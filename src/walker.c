@@ -12,35 +12,35 @@
 ** This file contains routines used for walking the parser tree for
 ** an SQL statement.
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <string.h>
+#ضمن "sqliteInt.h"
+#ضمن <stdlib.h>
+#ضمن <string.h>
 
 
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
+#إذا !defined(SQLITE_OMIT_WINDOWFUNC)
 /*
 ** Walk all expressions linked into the list of Window objects passed
 ** as the second argument.
 */
-static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
-  Window *pWin;
-  for(pWin=pList; pWin; pWin=pWin->pNextWin){
-    int rc;
-    rc = sqlite3WalkExprList(pWalker, pWin->pOrderBy);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExprList(pWalker, pWin->pPartition);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pFilter);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pStart);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pEnd);
-    if( rc ) return WRC_Abort;
-    if( bOneOnly ) break;
+ساكن صحيح walk_کړکۍ_List(Walker *pWalker, کړکۍ *pList, صحيح bOneOnly){
+  کړکۍ *pWin;
+  لكل(pWin=pList; pWin; pWin=pWin->p_بل_Win){
+    صحيح rc;
+    rc = sqlite3_Walk_بیان_List(pWalker, pWin->p_ترتیب_By);
+    إذا( rc ) أرجع WRC_Abort;
+    rc = sqlite3_Walk_بیان_List(pWalker, pWin->p_برخه_کول);
+    إذا( rc ) أرجع WRC_Abort;
+    rc = sqlite3_Walk_بیان(pWalker, pWin->pFilter);
+    إذا( rc ) أرجع WRC_Abort;
+    rc = sqlite3_Walk_بیان(pWalker, pWin->p_پیل);
+    إذا( rc ) أرجع WRC_Abort;
+    rc = sqlite3_Walk_بیان(pWalker, pWin->p_پای_ټکی);
+    إذا( rc ) أرجع WRC_Abort;
+    إذا( bOneOnly ) اكسر;
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
-#endif
+#د_که_پای
 
 /*
 ** Walk an expression tree.  Invoke the callback once for each node
@@ -61,66 +61,66 @@ static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
 ** The return value from this routine is WRC_Abort to abandon the tree walk
 ** and WRC_Continue to continue.
 */
-SQLITE_NOINLINE int sqlite3WalkExprNN(Walker *pWalker, Expr *pExpr){
-  int rc;
-  testcase( ExprHasProperty(pExpr, EP_TokenOnly) );
-  testcase( ExprHasProperty(pExpr, EP_Reduced) );
-  while(1){
-    rc = pWalker->xExprCallback(pWalker, pExpr);
-    if( rc ) return rc & WRC_Abort;
-    if( !ExprHasProperty(pExpr,(EP_TokenOnly|EP_Leaf)) ){
-      assert( pExpr->x.pList==0 || pExpr->pRight==0 );
-      if( pExpr->pLeft && sqlite3WalkExprNN(pWalker, pExpr->pLeft) ){
-        return WRC_Abort;
+SQLITE_NOINLINE صحيح sqlite3_Walk_بیان_NN(Walker *pWalker, بیان *p_بیان){
+  صحيح rc;
+  testcase( بیان_Has_Property(p_بیان, EP_TokenOnly) );
+  testcase( بیان_Has_Property(p_بیان, EP_Reduced) );
+  طالما(1){
+    rc = pWalker->x_بیان_Callback(pWalker, p_بیان);
+    إذا( rc ) أرجع rc & WRC_Abort;
+    إذا( !بیان_Has_Property(p_بیان,(EP_TokenOnly|EP_ونې_پاڼه)) ){
+      أكد( p_بیان->x.pList==0 || p_بیان->p_ښی==0 );
+      إذا( p_بیان->p_کیڼ && sqlite3_Walk_بیان_NN(pWalker, p_بیان->p_کیڼ) ){
+        أرجع WRC_Abort;
       }
-      if( pExpr->pRight ){
-        assert( !ExprHasProperty(pExpr, EP_WinFunc) );
-        pExpr = pExpr->pRight;
-        continue;
-      }else if( ExprUseXSelect(pExpr) ){
-        assert( !ExprHasProperty(pExpr, EP_WinFunc) );
-        if( sqlite3WalkSelect(pWalker, pExpr->x.pSelect) ) return WRC_Abort;
-      }else{
-        if( pExpr->x.pList ){
-          if( sqlite3WalkExprList(pWalker, pExpr->x.pList) ) return WRC_Abort;
+      إذا( p_بیان->p_ښی ){
+        أكد( !بیان_Has_Property(p_بیان, EP_WinFunc) );
+        p_بیان = p_بیان->p_ښی;
+        استمر;
+      }وإلا إذا( بیان_Use_XSelect(p_بیان) ){
+        أكد( !بیان_Has_Property(p_بیان, EP_WinFunc) );
+        إذا( sqlite3WalkSelect(pWalker, p_بیان->x.pSelect) ) أرجع WRC_Abort;
+      }وإلا{
+        إذا( p_بیان->x.pList ){
+          إذا( sqlite3_Walk_بیان_List(pWalker, p_بیان->x.pList) ) أرجع WRC_Abort;
         }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-        if( ExprHasProperty(pExpr, EP_WinFunc) ){
-          if( walkWindowList(pWalker, pExpr->y.pWin, 1) ) return WRC_Abort;
+#که_نه_تعریف_شوی SQLITE_OMIT_WINDOWFUNC
+        إذا( بیان_Has_Property(p_بیان, EP_WinFunc) ){
+          إذا( walk_کړکۍ_List(pWalker, p_بیان->y.pWin, 1) ) أرجع WRC_Abort;
         }
-#endif
+#د_که_پای
       }
     }
-    break;
+    اكسر;
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
-int sqlite3WalkExpr(Walker *pWalker, Expr *pExpr){
-  return pExpr ? sqlite3WalkExprNN(pWalker,pExpr) : WRC_Continue;
+صحيح sqlite3_Walk_بیان(Walker *pWalker, بیان *p_بیان){
+  أرجع p_بیان ? sqlite3_Walk_بیان_NN(pWalker,p_بیان) : WRC_Continue;
 }
 
 /*
 ** Call sqlite3WalkExpr() for every expression in list p or until
 ** an abort request is seen.
 */
-int sqlite3WalkExprList(Walker *pWalker, ExprList *p){
-  int i;
-  struct ExprList_item *pItem;
-  if( p ){
-    for(i=p->nExpr, pItem=p->a; i>0; i--, pItem++){
-      if( sqlite3WalkExpr(pWalker, pItem->pExpr) ) return WRC_Abort;
+صحيح sqlite3_Walk_بیان_List(Walker *pWalker, بیان_List *p){
+  صحيح i;
+  بنية بیان_List_توکی *p_توکی;
+  إذا( p ){
+    لكل(i=p->n_بیان, p_توکی=p->a; i>0; i--, p_توکی++){
+      إذا( sqlite3_Walk_بیان(pWalker, p_توکی->p_بیان) ) أرجع WRC_Abort;
     }
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
 ** This is a no-op callback for Walker->xSelectCallback2.  If this
 ** callback is set, then the Select->pWinDefn list is traversed.
 */
-void sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
-  UNUSED_PARAMETER(pWalker);
-  UNUSED_PARAMETER(p);
+فراغ sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
+  ناکارول_شوی_PARAMETER(pWalker);
+  ناکارول_شوی_PARAMETER(p);
   /* No-op */
 }
 
@@ -130,30 +130,30 @@ void sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
 ** any expr callbacks and SELECT callbacks that come from subqueries.
 ** Return WRC_Abort or WRC_Continue.
 */
-int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
-  if( sqlite3WalkExprList(pWalker, p->pEList) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pWhere) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pGroupBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pHaving) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pOrderBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pLimit) ) return WRC_Abort;
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
-  if( p->pWinDefn ){
+صحيح sqlite3_Walk_Select_بیان(Walker *pWalker, Select *p){
+  إذا( sqlite3_Walk_بیان_List(pWalker, p->pEList) ) أرجع WRC_Abort;
+  إذا( sqlite3_Walk_بیان(pWalker, p->pWhere) ) أرجع WRC_Abort;
+  إذا( sqlite3_Walk_بیان_List(pWalker, p->p_ډله_By) ) أرجع WRC_Abort;
+  إذا( sqlite3_Walk_بیان(pWalker, p->pHaving) ) أرجع WRC_Abort;
+  إذا( sqlite3_Walk_بیان_List(pWalker, p->p_ترتیب_By) ) أرجع WRC_Abort;
+  إذا( sqlite3_Walk_بیان(pWalker, p->p_حد) ) أرجع WRC_Abort;
+#إذا !defined(SQLITE_OMIT_WINDOWFUNC)
+  إذا( p->pWinDefn ){
     Parse *pParse;
-    if( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
-     || ((pParse = pWalker->pParse)!=0 && IN_RENAME_OBJECT)
-#ifndef SQLITE_OMIT_CTE
-     || pWalker->xSelectCallback2==sqlite3SelectPopWith
-#endif
+    إذا( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
+     || ((pParse = pWalker->pParse)!=0 && دننه_RENAME_OBJECT)
+#که_نه_تعریف_شوی SQLITE_OMIT_CTE
+     || pWalker->xSelectCallback2==sqlite3_Select_راوباسه_With
+#د_که_پای
     ){
       /* The following may return WRC_Abort if there are unresolvable
       ** symbols (e.g. a table that does not exist) in a window definition. */
-      int rc = walkWindowList(pWalker, p->pWinDefn, 0);
-      return rc;
+      صحيح rc = walk_کړکۍ_List(pWalker, p->pWinDefn, 0);
+      أرجع rc;
     }
   }
-#endif
-  return WRC_Continue;
+#د_که_پای
+  أرجع WRC_Continue;
 }
 
 /*
@@ -163,27 +163,27 @@ int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
 ** and on any subqueries further down in the tree.  Return 
 ** WRC_Abort or WRC_Continue;
 */
-int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
+صحيح sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
   SrcList *pSrc;
-  int i;
-  SrcItem *pItem;
+  صحيح i;
+  Src_توکی *p_توکی;
 
   pSrc = p->pSrc;
-  if( ALWAYS(pSrc) ){
-    for(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
-      if( pItem->fg.isSubquery
-       && sqlite3WalkSelect(pWalker, pItem->u4.pSubq->pSelect)
+  إذا( ALWAYS(pSrc) ){
+    لكل(i=pSrc->nSrc, p_توکی=pSrc->a; i>0; i--, p_توکی++){
+      إذا( p_توکی->fg.isSubquery
+       && sqlite3WalkSelect(pWalker, p_توکی->u4.pSubq->pSelect)
       ){
-        return WRC_Abort;
+        أرجع WRC_Abort;
       }
-      if( pItem->fg.isTabFunc
-       && sqlite3WalkExprList(pWalker, pItem->u1.pFuncArg)
+      إذا( p_توکی->fg.isTabFunc
+       && sqlite3_Walk_بیان_List(pWalker, p_توکی->u1.pFuncArg)
       ){
-        return WRC_Abort;
+        أرجع WRC_Abort;
       }
     }
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
@@ -203,37 +203,37 @@ int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
 ** If the Walker does not have an xSelectCallback() then this routine
 ** is a no-op returning WRC_Continue.
 */
-int sqlite3WalkSelect(Walker *pWalker, Select *p){
-  int rc;
-  if( p==0 ) return WRC_Continue;
-  if( pWalker->xSelectCallback==0 ) return WRC_Continue;
-  do{
+صحيح sqlite3WalkSelect(Walker *pWalker, Select *p){
+  صحيح rc;
+  إذا( p==0 ) أرجع WRC_Continue;
+  إذا( pWalker->xSelectCallback==0 ) أرجع WRC_Continue;
+  افعل{
     rc = pWalker->xSelectCallback(pWalker, p);
-    if( rc ) return rc & WRC_Abort;
-    if( sqlite3WalkSelectExpr(pWalker, p)
+    إذا( rc ) أرجع rc & WRC_Abort;
+    إذا( sqlite3_Walk_Select_بیان(pWalker, p)
      || sqlite3WalkSelectFrom(pWalker, p)
     ){
-      return WRC_Abort;
+      أرجع WRC_Abort;
     }
-    if( pWalker->xSelectCallback2 ){
+    إذا( pWalker->xSelectCallback2 ){
       pWalker->xSelectCallback2(pWalker, p);
     }
-    p = p->pPrior;
-  }while( p!=0 );
-  return WRC_Continue;
+    p = p->p_مخکینی;
+  }طالما( p!=0 );
+  أرجع WRC_Continue;
 }
 
 /* Increase the walkerDepth when entering a subquery, and
 ** decrease when leaving the subquery.
 */
-int sqlite3WalkerDepthIncrease(Walker *pWalker, Select *pSelect){
-  UNUSED_PARAMETER(pSelect);
-  pWalker->walkerDepth++;
-  return WRC_Continue;
+صحيح sqlite3_Walker_ژوروالی_Increase(Walker *pWalker, Select *pSelect){
+  ناکارول_شوی_PARAMETER(pSelect);
+  pWalker->walker_ژوروالی++;
+  أرجع WRC_Continue;
 }
-void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
-  UNUSED_PARAMETER(pSelect);
-  pWalker->walkerDepth--;
+فراغ sqlite3_Walker_ژوروالی_Decrease(Walker *pWalker, Select *pSelect){
+  ناکارول_شوی_PARAMETER(pSelect);
+  pWalker->walker_ژوروالی--;
 }
 
 
@@ -246,16 +246,16 @@ void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
 ** Walker.xSelectCallback is set to do something useful for every 
 ** subquery in the parser tree.
 */
-int sqlite3ExprWalkNoop(Walker *NotUsed, Expr *NotUsed2){
-  UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+صحيح sqlite3_بیان_Walk_Noop(Walker *Not_کارول_شوی, بیان *NotUsed2){
+  ناکارول_شوی_PARAMETER2(Not_کارول_شوی, NotUsed2);
+  أرجع WRC_Continue;
 }
 
 /*
 ** No-op routine for the parse-tree walker for SELECT statements.
 ** subquery in the parser tree.
 */
-int sqlite3SelectWalkNoop(Walker *NotUsed, Select *NotUsed2){
-  UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+صحيح sqlite3SelectWalkNoop(Walker *Not_کارول_شوی, Select *NotUsed2){
+  ناکارول_شوی_PARAMETER2(Not_کارول_شوی, NotUsed2);
+  أرجع WRC_Continue;
 }

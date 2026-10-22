@@ -14,10 +14,10 @@
 ** Most of the code in this file may be omitted by defining the
 ** SQLITE_OMIT_VACUUM macro.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#ضمن "sqliteInt.h"
+#ضمن "vdbeInt.h"
 
-#if !defined(SQLITE_OMIT_VACUUM) && !defined(SQLITE_OMIT_ATTACH)
+#إذا !defined(SQLITE_OMIT_VACUUM) && !defined(SQLITE_OMIT_ATTACH)
 
 /*
 ** Execute zSql on database db.
@@ -29,47 +29,47 @@
 ** The execSqlF() routine does the same thing, except it accepts
 ** a format string as its third argument
 */
-static int execSql(sqlite3 *db, char **pzErrMsg, const char *zSql){
+ساكن صحيح execSql(sqlite3 *db, حرف **pz_Err_پیغام, ثابت حرف *zSql){
   sqlite3_stmt *pStmt;
-  int rc;
+  صحيح rc;
 
   /* printf("SQL: [%s]\n", zSql); fflush(stdout); */
   rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0);
-  if( rc!=SQLITE_OK ) return rc;
-  while( SQLITE_ROW==(rc = sqlite3_step(pStmt)) ){
-    const char *zSubSql = (const char*)sqlite3_column_text(pStmt,0);
-    assert( sqlite3_strnicmp(zSql,"SELECT",6)==0 );
+  إذا( rc!=SQLITE_OK ) أرجع rc;
+  طالما( SQLITE_لیکه==(rc = sqlite3_ګام(pStmt)) ){
+    ثابت حرف *zSubSql = (ثابت حرف*)sqlite3_ستنه_متن(pStmt,0);
+    أكد( sqlite3_strnicmp(zSql,"SELECT",6)==0 );
     /* The secondary SQL must be one of CREATE TABLE, CREATE INDEX,
     ** or INSERT.  Historically there have been attacks that first
     ** corrupt the sqlite_schema.sql field with other kinds of statements
     ** then run VACUUM to get those statements to execute at inappropriate
     ** times. */
-    if( zSubSql
-     && (strncmp(zSubSql,"CRE",3)==0 || strncmp(zSubSql,"INS",3)==0)
+    إذا( zSubSql
+     && (مزي_پرتله(zSubSql,"CRE",3)==0 || مزي_پرتله(zSubSql,"INS",3)==0)
     ){
-      rc = execSql(db, pzErrMsg, zSubSql);
-      if( rc!=SQLITE_OK ) break;
+      rc = execSql(db, pz_Err_پیغام, zSubSql);
+      إذا( rc!=SQLITE_OK ) اكسر;
     }
   }
-  assert( rc!=SQLITE_ROW );
-  if( rc==SQLITE_DONE ) rc = SQLITE_OK;
-  if( rc ){
-    sqlite3SetString(pzErrMsg, db, sqlite3_errmsg(db));
+  أكد( rc!=SQLITE_لیکه );
+  إذا( rc==SQLITE_بشپړ ) rc = SQLITE_OK;
+  إذا( rc ){
+    sqlite3_سېټ_String(pz_Err_پیغام, db, sqlite3_errmsg(db));
   }
-  (void)sqlite3_finalize(pStmt);
-  return rc;
+  (فراغ)sqlite3_finalize(pStmt);
+  أرجع rc;
 }
-static int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...){
-  char *z;
+ساكن صحيح execSqlF(sqlite3 *db, حرف **pz_Err_پیغام, ثابت حرف *zSql, ...){
+  حرف *z;
   va_list ap;
-  int rc;
+  صحيح rc;
   va_start(ap, zSql);
   z = sqlite3VMPrintf(db, zSql, ap);
   va_end(ap);
-  if( z==0 ) return SQLITE_NOMEM;
-  rc = execSql(db, pzErrMsg, z);
+  إذا( z==0 ) أرجع SQLITE_NOMEM;
+  rc = execSql(db, pz_Err_پیغام, z);
   sqlite3DbFree(db, z);
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -102,89 +102,89 @@ static int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...){
 ** transient would cause the database file to appear to be deleted
 ** following reboot.
 */
-void sqlite3Vacuum(Parse *pParse, Token *pNm, Expr *pInto){
+فراغ sqlite3Vacuum(Parse *pParse, Token *pNm, بیان *pInto){
   Vdbe *v = sqlite3GetVdbe(pParse);
-  int iDb = 0;
-  if( v==0 ) goto build_vacuum_end;
-  if( pParse->nErr ) goto build_vacuum_end;
-  if( pNm ){
-#ifndef SQLITE_BUG_COMPATIBLE_20160819
+  صحيح iDb = 0;
+  إذا( v==0 ) اذهب build_vacuum_پای_ټکی;
+  إذا( pParse->nErr ) اذهب build_vacuum_پای_ټکی;
+  إذا( pNm ){
+#که_نه_تعریف_شوی SQLITE_BUG_COMPATIBLE_20160819
     /* Default behavior:  Report an error if the argument to VACUUM is
     ** not recognized */
     iDb = sqlite3TwoPartName(pParse, pNm, pNm, &pNm);
-    if( iDb<0 ) goto build_vacuum_end;
-#else
+    إذا( iDb<0 ) اذهب build_vacuum_پای_ټکی;
+#وإلا
     /* When SQLITE_BUG_COMPATIBLE_20160819 is defined, unrecognized arguments
     ** to VACUUM are silently ignored.  This is a back-out of a bug fix that
     ** occurred on 2016-08-19 (https://sqlite.org/src/info/083f9e6270).
     ** The buggy behavior is required for binary compatibility with some
     ** legacy applications. */
-    iDb = sqlite3FindDb(pParse->db, pNm);
-    if( iDb<0 ) iDb = 0;
-#endif
+    iDb = sqlite3_پیدا_کړه_Db(pParse->db, pNm);
+    إذا( iDb<0 ) iDb = 0;
+#د_که_پای
   }
-  if( iDb!=1 ){
-    int iIntoReg = 0;
-    if( pInto && sqlite3ResolveSelfReference(pParse,0,0,pInto,0)==0 ){
+  إذا( iDb!=1 ){
+    صحيح iIntoReg = 0;
+    إذا( pInto && sqlite3ResolveSelfReference(pParse,0,0,pInto,0)==0 ){
       iIntoReg = ++pParse->nMem;
-      sqlite3ExprCode(pParse, pInto, iIntoReg);
+      sqlite3_بیان_کوډ(pParse, pInto, iIntoReg);
     }
-    sqlite3VdbeAddOp2(v, OP_Vacuum, iDb, iIntoReg);
-    sqlite3VdbeUsesBtree(v, iDb);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Vacuum, iDb, iIntoReg);
+    sqlite3_Vdbe_کاروي_Btree(v, iDb);
   }
-build_vacuum_end:
-  sqlite3ExprDelete(pParse->db, pInto);
-  return;
+build_vacuum_پای_ټکی:
+  sqlite3_بیان_Delete(pParse->db, pInto);
+  أرجع;
 }
 
 /*
 ** This routine implements the OP_Vacuum opcode of the VDBE.
 */
-SQLITE_NOINLINE int sqlite3RunVacuum(
-  char **pzErrMsg,        /* Write error message here */
+SQLITE_NOINLINE صحيح sqlite3_پرلپسې_Vacuum(
+  حرف **pz_Err_پیغام,        /* Write error message here */
   sqlite3 *db,            /* Database connection */
-  int iDb,                /* Which attached DB to vacuum */
-  sqlite3_value *pOut     /* Write results here, if not NULL. VACUUM INTO */
+  صحيح iDb,                /* Which attached DB to vacuum */
+  sqlite3_ارزښت *p_بهر     /* Write results here, if not NULL. VACUUM INTO */
 ){
-  int rc = SQLITE_OK;     /* Return code from service routines */
+  صحيح rc = SQLITE_OK;     /* Return code from service routines */
   Btree *pMain;           /* The database being vacuumed */
-  Btree *pTemp;           /* The temporary database we vacuum into */
+  Btree *p_لنډمهاله;           /* The temporary database we vacuum into */
   u32 saved_mDbFlags;     /* Saved value of db->mDbFlags */
   u64 saved_flags;        /* Saved value of db->flags */
   i64 saved_nChange;      /* Saved value of db->nChange */
-  i64 saved_nTotalChange; /* Saved value of db->nTotalChange */
+  i64 saved_n_ټول_Change; /* Saved value of db->nTotalChange */
   u32 saved_openFlags;    /* Saved value of db->openFlags */
   u8 saved_mTrace;        /* Saved trace settings */
   Db *pDb = 0;            /* Database to detach at end of vacuum */
-  int isMemDb;            /* True if vacuuming a :memory: database */
-  int nRes;               /* Bytes of reserved space at the end of each page */
-  int nDb;                /* Number of attached databases */
-  const char *zDbMain;    /* Schema name of database to vacuum */
-  const char *zOut;       /* Name of output file */
+  صحيح isMemDb;            /* True if vacuuming a :memory: database */
+  صحيح nRes;               /* Bytes of reserved space at the end of each page */
+  صحيح nDb;                /* Number of attached databases */
+  ثابت حرف *zDbMain;    /* Schema name of database to vacuum */
+  ثابت حرف *z_بهر;       /* Name of output file */
   u32 pgflags = PAGER_SYNCHRONOUS_OFF; /* sync flags for output db */
   u64 iRandom;            /* Random value used for zDbVacuum[] */
-  char zDbVacuum[42];     /* Name of the ATTACH-ed database used for vacuum */
+  حرف zDbVacuum[42];     /* Name of the ATTACH-ed database used for vacuum */
 
 
-  if( !db->autoCommit ){
-    sqlite3SetString(pzErrMsg, db, "cannot VACUUM from within a transaction");
-    return SQLITE_ERROR; /* IMP: R-12218-18073 */
+  إذا( !db->autoCommit ){
+    sqlite3_سېټ_String(pz_Err_پیغام, db, "cannot VACUUM from within a transaction");
+    أرجع SQLITE_ERROR; /* IMP: R-12218-18073 */
   }
-  if( db->nVdbeActive>1 ){
-    sqlite3SetString(pzErrMsg, db,"cannot VACUUM - SQL statements in progress");
-    return SQLITE_ERROR; /* IMP: R-15610-35227 */
+  إذا( db->n_Vdbe_فعال>1 ){
+    sqlite3_سېټ_String(pz_Err_پیغام, db,"cannot VACUUM - SQL statements in progress");
+    أرجع SQLITE_ERROR; /* IMP: R-15610-35227 */
   }
   saved_openFlags = db->openFlags;
-  if( pOut ){
-    if( sqlite3_value_type(pOut)!=SQLITE_TEXT ){
-      sqlite3SetString(pzErrMsg, db, "non-text filename");
-      return SQLITE_ERROR;
+  إذا( p_بهر ){
+    إذا( sqlite3_ارزښت_type(p_بهر)!=SQLITE_متن ){
+      sqlite3_سېټ_String(pz_Err_پیغام, db, "non-text filename");
+      أرجع SQLITE_ERROR;
     }
-    zOut = (const char*)sqlite3_value_text(pOut);
+    z_بهر = (ثابت حرف*)sqlite3_ارزښت_متن(p_بهر);
     db->openFlags &= ~SQLITE_OPEN_READONLY;
     db->openFlags |= SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE;
-  }else{
-    zOut = "";
+  }وإلا{
+    z_بهر = "";
   }
 
   /* Save the current value of the database flags so that it can be 
@@ -193,13 +193,13 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   saved_flags = db->flags;
   saved_mDbFlags = db->mDbFlags;
   saved_nChange = db->nChange;
-  saved_nTotalChange = db->nTotalChange;
+  saved_n_ټول_Change = db->n_ټول_Change;
   saved_mTrace = db->mTrace;
   db->flags |= SQLITE_WriteSchema | SQLITE_IgnoreChecks | SQLITE_Comments
                | SQLITE_AttachCreate | SQLITE_AttachWrite;
   db->mDbFlags |= DBFLAG_PreferBuiltin | DBFLAG_Vacuum;
-  db->flags &= ~(u64)(SQLITE_ForeignKeys | SQLITE_ReverseOrder
-                   | SQLITE_Defensive | SQLITE_CountRows);
+  db->flags &= ~(u64)(SQLITE_Foreign_کلیګانې | SQLITE_سرچپه_ترتیب
+                   | SQLITE_Defensive | SQLITE_شمېر_لیکې);
   db->mTrace = 0;
 
   zDbMain = db->aDb[iDb].zDbSName;
@@ -220,124 +220,124 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   ** time to parse and run the PRAGMA to turn journalling off than it does
   ** to write the journal header file.
   */
-  sqlite3_randomness(sizeof(iRandom),&iRandom);
-  sqlite3_snprintf(sizeof(zDbVacuum), zDbVacuum, "vacuum_%016llx", iRandom);
+  sqlite3_randomness(حجم(iRandom),&iRandom);
+  sqlite3_snprintf(حجم(zDbVacuum), zDbVacuum, "vacuum_%016llx", iRandom);
   nDb = db->nDb;
-  rc = execSqlF(db, pzErrMsg, "ATTACH %Q AS %s", zOut, zDbVacuum);
+  rc = execSqlF(db, pz_Err_پیغام, "ATTACH %Q AS %s", z_بهر, zDbVacuum);
   db->openFlags = saved_openFlags;
-  if( rc!=SQLITE_OK ) goto end_of_vacuum;
-  assert( (db->nDb-1)==nDb );
+  إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
+  أكد( (db->nDb-1)==nDb );
   pDb = &db->aDb[nDb];
-  assert( strcmp(pDb->zDbSName,zDbVacuum)==0 );
-  pTemp = pDb->pBt;
+  أكد( strcmp(pDb->zDbSName,zDbVacuum)==0 );
+  p_لنډمهاله = pDb->pBt;
   nRes = sqlite3BtreeGetRequestedReserve(pMain);
-  if( pOut ){
-    sqlite3_file *id = sqlite3PagerFile(sqlite3BtreePager(pTemp));
+  إذا( p_بهر ){
+    sqlite3_file *id = sqlite3PagerFile(sqlite3BtreePager(p_لنډمهاله));
     i64 sz = 0;
-    const char *zFilename;
-    if( id->pMethods!=0 && (sqlite3OsFileSize(id, &sz)!=SQLITE_OK || sz>0) ){
+    ثابت حرف *zFilename;
+    إذا( id->pMethods!=0 && (sqlite3_Os_File_اندازه(id, &sz)!=SQLITE_OK || sz>0) ){
       rc = SQLITE_ERROR;
-      sqlite3SetString(pzErrMsg, db, "output file already exists");
-      goto end_of_vacuum;
+      sqlite3_سېټ_String(pz_Err_پیغام, db, "output file already exists");
+      اذهب پای_ټکی_د_vacuum;
     }
     db->mDbFlags |= DBFLAG_VacuumInto;
 
     /* For a VACUUM INTO, the pager-flags are set to the same values as
     ** they are for the database being vacuumed, except that PAGER_CACHESPILL
     ** is always set. */
-    pgflags = db->aDb[iDb].safety_level | (db->flags & PAGER_FLAGS_MASK);
+    pgflags = db->aDb[iDb].safety_level | (db->flags & PAGER_FLAGS_ماسک);
 
     /* If the VACUUM INTO target file is a URI filename and if the
     ** "reserve=N" query parameter is present, reset the reserve to the
     ** amount specified, if the amount is within range */
-    zFilename = sqlite3BtreeGetFilename(pTemp);
-    if( ALWAYS(zFilename) ){
-      int nNew = (int)sqlite3_uri_int64(zFilename, "reserve", nRes);
-      if( nNew>=0 && nNew<=255 ) nRes = nNew;
+    zFilename = sqlite3BtreeGetFilename(p_لنډمهاله);
+    إذا( ALWAYS(zFilename) ){
+      صحيح nNew = (صحيح)sqlite3_uri_int64(zFilename, "reserve", nRes);
+      إذا( nNew>=0 && nNew<=255 ) nRes = nNew;
     }
   }
 
-  sqlite3BtreeSetCacheSize(pTemp, db->aDb[iDb].pSchema->cache_size);
-  sqlite3BtreeSetSpillSize(pTemp, sqlite3BtreeSetSpillSize(pMain,0));
-  sqlite3BtreeSetPagerFlags(pTemp, pgflags|PAGER_CACHESPILL);
+  sqlite3_Btree_سېټ_Cache_اندازه(p_لنډمهاله, db->aDb[iDb].pSchema->cache_اندازه);
+  sqlite3_Btree_سېټ_Spill_اندازه(p_لنډمهاله, sqlite3_Btree_سېټ_Spill_اندازه(pMain,0));
+  sqlite3_Btree_سېټ_Pager_Flags(p_لنډمهاله, pgflags|PAGER_CACHESPILL);
 
   /* Begin a transaction and take an exclusive lock on the main database
   ** file. This is done before the sqlite3BtreeGetPageSize(pMain) call below,
   ** to ensure that we do not try to change the page-size on a WAL database.
   */
-  rc = execSql(db, pzErrMsg, "BEGIN");
-  if( rc!=SQLITE_OK ) goto end_of_vacuum;
-  rc = sqlite3BtreeBeginTrans(pMain, pOut==0 ? 2 : 0, 0);
-  if( rc!=SQLITE_OK ) goto end_of_vacuum;
+  rc = execSql(db, pz_Err_پیغام, "BEGIN");
+  إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
+  rc = sqlite3BtreeBeginTrans(pMain, p_بهر==0 ? 2 : 0, 0);
+  إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
 
   /* Do not attempt to change the page size for a WAL database */
-  if( sqlite3PagerGetJournalMode(sqlite3BtreePager(pMain))
+  إذا( sqlite3_Pager_Get_Journal_ډېرپېښ(sqlite3BtreePager(pMain))
                                                ==PAGER_JOURNALMODE_WAL
-   && pOut==0
+   && p_بهر==0
   ){
-    db->nextPagesize = 0;
+    db->بل_Pagesize = 0;
   }
 
-  if( sqlite3BtreeSetPageSize(pTemp, sqlite3BtreeGetPageSize(pMain), nRes, 0)
-   || (!isMemDb && sqlite3BtreeSetPageSize(pTemp, db->nextPagesize, nRes, 0))
+  إذا( sqlite3_Btree_سېټ_پاڼه_اندازه(p_لنډمهاله, sqlite3_Btree_Get_پاڼه_اندازه(pMain), nRes, 0)
+   || (!isMemDb && sqlite3_Btree_سېټ_پاڼه_اندازه(p_لنډمهاله, db->بل_Pagesize, nRes, 0))
    || NEVER(db->mallocFailed)
   ){
     rc = SQLITE_NOMEM_BKPT;
-    goto end_of_vacuum;
+    اذهب پای_ټکی_د_vacuum;
   }
 
-#ifndef SQLITE_OMIT_AUTOVACUUM
-  sqlite3BtreeSetAutoVacuum(pTemp, db->nextAutovac>=0 ? db->nextAutovac :
+#که_نه_تعریف_شوی SQLITE_OMIT_AUTOVACUUM
+  sqlite3_Btree_سېټ_Auto_Vacuum(p_لنډمهاله, db->بل_Autovac>=0 ? db->بل_Autovac :
                                            sqlite3BtreeGetAutoVacuum(pMain));
-#endif
+#د_که_پای
 
   /* Query the schema of the main database. Create a mirror schema
   ** in the temporary database.
   */
   db->init.iDb = nDb; /* force new CREATE statements into vacuum_db */
-  rc = execSqlF(db, pzErrMsg,
+  rc = execSqlF(db, pz_Err_پیغام,
       "SELECT sql FROM \"%w\".sqlite_schema"
       " WHERE type='table'AND name<>'sqlite_sequence'"
       " AND coalesce(rootpage,1)>0",
       zDbMain
   );
-  if( rc!=SQLITE_OK ) goto end_of_vacuum;
-  rc = execSqlF(db, pzErrMsg,
+  إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
+  rc = execSqlF(db, pz_Err_پیغام,
       "SELECT sql FROM \"%w\".sqlite_schema"
       " WHERE type='index'",
       zDbMain
   );
-  if( rc!=SQLITE_OK ) goto end_of_vacuum;
+  إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
   db->init.iDb = 0;
 
   /* Loop through the tables in the main database. For each, do
   ** an "INSERT INTO vacuum_db.xxx SELECT * FROM main.xxx;" to copy
   ** the contents to the temporary database.
   */
-  rc = execSqlF(db, pzErrMsg,
+  rc = execSqlF(db, pz_Err_پیغام,
       "SELECT'INSERT INTO %s.'||quote(name)"
       "||' SELECT*FROM\"%w\".'||quote(name)"
       "FROM %s.sqlite_schema "
       "WHERE type='table'AND coalesce(rootpage,1)>0",
       zDbVacuum, zDbMain, zDbVacuum
   );
-  assert( (db->mDbFlags & DBFLAG_Vacuum)!=0 );
+  أكد( (db->mDbFlags & DBFLAG_Vacuum)!=0 );
   db->mDbFlags &= ~DBFLAG_Vacuum;
-  if( rc!=SQLITE_OK ) goto end_of_vacuum;
+  إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
 
   /* Copy the triggers, views, and virtual tables from the main database
   ** over to the temporary database.  None of these objects has any
   ** associated storage, so all we have to do is copy their entries
   ** from the schema table.
   */
-  rc = execSqlF(db, pzErrMsg,
+  rc = execSqlF(db, pz_Err_پیغام,
       "INSERT INTO %s.sqlite_schema"
       " SELECT*FROM \"%w\".sqlite_schema"
       " WHERE type IN('view','trigger')"
       " OR(type='table'AND rootpage=0)",
       zDbVacuum, zDbMain
   );
-  if( rc ) goto end_of_vacuum;
+  إذا( rc ) اذهب پای_ټکی_د_vacuum;
 
   /* At this point, there is a write transaction open on both the 
   ** vacuum database and the main database. Assuming no error occurs,
@@ -347,7 +347,7 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   */
   {
     u32 meta;
-    int i;
+    صحيح i;
 
     /* This array determines which meta meta values are preserved in the
     ** vacuum.  Even entries are the meta value number and odd entries
@@ -355,54 +355,54 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
     ** The increment is used to increase the schema cookie so that other
     ** connections to the same database will know to reread the schema.
     */
-    static const unsigned char aCopy[] = {
-       BTREE_SCHEMA_VERSION,     1,  /* Add one to the old schema cookie */
-       BTREE_DEFAULT_CACHE_SIZE, 0,  /* Preserve the default page cache size */
-       BTREE_TEXT_ENCODING,      0,  /* Preserve the text encoding */
-       BTREE_USER_VERSION,       0,  /* Preserve the user version */
+    ساكن ثابت بینښه حرف aCopy[] = {
+       BTREE_SCHEMA_نسخه,     1,  /* Add one to the old schema cookie */
+       BTREE_DEFAULT_CACHE_اندازه, 0,  /* Preserve the default page cache size */
+       BTREE_متن_ENCODING,      0,  /* Preserve the text encoding */
+       BTREE_USER_نسخه,       0,  /* Preserve the user version */
        BTREE_APPLICATION_ID,     0,  /* Preserve the application id */
     };
 
-    assert( SQLITE_TXN_WRITE==sqlite3BtreeTxnState(pTemp) );
-    assert( pOut!=0 || SQLITE_TXN_WRITE==sqlite3BtreeTxnState(pMain) );
+    أكد( SQLITE_TXN_WRITE==sqlite3BtreeTxnState(p_لنډمهاله) );
+    أكد( p_بهر!=0 || SQLITE_TXN_WRITE==sqlite3BtreeTxnState(pMain) );
 
     /* Copy Btree meta values */
-    for(i=0; i<ArraySize(aCopy); i+=2){
+    لكل(i=0; i<Array_اندازه(aCopy); i+=2){
       /* GetMeta() and UpdateMeta() cannot fail in this context because
       ** we already have page 1 loaded into cache and marked dirty. */
       sqlite3BtreeGetMeta(pMain, aCopy[i], &meta);
-      rc = sqlite3BtreeUpdateMeta(pTemp, aCopy[i], meta+aCopy[i+1]);
-      if( NEVER(rc!=SQLITE_OK) ) goto end_of_vacuum;
+      rc = sqlite3BtreeUpdateMeta(p_لنډمهاله, aCopy[i], meta+aCopy[i+1]);
+      إذا( NEVER(rc!=SQLITE_OK) ) اذهب پای_ټکی_د_vacuum;
     }
 
-    if( pOut==0 ){
-      rc = sqlite3BtreeCopyFile(pMain, pTemp);
+    إذا( p_بهر==0 ){
+      rc = sqlite3BtreeCopyFile(pMain, p_لنډمهاله);
     }
-    if( rc!=SQLITE_OK ) goto end_of_vacuum;
-    rc = sqlite3BtreeCommit(pTemp);
-    if( rc!=SQLITE_OK ) goto end_of_vacuum;
-#ifndef SQLITE_OMIT_AUTOVACUUM
-    if( pOut==0 ){
-      sqlite3BtreeSetAutoVacuum(pMain, sqlite3BtreeGetAutoVacuum(pTemp));
+    إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
+    rc = sqlite3BtreeCommit(p_لنډمهاله);
+    إذا( rc!=SQLITE_OK ) اذهب پای_ټکی_د_vacuum;
+#که_نه_تعریف_شوی SQLITE_OMIT_AUTOVACUUM
+    إذا( p_بهر==0 ){
+      sqlite3_Btree_سېټ_Auto_Vacuum(pMain, sqlite3BtreeGetAutoVacuum(p_لنډمهاله));
     }
-#endif
+#د_که_پای
   }
 
-  assert( rc==SQLITE_OK );
-  if( pOut==0 ){
-    nRes = sqlite3BtreeGetRequestedReserve(pTemp);
-    rc = sqlite3BtreeSetPageSize(pMain, sqlite3BtreeGetPageSize(pTemp), nRes,1);
+  أكد( rc==SQLITE_OK );
+  إذا( p_بهر==0 ){
+    nRes = sqlite3BtreeGetRequestedReserve(p_لنډمهاله);
+    rc = sqlite3_Btree_سېټ_پاڼه_اندازه(pMain, sqlite3_Btree_Get_پاڼه_اندازه(p_لنډمهاله), nRes,1);
   }
 
-end_of_vacuum:
+پای_ټکی_د_vacuum:
   /* Restore the original value of db->flags */
   db->init.iDb = 0;
   db->mDbFlags = saved_mDbFlags;
   db->flags = saved_flags;
   db->nChange = saved_nChange;
-  db->nTotalChange = saved_nTotalChange;
+  db->n_ټول_Change = saved_n_ټول_Change;
   db->mTrace = saved_mTrace;
-  sqlite3BtreeSetPageSize(pMain, -1, 0, 1);
+  sqlite3_Btree_سېټ_پاڼه_اندازه(pMain, -1, 0, 1);
 
   /* Currently there is an SQL level transaction open on the vacuum
   ** database. No locks are held on any other files (since the main file
@@ -413,7 +413,7 @@ end_of_vacuum:
   */
   db->autoCommit = 1;
 
-  if( pDb ){
+  إذا( pDb ){
     sqlite3BtreeClose(pDb->pBt);
     pDb->pBt = 0;
     pDb->pSchema = 0;
@@ -421,9 +421,9 @@ end_of_vacuum:
 
   /* This both clears the schemas and reduces the size of the db->aDb[]
   ** array. */ 
-  sqlite3ResetAllSchemasOfConnection(db);
+  sqlite3_Reset_All_Schemas_د_Connection(db);
 
-  return rc;
+  أرجع rc;
 }
 
-#endif  /* SQLITE_OMIT_VACUUM && SQLITE_OMIT_ATTACH */
+#د_که_پای  /* SQLITE_OMIT_VACUUM && SQLITE_OMIT_ATTACH */

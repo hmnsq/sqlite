@@ -12,34 +12,34 @@
 **
 ** This file contains code that is specific to MSVC.
 */
-#ifndef SQLITE_MSVC_H
-#define SQLITE_MSVC_H
+#که_نه_تعریف_شوی SQLITE_MSVC_H
+#تعریف_کړه SQLITE_MSVC_H
 
-#if defined(_MSC_VER)
-#pragma warning(disable : 4054)
-#pragma warning(disable : 4055)
-#pragma warning(disable : 4100)
-#pragma warning(disable : 4127)
-#pragma warning(disable : 4130)
-#pragma warning(disable : 4152)
-#pragma warning(disable : 4189)
-#pragma warning(disable : 4206)
-#pragma warning(disable : 4210)
-#pragma warning(disable : 4232)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4305)
-#pragma warning(disable : 4306)
-#pragma warning(disable : 4702)
-#pragma warning(disable : 4706)
-#endif /* defined(_MSC_VER) */
+#إذا defined(_MSC_VER)
+#لارښوونه warning(disable : 4054)
+#لارښوونه warning(disable : 4055)
+#لارښوونه warning(disable : 4100)
+#لارښوونه warning(disable : 4127)
+#لارښوونه warning(disable : 4130)
+#لارښوونه warning(disable : 4152)
+#لارښوونه warning(disable : 4189)
+#لارښوونه warning(disable : 4206)
+#لارښوونه warning(disable : 4210)
+#لارښوونه warning(disable : 4232)
+#لارښوونه warning(disable : 4244)
+#لارښوونه warning(disable : 4305)
+#لارښوونه warning(disable : 4306)
+#لارښوونه warning(disable : 4702)
+#لارښوونه warning(disable : 4706)
+#د_که_پای /* defined(_MSC_VER) */
 
-#if defined(_MSC_VER) && !defined(_WIN64)
-#undef SQLITE_4_BYTE_ALIGNED_MALLOC
-#define SQLITE_4_BYTE_ALIGNED_MALLOC
-#endif /* defined(_MSC_VER) && !defined(_WIN64) */
+#إذا defined(_MSC_VER) && !defined(_WIN64)
+#تعریف_لغوه SQLITE_4_BYTE_ALIGNED_MALLOC
+#تعریف_کړه SQLITE_4_BYTE_ALIGNED_MALLOC
+#د_که_پای /* defined(_MSC_VER) && !defined(_WIN64) */
 
-#if !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
-#define HAVE_LOG2 0
-#endif /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
+#إذا !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
+#تعریف_کړه HAVE_LOG2 0
+#د_که_پای /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
 
-#endif /* SQLITE_MSVC_H */
+#د_که_پای /* SQLITE_MSVC_H */

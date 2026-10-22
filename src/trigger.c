@@ -10,24 +10,24 @@
 *************************************************************************
 ** This file contains the implementation for TRIGGERs
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_TRIGGER
+#که_نه_تعریف_شوی SQLITE_OMIT_TRIGGER
 /*
 ** Delete a linked list of TriggerStep structures.
 */
-void sqlite3DeleteTriggerStep(sqlite3 *db, TriggerStep *pTriggerStep){
-  while( pTriggerStep ){
-    TriggerStep * pTmp = pTriggerStep;
-    pTriggerStep = pTriggerStep->pNext;
+فراغ sqlite3_Delete_Trigger_ګام(sqlite3 *db, Trigger_ګام *p_Trigger_ګام){
+  طالما( p_Trigger_ګام ){
+    Trigger_ګام * pTmp = p_Trigger_ګام;
+    p_Trigger_ګام = p_Trigger_ګام->p_بل;
 
-    sqlite3ExprDelete(db, pTmp->pWhere);
-    sqlite3ExprListDelete(db, pTmp->pExprList);
+    sqlite3_بیان_Delete(db, pTmp->pWhere);
+    sqlite3_بیان_List_Delete(db, pTmp->p_بیان_List);
     sqlite3SelectDelete(db, pTmp->pSelect);
     sqlite3IdListDelete(db, pTmp->pIdList);
     sqlite3UpsertDelete(db, pTmp->pUpsert);
     sqlite3SrcListDelete(db, pTmp->pSrc);
-    sqlite3DbFree(db, pTmp->zSpan);
+    sqlite3DbFree(db, pTmp->z_پراختیا);
 
     sqlite3DbFree(db, pTmp);
   }
@@ -47,50 +47,50 @@ void sqlite3DeleteTriggerStep(sqlite3 *db, TriggerStep *pTriggerStep){
 ** that fire off of pTab.  The list will include any TEMP triggers on
 ** pTab as well as the triggers lised in pTab->pTrigger.
 */
-Trigger *sqlite3TriggerList(Parse *pParse, Table *pTab){
+Trigger *sqlite3TriggerList(Parse *pParse, جدول *pTab){
   Schema *pTmpSchema;       /* Schema of the pTab table */
   Trigger *pList;           /* List of triggers to return */
   HashElem *p;              /* Loop variable for TEMP triggers */
 
-  assert( pParse->disableTriggers==0 );
+  أكد( pParse->disableTriggers==0 );
   pTmpSchema = pParse->db->aDb[1].pSchema;
-  p = sqliteHashFirst(&pTmpSchema->trigHash);
+  p = sqlite_Hash_لومړی(&pTmpSchema->trigHash);
   pList = pTab->pTrigger;
-  while( p ){
-    Trigger *pTrig = (Trigger *)sqliteHashData(p);
-    if( pTrig->pTabSchema==pTab->pSchema
-     && pTrig->table
-     && 0==sqlite3StrICmp(pTrig->table, pTab->zName)
+  طالما( p ){
+    Trigger *pTrig = (Trigger *)sqlite_Hash_معلومات(p);
+    إذا( pTrig->pTabSchema==pTab->pSchema
+     && pTrig->جدول_2
+     && 0==sqlite3StrICmp(pTrig->جدول_2, pTab->zName)
      && (pTrig->pTabSchema!=pTmpSchema || pTrig->bReturning)
     ){
-      pTrig->pNext = pList;
+      pTrig->p_بل = pList;
       pList = pTrig;
-    }else if( pTrig->op==TK_RETURNING ){
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-      assert( pParse->db->pVtabCtx==0 );
-#endif
-      assert( pParse->bReturning );
-      assert( !pParse->isCreate );
-      assert( &(pParse->u1.d.pReturning->retTrig) == pTrig );
-      pTrig->table = pTab->zName;
+    }وإلا إذا( pTrig->op==TK_RETURNING ){
+#که_نه_تعریف_شوی SQLITE_OMIT_VIRTUALTABLE
+      أكد( pParse->db->pVtabCtx==0 );
+#د_که_پای
+      أكد( pParse->bReturning );
+      أكد( !pParse->isCreate );
+      أكد( &(pParse->u1.d.pReturning->retTrig) == pTrig );
+      pTrig->جدول_2 = pTab->zName;
       pTrig->pTabSchema = pTab->pSchema;
-      pTrig->pNext = pList;
+      pTrig->p_بل = pList;
       pList = pTrig;
     }        
-    p = sqliteHashNext(p);    
+    p = sqlite_Hash_بل(p);    
   }
-#if 0
-  if( pList ){
+#إذا 0
+  إذا( pList ){
     Trigger *pX;
-    printf("Triggers for %s:", pTab->zName);
-    for(pX=pList; pX; pX=pX->pNext){
-      printf(" %s", pX->zName);
+    چاپ_کړه("Triggers for %s:", pTab->zName);
+    لكل(pX=pList; pX; pX=pX->p_بل){
+      چاپ_کړه(" %s", pX->zName);
     }
-    printf("\n");
+    چاپ_کړه("\n");
     fflush(stdout);
   }
-#endif
-  return pList;  
+#د_که_پای
+  أرجع pList;  
 }
 
 /*
@@ -101,47 +101,47 @@ Trigger *sqlite3TriggerList(Parse *pParse, Table *pTab){
 ** sqlite3FinishTrigger() function is called to complete the trigger
 ** construction process.
 */
-void sqlite3BeginTrigger(
+فراغ sqlite3BeginTrigger(
   Parse *pParse,      /* The parse context of the CREATE TRIGGER statement */
   Token *pName1,      /* The name of the trigger */
   Token *pName2,      /* The name of the trigger */
-  int tr_tm,          /* One of TK_BEFORE, TK_AFTER, TK_INSTEAD */
-  int op,             /* One of TK_INSERT, TK_UPDATE, TK_DELETE */
+  صحيح tr_tm,          /* One of TK_BEFORE, TK_AFTER, TK_INSTEAD */
+  صحيح op,             /* One of TK_INSERT, TK_UPDATE, TK_DELETE */
   IdList *pColumns,   /* column list if this is an UPDATE OF trigger */
-  SrcList *pTableName,/* The name of the table/view the trigger applies to */
-  Expr *pWhen,        /* WHEN clause */
-  int isTemp,         /* True if the TEMPORARY keyword is present */
-  int noErr           /* Suppress errors if the trigger already exists */
+  SrcList *p_جدول_Name,/* The name of the table/view the trigger applies to */
+  بیان *pWhen,        /* WHEN clause */
+  صحيح is_لنډمهاله,         /* True if the TEMPORARY keyword is present */
+  صحيح noErr           /* Suppress errors if the trigger already exists */
 ){
   Trigger *pTrigger = 0;  /* The new trigger */
-  Table *pTab;            /* Table that the trigger fires off of */
-  char *zName = 0;        /* Name of the trigger */
+  جدول *pTab;            /* Table that the trigger fires off of */
+  حرف *zName = 0;        /* Name of the trigger */
   sqlite3 *db = pParse->db;  /* The database connection */
-  int iDb;                /* The database to store the trigger in */
+  صحيح iDb;                /* The database to store the trigger in */
   Token *pName;           /* The unqualified db name */
   DbFixer sFix;           /* State vector for the DB fixer */
 
-  assert( pName1!=0 );   /* pName1->z might be NULL, but not pName1 itself */
-  assert( pName2!=0 );
-  assert( op==TK_INSERT || op==TK_UPDATE || op==TK_DELETE );
-  assert( op>0 && op<0xff );
-  if( isTemp ){
+  أكد( pName1!=0 );   /* pName1->z might be NULL, but not pName1 itself */
+  أكد( pName2!=0 );
+  أكد( op==TK_ورننباسه || op==TK_UPDATE || op==TK_DELETE );
+  أكد( op>0 && op<0xff );
+  إذا( is_لنډمهاله ){
     /* If TEMP was specified, then the trigger name may not be qualified. */
-    if( pName2->n>0 ){
-      sqlite3ErrorMsg(pParse, "temporary trigger may not have qualified name");
-      goto trigger_cleanup;
+    إذا( pName2->n>0 ){
+      sqlite3_Error_پیغام(pParse, "temporary trigger may not have qualified name");
+      اذهب trigger_cleanup;
     }
     iDb = 1;
     pName = pName1;
-  }else{
+  }وإلا{
     /* Figure out the db that the trigger will be created in */
     iDb = sqlite3TwoPartName(pParse, pName1, pName2, &pName);
-    if( iDb<0 ){
-      goto trigger_cleanup;
+    إذا( iDb<0 ){
+      اذهب trigger_cleanup;
     }
   }
-  if( !pTableName || db->mallocFailed ){
-    goto trigger_cleanup;
+  إذا( !p_جدول_Name || db->mallocFailed ){
+    اذهب trigger_cleanup;
   }
 
   /* A long-standing parser bug is that this syntax was allowed:
@@ -152,11 +152,11 @@ void sqlite3BeginTrigger(
   ** To maintain backwards compatibility, ignore the database
   ** name on pTableName if we are reparsing out of the schema table
   */
-  if( db->init.busy && iDb!=1 ){
-    assert( pTableName->a[0].fg.fixedSchema==0 );
-    assert( pTableName->a[0].fg.isSubquery==0 );
-    sqlite3DbFree(db, pTableName->a[0].u4.zDatabase);
-    pTableName->a[0].u4.zDatabase = 0;
+  إذا( db->init.busy && iDb!=1 ){
+    أكد( p_جدول_Name->a[0].fg.fixedSchema==0 );
+    أكد( p_جدول_Name->a[0].fg.isSubquery==0 );
+    sqlite3DbFree(db, p_جدول_Name->a[0].u4.zDatabase);
+    p_جدول_Name->a[0].u4.zDatabase = 0;
   }
 
   /* If the trigger name was unqualified, and the table is a temp table,
@@ -164,144 +164,144 @@ void sqlite3BeginTrigger(
   ** If sqlite3SrcListLookup() returns 0, indicating the table does not
   ** exist, the error is caught by the block below.
   */
-  pTab = sqlite3SrcListLookup(pParse, pTableName);
-  if( db->init.busy==0 && pName2->n==0 && pTab
+  pTab = sqlite3SrcListLookup(pParse, p_جدول_Name);
+  إذا( db->init.busy==0 && pName2->n==0 && pTab
         && pTab->pSchema==db->aDb[1].pSchema ){
     iDb = 1;
   }
 
   /* Ensure the table name matches database name and that the table exists */
-  if( db->mallocFailed ) goto trigger_cleanup;
-  assert( pTableName->nSrc==1 );
+  إذا( db->mallocFailed ) اذهب trigger_cleanup;
+  أكد( p_جدول_Name->nSrc==1 );
   sqlite3FixInit(&sFix, pParse, iDb, "trigger", pName);
-  if( sqlite3FixSrcList(&sFix, pTableName) ){
-    goto trigger_cleanup;
+  إذا( sqlite3FixSrcList(&sFix, p_جدول_Name) ){
+    اذهب trigger_cleanup;
   }
-  pTab = sqlite3SrcListLookup(pParse, pTableName);
-  if( !pTab ){
+  pTab = sqlite3SrcListLookup(pParse, p_جدول_Name);
+  إذا( !pTab ){
     /* The table does not exist. */
-    goto trigger_orphan_error;
+    اذهب trigger_orphan_error;
   }
-  if( IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "cannot create triggers on virtual tables");
-    goto trigger_orphan_error;
+  إذا( IsVirtual(pTab) ){
+    sqlite3_Error_پیغام(pParse, "cannot create triggers on virtual tables");
+    اذهب trigger_orphan_error;
   }
-  if( (pTab->tabFlags & TF_Shadow)!=0 && sqlite3ReadOnlyShadowTables(db) ){
-    sqlite3ErrorMsg(pParse, "cannot create triggers on shadow tables");
-    goto trigger_orphan_error;
+  إذا( (pTab->tabFlags & TF_Shadow)!=0 && sqlite3ReadOnlyShadowTables(db) ){
+    sqlite3_Error_پیغام(pParse, "cannot create triggers on shadow tables");
+    اذهب trigger_orphan_error;
   }
 
   /* Check that the trigger name is not reserved and that no trigger of the
   ** specified name exists */
   zName = sqlite3NameFromToken(db, pName);
-  if( zName==0 ){
-    assert( db->mallocFailed );
-    goto trigger_cleanup;
+  إذا( zName==0 ){
+    أكد( db->mallocFailed );
+    اذهب trigger_cleanup;
   }
-  if( sqlite3CheckObjectName(pParse, zName, "trigger", pTab->zName) ){
-    goto trigger_cleanup;
+  إذا( sqlite3CheckObjectName(pParse, zName, "trigger", pTab->zName) ){
+    اذهب trigger_cleanup;
   }
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-  if( !IN_RENAME_OBJECT ){
-    if( sqlite3HashFind(&(db->aDb[iDb].pSchema->trigHash),zName) ){
-      if( !noErr ){
-        sqlite3ErrorMsg(pParse, "trigger %T already exists", pName);
-      }else if( db->init.busy ){
-        sqlite3ErrorMsg(pParse,""); /* Err msg generated by corruptSchema() */
-      }else{
-        sqlite3CodeVerifySchema(pParse, iDb);
+  أكد( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  إذا( !دننه_RENAME_OBJECT ){
+    إذا( sqlite3_Hash_پیدا_کړه(&(db->aDb[iDb].pSchema->trigHash),zName) ){
+      إذا( !noErr ){
+        sqlite3_Error_پیغام(pParse, "trigger %T already exists", pName);
+      }وإلا إذا( db->init.busy ){
+        sqlite3_Error_پیغام(pParse,""); /* Err msg generated by corruptSchema() */
+      }وإلا{
+        sqlite3_کوډ_Verify_Schema(pParse, iDb);
         VVA_ONLY( pParse->ifNotExists = 1; )
       }
-      goto trigger_cleanup;
+      اذهب trigger_cleanup;
     }
   }
 
   /* NB: The SQLITE_ALLOW_TRIGGERS_ON_SYSTEM_TABLES compile-time option is
   ** experimental and unsupported. Do not use it unless understand the
   ** implications and you cannot get by without this capability. */
-#if !defined(SQLITE_ALLOW_TRIGGERS_ON_SYSTEM_TABLES) /* Experimental */
+#إذا !defined(SQLITE_ALLOW_TRIGGERS_ON_SYSTEM_TABLES) /* Experimental */
   /* Do not create a trigger on a system table */
-  if( sqlite3StrNICmp(pTab->zName, "sqlite_", 7)==0 ){
-    sqlite3ErrorMsg(pParse, "cannot create trigger on system table");
-    goto trigger_cleanup;
+  إذا( sqlite3StrNICmp(pTab->zName, "sqlite_", 7)==0 ){
+    sqlite3_Error_پیغام(pParse, "cannot create trigger on system table");
+    اذهب trigger_cleanup;
   }
-#endif
+#د_که_پای
 
   /* INSTEAD of triggers are only for views and views only support INSTEAD
   ** of triggers.
   */
-  if( IsView(pTab) && tr_tm!=TK_INSTEAD ){
-    sqlite3ErrorMsg(pParse, "cannot create %s trigger on view: %S", 
-        (tr_tm == TK_BEFORE)?"BEFORE":"AFTER", pTableName->a);
-    goto trigger_orphan_error;
+  إذا( IsView(pTab) && tr_tm!=TK_INSTEAD ){
+    sqlite3_Error_پیغام(pParse, "cannot create %s trigger on view: %S", 
+        (tr_tm == TK_BEFORE)?"BEFORE":"AFTER", p_جدول_Name->a);
+    اذهب trigger_orphan_error;
   }
-  if( !IsView(pTab) && tr_tm==TK_INSTEAD ){
-    sqlite3ErrorMsg(pParse, "cannot create INSTEAD OF"
-        " trigger on table: %S", pTableName->a);
-    goto trigger_orphan_error;
+  إذا( !IsView(pTab) && tr_tm==TK_INSTEAD ){
+    sqlite3_Error_پیغام(pParse, "cannot create INSTEAD OF"
+        " trigger on table: %S", p_جدول_Name->a);
+    اذهب trigger_orphan_error;
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( !IN_RENAME_OBJECT ){
-    int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-    int code = SQLITE_CREATE_TRIGGER;
-    const char *zDb = db->aDb[iTabDb].zDbSName;
-    const char *zDbTrig = isTemp ? db->aDb[1].zDbSName : zDb;
-    if( iTabDb==1 || isTemp ) code = SQLITE_CREATE_TEMP_TRIGGER;
-    if( sqlite3AuthCheck(pParse, code, zName, pTab->zName, zDbTrig) ){
-      goto trigger_cleanup;
+#که_نه_تعریف_شوی SQLITE_OMIT_AUTHORIZATION
+  إذا( !دننه_RENAME_OBJECT ){
+    صحيح iTabDb = sqlite3_Schema_منزل_شاخص(db, pTab->pSchema);
+    صحيح کوډ = SQLITE_CREATE_TRIGGER;
+    ثابت حرف *zDb = db->aDb[iTabDb].zDbSName;
+    ثابت حرف *zDbTrig = is_لنډمهاله ? db->aDb[1].zDbSName : zDb;
+    إذا( iTabDb==1 || is_لنډمهاله ) کوډ = SQLITE_CREATE_لنډمهاله_TRIGGER;
+    إذا( sqlite3AuthCheck(pParse, کوډ, zName, pTab->zName, zDbTrig) ){
+      اذهب trigger_cleanup;
     }
-    if( sqlite3AuthCheck(pParse, SQLITE_INSERT, SCHEMA_TABLE(iTabDb),0,zDb)){
-      goto trigger_cleanup;
+    إذا( sqlite3AuthCheck(pParse, SQLITE_ورننباسه, SCHEMA_جدول(iTabDb),0,zDb)){
+      اذهب trigger_cleanup;
     }
   }
-#endif
+#د_که_پای
 
   /* INSTEAD OF triggers can only appear on views and BEFORE triggers
   ** cannot appear on views.  So we might as well translate every
   ** INSTEAD OF trigger into a BEFORE trigger.  It simplifies code
   ** elsewhere.
   */
-  if (tr_tm == TK_INSTEAD){
+  إذا (tr_tm == TK_INSTEAD){
     tr_tm = TK_BEFORE;
   }
 
   /* Build the Trigger object */
-  pTrigger = (Trigger*)sqlite3DbMallocZero(db, sizeof(Trigger));
-  if( pTrigger==0 ) goto trigger_cleanup;
+  pTrigger = (Trigger*)sqlite3DbMallocZero(db, حجم(Trigger));
+  إذا( pTrigger==0 ) اذهب trigger_cleanup;
   pTrigger->zName = zName;
   zName = 0;
-  pTrigger->table = sqlite3DbStrDup(db, pTableName->a[0].zName);
+  pTrigger->جدول_2 = sqlite3DbStrDup(db, p_جدول_Name->a[0].zName);
   pTrigger->pSchema = db->aDb[iDb].pSchema;
   pTrigger->pTabSchema = pTab->pSchema;
   pTrigger->op = (u8)op;
   pTrigger->tr_tm = tr_tm==TK_BEFORE ? TRIGGER_BEFORE : TRIGGER_AFTER;
-  if( IN_RENAME_OBJECT ){
-    sqlite3RenameTokenRemap(pParse, pTrigger->table, pTableName->a[0].zName);
+  إذا( دننه_RENAME_OBJECT ){
+    sqlite3RenameTokenRemap(pParse, pTrigger->جدول_2, p_جدول_Name->a[0].zName);
     pTrigger->pWhen = pWhen;
     pWhen = 0;
-  }else{
-    pTrigger->pWhen = sqlite3ExprDup(db, pWhen, EXPRDUP_REDUCE);
+  }وإلا{
+    pTrigger->pWhen = sqlite3_بیان_Dup(db, pWhen, EXPRDUP_REDUCE);
   }
   pTrigger->pColumns = pColumns;
   pColumns = 0;
-  assert( pParse->pNewTrigger==0 );
+  أكد( pParse->pNewTrigger==0 );
   pParse->pNewTrigger = pTrigger;
 
 trigger_cleanup:
   sqlite3DbFree(db, zName);
-  sqlite3SrcListDelete(db, pTableName);
+  sqlite3SrcListDelete(db, p_جدول_Name);
   sqlite3IdListDelete(db, pColumns);
-  sqlite3ExprDelete(db, pWhen);
-  if( !pParse->pNewTrigger ){
+  sqlite3_بیان_Delete(db, pWhen);
+  إذا( !pParse->pNewTrigger ){
     sqlite3DeleteTrigger(db, pTrigger);
-  }else{
-    assert( pParse->pNewTrigger==pTrigger );
+  }وإلا{
+    أكد( pParse->pNewTrigger==pTrigger );
   }
-  return;
+  أرجع;
 
 trigger_orphan_error:
-  if( db->init.iDb==1 ){
+  إذا( db->init.iDb==1 ){
     /* Ticket #3810.
     ** Normally, whenever a table is dropped, all associated triggers are
     ** dropped too.  But if a TEMP trigger is created on a non-TEMP table
@@ -314,129 +314,129 @@ trigger_orphan_error:
     */
     db->init.orphanTrigger = 1;
   }
-  goto trigger_cleanup;
+  اذهب trigger_cleanup;
 }
 
 /*
 ** This routine is called after all of the trigger actions have been parsed
 ** in order to complete the process of building the trigger.
 */
-void sqlite3FinishTrigger(
+فراغ sqlite3_پای_Trigger(
   Parse *pParse,          /* Parser context */
-  TriggerStep *pStepList, /* The triggered program */
+  Trigger_ګام *p_ګام_List, /* The triggered program */
   Token *pAll             /* Token that describes the complete CREATE TRIGGER */
 ){
   Trigger *pTrig = pParse->pNewTrigger;   /* Trigger being finished */
-  char *zName;                            /* Name of trigger */
+  حرف *zName;                            /* Name of trigger */
   sqlite3 *db = pParse->db;               /* The database */
   DbFixer sFix;                           /* Fixer object */
-  int iDb;                                /* Database containing the trigger */
+  صحيح iDb;                                /* Database containing the trigger */
   Token nameToken;                        /* Trigger name for error reporting */
   i64 n;                                  /* Number of steps */
 
   pParse->pNewTrigger = 0;
-  if( NEVER(pParse->nErr) || !pTrig ) goto triggerfinish_cleanup;
+  إذا( NEVER(pParse->nErr) || !pTrig ) اذهب triggerfinish_cleanup;
   zName = pTrig->zName;
-  iDb = sqlite3SchemaToIndex(pParse->db, pTrig->pSchema);
-  assert( iDb>=00 && iDb<db->nDb );
-  pTrig->step_list = pStepList;
-  for(n=0; pStepList; n++){
-    pStepList->pTrig = pTrig;
-    pStepList = pStepList->pNext;
+  iDb = sqlite3_Schema_منزل_شاخص(pParse->db, pTrig->pSchema);
+  أكد( iDb>=00 && iDb<db->nDb );
+  pTrig->ګام_list = p_ګام_List;
+  لكل(n=0; p_ګام_List; n++){
+    p_ګام_List->pTrig = pTrig;
+    p_ګام_List = p_ګام_List->p_بل;
   }
-  if( n>pParse->db->aLimit[SQLITE_LIMIT_TRIGGER_STEPS] ){
-    sqlite3ErrorMsg(pParse, "trigger \"%w\" contains too many steps", zName);
-    goto triggerfinish_cleanup;
+  إذا( n>pParse->db->a_حد[SQLITE_حد_TRIGGER_ګامونه] ){
+    sqlite3_Error_پیغام(pParse, "trigger \"%w\" contains too many steps", zName);
+    اذهب triggerfinish_cleanup;
   }
   sqlite3TokenInit(&nameToken, pTrig->zName);
   sqlite3FixInit(&sFix, pParse, iDb, "trigger", &nameToken);
-  if( sqlite3FixTriggerStep(&sFix, pTrig->step_list) 
-   || sqlite3FixExpr(&sFix, pTrig->pWhen) 
+  إذا( sqlite3_Fix_Trigger_ګام(&sFix, pTrig->ګام_list) 
+   || sqlite3_Fix_بیان(&sFix, pTrig->pWhen) 
   ){
-    goto triggerfinish_cleanup;
+    اذهب triggerfinish_cleanup;
   }
 
-#ifndef SQLITE_OMIT_ALTERTABLE
-  if( IN_RENAME_OBJECT ){
-    assert( !db->init.busy );
+#که_نه_تعریف_شوی SQLITE_OMIT_ALTERTABLE
+  إذا( دننه_RENAME_OBJECT ){
+    أكد( !db->init.busy );
     pParse->pNewTrigger = pTrig;
     pTrig = 0;
-  }else
-#endif
+  }وإلا
+#د_که_پای
 
   /* if we are not initializing,
   ** build the sqlite_schema entry
   */
-  if( !db->init.busy ){
+  إذا( !db->init.busy ){
     Vdbe *v;
-    char *z;
+    حرف *z;
 
     /* If this is a new CREATE TABLE statement, and if shadow tables
     ** are read-only, and the trigger makes a change to a shadow table,
     ** then raise an error - do not allow the trigger to be created. */
-    if( sqlite3ReadOnlyShadowTables(db) ){
-      TriggerStep *pStep;
-      for(pStep=pTrig->step_list; pStep; pStep=pStep->pNext){
-        if( pStep->pSrc!=0
-         && sqlite3ShadowTableName(db, pStep->pSrc->a[0].zName)
+    إذا( sqlite3ReadOnlyShadowTables(db) ){
+      Trigger_ګام *p_ګام;
+      لكل(p_ګام=pTrig->ګام_list; p_ګام; p_ګام=p_ګام->p_بل){
+        إذا( p_ګام->pSrc!=0
+         && sqlite3_Shadow_جدول_Name(db, p_ګام->pSrc->a[0].zName)
         ){
-          sqlite3ErrorMsg(pParse, 
+          sqlite3_Error_پیغام(pParse, 
             "trigger \"%s\" may not write to shadow table \"%s\"",
-            pTrig->zName, pStep->pSrc->a[0].zName);
-          goto triggerfinish_cleanup;
+            pTrig->zName, p_ګام->pSrc->a[0].zName);
+          اذهب triggerfinish_cleanup;
         }
       }
     }
 
     /* Make an entry in the sqlite_schema table */
     v = sqlite3GetVdbe(pParse);
-    if( v==0 ) goto triggerfinish_cleanup;
+    إذا( v==0 ) اذهب triggerfinish_cleanup;
     sqlite3BeginWriteOperation(pParse, 0, iDb);
-    z = sqlite3DbStrNDup(db, (char*)pAll->z, pAll->n);
+    z = sqlite3DbStrNDup(db, (حرف*)pAll->z, pAll->n);
     testcase( z==0 );
     sqlite3NestedParse(pParse,
-       "INSERT INTO %Q." LEGACY_SCHEMA_TABLE
+       "INSERT INTO %Q." LEGACY_SCHEMA_جدول
        " VALUES('trigger',%Q,%Q,0,'CREATE TRIGGER %q')",
        db->aDb[iDb].zDbSName, zName,
-       pTrig->table, z);
+       pTrig->جدول_2, z);
     sqlite3DbFree(db, z);
     sqlite3ChangeCookie(pParse, iDb);
-    sqlite3VdbeAddParseSchemaOp(v, iDb,
+    sqlite3_Vdbe_جمع_کړه_Parse_Schema_Op(v, iDb,
         sqlite3MPrintf(db, "type='trigger' AND name='%q'", zName), 0);
   }
 
-  if( db->init.busy ){
+  إذا( db->init.busy ){
     Trigger *pLink = pTrig;
     Hash *pHash = &db->aDb[iDb].pSchema->trigHash;
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    assert( pLink!=0 );
-    pTrig = sqlite3HashInsert(pHash, zName, pTrig);
-    if( pTrig ){
+    أكد( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    أكد( pLink!=0 );
+    pTrig = sqlite3_Hash_ورننباسه(pHash, zName, pTrig);
+    إذا( pTrig ){
       sqlite3OomFault(db);
-    }else if( pLink->pSchema==pLink->pTabSchema ){
-      Table *pTab;
-      pTab = sqlite3HashFind(&pLink->pTabSchema->tblHash, pLink->table);
-      assert( pTab!=0 );
-      pLink->pNext = pTab->pTrigger;
+    }وإلا إذا( pLink->pSchema==pLink->pTabSchema ){
+      جدول *pTab;
+      pTab = sqlite3_Hash_پیدا_کړه(&pLink->pTabSchema->tblHash, pLink->جدول_2);
+      أكد( pTab!=0 );
+      pLink->p_بل = pTab->pTrigger;
       pTab->pTrigger = pLink;
     }
   }
 
 triggerfinish_cleanup:
   sqlite3DeleteTrigger(db, pTrig);
-  assert( IN_RENAME_OBJECT || !pParse->pNewTrigger );
-  sqlite3DeleteTriggerStep(db, pStepList);
+  أكد( دننه_RENAME_OBJECT || !pParse->pNewTrigger );
+  sqlite3_Delete_Trigger_ګام(db, p_ګام_List);
 }
 
 /*
 ** Duplicate a range of text from an SQL statement, then convert all
 ** whitespace characters into ordinary space characters.
 */
-static char *triggerSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
-  char *z = sqlite3DbSpanDup(db, zStart, zEnd);
-  int i;
-  if( z ) for(i=0; z[i]; i++) if( sqlite3Isspace(z[i]) ) z[i] = ' ';
-  return z;
+ساكن حرف *trigger_پراختیا_Dup(sqlite3 *db, ثابت حرف *z_پیل, ثابت حرف *z_پای_ټکی){
+  حرف *z = sqlite3_Db_پراختیا_Dup(db, z_پیل, z_پای_ټکی);
+  صحيح i;
+  إذا( z ) لكل(i=0; z[i]; i++) إذا( sqlite3Isspace(z[i]) ) z[i] = ' ';
+  أرجع z;
 }    
 
 /*
@@ -446,22 +446,22 @@ static char *triggerSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
 ** The parser calls this routine when it finds a SELECT statement in
 ** body of a TRIGGER.  
 */
-TriggerStep *sqlite3TriggerSelectStep(
+Trigger_ګام *sqlite3_Trigger_Select_ګام(
   sqlite3 *db,                /* Database connection */
   Select *pSelect,            /* The SELECT statement */
-  const char *zStart,         /* Start of SQL text */
-  const char *zEnd            /* End of SQL text */
+  ثابت حرف *z_پیل,         /* Start of SQL text */
+  ثابت حرف *z_پای_ټکی            /* End of SQL text */
 ){
-  TriggerStep *pTriggerStep = sqlite3DbMallocZero(db, sizeof(TriggerStep));
-  if( pTriggerStep==0 ) {
+  Trigger_ګام *p_Trigger_ګام = sqlite3DbMallocZero(db, حجم(Trigger_ګام));
+  إذا( p_Trigger_ګام==0 ) {
     sqlite3SelectDelete(db, pSelect);
-    return 0;
+    أرجع 0;
   }
-  pTriggerStep->op = TK_SELECT;
-  pTriggerStep->pSelect = pSelect;
-  pTriggerStep->orconf = OE_Default;
-  pTriggerStep->zSpan = triggerSpanDup(db, zStart, zEnd);
-  return pTriggerStep;
+  p_Trigger_ګام->op = TK_SELECT;
+  p_Trigger_ګام->pSelect = pSelect;
+  p_Trigger_ګام->orconf = OE_Default;
+  p_Trigger_ګام->z_پراختیا = trigger_پراختیا_Dup(db, z_پیل, z_پای_ټکی);
+  أرجع p_Trigger_ګام;
 }
 
 /*
@@ -470,34 +470,34 @@ TriggerStep *sqlite3TriggerSelectStep(
 **
 ** If an OOM error occurs, NULL is returned and db->mallocFailed is set.
 */
-static TriggerStep *triggerStepAllocate(
+ساكن Trigger_ګام *trigger_ګام_Allocate(
   Parse *pParse,              /* Parser context */
   u8 op,                      /* Trigger opcode */
   SrcList *pTabList,          /* Target table */
-  const char *zStart,         /* Start of SQL text */
-  const char *zEnd            /* End of SQL text */
+  ثابت حرف *z_پیل,         /* Start of SQL text */
+  ثابت حرف *z_پای_ټکی            /* End of SQL text */
 ){
   Trigger *pNew = pParse->pNewTrigger;
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep = 0;
+  Trigger_ګام *p_Trigger_ګام = 0;
 
-  if( pParse->nErr==0 ){
-    if( pNew 
+  إذا( pParse->nErr==0 ){
+    إذا( pNew 
      && pNew->pSchema!=db->aDb[1].pSchema 
      && pTabList->a[0].u4.zDatabase 
     ){
-      sqlite3ErrorMsg(pParse, 
+      sqlite3_Error_پیغام(pParse, 
           "qualified table names are not allowed on INSERT, UPDATE, and DELETE "
           "statements within triggers");
-    }else{
-      pTriggerStep = sqlite3DbMallocZero(db, sizeof(TriggerStep));
-      if( pTriggerStep ){
-        pTriggerStep->pSrc = sqlite3SrcListDup(db, pTabList, EXPRDUP_REDUCE);
-        pTriggerStep->op = op;
-        pTriggerStep->zSpan = triggerSpanDup(db, zStart, zEnd);
-        if( pTriggerStep->pSrc && IN_RENAME_OBJECT ){
+    }وإلا{
+      p_Trigger_ګام = sqlite3DbMallocZero(db, حجم(Trigger_ګام));
+      إذا( p_Trigger_ګام ){
+        p_Trigger_ګام->pSrc = sqlite3SrcListDup(db, pTabList, EXPRDUP_REDUCE);
+        p_Trigger_ګام->op = op;
+        p_Trigger_ګام->z_پراختیا = trigger_پراختیا_Dup(db, z_پیل, z_پای_ټکی);
+        إذا( p_Trigger_ګام->pSrc && دننه_RENAME_OBJECT ){
           sqlite3RenameTokenRemap(pParse, 
-              pTriggerStep->pSrc->a[0].zName, 
+              p_Trigger_ګام->pSrc->a[0].zName, 
               pTabList->a[0].zName
           );
         }
@@ -506,7 +506,7 @@ static TriggerStep *triggerStepAllocate(
   }
 
   sqlite3SrcListDelete(db, pTabList);
-  return pTriggerStep;
+  أرجع p_Trigger_ګام;
 }
 
 /*
@@ -516,44 +516,44 @@ static TriggerStep *triggerStepAllocate(
 ** The parser calls this routine when it sees an INSERT inside the
 ** body of a trigger.
 */
-TriggerStep *sqlite3TriggerInsertStep(
+Trigger_ګام *sqlite3_Trigger_ورننباسه_ګام(
   Parse *pParse,      /* Parser */
   SrcList *pTabList,  /* Table to INSERT into */
-  IdList *pColumn,    /* List of columns in pTableName to insert into */
+  IdList *p_ستنه,    /* List of columns in pTableName to insert into */
   Select *pSelect,    /* A SELECT statement that supplies values */
   u8 orconf,          /* The conflict algorithm (OE_Abort, OE_Replace, etc.) */
   Upsert *pUpsert,    /* ON CONFLICT clauses for upsert */
-  const char *zStart, /* Start of SQL text */
-  const char *zEnd    /* End of SQL text */
+  ثابت حرف *z_پیل, /* Start of SQL text */
+  ثابت حرف *z_پای_ټکی    /* End of SQL text */
 ){
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep;
+  Trigger_ګام *p_Trigger_ګام;
 
-  assert(pSelect != 0 || db->mallocFailed);
+  أكد(pSelect != 0 || db->mallocFailed);
 
-  pTriggerStep = triggerStepAllocate(pParse, TK_INSERT, pTabList, zStart, zEnd);
-  if( pTriggerStep ){
-    if( IN_RENAME_OBJECT ){
-      pTriggerStep->pSelect = pSelect;
+  p_Trigger_ګام = trigger_ګام_Allocate(pParse, TK_ورننباسه, pTabList, z_پیل, z_پای_ټکی);
+  إذا( p_Trigger_ګام ){
+    إذا( دننه_RENAME_OBJECT ){
+      p_Trigger_ګام->pSelect = pSelect;
       pSelect = 0;
-    }else{
-      pTriggerStep->pSelect = sqlite3SelectDup(db, pSelect, EXPRDUP_REDUCE);
+    }وإلا{
+      p_Trigger_ګام->pSelect = sqlite3SelectDup(db, pSelect, EXPRDUP_REDUCE);
     }
-    pTriggerStep->pIdList = pColumn;
-    pTriggerStep->pUpsert = pUpsert;
-    pTriggerStep->orconf = orconf;
-    if( pUpsert ){
-      sqlite3HasExplicitNulls(pParse, pUpsert->pUpsertTarget);
+    p_Trigger_ګام->pIdList = p_ستنه;
+    p_Trigger_ګام->pUpsert = pUpsert;
+    p_Trigger_ګام->orconf = orconf;
+    إذا( pUpsert ){
+      sqlite3HasExplicitNulls(pParse, pUpsert->p_Upsert_موخه);
     }
-  }else{
-    testcase( pColumn );
-    sqlite3IdListDelete(db, pColumn);
+  }وإلا{
+    testcase( p_ستنه );
+    sqlite3IdListDelete(db, p_ستنه);
     testcase( pUpsert );
     sqlite3UpsertDelete(db, pUpsert);
   }
   sqlite3SelectDelete(db, pSelect);
 
-  return pTriggerStep;
+  أرجع p_Trigger_ګام;
 }
 
 /*
@@ -561,54 +561,54 @@ TriggerStep *sqlite3TriggerInsertStep(
 ** a pointer to that trigger step.  The parser calls this routine when it
 ** sees an UPDATE statement inside the body of a CREATE TRIGGER.
 */
-TriggerStep *sqlite3TriggerUpdateStep(
+Trigger_ګام *sqlite3_Trigger_Update_ګام(
   Parse *pParse,          /* Parser */
   SrcList *pTabList,   /* Name of the table to be updated */
   SrcList *pFrom,      /* FROM clause for an UPDATE-FROM, or NULL */
-  ExprList *pEList,    /* The SET clause: list of column and new values */
-  Expr *pWhere,        /* The WHERE clause */
+  بیان_List *pEList,    /* The SET clause: list of column and new values */
+  بیان *pWhere,        /* The WHERE clause */
   u8 orconf,           /* The conflict algorithm. (OE_Abort, OE_Ignore, etc) */
-  const char *zStart,  /* Start of SQL text */
-  const char *zEnd     /* End of SQL text */
+  ثابت حرف *z_پیل,  /* Start of SQL text */
+  ثابت حرف *z_پای_ټکی     /* End of SQL text */
 ){
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep;
+  Trigger_ګام *p_Trigger_ګام;
 
-  pTriggerStep = triggerStepAllocate(pParse, TK_UPDATE, pTabList, zStart, zEnd);
-  if( pTriggerStep ){
+  p_Trigger_ګام = trigger_ګام_Allocate(pParse, TK_UPDATE, pTabList, z_پیل, z_پای_ټکی);
+  إذا( p_Trigger_ګام ){
     SrcList *pFromDup = 0;
-    if( IN_RENAME_OBJECT ){
-      pTriggerStep->pExprList = pEList;
-      pTriggerStep->pWhere = pWhere;
+    إذا( دننه_RENAME_OBJECT ){
+      p_Trigger_ګام->p_بیان_List = pEList;
+      p_Trigger_ګام->pWhere = pWhere;
       pFromDup = pFrom;
       pEList = 0;
       pWhere = 0;
       pFrom = 0;
-    }else{
-      pTriggerStep->pExprList = sqlite3ExprListDup(db, pEList, EXPRDUP_REDUCE);
-      pTriggerStep->pWhere = sqlite3ExprDup(db, pWhere, EXPRDUP_REDUCE);
+    }وإلا{
+      p_Trigger_ګام->p_بیان_List = sqlite3_بیان_List_Dup(db, pEList, EXPRDUP_REDUCE);
+      p_Trigger_ګام->pWhere = sqlite3_بیان_Dup(db, pWhere, EXPRDUP_REDUCE);
       pFromDup = sqlite3SrcListDup(db, pFrom, EXPRDUP_REDUCE);
     }
-    pTriggerStep->orconf = orconf;
+    p_Trigger_ګام->orconf = orconf;
 
-    if( pFromDup && !IN_RENAME_OBJECT){
+    إذا( pFromDup && !دننه_RENAME_OBJECT){
       Select *pSub;
       Token as = {0, 0};
       pSub = sqlite3SelectNew(pParse, 0, pFromDup, 0,0,0,0, SF_NestedFrom, 0);
-      pFromDup = sqlite3SrcListAppendFromTerm(pParse, 0, 0, 0, &as, pSub ,0);
+      pFromDup = sqlite3_Src_List_Append_From_غړی(pParse, 0, 0, 0, &as, pSub ,0);
     }
-    if( pFromDup && pTriggerStep->pSrc ){
-      pTriggerStep->pSrc = sqlite3SrcListAppendList(
-          pParse, pTriggerStep->pSrc, pFromDup
+    إذا( pFromDup && p_Trigger_ګام->pSrc ){
+      p_Trigger_ګام->pSrc = sqlite3SrcListAppendList(
+          pParse, p_Trigger_ګام->pSrc, pFromDup
       );
-    }else{
+    }وإلا{
       sqlite3SrcListDelete(db, pFromDup);
     }
   }
-  sqlite3ExprListDelete(db, pEList);
-  sqlite3ExprDelete(db, pWhere);
+  sqlite3_بیان_List_Delete(db, pEList);
+  sqlite3_بیان_Delete(db, pWhere);
   sqlite3SrcListDelete(db, pFrom);
-  return pTriggerStep;
+  أرجع p_Trigger_ګام;
 }
 
 /*
@@ -616,39 +616,39 @@ TriggerStep *sqlite3TriggerUpdateStep(
 ** a pointer to that trigger step.  The parser calls this routine when it
 ** sees a DELETE statement inside the body of a CREATE TRIGGER.
 */
-TriggerStep *sqlite3TriggerDeleteStep(
+Trigger_ګام *sqlite3_Trigger_Delete_ګام(
   Parse *pParse,          /* Parser */
   SrcList *pTabList,      /* The table from which rows are deleted */
-  Expr *pWhere,           /* The WHERE clause */
-  const char *zStart,     /* Start of SQL text */
-  const char *zEnd        /* End of SQL text */
+  بیان *pWhere,           /* The WHERE clause */
+  ثابت حرف *z_پیل,     /* Start of SQL text */
+  ثابت حرف *z_پای_ټکی        /* End of SQL text */
 ){
   sqlite3 *db = pParse->db;
-  TriggerStep *pTriggerStep;
+  Trigger_ګام *p_Trigger_ګام;
 
-  pTriggerStep = triggerStepAllocate(pParse, TK_DELETE, pTabList, zStart, zEnd);
-  if( pTriggerStep ){
-    if( IN_RENAME_OBJECT ){
-      pTriggerStep->pWhere = pWhere;
+  p_Trigger_ګام = trigger_ګام_Allocate(pParse, TK_DELETE, pTabList, z_پیل, z_پای_ټکی);
+  إذا( p_Trigger_ګام ){
+    إذا( دننه_RENAME_OBJECT ){
+      p_Trigger_ګام->pWhere = pWhere;
       pWhere = 0;
-    }else{
-      pTriggerStep->pWhere = sqlite3ExprDup(db, pWhere, EXPRDUP_REDUCE);
+    }وإلا{
+      p_Trigger_ګام->pWhere = sqlite3_بیان_Dup(db, pWhere, EXPRDUP_REDUCE);
     }
-    pTriggerStep->orconf = OE_Default;
+    p_Trigger_ګام->orconf = OE_Default;
   }
-  sqlite3ExprDelete(db, pWhere);
-  return pTriggerStep;
+  sqlite3_بیان_Delete(db, pWhere);
+  أرجع p_Trigger_ګام;
 }
 
 /* 
 ** Recursively delete a Trigger structure
 */
-void sqlite3DeleteTrigger(sqlite3 *db, Trigger *pTrigger){
-  if( pTrigger==0 || pTrigger->bReturning ) return;
-  sqlite3DeleteTriggerStep(db, pTrigger->step_list);
+فراغ sqlite3DeleteTrigger(sqlite3 *db, Trigger *pTrigger){
+  إذا( pTrigger==0 || pTrigger->bReturning ) أرجع;
+  sqlite3_Delete_Trigger_ګام(db, pTrigger->ګام_list);
   sqlite3DbFree(db, pTrigger->zName);
-  sqlite3DbFree(db, pTrigger->table);
-  sqlite3ExprDelete(db, pTrigger->pWhen);
+  sqlite3DbFree(db, pTrigger->جدول_2);
+  sqlite3_بیان_Delete(db, pTrigger->pWhen);
   sqlite3IdListDelete(db, pTrigger->pColumns);
   sqlite3DbFree(db, pTrigger);
 }
@@ -661,38 +661,38 @@ void sqlite3DeleteTrigger(sqlite3 *db, Trigger *pTrigger){
 ** same job as this routine except it takes a pointer to the trigger
 ** instead of the trigger name.
 **/
-void sqlite3DropTrigger(Parse *pParse, SrcList *pName, int noErr){
+فراغ sqlite3DropTrigger(Parse *pParse, SrcList *pName, صحيح noErr){
   Trigger *pTrigger = 0;
-  int i;
-  const char *zDb;
-  const char *zName;
+  صحيح i;
+  ثابت حرف *zDb;
+  ثابت حرف *zName;
   sqlite3 *db = pParse->db;
 
-  if( db->mallocFailed ) goto drop_trigger_cleanup;
-  if( SQLITE_OK!=sqlite3ReadSchema(pParse) ){
-    goto drop_trigger_cleanup;
+  إذا( db->mallocFailed ) اذهب drop_trigger_cleanup;
+  إذا( SQLITE_OK!=sqlite3ReadSchema(pParse) ){
+    اذهب drop_trigger_cleanup;
   }
 
-  assert( pName->nSrc==1 );
-  assert( pName->a[0].fg.fixedSchema==0 && pName->a[0].fg.isSubquery==0 );
+  أكد( pName->nSrc==1 );
+  أكد( pName->a[0].fg.fixedSchema==0 && pName->a[0].fg.isSubquery==0 );
   zDb = pName->a[0].u4.zDatabase;
   zName = pName->a[0].zName;
-  assert( zDb!=0 || sqlite3BtreeHoldsAllMutexes(db) );
-  for(i=OMIT_TEMPDB; i<db->nDb; i++){
-    int j = (i<2) ? i^1 : i;  /* Search TEMP before MAIN */
-    if( zDb && sqlite3DbIsNamed(db, j, zDb)==0 ) continue;
-    assert( sqlite3SchemaMutexHeld(db, j, 0) );
-    pTrigger = sqlite3HashFind(&(db->aDb[j].pSchema->trigHash), zName);
-    if( pTrigger ) break;
+  أكد( zDb!=0 || sqlite3BtreeHoldsAllMutexes(db) );
+  لكل(i=OMIT_TEMPDB; i<db->nDb; i++){
+    صحيح j = (i<2) ? i^1 : i;  /* Search TEMP before MAIN */
+    إذا( zDb && sqlite3DbIsNamed(db, j, zDb)==0 ) استمر;
+    أكد( sqlite3SchemaMutexHeld(db, j, 0) );
+    pTrigger = sqlite3_Hash_پیدا_کړه(&(db->aDb[j].pSchema->trigHash), zName);
+    إذا( pTrigger ) اكسر;
   }
-  if( !pTrigger ){
-    if( !noErr ){
-      sqlite3ErrorMsg(pParse, "no such trigger: %S", pName->a);
-    }else{
-      sqlite3CodeVerifyNamedSchema(pParse, zDb);
+  إذا( !pTrigger ){
+    إذا( !noErr ){
+      sqlite3_Error_پیغام(pParse, "no such trigger: %S", pName->a);
+    }وإلا{
+      sqlite3_کوډ_Verify_Named_Schema(pParse, zDb);
     }
     pParse->checkSchema = 1;
-    goto drop_trigger_cleanup;
+    اذهب drop_trigger_cleanup;
   }
   sqlite3DropTriggerPtr(pParse, pTrigger);
 
@@ -704,68 +704,68 @@ drop_trigger_cleanup:
 ** Return a pointer to the Table structure for the table that a trigger
 ** is set on.
 */
-static Table *tableOfTrigger(Trigger *pTrigger){
-  return sqlite3HashFind(&pTrigger->pTabSchema->tblHash, pTrigger->table);
+ساكن جدول *جدول_د_Trigger(Trigger *pTrigger){
+  أرجع sqlite3_Hash_پیدا_کړه(&pTrigger->pTabSchema->tblHash, pTrigger->جدول_2);
 }
 
 
 /*
 ** Drop a trigger given a pointer to that trigger. 
 */
-void sqlite3DropTriggerPtr(Parse *pParse, Trigger *pTrigger){
-  Table   *pTable;
+فراغ sqlite3DropTriggerPtr(Parse *pParse, Trigger *pTrigger){
+  جدول   *p_جدول;
   Vdbe *v;
   sqlite3 *db = pParse->db;
-  int iDb;
+  صحيح iDb;
 
-  iDb = sqlite3SchemaToIndex(pParse->db, pTrigger->pSchema);
-  assert( iDb>=0 && iDb<db->nDb );
-  pTable = tableOfTrigger(pTrigger);
-  assert( (pTable && pTable->pSchema==pTrigger->pSchema) || iDb==1 );
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( pTable ){
-    int code = SQLITE_DROP_TRIGGER;
-    const char *zDb = db->aDb[iDb].zDbSName;
-    const char *zTab = SCHEMA_TABLE(iDb);
-    if( iDb==1 ) code = SQLITE_DROP_TEMP_TRIGGER;
-    if( sqlite3AuthCheck(pParse, code, pTrigger->zName, pTable->zName, zDb) ||
+  iDb = sqlite3_Schema_منزل_شاخص(pParse->db, pTrigger->pSchema);
+  أكد( iDb>=0 && iDb<db->nDb );
+  p_جدول = جدول_د_Trigger(pTrigger);
+  أكد( (p_جدول && p_جدول->pSchema==pTrigger->pSchema) || iDb==1 );
+#که_نه_تعریف_شوی SQLITE_OMIT_AUTHORIZATION
+  إذا( p_جدول ){
+    صحيح کوډ = SQLITE_DROP_TRIGGER;
+    ثابت حرف *zDb = db->aDb[iDb].zDbSName;
+    ثابت حرف *zTab = SCHEMA_جدول(iDb);
+    إذا( iDb==1 ) کوډ = SQLITE_DROP_لنډمهاله_TRIGGER;
+    إذا( sqlite3AuthCheck(pParse, کوډ, pTrigger->zName, p_جدول->zName, zDb) ||
       sqlite3AuthCheck(pParse, SQLITE_DELETE, zTab, 0, zDb) ){
-      return;
+      أرجع;
     }
   }
-#endif
+#د_که_پای
 
   /* Generate code to destroy the database record of the trigger.
   */
-  if( (v = sqlite3GetVdbe(pParse))!=0 ){
+  إذا( (v = sqlite3GetVdbe(pParse))!=0 ){
     sqlite3NestedParse(pParse,
-       "DELETE FROM %Q." LEGACY_SCHEMA_TABLE " WHERE name=%Q AND type='trigger'",
+       "DELETE FROM %Q." LEGACY_SCHEMA_جدول " WHERE name=%Q AND type='trigger'",
        db->aDb[iDb].zDbSName, pTrigger->zName
     );
     sqlite3ChangeCookie(pParse, iDb);
-    sqlite3VdbeAddOp4(v, OP_DropTrigger, iDb, 0, 0, pTrigger->zName, 0);
+    sqlite3_Vdbe_جمع_کړه_Op4(v, OP_DropTrigger, iDb, 0, 0, pTrigger->zName, 0);
   }
 }
 
 /*
 ** Remove a trigger from the hash tables of the sqlite* pointer.
 */
-void sqlite3UnlinkAndDeleteTrigger(sqlite3 *db, int iDb, const char *zName){
+فراغ sqlite3UnlinkAndDeleteTrigger(sqlite3 *db, صحيح iDb, ثابت حرف *zName){
   Trigger *pTrigger;
   Hash *pHash;
 
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  أكد( sqlite3SchemaMutexHeld(db, iDb, 0) );
   pHash = &(db->aDb[iDb].pSchema->trigHash);
-  pTrigger = sqlite3HashInsert(pHash, zName, 0);
-  if( ALWAYS(pTrigger) ){
-    if( pTrigger->pSchema==pTrigger->pTabSchema ){
-      Table *pTab = tableOfTrigger(pTrigger);
-      if( pTab ){
+  pTrigger = sqlite3_Hash_ورننباسه(pHash, zName, 0);
+  إذا( ALWAYS(pTrigger) ){
+    إذا( pTrigger->pSchema==pTrigger->pTabSchema ){
+      جدول *pTab = جدول_د_Trigger(pTrigger);
+      إذا( pTab ){
         Trigger **pp;
-        for(pp=&pTab->pTrigger; *pp; pp=&((*pp)->pNext)){
-          if( *pp==pTrigger ){
-            *pp = (*pp)->pNext;
-            break;
+        لكل(pp=&pTab->pTrigger; *pp; pp=&((*pp)->p_بل)){
+          إذا( *pp==pTrigger ){
+            *pp = (*pp)->p_بل;
+            اكسر;
           }
         }
       }
@@ -784,22 +784,22 @@ void sqlite3UnlinkAndDeleteTrigger(sqlite3 *db, int iDb, const char *zName){
 ** it matches anything so always return true.  Return false only
 ** if there is no match.
 */
-static int checkColumnOverlap(IdList *pIdList, ExprList *pEList){
-  int e;
-  if( pIdList==0 || NEVER(pEList==0) ) return 1;
-  for(e=0; e<pEList->nExpr; e++){
-    if( sqlite3IdListIndex(pIdList, pEList->a[e].zEName)>=0 ) return 1;
+ساكن صحيح check_ستنه_Overlap(IdList *pIdList, بیان_List *pEList){
+  صحيح e;
+  إذا( pIdList==0 || NEVER(pEList==0) ) أرجع 1;
+  لكل(e=0; e<pEList->n_بیان; e++){
+    إذا( sqlite3_Id_List_شاخص(pIdList, pEList->a[e].zEName)>=0 ) أرجع 1;
   }
-  return 0; 
+  أرجع 0; 
 }
 
 /*
 ** Return true if any TEMP triggers exist
 */
-static int tempTriggersExist(sqlite3 *db){
-  if( NEVER(db->aDb[1].pSchema==0) ) return 0;
-  if( sqliteHashFirst(&db->aDb[1].pSchema->trigHash)==0 ) return 0;
-  return 1;
+ساكن صحيح لنډمهاله_Triggers_Exist(sqlite3 *db){
+  إذا( NEVER(db->aDb[1].pSchema==0) ) أرجع 0;
+  إذا( sqlite_Hash_لومړی(&db->aDb[1].pSchema->trigHash)==0 ) أرجع 0;
+  أرجع 1;
 }
 
 /*
@@ -808,85 +808,85 @@ static int tempTriggersExist(sqlite3 *db){
 ** performed on the table, and, if that operation is an UPDATE, if at
 ** least one of the columns in pChanges is being modified.
 */
-static SQLITE_NOINLINE Trigger *triggersReallyExist(
+ساكن SQLITE_NOINLINE Trigger *triggersReallyExist(
   Parse *pParse,          /* Parse context */
-  Table *pTab,            /* The table the contains the triggers */
-  int op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
-  ExprList *pChanges,     /* Columns that change in an UPDATE statement */
-  int *pMask              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
+  جدول *pTab,            /* The table the contains the triggers */
+  صحيح op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
+  بیان_List *pChanges,     /* Columns that change in an UPDATE statement */
+  صحيح *p_ماسک              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
 ){
-  int mask = 0;
+  صحيح ماسک = 0;
   Trigger *pList = 0;
   Trigger *p;
 
   pList = sqlite3TriggerList(pParse, pTab);
-  assert( pList==0 || IsVirtual(pTab)==0 
-           || (pList->bReturning && pList->pNext==0) );
-  if( pList!=0 ){
+  أكد( pList==0 || IsVirtual(pTab)==0 
+           || (pList->bReturning && pList->p_بل==0) );
+  إذا( pList!=0 ){
     p = pList;
-    if( (pParse->db->flags & SQLITE_EnableTrigger)==0
+    إذا( (pParse->db->flags & SQLITE_EnableTrigger)==0
      && pTab->pTrigger!=0
-     && sqlite3SchemaToIndex(pParse->db, pTab->pTrigger->pSchema)!=1
+     && sqlite3_Schema_منزل_شاخص(pParse->db, pTab->pTrigger->pSchema)!=1
     ){
       /* The SQLITE_DBCONFIG_ENABLE_TRIGGER setting is off.  That means that
       ** only TEMP triggers are allowed.  Truncate the pList so that it
       ** includes only TEMP triggers */
-      if( pList==pTab->pTrigger ){
+      إذا( pList==pTab->pTrigger ){
         pList = 0;
-        goto exit_triggers_exist;
+        اذهب exit_triggers_exist;
       }
-      while( ALWAYS(p->pNext) && p->pNext!=pTab->pTrigger ) p = p->pNext;
-      p->pNext = 0;
+      طالما( ALWAYS(p->p_بل) && p->p_بل!=pTab->pTrigger ) p = p->p_بل;
+      p->p_بل = 0;
       p = pList;
     }
-    do{
-      if( p->op==op && checkColumnOverlap(p->pColumns, pChanges) ){
-        mask |= p->tr_tm;
-      }else if( p->op==TK_RETURNING ){
+    افعل{
+      إذا( p->op==op && check_ستنه_Overlap(p->pColumns, pChanges) ){
+        ماسک |= p->tr_tm;
+      }وإلا إذا( p->op==TK_RETURNING ){
         /* The first time a RETURNING trigger is seen, the "op" value tells
         ** us what time of trigger it should be. */
-        assert( sqlite3IsToplevel(pParse) );
+        أكد( sqlite3IsToplevel(pParse) );
         p->op = op;
-        if( IsVirtual(pTab) ){
-          if( op!=TK_INSERT ){
-            sqlite3ErrorMsg(pParse,
+        إذا( IsVirtual(pTab) ){
+          إذا( op!=TK_ورننباسه ){
+            sqlite3_Error_پیغام(pParse,
               "%s RETURNING is not available on virtual tables",
               op==TK_DELETE ? "DELETE" : "UPDATE");
           }
           p->tr_tm = TRIGGER_BEFORE;
-        }else{
+        }وإلا{
           p->tr_tm = TRIGGER_AFTER;
         }
-        mask |= p->tr_tm;
-      }else if( p->bReturning && p->op==TK_INSERT && op==TK_UPDATE
+        ماسک |= p->tr_tm;
+      }وإلا إذا( p->bReturning && p->op==TK_ورننباسه && op==TK_UPDATE
                 && sqlite3IsToplevel(pParse) ){
         /* Also fire a RETURNING trigger for an UPSERT */
-        mask |= p->tr_tm;
+        ماسک |= p->tr_tm;
       }
-      p = p->pNext;
-    }while( p );
+      p = p->p_بل;
+    }طالما( p );
   }
 exit_triggers_exist:
-  if( pMask ){
-    *pMask = mask;
+  إذا( p_ماسک ){
+    *p_ماسک = ماسک;
   }
-  return (mask ? pList : 0);
+  أرجع (ماسک ? pList : 0);
 }
 Trigger *sqlite3TriggersExist(
   Parse *pParse,          /* Parse context */
-  Table *pTab,            /* The table the contains the triggers */
-  int op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
-  ExprList *pChanges,     /* Columns that change in an UPDATE statement */
-  int *pMask              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
+  جدول *pTab,            /* The table the contains the triggers */
+  صحيح op,                 /* one of TK_DELETE, TK_INSERT, TK_UPDATE */
+  بیان_List *pChanges,     /* Columns that change in an UPDATE statement */
+  صحيح *p_ماسک              /* OUT: Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
 ){
-  assert( pTab!=0 );
-  if( (pTab->pTrigger==0 && !tempTriggersExist(pParse->db))
+  أكد( pTab!=0 );
+  إذا( (pTab->pTrigger==0 && !لنډمهاله_Triggers_Exist(pParse->db))
    || pParse->disableTriggers
   ){
-    if( pMask ) *pMask = 0;
-    return 0;
+    إذا( p_ماسک ) *p_ماسک = 0;
+    أرجع 0;
   }
-  return triggersReallyExist(pParse,pTab,op,pChanges,pMask);
+  أرجع triggersReallyExist(pParse,pTab,op,pChanges,p_ماسک);
 }
 
 /*
@@ -894,18 +894,18 @@ Trigger *sqlite3TriggersExist(
 ** list is of the form "*".  Raise an error if the terms if of the
 ** form "table.*".
 */
-static int isAsteriskTerm(
+ساكن صحيح is_Asterisk_غړی(
   Parse *pParse,      /* Parsing context */
-  Expr *pTerm         /* A term in the RETURNING clause */
+  بیان *p_غړی         /* A term in the RETURNING clause */
 ){
-  assert( pTerm!=0 );
-  if( pTerm->op==TK_ASTERISK ) return 1;
-  if( pTerm->op!=TK_DOT ) return 0;
-  assert( pTerm->pRight!=0 );
-  assert( pTerm->pLeft!=0 );
-  if( pTerm->pRight->op!=TK_ASTERISK ) return 0;
-  sqlite3ErrorMsg(pParse, "RETURNING may not use \"TABLE.*\" wildcards");
-  return 1;
+  أكد( p_غړی!=0 );
+  إذا( p_غړی->op==TK_ASTERISK ) أرجع 1;
+  إذا( p_غړی->op!=TK_DOT ) أرجع 0;
+  أكد( p_غړی->p_ښی!=0 );
+  أكد( p_غړی->p_کیڼ!=0 );
+  إذا( p_غړی->p_ښی->op!=TK_ASTERISK ) أرجع 0;
+  sqlite3_Error_پیغام(pParse, "RETURNING may not use \"TABLE.*\" wildcards");
+  أرجع 1;
 }
 
 /* The input list pList is the list of result set terms from a RETURNING
@@ -914,57 +914,57 @@ static int isAsteriskTerm(
 ** This routine makes a copy of the pList, and at the same time expands
 ** any "*" wildcards to be the complete set of columns from pTab.
 */
-static ExprList *sqlite3ExpandReturning(
+ساكن بیان_List *sqlite3ExpandReturning(
   Parse *pParse,        /* Parsing context */
-  ExprList *pList,      /* The arguments to RETURNING */
-  Table *pTab           /* The table being updated */
+  بیان_List *pList,      /* The arguments to RETURNING */
+  جدول *pTab           /* The table being updated */
 ){
-  ExprList *pNew = 0;
+  بیان_List *pNew = 0;
   sqlite3 *db = pParse->db;
-  int i;
+  صحيح i;
 
-  for(i=0; i<pList->nExpr; i++){
-    Expr *pOldExpr = pList->a[i].pExpr;
-    if( NEVER(pOldExpr==0) ) continue;
-    if( isAsteriskTerm(pParse, pOldExpr) ){
-      int jj;
-      for(jj=0; jj<pTab->nCol; jj++){
-        Expr *pNewExpr;
-        if( IsHiddenColumn(pTab->aCol+jj) ) continue;
-        pNewExpr = sqlite3Expr(db, TK_ID, pTab->aCol[jj].zCnName);
-        pNew = sqlite3ExprListAppend(pParse, pNew, pNewExpr);
-        if( !db->mallocFailed ){
-          struct ExprList_item *pItem = &pNew->a[pNew->nExpr-1];
-          pItem->zEName = sqlite3DbStrDup(db, pTab->aCol[jj].zCnName);
-          pItem->fg.eEName = ENAME_NAME;
+  لكل(i=0; i<pList->n_بیان; i++){
+    بیان *p_Old_بیان = pList->a[i].p_بیان;
+    إذا( NEVER(p_Old_بیان==0) ) استمر;
+    إذا( is_Asterisk_غړی(pParse, p_Old_بیان) ){
+      صحيح jj;
+      لكل(jj=0; jj<pTab->n_ستون; jj++){
+        بیان *p_New_بیان;
+        إذا( Is_Hidden_ستنه(pTab->a_ستون+jj) ) استمر;
+        p_New_بیان = sqlite3_بیان(db, TK_ID, pTab->a_ستون[jj].zCnName);
+        pNew = sqlite3_بیان_List_Append(pParse, pNew, p_New_بیان);
+        إذا( !db->mallocFailed ){
+          بنية بیان_List_توکی *p_توکی = &pNew->a[pNew->n_بیان-1];
+          p_توکی->zEName = sqlite3DbStrDup(db, pTab->a_ستون[jj].zCnName);
+          p_توکی->fg.eEName = ENAME_NAME;
         }
       }
-    }else{
-      Expr *pNewExpr = sqlite3ExprDup(db, pOldExpr, 0);
-      pNew = sqlite3ExprListAppend(pParse, pNew, pNewExpr);
-      if( !db->mallocFailed && ALWAYS(pList->a[i].zEName!=0) ){
-        struct ExprList_item *pItem = &pNew->a[pNew->nExpr-1];
-        pItem->zEName = sqlite3DbStrDup(db, pList->a[i].zEName);
-        pItem->fg.eEName = pList->a[i].fg.eEName;
+    }وإلا{
+      بیان *p_New_بیان = sqlite3_بیان_Dup(db, p_Old_بیان, 0);
+      pNew = sqlite3_بیان_List_Append(pParse, pNew, p_New_بیان);
+      إذا( !db->mallocFailed && ALWAYS(pList->a[i].zEName!=0) ){
+        بنية بیان_List_توکی *p_توکی = &pNew->a[pNew->n_بیان-1];
+        p_توکی->zEName = sqlite3DbStrDup(db, pList->a[i].zEName);
+        p_توکی->fg.eEName = pList->a[i].fg.eEName;
       }
     }
   }
-  return pNew;
+  أرجع pNew;
 }
 
 /* If the Expr node is a subquery or an EXISTS operator or an IN operator that
 ** uses a subquery, and if the subquery is SF_Correlated, then mark the
 ** expression as EP_VarSelect.
 */
-static int sqlite3ReturningSubqueryVarSelect(Walker *NotUsed, Expr *pExpr){
-  UNUSED_PARAMETER(NotUsed);
-  if( ExprUseXSelect(pExpr)
-   && (pExpr->x.pSelect->selFlags & SF_Correlated)!=0
+ساكن صحيح sqlite3ReturningSubqueryVarSelect(Walker *Not_کارول_شوی, بیان *p_بیان){
+  ناکارول_شوی_PARAMETER(Not_کارول_شوی);
+  إذا( بیان_Use_XSelect(p_بیان)
+   && (p_بیان->x.pSelect->selFlags & SF_Correlated)!=0
   ){
-    testcase( ExprHasProperty(pExpr, EP_VarSelect) );
-    ExprSetProperty(pExpr, EP_VarSelect);
+    testcase( بیان_Has_Property(p_بیان, EP_VarSelect) );
+    بیان_سېټ_Property(p_بیان, EP_VarSelect);
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 
@@ -975,21 +975,21 @@ static int sqlite3ReturningSubqueryVarSelect(Walker *NotUsed, Expr *pExpr){
 **    (2) Set pWalker->eCode to non-zero so that the caller will know
 **        that (1) has happened.
 */
-static int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
-  int i;
+ساكن صحيح sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
+  صحيح i;
   SrcList *pSrc;
-  assert( pSelect!=0 );
+  أكد( pSelect!=0 );
   pSrc = pSelect->pSrc;
-  assert( pSrc!=0 );
-  for(i=0; i<pSrc->nSrc; i++){
-    if( pSrc->a[i].pSTab==pWalker->u.pTab ){
+  أكد( pSrc!=0 );
+  لكل(i=0; i<pSrc->nSrc; i++){
+    إذا( pSrc->a[i].pSTab==pWalker->u.pTab ){
       testcase( pSelect->selFlags & SF_Correlated );
       pSelect->selFlags |= SF_Correlated;
-      pWalker->eCode = 1;
-      break;
+      pWalker->e_کوډ = 1;
+      اكسر;
     }
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
@@ -1001,20 +1001,20 @@ static int sqlite3ReturningSubqueryCorrelated(Walker *pWalker, Select *pSelect){
 **
 ** https://sqlite.org/forum/forumpost/2c83569ce8945d39
 */
-static void sqlite3ProcessReturningSubqueries(
-  ExprList *pEList,
-  Table *pTab
+ساكن فراغ sqlite3ProcessReturningSubqueries(
+  بیان_List *pEList,
+  جدول *pTab
 ){
   Walker w;
-  memset(&w, 0, sizeof(w));
-  w.xExprCallback = sqlite3ExprWalkNoop;
+  memset(&w, 0, حجم(w));
+  w.x_بیان_Callback = sqlite3_بیان_Walk_Noop;
   w.xSelectCallback = sqlite3ReturningSubqueryCorrelated;
   w.u.pTab = pTab;
-  sqlite3WalkExprList(&w, pEList);
-  if( w.eCode ){
-    w.xExprCallback = sqlite3ReturningSubqueryVarSelect;
+  sqlite3_Walk_بیان_List(&w, pEList);
+  إذا( w.e_کوډ ){
+    w.x_بیان_Callback = sqlite3ReturningSubqueryVarSelect;
     w.xSelectCallback = sqlite3SelectWalkNoop;
-    sqlite3WalkExprList(&w, pEList);
+    sqlite3_Walk_بیان_List(&w, pEList);
   }
 }
 
@@ -1023,87 +1023,87 @@ static void sqlite3ProcessReturningSubqueries(
 ** that invoke a subprogram in the bytecode, the code for RETURNING
 ** is generated in-line.
 */
-static void codeReturningTrigger(
+ساكن فراغ کوډ_Returning_Trigger(
   Parse *pParse,       /* Parse context */
   Trigger *pTrigger,   /* The trigger step that defines the RETURNING */
-  Table *pTab,         /* The table to code triggers from */
-  int regIn            /* The first in an array of registers */
+  جدول *pTab,         /* The table to code triggers from */
+  صحيح reg_دننه            /* The first in an array of registers */
 ){
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
-  ExprList *pNew;
+  بیان_List *pNew;
   Returning *pReturning;
   Select sSelect;
   SrcList *pFrom;
-  union {
+  اتحاد {
     SrcList sSrc;
     u8 fromSpace[SZ_SRCLIST_1];
   } uSrc;
 
-  assert( v!=0 );
-  if( !pParse->bReturning ){
+  أكد( v!=0 );
+  إذا( !pParse->bReturning ){
     /* This RETURNING trigger must be for a different statement as
     ** this statement lacks a RETURNING clause. */
-    return;
+    أرجع;
   }
-  assert( db->pParse==pParse );
-  assert( !pParse->isCreate );
+  أكد( db->pParse==pParse );
+  أكد( !pParse->isCreate );
   pReturning = pParse->u1.d.pReturning;
-  if( pTrigger != &(pReturning->retTrig) ){
+  إذا( pTrigger != &(pReturning->retTrig) ){
     /* This RETURNING trigger is for a different statement */
-    return;
+    أرجع;
   }
-  memset(&sSelect, 0, sizeof(sSelect));
-  memset(&uSrc, 0, sizeof(uSrc));
+  memset(&sSelect, 0, حجم(sSelect));
+  memset(&uSrc, 0, حجم(uSrc));
   pFrom = &uSrc.sSrc;
-  sSelect.pEList = sqlite3ExprListDup(db, pReturning->pReturnEL, 0);
+  sSelect.pEList = sqlite3_بیان_List_Dup(db, pReturning->pReturnEL, 0);
   sSelect.pSrc = pFrom;
   pFrom->nSrc = 1;
   pFrom->a[0].pSTab = pTab;
   pFrom->a[0].zName = pTab->zName; /* tag-20240424-1 */
   pFrom->a[0].iCursor = -1;
   sqlite3SelectPrep(pParse, &sSelect, 0);
-  if( pParse->nErr==0 ){
-    assert( db->mallocFailed==0 );
-    sqlite3GenerateColumnNames(pParse, &sSelect);
+  إذا( pParse->nErr==0 ){
+    أكد( db->mallocFailed==0 );
+    sqlite3_Generate_ستنه_نومونه(pParse, &sSelect);
   }
-  sqlite3ExprListDelete(db, sSelect.pEList);
+  sqlite3_بیان_List_Delete(db, sSelect.pEList);
   pNew = sqlite3ExpandReturning(pParse, pReturning->pReturnEL, pTab);
-  if( pParse->nErr==0 ){
+  إذا( pParse->nErr==0 ){
     NameContext sNC;
-    memset(&sNC, 0, sizeof(sNC));
-    if( pReturning->nRetCol==0 ){
-      pReturning->nRetCol = pNew->nExpr;
+    memset(&sNC, 0, حجم(sNC));
+    إذا( pReturning->n_Ret_ستون==0 ){
+      pReturning->n_Ret_ستون = pNew->n_بیان;
       pReturning->iRetCur = pParse->nTab++;
     }
     sNC.pParse = pParse;
-    sNC.uNC.iBaseReg = regIn;
+    sNC.uNC.i_بنسټ_Reg = reg_دننه;
     sNC.ncFlags = NC_UBaseReg;
     pParse->eTriggerOp = pTrigger->op;
     pParse->pTriggerTab = pTab;
-    if( sqlite3ResolveExprListNames(&sNC, pNew)==SQLITE_OK
+    إذا( sqlite3_Resolve_بیان_List_نومونه(&sNC, pNew)==SQLITE_OK
      && ALWAYS(!db->mallocFailed)
     ){
-      int i;
-      int nCol = pNew->nExpr;
-      int reg = pParse->nMem+1;
+      صحيح i;
+      صحيح n_ستون = pNew->n_بیان;
+      صحيح reg = pParse->nMem+1;
       sqlite3ProcessReturningSubqueries(pNew, pTab);
-      pParse->nMem += nCol+2;
+      pParse->nMem += n_ستون+2;
       pReturning->iRetReg = reg;
-      for(i=0; i<nCol; i++){
-        Expr *pCol = pNew->a[i].pExpr;
-        assert( pCol!=0 ); /* Due to !db->mallocFailed ~9 lines above */
-        sqlite3ExprCodeFactorable(pParse, pCol, reg+i);
-        if( sqlite3ExprAffinity(pCol)==SQLITE_AFF_REAL ){
-          sqlite3VdbeAddOp1(v, OP_RealAffinity, reg+i);
+      لكل(i=0; i<n_ستون; i++){
+        بیان *p_ستون = pNew->a[i].p_بیان;
+        أكد( p_ستون!=0 ); /* Due to !db->mallocFailed ~9 lines above */
+        sqlite3_بیان_کوډ_Factorable(pParse, p_ستون, reg+i);
+        إذا( sqlite3_بیان_Affinity(p_ستون)==SQLITE_AFF_REAL ){
+          sqlite3_Vdbe_جمع_کړه_Op1(v, OP_RealAffinity, reg+i);
         }
       }
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, reg, i, reg+i);
-      sqlite3VdbeAddOp2(v, OP_NewRowid, pReturning->iRetCur, reg+i+1);
-      sqlite3VdbeAddOp3(v, OP_Insert, pReturning->iRetCur, reg+i, reg+i+1);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Make_ریکارډ, reg, i, reg+i);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_NewRowid, pReturning->iRetCur, reg+i+1);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ورننباسه, pReturning->iRetCur, reg+i, reg+i+1);
     }
   }
-  sqlite3ExprListDelete(db, pNew);
+  sqlite3_بیان_List_Delete(db, pNew);
   pParse->eTriggerOp = 0;
   pParse->pTriggerTab = 0;
 }
@@ -1114,19 +1114,19 @@ static void codeReturningTrigger(
 ** Generate VDBE code for the statements inside the body of a single 
 ** trigger.
 */
-static int codeTriggerProgram(
+ساكن صحيح کوډ_Trigger_پروګرام(
   Parse *pParse,            /* The parser context */
-  TriggerStep *pStepList,   /* List of statements inside the trigger body */
-  int orconf                /* Conflict algorithm. (OE_Abort, etc) */  
+  Trigger_ګام *p_ګام_List,   /* List of statements inside the trigger body */
+  صحيح orconf                /* Conflict algorithm. (OE_Abort, etc) */  
 ){
-  TriggerStep *pStep;
+  Trigger_ګام *p_ګام;
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
 
-  assert( pParse->pTriggerTab && pParse->pToplevel );
-  assert( pStepList );
-  assert( v!=0 );
-  for(pStep=pStepList; pStep; pStep=pStep->pNext){
+  أكد( pParse->pTriggerTab && pParse->pToplevel );
+  أكد( p_ګام_List );
+  أكد( v!=0 );
+  لكل(p_ګام=p_ګام_List; p_ګام; p_ګام=p_ګام->p_بل){
     /* Figure out the ON CONFLICT policy that will be used for this step
     ** of the trigger program. If the statement that caused this trigger
     ** to fire had an explicit ON CONFLICT, then use it. Otherwise, use
@@ -1140,93 +1140,93 @@ static int codeTriggerProgram(
     **   INSERT INTO t1 ... ;            -- insert into t2 uses REPLACE policy
     **   INSERT OR IGNORE INTO t1 ... ;  -- insert into t2 uses IGNORE policy
     */
-    pParse->eOrconf = (orconf==OE_Default)?pStep->orconf:(u8)orconf;
-    assert( pParse->okConstFactor==0 );
+    pParse->eOrconf = (orconf==OE_Default)?p_ګام->orconf:(u8)orconf;
+    أكد( pParse->ok_Const_ضریب==0 );
 
-#ifndef SQLITE_OMIT_TRACE
-    if( pStep->zSpan ){
-      sqlite3VdbeAddOp4(v, OP_Trace, 0x7fffffff, 1, 0,
-                        sqlite3MPrintf(db, "-- %s", pStep->zSpan),
+#که_نه_تعریف_شوی SQLITE_OMIT_TRACE
+    إذا( p_ګام->z_پراختیا ){
+      sqlite3_Vdbe_جمع_کړه_Op4(v, OP_Trace, 0x7fffffff, 1, 0,
+                        sqlite3MPrintf(db, "-- %s", p_ګام->z_پراختیا),
                         P4_DYNAMIC);
     }
-#endif
+#د_که_پای
 
-    switch( pStep->op ){
-      case TK_UPDATE: {
+    بدل( p_ګام->op ){
+      حالة TK_UPDATE: {
         sqlite3Update(pParse, 
-          sqlite3SrcListDup(db, pStep->pSrc, 0),
-          sqlite3ExprListDup(db, pStep->pExprList, 0), 
-          sqlite3ExprDup(db, pStep->pWhere, 0), 
+          sqlite3SrcListDup(db, p_ګام->pSrc, 0),
+          sqlite3_بیان_List_Dup(db, p_ګام->p_بیان_List, 0), 
+          sqlite3_بیان_Dup(db, p_ګام->pWhere, 0), 
           pParse->eOrconf, 0, 0, 0
         );
-        sqlite3VdbeAddOp0(v, OP_ResetCount);
-        break;
+        sqlite3_Vdbe_جمع_کړه_Op0(v, OP_Reset_شمېر);
+        اكسر;
       }
-      case TK_INSERT: {
-        sqlite3Insert(pParse, 
-          sqlite3SrcListDup(db, pStep->pSrc, 0),
-          sqlite3SelectDup(db, pStep->pSelect, 0), 
-          sqlite3IdListDup(db, pStep->pIdList), 
+      حالة TK_ورننباسه: {
+        sqlite3_ورننباسه(pParse, 
+          sqlite3SrcListDup(db, p_ګام->pSrc, 0),
+          sqlite3SelectDup(db, p_ګام->pSelect, 0), 
+          sqlite3IdListDup(db, p_ګام->pIdList), 
           pParse->eOrconf,
-          sqlite3UpsertDup(db, pStep->pUpsert)
+          sqlite3UpsertDup(db, p_ګام->pUpsert)
         );
-        sqlite3VdbeAddOp0(v, OP_ResetCount);
-        break;
+        sqlite3_Vdbe_جمع_کړه_Op0(v, OP_Reset_شمېر);
+        اكسر;
       }
-      case TK_DELETE: {
+      حالة TK_DELETE: {
         sqlite3DeleteFrom(pParse, 
-          sqlite3SrcListDup(db, pStep->pSrc, 0),
-          sqlite3ExprDup(db, pStep->pWhere, 0), 0, 0
+          sqlite3SrcListDup(db, p_ګام->pSrc, 0),
+          sqlite3_بیان_Dup(db, p_ګام->pWhere, 0), 0, 0
         );
-        sqlite3VdbeAddOp0(v, OP_ResetCount);
-        break;
+        sqlite3_Vdbe_جمع_کړه_Op0(v, OP_Reset_شمېر);
+        اكسر;
       }
-      default: assert( pStep->op==TK_SELECT ); {
+      افتراضي: أكد( p_ګام->op==TK_SELECT ); {
         SelectDest sDest;
-        Select *pSelect = sqlite3SelectDup(db, pStep->pSelect, 0);
+        Select *pSelect = sqlite3SelectDup(db, p_ګام->pSelect, 0);
         sqlite3SelectDestInit(&sDest, SRT_Discard, 0);
         sqlite3Select(pParse, pSelect, &sDest);
         sqlite3SelectDelete(db, pSelect);
-        break;
+        اكسر;
       }
     } 
   }
 
-  return 0;
+  أرجع 0;
 }
 
-#ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
+#که_تعریف_شوی SQLITE_ENABLE_EXPLAIN_COMMENTS
 /*
 ** This function is used to add VdbeComment() annotations to a VDBE
 ** program. It is not used in production code, only for debugging.
 */
-static const char *onErrorText(int onError){
-  switch( onError ){
-    case OE_Abort:    return "abort";
-    case OE_Rollback: return "rollback";
-    case OE_Fail:     return "fail";
-    case OE_Replace:  return "replace";
-    case OE_Ignore:   return "ignore";
-    case OE_Default:  return "default";
+ساكن ثابت حرف *on_Error_متن(صحيح onError){
+  بدل( onError ){
+    حالة OE_Abort:    أرجع "abort";
+    حالة OE_Rollback: أرجع "rollback";
+    حالة OE_Fail:     أرجع "fail";
+    حالة OE_Replace:  أرجع "replace";
+    حالة OE_Ignore:   أرجع "ignore";
+    حالة OE_Default:  أرجع "default";
   }
-  return "n/a";
+  أرجع "n/a";
 }
-#endif
+#د_که_پای
 
 /*
 ** Parse context structure pFrom has just been used to create a sub-vdbe
 ** (trigger program). If an error has occurred, transfer error information
 ** from pFrom to pTo.
 */
-static void transferParseError(Parse *pTo, Parse *pFrom){
-  assert( pFrom->zErrMsg==0 || pFrom->nErr );
-  assert( pTo->zErrMsg==0 || pTo->nErr );
-  if( pTo->nErr==0 ){
-    pTo->zErrMsg = pFrom->zErrMsg;
-    pTo->nErr = pFrom->nErr;
-    pTo->rc = pFrom->rc;
-  }else{
-    sqlite3DbFree(pFrom->db, pFrom->zErrMsg);
+ساكن فراغ transferParseError(Parse *p_منزل, Parse *pFrom){
+  أكد( pFrom->z_Err_پیغام==0 || pFrom->nErr );
+  أكد( p_منزل->z_Err_پیغام==0 || p_منزل->nErr );
+  إذا( p_منزل->nErr==0 ){
+    p_منزل->z_Err_پیغام = pFrom->z_Err_پیغام;
+    p_منزل->nErr = pFrom->nErr;
+    p_منزل->rc = pFrom->rc;
+  }وإلا{
+    sqlite3DbFree(pFrom->db, pFrom->z_Err_پیغام);
   }
 }
 
@@ -1234,49 +1234,49 @@ static void transferParseError(Parse *pTo, Parse *pFrom){
 ** Create and populate a new TriggerPrg object with a sub-program 
 ** implementing trigger pTrigger with ON CONFLICT policy orconf.
 */
-static TriggerPrg *codeRowTrigger(
+ساكن TriggerPrg *کوډ_لیکه_Trigger(
   Parse *pParse,       /* Current parse context */
   Trigger *pTrigger,   /* Trigger to code */
-  Table *pTab,         /* The table pTrigger is attached to */
-  int orconf           /* ON CONFLICT policy to code trigger program with */
+  جدول *pTab,         /* The table pTrigger is attached to */
+  صحيح orconf           /* ON CONFLICT policy to code trigger program with */
 ){
-  Parse *pTop;                /* Top level Parse object */
+  Parse *p_سر_2;                /* Top level Parse object */
   sqlite3 *db = pParse->db;   /* Database handle */
   TriggerPrg *pPrg;           /* Value to return */
-  Expr *pWhen = 0;            /* Duplicate of trigger WHEN expression */
+  بیان *pWhen = 0;            /* Duplicate of trigger WHEN expression */
   Vdbe *v;                    /* Temporary VM */
   NameContext sNC;            /* Name context for sub-vdbe */
-  SubProgram *pProgram = 0;   /* Sub-vdbe for trigger program */
-  int iEndTrigger = 0;        /* Label to jump to if WHEN is false */
+  Sub_پروګرام *p_پروګرام = 0;   /* Sub-vdbe for trigger program */
+  صحيح i_پای_ټکی_Trigger = 0;        /* Label to jump to if WHEN is false */
   Parse sSubParse;            /* Parse context for sub-vdbe */
-  int nDepth;                 /* Trigger depth */
+  صحيح n_ژوروالی;                 /* Trigger depth */
 
   /* Ensure that triggers are not chained too deep.  This test is linear
   ** in the chaining depth, but sensible code ought not be chaining
   ** triggers excessively, so that shouldn't be a problem.
   */  
-  pTop = pParse;
-  for(nDepth=0; pTop->pOuterParse; pTop = pTop->pOuterParse, nDepth++){}
-  if( nDepth>=db->aLimit[SQLITE_LIMIT_TRIGGER_DEPTH] ){
-    sqlite3ErrorMsg(pParse, "triggers nested too deep");
-    return 0;
+  p_سر_2 = pParse;
+  لكل(n_ژوروالی=0; p_سر_2->pOuterParse; p_سر_2 = p_سر_2->pOuterParse, n_ژوروالی++){}
+  إذا( n_ژوروالی>=db->a_حد[SQLITE_حد_TRIGGER_ژوروالی] ){
+    sqlite3_Error_پیغام(pParse, "triggers nested too deep");
+    أرجع 0;
   }
 
-  pTop = sqlite3ParseToplevel(pParse);
-  assert( pTrigger->zName==0 || pTab==tableOfTrigger(pTrigger) );
-  assert( pTop->pVdbe );
+  p_سر_2 = sqlite3ParseToplevel(pParse);
+  أكد( pTrigger->zName==0 || pTab==جدول_د_Trigger(pTrigger) );
+  أكد( p_سر_2->pVdbe );
 
 
   /* Allocate the TriggerPrg and SubProgram objects. To ensure that they
   ** are freed if an error occurs, link them into the Parse.pTriggerPrg 
   ** list of the top-level Parse object sooner rather than later.  */
-  pPrg = sqlite3DbMallocZero(db, sizeof(TriggerPrg));
-  if( !pPrg ) return 0;
-  pPrg->pNext = pTop->pTriggerPrg;
-  pTop->pTriggerPrg = pPrg;
-  pPrg->pProgram = pProgram = sqlite3DbMallocZero(db, sizeof(SubProgram));
-  if( !pProgram ) return 0;
-  sqlite3VdbeLinkSubProgram(pTop->pVdbe, pProgram);
+  pPrg = sqlite3DbMallocZero(db, حجم(TriggerPrg));
+  إذا( !pPrg ) أرجع 0;
+  pPrg->p_بل = p_سر_2->pTriggerPrg;
+  p_سر_2->pTriggerPrg = pPrg;
+  pPrg->p_پروګرام = p_پروګرام = sqlite3DbMallocZero(db, حجم(Sub_پروګرام));
+  إذا( !p_پروګرام ) أرجع 0;
+  sqlite3_Vdbe_Link_Sub_پروګرام(p_سر_2->pVdbe, p_پروګرام);
   pPrg->pTrigger = pTrigger;
   pPrg->orconf = orconf;
   pPrg->aColmask[0] = 0xffffffff;
@@ -1285,10 +1285,10 @@ static TriggerPrg *codeRowTrigger(
   /* Allocate and populate a new Parse context to use for coding the 
   ** trigger sub-program.  */
   sqlite3ParseObjectInit(&sSubParse, db);
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, حجم(sNC));
   sNC.pParse = &sSubParse;
   sSubParse.pTriggerTab = pTab;
-  sSubParse.pToplevel = pTop;
+  sSubParse.pToplevel = p_سر_2;
   sSubParse.pTrigCoded = pTrigger;
   sSubParse.zAuthContext = pTrigger->zName;
   sSubParse.eTriggerOp = pTrigger->op;
@@ -1298,65 +1298,65 @@ static TriggerPrg *codeRowTrigger(
   sSubParse.newmask = 0;
 
   v = sqlite3GetVdbe(&sSubParse);
-  if( v ){
+  إذا( v ){
     VdbeComment((v, "Start: %s.%s (%s %s%s%s ON %s)", 
-      pTrigger->zName, onErrorText(orconf),
+      pTrigger->zName, on_Error_متن(orconf),
       (pTrigger->tr_tm==TRIGGER_BEFORE ? "BEFORE" : "AFTER"),
         (pTrigger->op==TK_UPDATE ? "UPDATE" : ""),
-        (pTrigger->op==TK_INSERT ? "INSERT" : ""),
+        (pTrigger->op==TK_ورننباسه ? "INSERT" : ""),
         (pTrigger->op==TK_DELETE ? "DELETE" : ""),
       pTab->zName
     ));
-#ifndef SQLITE_OMIT_TRACE
-    if( pTrigger->zName ){
+#که_نه_تعریف_شوی SQLITE_OMIT_TRACE
+    إذا( pTrigger->zName ){
       sqlite3VdbeChangeP4(v, -1, 
         sqlite3MPrintf(db, "-- TRIGGER %s", pTrigger->zName), P4_DYNAMIC
       );
     }
-#endif
+#د_که_پای
 
     /* If one was specified, code the WHEN clause. If it evaluates to false
     ** (or NULL) the sub-vdbe is immediately halted by jumping to the 
     ** OP_Halt inserted at the end of the program.  */
-    if( pTrigger->pWhen ){
-      pWhen = sqlite3ExprDup(db, pTrigger->pWhen, 0);
-      if( db->mallocFailed==0
-       && SQLITE_OK==sqlite3ResolveExprNames(&sNC, pWhen) 
+    إذا( pTrigger->pWhen ){
+      pWhen = sqlite3_بیان_Dup(db, pTrigger->pWhen, 0);
+      إذا( db->mallocFailed==0
+       && SQLITE_OK==sqlite3_Resolve_بیان_نومونه(&sNC, pWhen) 
       ){
-        iEndTrigger = sqlite3VdbeMakeLabel(&sSubParse);
-        sqlite3ExprIfFalse(&sSubParse, pWhen, iEndTrigger, SQLITE_JUMPIFNULL);
+        i_پای_ټکی_Trigger = sqlite3VdbeMakeLabel(&sSubParse);
+        sqlite3_بیان_If_False(&sSubParse, pWhen, i_پای_ټکی_Trigger, SQLITE_JUMPIFNULL);
       }
-      sqlite3ExprDelete(db, pWhen);
+      sqlite3_بیان_Delete(db, pWhen);
     }
 
     /* Code the trigger program into the sub-vdbe. */
-    codeTriggerProgram(&sSubParse, pTrigger->step_list, orconf);
+    کوډ_Trigger_پروګرام(&sSubParse, pTrigger->ګام_list, orconf);
 
     /* Insert an OP_Halt at the end of the sub-program. */
-    if( iEndTrigger ){
-      sqlite3VdbeResolveLabel(v, iEndTrigger);
+    إذا( i_پای_ټکی_Trigger ){
+      sqlite3VdbeResolveLabel(v, i_پای_ټکی_Trigger);
     }
-    sqlite3VdbeAddOp0(v, OP_Halt);
-    VdbeComment((v, "End: %s.%s", pTrigger->zName, onErrorText(orconf)));
+    sqlite3_Vdbe_جمع_کړه_Op0(v, OP_Halt);
+    VdbeComment((v, "End: %s.%s", pTrigger->zName, on_Error_متن(orconf)));
     transferParseError(pParse, &sSubParse);
 
-    if( pParse->nErr==0 ){
-      assert( db->mallocFailed==0 );
-      pProgram->aOp = sqlite3VdbeTakeOpArray(v, &pProgram->nOp, &pTop->nMaxArg);
+    إذا( pParse->nErr==0 ){
+      أكد( db->mallocFailed==0 );
+      p_پروګرام->aOp = sqlite3VdbeTakeOpArray(v, &p_پروګرام->nOp, &p_سر_2->nMaxArg);
     }
-    pProgram->nMem = sSubParse.nMem;
-    pProgram->nCsr = sSubParse.nTab;
-    pProgram->token = (void *)pTrigger;
+    p_پروګرام->nMem = sSubParse.nMem;
+    p_پروګرام->nCsr = sSubParse.nTab;
+    p_پروګرام->token = (فراغ *)pTrigger;
     pPrg->aColmask[0] = sSubParse.oldmask;
     pPrg->aColmask[1] = sSubParse.newmask;
     sqlite3VdbeDelete(v);
-  }else{
+  }وإلا{
     transferParseError(pParse, &sSubParse);
   }
 
-  assert( !sSubParse.pTriggerPrg && !sSubParse.nMaxArg );
+  أكد( !sSubParse.pTriggerPrg && !sSubParse.nMaxArg );
   sqlite3ParseObjectReset(&sSubParse);
-  return pPrg;
+  أرجع pPrg;
 }
     
 /*
@@ -1365,33 +1365,33 @@ static TriggerPrg *codeRowTrigger(
 ** TriggerPrg object exists, a new object is allocated and populated before
 ** being returned.
 */
-static TriggerPrg *getRowTrigger(
+ساكن TriggerPrg *get_لیکه_Trigger(
   Parse *pParse,       /* Current parse context */
   Trigger *pTrigger,   /* Trigger to code */
-  Table *pTab,         /* The table trigger pTrigger is attached to */
-  int orconf           /* ON CONFLICT algorithm. */
+  جدول *pTab,         /* The table trigger pTrigger is attached to */
+  صحيح orconf           /* ON CONFLICT algorithm. */
 ){
-  Parse *pRoot = sqlite3ParseToplevel(pParse);
+  Parse *p_ریښه = sqlite3ParseToplevel(pParse);
   TriggerPrg *pPrg;
 
-  assert( pTrigger->zName==0 || pTab==tableOfTrigger(pTrigger) );
+  أكد( pTrigger->zName==0 || pTab==جدول_د_Trigger(pTrigger) );
 
   /* It may be that this trigger has already been coded (or is in the
   ** process of being coded). If this is the case, then an entry with
   ** a matching TriggerPrg.pTrigger field will be present somewhere
   ** in the Parse.pTriggerPrg list. Search for such an entry.  */
-  for(pPrg=pRoot->pTriggerPrg; 
+  لكل(pPrg=p_ریښه->pTriggerPrg; 
       pPrg && (pPrg->pTrigger!=pTrigger || pPrg->orconf!=orconf); 
-      pPrg=pPrg->pNext
+      pPrg=pPrg->p_بل
   );
 
   /* If an existing TriggerPrg could not be located, create a new one. */
-  if( !pPrg ){
-    pPrg = codeRowTrigger(pParse, pTrigger, pTab, orconf);
-    pParse->db->errByteOffset = -1;
+  إذا( !pPrg ){
+    pPrg = کوډ_لیکه_Trigger(pParse, pTrigger, pTab, orconf);
+    pParse->db->err_Byte_دننه_واټن = -1;
   }
 
-  return pPrg;
+  أرجع pPrg;
 }
 
 /*
@@ -1400,28 +1400,28 @@ static TriggerPrg *getRowTrigger(
 ** function are the same as those described in the header function for
 ** sqlite3CodeRowTrigger()
 */
-void sqlite3CodeRowTriggerDirect(
+فراغ sqlite3_کوډ_لیکه_Trigger_مستقیم(
   Parse *pParse,       /* Parse context */
   Trigger *p,          /* Trigger to code */
-  Table *pTab,         /* The table to code triggers from */
-  int reg,             /* Reg array containing OLD.* and NEW.* values */
-  int orconf,          /* ON CONFLICT policy */
-  int ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
+  جدول *pTab,         /* The table to code triggers from */
+  صحيح reg,             /* Reg array containing OLD.* and NEW.* values */
+  صحيح orconf,          /* ON CONFLICT policy */
+  صحيح ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
 ){
   Vdbe *v = sqlite3GetVdbe(pParse); /* Main VM */
   TriggerPrg *pPrg;
-  pPrg = getRowTrigger(pParse, p, pTab, orconf);
-  assert( pPrg || pParse->nErr );
+  pPrg = get_لیکه_Trigger(pParse, p, pTab, orconf);
+  أكد( pPrg || pParse->nErr );
 
   /* Code the OP_Program opcode in the parent VDBE. P4 of the OP_Program 
   ** is a pointer to the sub-vdbe containing the trigger program.  */
-  if( pPrg ){
-    int bRecursive = (p->zName && 0==(pParse->db->flags&SQLITE_RecTriggers));
+  إذا( pPrg ){
+    صحيح bRecursive = (p->zName && 0==(pParse->db->flags&SQLITE_RecTriggers));
 
-    sqlite3VdbeAddOp4(v, OP_Program, reg, ignoreJump, ++pParse->nMem,
-                      (const char *)pPrg->pProgram, P4_SUBPROGRAM);
+    sqlite3_Vdbe_جمع_کړه_Op4(v, OP_پروګرام, reg, ignoreJump, ++pParse->nMem,
+                      (ثابت حرف *)pPrg->p_پروګرام, P4_SUBPROGRAM);
     VdbeComment(
-        (v, "Call: %s.%s", (p->zName?p->zName:"fkey"), onErrorText(orconf)));
+        (v, "Call: %s.%s", (p->zName?p->zName:"fkey"), on_Error_متن(orconf)));
 
     /* Set the P5 operand of the OP_Program instruction to non-zero if
     ** recursive invocation of this trigger program is disallowed. Recursive
@@ -1472,31 +1472,31 @@ void sqlite3CodeRowTriggerDirect(
 ** is the instruction that control should jump to if a trigger program
 ** raises an IGNORE exception.
 */
-void sqlite3CodeRowTrigger(
+فراغ sqlite3_کوډ_لیکه_Trigger(
   Parse *pParse,       /* Parse context */
   Trigger *pTrigger,   /* List of triggers on table pTab */
-  int op,              /* One of TK_UPDATE, TK_INSERT, TK_DELETE */
-  ExprList *pChanges,  /* Changes list for any UPDATE OF triggers */
-  int tr_tm,           /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
-  Table *pTab,         /* The table to code triggers from */
-  int reg,             /* The first in an array of registers (see above) */
-  int orconf,          /* ON CONFLICT policy */
-  int ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
+  صحيح op,              /* One of TK_UPDATE, TK_INSERT, TK_DELETE */
+  بیان_List *pChanges,  /* Changes list for any UPDATE OF triggers */
+  صحيح tr_tm,           /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
+  جدول *pTab,         /* The table to code triggers from */
+  صحيح reg,             /* The first in an array of registers (see above) */
+  صحيح orconf,          /* ON CONFLICT policy */
+  صحيح ignoreJump       /* Instruction to jump to for RAISE(IGNORE) */
 ){
   Trigger *p;          /* Used to iterate through pTrigger list */
 
-  assert( op==TK_UPDATE || op==TK_INSERT || op==TK_DELETE );
-  assert( tr_tm==TRIGGER_BEFORE || tr_tm==TRIGGER_AFTER );
-  assert( (op==TK_UPDATE)==(pChanges!=0) );
+  أكد( op==TK_UPDATE || op==TK_ورننباسه || op==TK_DELETE );
+  أكد( tr_tm==TRIGGER_BEFORE || tr_tm==TRIGGER_AFTER );
+  أكد( (op==TK_UPDATE)==(pChanges!=0) );
 
-  for(p=pTrigger; p; p=p->pNext){
+  لكل(p=pTrigger; p; p=p->p_بل){
 
     /* Sanity checking:  The schema for the trigger and for the table are
     ** always defined.  The trigger must be in the same schema as the table
     ** or else it must be a TEMP trigger. */
-    assert( p->pSchema!=0 );
-    assert( p->pTabSchema!=0 );
-    assert( p->pSchema==p->pTabSchema 
+    أكد( p->pSchema!=0 );
+    أكد( p->pTabSchema!=0 );
+    أكد( p->pSchema==p->pTabSchema 
          || p->pSchema==pParse->db->aDb[1].pSchema );
 
     /* Determine whether we should code this trigger.  One of two choices:
@@ -1504,14 +1504,14 @@ void sqlite3CodeRowTrigger(
     **   2. This is a RETURNING trigger for INSERT but we are currently
     **      doing the UPDATE part of an UPSERT.
     */
-    if( (p->op==op || (p->bReturning && p->op==TK_INSERT && op==TK_UPDATE))
+    إذا( (p->op==op || (p->bReturning && p->op==TK_ورننباسه && op==TK_UPDATE))
      && p->tr_tm==tr_tm 
-     && checkColumnOverlap(p->pColumns, pChanges)
+     && check_ستنه_Overlap(p->pColumns, pChanges)
     ){
-      if( !p->bReturning ){
-        sqlite3CodeRowTriggerDirect(pParse, p, pTab, reg, orconf, ignoreJump);
-      }else if( sqlite3IsToplevel(pParse) ){
-        codeReturningTrigger(pParse, p, pTab, reg);
+      إذا( !p->bReturning ){
+        sqlite3_کوډ_لیکه_Trigger_مستقیم(pParse, p, pTab, reg, orconf, ignoreJump);
+      }وإلا إذا( sqlite3IsToplevel(pParse) ){
+        کوډ_Returning_Trigger(pParse, p, pTab, reg);
       }
     }
   }
@@ -1545,38 +1545,38 @@ void sqlite3CodeRowTrigger(
 u32 sqlite3TriggerColmask(
   Parse *pParse,       /* Parse context */
   Trigger *pTrigger,   /* List of triggers on table pTab */
-  ExprList *pChanges,  /* Changes list for any UPDATE OF triggers */
-  int isNew,           /* 1 for new.* ref mask, 0 for old.* ref mask */
-  int tr_tm,           /* Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
-  Table *pTab,         /* The table to code triggers from */
-  int orconf           /* Default ON CONFLICT policy for trigger steps */
+  بیان_List *pChanges,  /* Changes list for any UPDATE OF triggers */
+  صحيح isNew,           /* 1 for new.* ref mask, 0 for old.* ref mask */
+  صحيح tr_tm,           /* Mask of TRIGGER_BEFORE|TRIGGER_AFTER */
+  جدول *pTab,         /* The table to code triggers from */
+  صحيح orconf           /* Default ON CONFLICT policy for trigger steps */
 ){
-  const int op = pChanges ? TK_UPDATE : TK_DELETE;
-  u32 mask = 0;
+  ثابت صحيح op = pChanges ? TK_UPDATE : TK_DELETE;
+  u32 ماسک = 0;
   Trigger *p;
 
-  assert( isNew==1 || isNew==0 );
-  if( IsView(pTab) ){
-    return 0xffffffff;
+  أكد( isNew==1 || isNew==0 );
+  إذا( IsView(pTab) ){
+    أرجع 0xffffffff;
   }
-  for(p=pTrigger; p; p=p->pNext){
-    if( p->op==op
+  لكل(p=pTrigger; p; p=p->p_بل){
+    إذا( p->op==op
      && (tr_tm&p->tr_tm)
-     && checkColumnOverlap(p->pColumns,pChanges)
+     && check_ستنه_Overlap(p->pColumns,pChanges)
     ){
-      if( p->bReturning ){
-        mask = 0xffffffff;
-      }else{
+      إذا( p->bReturning ){
+        ماسک = 0xffffffff;
+      }وإلا{
         TriggerPrg *pPrg;
-        pPrg = getRowTrigger(pParse, p, pTab, orconf);
-        if( pPrg ){
-          mask |= pPrg->aColmask[isNew];
+        pPrg = get_لیکه_Trigger(pParse, p, pTab, orconf);
+        إذا( pPrg ){
+          ماسک |= pPrg->aColmask[isNew];
         }
       }
     }
   }
 
-  return mask;
+  أرجع ماسک;
 }
 
-#endif /* !defined(SQLITE_OMIT_TRIGGER) */
+#د_که_پای /* !defined(SQLITE_OMIT_TRIGGER) */

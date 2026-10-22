@@ -10,9 +10,9 @@
 **
 *************************************************************************
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#که_نه_تعریف_شوی SQLITE_OMIT_WINDOWFUNC
 
 /*
 ** SELECT REWRITING
@@ -144,29 +144,29 @@
 **
 **   ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 */
-static void row_numberStepFunc(
+ساكن فراغ لیکه_شمېره_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  i64 *p = (i64*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ) (*p)++;
-  UNUSED_PARAMETER(nArg);
-  UNUSED_PARAMETER(apArg);
+  i64 *p = (i64*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ) (*p)++;
+  ناکارول_شوی_PARAMETER(nArg);
+  ناکارول_شوی_PARAMETER(apArg);
 }
-static void row_numberValueFunc(sqlite3_context *pCtx){
-  i64 *p = (i64*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  sqlite3_result_int64(pCtx, (p ? *p : 0));
+ساكن فراغ لیکه_شمېره_ارزښت_Func(sqlite3_context *pCtx){
+  i64 *p = (i64*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  sqlite3_پایله_int64(pCtx, (p ? *p : 0));
 }
 
 /*
 ** Context object type used by rank(), dense_rank(), percent_rank() and
 ** cume_dist().
 */
-struct CallCount {
-  i64 nValue;
-  i64 nStep;
-  i64 nTotal;
+بنية Call_شمېر {
+  i64 n_ارزښت;
+  i64 n_ګام;
+  i64 n_ټول;
 };
 
 /*
@@ -175,26 +175,26 @@ struct CallCount {
 **
 **   RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 */
-static void dense_rankStepFunc(
+ساكن فراغ dense_rank_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ) p->nStep = 1;
-  UNUSED_PARAMETER(nArg);
-  UNUSED_PARAMETER(apArg);
+  بنية Call_شمېر *p;
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ) p->n_ګام = 1;
+  ناکارول_شوی_PARAMETER(nArg);
+  ناکارول_شوی_PARAMETER(apArg);
 }
-static void dense_rankValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    if( p->nStep ){
-      p->nValue++;
-      p->nStep = 0;
+ساكن فراغ dense_rank_ارزښت_Func(sqlite3_context *pCtx){
+  بنية Call_شمېر *p;
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    إذا( p->n_ګام ){
+      p->n_ارزښت++;
+      p->n_ګام = 0;
     }
-    sqlite3_result_int64(pCtx, p->nValue);
+    sqlite3_پایله_int64(pCtx, p->n_ارزښت);
   }
 }
 
@@ -203,90 +203,90 @@ static void dense_rankValueFunc(sqlite3_context *pCtx){
 ** implementation is used in "slow mode" only - when the EXCLUDE clause
 ** is not set to the default value "NO OTHERS".
 */
-struct NthValueCtx {
-  i64 nStep;
-  sqlite3_value *pValue;
+بنية Nth_ارزښت_Ctx {
+  i64 n_ګام;
+  sqlite3_ارزښت *p_ارزښت;
 };
-static void nth_valueStepFunc(
+ساكن فراغ nth_ارزښت_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
+  بنية Nth_ارزښت_Ctx *p;
+  p = (بنية Nth_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
     i64 iVal;
-    switch( sqlite3_value_numeric_type(apArg[1]) ){
-      case SQLITE_INTEGER:
-        iVal = sqlite3_value_int64(apArg[1]);
-        break;
-      case SQLITE_FLOAT: {
-        double fVal = sqlite3_value_double(apArg[1]);
-        if( sqlite3RealToI64(fVal)!=fVal ) goto error_out;
+    بدل( sqlite3_ارزښت_numeric_type(apArg[1]) ){
+      حالة SQLITE_INTEGER:
+        iVal = sqlite3_ارزښت_int64(apArg[1]);
+        اكسر;
+      حالة SQLITE_FLOAT: {
+        مزدوج fVal = sqlite3_ارزښت_double(apArg[1]);
+        إذا( sqlite3_Real_منزل_I64(fVal)!=fVal ) اذهب error_بهر;
         iVal = (i64)fVal;
-        break;
+        اكسر;
       }
-      default:
-        goto error_out;
+      افتراضي:
+        اذهب error_بهر;
     }
-    if( iVal<=0 ) goto error_out;
+    إذا( iVal<=0 ) اذهب error_بهر;
 
-    p->nStep++;
-    if( iVal==p->nStep ){
-      p->pValue = sqlite3_value_dup(apArg[0]);
-      if( !p->pValue ){
-        sqlite3_result_error_nomem(pCtx);
+    p->n_ګام++;
+    إذا( iVal==p->n_ګام ){
+      p->p_ارزښت = sqlite3_ارزښت_dup(apArg[0]);
+      إذا( !p->p_ارزښت ){
+        sqlite3_پایله_error_nomem(pCtx);
       }
     }
   }
-  UNUSED_PARAMETER(nArg);
-  UNUSED_PARAMETER(apArg);
-  return;
+  ناکارول_شوی_PARAMETER(nArg);
+  ناکارول_شوی_PARAMETER(apArg);
+  أرجع;
 
- error_out:
-  sqlite3_result_error(
+ error_بهر:
+  sqlite3_پایله_error(
       pCtx, "second argument to nth_value must be a positive integer", -1
   );
 }
-static void nth_valueFinalizeFunc(sqlite3_context *pCtx){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, 0);
-  if( p && p->pValue ){
-    sqlite3_result_value(pCtx, p->pValue);
-    sqlite3_value_free(p->pValue);
-    p->pValue = 0;
+ساكن فراغ nth_ارزښت_Finalize_Func(sqlite3_context *pCtx){
+  بنية Nth_ارزښت_Ctx *p;
+  p = (بنية Nth_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, 0);
+  إذا( p && p->p_ارزښت ){
+    sqlite3_پایله_ارزښت(pCtx, p->p_ارزښت);
+    sqlite3_ارزښت_free(p->p_ارزښت);
+    p->p_ارزښت = 0;
   }
 }
-#define nth_valueInvFunc noopStepFunc
-#define nth_valueValueFunc noopValueFunc
+#تعریف_کړه nth_ارزښت_Inv_Func noop_ګام_Func
+#تعریف_کړه nth_ارزښت_ارزښت_Func noop_ارزښت_Func
 
-static void first_valueStepFunc(
+ساكن فراغ لومړی_ارزښت_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p && p->pValue==0 ){
-    p->pValue = sqlite3_value_dup(apArg[0]);
-    if( !p->pValue ){
-      sqlite3_result_error_nomem(pCtx);
+  بنية Nth_ارزښت_Ctx *p;
+  p = (بنية Nth_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p && p->p_ارزښت==0 ){
+    p->p_ارزښت = sqlite3_ارزښت_dup(apArg[0]);
+    إذا( !p->p_ارزښت ){
+      sqlite3_پایله_error_nomem(pCtx);
     }
   }
-  UNUSED_PARAMETER(nArg);
-  UNUSED_PARAMETER(apArg);
+  ناکارول_شوی_PARAMETER(nArg);
+  ناکارول_شوی_PARAMETER(apArg);
 }
-static void first_valueFinalizeFunc(sqlite3_context *pCtx){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p && p->pValue ){
-    sqlite3_result_value(pCtx, p->pValue);
-    sqlite3_value_free(p->pValue);
-    p->pValue = 0;
+ساكن فراغ لومړی_ارزښت_Finalize_Func(sqlite3_context *pCtx){
+  بنية Nth_ارزښت_Ctx *p;
+  p = (بنية Nth_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p && p->p_ارزښت ){
+    sqlite3_پایله_ارزښت(pCtx, p->p_ارزښت);
+    sqlite3_ارزښت_free(p->p_ارزښت);
+    p->p_ارزښت = 0;
   }
 }
-#define first_valueInvFunc noopStepFunc
-#define first_valueValueFunc noopValueFunc
+#تعریف_کړه لومړی_ارزښت_Inv_Func noop_ګام_Func
+#تعریف_کړه لومړی_ارزښت_ارزښت_Func noop_ارزښت_Func
 
 /*
 ** Implementation of built-in window function rank(). Assumes that
@@ -294,28 +294,28 @@ static void first_valueFinalizeFunc(sqlite3_context *pCtx){
 **
 **   RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 */
-static void rankStepFunc(
+ساكن فراغ rank_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    p->nStep++;
-    if( p->nValue==0 ){
-      p->nValue = p->nStep;
+  بنية Call_شمېر *p;
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    p->n_ګام++;
+    إذا( p->n_ارزښت==0 ){
+      p->n_ارزښت = p->n_ګام;
     }
   }
-  UNUSED_PARAMETER(nArg);
-  UNUSED_PARAMETER(apArg);
+  ناکارول_شوی_PARAMETER(nArg);
+  ناکارول_شوی_PARAMETER(apArg);
 }
-static void rankValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    sqlite3_result_int64(pCtx, p->nValue);
-    p->nValue = 0;
+ساكن فراغ rank_ارزښت_Func(sqlite3_context *pCtx){
+  بنية Call_شمېر *p;
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    sqlite3_پایله_int64(pCtx, p->n_ارزښت);
+    p->n_ارزښت = 0;
   }
 }
 
@@ -325,45 +325,45 @@ static void rankValueFunc(sqlite3_context *pCtx){
 **
 **   GROUPS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
 */
-static void percent_rankStepFunc(
+ساكن فراغ percent_rank_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct CallCount *p;
-  UNUSED_PARAMETER(nArg); assert( nArg==0 );
-  UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    p->nTotal++;
+  بنية Call_شمېر *p;
+  ناکارول_شوی_PARAMETER(nArg); أكد( nArg==0 );
+  ناکارول_شوی_PARAMETER(apArg);
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    p->n_ټول++;
   }
 }
-static void percent_rankInvFunc(
+ساكن فراغ percent_rankInvFunc(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct CallCount *p;
-  UNUSED_PARAMETER(nArg); assert( nArg==0 );
-  UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  assert( p!=0 );
-  p->nStep++;
+  بنية Call_شمېر *p;
+  ناکارول_شوی_PARAMETER(nArg); أكد( nArg==0 );
+  ناکارول_شوی_PARAMETER(apArg);
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  أكد( p!=0 );
+  p->n_ګام++;
 }
-static void percent_rankValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    p->nValue = p->nStep;
-    if( p->nTotal>1 ){
-      double r = (double)p->nValue / (double)(p->nTotal-1);
-      sqlite3_result_double(pCtx, r);
-    }else{
-      sqlite3_result_double(pCtx, 0.0);
+ساكن فراغ percent_rank_ارزښت_Func(sqlite3_context *pCtx){
+  بنية Call_شمېر *p;
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    p->n_ارزښت = p->n_ګام;
+    إذا( p->n_ټول>1 ){
+      مزدوج r = (مزدوج)p->n_ارزښت / (مزدوج)(p->n_ټول-1);
+      sqlite3_پایله_double(pCtx, r);
+    }وإلا{
+      sqlite3_پایله_double(pCtx, 0.0);
     }
   }
 }
-#define percent_rankFinalizeFunc percent_rankValueFunc
+#تعریف_کړه percent_rankFinalizeFunc percent_rank_ارزښت_Func
 
 /*
 ** Implementation of built-in window function cume_dist(). Assumes that
@@ -371,48 +371,48 @@ static void percent_rankValueFunc(sqlite3_context *pCtx){
 **
 **   GROUPS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING
 */
-static void cume_distStepFunc(
+ساكن فراغ cume_dist_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct CallCount *p;
-  UNUSED_PARAMETER(nArg); assert( nArg==0 );
-  UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    p->nTotal++;
+  بنية Call_شمېر *p;
+  ناکارول_شوی_PARAMETER(nArg); أكد( nArg==0 );
+  ناکارول_شوی_PARAMETER(apArg);
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    p->n_ټول++;
   }
 }
-static void cume_distInvFunc(
+ساكن فراغ cume_distInvFunc(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct CallCount *p;
-  UNUSED_PARAMETER(nArg); assert( nArg==0 );
-  UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  assert( p!=0 );
-  p->nStep++;
+  بنية Call_شمېر *p;
+  ناکارول_شوی_PARAMETER(nArg); أكد( nArg==0 );
+  ناکارول_شوی_PARAMETER(apArg);
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  أكد( p!=0 );
+  p->n_ګام++;
 }
-static void cume_distValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, 0);
-  if( p ){
-    double r = (double)(p->nStep) / (double)(p->nTotal);
-    sqlite3_result_double(pCtx, r);
+ساكن فراغ cume_dist_ارزښت_Func(sqlite3_context *pCtx){
+  بنية Call_شمېر *p;
+  p = (بنية Call_شمېر*)sqlite3_aggregate_context(pCtx, 0);
+  إذا( p ){
+    مزدوج r = (مزدوج)(p->n_ګام) / (مزدوج)(p->n_ټول);
+    sqlite3_پایله_double(pCtx, r);
   }
 }
-#define cume_distFinalizeFunc cume_distValueFunc
+#تعریف_کړه cume_distFinalizeFunc cume_dist_ارزښت_Func
 
 /*
 ** Context object for ntile() window function.
 */
-struct NtileCtx {
-  i64 nTotal;                     /* Total rows in partition */
+بنية NtileCtx {
+  i64 n_ټول;                     /* Total rows in partition */
   i64 nParam;                     /* Parameter passed to ntile(N) */
-  i64 iRow;                       /* Current row */
+  i64 i_لیکه;                       /* Current row */
 };
 
 /*
@@ -421,121 +421,121 @@ struct NtileCtx {
 **
 **   ROWS CURRENT ROW AND UNBOUNDED FOLLOWING
 */
-static void ntileStepFunc(
+ساكن فراغ ntile_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct NtileCtx *p;
-  assert( nArg==1 ); UNUSED_PARAMETER(nArg);
-  p = (struct NtileCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    if( p->nTotal==0 ){
-      p->nParam = sqlite3_value_int64(apArg[0]);
-      if( p->nParam<=0 ){
-        sqlite3_result_error(
+  بنية NtileCtx *p;
+  أكد( nArg==1 ); ناکارول_شوی_PARAMETER(nArg);
+  p = (بنية NtileCtx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    إذا( p->n_ټول==0 ){
+      p->nParam = sqlite3_ارزښت_int64(apArg[0]);
+      إذا( p->nParam<=0 ){
+        sqlite3_پایله_error(
             pCtx, "argument of ntile must be a positive integer", -1
         );
       }
     }
-    p->nTotal++;
+    p->n_ټول++;
   }
 }
-static void ntileInvFunc(
+ساكن فراغ ntileInvFunc(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct NtileCtx *p;
-  assert( nArg==1 ); UNUSED_PARAMETER(nArg);
-  UNUSED_PARAMETER(apArg);
-  p = (struct NtileCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  assert( p!=0 );
-  p->iRow++;
+  بنية NtileCtx *p;
+  أكد( nArg==1 ); ناکارول_شوی_PARAMETER(nArg);
+  ناکارول_شوی_PARAMETER(apArg);
+  p = (بنية NtileCtx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  أكد( p!=0 );
+  p->i_لیکه++;
 }
-static void ntileValueFunc(sqlite3_context *pCtx){
-  struct NtileCtx *p;
-  p = (struct NtileCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p && p->nParam>0 ){
-    int nSize = (p->nTotal / p->nParam);
-    if( nSize==0 ){
-      sqlite3_result_int64(pCtx, p->iRow+1);
-    }else{
-      i64 nLarge = p->nTotal - p->nParam*nSize;
-      i64 iSmall = nLarge*(nSize+1);
-      i64 iRow = p->iRow;
+ساكن فراغ ntile_ارزښت_Func(sqlite3_context *pCtx){
+  بنية NtileCtx *p;
+  p = (بنية NtileCtx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p && p->nParam>0 ){
+    صحيح n_اندازه = (p->n_ټول / p->nParam);
+    إذا( n_اندازه==0 ){
+      sqlite3_پایله_int64(pCtx, p->i_لیکه+1);
+    }وإلا{
+      i64 nLarge = p->n_ټول - p->nParam*n_اندازه;
+      i64 iSmall = nLarge*(n_اندازه+1);
+      i64 i_لیکه = p->i_لیکه;
 
-      assert( (nLarge*(nSize+1) + (p->nParam-nLarge)*nSize)==p->nTotal );
+      أكد( (nLarge*(n_اندازه+1) + (p->nParam-nLarge)*n_اندازه)==p->n_ټول );
 
-      if( iRow<iSmall ){
-        sqlite3_result_int64(pCtx, 1 + iRow/(nSize+1));
-      }else{
-        sqlite3_result_int64(pCtx, 1 + nLarge + (iRow-iSmall)/nSize);
+      إذا( i_لیکه<iSmall ){
+        sqlite3_پایله_int64(pCtx, 1 + i_لیکه/(n_اندازه+1));
+      }وإلا{
+        sqlite3_پایله_int64(pCtx, 1 + nLarge + (i_لیکه-iSmall)/n_اندازه);
       }
     }
   }
 }
-#define ntileFinalizeFunc ntileValueFunc
+#تعریف_کړه ntileFinalizeFunc ntile_ارزښت_Func
 
 /*
 ** Context object for last_value() window function.
 */
-struct LastValueCtx {
-  sqlite3_value *pVal;
-  int nVal;
+بنية وروستی_ارزښت_Ctx {
+  sqlite3_ارزښت *pVal;
+  صحيح nVal;
 };
 
 /*
 ** Implementation of last_value().
 */
-static void last_valueStepFunc(
+ساكن فراغ وروستی_ارزښت_ګام_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct LastValueCtx *p;
-  UNUSED_PARAMETER(nArg);
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p ){
-    sqlite3_value_free(p->pVal);
-    p->pVal = sqlite3_value_dup(apArg[0]);
-    if( p->pVal==0 ){
-      sqlite3_result_error_nomem(pCtx);
-    }else{
+  بنية وروستی_ارزښت_Ctx *p;
+  ناکارول_شوی_PARAMETER(nArg);
+  p = (بنية وروستی_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p ){
+    sqlite3_ارزښت_free(p->pVal);
+    p->pVal = sqlite3_ارزښت_dup(apArg[0]);
+    إذا( p->pVal==0 ){
+      sqlite3_پایله_error_nomem(pCtx);
+    }وإلا{
       p->nVal++;
     }
   }
 }
-static void last_valueInvFunc(
+ساكن فراغ وروستی_ارزښت_Inv_Func(
   sqlite3_context *pCtx,
-  int nArg,
-  sqlite3_value **apArg
+  صحيح nArg,
+  sqlite3_ارزښت **apArg
 ){
-  struct LastValueCtx *p;
-  UNUSED_PARAMETER(nArg);
-  UNUSED_PARAMETER(apArg);
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( ALWAYS(p) ){
+  بنية وروستی_ارزښت_Ctx *p;
+  ناکارول_شوی_PARAMETER(nArg);
+  ناکارول_شوی_PARAMETER(apArg);
+  p = (بنية وروستی_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( ALWAYS(p) ){
     p->nVal--;
-    if( p->nVal==0 ){
-      sqlite3_value_free(p->pVal);
+    إذا( p->nVal==0 ){
+      sqlite3_ارزښت_free(p->pVal);
       p->pVal = 0;
     }
   }
 }
-static void last_valueValueFunc(sqlite3_context *pCtx){
-  struct LastValueCtx *p;
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, 0);
-  if( p && p->pVal ){
-    sqlite3_result_value(pCtx, p->pVal);
+ساكن فراغ وروستی_ارزښت_ارزښت_Func(sqlite3_context *pCtx){
+  بنية وروستی_ارزښت_Ctx *p;
+  p = (بنية وروستی_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, 0);
+  إذا( p && p->pVal ){
+    sqlite3_پایله_ارزښت(pCtx, p->pVal);
   }
 }
-static void last_valueFinalizeFunc(sqlite3_context *pCtx){
-  struct LastValueCtx *p;
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p && p->pVal ){
-    sqlite3_result_value(pCtx, p->pVal);
-    sqlite3_value_free(p->pVal);
+ساكن فراغ وروستی_ارزښت_Finalize_Func(sqlite3_context *pCtx){
+  بنية وروستی_ارزښت_Ctx *p;
+  p = (بنية وروستی_ارزښت_Ctx*)sqlite3_aggregate_context(pCtx, حجم(*p));
+  إذا( p && p->pVal ){
+    sqlite3_پایله_ارزښت(pCtx, p->pVal);
+    sqlite3_ارزښت_free(p->pVal);
     p->pVal = 0;
   }
 }
@@ -548,17 +548,17 @@ static void last_valueFinalizeFunc(sqlite3_context *pCtx){
 **
 **       if( pFuncDef->zName==row_valueName ){ ... }
 */
-static const char row_numberName[] =   "row_number";
-static const char dense_rankName[] =   "dense_rank";
-static const char rankName[] =         "rank";
-static const char percent_rankName[] = "percent_rank";
-static const char cume_distName[] =    "cume_dist";
-static const char ntileName[] =        "ntile";
-static const char last_valueName[] =   "last_value";
-static const char nth_valueName[] =    "nth_value";
-static const char first_valueName[] =  "first_value";
-static const char leadName[] =         "lead";
-static const char lagName[] =          "lag";
+ساكن ثابت حرف لیکه_شمېره_Name[] =   "row_number";
+ساكن ثابت حرف dense_rankName[] =   "dense_rank";
+ساكن ثابت حرف rankName[] =         "rank";
+ساكن ثابت حرف percent_rankName[] = "percent_rank";
+ساكن ثابت حرف cume_distName[] =    "cume_dist";
+ساكن ثابت حرف ntileName[] =        "ntile";
+ساكن ثابت حرف وروستی_ارزښت_Name[] =   "last_value";
+ساكن ثابت حرف nth_ارزښت_Name[] =    "nth_value";
+ساكن ثابت حرف لومړی_ارزښت_Name[] =  "first_value";
+ساكن ثابت حرف leadName[] =         "lead";
+ساكن ثابت حرف lagName[] =          "lag";
 
 /*
 ** No-op implementations of xStep() and xFinalize().  Used as place-holders
@@ -569,58 +569,58 @@ static const char lagName[] =          "lag";
 ** let the test coverage routine know not to expect this function to be
 ** invoked.
 */
-static void noopStepFunc(    /*NO_TEST*/
+ساكن فراغ noop_ګام_Func(    /*NO_TEST*/
   sqlite3_context *p,        /*NO_TEST*/
-  int n,                     /*NO_TEST*/
-  sqlite3_value **a          /*NO_TEST*/
+  صحيح n,                     /*NO_TEST*/
+  sqlite3_ارزښت **a          /*NO_TEST*/
 ){                           /*NO_TEST*/
-  UNUSED_PARAMETER(p);       /*NO_TEST*/
-  UNUSED_PARAMETER(n);       /*NO_TEST*/
-  UNUSED_PARAMETER(a);       /*NO_TEST*/
-  assert(0);                 /*NO_TEST*/
+  ناکارول_شوی_PARAMETER(p);       /*NO_TEST*/
+  ناکارول_شوی_PARAMETER(n);       /*NO_TEST*/
+  ناکارول_شوی_PARAMETER(a);       /*NO_TEST*/
+  أكد(0);                 /*NO_TEST*/
 }                            /*NO_TEST*/
-static void noopValueFunc(sqlite3_context *p){ UNUSED_PARAMETER(p); /*no-op*/ }
+ساكن فراغ noop_ارزښت_Func(sqlite3_context *p){ ناکارول_شوی_PARAMETER(p); /*no-op*/ }
 
 /* Window functions that use all window interfaces: xStep, xFinal,
 ** xValue, and xInverse */
-#define WINDOWFUNCALL(name,nArg,extra) {                                   \
-  nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_WINDOW|extra), 0, 0,  \
-  name ## StepFunc, name ## FinalizeFunc, name ## ValueFunc,               \
+#تعریف_کړه WINDOWFUNCALL(name,nArg,extra) {                                   \
+  nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_کړکۍ|extra), 0, 0,  \
+  name ## ګام_Func, name ## FinalizeFunc, name ## ارزښت_Func,               \
   name ## InvFunc, name ## Name, {0}                                       \
 }
 
 /* Window functions that are implemented using bytecode and thus have
 ** no-op routines for their methods */
-#define WINDOWFUNCNOOP(name,nArg,extra) {                                  \
-  nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_WINDOW|extra), 0, 0,  \
-  noopStepFunc, noopValueFunc, noopValueFunc,                              \
-  noopStepFunc, name ## Name, {0}                                          \
+#تعریف_کړه WINDOWFUNCNOOP(name,nArg,extra) {                                  \
+  nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_کړکۍ|extra), 0, 0,  \
+  noop_ګام_Func, noop_ارزښت_Func, noop_ارزښت_Func,                              \
+  noop_ګام_Func, name ## Name, {0}                                          \
 }
 
 /* Window functions that use all window interfaces: xStep, the
 ** same routine for xFinalize and xValue and which never call
 ** xInverse. */
-#define WINDOWFUNCX(name,nArg,extra) {                                     \
-  nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_WINDOW|extra), 0, 0,  \
-  name ## StepFunc, name ## ValueFunc, name ## ValueFunc,                  \
-  noopStepFunc, name ## Name, {0}                                          \
+#تعریف_کړه WINDOWFUNCX(name,nArg,extra) {                                     \
+  nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_کړکۍ|extra), 0, 0,  \
+  name ## ګام_Func, name ## ارزښت_Func, name ## ارزښت_Func,                  \
+  noop_ګام_Func, name ## Name, {0}                                          \
 }
 
 
 /*
 ** Register those built-in window functions that are not also aggregates.
 */
-void sqlite3WindowFunctions(void){
-  static FuncDef aWindowFuncs[] = {
-    WINDOWFUNCX(row_number, 0, 0),
+فراغ sqlite3_کړکۍ_Functions(فراغ){
+  ساكن FuncDef a_کړکۍ_Funcs[] = {
+    WINDOWFUNCX(لیکه_شمېره, 0, 0),
     WINDOWFUNCX(dense_rank, 0, 0),
     WINDOWFUNCX(rank, 0, 0),
     WINDOWFUNCALL(percent_rank, 0, 0),
     WINDOWFUNCALL(cume_dist, 0, 0),
     WINDOWFUNCALL(ntile, 1, 0),
-    WINDOWFUNCALL(last_value, 1, 0),
-    WINDOWFUNCALL(nth_value, 2, 0),
-    WINDOWFUNCALL(first_value, 1, 0),
+    WINDOWFUNCALL(وروستی_ارزښت, 1, 0),
+    WINDOWFUNCALL(nth_ارزښت, 2, 0),
+    WINDOWFUNCALL(لومړی_ارزښت, 1, 0),
     WINDOWFUNCNOOP(lead, 1, 0),
     WINDOWFUNCNOOP(lead, 2, 0),
     WINDOWFUNCNOOP(lead, 3, 0),
@@ -628,18 +628,18 @@ void sqlite3WindowFunctions(void){
     WINDOWFUNCNOOP(lag, 2, 0),
     WINDOWFUNCNOOP(lag, 3, 0),
   };
-  sqlite3InsertBuiltinFuncs(aWindowFuncs, ArraySize(aWindowFuncs));
+  sqlite3_ورننباسه_Builtin_Funcs(a_کړکۍ_Funcs, Array_اندازه(a_کړکۍ_Funcs));
 }
 
-static Window *windowFind(Parse *pParse, Window *pList, const char *zName){
-  Window *p;
-  for(p=pList; p; p=p->pNextWin){
-    if( sqlite3StrICmp(p->zName, zName)==0 ) break;
+ساكن کړکۍ *کړکۍ_پیدا_کړه(Parse *pParse, کړکۍ *pList, ثابت حرف *zName){
+  کړکۍ *p;
+  لكل(p=pList; p; p=p->p_بل_Win){
+    إذا( sqlite3StrICmp(p->zName, zName)==0 ) اكسر;
   }
-  if( p==0 ){
-    sqlite3ErrorMsg(pParse, "no such window: %s", zName);
+  إذا( p==0 ){
+    sqlite3_Error_پیغام(pParse, "no such window: %s", zName);
   }
-  return p;
+  أرجع p;
 }
 
 /*
@@ -659,70 +659,70 @@ static Window *windowFind(Parse *pParse, Window *pList, const char *zName){
 **     window to be coerced (see "BUILT-IN WINDOW FUNCTIONS" at the top
 **     of this file), pWin is updated here.
 */
-void sqlite3WindowUpdate(
+فراغ sqlite3_کړکۍ_Update(
   Parse *pParse,
-  Window *pList,                  /* List of named windows for this SELECT */
-  Window *pWin,                   /* Window frame to update */
+  کړکۍ *pList,                  /* List of named windows for this SELECT */
+  کړکۍ *pWin,                   /* Window frame to update */
   FuncDef *pFunc                  /* Window function definition */
 ){
-  if( pWin->zName && pWin->eFrmType==0 ){
-    Window *p = windowFind(pParse, pList, pWin->zName);
-    if( p==0 ) return;
-    pWin->pPartition = sqlite3ExprListDup(pParse->db, p->pPartition, 0);
-    pWin->pOrderBy = sqlite3ExprListDup(pParse->db, p->pOrderBy, 0);
-    pWin->pStart = sqlite3ExprDup(pParse->db, p->pStart, 0);
-    pWin->pEnd = sqlite3ExprDup(pParse->db, p->pEnd, 0);
-    pWin->eStart = p->eStart;
-    pWin->eEnd = p->eEnd;
+  إذا( pWin->zName && pWin->eFrmType==0 ){
+    کړکۍ *p = کړکۍ_پیدا_کړه(pParse, pList, pWin->zName);
+    إذا( p==0 ) أرجع;
+    pWin->p_برخه_کول = sqlite3_بیان_List_Dup(pParse->db, p->p_برخه_کول, 0);
+    pWin->p_ترتیب_By = sqlite3_بیان_List_Dup(pParse->db, p->p_ترتیب_By, 0);
+    pWin->p_پیل = sqlite3_بیان_Dup(pParse->db, p->p_پیل, 0);
+    pWin->p_پای_ټکی = sqlite3_بیان_Dup(pParse->db, p->p_پای_ټکی, 0);
+    pWin->e_پیل = p->e_پیل;
+    pWin->e_پای_ټکی = p->e_پای_ټکی;
     pWin->eFrmType = p->eFrmType;
     pWin->eExclude = p->eExclude;
-  }else{
-    sqlite3WindowChain(pParse, pWin, pList);
+  }وإلا{
+    sqlite3_کړکۍ_Chain(pParse, pWin, pList);
   }
-  if( (pWin->eFrmType==TK_RANGE)
-   && (pWin->pStart || pWin->pEnd)
-   && (pWin->pOrderBy==0 || pWin->pOrderBy->nExpr!=1)
+  إذا( (pWin->eFrmType==TK_RANGE)
+   && (pWin->p_پیل || pWin->p_پای_ټکی)
+   && (pWin->p_ترتیب_By==0 || pWin->p_ترتیب_By->n_بیان!=1)
   ){
-    sqlite3ErrorMsg(pParse,
+    sqlite3_Error_پیغام(pParse,
       "RANGE with offset PRECEDING/FOLLOWING requires one ORDER BY expression"
     );
-  }else
-  if( pFunc->funcFlags & SQLITE_FUNC_WINDOW ){
+  }وإلا
+  إذا( pFunc->funcFlags & SQLITE_FUNC_کړکۍ ){
     sqlite3 *db = pParse->db;
-    if( pWin->pFilter ){
-      sqlite3ErrorMsg(pParse,
+    إذا( pWin->pFilter ){
+      sqlite3_Error_پیغام(pParse,
           "FILTER clause may only be used with aggregate window functions"
       );
-    }else{
-      struct WindowUpdate {
-        const char *zFunc;
-        int eFrmType;
-        int eStart;
-        int eEnd;
-      } aUp[] = {
-        { row_numberName,   TK_ROWS,   TK_UNBOUNDED, TK_CURRENT },
+    }وإلا{
+      بنية کړکۍ_Update {
+        ثابت حرف *zFunc;
+        صحيح eFrmType;
+        صحيح e_پیل;
+        صحيح e_پای_ټکی;
+      } a_پورته[] = {
+        { لیکه_شمېره_Name,   TK_لیکې,   TK_UNBOUNDED, TK_CURRENT },
         { dense_rankName,   TK_RANGE,  TK_UNBOUNDED, TK_CURRENT },
         { rankName,         TK_RANGE,  TK_UNBOUNDED, TK_CURRENT },
         { percent_rankName, TK_GROUPS, TK_CURRENT,   TK_UNBOUNDED },
         { cume_distName,    TK_GROUPS, TK_FOLLOWING, TK_UNBOUNDED },
-        { ntileName,        TK_ROWS,   TK_CURRENT,   TK_UNBOUNDED },
-        { leadName,         TK_ROWS,   TK_UNBOUNDED, TK_UNBOUNDED },
-        { lagName,          TK_ROWS,   TK_UNBOUNDED, TK_CURRENT },
+        { ntileName,        TK_لیکې,   TK_CURRENT,   TK_UNBOUNDED },
+        { leadName,         TK_لیکې,   TK_UNBOUNDED, TK_UNBOUNDED },
+        { lagName,          TK_لیکې,   TK_UNBOUNDED, TK_CURRENT },
       };
-      int i;
-      for(i=0; i<ArraySize(aUp); i++){
-        if( pFunc->zName==aUp[i].zFunc ){
-          sqlite3ExprDelete(db, pWin->pStart);
-          sqlite3ExprDelete(db, pWin->pEnd);
-          pWin->pEnd = pWin->pStart = 0;
-          pWin->eFrmType = aUp[i].eFrmType;
-          pWin->eStart = aUp[i].eStart;
-          pWin->eEnd = aUp[i].eEnd;
+      صحيح i;
+      لكل(i=0; i<Array_اندازه(a_پورته); i++){
+        إذا( pFunc->zName==a_پورته[i].zFunc ){
+          sqlite3_بیان_Delete(db, pWin->p_پیل);
+          sqlite3_بیان_Delete(db, pWin->p_پای_ټکی);
+          pWin->p_پای_ټکی = pWin->p_پیل = 0;
+          pWin->eFrmType = a_پورته[i].eFrmType;
+          pWin->e_پیل = a_پورته[i].e_پیل;
+          pWin->e_پای_ټکی = a_پورته[i].e_پای_ټکی;
           pWin->eExclude = 0;
-          if( pWin->eStart==TK_FOLLOWING ){
-            pWin->pStart = sqlite3ExprInt32(db, 1);
+          إذا( pWin->e_پیل==TK_FOLLOWING ){
+            pWin->p_پیل = sqlite3_بیان_Int32(db, 1);
           }
-          break;
+          اكسر;
         }
       }
     }
@@ -734,12 +734,12 @@ void sqlite3WindowUpdate(
 ** Context object passed through sqlite3WalkExprList() to
 ** selectWindowRewriteExprCb() by selectWindowRewriteEList().
 */
-typedef struct WindowRewrite WindowRewrite;
-struct WindowRewrite {
-  Window *pWin;
+تعريفنوع بنية کړکۍ_Rewrite کړکۍ_Rewrite;
+بنية کړکۍ_Rewrite {
+  کړکۍ *pWin;
   SrcList *pSrc;
-  ExprList *pSub;
-  Table *pTab;
+  بیان_List *pSub;
+  جدول *pTab;
   Select *pSubSelect;             /* Current sub-select, if any */
 };
 
@@ -748,110 +748,110 @@ struct WindowRewrite {
 ** this function appends to the output expression-list and updates
 ** expression (*ppExpr) in place.
 */
-static int selectWindowRewriteExprCb(Walker *pWalker, Expr *pExpr){
-  struct WindowRewrite *p = pWalker->u.pRewrite;
+ساكن صحيح select_کړکۍ_Rewrite_بیان_Cb(Walker *pWalker, بیان *p_بیان){
+  بنية کړکۍ_Rewrite *p = pWalker->u.pRewrite;
   Parse *pParse = pWalker->pParse;
-  assert( p!=0 );
-  assert( p->pWin!=0 );
+  أكد( p!=0 );
+  أكد( p->pWin!=0 );
 
   /* If this function is being called from within a scalar sub-select
   ** that used by the SELECT statement being processed, only process
   ** TK_COLUMN and TK_AGGREGATE expressions that refer to it (the outer
   ** SELECT). Do not process window functions at all, as they belong to the
   ** scalar sub-select.  */
-  if( p->pSubSelect ){
-    if( pExpr->op==TK_AGG_FUNCTION ){
+  إذا( p->pSubSelect ){
+    إذا( p_بیان->op==TK_AGG_FUNCTION ){
       /* If op2==walkerDepth, then this expression aggregates over the rows
       ** of the SELECT being processed, even though it is within a scalar
       ** sub-select. In that case proceed, otherwise skip this node. */
-      if( pExpr->op2!=pWalker->walkerDepth ) return WRC_Continue;
-    }else if( pExpr->op!=TK_COLUMN ){
-      return WRC_Continue;
-    }else{
-      int nSrc = p->pSrc->nSrc;
-      int i;
-      for(i=0; i<nSrc; i++){
-        if( pExpr->iTable==p->pSrc->a[i].iCursor ) break;
+      إذا( p_بیان->op2!=pWalker->walker_ژوروالی ) أرجع WRC_Continue;
+    }وإلا إذا( p_بیان->op!=TK_ستنه ){
+      أرجع WRC_Continue;
+    }وإلا{
+      صحيح nSrc = p->pSrc->nSrc;
+      صحيح i;
+      لكل(i=0; i<nSrc; i++){
+        إذا( p_بیان->i_جدول==p->pSrc->a[i].iCursor ) اكسر;
       }
-      if( i==nSrc ) return WRC_Continue;
+      إذا( i==nSrc ) أرجع WRC_Continue;
     }
   }
 
-  switch( pExpr->op ){
+  بدل( p_بیان->op ){
 
-    case TK_FUNCTION:
-      if( !ExprHasProperty(pExpr, EP_WinFunc) ){
-        break;
-      }else{
-        Window *pWin;
-        for(pWin=p->pWin; pWin; pWin=pWin->pNextWin){
-          if( pExpr->y.pWin==pWin ){
-            assert( pWin->pOwner==pExpr );
-            return WRC_Prune;
+    حالة TK_FUNCTION:
+      إذا( !بیان_Has_Property(p_بیان, EP_WinFunc) ){
+        اكسر;
+      }وإلا{
+        کړکۍ *pWin;
+        لكل(pWin=p->pWin; pWin; pWin=pWin->p_بل_Win){
+          إذا( p_بیان->y.pWin==pWin ){
+            أكد( pWin->pOwner==p_بیان );
+            أرجع WRC_Prune;
           }
         }
       }
       /* no break */ deliberate_fall_through
 
-    case TK_IF_NULL_ROW:
-    case TK_AGG_FUNCTION:
-    case TK_COLUMN: {
-      int iCol = -1;
-      if( pParse->db->mallocFailed ) return WRC_Abort;
-      if( p->pSub ){
-        int i;
-        for(i=0; i<p->pSub->nExpr; i++){
-          if( 0==sqlite3ExprCompare(0, p->pSub->a[i].pExpr, pExpr, -1) ){
-            iCol = i;
-            break;
+    حالة TK_IF_NULL_لیکه:
+    حالة TK_AGG_FUNCTION:
+    حالة TK_ستنه: {
+      صحيح i_ستون = -1;
+      إذا( pParse->db->mallocFailed ) أرجع WRC_Abort;
+      إذا( p->pSub ){
+        صحيح i;
+        لكل(i=0; i<p->pSub->n_بیان; i++){
+          إذا( 0==sqlite3_بیان_Compare(0, p->pSub->a[i].p_بیان, p_بیان, -1) ){
+            i_ستون = i;
+            اكسر;
           }
         }
       }
-      if( iCol<0 ){
-        Expr *pDup = sqlite3ExprDup(pParse->db, pExpr, 0);
-        if( pDup && pDup->op==TK_AGG_FUNCTION ) pDup->op = TK_FUNCTION;
-        p->pSub = sqlite3ExprListAppend(pParse, p->pSub, pDup);
+      إذا( i_ستون<0 ){
+        بیان *pDup = sqlite3_بیان_Dup(pParse->db, p_بیان, 0);
+        إذا( pDup && pDup->op==TK_AGG_FUNCTION ) pDup->op = TK_FUNCTION;
+        p->pSub = sqlite3_بیان_List_Append(pParse, p->pSub, pDup);
       }
-      if( p->pSub ){
-        int f = pExpr->flags & (EP_Collate|EP_OuterON|EP_InnerON);
-        int iJoin = pExpr->w.iJoin;
+      إذا( p->pSub ){
+        صحيح f = p_بیان->flags & (EP_Collate|EP_OuterON|EP_InnerON);
+        صحيح iJoin = p_بیان->w.iJoin;
 
-        assert( ExprHasProperty(pExpr, EP_Static)==0 );
-        ExprSetProperty(pExpr, EP_Static);
-        sqlite3ExprDelete(pParse->db, pExpr);
-        ExprClearProperty(pExpr, EP_Static);
-        memset(pExpr, 0, sizeof(Expr));
+        أكد( بیان_Has_Property(p_بیان, EP_Static)==0 );
+        بیان_سېټ_Property(p_بیان, EP_Static);
+        sqlite3_بیان_Delete(pParse->db, p_بیان);
+        بیان_Clear_Property(p_بیان, EP_Static);
+        memset(p_بیان, 0, حجم(بیان));
 
-        pExpr->op = TK_COLUMN;
-        pExpr->iColumn = (iCol<0 ? p->pSub->nExpr-1: iCol);
-        pExpr->iTable = p->pWin->iEphCsr;
-        pExpr->y.pTab = p->pTab;
-        pExpr->flags = f;
-        if( (f & (EP_OuterON|EP_InnerON)) ) pExpr->w.iJoin = iJoin;
+        p_بیان->op = TK_ستنه;
+        p_بیان->i_ستنه = (i_ستون<0 ? p->pSub->n_بیان-1: i_ستون);
+        p_بیان->i_جدول = p->pWin->iEphCsr;
+        p_بیان->y.pTab = p->pTab;
+        p_بیان->flags = f;
+        إذا( (f & (EP_OuterON|EP_InnerON)) ) p_بیان->w.iJoin = iJoin;
       }
-      if( pParse->db->mallocFailed ) return WRC_Abort;
-      break;
+      إذا( pParse->db->mallocFailed ) أرجع WRC_Abort;
+      اكسر;
     }
 
-    default: /* no-op */
-      break;
+    افتراضي: /* no-op */
+      اكسر;
   }
 
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
-static int selectWindowRewriteSelectCb(Walker *pWalker, Select *pSelect){
-  struct WindowRewrite *p = pWalker->u.pRewrite;
+ساكن صحيح select_کړکۍ_Rewrite_Select_Cb(Walker *pWalker, Select *pSelect){
+  بنية کړکۍ_Rewrite *p = pWalker->u.pRewrite;
   Select *pSave = p->pSubSelect;
-  if( pSave==pSelect ){
-    return WRC_Continue;
-  }else{
+  إذا( pSave==pSelect ){
+    أرجع WRC_Continue;
+  }وإلا{
     p->pSubSelect = pSelect;
-    pWalker->walkerDepth++;
+    pWalker->walker_ژوروالی++;
     sqlite3WalkSelect(pWalker, pSelect);
-    pWalker->walkerDepth--;
+    pWalker->walker_ژوروالی--;
     p->pSubSelect = pSave;
   }
-  return WRC_Prune;
+  أرجع WRC_Prune;
 }
 
 
@@ -868,20 +868,20 @@ static int selectWindowRewriteSelectCb(Walker *pWalker, Select *pSelect){
 ** pWin->iEphCsr, where N is the number of elements in (*ppSub) after
 ** appending the new one.
 */
-static void selectWindowRewriteEList(
+ساكن فراغ select_کړکۍ_Rewrite_EList(
   Parse *pParse,
-  Window *pWin,
+  کړکۍ *pWin,
   SrcList *pSrc,
-  ExprList *pEList,               /* Rewrite expressions in this list */
-  Table *pTab,
-  ExprList **ppSub                /* IN/OUT: Sub-select expression-list */
+  بیان_List *pEList,               /* Rewrite expressions in this list */
+  جدول *pTab,
+  بیان_List **ppSub                /* IN/OUT: Sub-select expression-list */
 ){
   Walker sWalker;
-  WindowRewrite sRewrite;
+  کړکۍ_Rewrite sRewrite;
 
-  assert( pWin!=0 );
-  memset(&sWalker, 0, sizeof(Walker));
-  memset(&sRewrite, 0, sizeof(WindowRewrite));
+  أكد( pWin!=0 );
+  memset(&sWalker, 0, حجم(Walker));
+  memset(&sRewrite, 0, حجم(کړکۍ_Rewrite));
 
   sRewrite.pSub = *ppSub;
   sRewrite.pWin = pWin;
@@ -889,11 +889,11 @@ static void selectWindowRewriteEList(
   sRewrite.pTab = pTab;
 
   sWalker.pParse = pParse;
-  sWalker.xExprCallback = selectWindowRewriteExprCb;
-  sWalker.xSelectCallback = selectWindowRewriteSelectCb;
+  sWalker.x_بیان_Callback = select_کړکۍ_Rewrite_بیان_Cb;
+  sWalker.xSelectCallback = select_کړکۍ_Rewrite_Select_Cb;
   sWalker.u.pRewrite = &sRewrite;
 
-  (void)sqlite3WalkExprList(&sWalker, pEList);
+  (فراغ)sqlite3_Walk_بیان_List(&sWalker, pEList);
 
   *ppSub = sRewrite.pSub;
 }
@@ -902,37 +902,37 @@ static void selectWindowRewriteEList(
 ** Append a copy of each expression in expression-list pAppend to
 ** expression list pList. Return a pointer to the result list.
 */
-static ExprList *exprListAppendList(
+ساكن بیان_List *بیان_List_Append_List(
   Parse *pParse,          /* Parsing context */
-  ExprList *pList,        /* List to which to append. Might be NULL */
-  ExprList *pAppend,      /* List of values to append. Might be NULL */
-  int bIntToNull
+  بیان_List *pList,        /* List to which to append. Might be NULL */
+  بیان_List *pAppend,      /* List of values to append. Might be NULL */
+  صحيح b_Int_منزل_Null
 ){
-  if( pAppend ){
-    int i;
-    int nInit = pList ? pList->nExpr : 0;
-    for(i=0; i<pAppend->nExpr; i++){
+  إذا( pAppend ){
+    صحيح i;
+    صحيح nInit = pList ? pList->n_بیان : 0;
+    لكل(i=0; i<pAppend->n_بیان; i++){
       sqlite3 *db = pParse->db;
-      Expr *pDup = sqlite3ExprDup(db, pAppend->a[i].pExpr, 0);
-      if( db->mallocFailed ){
-        sqlite3ExprDelete(db, pDup);
-        break;
+      بیان *pDup = sqlite3_بیان_Dup(db, pAppend->a[i].p_بیان, 0);
+      إذا( db->mallocFailed ){
+        sqlite3_بیان_Delete(db, pDup);
+        اكسر;
       }
-      if( bIntToNull ){
-        int iDummy;
-        Expr *pSub;
-        pSub = sqlite3ExprSkipCollateAndLikely(pDup);
-        if( sqlite3ExprIsInteger(pSub, &iDummy, 0, 0) ){
+      إذا( b_Int_منزل_Null ){
+        صحيح iDummy;
+        بیان *pSub;
+        pSub = sqlite3_بیان_Skip_Collate_And_Likely(pDup);
+        إذا( sqlite3_بیان_Is_Integer(pSub, &iDummy, 0, 0) ){
           pSub->op = TK_NULL;
-          pSub->flags &= ~(EP_IntValue|EP_IsTrue|EP_IsFalse);
+          pSub->flags &= ~(EP_Int_ارزښت|EP_IsTrue|EP_IsFalse);
           pSub->u.zToken = 0;
         }
       }
-      pList = sqlite3ExprListAppend(pParse, pList, pDup);
-      if( pList ) pList->a[nInit+i].fg.sortFlags = pAppend->a[i].fg.sortFlags;
+      pList = sqlite3_بیان_List_Append(pParse, pList, pDup);
+      إذا( pList ) pList->a[nInit+i].fg.ترتیبول_Flags = pAppend->a[i].fg.ترتیبول_Flags;
     }
   }
-  return pList;
+  أرجع pList;
 }
 
 /*
@@ -943,29 +943,29 @@ static ExprList *exprListAppendList(
 **
 ** See also the incrAggDepth() routine in resolve.c
 */
-static int sqlite3WindowExtraAggFuncDepth(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_AGG_FUNCTION
-   && pExpr->op2>=pWalker->walkerDepth
+ساكن صحيح sqlite3_کړکۍ_Extra_Agg_Func_ژوروالی(Walker *pWalker, بیان *p_بیان){
+  إذا( p_بیان->op==TK_AGG_FUNCTION
+   && p_بیان->op2>=pWalker->walker_ژوروالی
   ){
-    pExpr->op2++;
+    p_بیان->op2++;
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
 ** Walker callback used to detect aggregate functions in the ORDER BY
 ** clause of an otherwise non-aggregate SELECT. 
 */
-static int disallowAggregatesInOrderByCb(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_AGG_FUNCTION
-   && pExpr->pAggInfo==0
-   && pExpr->op2==pWalker->walkerDepth
+ساكن صحيح disallow_Aggregates_دننه_ترتیب_By_Cb(Walker *pWalker, بیان *p_بیان){
+  إذا( p_بیان->op==TK_AGG_FUNCTION
+   && p_بیان->pAggInfo==0
+   && p_بیان->op2==pWalker->walker_ژوروالی
   ){
-    assert( !ExprHasProperty(pExpr, EP_IntValue) );
-     sqlite3ErrorMsg(pWalker->pParse,
-         "misuse of aggregate: %s()", pExpr->u.zToken);
+    أكد( !بیان_Has_Property(p_بیان, EP_Int_ارزښت) );
+     sqlite3_Error_پیغام(pWalker->pParse,
+         "misuse of aggregate: %s()", p_بیان->u.zToken);
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
@@ -975,47 +975,47 @@ static int disallowAggregatesInOrderByCb(Walker *pWalker, Expr *pExpr){
 ** are invoked in the correct order as described under "SELECT REWRITING"
 ** at the top of this file.
 */
-int sqlite3WindowRewrite(Parse *pParse, Select *p){
-  int rc = SQLITE_OK;
-  if( p->pWin
-   && p->pPrior==0
+صحيح sqlite3_کړکۍ_Rewrite(Parse *pParse, Select *p){
+  صحيح rc = SQLITE_OK;
+  إذا( p->pWin
+   && p->p_مخکینی==0
    && ALWAYS((p->selFlags & SF_WinRewrite)==0)
-   && ALWAYS(!IN_RENAME_OBJECT)
+   && ALWAYS(!دننه_RENAME_OBJECT)
   ){
     Vdbe *v = sqlite3GetVdbe(pParse);
     sqlite3 *db = pParse->db;
     Select *pSub = 0;             /* The subquery */
     SrcList *pSrc = p->pSrc;
-    Expr *pWhere = p->pWhere;
-    ExprList *pGroupBy = p->pGroupBy;
-    Expr *pHaving = p->pHaving;
-    ExprList *pSort = 0;
+    بیان *pWhere = p->pWhere;
+    بیان_List *p_ډله_By = p->p_ډله_By;
+    بیان *pHaving = p->pHaving;
+    بیان_List *p_ترتیبول = 0;
 
-    ExprList *pSublist = 0;       /* Expression list for sub-query */
-    Window *pMWin = p->pWin;      /* Main window object */
-    Window *pWin;                 /* Window object iterator */
-    Table *pTab;
+    بیان_List *pSublist = 0;       /* Expression list for sub-query */
+    کړکۍ *pMWin = p->pWin;      /* Main window object */
+    کړکۍ *pWin;                 /* Window object iterator */
+    جدول *pTab;
     Walker w;
 
     u32 selFlags = p->selFlags;
 
-    pTab = sqlite3DbMallocZero(db, sizeof(Table));
-    if( pTab==0 ){
-      return sqlite3ErrorToParser(db, SQLITE_NOMEM);
+    pTab = sqlite3DbMallocZero(db, حجم(جدول));
+    إذا( pTab==0 ){
+      أرجع sqlite3_Error_منزل_Parser(db, SQLITE_NOMEM);
     }
     sqlite3AggInfoPersistWalkerInit(&w, pParse);
     sqlite3WalkSelect(&w, p);
-    if( (p->selFlags & SF_Aggregate)==0 ){
-      w.xExprCallback = disallowAggregatesInOrderByCb;
-      w.xSelectCallback = sqlite3WalkerDepthIncrease;
-      w.xSelectCallback2 = sqlite3WalkerDepthDecrease;
-      w.walkerDepth = 0;
-      sqlite3WalkExprList(&w, p->pOrderBy);
+    إذا( (p->selFlags & SF_Aggregate)==0 ){
+      w.x_بیان_Callback = disallow_Aggregates_دننه_ترتیب_By_Cb;
+      w.xSelectCallback = sqlite3_Walker_ژوروالی_Increase;
+      w.xSelectCallback2 = sqlite3_Walker_ژوروالی_Decrease;
+      w.walker_ژوروالی = 0;
+      sqlite3_Walk_بیان_List(&w, p->p_ترتیب_By);
     }
 
     p->pSrc = 0;
     p->pWhere = 0;
-    p->pGroupBy = 0;
+    p->p_ډله_By = 0;
     p->pHaving = 0;
     p->selFlags &= ~(u32)SF_Aggregate;
     p->selFlags |= SF_WinRewrite;
@@ -1023,16 +1023,16 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
     /* Create the ORDER BY clause for the sub-select. This is the concatenation
     ** of the window PARTITION and ORDER BY clauses. Then, if this makes it
     ** redundant, remove the ORDER BY from the parent SELECT.  */
-    pSort = exprListAppendList(pParse, 0, pMWin->pPartition, 1);
-    pSort = exprListAppendList(pParse, pSort, pMWin->pOrderBy, 1);
-    if( pSort && p->pOrderBy && p->pOrderBy->nExpr<=pSort->nExpr ){
-      int nSave = pSort->nExpr;
-      pSort->nExpr = p->pOrderBy->nExpr;
-      if( sqlite3ExprListCompare(pSort, p->pOrderBy, -1)==0 ){
-        sqlite3ExprListDelete(db, p->pOrderBy);
-        p->pOrderBy = 0;
+    p_ترتیبول = بیان_List_Append_List(pParse, 0, pMWin->p_برخه_کول, 1);
+    p_ترتیبول = بیان_List_Append_List(pParse, p_ترتیبول, pMWin->p_ترتیب_By, 1);
+    إذا( p_ترتیبول && p->p_ترتیب_By && p->p_ترتیب_By->n_بیان<=p_ترتیبول->n_بیان ){
+      صحيح nSave = p_ترتیبول->n_بیان;
+      p_ترتیبول->n_بیان = p->p_ترتیب_By->n_بیان;
+      إذا( sqlite3_بیان_List_Compare(p_ترتیبول, p->p_ترتیب_By, -1)==0 ){
+        sqlite3_بیان_List_Delete(db, p->p_ترتیب_By);
+        p->p_ترتیب_By = 0;
       }
-      pSort->nExpr = nSave;
+      p_ترتیبول->n_بیان = nSave;
     }
 
     /* Assign a cursor number for the ephemeral table used to buffer rows.
@@ -1041,40 +1041,40 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
     pMWin->iEphCsr = pParse->nTab++;
     pParse->nTab += 3;
 
-    selectWindowRewriteEList(pParse, pMWin, pSrc, p->pEList, pTab, &pSublist);
-    selectWindowRewriteEList(pParse, pMWin, pSrc, p->pOrderBy, pTab, &pSublist);
-    pMWin->nBufferCol = (pSublist ? pSublist->nExpr : 0);
+    select_کړکۍ_Rewrite_EList(pParse, pMWin, pSrc, p->pEList, pTab, &pSublist);
+    select_کړکۍ_Rewrite_EList(pParse, pMWin, pSrc, p->p_ترتیب_By, pTab, &pSublist);
+    pMWin->n_بفر_ستون = (pSublist ? pSublist->n_بیان : 0);
 
     /* Append the PARTITION BY and ORDER BY expressions to the to the
     ** sub-select expression list. They are required to figure out where
     ** boundaries for partitions and sets of peer rows lie.  */
-    pSublist = exprListAppendList(pParse, pSublist, pMWin->pPartition, 0);
-    pSublist = exprListAppendList(pParse, pSublist, pMWin->pOrderBy, 0);
+    pSublist = بیان_List_Append_List(pParse, pSublist, pMWin->p_برخه_کول, 0);
+    pSublist = بیان_List_Append_List(pParse, pSublist, pMWin->p_ترتیب_By, 0);
 
     /* Append the arguments passed to each window function to the
     ** sub-select expression list. Also allocate two registers for each
     ** window function - one for the accumulator, another for interim
     ** results.  */
-    for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
-      ExprList *pArgs;
-      assert( ExprUseXList(pWin->pOwner) );
-      assert( pWin->pWFunc!=0 );
-      pArgs = pWin->pOwner->x.pList;
-      if( pWin->pWFunc->funcFlags & SQLITE_SUBTYPE ){
-        selectWindowRewriteEList(pParse, pMWin, pSrc, pArgs, pTab, &pSublist);
-        pWin->iArgCol = (pSublist ? pSublist->nExpr : 0);
-        pWin->bExprArgs = 1;
-      }else{
-        pWin->iArgCol = (pSublist ? pSublist->nExpr : 0);
-        pSublist = exprListAppendList(pParse, pSublist, pArgs, 0);
+    لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
+      بیان_List *p_دلیلونه;
+      أكد( بیان_Use_XList(pWin->pOwner) );
+      أكد( pWin->pWFunc!=0 );
+      p_دلیلونه = pWin->pOwner->x.pList;
+      إذا( pWin->pWFunc->funcFlags & SQLITE_SUBTYPE ){
+        select_کړکۍ_Rewrite_EList(pParse, pMWin, pSrc, p_دلیلونه, pTab, &pSublist);
+        pWin->i_Arg_ستون = (pSublist ? pSublist->n_بیان : 0);
+        pWin->b_بیان_دلیلونه = 1;
+      }وإلا{
+        pWin->i_Arg_ستون = (pSublist ? pSublist->n_بیان : 0);
+        pSublist = بیان_List_Append_List(pParse, pSublist, p_دلیلونه, 0);
       }
-      if( pWin->pFilter ){
-        Expr *pFilter = sqlite3ExprDup(db, pWin->pFilter, 0);
-        pSublist = sqlite3ExprListAppend(pParse, pSublist, pFilter);
+      إذا( pWin->pFilter ){
+        بیان *pFilter = sqlite3_بیان_Dup(db, pWin->pFilter, 0);
+        pSublist = sqlite3_بیان_List_Append(pParse, pSublist, pFilter);
       }
       pWin->regAccum = ++pParse->nMem;
-      pWin->regResult = ++pParse->nMem;
-      sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regAccum);
+      pWin->reg_پایله = ++pParse->nMem;
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Null, 0, pWin->regAccum);
     }
 
     /* If there is no ORDER BY or PARTITION BY clause, and the window
@@ -1083,66 +1083,66 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
     ** that pSublist is still NULL here. Add a constant expression here to
     ** keep everything legal in this case.
     */
-    if( pSublist==0 ){
-      pSublist = sqlite3ExprListAppend(pParse, 0, sqlite3ExprInt32(db, 0));
+    إذا( pSublist==0 ){
+      pSublist = sqlite3_بیان_List_Append(pParse, 0, sqlite3_بیان_Int32(db, 0));
     }
 
     pSub = sqlite3SelectNew(
-        pParse, pSublist, pSrc, pWhere, pGroupBy, pHaving, pSort, 0, 0
+        pParse, pSublist, pSrc, pWhere, p_ډله_By, pHaving, p_ترتیبول, 0, 0
     );
     TREETRACE(0x40,pParse,pSub,
        ("New window-function subquery in FROM clause of (%u/%p)\n",
        p->selId, p));
     p->pSrc = sqlite3SrcListAppend(pParse, 0, 0, 0);
-    assert( pSub!=0 || p->pSrc==0 ); /* Due to db->mallocFailed test inside
+    أكد( pSub!=0 || p->pSrc==0 ); /* Due to db->mallocFailed test inside
                                      ** of sqlite3DbMallocRawNN() called from
                                      ** sqlite3SrcListAppend() */
-    if( p->pSrc==0 ){
+    إذا( p->pSrc==0 ){
       sqlite3SelectDelete(db, pSub);
-    }else if( sqlite3SrcItemAttachSubquery(pParse, &p->pSrc->a[0], pSub, 0) ){
-      Table *pTab2;
+    }وإلا إذا( sqlite3_Src_توکی_Attach_Subquery(pParse, &p->pSrc->a[0], pSub, 0) ){
+      جدول *pTab2;
       p->pSrc->a[0].fg.isCorrelated = 1;
-      sqlite3SrcListAssignCursors(pParse, p->pSrc);
-      pSub->selFlags |= SF_Expanded|SF_OrderByReqd;
-      pTab2 = sqlite3ResultSetOfSelect(pParse, pSub, SQLITE_AFF_NONE);
+      sqlite3_Src_List_ټاکل_Cursors(pParse, p->pSrc);
+      pSub->selFlags |= SF_Expanded|SF_ترتیب_By_Reqd;
+      pTab2 = sqlite3_پایله_سېټ_د_Select(pParse, pSub, SQLITE_AFF_NONE);
       pSub->selFlags |= (selFlags & SF_Aggregate);
-      if( pTab2==0 ){
+      إذا( pTab2==0 ){
         /* Might actually be some other kind of error, but in that case
         ** pParse->nErr will be set, so if SQLITE_NOMEM is set, we will get
         ** the correct error message regardless. */
         rc = SQLITE_NOMEM;
-      }else{
-        memcpy(pTab, pTab2, sizeof(Table));
+      }وإلا{
+        حافظه_نقل(pTab, pTab2, حجم(جدول));
         pTab->tabFlags |= TF_Ephemeral;
         p->pSrc->a[0].pSTab = pTab;
         pTab = pTab2;
-        memset(&w, 0, sizeof(w));
-        w.xExprCallback = sqlite3WindowExtraAggFuncDepth;
-        w.xSelectCallback = sqlite3WalkerDepthIncrease;
-        w.xSelectCallback2 = sqlite3WalkerDepthDecrease;
+        memset(&w, 0, حجم(w));
+        w.x_بیان_Callback = sqlite3_کړکۍ_Extra_Agg_Func_ژوروالی;
+        w.xSelectCallback = sqlite3_Walker_ژوروالی_Increase;
+        w.xSelectCallback2 = sqlite3_Walker_ژوروالی_Decrease;
         sqlite3WalkSelect(&w, pSub);
       }
     }
-    if( db->mallocFailed ) rc = SQLITE_NOMEM;
+    إذا( db->mallocFailed ) rc = SQLITE_NOMEM;
 
     /* Defer deleting the temporary table pTab because if an error occurred,
     ** there could still be references to that table embedded in the
     ** result-set or ORDER BY clause of the SELECT statement p.  */
-    sqlite3ParserAddCleanup(pParse, sqlite3DbFree, pTab);
+    sqlite3_Parser_جمع_کړه_Cleanup(pParse, sqlite3DbFree, pTab);
   }
 
-  assert( rc==SQLITE_OK || pParse->nErr!=0 );
-  return rc;
+  أكد( rc==SQLITE_OK || pParse->nErr!=0 );
+  أرجع rc;
 }
 
 /*
 ** Unlink the Window object from the Select to which it is attached,
 ** if it is attached.
 */
-void sqlite3WindowUnlinkFromSelect(Window *p){
-  if( p->ppThis ){
-    *p->ppThis = p->pNextWin;
-    if( p->pNextWin ) p->pNextWin->ppThis = p->ppThis;
+فراغ sqlite3_کړکۍ_Unlink_From_Select(کړکۍ *p){
+  إذا( p->ppThis ){
+    *p->ppThis = p->p_بل_Win;
+    إذا( p->p_بل_Win ) p->p_بل_Win->ppThis = p->ppThis;
     p->ppThis = 0;
   }
 }
@@ -1150,16 +1150,16 @@ void sqlite3WindowUnlinkFromSelect(Window *p){
 /*
 ** Free the Window object passed as the second argument.
 */
-void sqlite3WindowDelete(sqlite3 *db, Window *p){
-  if( p ){
-    sqlite3WindowUnlinkFromSelect(p);
-    sqlite3ExprDelete(db, p->pFilter);
-    sqlite3ExprListDelete(db, p->pPartition);
-    sqlite3ExprListDelete(db, p->pOrderBy);
-    sqlite3ExprDelete(db, p->pEnd);
-    sqlite3ExprDelete(db, p->pStart);
+فراغ sqlite3_کړکۍ_Delete(sqlite3 *db, کړکۍ *p){
+  إذا( p ){
+    sqlite3_کړکۍ_Unlink_From_Select(p);
+    sqlite3_بیان_Delete(db, p->pFilter);
+    sqlite3_بیان_List_Delete(db, p->p_برخه_کول);
+    sqlite3_بیان_List_Delete(db, p->p_ترتیب_By);
+    sqlite3_بیان_Delete(db, p->p_پای_ټکی);
+    sqlite3_بیان_Delete(db, p->p_پیل);
     sqlite3DbFree(db, p->zName);
-    sqlite3DbFree(db, p->zBase);
+    sqlite3DbFree(db, p->z_بنسټ);
     sqlite3DbFree(db, p);
   }
 }
@@ -1167,11 +1167,11 @@ void sqlite3WindowDelete(sqlite3 *db, Window *p){
 /*
 ** Free the linked list of Window objects starting at the second argument.
 */
-void sqlite3WindowListDelete(sqlite3 *db, Window *p){
-  while( p ){
-    Window *pNext = p->pNextWin;
-    sqlite3WindowDelete(db, p);
-    p = pNext;
+فراغ sqlite3_کړکۍ_List_Delete(sqlite3 *db, کړکۍ *p){
+  طالما( p ){
+    کړکۍ *p_بل = p->p_بل_Win;
+    sqlite3_کړکۍ_Delete(db, p);
+    p = p_بل;
   }
 }
 
@@ -1182,41 +1182,41 @@ void sqlite3WindowListDelete(sqlite3 *db, Window *p){
 ** integer will be caught later.  But it is important not to leave
 ** variable values in the expression tree.
 */
-static Expr *sqlite3WindowOffsetExpr(Parse *pParse, Expr *pExpr){
-  if( 0==sqlite3ExprIsConstant(0,pExpr) ){
-    if( IN_RENAME_OBJECT ) sqlite3RenameExprUnmap(pParse, pExpr);
-    sqlite3ExprDelete(pParse->db, pExpr);
-    pExpr = sqlite3ExprAlloc(pParse->db, TK_NULL, 0, 0);
+ساكن بیان *sqlite3_کړکۍ_دننه_واټن_بیان(Parse *pParse, بیان *p_بیان){
+  إذا( 0==sqlite3_بیان_Is_Constant(0,p_بیان) ){
+    إذا( دننه_RENAME_OBJECT ) sqlite3_Rename_بیان_Unmap(pParse, p_بیان);
+    sqlite3_بیان_Delete(pParse->db, p_بیان);
+    p_بیان = sqlite3_بیان_Alloc(pParse->db, TK_NULL, 0, 0);
   }
-  return pExpr;
+  أرجع p_بیان;
 }
 
 /*
 ** Allocate and return a new Window object describing a Window Definition.
 */
-Window *sqlite3WindowAlloc(
+کړکۍ *sqlite3_کړکۍ_Alloc(
   Parse *pParse,    /* Parsing context */
-  int eType,        /* Frame type. TK_RANGE, TK_ROWS, TK_GROUPS, or 0 */
-  int eStart,       /* Start type: CURRENT, PRECEDING, FOLLOWING, UNBOUNDED */
-  Expr *pStart,     /* Start window size if TK_PRECEDING or FOLLOWING */
-  int eEnd,         /* End type: CURRENT, FOLLOWING, TK_UNBOUNDED, PRECEDING */
-  Expr *pEnd,       /* End window size if TK_FOLLOWING or PRECEDING */
+  صحيح eType,        /* Frame type. TK_RANGE, TK_ROWS, TK_GROUPS, or 0 */
+  صحيح e_پیل,       /* Start type: CURRENT, PRECEDING, FOLLOWING, UNBOUNDED */
+  بیان *p_پیل,     /* Start window size if TK_PRECEDING or FOLLOWING */
+  صحيح e_پای_ټکی,         /* End type: CURRENT, FOLLOWING, TK_UNBOUNDED, PRECEDING */
+  بیان *p_پای_ټکی,       /* End window size if TK_FOLLOWING or PRECEDING */
   u8 eExclude       /* EXCLUDE clause */
 ){
-  Window *pWin = 0;
-  int bImplicitFrame = 0;
+  کړکۍ *pWin = 0;
+  صحيح b_Implicit_چوکاټ = 0;
 
   /* Parser assures the following: */
-  assert( eType==0 || eType==TK_RANGE || eType==TK_ROWS || eType==TK_GROUPS );
-  assert( eStart==TK_CURRENT || eStart==TK_PRECEDING
-           || eStart==TK_UNBOUNDED || eStart==TK_FOLLOWING );
-  assert( eEnd==TK_CURRENT || eEnd==TK_FOLLOWING
-           || eEnd==TK_UNBOUNDED || eEnd==TK_PRECEDING );
-  assert( (eStart==TK_PRECEDING || eStart==TK_FOLLOWING)==(pStart!=0) );
-  assert( (eEnd==TK_FOLLOWING || eEnd==TK_PRECEDING)==(pEnd!=0) );
+  أكد( eType==0 || eType==TK_RANGE || eType==TK_لیکې || eType==TK_GROUPS );
+  أكد( e_پیل==TK_CURRENT || e_پیل==TK_PRECEDING
+           || e_پیل==TK_UNBOUNDED || e_پیل==TK_FOLLOWING );
+  أكد( e_پای_ټکی==TK_CURRENT || e_پای_ټکی==TK_FOLLOWING
+           || e_پای_ټکی==TK_UNBOUNDED || e_پای_ټکی==TK_PRECEDING );
+  أكد( (e_پیل==TK_PRECEDING || e_پیل==TK_FOLLOWING)==(p_پیل!=0) );
+  أكد( (e_پای_ټکی==TK_FOLLOWING || e_پای_ټکی==TK_PRECEDING)==(p_پای_ټکی!=0) );
 
-  if( eType==0 ){
-    bImplicitFrame = 1;
+  إذا( eType==0 ){
+    b_Implicit_چوکاټ = 1;
     eType = TK_RANGE;
   }
 
@@ -1234,31 +1234,31 @@ Window *sqlite3WindowAlloc(
   ** boundary, and than "UNBOUNDED FOLLOWING" cannot be used as a starting
   ** frame boundary.
   */
-  if( (eStart==TK_CURRENT && eEnd==TK_PRECEDING)
-   || (eStart==TK_FOLLOWING && (eEnd==TK_PRECEDING || eEnd==TK_CURRENT))
+  إذا( (e_پیل==TK_CURRENT && e_پای_ټکی==TK_PRECEDING)
+   || (e_پیل==TK_FOLLOWING && (e_پای_ټکی==TK_PRECEDING || e_پای_ټکی==TK_CURRENT))
   ){
-    sqlite3ErrorMsg(pParse, "unsupported frame specification");
-    goto windowAllocErr;
+    sqlite3_Error_پیغام(pParse, "unsupported frame specification");
+    اذهب کړکۍ_Alloc_Err;
   }
 
-  pWin = (Window*)sqlite3DbMallocZero(pParse->db, sizeof(Window));
-  if( pWin==0 ) goto windowAllocErr;
+  pWin = (کړکۍ*)sqlite3DbMallocZero(pParse->db, حجم(کړکۍ));
+  إذا( pWin==0 ) اذهب کړکۍ_Alloc_Err;
   pWin->eFrmType = eType;
-  pWin->eStart = eStart;
-  pWin->eEnd = eEnd;
-  if( eExclude==0 && OptimizationDisabled(pParse->db, SQLITE_WindowFunc) ){
+  pWin->e_پیل = e_پیل;
+  pWin->e_پای_ټکی = e_پای_ټکی;
+  إذا( eExclude==0 && OptimizationDisabled(pParse->db, SQLITE_کړکۍ_Func) ){
     eExclude = TK_NO;
   }
   pWin->eExclude = eExclude;
-  pWin->bImplicitFrame = bImplicitFrame;
-  pWin->pEnd = sqlite3WindowOffsetExpr(pParse, pEnd);
-  pWin->pStart = sqlite3WindowOffsetExpr(pParse, pStart);
-  return pWin;
+  pWin->b_Implicit_چوکاټ = b_Implicit_چوکاټ;
+  pWin->p_پای_ټکی = sqlite3_کړکۍ_دننه_واټن_بیان(pParse, p_پای_ټکی);
+  pWin->p_پیل = sqlite3_کړکۍ_دننه_واټن_بیان(pParse, p_پیل);
+  أرجع pWin;
 
-windowAllocErr:
-  sqlite3ExprDelete(pParse->db, pEnd);
-  sqlite3ExprDelete(pParse->db, pStart);
-  return 0;
+کړکۍ_Alloc_Err:
+  sqlite3_بیان_Delete(pParse->db, p_پای_ټکی);
+  sqlite3_بیان_Delete(pParse->db, p_پیل);
+  أرجع 0;
 }
 
 /*
@@ -1266,24 +1266,24 @@ windowAllocErr:
 ** pWin. Also, if parameter pBase is not NULL, set pWin->zBase to the
 ** equivalent nul-terminated string.
 */
-Window *sqlite3WindowAssemble(
+کړکۍ *sqlite3_کړکۍ_Assemble(
   Parse *pParse,
-  Window *pWin,
-  ExprList *pPartition,
-  ExprList *pOrderBy,
-  Token *pBase
+  کړکۍ *pWin,
+  بیان_List *p_برخه_کول,
+  بیان_List *p_ترتیب_By,
+  Token *p_بنسټ
 ){
-  if( pWin ){
-    pWin->pPartition = pPartition;
-    pWin->pOrderBy = pOrderBy;
-    if( pBase ){
-      pWin->zBase = sqlite3DbStrNDup(pParse->db, pBase->z, pBase->n);
+  إذا( pWin ){
+    pWin->p_برخه_کول = p_برخه_کول;
+    pWin->p_ترتیب_By = p_ترتیب_By;
+    إذا( p_بنسټ ){
+      pWin->z_بنسټ = sqlite3DbStrNDup(pParse->db, p_بنسټ->z, p_بنسټ->n);
     }
-  }else{
-    sqlite3ExprListDelete(pParse->db, pPartition);
-    sqlite3ExprListDelete(pParse->db, pOrderBy);
+  }وإلا{
+    sqlite3_بیان_List_Delete(pParse->db, p_برخه_کول);
+    sqlite3_بیان_List_Delete(pParse->db, p_ترتیب_By);
   }
-  return pWin;
+  أرجع pWin;
 }
 
 /*
@@ -1293,32 +1293,32 @@ Window *sqlite3WindowAssemble(
 ** either updates *pWin according to the base specification, or else
 ** leaves an error in pParse.
 */
-void sqlite3WindowChain(Parse *pParse, Window *pWin, Window *pList){
-  if( pWin->zBase ){
+فراغ sqlite3_کړکۍ_Chain(Parse *pParse, کړکۍ *pWin, کړکۍ *pList){
+  إذا( pWin->z_بنسټ ){
     sqlite3 *db = pParse->db;
-    Window *pExist = windowFind(pParse, pList, pWin->zBase);
-    if( pExist ){
-      const char *zErr = 0;
+    کړکۍ *pExist = کړکۍ_پیدا_کړه(pParse, pList, pWin->z_بنسټ);
+    إذا( pExist ){
+      ثابت حرف *zErr = 0;
       /* Check for errors */
-      if( pWin->pPartition ){
+      إذا( pWin->p_برخه_کول ){
         zErr = "PARTITION clause";
-      }else if( pExist->pOrderBy && pWin->pOrderBy ){
+      }وإلا إذا( pExist->p_ترتیب_By && pWin->p_ترتیب_By ){
         zErr = "ORDER BY clause";
-      }else if( pExist->bImplicitFrame==0 ){
+      }وإلا إذا( pExist->b_Implicit_چوکاټ==0 ){
         zErr = "frame specification";
       }
-      if( zErr ){
-        sqlite3ErrorMsg(pParse,
-            "cannot override %s of window: %s", zErr, pWin->zBase
+      إذا( zErr ){
+        sqlite3_Error_پیغام(pParse,
+            "cannot override %s of window: %s", zErr, pWin->z_بنسټ
         );
-      }else{
-        pWin->pPartition = sqlite3ExprListDup(db, pExist->pPartition, 0);
-        if( pExist->pOrderBy ){
-          assert( pWin->pOrderBy==0 );
-          pWin->pOrderBy = sqlite3ExprListDup(db, pExist->pOrderBy, 0);
+      }وإلا{
+        pWin->p_برخه_کول = sqlite3_بیان_List_Dup(db, pExist->p_برخه_کول, 0);
+        إذا( pExist->p_ترتیب_By ){
+          أكد( pWin->p_ترتیب_By==0 );
+          pWin->p_ترتیب_By = sqlite3_بیان_List_Dup(db, pExist->p_ترتیب_By, 0);
         }
-        sqlite3DbFree(db, pWin->zBase);
-        pWin->zBase = 0;
+        sqlite3DbFree(db, pWin->z_بنسټ);
+        pWin->z_بنسټ = 0;
       }
     }
   }
@@ -1327,21 +1327,21 @@ void sqlite3WindowChain(Parse *pParse, Window *pWin, Window *pList){
 /*
 ** Attach window object pWin to expression p.
 */
-void sqlite3WindowAttach(Parse *pParse, Expr *p, Window *pWin){
-  if( p ){
-    assert( p->op==TK_FUNCTION );
-    assert( pWin );
-    assert( ExprIsFullSize(p) );
+فراغ sqlite3_کړکۍ_Attach(Parse *pParse, بیان *p, کړکۍ *pWin){
+  إذا( p ){
+    أكد( p->op==TK_FUNCTION );
+    أكد( pWin );
+    أكد( بیان_Is_ډک_اندازه(p) );
     p->y.pWin = pWin;
-    ExprSetProperty(p, EP_WinFunc|EP_FullSize);
+    بیان_سېټ_Property(p, EP_WinFunc|EP_ډک_اندازه);
     pWin->pOwner = p;
-    if( (p->flags & EP_Distinct) && pWin->eFrmType!=TK_FILTER ){
-      sqlite3ErrorMsg(pParse,
+    إذا( (p->flags & EP_Distinct) && pWin->eFrmType!=TK_FILTER ){
+      sqlite3_Error_پیغام(pParse,
           "DISTINCT is not supported for window functions"
       );
     }
-  }else{
-    sqlite3WindowDelete(pParse->db, pWin);
+  }وإلا{
+    sqlite3_کړکۍ_Delete(pParse->db, pWin);
   }
 }
 
@@ -1351,17 +1351,17 @@ void sqlite3WindowAttach(Parse *pParse, Expr *p, Window *pWin){
 ** in if either (a) there are no other windows already linked to this
 ** SELECT, or (b) the windows already linked use a compatible window frame.
 */
-void sqlite3WindowLink(Select *pSel, Window *pWin){
-  if( pSel ){
-    if( 0==pSel->pWin || 0==sqlite3WindowCompare(0, pSel->pWin, pWin, 0) ){
-      pWin->pNextWin = pSel->pWin;
-      if( pSel->pWin ){
-        pSel->pWin->ppThis = &pWin->pNextWin;
+فراغ sqlite3_کړکۍ_Link(Select *pSel, کړکۍ *pWin){
+  إذا( pSel ){
+    إذا( 0==pSel->pWin || 0==sqlite3_کړکۍ_Compare(0, pSel->pWin, pWin, 0) ){
+      pWin->p_بل_Win = pSel->pWin;
+      إذا( pSel->pWin ){
+        pSel->pWin->ppThis = &pWin->p_بل_Win;
       }
       pSel->pWin = pWin;
       pWin->ppThis = &pSel->pWin;
-    }else{
-      if( sqlite3ExprListCompare(pWin->pPartition, pSel->pWin->pPartition,-1) ){
+    }وإلا{
+      إذا( sqlite3_بیان_List_Compare(pWin->p_برخه_کول, pSel->pWin->p_برخه_کول,-1) ){
         pSel->selFlags |= SF_MultiPart;
       }
     }
@@ -1373,32 +1373,32 @@ void sqlite3WindowLink(Select *pSel, Window *pWin){
 ** different, or 2 if it cannot be determined if the objects are identical
 ** or not. Identical window objects can be processed in a single scan.
 */
-int sqlite3WindowCompare(
-  const Parse *pParse,
-  const Window *p1,
-  const Window *p2,
-  int bFilter
+صحيح sqlite3_کړکۍ_Compare(
+  ثابت Parse *pParse,
+  ثابت کړکۍ *p1,
+  ثابت کړکۍ *p2,
+  صحيح bFilter
 ){
-  int res;
-  if( NEVER(p1==0) || NEVER(p2==0) ) return 1;
-  if( p1->eFrmType!=p2->eFrmType ) return 1;
-  if( p1->eStart!=p2->eStart ) return 1;
-  if( p1->eEnd!=p2->eEnd ) return 1;
-  if( p1->eExclude!=p2->eExclude ) return 1;
-  if( sqlite3ExprCompare(pParse, p1->pStart, p2->pStart, -1) ) return 1;
-  if( sqlite3ExprCompare(pParse, p1->pEnd, p2->pEnd, -1) ) return 1;
-  if( (res = sqlite3ExprListCompare(p1->pPartition, p2->pPartition, -1)) ){
-    return res;
+  صحيح res;
+  إذا( NEVER(p1==0) || NEVER(p2==0) ) أرجع 1;
+  إذا( p1->eFrmType!=p2->eFrmType ) أرجع 1;
+  إذا( p1->e_پیل!=p2->e_پیل ) أرجع 1;
+  إذا( p1->e_پای_ټکی!=p2->e_پای_ټکی ) أرجع 1;
+  إذا( p1->eExclude!=p2->eExclude ) أرجع 1;
+  إذا( sqlite3_بیان_Compare(pParse, p1->p_پیل, p2->p_پیل, -1) ) أرجع 1;
+  إذا( sqlite3_بیان_Compare(pParse, p1->p_پای_ټکی, p2->p_پای_ټکی, -1) ) أرجع 1;
+  إذا( (res = sqlite3_بیان_List_Compare(p1->p_برخه_کول, p2->p_برخه_کول, -1)) ){
+    أرجع res;
   }
-  if( (res = sqlite3ExprListCompare(p1->pOrderBy, p2->pOrderBy, -1)) ){
-    return res;
+  إذا( (res = sqlite3_بیان_List_Compare(p1->p_ترتیب_By, p2->p_ترتیب_By, -1)) ){
+    أرجع res;
   }
-  if( bFilter ){
-    if( (res = sqlite3ExprCompare(pParse, p1->pFilter, p2->pFilter, -1)) ){
-      return res;
+  إذا( bFilter ){
+    إذا( (res = sqlite3_بیان_Compare(pParse, p1->pFilter, p2->pFilter, -1)) ){
+      أرجع res;
     }
   }
-  return 0;
+  أرجع 0;
 }
 
 
@@ -1407,47 +1407,47 @@ int sqlite3WindowCompare(
 ** to begin iterating through the sub-query results. It is used to allocate
 ** and initialize registers and cursors used by sqlite3WindowCodeStep().
 */
-void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
-  Window *pWin;
-  int nEphExpr;
-  Window *pMWin;
+فراغ sqlite3_کړکۍ_کوډ_Init(Parse *pParse, Select *pSelect){
+  کړکۍ *pWin;
+  صحيح n_Eph_بیان;
+  کړکۍ *pMWin;
   Vdbe *v;
 
-  assert( pSelect->pSrc->a[0].fg.isSubquery );
-  nEphExpr = pSelect->pSrc->a[0].u4.pSubq->pSelect->pEList->nExpr;
+  أكد( pSelect->pSrc->a[0].fg.isSubquery );
+  n_Eph_بیان = pSelect->pSrc->a[0].u4.pSubq->pSelect->pEList->n_بیان;
   pMWin = pSelect->pWin;
   v = sqlite3GetVdbe(pParse);
 
-  sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pMWin->iEphCsr, nEphExpr);
-  sqlite3VdbeAddOp2(v, OP_OpenDup, pMWin->iEphCsr+1, pMWin->iEphCsr);
-  sqlite3VdbeAddOp2(v, OP_OpenDup, pMWin->iEphCsr+2, pMWin->iEphCsr);
-  sqlite3VdbeAddOp2(v, OP_OpenDup, pMWin->iEphCsr+3, pMWin->iEphCsr);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenEphemeral, pMWin->iEphCsr, n_Eph_بیان);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenDup, pMWin->iEphCsr+1, pMWin->iEphCsr);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenDup, pMWin->iEphCsr+2, pMWin->iEphCsr);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenDup, pMWin->iEphCsr+3, pMWin->iEphCsr);
 
   /* Allocate registers to use for PARTITION BY values, if any. Initialize
   ** said registers to NULL.  */
-  if( pMWin->pPartition ){
-    int nExpr = pMWin->pPartition->nExpr;
+  إذا( pMWin->p_برخه_کول ){
+    صحيح n_بیان = pMWin->p_برخه_کول->n_بیان;
     pMWin->regPart = pParse->nMem+1;
-    pParse->nMem += nExpr;
-    sqlite3VdbeAddOp3(v, OP_Null, 0, pMWin->regPart, pMWin->regPart+nExpr-1);
+    pParse->nMem += n_بیان;
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Null, 0, pMWin->regPart, pMWin->regPart+n_بیان-1);
   }
 
   pMWin->regOne = ++pParse->nMem;
-  sqlite3VdbeAddOp2(v, OP_Integer, 1, pMWin->regOne);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 1, pMWin->regOne);
 
-  if( pMWin->eExclude ){
-    pMWin->regStartRowid = ++pParse->nMem;
-    pMWin->regEndRowid = ++pParse->nMem;
+  إذا( pMWin->eExclude ){
+    pMWin->reg_پیل_Rowid = ++pParse->nMem;
+    pMWin->reg_پای_ټکی_Rowid = ++pParse->nMem;
     pMWin->csrApp = pParse->nTab++;
-    sqlite3VdbeAddOp2(v, OP_Integer, 1, pMWin->regStartRowid);
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, pMWin->regEndRowid);
-    sqlite3VdbeAddOp2(v, OP_OpenDup, pMWin->csrApp, pMWin->iEphCsr);
-    return;
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 1, pMWin->reg_پیل_Rowid);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, pMWin->reg_پای_ټکی_Rowid);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenDup, pMWin->csrApp, pMWin->iEphCsr);
+    أرجع;
   }
 
-  for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
+  لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
     FuncDef *p = pWin->pWFunc;
-    if( (p->funcFlags & SQLITE_FUNC_MINMAX) && pWin->eStart!=TK_UNBOUNDED ){
+    إذا( (p->funcFlags & SQLITE_FUNC_MINMAX) && pWin->e_پیل!=TK_UNBOUNDED ){
       /* The inline versions of min() and max() require a single ephemeral
       ** table and 3 registers. The registers are used as follows:
       **
@@ -1455,42 +1455,42 @@ void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
       **   regApp+1: integer value used to ensure keys are unique
       **   regApp+2: output of MakeRecord
       */
-      ExprList *pList;
-      KeyInfo *pKeyInfo;
-      assert( ExprUseXList(pWin->pOwner) );
+      بیان_List *pList;
+      کلی_Info *p_کلی_Info;
+      أكد( بیان_Use_XList(pWin->pOwner) );
       pList = pWin->pOwner->x.pList;
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pList, 0, 0);
+      p_کلی_Info = sqlite3_کلی_Info_From_بیان_List(pParse, pList, 0, 0);
       pWin->csrApp = pParse->nTab++;
       pWin->regApp = pParse->nMem+1;
       pParse->nMem += 3;
-      if( pKeyInfo && pWin->pWFunc->zName[1]=='i' ){
-        assert( pKeyInfo->aSortFlags[0]==0 );
-        pKeyInfo->aSortFlags[0] = KEYINFO_ORDER_DESC;
+      إذا( p_کلی_Info && pWin->pWFunc->zName[1]=='i' ){
+        أكد( p_کلی_Info->a_ترتیبول_Flags[0]==0 );
+        p_کلی_Info->a_ترتیبول_Flags[0] = KEYINFO_ترتیب_DESC;
       }
-      sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pWin->csrApp, 2);
-      sqlite3VdbeAppendP4(v, pKeyInfo, P4_KEYINFO);
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, pWin->regApp+1);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenEphemeral, pWin->csrApp, 2);
+      sqlite3VdbeAppendP4(v, p_کلی_Info, P4_KEYINFO);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, pWin->regApp+1);
     }
-    else if( p->zName==nth_valueName || p->zName==first_valueName ){
+    وإلا إذا( p->zName==nth_ارزښت_Name || p->zName==لومړی_ارزښت_Name ){
       /* Allocate two registers at pWin->regApp. These will be used to
       ** store the start and end index of the current frame.  */
       pWin->regApp = pParse->nMem+1;
       pWin->csrApp = pParse->nTab++;
       pParse->nMem += 2;
-      sqlite3VdbeAddOp2(v, OP_OpenDup, pWin->csrApp, pMWin->iEphCsr);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenDup, pWin->csrApp, pMWin->iEphCsr);
     }
-    else if( p->zName==leadName || p->zName==lagName ){
+    وإلا إذا( p->zName==leadName || p->zName==lagName ){
       pWin->csrApp = pParse->nTab++;
-      sqlite3VdbeAddOp2(v, OP_OpenDup, pWin->csrApp, pMWin->iEphCsr);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_OpenDup, pWin->csrApp, pMWin->iEphCsr);
     }
   }
 }
 
-#define WINDOW_STARTING_INT  0
-#define WINDOW_ENDING_INT    1
-#define WINDOW_NTH_VALUE_INT 2
-#define WINDOW_STARTING_NUM  3
-#define WINDOW_ENDING_NUM    4
+#تعریف_کړه کړکۍ_STARTING_INT  0
+#تعریف_کړه کړکۍ_ENDING_INT    1
+#تعریف_کړه کړکۍ_NTH_ارزښت_INT 2
+#تعریف_کړه کړکۍ_STARTING_عدد  3
+#تعریف_کړه کړکۍ_ENDING_عدد    4
 
 /*
 ** A "PRECEDING <expr>" (eCond==0) or "FOLLOWING <expr>" (eCond==1) or the
@@ -1499,37 +1499,37 @@ void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
 ** code to check that the value is a non-negative integer and throws an
 ** exception if it is not.
 */
-static void windowCheckValue(Parse *pParse, int reg, int eCond){
-  static const char *azErr[] = {
+ساكن فراغ کړکۍ_Check_ارزښت(Parse *pParse, صحيح reg, صحيح eCond){
+  ساكن ثابت حرف *azErr[] = {
     "frame starting offset must be a non-negative integer",
     "frame ending offset must be a non-negative integer",
     "second argument to nth_value must be a positive integer",
     "frame starting offset must be a non-negative number",
     "frame ending offset must be a non-negative number",
   };
-  static int aOp[] = { OP_Ge, OP_Ge, OP_Gt, OP_Ge, OP_Ge };
+  ساكن صحيح aOp[] = { OP_Ge, OP_Ge, OP_Gt, OP_Ge, OP_Ge };
   Vdbe *v = sqlite3GetVdbe(pParse);
-  int regZero = sqlite3GetTempReg(pParse);
-  assert( eCond>=0 && eCond<ArraySize(azErr) );
-  sqlite3VdbeAddOp2(v, OP_Integer, 0, regZero);
-  if( eCond>=WINDOW_STARTING_NUM ){
-    int regString = sqlite3GetTempReg(pParse);
-    sqlite3VdbeAddOp4(v, OP_String8, 0, regString, 0, "", P4_STATIC);
-    sqlite3VdbeAddOp3(v, OP_Ge, regString, sqlite3VdbeCurrentAddr(v)+2, reg);
+  صحيح regZero = sqlite3_Get_لنډمهاله_Reg(pParse);
+  أكد( eCond>=0 && eCond<Array_اندازه(azErr) );
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, regZero);
+  إذا( eCond>=کړکۍ_STARTING_عدد ){
+    صحيح regString = sqlite3_Get_لنډمهاله_Reg(pParse);
+    sqlite3_Vdbe_جمع_کړه_Op4(v, OP_String8, 0, regString, 0, "", P4_STATIC);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Ge, regString, sqlite3VdbeCurrentAddr(v)+2, reg);
     sqlite3VdbeChangeP5(v, SQLITE_AFF_NUMERIC|SQLITE_JUMPIFNULL);
     VdbeCoverage(v);
-    assert( eCond==3 || eCond==4 );
+    أكد( eCond==3 || eCond==4 );
     VdbeCoverageIf(v, eCond==3);
     VdbeCoverageIf(v, eCond==4);
-  }else{
-    sqlite3VdbeAddOp2(v, OP_MustBeInt, reg, sqlite3VdbeCurrentAddr(v)+2);
+  }وإلا{
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_MustBeInt, reg, sqlite3VdbeCurrentAddr(v)+2);
     VdbeCoverage(v);
-    assert( eCond==0 || eCond==1 || eCond==2 );
+    أكد( eCond==0 || eCond==1 || eCond==2 );
     VdbeCoverageIf(v, eCond==0);
     VdbeCoverageIf(v, eCond==1);
     VdbeCoverageIf(v, eCond==2);
   }
-  sqlite3VdbeAddOp3(v, aOp[eCond], regZero, sqlite3VdbeCurrentAddr(v)+2, reg);
+  sqlite3_Vdbe_جمع_کړه_Op3(v, aOp[eCond], regZero, sqlite3VdbeCurrentAddr(v)+2, reg);
   sqlite3VdbeChangeP5(v, SQLITE_AFF_NUMERIC);
   VdbeCoverageNeverNullIf(v, eCond==0); /* NULL case captured by */
   VdbeCoverageNeverNullIf(v, eCond==1); /*   the OP_MustBeInt */
@@ -1537,31 +1537,31 @@ static void windowCheckValue(Parse *pParse, int reg, int eCond){
   VdbeCoverageNeverNullIf(v, eCond==3); /* NULL case caught by */
   VdbeCoverageNeverNullIf(v, eCond==4); /*   the OP_Ge */
   sqlite3MayAbort(pParse);
-  sqlite3VdbeAddOp2(v, OP_Halt, SQLITE_ERROR, OE_Abort);
-  sqlite3VdbeAppendP4(v, (void*)azErr[eCond], P4_STATIC);
-  sqlite3ReleaseTempReg(pParse, regZero);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Halt, SQLITE_ERROR, OE_Abort);
+  sqlite3VdbeAppendP4(v, (فراغ*)azErr[eCond], P4_STATIC);
+  sqlite3_Release_لنډمهاله_Reg(pParse, regZero);
 }
 
 /*
 ** Return the number of arguments passed to the window-function associated
 ** with the object passed as the only argument to this function.
 */
-static int windowArgCount(Window *pWin){
-  const ExprList *pList;
-  assert( ExprUseXList(pWin->pOwner) );
+ساكن صحيح کړکۍ_Arg_شمېر(کړکۍ *pWin){
+  ثابت بیان_List *pList;
+  أكد( بیان_Use_XList(pWin->pOwner) );
   pList = pWin->pOwner->x.pList;
-  return (pList ? pList->nExpr : 0);
+  أرجع (pList ? pList->n_بیان : 0);
 }
 
-typedef struct WindowCodeArg WindowCodeArg;
-typedef struct WindowCsrAndReg WindowCsrAndReg;
+تعريفنوع بنية کړکۍ_کوډ_Arg کړکۍ_کوډ_Arg;
+تعريفنوع بنية کړکۍ_Csr_And_Reg کړکۍ_Csr_And_Reg;
 
 /*
 ** See comments above struct WindowCodeArg.
 */
-struct WindowCsrAndReg {
-  int csr;                        /* Cursor number */
-  int reg;                        /* First in array of peer values */
+بنية کړکۍ_Csr_And_Reg {
+  صحيح csr;                        /* Cursor number */
+  صحيح reg;                        /* First in array of peer values */
 };
 
 /*
@@ -1619,39 +1619,39 @@ struct WindowCsrAndReg {
 **   be required. In this case both WindowCodeArg.csr and reg are set to
 **   0.
 */
-struct WindowCodeArg {
+بنية کړکۍ_کوډ_Arg {
   Parse *pParse;             /* Parse context */
-  Window *pMWin;             /* First in list of functions being processed */
+  کړکۍ *pMWin;             /* First in list of functions being processed */
   Vdbe *pVdbe;               /* VDBE object */
-  int addrGosub;             /* OP_Gosub to this address to return one row */
-  int regGosub;              /* Register used with OP_Gosub(addrGosub) */
-  int regArg;                /* First in array of accumulator registers */
-  int eDelete;               /* See above */
-  int regRowid;
+  صحيح addrGosub;             /* OP_Gosub to this address to return one row */
+  صحيح regGosub;              /* Register used with OP_Gosub(addrGosub) */
+  صحيح regArg;                /* First in array of accumulator registers */
+  صحيح eDelete;               /* See above */
+  صحيح regRowid;
 
-  WindowCsrAndReg start;
-  WindowCsrAndReg current;
-  WindowCsrAndReg end;
+  کړکۍ_Csr_And_Reg پیل;
+  کړکۍ_Csr_And_Reg current;
+  کړکۍ_Csr_And_Reg پای_ټکی_2;
 };
 
 /*
 ** Generate VM code to read the window frames peer values from cursor csr into
 ** an array of registers starting at reg.
 */
-static void windowReadPeerValues(
-  WindowCodeArg *p,
-  int csr,
-  int reg
+ساكن فراغ کړکۍ_Read_Peer_ارزښتونه(
+  کړکۍ_کوډ_Arg *p,
+  صحيح csr,
+  صحيح reg
 ){
-  Window *pMWin = p->pMWin;
-  ExprList *pOrderBy = pMWin->pOrderBy;
-  if( pOrderBy ){
+  کړکۍ *pMWin = p->pMWin;
+  بیان_List *p_ترتیب_By = pMWin->p_ترتیب_By;
+  إذا( p_ترتیب_By ){
     Vdbe *v = sqlite3GetVdbe(p->pParse);
-    ExprList *pPart = pMWin->pPartition;
-    int iColOff = pMWin->nBufferCol + (pPart ? pPart->nExpr : 0);
-    int i;
-    for(i=0; i<pOrderBy->nExpr; i++){
-      sqlite3VdbeAddOp3(v, OP_Column, csr, iColOff+i, reg+i);
+    بیان_List *pPart = pMWin->p_برخه_کول;
+    صحيح i_ستون_Off = pMWin->n_بفر_ستون + (pPart ? pPart->n_بیان : 0);
+    صحيح i;
+    لكل(i=0; i<p_ترتیب_By->n_بیان; i++){
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, csr, i_ستون_Off+i, reg+i);
     }
   }
 }
@@ -1675,118 +1675,118 @@ static void windowReadPeerValues(
 ** If argument regPartSize is non-zero, then it is a register containing the
 ** number of rows in the current partition.
 */
-static void windowAggStep(
-  WindowCodeArg *p,
-  Window *pMWin,                  /* Linked list of window functions */
-  int csr,                        /* Read arguments from this cursor */
-  int bInverse,                   /* True to invoke xInverse instead of xStep */
-  int reg                         /* Array of registers */
+ساكن فراغ کړکۍ_Agg_ګام(
+  کړکۍ_کوډ_Arg *p,
+  کړکۍ *pMWin,                  /* Linked list of window functions */
+  صحيح csr,                        /* Read arguments from this cursor */
+  صحيح bInverse,                   /* True to invoke xInverse instead of xStep */
+  صحيح reg                         /* Array of registers */
 ){
   Parse *pParse = p->pParse;
   Vdbe *v = sqlite3GetVdbe(pParse);
-  Window *pWin;
-  for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
+  کړکۍ *pWin;
+  لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
     FuncDef *pFunc = pWin->pWFunc;
-    int regArg;
-    int nArg = pWin->bExprArgs ? 0 : windowArgCount(pWin);
-    int i;
-    int addrIf = 0;
+    صحيح regArg;
+    صحيح nArg = pWin->b_بیان_دلیلونه ? 0 : کړکۍ_Arg_شمېر(pWin);
+    صحيح i;
+    صحيح addrIf = 0;
 
-    assert( bInverse==0 || pWin->eStart!=TK_UNBOUNDED );
+    أكد( bInverse==0 || pWin->e_پیل!=TK_UNBOUNDED );
 
     /* All OVER clauses in the same window function aggregate step must
     ** be the same. */
-    assert( pWin==pMWin || sqlite3WindowCompare(pParse,pWin,pMWin,0)!=1 );
+    أكد( pWin==pMWin || sqlite3_کړکۍ_Compare(pParse,pWin,pMWin,0)!=1 );
 
-    for(i=0; i<nArg; i++){
-      if( i!=1 || pFunc->zName!=nth_valueName ){
-        sqlite3VdbeAddOp3(v, OP_Column, csr, pWin->iArgCol+i, reg+i);
-      }else{
-        sqlite3VdbeAddOp3(v, OP_Column, pMWin->iEphCsr, pWin->iArgCol+i, reg+i);
+    لكل(i=0; i<nArg; i++){
+      إذا( i!=1 || pFunc->zName!=nth_ارزښت_Name ){
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, csr, pWin->i_Arg_ستون+i, reg+i);
+      }وإلا{
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, pMWin->iEphCsr, pWin->i_Arg_ستون+i, reg+i);
       }
     }
     regArg = reg;
 
-    if( pWin->pFilter ){
-      int regTmp;
-      assert( ExprUseXList(pWin->pOwner) );
-      assert( pWin->bExprArgs || !nArg ||nArg==pWin->pOwner->x.pList->nExpr );
-      assert( pWin->bExprArgs || nArg  ||pWin->pOwner->x.pList==0 );
-      regTmp = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp3(v, OP_Column, csr, pWin->iArgCol+nArg,regTmp);
-      addrIf = sqlite3VdbeAddOp3(v, OP_IfNot, regTmp, 0, 1);
+    إذا( pWin->pFilter ){
+      صحيح regTmp;
+      أكد( بیان_Use_XList(pWin->pOwner) );
+      أكد( pWin->b_بیان_دلیلونه || !nArg ||nArg==pWin->pOwner->x.pList->n_بیان );
+      أكد( pWin->b_بیان_دلیلونه || nArg  ||pWin->pOwner->x.pList==0 );
+      regTmp = sqlite3_Get_لنډمهاله_Reg(pParse);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, csr, pWin->i_Arg_ستون+nArg,regTmp);
+      addrIf = sqlite3_Vdbe_جمع_کړه_Op3(v, OP_IfNot, regTmp, 0, 1);
       VdbeCoverage(v);
-      sqlite3ReleaseTempReg(pParse, regTmp);
+      sqlite3_Release_لنډمهاله_Reg(pParse, regTmp);
     }
 
-    if( pMWin->regStartRowid==0
+    إذا( pMWin->reg_پیل_Rowid==0
      && (pFunc->funcFlags & SQLITE_FUNC_MINMAX)
-     && (pWin->eStart!=TK_UNBOUNDED)
+     && (pWin->e_پیل!=TK_UNBOUNDED)
     ){
-      int addrIsNull = sqlite3VdbeAddOp1(v, OP_IsNull, regArg);
+      صحيح addrIsNull = sqlite3_Vdbe_جمع_کړه_Op1(v, OP_IsNull, regArg);
       VdbeCoverage(v);
-      if( bInverse==0 ){
-        sqlite3VdbeAddOp2(v, OP_AddImm, pWin->regApp+1, 1);
-        sqlite3VdbeAddOp2(v, OP_SCopy, regArg, pWin->regApp);
-        sqlite3VdbeAddOp3(v, OP_MakeRecord, pWin->regApp, 2, pWin->regApp+2);
-        sqlite3VdbeAddOp2(v, OP_IdxInsert, pWin->csrApp, pWin->regApp+2);
-      }else{
-        sqlite3VdbeAddOp4Int(v, OP_SeekGE, pWin->csrApp, 0, regArg, 1);
-        VdbeCoverageNeverTaken(v);
-        sqlite3VdbeAddOp1(v, OP_Delete, pWin->csrApp);
-        sqlite3VdbeJumpHere(v, sqlite3VdbeCurrentAddr(v)-2);
+      إذا( bInverse==0 ){
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_جمع_کړه_Imm, pWin->regApp+1, 1);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_SCopy, regArg, pWin->regApp);
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Make_ریکارډ, pWin->regApp, 2, pWin->regApp+2);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Idx_ورننباسه, pWin->csrApp, pWin->regApp+2);
+      }وإلا{
+        sqlite3_Vdbe_جمع_کړه_Op4_Int(v, OP_SeekGE, pWin->csrApp, 0, regArg, 1);
+        Vdbe_Coverage_Never_اخیستل_شوی(v);
+        sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Delete, pWin->csrApp);
+        sqlite3_Vdbe_Jump_دلته(v, sqlite3VdbeCurrentAddr(v)-2);
       }
-      sqlite3VdbeJumpHere(v, addrIsNull);
-    }else if( pWin->regApp ){
-      assert( pWin->pFilter==0 );
-      assert( pFunc->zName==nth_valueName
-           || pFunc->zName==first_valueName
+      sqlite3_Vdbe_Jump_دلته(v, addrIsNull);
+    }وإلا إذا( pWin->regApp ){
+      أكد( pWin->pFilter==0 );
+      أكد( pFunc->zName==nth_ارزښت_Name
+           || pFunc->zName==لومړی_ارزښت_Name
       );
-      assert( bInverse==0 || bInverse==1 );
-      sqlite3VdbeAddOp2(v, OP_AddImm, pWin->regApp+1-bInverse, 1);
-    }else if( pFunc->xSFunc!=noopStepFunc ){
-      if( pWin->bExprArgs ){
-        int iOp = sqlite3VdbeCurrentAddr(v);
-        int iEnd;
+      أكد( bInverse==0 || bInverse==1 );
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_جمع_کړه_Imm, pWin->regApp+1-bInverse, 1);
+    }وإلا إذا( pFunc->xSFunc!=noop_ګام_Func ){
+      إذا( pWin->b_بیان_دلیلونه ){
+        صحيح iOp = sqlite3VdbeCurrentAddr(v);
+        صحيح i_پای_ټکی;
 
-        assert( ExprUseXList(pWin->pOwner) );
-        nArg = pWin->pOwner->x.pList->nExpr;
-        regArg = sqlite3GetTempRange(pParse, nArg);
-        sqlite3ExprCodeExprList(pParse, pWin->pOwner->x.pList, regArg, 0, 0);
+        أكد( بیان_Use_XList(pWin->pOwner) );
+        nArg = pWin->pOwner->x.pList->n_بیان;
+        regArg = sqlite3_Get_لنډمهاله_Range(pParse, nArg);
+        sqlite3_بیان_کوډ_بیان_List(pParse, pWin->pOwner->x.pList, regArg, 0, 0);
 
-        for(iEnd=sqlite3VdbeCurrentAddr(v); iOp<iEnd; iOp++){
+        لكل(i_پای_ټکی=sqlite3VdbeCurrentAddr(v); iOp<i_پای_ټکی; iOp++){
           VdbeOp *pOp = sqlite3VdbeGetOp(v, iOp);
-          if( pOp->opcode==OP_Column && pOp->p1==pMWin->iEphCsr ){
+          إذا( pOp->opcode==OP_ستنه && pOp->p1==pMWin->iEphCsr ){
             pOp->p1 = csr;
           }
         }
       }
-      if( pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
+      إذا( pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
         CollSeq *pColl;
-        assert( nArg>0 );
-        assert( ExprUseXList(pWin->pOwner) );
-        pColl = sqlite3ExprNNCollSeq(pParse, pWin->pOwner->x.pList->a[0].pExpr);
-        sqlite3VdbeAddOp4(v, OP_CollSeq, 0,0,0, (const char*)pColl, P4_COLLSEQ);
+        أكد( nArg>0 );
+        أكد( بیان_Use_XList(pWin->pOwner) );
+        pColl = sqlite3_بیان_NNColl_Seq(pParse, pWin->pOwner->x.pList->a[0].p_بیان);
+        sqlite3_Vdbe_جمع_کړه_Op4(v, OP_CollSeq, 0,0,0, (ثابت حرف*)pColl, P4_COLLSEQ);
       }
-      sqlite3VdbeAddOp3(v, bInverse? OP_AggInverse : OP_AggStep,
+      sqlite3_Vdbe_جمع_کړه_Op3(v, bInverse? OP_AggInverse : OP_Agg_ګام,
                         bInverse, regArg, pWin->regAccum);
       sqlite3VdbeAppendP4(v, pFunc, P4_FUNCDEF);
       sqlite3VdbeChangeP5(v, (u16)nArg);
-      if( pWin->bExprArgs ){
-        sqlite3ReleaseTempRange(pParse, regArg, nArg);
+      إذا( pWin->b_بیان_دلیلونه ){
+        sqlite3_Release_لنډمهاله_Range(pParse, regArg, nArg);
       }
     }
 
-    if( addrIf ) sqlite3VdbeJumpHere(v, addrIf);
+    إذا( addrIf ) sqlite3_Vdbe_Jump_دلته(v, addrIf);
   }
 }
 
 /*
 ** Values that may be passed as the second argument to windowCodeOp().
 */
-#define WINDOW_RETURN_ROW 1
-#define WINDOW_AGGINVERSE 2
-#define WINDOW_AGGSTEP    3
+#تعریف_کړه کړکۍ_RETURN_لیکه 1
+#تعریف_کړه کړکۍ_AGGINVERSE 2
+#تعریف_کړه کړکۍ_AGGSTEP    3
 
 /*
 ** Generate VM code to invoke either xValue() (bFin==0) or xFinalize()
@@ -1794,33 +1794,33 @@ static void windowAggStep(
 ** pMWin. Or, for built-in window-functions that do not use the standard
 ** API, generate the equivalent VM code.
 */
-static void windowAggFinal(WindowCodeArg *p, int bFin){
+ساكن فراغ کړکۍ_Agg_Final(کړکۍ_کوډ_Arg *p, صحيح bFin){
   Parse *pParse = p->pParse;
-  Window *pMWin = p->pMWin;
+  کړکۍ *pMWin = p->pMWin;
   Vdbe *v = sqlite3GetVdbe(pParse);
-  Window *pWin;
+  کړکۍ *pWin;
 
-  for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
-    if( pMWin->regStartRowid==0
+  لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
+    إذا( pMWin->reg_پیل_Rowid==0
      && (pWin->pWFunc->funcFlags & SQLITE_FUNC_MINMAX)
-     && (pWin->eStart!=TK_UNBOUNDED)
+     && (pWin->e_پیل!=TK_UNBOUNDED)
     ){
-      sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regResult);
-      sqlite3VdbeAddOp1(v, OP_Last, pWin->csrApp);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Null, 0, pWin->reg_پایله);
+      sqlite3_Vdbe_جمع_کړه_Op1(v, OP_وروستی, pWin->csrApp);
       VdbeCoverage(v);
-      sqlite3VdbeAddOp3(v, OP_Column, pWin->csrApp, 0, pWin->regResult);
-      sqlite3VdbeJumpHere(v, sqlite3VdbeCurrentAddr(v)-2);
-    }else if( pWin->regApp ){
-      assert( pMWin->regStartRowid==0 );
-    }else{
-      int nArg = windowArgCount(pWin);
-      if( bFin ){
-        sqlite3VdbeAddOp2(v, OP_AggFinal, pWin->regAccum, nArg);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, pWin->csrApp, 0, pWin->reg_پایله);
+      sqlite3_Vdbe_Jump_دلته(v, sqlite3VdbeCurrentAddr(v)-2);
+    }وإلا إذا( pWin->regApp ){
+      أكد( pMWin->reg_پیل_Rowid==0 );
+    }وإلا{
+      صحيح nArg = کړکۍ_Arg_شمېر(pWin);
+      إذا( bFin ){
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_AggFinal, pWin->regAccum, nArg);
         sqlite3VdbeAppendP4(v, pWin->pWFunc, P4_FUNCDEF);
-        sqlite3VdbeAddOp2(v, OP_Copy, pWin->regAccum, pWin->regResult);
-        sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regAccum);
-      }else{
-        sqlite3VdbeAddOp3(v, OP_AggValue,pWin->regAccum,nArg,pWin->regResult);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Copy, pWin->regAccum, pWin->reg_پایله);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Null, 0, pWin->regAccum);
+      }وإلا{
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Agg_ارزښت,pWin->regAccum,nArg,pWin->reg_پایله);
         sqlite3VdbeAppendP4(v, pWin->pWFunc, P4_FUNCDEF);
       }
     }
@@ -1833,96 +1833,96 @@ static void windowAggFinal(WindowCodeArg *p, int bFin){
 ** results in the Window.regResult registers, ready to return the upper
 ** layer.
 */
-static void windowFullScan(WindowCodeArg *p){
-  Window *pWin;
+ساكن فراغ کړکۍ_ډک_لټون(کړکۍ_کوډ_Arg *p){
+  کړکۍ *pWin;
   Parse *pParse = p->pParse;
-  Window *pMWin = p->pMWin;
+  کړکۍ *pMWin = p->pMWin;
   Vdbe *v = p->pVdbe;
 
-  int regCRowid = 0;              /* Current rowid value */
-  int regCPeer = 0;               /* Current peer values */
-  int regRowid = 0;               /* AggStep rowid value */
-  int regPeer = 0;                /* AggStep peer values */
+  صحيح regCRowid = 0;              /* Current rowid value */
+  صحيح regCPeer = 0;               /* Current peer values */
+  صحيح regRowid = 0;               /* AggStep rowid value */
+  صحيح regPeer = 0;                /* AggStep peer values */
 
-  int nPeer;
-  int lblNext;
-  int lblBrk;
-  int addrNext;
-  int csr;
+  صحيح nPeer;
+  صحيح lbl_بل;
+  صحيح lblBrk;
+  صحيح addr_بل;
+  صحيح csr;
 
   VdbeModuleComment((v, "windowFullScan begin"));
 
-  assert( pMWin!=0 );
+  أكد( pMWin!=0 );
   csr = pMWin->csrApp;
-  nPeer = (pMWin->pOrderBy ? pMWin->pOrderBy->nExpr : 0);
+  nPeer = (pMWin->p_ترتیب_By ? pMWin->p_ترتیب_By->n_بیان : 0);
 
-  lblNext = sqlite3VdbeMakeLabel(pParse);
+  lbl_بل = sqlite3VdbeMakeLabel(pParse);
   lblBrk = sqlite3VdbeMakeLabel(pParse);
 
-  regCRowid = sqlite3GetTempReg(pParse);
-  regRowid = sqlite3GetTempReg(pParse);
-  if( nPeer ){
-    regCPeer = sqlite3GetTempRange(pParse, nPeer);
-    regPeer = sqlite3GetTempRange(pParse, nPeer);
+  regCRowid = sqlite3_Get_لنډمهاله_Reg(pParse);
+  regRowid = sqlite3_Get_لنډمهاله_Reg(pParse);
+  إذا( nPeer ){
+    regCPeer = sqlite3_Get_لنډمهاله_Range(pParse, nPeer);
+    regPeer = sqlite3_Get_لنډمهاله_Range(pParse, nPeer);
   }
 
-  sqlite3VdbeAddOp2(v, OP_Rowid, pMWin->iEphCsr, regCRowid);
-  windowReadPeerValues(p, pMWin->iEphCsr, regCPeer);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Rowid, pMWin->iEphCsr, regCRowid);
+  کړکۍ_Read_Peer_ارزښتونه(p, pMWin->iEphCsr, regCPeer);
 
-  for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
-    sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regAccum);
+  لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Null, 0, pWin->regAccum);
   }
 
-  sqlite3VdbeAddOp3(v, OP_SeekGE, csr, lblBrk, pMWin->regStartRowid);
+  sqlite3_Vdbe_جمع_کړه_Op3(v, OP_SeekGE, csr, lblBrk, pMWin->reg_پیل_Rowid);
   VdbeCoverage(v);
-  addrNext = sqlite3VdbeCurrentAddr(v);
-  sqlite3VdbeAddOp2(v, OP_Rowid, csr, regRowid);
-  sqlite3VdbeAddOp3(v, OP_Gt, pMWin->regEndRowid, lblBrk, regRowid);
+  addr_بل = sqlite3VdbeCurrentAddr(v);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Rowid, csr, regRowid);
+  sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Gt, pMWin->reg_پای_ټکی_Rowid, lblBrk, regRowid);
   VdbeCoverageNeverNull(v);
 
-  if( pMWin->eExclude==TK_CURRENT ){
-    sqlite3VdbeAddOp3(v, OP_Eq, regCRowid, lblNext, regRowid);
+  إذا( pMWin->eExclude==TK_CURRENT ){
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Eq, regCRowid, lbl_بل, regRowid);
     VdbeCoverageNeverNull(v);
-  }else if( pMWin->eExclude!=TK_NO ){
-    int addr;
-    int addrEq = 0;
-    KeyInfo *pKeyInfo = 0;
+  }وإلا إذا( pMWin->eExclude!=TK_NO ){
+    صحيح addr;
+    صحيح addrEq = 0;
+    کلی_Info *p_کلی_Info = 0;
 
-    if( pMWin->pOrderBy ){
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pMWin->pOrderBy, 0, 0);
+    إذا( pMWin->p_ترتیب_By ){
+      p_کلی_Info = sqlite3_کلی_Info_From_بیان_List(pParse, pMWin->p_ترتیب_By, 0, 0);
     }
-    if( pMWin->eExclude==TK_TIES ){
-      addrEq = sqlite3VdbeAddOp3(v, OP_Eq, regCRowid, 0, regRowid);
+    إذا( pMWin->eExclude==TK_TIES ){
+      addrEq = sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Eq, regCRowid, 0, regRowid);
       VdbeCoverageNeverNull(v);
     }
-    if( pKeyInfo ){
-      windowReadPeerValues(p, csr, regPeer);
-      sqlite3VdbeAddOp3(v, OP_Compare, regPeer, regCPeer, nPeer);
-      sqlite3VdbeAppendP4(v, (void*)pKeyInfo, P4_KEYINFO);
+    إذا( p_کلی_Info ){
+      کړکۍ_Read_Peer_ارزښتونه(p, csr, regPeer);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Compare, regPeer, regCPeer, nPeer);
+      sqlite3VdbeAppendP4(v, (فراغ*)p_کلی_Info, P4_KEYINFO);
       addr = sqlite3VdbeCurrentAddr(v)+1;
-      sqlite3VdbeAddOp3(v, OP_Jump, addr, lblNext, addr);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Jump, addr, lbl_بل, addr);
       VdbeCoverageEqNe(v);
-    }else{
-      sqlite3VdbeAddOp2(v, OP_Goto, 0, lblNext);
+    }وإلا{
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, lbl_بل);
     }
-    if( addrEq ) sqlite3VdbeJumpHere(v, addrEq);
+    إذا( addrEq ) sqlite3_Vdbe_Jump_دلته(v, addrEq);
   }
 
-  windowAggStep(p, pMWin, csr, 0, p->regArg);
+  کړکۍ_Agg_ګام(p, pMWin, csr, 0, p->regArg);
 
-  sqlite3VdbeResolveLabel(v, lblNext);
-  sqlite3VdbeAddOp2(v, OP_Next, csr, addrNext);
+  sqlite3VdbeResolveLabel(v, lbl_بل);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_بل, csr, addr_بل);
   VdbeCoverage(v);
-  sqlite3VdbeJumpHere(v, addrNext-1);
-  sqlite3VdbeJumpHere(v, addrNext+1);
-  sqlite3ReleaseTempReg(pParse, regRowid);
-  sqlite3ReleaseTempReg(pParse, regCRowid);
-  if( nPeer ){
-    sqlite3ReleaseTempRange(pParse, regPeer, nPeer);
-    sqlite3ReleaseTempRange(pParse, regCPeer, nPeer);
+  sqlite3_Vdbe_Jump_دلته(v, addr_بل-1);
+  sqlite3_Vdbe_Jump_دلته(v, addr_بل+1);
+  sqlite3_Release_لنډمهاله_Reg(pParse, regRowid);
+  sqlite3_Release_لنډمهاله_Reg(pParse, regCRowid);
+  إذا( nPeer ){
+    sqlite3_Release_لنډمهاله_Range(pParse, regPeer, nPeer);
+    sqlite3_Release_لنډمهاله_Range(pParse, regCPeer, nPeer);
   }
 
-  windowAggFinal(p, 1);
+  کړکۍ_Agg_Final(p, 1);
   VdbeModuleComment((v, "windowFullScan end"));
 }
 
@@ -1939,75 +1939,75 @@ static void windowFullScan(WindowCodeArg *p){
 **   lag()
 **   lead()
 */
-static void windowReturnOneRow(WindowCodeArg *p){
-  Window *pMWin = p->pMWin;
+ساكن فراغ کړکۍ_Return_One_لیکه(کړکۍ_کوډ_Arg *p){
+  کړکۍ *pMWin = p->pMWin;
   Vdbe *v = p->pVdbe;
 
-  if( pMWin->regStartRowid ){
-    windowFullScan(p);
-  }else{
+  إذا( pMWin->reg_پیل_Rowid ){
+    کړکۍ_ډک_لټون(p);
+  }وإلا{
     Parse *pParse = p->pParse;
-    Window *pWin;
+    کړکۍ *pWin;
 
-    for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
+    لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
       FuncDef *pFunc = pWin->pWFunc;
-      assert( ExprUseXList(pWin->pOwner) );
-      if( pFunc->zName==nth_valueName
-       || pFunc->zName==first_valueName
+      أكد( بیان_Use_XList(pWin->pOwner) );
+      إذا( pFunc->zName==nth_ارزښت_Name
+       || pFunc->zName==لومړی_ارزښت_Name
       ){
-        int csr = pWin->csrApp;
-        int lbl = sqlite3VdbeMakeLabel(pParse);
-        int tmpReg = sqlite3GetTempReg(pParse);
-        sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regResult);
+        صحيح csr = pWin->csrApp;
+        صحيح lbl = sqlite3VdbeMakeLabel(pParse);
+        صحيح tmpReg = sqlite3_Get_لنډمهاله_Reg(pParse);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Null, 0, pWin->reg_پایله);
  
-        if( pFunc->zName==nth_valueName ){
-          sqlite3VdbeAddOp3(v, OP_Column,pMWin->iEphCsr,pWin->iArgCol+1,tmpReg);
-          windowCheckValue(pParse, tmpReg, 2);
-        }else{
-          sqlite3VdbeAddOp2(v, OP_Integer, 1, tmpReg);
+        إذا( pFunc->zName==nth_ارزښت_Name ){
+          sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه,pMWin->iEphCsr,pWin->i_Arg_ستون+1,tmpReg);
+          کړکۍ_Check_ارزښت(pParse, tmpReg, 2);
+        }وإلا{
+          sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 1, tmpReg);
         }
-        sqlite3VdbeAddOp3(v, OP_Add, tmpReg, pWin->regApp, tmpReg);
-        sqlite3VdbeAddOp3(v, OP_Gt, pWin->regApp+1, lbl, tmpReg);
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_جمع_کړه, tmpReg, pWin->regApp, tmpReg);
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Gt, pWin->regApp+1, lbl, tmpReg);
         VdbeCoverageNeverNull(v);
-        sqlite3VdbeAddOp3(v, OP_SeekRowid, csr, 0, tmpReg);
-        VdbeCoverageNeverTaken(v);
-        sqlite3VdbeAddOp3(v, OP_Column, csr, pWin->iArgCol, pWin->regResult);
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_SeekRowid, csr, 0, tmpReg);
+        Vdbe_Coverage_Never_اخیستل_شوی(v);
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, csr, pWin->i_Arg_ستون, pWin->reg_پایله);
         sqlite3VdbeResolveLabel(v, lbl);
-        sqlite3ReleaseTempReg(pParse, tmpReg);
+        sqlite3_Release_لنډمهاله_Reg(pParse, tmpReg);
       }
-      else if( pFunc->zName==leadName || pFunc->zName==lagName ){
-        int nArg = pWin->pOwner->x.pList->nExpr;
-        int csr = pWin->csrApp;
-        int lbl = sqlite3VdbeMakeLabel(pParse);
-        int tmpReg = sqlite3GetTempReg(pParse);
-        int iEph = pMWin->iEphCsr;
+      وإلا إذا( pFunc->zName==leadName || pFunc->zName==lagName ){
+        صحيح nArg = pWin->pOwner->x.pList->n_بیان;
+        صحيح csr = pWin->csrApp;
+        صحيح lbl = sqlite3VdbeMakeLabel(pParse);
+        صحيح tmpReg = sqlite3_Get_لنډمهاله_Reg(pParse);
+        صحيح iEph = pMWin->iEphCsr;
  
-        if( nArg<3 ){
-          sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regResult);
-        }else{
-          sqlite3VdbeAddOp3(v, OP_Column, iEph,pWin->iArgCol+2,pWin->regResult);
+        إذا( nArg<3 ){
+          sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Null, 0, pWin->reg_پایله);
+        }وإلا{
+          sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, iEph,pWin->i_Arg_ستون+2,pWin->reg_پایله);
         }
-        sqlite3VdbeAddOp2(v, OP_Rowid, iEph, tmpReg);
-        if( nArg<2 ){
-          int val = (pFunc->zName==leadName ? 1 : -1);
-          sqlite3VdbeAddOp2(v, OP_AddImm, tmpReg, val);
-        }else{
-          int op = (pFunc->zName==leadName ? OP_Add : OP_Subtract);
-          int tmpReg2 = sqlite3GetTempReg(pParse);
-          sqlite3VdbeAddOp3(v, OP_Column, iEph, pWin->iArgCol+1, tmpReg2);
-          sqlite3VdbeAddOp3(v, op, tmpReg2, tmpReg, tmpReg);
-          sqlite3ReleaseTempReg(pParse, tmpReg2);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Rowid, iEph, tmpReg);
+        إذا( nArg<2 ){
+          صحيح val = (pFunc->zName==leadName ? 1 : -1);
+          sqlite3_Vdbe_جمع_کړه_Op2(v, OP_جمع_کړه_Imm, tmpReg, val);
+        }وإلا{
+          صحيح op = (pFunc->zName==leadName ? OP_جمع_کړه : OP_کمول);
+          صحيح tmpReg2 = sqlite3_Get_لنډمهاله_Reg(pParse);
+          sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, iEph, pWin->i_Arg_ستون+1, tmpReg2);
+          sqlite3_Vdbe_جمع_کړه_Op3(v, op, tmpReg2, tmpReg, tmpReg);
+          sqlite3_Release_لنډمهاله_Reg(pParse, tmpReg2);
         }
  
-        sqlite3VdbeAddOp3(v, OP_SeekRowid, csr, lbl, tmpReg);
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_SeekRowid, csr, lbl, tmpReg);
         VdbeCoverage(v);
-        sqlite3VdbeAddOp3(v, OP_Column, csr, pWin->iArgCol, pWin->regResult);
+        sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, csr, pWin->i_Arg_ستون, pWin->reg_پایله);
         sqlite3VdbeResolveLabel(v, lbl);
-        sqlite3ReleaseTempReg(pParse, tmpReg);
+        sqlite3_Release_لنډمهاله_Reg(pParse, tmpReg);
       }
     }
   }
-  sqlite3VdbeAddOp2(v, OP_Gosub, p->regGosub, p->addrGosub);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Gosub, p->regGosub, p->addrGosub);
 }
 
 /*
@@ -2016,52 +2016,52 @@ static void windowReturnOneRow(WindowCodeArg *p){
 ** any equivalent initialization required by any built-in window functions
 ** in the list.
 */
-static int windowInitAccum(Parse *pParse, Window *pMWin){
+ساكن صحيح کړکۍ_Init_Accum(Parse *pParse, کړکۍ *pMWin){
   Vdbe *v = sqlite3GetVdbe(pParse);
-  int regArg;
-  int nArg = 0;
-  Window *pWin;
-  for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
+  صحيح regArg;
+  صحيح nArg = 0;
+  کړکۍ *pWin;
+  لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
     FuncDef *pFunc = pWin->pWFunc;
-    assert( pWin->regAccum );
-    sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regAccum);
-    nArg = MAX(nArg, windowArgCount(pWin));
-    if( pMWin->regStartRowid==0 ){
-      if( pFunc->zName==nth_valueName || pFunc->zName==first_valueName ){
-        sqlite3VdbeAddOp2(v, OP_Integer, 0, pWin->regApp);
-        sqlite3VdbeAddOp2(v, OP_Integer, 0, pWin->regApp+1);
+    أكد( pWin->regAccum );
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Null, 0, pWin->regAccum);
+    nArg = MAX(nArg, کړکۍ_Arg_شمېر(pWin));
+    إذا( pMWin->reg_پیل_Rowid==0 ){
+      إذا( pFunc->zName==nth_ارزښت_Name || pFunc->zName==لومړی_ارزښت_Name ){
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, pWin->regApp);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, pWin->regApp+1);
       }
 
-      if( (pFunc->funcFlags & SQLITE_FUNC_MINMAX) && pWin->csrApp ){
-        assert( pWin->eStart!=TK_UNBOUNDED );
-        sqlite3VdbeAddOp1(v, OP_ResetSorter, pWin->csrApp);
-        sqlite3VdbeAddOp2(v, OP_Integer, 0, pWin->regApp+1);
+      إذا( (pFunc->funcFlags & SQLITE_FUNC_MINMAX) && pWin->csrApp ){
+        أكد( pWin->e_پیل!=TK_UNBOUNDED );
+        sqlite3_Vdbe_جمع_کړه_Op1(v, OP_ResetSorter, pWin->csrApp);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, pWin->regApp+1);
       }
     }
   }
   regArg = pParse->nMem+1;
   pParse->nMem += nArg;
-  return regArg;
+  أرجع regArg;
 }
 
 /*
 ** Return true if the current frame should be cached in the ephemeral table,
 ** even if there are no xInverse() calls required.
 */
-static int windowCacheFrame(Window *pMWin){
-  Window *pWin;
-  if( pMWin->regStartRowid ) return 1;
-  for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
+ساكن صحيح کړکۍ_Cache_چوکاټ(کړکۍ *pMWin){
+  کړکۍ *pWin;
+  إذا( pMWin->reg_پیل_Rowid ) أرجع 1;
+  لكل(pWin=pMWin; pWin; pWin=pWin->p_بل_Win){
     FuncDef *pFunc = pWin->pWFunc;
-    if( (pFunc->zName==nth_valueName)
-     || (pFunc->zName==first_valueName)
+    إذا( (pFunc->zName==nth_ارزښت_Name)
+     || (pFunc->zName==لومړی_ارزښت_Name)
      || (pFunc->zName==leadName)
      || (pFunc->zName==lagName)
     ){
-      return 1;
+      أرجع 1;
     }
   }
-  return 0;
+  أرجع 0;
 }
 
 /*
@@ -2074,26 +2074,26 @@ static int windowCacheFrame(Window *pMWin){
 ** regOld and control falls through. Otherwise, if the contents of the arrays
 ** are equal, an OP_Goto is executed. The address of the OP_Goto is returned.
 */
-static void windowIfNewPeer(
+ساكن فراغ کړکۍ_If_New_Peer(
   Parse *pParse,
-  ExprList *pOrderBy,
-  int regNew,                     /* First in array of new values */
-  int regOld,                     /* First in array of old values */
-  int addr                        /* Jump here */
+  بیان_List *p_ترتیب_By,
+  صحيح regNew,                     /* First in array of new values */
+  صحيح regOld,                     /* First in array of old values */
+  صحيح addr                        /* Jump here */
 ){
   Vdbe *v = sqlite3GetVdbe(pParse);
-  if( pOrderBy ){
-    int nVal = pOrderBy->nExpr;
-    KeyInfo *pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pOrderBy, 0, 0);
-    sqlite3VdbeAddOp3(v, OP_Compare, regOld, regNew, nVal);
-    sqlite3VdbeAppendP4(v, (void*)pKeyInfo, P4_KEYINFO);
-    sqlite3VdbeAddOp3(v, OP_Jump,
+  إذا( p_ترتیب_By ){
+    صحيح nVal = p_ترتیب_By->n_بیان;
+    کلی_Info *p_کلی_Info = sqlite3_کلی_Info_From_بیان_List(pParse, p_ترتیب_By, 0, 0);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Compare, regOld, regNew, nVal);
+    sqlite3VdbeAppendP4(v, (فراغ*)p_کلی_Info, P4_KEYINFO);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Jump,
       sqlite3VdbeCurrentAddr(v)+1, addr, sqlite3VdbeCurrentAddr(v)+1
     );
     VdbeCoverageEqNe(v);
-    sqlite3VdbeAddOp3(v, OP_Copy, regNew, regOld, nVal-1);
-  }else{
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, addr);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Copy, regNew, regOld, nVal-1);
+  }وإلا{
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr);
   }
 }
 
@@ -2120,42 +2120,42 @@ static void windowIfNewPeer(
 ** a numeric type (real or integer), then the result of the addition
 ** or subtraction is a a copy of csr1.peerVal.
 */
-static void windowCodeRangeTest(
-  WindowCodeArg *p,
-  int op,                         /* OP_Ge, OP_Gt, or OP_Le */
-  int csr1,                       /* Cursor number for cursor 1 */
-  int regVal,                     /* Register containing non-negative number */
-  int csr2,                       /* Cursor number for cursor 2 */
-  int lbl                         /* Jump destination if condition is true */
+ساكن فراغ کړکۍ_کوډ_Range_Test(
+  کړکۍ_کوډ_Arg *p,
+  صحيح op,                         /* OP_Ge, OP_Gt, or OP_Le */
+  صحيح csr1,                       /* Cursor number for cursor 1 */
+  صحيح regVal,                     /* Register containing non-negative number */
+  صحيح csr2,                       /* Cursor number for cursor 2 */
+  صحيح lbl                         /* Jump destination if condition is true */
 ){
   Parse *pParse = p->pParse;
   Vdbe *v = sqlite3GetVdbe(pParse);
-  ExprList *pOrderBy = p->pMWin->pOrderBy;  /* ORDER BY clause for window */
-  int reg1 = sqlite3GetTempReg(pParse);     /* Reg. for csr1.peerVal+regVal */
-  int reg2 = sqlite3GetTempReg(pParse);     /* Reg. for csr2.peerVal */
-  int regString = ++pParse->nMem;           /* Reg. for constant value '' */
-  int arith = OP_Add;                       /* OP_Add or OP_Subtract */
-  int addrGe;                               /* Jump destination */
-  int addrDone = sqlite3VdbeMakeLabel(pParse);   /* Address past OP_Ge */
+  بیان_List *p_ترتیب_By = p->pMWin->p_ترتیب_By;  /* ORDER BY clause for window */
+  صحيح reg1 = sqlite3_Get_لنډمهاله_Reg(pParse);     /* Reg. for csr1.peerVal+regVal */
+  صحيح reg2 = sqlite3_Get_لنډمهاله_Reg(pParse);     /* Reg. for csr2.peerVal */
+  صحيح regString = ++pParse->nMem;           /* Reg. for constant value '' */
+  صحيح arith = OP_جمع_کړه;                       /* OP_Add or OP_Subtract */
+  صحيح addrGe;                               /* Jump destination */
+  صحيح addr_بشپړ = sqlite3VdbeMakeLabel(pParse);   /* Address past OP_Ge */
   CollSeq *pColl;
 
   /* Read the peer-value from each cursor into a register */
-  windowReadPeerValues(p, csr1, reg1);
-  windowReadPeerValues(p, csr2, reg2);
+  کړکۍ_Read_Peer_ارزښتونه(p, csr1, reg1);
+  کړکۍ_Read_Peer_ارزښتونه(p, csr2, reg2);
 
-  assert( op==OP_Ge || op==OP_Gt || op==OP_Le );
-  assert( pOrderBy && pOrderBy->nExpr==1 );
-  if( pOrderBy->a[0].fg.sortFlags & KEYINFO_ORDER_DESC ){
-    switch( op ){
-      case OP_Ge: op = OP_Le; break;
-      case OP_Gt: op = OP_Lt; break;
-      default: assert( op==OP_Le ); op = OP_Ge; break;
+  أكد( op==OP_Ge || op==OP_Gt || op==OP_Le );
+  أكد( p_ترتیب_By && p_ترتیب_By->n_بیان==1 );
+  إذا( p_ترتیب_By->a[0].fg.ترتیبول_Flags & KEYINFO_ترتیب_DESC ){
+    بدل( op ){
+      حالة OP_Ge: op = OP_Le; اكسر;
+      حالة OP_Gt: op = OP_Lt; اكسر;
+      افتراضي: أكد( op==OP_Le ); op = OP_Ge; اكسر;
     }
-    arith = OP_Subtract;
+    arith = OP_کمول;
   }
 
   VdbeModuleComment((v, "CodeRangeTest: if( R%d %s R%d %s R%d ) goto lbl",
-      reg1, (arith==OP_Add ? "+" : "-"), regVal,
+      reg1, (arith==OP_جمع_کړه ? "+" : "-"), regVal,
       ((op==OP_Ge) ? ">=" : (op==OP_Le) ? "<=" : (op==OP_Gt) ? ">" : "<"), reg2
   ));
 
@@ -2178,29 +2178,29 @@ static void windowCodeRangeTest(
   ** Additionally, if either reg1 or reg2 are NULL but the jump to lbl is
   ** not taken, control jumps over the comparison operator coded below this
   ** block.  */
-  if( pOrderBy->a[0].fg.sortFlags & KEYINFO_ORDER_BIGNULL ){
+  إذا( p_ترتیب_By->a[0].fg.ترتیبول_Flags & KEYINFO_ترتیب_BIGNULL ){
     /* This block runs if reg1 contains a NULL. */
-    int addr = sqlite3VdbeAddOp1(v, OP_NotNull, reg1); VdbeCoverage(v);
-    switch( op ){
-      case OP_Ge:
-        sqlite3VdbeAddOp2(v, OP_Goto, 0, lbl);
-        break;
-      case OP_Gt:
-        sqlite3VdbeAddOp2(v, OP_NotNull, reg2, lbl);
+    صحيح addr = sqlite3_Vdbe_جمع_کړه_Op1(v, OP_NotNull, reg1); VdbeCoverage(v);
+    بدل( op ){
+      حالة OP_Ge:
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, lbl);
+        اكسر;
+      حالة OP_Gt:
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_NotNull, reg2, lbl);
         VdbeCoverage(v);
-        break;
-      case OP_Le:
-        sqlite3VdbeAddOp2(v, OP_IsNull, reg2, lbl);
+        اكسر;
+      حالة OP_Le:
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_IsNull, reg2, lbl);
         VdbeCoverage(v);
-        break;
-      default: assert( op==OP_Lt ); /* no-op */ break;
+        اكسر;
+      افتراضي: أكد( op==OP_Lt ); /* no-op */ اكسر;
     }
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, addrDone);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr_بشپړ);
 
     /* This block runs if reg1 is not NULL, but reg2 is. */
-    sqlite3VdbeJumpHere(v, addr);
-    sqlite3VdbeAddOp2(v, OP_IsNull, reg2,
-                      (op==OP_Gt || op==OP_Ge) ? addrDone : lbl);
+    sqlite3_Vdbe_Jump_دلته(v, addr);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_IsNull, reg2,
+                      (op==OP_Gt || op==OP_Ge) ? addr_بشپړ : lbl);
     VdbeCoverage(v);
   }
 
@@ -2217,31 +2217,31 @@ static void windowCodeRangeTest(
   ** the add/subtract is skipped for these, as required. If reg1 is a NULL,
   ** then the arithmetic is performed, but since adding or subtracting from
   ** NULL is always NULL anyway, this case is handled as required too.  */
-  sqlite3VdbeAddOp4(v, OP_String8, 0, regString, 0, "", P4_STATIC);
-  addrGe = sqlite3VdbeAddOp3(v, OP_Ge, regString, 0, reg1);
+  sqlite3_Vdbe_جمع_کړه_Op4(v, OP_String8, 0, regString, 0, "", P4_STATIC);
+  addrGe = sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Ge, regString, 0, reg1);
   VdbeCoverage(v);
-  if( (op==OP_Ge && arith==OP_Add) || (op==OP_Le && arith==OP_Subtract) ){
-    sqlite3VdbeAddOp3(v, op, reg2, lbl, reg1); VdbeCoverage(v);
+  إذا( (op==OP_Ge && arith==OP_جمع_کړه) || (op==OP_Le && arith==OP_کمول) ){
+    sqlite3_Vdbe_جمع_کړه_Op3(v, op, reg2, lbl, reg1); VdbeCoverage(v);
   }
-  sqlite3VdbeAddOp3(v, arith, regVal, reg1, reg1);
-  sqlite3VdbeJumpHere(v, addrGe);
+  sqlite3_Vdbe_جمع_کړه_Op3(v, arith, regVal, reg1, reg1);
+  sqlite3_Vdbe_Jump_دلته(v, addrGe);
 
   /* Compare registers reg2 and reg1, taking the jump if required. Note that
   ** control skips over this test if the BIGNULL flag is set and either
   ** reg1 or reg2 contain a NULL value.  */
-  sqlite3VdbeAddOp3(v, op, reg2, lbl, reg1); VdbeCoverage(v);
-  pColl = sqlite3ExprNNCollSeq(pParse, pOrderBy->a[0].pExpr);
-  sqlite3VdbeAppendP4(v, (void*)pColl, P4_COLLSEQ);
+  sqlite3_Vdbe_جمع_کړه_Op3(v, op, reg2, lbl, reg1); VdbeCoverage(v);
+  pColl = sqlite3_بیان_NNColl_Seq(pParse, p_ترتیب_By->a[0].p_بیان);
+  sqlite3VdbeAppendP4(v, (فراغ*)pColl, P4_COLLSEQ);
   sqlite3VdbeChangeP5(v, SQLITE_NULLEQ);
-  sqlite3VdbeResolveLabel(v, addrDone);
+  sqlite3VdbeResolveLabel(v, addr_بشپړ);
 
-  assert( op==OP_Ge || op==OP_Gt || op==OP_Lt || op==OP_Le );
+  أكد( op==OP_Ge || op==OP_Gt || op==OP_Lt || op==OP_Le );
   testcase(op==OP_Ge); VdbeCoverageIf(v, op==OP_Ge);
   testcase(op==OP_Lt); VdbeCoverageIf(v, op==OP_Lt);
   testcase(op==OP_Le); VdbeCoverageIf(v, op==OP_Le);
   testcase(op==OP_Gt); VdbeCoverageIf(v, op==OP_Gt);
-  sqlite3ReleaseTempReg(pParse, reg1);
-  sqlite3ReleaseTempReg(pParse, reg2);
+  sqlite3_Release_لنډمهاله_Reg(pParse, reg1);
+  sqlite3_Release_لنډمهاله_Reg(pParse, reg2);
 
   VdbeModuleComment((v, "CodeRangeTest: end"));
 }
@@ -2252,57 +2252,57 @@ static void windowCodeRangeTest(
 ** operation. Refer to the header comment for sqlite3WindowCodeStep() for
 ** details.
 */
-static int windowCodeOp(
- WindowCodeArg *p,                /* Context object */
- int op,                          /* WINDOW_RETURN_ROW, AGGSTEP or AGGINVERSE */
- int regCountdown,                /* Register for OP_IfPos countdown */
- int jumpOnEof                    /* Jump here if stepped cursor reaches EOF */
+ساكن صحيح کړکۍ_کوډ_Op(
+ کړکۍ_کوډ_Arg *p,                /* Context object */
+ صحيح op,                          /* WINDOW_RETURN_ROW, AGGSTEP or AGGINVERSE */
+ صحيح regCountdown,                /* Register for OP_IfPos countdown */
+ صحيح jumpOnEof                    /* Jump here if stepped cursor reaches EOF */
 ){
-  int csr, reg;
+  صحيح csr, reg;
   Parse *pParse = p->pParse;
-  Window *pMWin = p->pMWin;
-  int ret = 0;
+  کړکۍ *pMWin = p->pMWin;
+  صحيح ret = 0;
   Vdbe *v = p->pVdbe;
-  int addrContinue = 0;
-  int bPeer = (pMWin->eFrmType!=TK_ROWS);
+  صحيح addrContinue = 0;
+  صحيح bPeer = (pMWin->eFrmType!=TK_لیکې);
 
-  int lblDone = sqlite3VdbeMakeLabel(pParse);
-  int addrNextRange = 0;
+  صحيح lbl_بشپړ = sqlite3VdbeMakeLabel(pParse);
+  صحيح addr_بل_Range = 0;
 
   /* Special case - WINDOW_AGGINVERSE is always a no-op if the frame
   ** starts with UNBOUNDED PRECEDING. */
-  if( op==WINDOW_AGGINVERSE && pMWin->eStart==TK_UNBOUNDED ){
-    assert( regCountdown==0 && jumpOnEof==0 );
-    return 0;
+  إذا( op==کړکۍ_AGGINVERSE && pMWin->e_پیل==TK_UNBOUNDED ){
+    أكد( regCountdown==0 && jumpOnEof==0 );
+    أرجع 0;
   }
 
-  if( regCountdown>0 ){
-    if( pMWin->eFrmType==TK_RANGE ){
-      addrNextRange = sqlite3VdbeCurrentAddr(v);
-      assert( op==WINDOW_AGGINVERSE || op==WINDOW_AGGSTEP );
-      if( op==WINDOW_AGGINVERSE ){
-        if( pMWin->eStart==TK_FOLLOWING ){
-          windowCodeRangeTest(
-              p, OP_Le, p->current.csr, regCountdown, p->start.csr, lblDone
+  إذا( regCountdown>0 ){
+    إذا( pMWin->eFrmType==TK_RANGE ){
+      addr_بل_Range = sqlite3VdbeCurrentAddr(v);
+      أكد( op==کړکۍ_AGGINVERSE || op==کړکۍ_AGGSTEP );
+      إذا( op==کړکۍ_AGGINVERSE ){
+        إذا( pMWin->e_پیل==TK_FOLLOWING ){
+          کړکۍ_کوډ_Range_Test(
+              p, OP_Le, p->current.csr, regCountdown, p->پیل.csr, lbl_بشپړ
           );
-        }else{
-          windowCodeRangeTest(
-              p, OP_Ge, p->start.csr, regCountdown, p->current.csr, lblDone
+        }وإلا{
+          کړکۍ_کوډ_Range_Test(
+              p, OP_Ge, p->پیل.csr, regCountdown, p->current.csr, lbl_بشپړ
           );
         }
-      }else{
-        windowCodeRangeTest(
-            p, OP_Gt, p->end.csr, regCountdown, p->current.csr, lblDone
+      }وإلا{
+        کړکۍ_کوډ_Range_Test(
+            p, OP_Gt, p->پای_ټکی_2.csr, regCountdown, p->current.csr, lbl_بشپړ
         );
       }
-    }else{
-      sqlite3VdbeAddOp3(v, OP_IfPos, regCountdown, lblDone, 1);
+    }وإلا{
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_IfPos, regCountdown, lbl_بشپړ, 1);
       VdbeCoverage(v);
     }
   }
 
-  if( op==WINDOW_RETURN_ROW && pMWin->regStartRowid==0 ){
-    windowAggFinal(p, 0);
+  إذا( op==کړکۍ_RETURN_لیکه && pMWin->reg_پیل_Rowid==0 ){
+    کړکۍ_Agg_Final(p, 0);
   }
   addrContinue = sqlite3VdbeCurrentAddr(v);
 
@@ -2312,87 +2312,87 @@ static int windowCodeOp(
   ** temporary table. It otherwise might, if (a>b). Also ensure that,
   ** if the input cursor is still finding new rows, that the end
   ** cursor does not go past it to EOF. */
-  if( pMWin->eStart==pMWin->eEnd && regCountdown
+  إذا( pMWin->e_پیل==pMWin->e_پای_ټکی && regCountdown
    && pMWin->eFrmType==TK_RANGE
   ){
-    int regRowid1 = sqlite3GetTempReg(pParse);
-    int regRowid2 = sqlite3GetTempReg(pParse);
-    if( op==WINDOW_AGGINVERSE ){
-      sqlite3VdbeAddOp2(v, OP_Rowid, p->start.csr, regRowid1);
-      sqlite3VdbeAddOp2(v, OP_Rowid, p->end.csr, regRowid2);
-      sqlite3VdbeAddOp3(v, OP_Ge, regRowid2, lblDone, regRowid1);
+    صحيح regRowid1 = sqlite3_Get_لنډمهاله_Reg(pParse);
+    صحيح regRowid2 = sqlite3_Get_لنډمهاله_Reg(pParse);
+    إذا( op==کړکۍ_AGGINVERSE ){
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Rowid, p->پیل.csr, regRowid1);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Rowid, p->پای_ټکی_2.csr, regRowid2);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Ge, regRowid2, lbl_بشپړ, regRowid1);
       VdbeCoverage(v);
-    }else if( p->regRowid ){
-      sqlite3VdbeAddOp2(v, OP_Rowid, p->end.csr, regRowid1);
-      sqlite3VdbeAddOp3(v, OP_Ge, p->regRowid, lblDone, regRowid1);
+    }وإلا إذا( p->regRowid ){
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Rowid, p->پای_ټکی_2.csr, regRowid1);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Ge, p->regRowid, lbl_بشپړ, regRowid1);
       VdbeCoverageNeverNull(v);
     }
-    sqlite3ReleaseTempReg(pParse, regRowid1);
-    sqlite3ReleaseTempReg(pParse, regRowid2);
-    assert( pMWin->eStart==TK_PRECEDING || pMWin->eStart==TK_FOLLOWING );
+    sqlite3_Release_لنډمهاله_Reg(pParse, regRowid1);
+    sqlite3_Release_لنډمهاله_Reg(pParse, regRowid2);
+    أكد( pMWin->e_پیل==TK_PRECEDING || pMWin->e_پیل==TK_FOLLOWING );
   }
 
-  switch( op ){
-    case WINDOW_RETURN_ROW:
+  بدل( op ){
+    حالة کړکۍ_RETURN_لیکه:
       csr = p->current.csr;
       reg = p->current.reg;
-      windowReturnOneRow(p);
-      break;
+      کړکۍ_Return_One_لیکه(p);
+      اكسر;
 
-    case WINDOW_AGGINVERSE:
-      csr = p->start.csr;
-      reg = p->start.reg;
-      if( pMWin->regStartRowid ){
-        assert( pMWin->regEndRowid );
-        sqlite3VdbeAddOp2(v, OP_AddImm, pMWin->regStartRowid, 1);
-      }else{
-        windowAggStep(p, pMWin, csr, 1, p->regArg);
+    حالة کړکۍ_AGGINVERSE:
+      csr = p->پیل.csr;
+      reg = p->پیل.reg;
+      إذا( pMWin->reg_پیل_Rowid ){
+        أكد( pMWin->reg_پای_ټکی_Rowid );
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_جمع_کړه_Imm, pMWin->reg_پیل_Rowid, 1);
+      }وإلا{
+        کړکۍ_Agg_ګام(p, pMWin, csr, 1, p->regArg);
       }
-      break;
+      اكسر;
 
-    default:
-      assert( op==WINDOW_AGGSTEP );
-      csr = p->end.csr;
-      reg = p->end.reg;
-      if( pMWin->regStartRowid ){
-        assert( pMWin->regEndRowid );
-        sqlite3VdbeAddOp2(v, OP_AddImm, pMWin->regEndRowid, 1);
-      }else{
-        windowAggStep(p, pMWin, csr, 0, p->regArg);
+    افتراضي:
+      أكد( op==کړکۍ_AGGSTEP );
+      csr = p->پای_ټکی_2.csr;
+      reg = p->پای_ټکی_2.reg;
+      إذا( pMWin->reg_پیل_Rowid ){
+        أكد( pMWin->reg_پای_ټکی_Rowid );
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_جمع_کړه_Imm, pMWin->reg_پای_ټکی_Rowid, 1);
+      }وإلا{
+        کړکۍ_Agg_ګام(p, pMWin, csr, 0, p->regArg);
       }
-      break;
+      اكسر;
   }
 
-  if( op==p->eDelete ){
-    sqlite3VdbeAddOp1(v, OP_Delete, csr);
+  إذا( op==p->eDelete ){
+    sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Delete, csr);
     sqlite3VdbeChangeP5(v, OPFLAG_SAVEPOSITION);
   }
 
-  if( jumpOnEof ){
-    sqlite3VdbeAddOp2(v, OP_Next, csr, sqlite3VdbeCurrentAddr(v)+2);
+  إذا( jumpOnEof ){
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_بل, csr, sqlite3VdbeCurrentAddr(v)+2);
     VdbeCoverage(v);
-    ret = sqlite3VdbeAddOp0(v, OP_Goto);
-  }else{
-    sqlite3VdbeAddOp2(v, OP_Next, csr, sqlite3VdbeCurrentAddr(v)+1+bPeer);
+    ret = sqlite3_Vdbe_جمع_کړه_Op0(v, OP_Goto);
+  }وإلا{
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_بل, csr, sqlite3VdbeCurrentAddr(v)+1+bPeer);
     VdbeCoverage(v);
-    if( bPeer ){
-      sqlite3VdbeAddOp2(v, OP_Goto, 0, lblDone);
+    إذا( bPeer ){
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, lbl_بشپړ);
     }
   }
 
-  if( bPeer ){
-    int nReg = (pMWin->pOrderBy ? pMWin->pOrderBy->nExpr : 0);
-    int regTmp = (nReg ? sqlite3GetTempRange(pParse, nReg) : 0);
-    windowReadPeerValues(p, csr, regTmp);
-    windowIfNewPeer(pParse, pMWin->pOrderBy, regTmp, reg, addrContinue);
-    sqlite3ReleaseTempRange(pParse, regTmp, nReg);
+  إذا( bPeer ){
+    صحيح nReg = (pMWin->p_ترتیب_By ? pMWin->p_ترتیب_By->n_بیان : 0);
+    صحيح regTmp = (nReg ? sqlite3_Get_لنډمهاله_Range(pParse, nReg) : 0);
+    کړکۍ_Read_Peer_ارزښتونه(p, csr, regTmp);
+    کړکۍ_If_New_Peer(pParse, pMWin->p_ترتیب_By, regTmp, reg, addrContinue);
+    sqlite3_Release_لنډمهاله_Range(pParse, regTmp, nReg);
   }
 
-  if( addrNextRange ){
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, addrNextRange);
+  إذا( addr_بل_Range ){
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr_بل_Range);
   }
-  sqlite3VdbeResolveLabel(v, lblDone);
-  return ret;
+  sqlite3VdbeResolveLabel(v, lbl_بشپړ);
+  أرجع ret;
 }
 
 
@@ -2401,51 +2401,51 @@ static int windowCodeOp(
 ** third argument. Set the Window.pOwner field of the new object to
 ** pOwner.
 */
-Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p){
-  Window *pNew = 0;
-  if( ALWAYS(p) ){
-    pNew = sqlite3DbMallocZero(db, sizeof(Window));
-    if( pNew ){
+کړکۍ *sqlite3_کړکۍ_Dup(sqlite3 *db, بیان *pOwner, کړکۍ *p){
+  کړکۍ *pNew = 0;
+  إذا( ALWAYS(p) ){
+    pNew = sqlite3DbMallocZero(db, حجم(کړکۍ));
+    إذا( pNew ){
       pNew->zName = sqlite3DbStrDup(db, p->zName);
-      pNew->zBase = sqlite3DbStrDup(db, p->zBase);
-      pNew->pFilter = sqlite3ExprDup(db, p->pFilter, 0);
+      pNew->z_بنسټ = sqlite3DbStrDup(db, p->z_بنسټ);
+      pNew->pFilter = sqlite3_بیان_Dup(db, p->pFilter, 0);
       pNew->pWFunc = p->pWFunc;
-      pNew->pPartition = sqlite3ExprListDup(db, p->pPartition, 0);
-      pNew->pOrderBy = sqlite3ExprListDup(db, p->pOrderBy, 0);
+      pNew->p_برخه_کول = sqlite3_بیان_List_Dup(db, p->p_برخه_کول, 0);
+      pNew->p_ترتیب_By = sqlite3_بیان_List_Dup(db, p->p_ترتیب_By, 0);
       pNew->eFrmType = p->eFrmType;
-      pNew->eEnd = p->eEnd;
-      pNew->eStart = p->eStart;
+      pNew->e_پای_ټکی = p->e_پای_ټکی;
+      pNew->e_پیل = p->e_پیل;
       pNew->eExclude = p->eExclude;
-      pNew->regResult = p->regResult;
+      pNew->reg_پایله = p->reg_پایله;
       pNew->regAccum = p->regAccum;
-      pNew->iArgCol = p->iArgCol;
+      pNew->i_Arg_ستون = p->i_Arg_ستون;
       pNew->iEphCsr = p->iEphCsr;
-      pNew->bExprArgs = p->bExprArgs;
-      pNew->pStart = sqlite3ExprDup(db, p->pStart, 0);
-      pNew->pEnd = sqlite3ExprDup(db, p->pEnd, 0);
+      pNew->b_بیان_دلیلونه = p->b_بیان_دلیلونه;
+      pNew->p_پیل = sqlite3_بیان_Dup(db, p->p_پیل, 0);
+      pNew->p_پای_ټکی = sqlite3_بیان_Dup(db, p->p_پای_ټکی, 0);
       pNew->pOwner = pOwner;
-      pNew->bImplicitFrame = p->bImplicitFrame;
+      pNew->b_Implicit_چوکاټ = p->b_Implicit_چوکاټ;
     }
   }
-  return pNew;
+  أرجع pNew;
 }
 
 /*
 ** Return a copy of the linked list of Window objects passed as the
 ** second argument.
 */
-Window *sqlite3WindowListDup(sqlite3 *db, Window *p){
-  Window *pWin;
-  Window *pRet = 0;
-  Window **pp = &pRet;
+کړکۍ *sqlite3_کړکۍ_List_Dup(sqlite3 *db, کړکۍ *p){
+  کړکۍ *pWin;
+  کړکۍ *pRet = 0;
+  کړکۍ **pp = &pRet;
 
-  for(pWin=p; pWin; pWin=pWin->pNextWin){
-    *pp = sqlite3WindowDup(db, 0, pWin);
-    if( *pp==0 ) break;
-    pp = &((*pp)->pNextWin);
+  لكل(pWin=p; pWin; pWin=pWin->p_بل_Win){
+    *pp = sqlite3_کړکۍ_Dup(db, 0, pWin);
+    إذا( *pp==0 ) اكسر;
+    pp = &((*pp)->p_بل_Win);
   }
 
-  return pRet;
+  أرجع pRet;
 }
 
 /*
@@ -2456,16 +2456,16 @@ Window *sqlite3WindowListDup(sqlite3 *db, Window *p){
 ** If an OOM error occurs, this function sets the Parse.db.mallocFailed
 ** flag and returns zero.
 */
-static int windowExprGtZero(Parse *pParse, Expr *pExpr){
-  int ret = 0;
+ساكن صحيح کړکۍ_بیان_Gt_Zero(Parse *pParse, بیان *p_بیان){
+  صحيح ret = 0;
   sqlite3 *db = pParse->db;
-  sqlite3_value *pVal = 0;
-  sqlite3ValueFromExpr(db, pExpr, db->enc, SQLITE_AFF_NUMERIC, &pVal);
-  if( pVal && sqlite3_value_int(pVal)>0 ){
+  sqlite3_ارزښت *pVal = 0;
+  sqlite3_ارزښت_From_بیان(db, p_بیان, db->enc, SQLITE_AFF_NUMERIC, &pVal);
+  إذا( pVal && sqlite3_ارزښت_int(pVal)>0 ){
     ret = 1;
   }
-  sqlite3ValueFree(pVal);
-  return ret;
+  sqlite3_ارزښت_Free(pVal);
+  أرجع ret;
 }
 
 /*
@@ -2803,49 +2803,49 @@ static int windowExprGtZero(Parse *pParse, Expr *pExpr){
 ** The text above leaves out many details. Refer to the code and comments
 ** below for a more complete picture.
 */
-void sqlite3WindowCodeStep(
+فراغ sqlite3_کړکۍ_کوډ_ګام(
   Parse *pParse,                  /* Parse context */
   Select *p,                      /* Rewritten SELECT statement */
   WhereInfo *pWInfo,              /* Context returned by sqlite3WhereBegin() */
-  int regGosub,                   /* Register for OP_Gosub */
-  int addrGosub                   /* OP_Gosub here to return each row */
+  صحيح regGosub,                   /* Register for OP_Gosub */
+  صحيح addrGosub                   /* OP_Gosub here to return each row */
 ){
-  Window *pMWin = p->pWin;
-  ExprList *pOrderBy = pMWin->pOrderBy;
+  کړکۍ *pMWin = p->pWin;
+  بیان_List *p_ترتیب_By = pMWin->p_ترتیب_By;
   Vdbe *v = sqlite3GetVdbe(pParse);
-  int csrWrite;                   /* Cursor used to write to eph. table */
-  int csrInput = p->pSrc->a[0].iCursor;     /* Cursor of sub-select */
-  int nInput = p->pSrc->a[0].pSTab->nCol;   /* Number of cols returned by sub */
-  int iInput;                               /* To iterate through sub cols */
-  int addrNe;                     /* Address of OP_Ne */
-  int addrGosubFlush = 0;         /* Address of OP_Gosub to flush: */
-  int addrInteger = 0;            /* Address of OP_Integer */
-  int addrEmpty;                  /* Address of OP_Rewind in flush: */
-  int regNew;                     /* Array of registers holding new input row */
-  int regRecord;                  /* regNew array in record form */
-  int regNewPeer = 0;             /* Peer values for new row (part of regNew) */
-  int regPeer = 0;                /* Peer values for current row */
-  int regFlushPart = 0;           /* Register for "Gosub flush_partition" */
-  WindowCodeArg s;                /* Context object for sub-routines */
-  int lblWhereEnd;                /* Label just before sqlite3WhereEnd() code */
-  int regStart = 0;               /* Value of <expr> PRECEDING */
-  int regEnd = 0;                 /* Value of <expr> FOLLOWING */
+  صحيح csrWrite;                   /* Cursor used to write to eph. table */
+  صحيح csr_ننوت = p->pSrc->a[0].iCursor;     /* Cursor of sub-select */
+  صحيح n_ننوت = p->pSrc->a[0].pSTab->n_ستون;   /* Number of cols returned by sub */
+  صحيح i_ننوت;                               /* To iterate through sub cols */
+  صحيح addrNe;                     /* Address of OP_Ne */
+  صحيح addrGosubFlush = 0;         /* Address of OP_Gosub to flush: */
+  صحيح addrInteger = 0;            /* Address of OP_Integer */
+  صحيح addr_تشه;                  /* Address of OP_Rewind in flush: */
+  صحيح regNew;                     /* Array of registers holding new input row */
+  صحيح reg_ریکارډ;                  /* regNew array in record form */
+  صحيح regNewPeer = 0;             /* Peer values for new row (part of regNew) */
+  صحيح regPeer = 0;                /* Peer values for current row */
+  صحيح regFlushPart = 0;           /* Register for "Gosub flush_partition" */
+  کړکۍ_کوډ_Arg s;                /* Context object for sub-routines */
+  صحيح lbl_Where_پای_ټکی;                /* Label just before sqlite3WhereEnd() code */
+  صحيح reg_پیل = 0;               /* Value of <expr> PRECEDING */
+  صحيح reg_پای_ټکی = 0;                 /* Value of <expr> FOLLOWING */
 
-  assert( pMWin->eStart==TK_PRECEDING || pMWin->eStart==TK_CURRENT
-       || pMWin->eStart==TK_FOLLOWING || pMWin->eStart==TK_UNBOUNDED
+  أكد( pMWin->e_پیل==TK_PRECEDING || pMWin->e_پیل==TK_CURRENT
+       || pMWin->e_پیل==TK_FOLLOWING || pMWin->e_پیل==TK_UNBOUNDED
   );
-  assert( pMWin->eEnd==TK_FOLLOWING || pMWin->eEnd==TK_CURRENT
-       || pMWin->eEnd==TK_UNBOUNDED || pMWin->eEnd==TK_PRECEDING
+  أكد( pMWin->e_پای_ټکی==TK_FOLLOWING || pMWin->e_پای_ټکی==TK_CURRENT
+       || pMWin->e_پای_ټکی==TK_UNBOUNDED || pMWin->e_پای_ټکی==TK_PRECEDING
   );
-  assert( pMWin->eExclude==0 || pMWin->eExclude==TK_CURRENT
-       || pMWin->eExclude==TK_GROUP || pMWin->eExclude==TK_TIES
+  أكد( pMWin->eExclude==0 || pMWin->eExclude==TK_CURRENT
+       || pMWin->eExclude==TK_ډله || pMWin->eExclude==TK_TIES
        || pMWin->eExclude==TK_NO
   );
 
-  lblWhereEnd = sqlite3VdbeMakeLabel(pParse);
+  lbl_Where_پای_ټکی = sqlite3VdbeMakeLabel(pParse);
 
   /* Fill in the context object */
-  memset(&s, 0, sizeof(WindowCodeArg));
+  memset(&s, 0, حجم(کړکۍ_کوډ_Arg));
   s.pParse = pParse;
   s.pMWin = pMWin;
   s.pVdbe = v;
@@ -2853,8 +2853,8 @@ void sqlite3WindowCodeStep(
   s.addrGosub = addrGosub;
   s.current.csr = pMWin->iEphCsr;
   csrWrite = s.current.csr+1;
-  s.start.csr = s.current.csr+2;
-  s.end.csr = s.current.csr+3;
+  s.پیل.csr = s.current.csr+2;
+  s.پای_ټکی_2.csr = s.current.csr+3;
 
   /* Figure out when rows may be deleted from the ephemeral table. There
   ** are four options - they may never be deleted (eDelete==0), they may
@@ -2862,273 +2862,273 @@ void sqlite3WindowCodeStep(
   ** (eDelete==WINDOW_AGGINVERSE), they may be deleted as after the row
   ** has been returned to the caller (WINDOW_RETURN_ROW), or they may
   ** be deleted after they enter the frame (WINDOW_AGGSTEP). */
-  switch( pMWin->eStart ){
-    case TK_FOLLOWING:
-      if( pMWin->eFrmType!=TK_RANGE
-       && windowExprGtZero(pParse, pMWin->pStart)
+  بدل( pMWin->e_پیل ){
+    حالة TK_FOLLOWING:
+      إذا( pMWin->eFrmType!=TK_RANGE
+       && کړکۍ_بیان_Gt_Zero(pParse, pMWin->p_پیل)
       ){
-        s.eDelete = WINDOW_RETURN_ROW;
+        s.eDelete = کړکۍ_RETURN_لیکه;
       }
-      break;
-    case TK_UNBOUNDED:
-      if( windowCacheFrame(pMWin)==0 ){
-        if( pMWin->eEnd==TK_PRECEDING ){
-          if( pMWin->eFrmType!=TK_RANGE
-           && windowExprGtZero(pParse, pMWin->pEnd)
+      اكسر;
+    حالة TK_UNBOUNDED:
+      إذا( کړکۍ_Cache_چوکاټ(pMWin)==0 ){
+        إذا( pMWin->e_پای_ټکی==TK_PRECEDING ){
+          إذا( pMWin->eFrmType!=TK_RANGE
+           && کړکۍ_بیان_Gt_Zero(pParse, pMWin->p_پای_ټکی)
           ){
-            s.eDelete = WINDOW_AGGSTEP;
+            s.eDelete = کړکۍ_AGGSTEP;
           }
-        }else{
-          s.eDelete = WINDOW_RETURN_ROW;
+        }وإلا{
+          s.eDelete = کړکۍ_RETURN_لیکه;
         }
       }
-      break;
-    default:
-      s.eDelete = WINDOW_AGGINVERSE;
-      break;
+      اكسر;
+    افتراضي:
+      s.eDelete = کړکۍ_AGGINVERSE;
+      اكسر;
   }
 
   /* Allocate registers for the array of values from the sub-query, the
   ** same values in record form, and the rowid used to insert said record
   ** into the ephemeral table.  */
   regNew = pParse->nMem+1;
-  pParse->nMem += nInput;
-  regRecord = ++pParse->nMem;
+  pParse->nMem += n_ننوت;
+  reg_ریکارډ = ++pParse->nMem;
   s.regRowid = ++pParse->nMem;
 
   /* If the window frame contains an "<expr> PRECEDING" or "<expr> FOLLOWING"
   ** clause, allocate registers to store the results of evaluating each
   ** <expr>.  */
-  if( pMWin->eStart==TK_PRECEDING || pMWin->eStart==TK_FOLLOWING ){
-    regStart = ++pParse->nMem;
+  إذا( pMWin->e_پیل==TK_PRECEDING || pMWin->e_پیل==TK_FOLLOWING ){
+    reg_پیل = ++pParse->nMem;
   }
-  if( pMWin->eEnd==TK_PRECEDING || pMWin->eEnd==TK_FOLLOWING ){
-    regEnd = ++pParse->nMem;
+  إذا( pMWin->e_پای_ټکی==TK_PRECEDING || pMWin->e_پای_ټکی==TK_FOLLOWING ){
+    reg_پای_ټکی = ++pParse->nMem;
   }
 
   /* If this is not a "ROWS BETWEEN ..." frame, then allocate arrays of
   ** registers to store copies of the ORDER BY expressions (peer values)
   ** for the main loop, and for each cursor (start, current and end). */
-  if( pMWin->eFrmType!=TK_ROWS ){
-    int nPeer = (pOrderBy ? pOrderBy->nExpr : 0);
-    regNewPeer = regNew + pMWin->nBufferCol;
-    if( pMWin->pPartition ) regNewPeer += pMWin->pPartition->nExpr;
+  إذا( pMWin->eFrmType!=TK_لیکې ){
+    صحيح nPeer = (p_ترتیب_By ? p_ترتیب_By->n_بیان : 0);
+    regNewPeer = regNew + pMWin->n_بفر_ستون;
+    إذا( pMWin->p_برخه_کول ) regNewPeer += pMWin->p_برخه_کول->n_بیان;
     regPeer = pParse->nMem+1;       pParse->nMem += nPeer;
-    s.start.reg = pParse->nMem+1;   pParse->nMem += nPeer;
+    s.پیل.reg = pParse->nMem+1;   pParse->nMem += nPeer;
     s.current.reg = pParse->nMem+1; pParse->nMem += nPeer;
-    s.end.reg = pParse->nMem+1;     pParse->nMem += nPeer;
+    s.پای_ټکی_2.reg = pParse->nMem+1;     pParse->nMem += nPeer;
   }
 
   /* Load the column values for the row returned by the sub-select
   ** into an array of registers starting at regNew. Assemble them into
   ** a record in register regRecord. */
-  for(iInput=0; iInput<nInput; iInput++){
-    sqlite3VdbeAddOp3(v, OP_Column, csrInput, iInput, regNew+iInput);
+  لكل(i_ننوت=0; i_ننوت<n_ننوت; i_ننوت++){
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ستنه, csr_ننوت, i_ننوت, regNew+i_ننوت);
   }
-  sqlite3VdbeAddOp3(v, OP_MakeRecord, regNew, nInput, regRecord);
+  sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Make_ریکارډ, regNew, n_ننوت, reg_ریکارډ);
 
   /* An input row has just been read into an array of registers starting
   ** at regNew. If the window has a PARTITION clause, this block generates
   ** VM code to check if the input row is the start of a new partition.
   ** If so, it does an OP_Gosub to an address to be filled in later. The
   ** address of the OP_Gosub is stored in local variable addrGosubFlush. */
-  if( pMWin->pPartition ){
-    int addr;
-    ExprList *pPart = pMWin->pPartition;
-    int nPart = pPart->nExpr;
-    int regNewPart = regNew + pMWin->nBufferCol;
-    KeyInfo *pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pPart, 0, 0);
+  إذا( pMWin->p_برخه_کول ){
+    صحيح addr;
+    بیان_List *pPart = pMWin->p_برخه_کول;
+    صحيح nPart = pPart->n_بیان;
+    صحيح regNewPart = regNew + pMWin->n_بفر_ستون;
+    کلی_Info *p_کلی_Info = sqlite3_کلی_Info_From_بیان_List(pParse, pPart, 0, 0);
 
     regFlushPart = ++pParse->nMem;
-    addr = sqlite3VdbeAddOp3(v, OP_Compare, regNewPart, pMWin->regPart, nPart);
-    sqlite3VdbeAppendP4(v, (void*)pKeyInfo, P4_KEYINFO);
-    sqlite3VdbeAddOp3(v, OP_Jump, addr+2, addr+4, addr+2);
+    addr = sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Compare, regNewPart, pMWin->regPart, nPart);
+    sqlite3VdbeAppendP4(v, (فراغ*)p_کلی_Info, P4_KEYINFO);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Jump, addr+2, addr+4, addr+2);
     VdbeCoverageEqNe(v);
-    addrGosubFlush = sqlite3VdbeAddOp1(v, OP_Gosub, regFlushPart);
+    addrGosubFlush = sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Gosub, regFlushPart);
     VdbeComment((v, "call flush_partition"));
-    sqlite3VdbeAddOp3(v, OP_Copy, regNewPart, pMWin->regPart, nPart-1);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Copy, regNewPart, pMWin->regPart, nPart-1);
   }
 
   /* Insert the new row into the ephemeral table */
-  sqlite3VdbeAddOp2(v, OP_NewRowid, csrWrite, s.regRowid);
-  sqlite3VdbeAddOp3(v, OP_Insert, csrWrite, regRecord, s.regRowid);
-  addrNe = sqlite3VdbeAddOp3(v, OP_Ne, pMWin->regOne, 0, s.regRowid);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_NewRowid, csrWrite, s.regRowid);
+  sqlite3_Vdbe_جمع_کړه_Op3(v, OP_ورننباسه, csrWrite, reg_ریکارډ, s.regRowid);
+  addrNe = sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Ne, pMWin->regOne, 0, s.regRowid);
   VdbeCoverageNeverNull(v);
 
   /* This block is run for the first row of each partition */
-  s.regArg = windowInitAccum(pParse, pMWin);
+  s.regArg = کړکۍ_Init_Accum(pParse, pMWin);
 
-  if( regStart ){
-    sqlite3ExprCode(pParse, pMWin->pStart, regStart);
-    windowCheckValue(pParse, regStart, 0 + (pMWin->eFrmType==TK_RANGE?3:0));
+  إذا( reg_پیل ){
+    sqlite3_بیان_کوډ(pParse, pMWin->p_پیل, reg_پیل);
+    کړکۍ_Check_ارزښت(pParse, reg_پیل, 0 + (pMWin->eFrmType==TK_RANGE?3:0));
   }
-  if( regEnd ){
-    sqlite3ExprCode(pParse, pMWin->pEnd, regEnd);
-    windowCheckValue(pParse, regEnd, 1 + (pMWin->eFrmType==TK_RANGE?3:0));
+  إذا( reg_پای_ټکی ){
+    sqlite3_بیان_کوډ(pParse, pMWin->p_پای_ټکی, reg_پای_ټکی);
+    کړکۍ_Check_ارزښت(pParse, reg_پای_ټکی, 1 + (pMWin->eFrmType==TK_RANGE?3:0));
   }
 
-  if( pMWin->eFrmType!=TK_RANGE && pMWin->eStart==pMWin->eEnd && regStart ){
-    int op = ((pMWin->eStart==TK_FOLLOWING) ? OP_Ge : OP_Le);
-    int addrGe = sqlite3VdbeAddOp3(v, op, regStart, 0, regEnd);
+  إذا( pMWin->eFrmType!=TK_RANGE && pMWin->e_پیل==pMWin->e_پای_ټکی && reg_پیل ){
+    صحيح op = ((pMWin->e_پیل==TK_FOLLOWING) ? OP_Ge : OP_Le);
+    صحيح addrGe = sqlite3_Vdbe_جمع_کړه_Op3(v, op, reg_پیل, 0, reg_پای_ټکی);
     VdbeCoverageNeverNullIf(v, op==OP_Ge); /* NeverNull because bound <expr> */
     VdbeCoverageNeverNullIf(v, op==OP_Le); /*   values previously checked */
-    windowAggFinal(&s, 0);
-    sqlite3VdbeAddOp1(v, OP_Rewind, s.current.csr);
-    windowReturnOneRow(&s);
-    sqlite3VdbeAddOp1(v, OP_ResetSorter, s.current.csr);
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, lblWhereEnd);
-    sqlite3VdbeJumpHere(v, addrGe);
+    کړکۍ_Agg_Final(&s, 0);
+    sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Rewind, s.current.csr);
+    کړکۍ_Return_One_لیکه(&s);
+    sqlite3_Vdbe_جمع_کړه_Op1(v, OP_ResetSorter, s.current.csr);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, lbl_Where_پای_ټکی);
+    sqlite3_Vdbe_Jump_دلته(v, addrGe);
   }
-  if( pMWin->eStart==TK_FOLLOWING && pMWin->eFrmType!=TK_RANGE && regEnd ){
-    assert( pMWin->eEnd==TK_FOLLOWING );
-    sqlite3VdbeAddOp3(v, OP_Subtract, regStart, regEnd, regStart);
-  }
-
-  if( pMWin->eStart!=TK_UNBOUNDED ){
-    sqlite3VdbeAddOp1(v, OP_Rewind, s.start.csr);
-  }
-  sqlite3VdbeAddOp1(v, OP_Rewind, s.current.csr);
-  sqlite3VdbeAddOp1(v, OP_Rewind, s.end.csr);
-  if( regPeer && pOrderBy ){
-    sqlite3VdbeAddOp3(v, OP_Copy, regNewPeer, regPeer, pOrderBy->nExpr-1);
-    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.start.reg, pOrderBy->nExpr-1);
-    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.current.reg, pOrderBy->nExpr-1);
-    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.end.reg, pOrderBy->nExpr-1);
+  إذا( pMWin->e_پیل==TK_FOLLOWING && pMWin->eFrmType!=TK_RANGE && reg_پای_ټکی ){
+    أكد( pMWin->e_پای_ټکی==TK_FOLLOWING );
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_کمول, reg_پیل, reg_پای_ټکی, reg_پیل);
   }
 
-  sqlite3VdbeAddOp2(v, OP_Goto, 0, lblWhereEnd);
+  إذا( pMWin->e_پیل!=TK_UNBOUNDED ){
+    sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Rewind, s.پیل.csr);
+  }
+  sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Rewind, s.current.csr);
+  sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Rewind, s.پای_ټکی_2.csr);
+  إذا( regPeer && p_ترتیب_By ){
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Copy, regNewPeer, regPeer, p_ترتیب_By->n_بیان-1);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Copy, regPeer, s.پیل.reg, p_ترتیب_By->n_بیان-1);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Copy, regPeer, s.current.reg, p_ترتیب_By->n_بیان-1);
+    sqlite3_Vdbe_جمع_کړه_Op3(v, OP_Copy, regPeer, s.پای_ټکی_2.reg, p_ترتیب_By->n_بیان-1);
+  }
 
-  sqlite3VdbeJumpHere(v, addrNe);
+  sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, lbl_Where_پای_ټکی);
+
+  sqlite3_Vdbe_Jump_دلته(v, addrNe);
 
   /* Beginning of the block executed for the second and subsequent rows. */
-  if( regPeer ){
-    windowIfNewPeer(pParse, pOrderBy, regNewPeer, regPeer, lblWhereEnd);
+  إذا( regPeer ){
+    کړکۍ_If_New_Peer(pParse, p_ترتیب_By, regNewPeer, regPeer, lbl_Where_پای_ټکی);
   }
-  if( pMWin->eStart==TK_FOLLOWING ){
-    windowCodeOp(&s, WINDOW_AGGSTEP, 0, 0);
-    if( pMWin->eEnd!=TK_UNBOUNDED ){
-      if( pMWin->eFrmType==TK_RANGE ){
-        int lbl = sqlite3VdbeMakeLabel(pParse);
-        int addrNext = sqlite3VdbeCurrentAddr(v);
-        windowCodeRangeTest(&s, OP_Ge, s.current.csr, regEnd, s.end.csr, lbl);
-        windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
-        windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 0);
-        sqlite3VdbeAddOp2(v, OP_Goto, 0, addrNext);
+  إذا( pMWin->e_پیل==TK_FOLLOWING ){
+    کړکۍ_کوډ_Op(&s, کړکۍ_AGGSTEP, 0, 0);
+    إذا( pMWin->e_پای_ټکی!=TK_UNBOUNDED ){
+      إذا( pMWin->eFrmType==TK_RANGE ){
+        صحيح lbl = sqlite3VdbeMakeLabel(pParse);
+        صحيح addr_بل = sqlite3VdbeCurrentAddr(v);
+        کړکۍ_کوډ_Range_Test(&s, OP_Ge, s.current.csr, reg_پای_ټکی, s.پای_ټکی_2.csr, lbl);
+        کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
+        کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 0);
+        sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr_بل);
         sqlite3VdbeResolveLabel(v, lbl);
-      }else{
-        windowCodeOp(&s, WINDOW_RETURN_ROW, regEnd, 0);
-        windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
+      }وإلا{
+        کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, reg_پای_ټکی, 0);
+        کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
       }
     }
-  }else
-  if( pMWin->eEnd==TK_PRECEDING ){
-    int bRPS = (pMWin->eStart==TK_PRECEDING && pMWin->eFrmType==TK_RANGE);
-    windowCodeOp(&s, WINDOW_AGGSTEP, regEnd, 0);
-    if( bRPS ) windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
-    windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 0);
-    if( !bRPS ) windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
-  }else{
-    int addr = 0;
-    windowCodeOp(&s, WINDOW_AGGSTEP, 0, 0);
-    if( pMWin->eEnd!=TK_UNBOUNDED ){
-      if( pMWin->eFrmType==TK_RANGE ){
-        int lbl = 0;
+  }وإلا
+  إذا( pMWin->e_پای_ټکی==TK_PRECEDING ){
+    صحيح bRPS = (pMWin->e_پیل==TK_PRECEDING && pMWin->eFrmType==TK_RANGE);
+    کړکۍ_کوډ_Op(&s, کړکۍ_AGGSTEP, reg_پای_ټکی, 0);
+    إذا( bRPS ) کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
+    کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 0);
+    إذا( !bRPS ) کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
+  }وإلا{
+    صحيح addr = 0;
+    کړکۍ_کوډ_Op(&s, کړکۍ_AGGSTEP, 0, 0);
+    إذا( pMWin->e_پای_ټکی!=TK_UNBOUNDED ){
+      إذا( pMWin->eFrmType==TK_RANGE ){
+        صحيح lbl = 0;
         addr = sqlite3VdbeCurrentAddr(v);
-        if( regEnd ){
+        إذا( reg_پای_ټکی ){
           lbl = sqlite3VdbeMakeLabel(pParse);
-          windowCodeRangeTest(&s, OP_Ge, s.current.csr, regEnd, s.end.csr, lbl);
+          کړکۍ_کوډ_Range_Test(&s, OP_Ge, s.current.csr, reg_پای_ټکی, s.پای_ټکی_2.csr, lbl);
         }
-        windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 0);
-        windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
-        if( regEnd ){
-          sqlite3VdbeAddOp2(v, OP_Goto, 0, addr);
+        کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 0);
+        کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
+        إذا( reg_پای_ټکی ){
+          sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr);
           sqlite3VdbeResolveLabel(v, lbl);
         }
-      }else{
-        if( regEnd ){
-          addr = sqlite3VdbeAddOp3(v, OP_IfPos, regEnd, 0, 1);
+      }وإلا{
+        إذا( reg_پای_ټکی ){
+          addr = sqlite3_Vdbe_جمع_کړه_Op3(v, OP_IfPos, reg_پای_ټکی, 0, 1);
           VdbeCoverage(v);
         }
-        windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 0);
-        windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
-        if( regEnd ) sqlite3VdbeJumpHere(v, addr);
+        کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 0);
+        کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
+        إذا( reg_پای_ټکی ) sqlite3_Vdbe_Jump_دلته(v, addr);
       }
     }
   }
 
   /* End of the main input loop */
-  sqlite3VdbeResolveLabel(v, lblWhereEnd);
-  sqlite3WhereEnd(pWInfo);
+  sqlite3VdbeResolveLabel(v, lbl_Where_پای_ټکی);
+  sqlite3_Where_پای_ټکی(pWInfo);
 
   /* Fall through */
-  if( pMWin->pPartition ){
-    addrInteger = sqlite3VdbeAddOp2(v, OP_Integer, 0, regFlushPart);
-    sqlite3VdbeJumpHere(v, addrGosubFlush);
+  إذا( pMWin->p_برخه_کول ){
+    addrInteger = sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, regFlushPart);
+    sqlite3_Vdbe_Jump_دلته(v, addrGosubFlush);
   }
 
   s.regRowid = 0;
-  addrEmpty = sqlite3VdbeAddOp1(v, OP_Rewind, csrWrite);
+  addr_تشه = sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Rewind, csrWrite);
   VdbeCoverage(v);
-  if( pMWin->eEnd==TK_PRECEDING ){
-    int bRPS = (pMWin->eStart==TK_PRECEDING && pMWin->eFrmType==TK_RANGE);
-    windowCodeOp(&s, WINDOW_AGGSTEP, regEnd, 0);
-    if( bRPS ) windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
-    windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 0);
-  }else if( pMWin->eStart==TK_FOLLOWING ){
-    int addrStart;
-    int addrBreak1;
-    int addrBreak2;
-    int addrBreak3;
-    windowCodeOp(&s, WINDOW_AGGSTEP, 0, 0);
-    if( pMWin->eFrmType==TK_RANGE ){
-      addrStart = sqlite3VdbeCurrentAddr(v);
-      addrBreak2 = windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 1);
-      addrBreak1 = windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 1);
-    }else
-    if( pMWin->eEnd==TK_UNBOUNDED ){
-      addrStart = sqlite3VdbeCurrentAddr(v);
-      addrBreak1 = windowCodeOp(&s, WINDOW_RETURN_ROW, regStart, 1);
-      addrBreak2 = windowCodeOp(&s, WINDOW_AGGINVERSE, 0, 1);
-    }else{
-      assert( pMWin->eEnd==TK_FOLLOWING );
+  إذا( pMWin->e_پای_ټکی==TK_PRECEDING ){
+    صحيح bRPS = (pMWin->e_پیل==TK_PRECEDING && pMWin->eFrmType==TK_RANGE);
+    کړکۍ_کوډ_Op(&s, کړکۍ_AGGSTEP, reg_پای_ټکی, 0);
+    إذا( bRPS ) کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
+    کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 0);
+  }وإلا إذا( pMWin->e_پیل==TK_FOLLOWING ){
+    صحيح addr_پیل;
+    صحيح addrBreak1;
+    صحيح addrBreak2;
+    صحيح addrBreak3;
+    کړکۍ_کوډ_Op(&s, کړکۍ_AGGSTEP, 0, 0);
+    إذا( pMWin->eFrmType==TK_RANGE ){
+      addr_پیل = sqlite3VdbeCurrentAddr(v);
+      addrBreak2 = کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 1);
+      addrBreak1 = کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 1);
+    }وإلا
+    إذا( pMWin->e_پای_ټکی==TK_UNBOUNDED ){
+      addr_پیل = sqlite3VdbeCurrentAddr(v);
+      addrBreak1 = کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, reg_پیل, 1);
+      addrBreak2 = کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, 0, 1);
+    }وإلا{
+      أكد( pMWin->e_پای_ټکی==TK_FOLLOWING );
       /* assert( regStart>=0 );
       ** regEnd = regEnd - regStart;
       ** regStart = 0;   */ 
-      sqlite3VdbeAddOp3(v, OP_Subtract, regStart, regEnd, regEnd);
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, regStart);
+      sqlite3_Vdbe_جمع_کړه_Op3(v, OP_کمول, reg_پیل, reg_پای_ټکی, reg_پای_ټکی);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, reg_پیل);
 
-      addrStart = sqlite3VdbeCurrentAddr(v);
-      addrBreak1 = windowCodeOp(&s, WINDOW_RETURN_ROW, regEnd, 1);
-      addrBreak2 = windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 1);
+      addr_پیل = sqlite3VdbeCurrentAddr(v);
+      addrBreak1 = کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, reg_پای_ټکی, 1);
+      addrBreak2 = کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 1);
     }
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, addrStart);
-    sqlite3VdbeJumpHere(v, addrBreak2);
-    addrStart = sqlite3VdbeCurrentAddr(v);
-    addrBreak3 = windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 1);
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, addrStart);
-    sqlite3VdbeJumpHere(v, addrBreak1);
-    sqlite3VdbeJumpHere(v, addrBreak3);
-  }else{
-    int addrBreak;
-    int addrStart;
-    windowCodeOp(&s, WINDOW_AGGSTEP, 0, 0);
-    addrStart = sqlite3VdbeCurrentAddr(v);
-    addrBreak = windowCodeOp(&s, WINDOW_RETURN_ROW, 0, 1);
-    windowCodeOp(&s, WINDOW_AGGINVERSE, regStart, 0);
-    sqlite3VdbeAddOp2(v, OP_Goto, 0, addrStart);
-    sqlite3VdbeJumpHere(v, addrBreak);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr_پیل);
+    sqlite3_Vdbe_Jump_دلته(v, addrBreak2);
+    addr_پیل = sqlite3VdbeCurrentAddr(v);
+    addrBreak3 = کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 1);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr_پیل);
+    sqlite3_Vdbe_Jump_دلته(v, addrBreak1);
+    sqlite3_Vdbe_Jump_دلته(v, addrBreak3);
+  }وإلا{
+    صحيح addrBreak;
+    صحيح addr_پیل;
+    کړکۍ_کوډ_Op(&s, کړکۍ_AGGSTEP, 0, 0);
+    addr_پیل = sqlite3VdbeCurrentAddr(v);
+    addrBreak = کړکۍ_کوډ_Op(&s, کړکۍ_RETURN_لیکه, 0, 1);
+    کړکۍ_کوډ_Op(&s, کړکۍ_AGGINVERSE, reg_پیل, 0);
+    sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Goto, 0, addr_پیل);
+    sqlite3_Vdbe_Jump_دلته(v, addrBreak);
   }
-  sqlite3VdbeJumpHere(v, addrEmpty);
+  sqlite3_Vdbe_Jump_دلته(v, addr_تشه);
 
-  sqlite3VdbeAddOp1(v, OP_ResetSorter, s.current.csr);
-  if( pMWin->pPartition ){
-    if( pMWin->regStartRowid ){
-      sqlite3VdbeAddOp2(v, OP_Integer, 1, pMWin->regStartRowid);
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, pMWin->regEndRowid);
+  sqlite3_Vdbe_جمع_کړه_Op1(v, OP_ResetSorter, s.current.csr);
+  إذا( pMWin->p_برخه_کول ){
+    إذا( pMWin->reg_پیل_Rowid ){
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 1, pMWin->reg_پیل_Rowid);
+      sqlite3_Vdbe_جمع_کړه_Op2(v, OP_Integer, 0, pMWin->reg_پای_ټکی_Rowid);
     }
     sqlite3VdbeChangeP1(v, addrInteger, sqlite3VdbeCurrentAddr(v));
-    sqlite3VdbeAddOp1(v, OP_Return, regFlushPart);
+    sqlite3_Vdbe_جمع_کړه_Op1(v, OP_Return, regFlushPart);
   }
 }
 
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#د_که_پای /* SQLITE_OMIT_WINDOWFUNC */

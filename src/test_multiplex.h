@@ -20,8 +20,8 @@
 **
 */
 
-#ifndef SQLITE_TEST_MULTIPLEX_H
-#define SQLITE_TEST_MULTIPLEX_H
+#که_نه_تعریف_شوی SQLITE_TEST_MULTIPLEX_H
+#تعریف_کړه SQLITE_TEST_MULTIPLEX_H
 
 /*
 ** CAPI: File-control Operations Supported by Multiplex VFS
@@ -42,13 +42,13 @@
 **   This file control is used to set the maximum number of chunks
 **   allowed to be used for a multiplex file set.
 */
-#define MULTIPLEX_CTRL_ENABLE          214014
-#define MULTIPLEX_CTRL_SET_CHUNK_SIZE  214015
-#define MULTIPLEX_CTRL_SET_MAX_CHUNKS  214016
+#تعریف_کړه MULTIPLEX_CTRL_ENABLE          214014
+#تعریف_کړه MULTIPLEX_CTRL_سېټ_CHUNK_اندازه  214015
+#تعریف_کړه MULTIPLEX_CTRL_سېټ_MAX_CHUNKS  214016
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#که_تعریف_شوی __cplusplus
+خارجي "C" {
+#د_که_پای
 
 /*
 ** CAPI: Initialize the multiplex VFS shim - sqlite3_multiplex_initialize()
@@ -79,7 +79,7 @@ extern "C" {
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once
 ** during start-up.
 */
-extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefault);
+خارجي صحيح sqlite3_multiplex_initialize(ثابت حرف *zOrigVfsName, صحيح makeDefault);
 
 /*
 ** CAPI: Shutdown the multiplex system - sqlite3_multiplex_shutdown()
@@ -90,10 +90,10 @@ extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefaul
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once while
 ** shutting down in order to free all remaining multiplex groups.
 */
-extern int sqlite3_multiplex_shutdown(int eForce);
+خارجي صحيح sqlite3_multiplex_shutdown(صحيح eForce);
 
-#ifdef __cplusplus
+#که_تعریف_شوی __cplusplus
 }  /* End of the 'extern "C"' block */
-#endif
+#د_که_پای
 
-#endif /* SQLITE_TEST_MULTIPLEX_H */
+#د_که_پای /* SQLITE_TEST_MULTIPLEX_H */

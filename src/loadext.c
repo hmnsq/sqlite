@@ -13,37 +13,37 @@
 ** the SQLite library.
 */
 
-#ifndef SQLITE_CORE
-  #define SQLITE_CORE 1  /* Disable the API redefinition in sqlite3ext.h */
-#endif
-#include "sqlite3ext.h"
-#include "sqliteInt.h"
+#که_نه_تعریف_شوی SQLITE_CORE
+  #تعریف_کړه SQLITE_CORE 1  /* Disable the API redefinition in sqlite3ext.h */
+#د_که_پای
+#ضمن "sqlite3ext.h"
+#ضمن "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#که_نه_تعریف_شوی SQLITE_OMIT_بارول_EXTENSION
 /*
 ** Some API routines are omitted when various features are
 ** excluded from a build of SQLite.  Substitute a NULL pointer
 ** for any missing APIs.
 */
-#ifndef SQLITE_ENABLE_COLUMN_METADATA
-# define sqlite3_column_database_name   0
-# define sqlite3_column_database_name16 0
-# define sqlite3_column_table_name      0
-# define sqlite3_column_table_name16    0
-# define sqlite3_column_origin_name     0
-# define sqlite3_column_origin_name16   0
-#endif
+#که_نه_تعریف_شوی SQLITE_ENABLE_ستنه_METADATA
+# define sqlite3_ستنه_database_name   0
+# define sqlite3_ستنه_database_name16 0
+# define sqlite3_ستنه_جدول_name      0
+# define sqlite3_ستنه_جدول_name16    0
+# define sqlite3_ستنه_origin_name     0
+# define sqlite3_ستنه_origin_name16   0
+#د_که_پای
 
-#ifdef SQLITE_OMIT_AUTHORIZATION
-# define sqlite3_set_authorizer         0
-#endif
+#که_تعریف_شوی SQLITE_OMIT_AUTHORIZATION
+# define sqlite3_سېټ_authorizer         0
+#د_که_پای
 
-#ifdef SQLITE_OMIT_UTF16
+#که_تعریف_شوی SQLITE_OMIT_UTF16
 # define sqlite3_bind_text16            0
 # define sqlite3_collation_needed16     0
-# define sqlite3_column_decltype16      0
-# define sqlite3_column_name16          0
-# define sqlite3_column_text16          0
+# define sqlite3_ستنه_decltype16      0
+# define sqlite3_ستنه_name16          0
+# define sqlite3_ستنه_text16          0
 # define sqlite3_complete16             0
 # define sqlite3_create_collation16     0
 # define sqlite3_create_function16      0
@@ -52,68 +52,68 @@
 # define sqlite3_prepare16              0
 # define sqlite3_prepare16_v2           0
 # define sqlite3_prepare16_v3           0
-# define sqlite3_result_error16         0
-# define sqlite3_result_text16          0
-# define sqlite3_result_text16be        0
-# define sqlite3_result_text16le        0
-# define sqlite3_value_text16           0
-# define sqlite3_value_text16be         0
-# define sqlite3_value_text16le         0
-# define sqlite3_column_database_name16 0
-# define sqlite3_column_table_name16    0
-# define sqlite3_column_origin_name16   0
-#endif
+# define sqlite3_پایله_error16         0
+# define sqlite3_پایله_text16          0
+# define sqlite3_پایله_text16be        0
+# define sqlite3_پایله_text16le        0
+# define sqlite3_ارزښت_text16           0
+# define sqlite3_ارزښت_text16be         0
+# define sqlite3_ارزښت_text16le         0
+# define sqlite3_ستنه_database_name16 0
+# define sqlite3_ستنه_جدول_name16    0
+# define sqlite3_ستنه_origin_name16   0
+#د_که_پای
 
-#ifdef SQLITE_OMIT_COMPLETE
+#که_تعریف_شوی SQLITE_OMIT_COMPLETE
 # define sqlite3_complete 0
 # define sqlite3_complete16 0
-#endif
+#د_که_پای
 
-#ifdef SQLITE_OMIT_DECLTYPE
-# define sqlite3_column_decltype16      0
-# define sqlite3_column_decltype        0
-#endif
+#که_تعریف_شوی SQLITE_OMIT_DECLTYPE
+# define sqlite3_ستنه_decltype16      0
+# define sqlite3_ستنه_decltype        0
+#د_که_پای
 
-#ifdef SQLITE_OMIT_PROGRESS_CALLBACK
-# define sqlite3_progress_handler 0
-#endif
+#که_تعریف_شوی SQLITE_OMIT_پرمختګ_CALLBACK
+# define sqlite3_پرمختګ_handler 0
+#د_که_پای
 
-#ifdef SQLITE_OMIT_VIRTUALTABLE
+#که_تعریف_شوی SQLITE_OMIT_VIRTUALTABLE
 # define sqlite3_create_module 0
 # define sqlite3_create_module_v2 0
 # define sqlite3_declare_vtab 0
 # define sqlite3_vtab_config 0
 # define sqlite3_vtab_on_conflict 0
 # define sqlite3_vtab_collation 0
-#endif
+#د_که_پای
 
-#ifdef SQLITE_OMIT_SHARED_CACHE
+#که_تعریف_شوی SQLITE_OMIT_SHARED_CACHE
 # define sqlite3_enable_shared_cache 0
-#endif
+#د_که_پای
 
-#if defined(SQLITE_OMIT_TRACE) || defined(SQLITE_OMIT_DEPRECATED)
+#إذا defined(SQLITE_OMIT_TRACE) || defined(SQLITE_OMIT_DEPRECATED)
 # define sqlite3_profile       0
 # define sqlite3_trace         0
-#endif
+#د_که_پای
 
-#ifdef SQLITE_OMIT_GET_TABLE
-# define sqlite3_free_table    0
-# define sqlite3_get_table     0
-#endif
+#که_تعریف_شوی SQLITE_OMIT_GET_جدول
+# define sqlite3_free_جدول    0
+# define sqlite3_get_جدول     0
+#د_که_پای
 
-#ifdef SQLITE_OMIT_INCRBLOB
-#define sqlite3_bind_zeroblob  0
-#define sqlite3_blob_bytes     0
-#define sqlite3_blob_close     0
-#define sqlite3_blob_open      0
-#define sqlite3_blob_read      0
-#define sqlite3_blob_write     0
-#define sqlite3_blob_reopen    0
-#endif
+#که_تعریف_شوی SQLITE_OMIT_INCRBLOB
+#تعریف_کړه sqlite3_bind_zeroblob  0
+#تعریف_کړه sqlite3_blob_بایټونه     0
+#تعریف_کړه sqlite3_blob_close     0
+#تعریف_کړه sqlite3_blob_open      0
+#تعریف_کړه sqlite3_blob_read      0
+#تعریف_کړه sqlite3_blob_write     0
+#تعریف_کړه sqlite3_blob_reopen    0
+#د_که_پای
 
-#if defined(SQLITE_OMIT_TRACE)
+#إذا defined(SQLITE_OMIT_TRACE)
 # define sqlite3_trace_v2      0
-#endif
+#د_که_پای
 
 /*
 ** The following structure contains pointers to all SQLite API routines.
@@ -130,51 +130,51 @@
 ** also check to make sure that the pointer to the function is
 ** not NULL before calling it.
 */
-static const sqlite3_api_routines sqlite3Apis = {
+ساكن ثابت sqlite3_api_routines sqlite3Apis = {
   sqlite3_aggregate_context,
-#ifndef SQLITE_OMIT_DEPRECATED
-  sqlite3_aggregate_count,
-#else
+#که_نه_تعریف_شوی SQLITE_OMIT_DEPRECATED
+  sqlite3_aggregate_شمېر,
+#وإلا
   0,
-#endif
+#د_که_پای
   sqlite3_bind_blob,
   sqlite3_bind_double,
   sqlite3_bind_int,
   sqlite3_bind_int64,
   sqlite3_bind_null,
-  sqlite3_bind_parameter_count,
-  sqlite3_bind_parameter_index,
+  sqlite3_bind_parameter_شمېر,
+  sqlite3_bind_parameter_شاخص,
   sqlite3_bind_parameter_name,
-  sqlite3_bind_text,
+  sqlite3_bind_متن,
   sqlite3_bind_text16,
-  sqlite3_bind_value,
+  sqlite3_bind_ارزښت,
   sqlite3_busy_handler,
   sqlite3_busy_timeout,
   sqlite3_changes,
   sqlite3_close,
   sqlite3_collation_needed,
   sqlite3_collation_needed16,
-  sqlite3_column_blob,
-  sqlite3_column_bytes,
-  sqlite3_column_bytes16,
-  sqlite3_column_count,
-  sqlite3_column_database_name,
-  sqlite3_column_database_name16,
-  sqlite3_column_decltype,
-  sqlite3_column_decltype16,
-  sqlite3_column_double,
-  sqlite3_column_int,
-  sqlite3_column_int64,
-  sqlite3_column_name,
-  sqlite3_column_name16,
-  sqlite3_column_origin_name,
-  sqlite3_column_origin_name16,
-  sqlite3_column_table_name,
-  sqlite3_column_table_name16,
-  sqlite3_column_text,
-  sqlite3_column_text16,
-  sqlite3_column_type,
-  sqlite3_column_value,
+  sqlite3_ستنه_blob,
+  sqlite3_ستنه_بایټونه,
+  sqlite3_ستنه_bytes16,
+  sqlite3_ستنه_شمېر,
+  sqlite3_ستنه_database_name,
+  sqlite3_ستنه_database_name16,
+  sqlite3_ستنه_decltype,
+  sqlite3_ستنه_decltype16,
+  sqlite3_ستنه_double,
+  sqlite3_ستنه_int,
+  sqlite3_ستنه_int64,
+  sqlite3_ستنه_name,
+  sqlite3_ستنه_name16,
+  sqlite3_ستنه_origin_name,
+  sqlite3_ستنه_origin_name16,
+  sqlite3_ستنه_جدول_name,
+  sqlite3_ستنه_جدول_name16,
+  sqlite3_ستنه_متن,
+  sqlite3_ستنه_text16,
+  sqlite3_ستنه_type,
+  sqlite3_ستنه_ارزښت,
   sqlite3_commit_hook,
   sqlite3_complete,
   sqlite3_complete16,
@@ -183,7 +183,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_create_function,
   sqlite3_create_function16,
   sqlite3_create_module,
-  sqlite3_data_count,
+  sqlite3_معلومات_شمېر,
   sqlite3_db_handle,
   sqlite3_declare_vtab,
   sqlite3_enable_shared_cache,
@@ -191,22 +191,22 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_errmsg,
   sqlite3_errmsg16,
   sqlite3_exec,
-#ifndef SQLITE_OMIT_DEPRECATED
+#که_نه_تعریف_شوی SQLITE_OMIT_DEPRECATED
   sqlite3_expired,
-#else
+#وإلا
   0,
-#endif
+#د_که_پای
   sqlite3_finalize,
   sqlite3_free,
-  sqlite3_free_table,
+  sqlite3_free_جدول,
   sqlite3_get_autocommit,
   sqlite3_get_auxdata,
-  sqlite3_get_table,
+  sqlite3_get_جدول,
   0,     /* Was sqlite3_global_recover(), but that function is deprecated */
-  sqlite3_interrupt,
-  sqlite3_last_insert_rowid,
+  sqlite3_مداخله,
+  sqlite3_وروستی_ورننباسه_rowid,
   sqlite3_libversion,
-  sqlite3_libversion_number,
+  sqlite3_libversion_شمېره,
   sqlite3_malloc,
   sqlite3_mprintf,
   sqlite3_open,
@@ -214,53 +214,53 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_prepare,
   sqlite3_prepare16,
   sqlite3_profile,
-  sqlite3_progress_handler,
+  sqlite3_پرمختګ_handler,
   sqlite3_realloc,
   sqlite3_reset,
-  sqlite3_result_blob,
-  sqlite3_result_double,
-  sqlite3_result_error,
-  sqlite3_result_error16,
-  sqlite3_result_int,
-  sqlite3_result_int64,
-  sqlite3_result_null,
-  sqlite3_result_text,
-  sqlite3_result_text16,
-  sqlite3_result_text16be,
-  sqlite3_result_text16le,
-  sqlite3_result_value,
+  sqlite3_پایله_blob,
+  sqlite3_پایله_double,
+  sqlite3_پایله_error,
+  sqlite3_پایله_error16,
+  sqlite3_پایله_int,
+  sqlite3_پایله_int64,
+  sqlite3_پایله_null,
+  sqlite3_پایله_متن,
+  sqlite3_پایله_text16,
+  sqlite3_پایله_text16be,
+  sqlite3_پایله_text16le,
+  sqlite3_پایله_ارزښت,
   sqlite3_rollback_hook,
-  sqlite3_set_authorizer,
-  sqlite3_set_auxdata,
+  sqlite3_سېټ_authorizer,
+  sqlite3_سېټ_auxdata,
   sqlite3_snprintf,
-  sqlite3_step,
-  sqlite3_table_column_metadata,
-#ifndef SQLITE_OMIT_DEPRECATED
+  sqlite3_ګام,
+  sqlite3_جدول_ستنه_metadata,
+#که_نه_تعریف_شوی SQLITE_OMIT_DEPRECATED
   sqlite3_thread_cleanup,
-#else
+#وإلا
   0,
-#endif
-  sqlite3_total_changes,
+#د_که_پای
+  sqlite3_ټول_changes,
   sqlite3_trace,
-#ifndef SQLITE_OMIT_DEPRECATED
+#که_نه_تعریف_شوی SQLITE_OMIT_DEPRECATED
   sqlite3_transfer_bindings,
-#else
+#وإلا
   0,
-#endif
+#د_که_پای
   sqlite3_update_hook,
-  sqlite3_user_data,
-  sqlite3_value_blob,
-  sqlite3_value_bytes,
-  sqlite3_value_bytes16,
-  sqlite3_value_double,
-  sqlite3_value_int,
-  sqlite3_value_int64,
-  sqlite3_value_numeric_type,
-  sqlite3_value_text,
-  sqlite3_value_text16,
-  sqlite3_value_text16be,
-  sqlite3_value_text16le,
-  sqlite3_value_type,
+  sqlite3_user_معلومات,
+  sqlite3_ارزښت_blob,
+  sqlite3_ارزښت_بایټونه,
+  sqlite3_ارزښت_bytes16,
+  sqlite3_ارزښت_double,
+  sqlite3_ارزښت_int,
+  sqlite3_ارزښت_int64,
+  sqlite3_ارزښت_numeric_type,
+  sqlite3_ارزښت_متن,
+  sqlite3_ارزښت_text16,
+  sqlite3_ارزښت_text16be,
+  sqlite3_ارزښت_text16le,
+  sqlite3_ارزښت_type,
   sqlite3_vmprintf,
   /*
   ** The original API set ends here.  All extensions can call any
@@ -288,44 +288,44 @@ static const sqlite3_api_routines sqlite3Apis = {
   ** Added for 3.5.0
   */
   sqlite3_bind_zeroblob,
-  sqlite3_blob_bytes,
+  sqlite3_blob_بایټونه,
   sqlite3_blob_close,
   sqlite3_blob_open,
   sqlite3_blob_read,
   sqlite3_blob_write,
   sqlite3_create_collation_v2,
   sqlite3_file_control,
-  sqlite3_memory_highwater,
-  sqlite3_memory_used,
-#ifdef SQLITE_MUTEX_OMIT
+  sqlite3_حافظه_highwater,
+  sqlite3_حافظه_کارول_شوی,
+#که_تعریف_شوی SQLITE_MUTEX_OMIT
   0, 
   0, 
   0,
   0,
   0,
-#else
+#وإلا
   sqlite3_mutex_alloc,
   sqlite3_mutex_enter,
   sqlite3_mutex_free,
   sqlite3_mutex_leave,
   sqlite3_mutex_try,
-#endif
+#د_که_پای
   sqlite3_open_v2,
-  sqlite3_release_memory,
-  sqlite3_result_error_nomem,
-  sqlite3_result_error_toobig,
+  sqlite3_release_حافظه,
+  sqlite3_پایله_error_nomem,
+  sqlite3_پایله_error_toobig,
   sqlite3_sleep,
-  sqlite3_soft_heap_limit,
-  sqlite3_vfs_find,
-  sqlite3_vfs_register,
+  sqlite3_soft_ډېرۍ_حد,
+  sqlite3_vfs_پیدا_کړه,
+  sqlite3_vfs_ثبتوونکی,
   sqlite3_vfs_unregister,
 
   /*
   ** Added for 3.5.8
   */
   sqlite3_threadsafe,
-  sqlite3_result_zeroblob,
-  sqlite3_result_error_code,
+  sqlite3_پایله_zeroblob,
+  sqlite3_پایله_error_کوډ,
   sqlite3_test_control,
   sqlite3_randomness,
   sqlite3_context_db_handle,
@@ -333,58 +333,58 @@ static const sqlite3_api_routines sqlite3Apis = {
   /*
   ** Added for 3.6.0
   */
-  sqlite3_extended_result_codes,
-  sqlite3_limit,
-  sqlite3_next_stmt,
+  sqlite3_extended_پایله_codes,
+  sqlite3_حد,
+  sqlite3_بل_stmt,
   sqlite3_sql,
-  sqlite3_status,
+  sqlite3_حالت,
 
   /*
   ** Added for 3.7.4
   */
-  sqlite3_backup_finish,
+  sqlite3_backup_پای,
   sqlite3_backup_init,
   sqlite3_backup_pagecount,
-  sqlite3_backup_remaining,
-  sqlite3_backup_step,
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
+  sqlite3_backup_پاتې_شوی,
+  sqlite3_backup_ګام,
+#که_نه_تعریف_شوی SQLITE_OMIT_COMPILEOPTION_DIAGS
   sqlite3_compileoption_get,
-  sqlite3_compileoption_used,
-#else
+  sqlite3_compileoption_کارول_شوی,
+#وإلا
   0,
   0,
-#endif
+#د_که_پای
   sqlite3_create_function_v2,
   sqlite3_db_config,
   sqlite3_db_mutex,
-  sqlite3_db_status,
+  sqlite3_db_حالت,
   sqlite3_extended_errcode,
   sqlite3_log,
-  sqlite3_soft_heap_limit64,
+  sqlite3_soft_ډېرۍ_limit64,
   sqlite3_sourceid,
-  sqlite3_stmt_status,
+  sqlite3_stmt_حالت,
   sqlite3_strnicmp,
-#ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
+#که_تعریف_شوی SQLITE_ENABLE_UNLOCK_NOTIFY
   sqlite3_unlock_notify,
-#else
+#وإلا
   0,
-#endif
-#ifndef SQLITE_OMIT_WAL
+#د_که_پای
+#که_نه_تعریف_شوی SQLITE_OMIT_WAL
   sqlite3_wal_autocheckpoint,
   sqlite3_wal_checkpoint,
   sqlite3_wal_hook,
-#else
+#وإلا
   0,
   0,
   0,
-#endif
+#د_که_پای
   sqlite3_blob_reopen,
   sqlite3_vtab_config,
   sqlite3_vtab_on_conflict,
   sqlite3_close_v2,
   sqlite3_db_filename,
   sqlite3_db_readonly,
-  sqlite3_db_release_memory,
+  sqlite3_db_release_حافظه,
   sqlite3_errstr,
   sqlite3_stmt_busy,
   sqlite3_stmt_readonly,
@@ -399,22 +399,22 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_bind_blob64,
   sqlite3_bind_text64,
   sqlite3_cancel_auto_extension,
-  sqlite3_load_extension,
+  sqlite3_بارول_extension,
   sqlite3_malloc64,
   sqlite3_msize,
   sqlite3_realloc64,
   sqlite3_reset_auto_extension,
-  sqlite3_result_blob64,
-  sqlite3_result_text64,
+  sqlite3_پایله_blob64,
+  sqlite3_پایله_text64,
   sqlite3_strglob,
   /* Version 3.8.11 and later */
-  (sqlite3_value*(*)(const sqlite3_value*))sqlite3_value_dup,
-  sqlite3_value_free,
-  sqlite3_result_zeroblob64,
+  (sqlite3_ارزښت*(*)(ثابت sqlite3_ارزښت*))sqlite3_ارزښت_dup,
+  sqlite3_ارزښت_free,
+  sqlite3_پایله_zeroblob64,
   sqlite3_bind_zeroblob64,
   /* Version 3.9.0 and later */
-  sqlite3_value_subtype,
-  sqlite3_result_subtype,
+  sqlite3_ارزښت_subtype,
+  sqlite3_پایله_subtype,
   /* Version 3.10.0 and later */
   sqlite3_status64,
   sqlite3_strlike,
@@ -425,23 +425,23 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_trace_v2,
   sqlite3_expanded_sql,
   /* Version 3.18.0 and later */
-  sqlite3_set_last_insert_rowid,
+  sqlite3_سېټ_وروستی_ورننباسه_rowid,
   /* Version 3.20.0 and later */
   sqlite3_prepare_v3,
   sqlite3_prepare16_v3,
-  sqlite3_bind_pointer,
-  sqlite3_result_pointer,
-  sqlite3_value_pointer,
+  sqlite3_bind_اشاره_ګر,
+  sqlite3_پایله_اشاره_ګر,
+  sqlite3_ارزښت_اشاره_ګر,
   /* Version 3.22.0 and later */
   sqlite3_vtab_nochange,
-  sqlite3_value_nochange,
+  sqlite3_ارزښت_nochange,
   sqlite3_vtab_collation,
   /* Version 3.24.0 and later */
-  sqlite3_keyword_count,
+  sqlite3_keyword_شمېر,
   sqlite3_keyword_name,
   sqlite3_keyword_check,
   sqlite3_str_new,
-  sqlite3_str_finish,
+  sqlite3_str_پای,
   sqlite3_str_appendf,
   sqlite3_str_vappendf,
   sqlite3_str_append,
@@ -449,28 +449,28 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_str_appendchar,
   sqlite3_str_reset,
   sqlite3_str_errcode,
-  sqlite3_str_length,
-  sqlite3_str_value,
+  sqlite3_str_اوږدتیا,
+  sqlite3_str_ارزښت,
   /* Version 3.25.0 and later */
-  sqlite3_create_window_function,
+  sqlite3_create_کړکۍ_function,
   /* Version 3.26.0 and later */
-#ifdef SQLITE_ENABLE_NORMALIZE
+#که_تعریف_شوی SQLITE_ENABLE_NORMALIZE
   sqlite3_normalized_sql,
-#else
+#وإلا
   0,
-#endif
+#د_که_پای
   /* Version 3.28.0 and later */
   sqlite3_stmt_isexplain,
-  sqlite3_value_frombind,
+  sqlite3_ارزښت_frombind,
   /* Version 3.30.0 and later */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#که_نه_تعریف_شوی SQLITE_OMIT_VIRTUALTABLE
   sqlite3_drop_modules,
-#else
+#وإلا
   0,
-#endif
+#د_که_پای
   /* Version 3.31.0 and later */
-  sqlite3_hard_heap_limit64,
-  sqlite3_uri_key,
+  sqlite3_hard_ډېرۍ_limit64,
+  sqlite3_uri_کلی,
   sqlite3_filename_database,
   sqlite3_filename_journal,
   sqlite3_filename_wal,
@@ -482,69 +482,69 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_txn_state,
   /* Version 3.36.1 and later */
   sqlite3_changes64,
-  sqlite3_total_changes64,
+  sqlite3_ټول_changes64,
   /* Version 3.37.0 and later */
-  sqlite3_autovacuum_pages,
+  sqlite3_autovacuum_پاڼې,
   /* Version 3.38.0 and later */
-  sqlite3_error_offset,
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  sqlite3_vtab_rhs_value,
+  sqlite3_error_دننه_واټن,
+#که_نه_تعریف_شوی SQLITE_OMIT_VIRTUALTABLE
+  sqlite3_vtab_rhs_ارزښت,
   sqlite3_vtab_distinct,
-  sqlite3_vtab_in,
-  sqlite3_vtab_in_first,
-  sqlite3_vtab_in_next,
-#else
+  sqlite3_vtab_دننه,
+  sqlite3_vtab_دننه_لومړی,
+  sqlite3_vtab_دننه_بل,
+#وإلا
   0,
   0,
   0,
   0,
   0,
-#endif
+#د_که_پای
   /* Version 3.39.0 and later */
-#ifndef SQLITE_OMIT_DESERIALIZE
+#که_نه_تعریف_شوی SQLITE_OMIT_DESERIALIZE
   sqlite3_deserialize,
   sqlite3_serialize,
-#else
+#وإلا
   0,
   0,
-#endif
+#د_که_پای
   sqlite3_db_name,
   /* Version 3.40.0 and later */
-  sqlite3_value_encoding,
+  sqlite3_ارزښت_encoding,
   /* Version 3.41.0 and later */
   sqlite3_is_interrupted,
   /* Version 3.43.0 and later */
   sqlite3_stmt_explain,
   /* Version 3.44.0 and later */
   sqlite3_get_clientdata,
-  sqlite3_set_clientdata,
+  sqlite3_سېټ_clientdata,
   /* Version 3.50.0 and later */
   sqlite3_setlk_timeout,
   /* Version 3.51.0 and later */
-  sqlite3_set_errmsg,
+  sqlite3_سېټ_errmsg,
   sqlite3_db_status64,
   /* Version 3.52.0 and later */
   sqlite3_str_truncate,
   sqlite3_str_free,
-#ifdef SQLITE_ENABLE_CARRAY
+#که_تعریف_شوی SQLITE_ENABLE_CARRAY
   sqlite3_carray_bind,
   sqlite3_carray_bind_v2,
-#else
+#وإلا
   0,
   0,
-#endif
+#د_که_پای
   /* Version 3.54.0 and later */
   sqlite3_incomplete,
-  sqlite3_result_str
+  sqlite3_پایله_str
 };
 
 /* True if x is the directory separator character
 */
-#if SQLITE_OS_WIN
+#إذا SQLITE_OS_WIN
 # define DirSep(X)  ((X)=='/'||(X)=='\\')
-#else
+#وإلا
 # define DirSep(X)  ((X)=='/')
-#endif
+#د_که_پای
 
 /*
 ** Attempt to load an SQLite extension library contained in the file
@@ -558,36 +558,36 @@ static const sqlite3_api_routines sqlite3Apis = {
 ** error message text.  The calling function should free this memory
 ** by calling sqlite3DbFree(db, ).
 */
-static int sqlite3LoadExtension(
+ساكن صحيح sqlite3_بارول_Extension(
   sqlite3 *db,          /* Load the extension into this database connection */
-  const char *zFile,    /* Name of the shared library containing extension */
-  const char *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
-  char **pzErrMsg       /* Put error message here if not 0 */
+  ثابت حرف *zFile,    /* Name of the shared library containing extension */
+  ثابت حرف *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
+  حرف **pz_Err_پیغام       /* Put error message here if not 0 */
 ){
   sqlite3_vfs *pVfs = db->pVfs;
-  void *handle;
-  sqlite3_loadext_entry xInit;
-  char *zErrmsg = 0;
-  const char *zEntry;
-  char *zAltEntry = 0;
-  void **aHandle;
-  u64 nMsg = strlen(zFile);
-  int ii;
-  int rc;
+  فراغ *handle;
+  sqlite3_loadext_ثبت xInit;
+  حرف *zErrmsg = 0;
+  ثابت حرف *z_ثبت;
+  حرف *z_Alt_ثبت = 0;
+  فراغ **aHandle;
+  u64 n_پیغام = مزي_اوږدوالی(zFile);
+  صحيح ii;
+  صحيح rc;
 
   /* Shared library endings to try if zFile cannot be loaded as written */
-  static const char *azEndings[] = {
-#if SQLITE_OS_WIN
+  ساكن ثابت حرف *azEndings[] = {
+#إذا SQLITE_OS_WIN
      "dll"   
-#elif defined(__APPLE__)
+#وإلاإذا defined(__APPLE__)
      "dylib"
-#else
+#وإلا
      "so"
-#endif
+#د_که_پای
   };
 
 
-  if( pzErrMsg ) *pzErrMsg = 0;
+  إذا( pz_Err_پیغام ) *pz_Err_پیغام = 0;
 
   /* Ticket #1863.  To avoid a creating security problems for older
   ** applications that relink against newer versions of SQLite, the
@@ -596,14 +596,14 @@ static int sqlite3LoadExtension(
   ** sqlite3_db_config(db, SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION, 1, 0)
   ** to turn on extension loading.
   */
-  if( (db->flags & SQLITE_LoadExtension)==0 ){
-    if( pzErrMsg ){
-      *pzErrMsg = sqlite3_mprintf("not authorized");
+  إذا( (db->flags & SQLITE_بارول_Extension)==0 ){
+    إذا( pz_Err_پیغام ){
+      *pz_Err_پیغام = sqlite3_mprintf("not authorized");
     }
-    return SQLITE_ERROR;
+    أرجع SQLITE_ERROR;
   }
 
-  zEntry = zProc ? zProc : "sqlite3_extension_init";
+  z_ثبت = zProc ? zProc : "sqlite3_extension_init";
 
   /* tag-20210611-1.  Some dlopen() implementations will segfault if given
   ** an oversize filename.  Most filesystems have a pathname limit of 4K,
@@ -613,25 +613,25 @@ static int sqlite3LoadExtension(
   ** Later (2023-03-25): Save an extra 6 bytes for the filename suffix.
   ** See https://sqlite.org/forum/forumpost/24083b579d.
   */
-  if( nMsg>SQLITE_MAX_PATHLEN ) goto extension_not_found;
+  إذا( n_پیغام>SQLITE_MAX_PATHLEN ) اذهب extension_not_وموندل;
 
   /* Do not allow sqlite3_load_extension() to link to a copy of the
   ** running application, by passing in an empty filename. */
-  if( nMsg==0 ) goto extension_not_found;
+  إذا( n_پیغام==0 ) اذهب extension_not_وموندل;
     
   handle = sqlite3OsDlOpen(pVfs, zFile);
-#if SQLITE_OS_UNIX || SQLITE_OS_WIN
-  for(ii=0; ii<ArraySize(azEndings) && handle==0; ii++){
-    char *zAltFile = sqlite3_mprintf("%s.%s", zFile, azEndings[ii]);
-    if( zAltFile==0 ) return SQLITE_NOMEM_BKPT;
-    if( nMsg+strlen(azEndings[ii])+1<=SQLITE_MAX_PATHLEN ){
+#إذا SQLITE_OS_UNIX || SQLITE_OS_WIN
+  لكل(ii=0; ii<Array_اندازه(azEndings) && handle==0; ii++){
+    حرف *zAltFile = sqlite3_mprintf("%s.%s", zFile, azEndings[ii]);
+    إذا( zAltFile==0 ) أرجع SQLITE_NOMEM_BKPT;
+    إذا( n_پیغام+مزي_اوږدوالی(azEndings[ii])+1<=SQLITE_MAX_PATHLEN ){
       handle = sqlite3OsDlOpen(pVfs, zAltFile);
     }
     sqlite3_free(zAltFile);
   }
-#endif
-  if( handle==0 ) goto extension_not_found;
-  xInit = (sqlite3_loadext_entry)sqlite3OsDlSym(pVfs, handle, zEntry);
+#د_که_پای
+  إذا( handle==0 ) اذهب extension_not_وموندل;
+  xInit = (sqlite3_loadext_ثبت)sqlite3OsDlSym(pVfs, handle, z_ثبت);
 
   /* If no entry point was specified and the default legacy
   ** entry point name "sqlite3_extension_init" was not found, then
@@ -650,106 +650,106 @@ static int sqlite3LoadExtension(
   **
   **    /usr/local/lib/libExample5.4.3.so ==>  sqlite3_example5_init
   */
-  if( xInit==0 && zProc==0 ){
-    int iFile, iEntry, c;
-    int ncFile = sqlite3Strlen30(zFile);
-    int cnt = 0;
-    zAltEntry = sqlite3_malloc64(ncFile+30);
-    if( zAltEntry==0 ){
+  إذا( xInit==0 && zProc==0 ){
+    صحيح iFile, i_ثبت, c;
+    صحيح ncFile = sqlite3Strlen30(zFile);
+    صحيح cnt = 0;
+    z_Alt_ثبت = sqlite3_malloc64(ncFile+30);
+    إذا( z_Alt_ثبت==0 ){
       sqlite3OsDlClose(pVfs, handle);
-      return SQLITE_NOMEM_BKPT;
+      أرجع SQLITE_NOMEM_BKPT;
     }
-    do{
-      memcpy(zAltEntry, "sqlite3_", 8);
-      for(iFile=ncFile-1; iFile>=0 && !DirSep(zFile[iFile]); iFile--){}
+    افعل{
+      حافظه_نقل(z_Alt_ثبت, "sqlite3_", 8);
+      لكل(iFile=ncFile-1; iFile>=0 && !DirSep(zFile[iFile]); iFile--){}
       iFile++;
-      if( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
-      for(iEntry=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
-        if( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
-          zAltEntry[iEntry++] = (char)sqlite3UpperToLower[(unsigned)c];
+      إذا( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
+      لكل(i_ثبت=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
+        إذا( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
+          z_Alt_ثبت[i_ثبت++] = (حرف)sqlite3_پاسنی_منزل_ښکتنی[(بینښه)c];
         }
       }
-      memcpy(zAltEntry+iEntry, "_init", 6);
-      zEntry = zAltEntry;
-      xInit = (sqlite3_loadext_entry)sqlite3OsDlSym(pVfs, handle, zEntry);
-    }while( xInit==0 && (++cnt)<2 );
+      حافظه_نقل(z_Alt_ثبت+i_ثبت, "_init", 6);
+      z_ثبت = z_Alt_ثبت;
+      xInit = (sqlite3_loadext_ثبت)sqlite3OsDlSym(pVfs, handle, z_ثبت);
+    }طالما( xInit==0 && (++cnt)<2 );
   }
-  if( xInit==0 ){
-    if( pzErrMsg ){
-      nMsg += strlen(zEntry) + 300;
-      *pzErrMsg = zErrmsg = sqlite3_malloc64(nMsg);
-      if( zErrmsg ){
-        assert( nMsg<0x7fffffff );  /* zErrmsg would be NULL if not so */
-        sqlite3_snprintf((int)nMsg, zErrmsg,
-            "no entry point [%s] in shared library [%s]", zEntry, zFile);
-        sqlite3OsDlError(pVfs, nMsg-1, zErrmsg);
+  إذا( xInit==0 ){
+    إذا( pz_Err_پیغام ){
+      n_پیغام += مزي_اوږدوالی(z_ثبت) + 300;
+      *pz_Err_پیغام = zErrmsg = sqlite3_malloc64(n_پیغام);
+      إذا( zErrmsg ){
+        أكد( n_پیغام<0x7fffffff );  /* zErrmsg would be NULL if not so */
+        sqlite3_snprintf((صحيح)n_پیغام, zErrmsg,
+            "no entry point [%s] in shared library [%s]", z_ثبت, zFile);
+        sqlite3OsDlError(pVfs, n_پیغام-1, zErrmsg);
       }
     }
     sqlite3OsDlClose(pVfs, handle);
-    sqlite3_free(zAltEntry);
-    return SQLITE_ERROR;
+    sqlite3_free(z_Alt_ثبت);
+    أرجع SQLITE_ERROR;
   }
-  sqlite3_free(zAltEntry);
+  sqlite3_free(z_Alt_ثبت);
   rc = xInit(db, &zErrmsg, &sqlite3Apis);
-  if( rc ){
-    if( rc==SQLITE_OK_LOAD_PERMANENTLY ) return SQLITE_OK;
-    if( pzErrMsg ){
-      *pzErrMsg = sqlite3_mprintf("error during initialization: %s", zErrmsg);
+  إذا( rc ){
+    إذا( rc==SQLITE_OK_بارول_PERMANENTLY ) أرجع SQLITE_OK;
+    إذا( pz_Err_پیغام ){
+      *pz_Err_پیغام = sqlite3_mprintf("error during initialization: %s", zErrmsg);
     }
     sqlite3_free(zErrmsg);
     sqlite3OsDlClose(pVfs, handle);
-    return SQLITE_ERROR;
+    أرجع SQLITE_ERROR;
   }
 
   /* Append the new shared library handle to the db->aExtension array. */
-  aHandle = sqlite3DbMallocZero(db, sizeof(handle)*(db->nExtension+1));
-  if( aHandle==0 ){
-    return SQLITE_NOMEM_BKPT;
+  aHandle = sqlite3DbMallocZero(db, حجم(handle)*(db->nExtension+1));
+  إذا( aHandle==0 ){
+    أرجع SQLITE_NOMEM_BKPT;
   }
-  if( db->nExtension>0 ){
-    memcpy(aHandle, db->aExtension, sizeof(handle)*db->nExtension);
+  إذا( db->nExtension>0 ){
+    حافظه_نقل(aHandle, db->aExtension, حجم(handle)*db->nExtension);
   }
   sqlite3DbFree(db, db->aExtension);
   db->aExtension = aHandle;
 
   db->aExtension[db->nExtension++] = handle;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 
-extension_not_found:
-  if( pzErrMsg ){
-    nMsg += 300;
-    *pzErrMsg = zErrmsg = sqlite3_malloc64(nMsg);
-    if( zErrmsg ){
-      assert( nMsg<0x7fffffff );  /* zErrmsg would be NULL if not so */
-      sqlite3_snprintf((int)nMsg, zErrmsg,
+extension_not_وموندل:
+  إذا( pz_Err_پیغام ){
+    n_پیغام += 300;
+    *pz_Err_پیغام = zErrmsg = sqlite3_malloc64(n_پیغام);
+    إذا( zErrmsg ){
+      أكد( n_پیغام<0x7fffffff );  /* zErrmsg would be NULL if not so */
+      sqlite3_snprintf((صحيح)n_پیغام, zErrmsg,
           "unable to open shared library [%.*s]", SQLITE_MAX_PATHLEN, zFile);
-      sqlite3OsDlError(pVfs, nMsg-1, zErrmsg);
+      sqlite3OsDlError(pVfs, n_پیغام-1, zErrmsg);
     }
   }
-  return SQLITE_ERROR;
+  أرجع SQLITE_ERROR;
 }
-int sqlite3_load_extension(
+صحيح sqlite3_بارول_extension(
   sqlite3 *db,          /* Load the extension into this database connection */
-  const char *zFile,    /* Name of the shared library containing extension */
-  const char *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
-  char **pzErrMsg       /* Put error message here if not 0 */
+  ثابت حرف *zFile,    /* Name of the shared library containing extension */
+  ثابت حرف *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
+  حرف **pz_Err_پیغام       /* Put error message here if not 0 */
 ){
-  int rc;
+  صحيح rc;
   sqlite3_mutex_enter(db->mutex);
-  rc = sqlite3LoadExtension(db, zFile, zProc, pzErrMsg);
+  rc = sqlite3_بارول_Extension(db, zFile, zProc, pz_Err_پیغام);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Call this routine when the database connection is closing in order
 ** to clean up loaded extensions
 */
-void sqlite3CloseExtensions(sqlite3 *db){
-  int i;
-  assert( sqlite3_mutex_held(db->mutex) );
-  for(i=0; i<db->nExtension; i++){
+فراغ sqlite3CloseExtensions(sqlite3 *db){
+  صحيح i;
+  أكد( sqlite3_mutex_held(db->mutex) );
+  لكل(i=0; i<db->nExtension; i++){
     sqlite3OsDlClose(db->pVfs, db->aExtension[i]);
   }
   sqlite3DbFree(db, db->aExtension);
@@ -759,21 +759,21 @@ void sqlite3CloseExtensions(sqlite3 *db){
 ** Enable or disable extension loading.  Extension loading is disabled by
 ** default so as not to open security holes in older applications.
 */
-int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-#endif
+صحيح sqlite3_enable_بارول_extension(sqlite3 *db, صحيح onoff){
+#که_تعریف_شوی SQLITE_ENABLE_API_ARMOR
+  إذا( !sqlite3SafetyCheckOk(db) ) أرجع SQLITE_MISUSE_BKPT;
+#د_که_پای
   sqlite3_mutex_enter(db->mutex);
-  if( onoff ){
-    db->flags |= SQLITE_LoadExtension|SQLITE_LoadExtFunc;
-  }else{
-    db->flags &= ~(u64)(SQLITE_LoadExtension|SQLITE_LoadExtFunc);
+  إذا( onoff ){
+    db->flags |= SQLITE_بارول_Extension|SQLITE_بارول_Ext_Func;
+  }وإلا{
+    db->flags &= ~(u64)(SQLITE_بارول_Extension|SQLITE_بارول_Ext_Func);
   }
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
-#endif /* !defined(SQLITE_OMIT_LOAD_EXTENSION) */
+#د_که_پای /* !defined(SQLITE_OMIT_LOAD_EXTENSION) */
 
 /*
 ** The following object holds the list of automatically loaded
@@ -782,10 +782,10 @@ int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
 ** This list is shared across threads.  The SQLITE_MUTEX_STATIC_MAIN
 ** mutex must be held while accessing this list.
 */
-typedef struct sqlite3AutoExtList sqlite3AutoExtList;
-static SQLITE_WSD struct sqlite3AutoExtList {
+تعريفنوع بنية sqlite3AutoExtList sqlite3AutoExtList;
+ساكن SQLITE_WSD بنية sqlite3AutoExtList {
   u32 nExt;              /* Number of entries in aExt[] */
-  void (**aExt)(void);   /* Pointers to the extension init functions */
+  فراغ (**aExt)(فراغ);   /* Pointers to the extension init functions */
 } sqlite3Autoext = { 0, 0 };
 
 /* The "wsdAutoext" macro will resolve to the autoextension
@@ -794,58 +794,58 @@ static SQLITE_WSD struct sqlite3AutoExtList {
 ** case where writable static data is supported, wsdStat can refer directly
 ** to the "sqlite3Autoext" state vector declared above.
 */
-#ifdef SQLITE_OMIT_WSD
+#که_تعریف_شوی SQLITE_OMIT_WSD
 # define wsdAutoextInit \
   sqlite3AutoExtList *x = &GLOBAL(sqlite3AutoExtList,sqlite3Autoext)
 # define wsdAutoext x[0]
-#else
+#وإلا
 # define wsdAutoextInit
 # define wsdAutoext sqlite3Autoext
-#endif
+#د_که_پای
 
 
 /*
 ** Register a statically linked extension that is automatically
 ** loaded by every new database connection.
 */
-int sqlite3_auto_extension(
-  void (*xInit)(void)
+صحيح sqlite3_auto_extension(
+  فراغ (*xInit)(فراغ)
 ){
-  int rc = SQLITE_OK;
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( xInit==0 ) return SQLITE_MISUSE_BKPT;
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
+  صحيح rc = SQLITE_OK;
+#که_تعریف_شوی SQLITE_ENABLE_API_ARMOR
+  إذا( xInit==0 ) أرجع SQLITE_MISUSE_BKPT;
+#د_که_پای
+#که_نه_تعریف_شوی SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ){
-    return rc;
-  }else
-#endif
+  إذا( rc ){
+    أرجع rc;
+  }وإلا
+#د_که_پای
   {
     u32 i;
-#if SQLITE_THREADSAFE
+#إذا SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
-#endif
+#د_که_پای
     wsdAutoextInit;
     sqlite3_mutex_enter(mutex);
-    for(i=0; i<wsdAutoext.nExt; i++){
-      if( wsdAutoext.aExt[i]==xInit ) break;
+    لكل(i=0; i<wsdAutoext.nExt; i++){
+      إذا( wsdAutoext.aExt[i]==xInit ) اكسر;
     }
-    if( i==wsdAutoext.nExt ){
-      u64 nByte = (wsdAutoext.nExt+1)*sizeof(wsdAutoext.aExt[0]);
-      void (**aNew)(void);
+    إذا( i==wsdAutoext.nExt ){
+      u64 nByte = (wsdAutoext.nExt+1)*حجم(wsdAutoext.aExt[0]);
+      فراغ (**aNew)(فراغ);
       aNew = sqlite3_realloc64(wsdAutoext.aExt, nByte);
-      if( aNew==0 ){
+      إذا( aNew==0 ){
         rc = SQLITE_NOMEM_BKPT;
-      }else{
+      }وإلا{
         wsdAutoext.aExt = aNew;
         wsdAutoext.aExt[wsdAutoext.nExt] = xInit;
         wsdAutoext.nExt++;
       }
     }
     sqlite3_mutex_leave(mutex);
-    assert( (rc&0xff)==rc );
-    return rc;
+    أكد( (rc&0xff)==rc );
+    أرجع rc;
   }
 }
 
@@ -858,49 +858,49 @@ int sqlite3_auto_extension(
 ** Return 1 if xInit was found on the list and removed.  Return 0 if xInit
 ** was not on the list.
 */
-int sqlite3_cancel_auto_extension(
-  void (*xInit)(void)
+صحيح sqlite3_cancel_auto_extension(
+  فراغ (*xInit)(فراغ)
 ){
-  int n = 0;
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ){
-    return 0;
-  }else
-#endif
+  صحيح n = 0;
+#که_نه_تعریف_شوی SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize() ){
+    أرجع 0;
+  }وإلا
+#د_که_پای
   {
-#if SQLITE_THREADSAFE
+#إذا SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
-#endif
-    int i;
+#د_که_پای
+    صحيح i;
     wsdAutoextInit;
-#ifdef SQLITE_ENABLE_API_ARMOR
-    if( xInit==0 ) return 0;
-#endif
+#که_تعریف_شوی SQLITE_ENABLE_API_ARMOR
+    إذا( xInit==0 ) أرجع 0;
+#د_که_پای
     sqlite3_mutex_enter(mutex);
-    for(i=(int)wsdAutoext.nExt-1; i>=0; i--){
-      if( wsdAutoext.aExt[i]==xInit ){
+    لكل(i=(صحيح)wsdAutoext.nExt-1; i>=0; i--){
+      إذا( wsdAutoext.aExt[i]==xInit ){
         wsdAutoext.nExt--;
         wsdAutoext.aExt[i] = wsdAutoext.aExt[wsdAutoext.nExt];
         n++;
-        break;
+        اكسر;
       }
     }
     sqlite3_mutex_leave(mutex);
   }
-  return n;
+  أرجع n;
 }
 
 /*
 ** Reset the automatic extension loading mechanism.
 */
-void sqlite3_reset_auto_extension(void){
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize()==SQLITE_OK )
-#endif
+فراغ sqlite3_reset_auto_extension(فراغ){
+#که_نه_تعریف_شوی SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize()==SQLITE_OK )
+#د_که_پای
   {
-#if SQLITE_THREADSAFE
+#إذا SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
-#endif
+#د_که_پای
     wsdAutoextInit;
     sqlite3_mutex_enter(mutex);
     sqlite3_free(wsdAutoext.aExt);
@@ -915,38 +915,38 @@ void sqlite3_reset_auto_extension(void){
 **
 ** If anything goes wrong, set an error in the database connection.
 */
-void sqlite3AutoLoadExtensions(sqlite3 *db){
+فراغ sqlite3_Auto_بارول_Extensions(sqlite3 *db){
   u32 i;
-  int go = 1;
-  int rc;
-  sqlite3_loadext_entry xInit;
+  صحيح go = 1;
+  صحيح rc;
+  sqlite3_loadext_ثبت xInit;
 
   wsdAutoextInit;
-  if( wsdAutoext.nExt==0 ){
+  إذا( wsdAutoext.nExt==0 ){
     /* Common case: early out without every having to acquire a mutex */
-    return;
+    أرجع;
   }
-  for(i=0; go; i++){
-    char *zErrmsg;
-#if SQLITE_THREADSAFE
+  لكل(i=0; go; i++){
+    حرف *zErrmsg;
+#إذا SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
-#endif
-#ifdef SQLITE_OMIT_LOAD_EXTENSION
-    const sqlite3_api_routines *pThunk = 0;
-#else
-    const sqlite3_api_routines *pThunk = &sqlite3Apis;
-#endif
+#د_که_پای
+#که_تعریف_شوی SQLITE_OMIT_بارول_EXTENSION
+    ثابت sqlite3_api_routines *pThunk = 0;
+#وإلا
+    ثابت sqlite3_api_routines *pThunk = &sqlite3Apis;
+#د_که_پای
     sqlite3_mutex_enter(mutex);
-    if( i>=wsdAutoext.nExt ){
+    إذا( i>=wsdAutoext.nExt ){
       xInit = 0;
       go = 0;
-    }else{
-      xInit = (sqlite3_loadext_entry)wsdAutoext.aExt[i];
+    }وإلا{
+      xInit = (sqlite3_loadext_ثبت)wsdAutoext.aExt[i];
     }
     sqlite3_mutex_leave(mutex);
     zErrmsg = 0;
-    if( xInit && (rc = xInit(db, &zErrmsg, pThunk))!=0 ){
-      sqlite3ErrorWithMsg(db, rc,
+    إذا( xInit && (rc = xInit(db, &zErrmsg, pThunk))!=0 ){
+      sqlite3_Error_With_پیغام(db, rc,
             "automatic extension loading failed: %s", zErrmsg);
       go = 0;
     }
