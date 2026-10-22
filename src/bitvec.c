@@ -117,10 +117,10 @@ Bitvec *sqlite3BitvecCreate(u32 iSize){
   Bitvec *p;
   assert( sizeof(*p)==BITVEC_SZ );
   p = sqlite3MallocZero( sizeof(*p) );
-  if( p ){
+  もし( p ){
     p->iSize = iSize;
   }
-  return p;
+  戻る p;
 }
 
 /*
@@ -128,31 +128,31 @@ Bitvec *sqlite3BitvecCreate(u32 iSize){
 ** If p is NULL (if the bitmap has not been created) or if
 ** i is out of range, then return false.
 */
-int sqlite3BitvecTestNotNull(Bitvec *p, u32 i){
+整数 sqlite3BitvecTestNotNull(Bitvec *p, u32 i){
   assert( p!=0 );
   i--;
-  if( i>=p->iSize ) return 0;
-  while( p->iDivisor ){
+  もし( i>=p->iSize ) 戻る 0;
+  ながら( p->iDivisor ){
     u32 bin = i/p->iDivisor;
     i = i%p->iDivisor;
     p = p->u.apSub[bin];
-    if (!p) {
-      return 0;
+    もし (!p) {
+      戻る 0;
     }
   }
-  if( p->iSize<=BITVEC_NBIT ){
-    return (p->u.aBitmap[i/BITVEC_SZELEM] & (1<<(i&(BITVEC_SZELEM-1))))!=0;
-  } else{
+  もし( p->iSize<=BITVEC_NBIT ){
+    戻る (p->u.aBitmap[i/BITVEC_SZELEM] & (1<<(i&(BITVEC_SZELEM-1))))!=0;
+  } 否则{
     u32 h = BITVEC_HASH(i++);
-    while( p->u.aHash[h] ){
-      if( p->u.aHash[h]==i ) return 1;
+    ながら( p->u.aHash[h] ){
+      もし( p->u.aHash[h]==i ) 戻る 1;
       h = (h+1) % BITVEC_NINT;
     }
-    return 0;
+    戻る 0;
   }
 }
-int sqlite3BitvecTest(Bitvec *p, u32 i){
-  return p!=0 && sqlite3BitvecTestNotNull(p,i);
+整数 sqlite3BitvecTest(Bitvec *p, u32 i){
+  戻る p!=0 && sqlite3BitvecTestNotNull(p,i);
 }
 
 /*
@@ -167,71 +167,71 @@ int sqlite3BitvecTest(Bitvec *p, u32 i){
 ** and that the value for "i" is within range of the Bitvec object.
 ** Otherwise the behavior is undefined.
 */
-int sqlite3BitvecSet(Bitvec *p, u32 i){
+整数 sqlite3BitvecSet(Bitvec *p, u32 i){
   u32 h;
-  if( p==0 ) return SQLITE_OK;
+  もし( p==0 ) 戻る SQLITE_OK;
   assert( i>0 );
   assert( i<=p->iSize );
   i--;
-  while((p->iSize > BITVEC_NBIT) && p->iDivisor) {
+  ながら((p->iSize > BITVEC_NBIT) && p->iDivisor) {
     u32 bin = i/p->iDivisor;
     i = i%p->iDivisor;
-    if( p->u.apSub[bin]==0 ){
+    もし( p->u.apSub[bin]==0 ){
       p->u.apSub[bin] = sqlite3BitvecCreate( p->iDivisor );
-      if( p->u.apSub[bin]==0 ) return SQLITE_NOMEM_BKPT;
+      もし( p->u.apSub[bin]==0 ) 戻る SQLITE_NOMEM_BKPT;
     }
     p = p->u.apSub[bin];
   }
-  if( p->iSize<=BITVEC_NBIT ){
+  もし( p->iSize<=BITVEC_NBIT ){
     p->u.aBitmap[i/BITVEC_SZELEM] |= 1 << (i&(BITVEC_SZELEM-1));
-    return SQLITE_OK;
+    戻る SQLITE_OK;
   }
   h = BITVEC_HASH(i++);
   /* if there wasn't a hash collision, and this doesn't */
   /* completely fill the hash, then just add it without */
   /* worrying about sub-dividing and re-hashing. */
-  if( !p->u.aHash[h] ){
-    if (p->nSet<(BITVEC_NINT-1)) {
+  もし( !p->u.aHash[h] ){
+    もし (p->nSet<(BITVEC_NINT-1)) {
       goto bitvec_set_end;
-    } else {
+    } 否则 {
       goto bitvec_set_rehash;
     }
   }
   /* there was a collision, check to see if it's already */
   /* in hash, if not, try to find a spot for it */
   do {
-    if( p->u.aHash[h]==i ) return SQLITE_OK;
+    もし( p->u.aHash[h]==i ) 戻る SQLITE_OK;
     h++;
-    if( h>=BITVEC_NINT ) h = 0;
-  } while( p->u.aHash[h] );
+    もし( h>=BITVEC_NINT ) h = 0;
+  } ながら( p->u.aHash[h] );
   /* we didn't find it in the hash.  h points to the first */
   /* available free spot. check to see if this is going to */
   /* make our hash too "full".  */
 bitvec_set_rehash:
-  if( p->nSet>=BITVEC_MXHASH ){
-    unsigned int j;
-    int rc;
+  もし( p->nSet>=BITVEC_MXHASH ){
+    unsigned 整数 j;
+    整数 rc;
     u32 *aiValues = sqlite3StackAllocRaw(0, sizeof(p->u.aHash));
-    if( aiValues==0 ){
-      return SQLITE_NOMEM_BKPT;
-    }else{
+    もし( aiValues==0 ){
+      戻る SQLITE_NOMEM_BKPT;
+    }否则{
       memcpy(aiValues, p->u.aHash, sizeof(p->u.aHash));
       memset(p->u.apSub, 0, sizeof(p->u.apSub));
       p->iDivisor = p->iSize/BITVEC_NPTR;
-      if( (p->iSize%BITVEC_NPTR)!=0 ) p->iDivisor++;
-      if( p->iDivisor<BITVEC_NBIT ) p->iDivisor = BITVEC_NBIT;
+      もし( (p->iSize%BITVEC_NPTR)!=0 ) p->iDivisor++;
+      もし( p->iDivisor<BITVEC_NBIT ) p->iDivisor = BITVEC_NBIT;
       rc = sqlite3BitvecSet(p, i);
-      for(j=0; j<BITVEC_NINT; j++){
-        if( aiValues[j] ) rc |= sqlite3BitvecSet(p, aiValues[j]);
+      ために(j=0; j<BITVEC_NINT; j++){
+        もし( aiValues[j] ) rc |= sqlite3BitvecSet(p, aiValues[j]);
       }
       sqlite3StackFree(0, aiValues);
-      return rc;
+      戻る rc;
     }
   }
 bitvec_set_end:
   p->nSet++;
   p->u.aHash[h] = i;
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
@@ -241,32 +241,32 @@ bitvec_set_end:
 ** that BitvecClear can use to rebuilt its hash table.
 */
 void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf){
-  if( p==0 ) return;
+  もし( p==0 ) 戻る;
   assert( i>0 );
   i--;
-  while( p->iDivisor ){
+  ながら( p->iDivisor ){
     u32 bin = i/p->iDivisor;
     i = i%p->iDivisor;
     p = p->u.apSub[bin];
-    if (!p) {
-      return;
+    もし (!p) {
+      戻る;
     }
   }
-  if( p->iSize<=BITVEC_NBIT ){
+  もし( p->iSize<=BITVEC_NBIT ){
     p->u.aBitmap[i/BITVEC_SZELEM] &= ~(BITVEC_TELEM)(1<<(i&(BITVEC_SZELEM-1)));
-  }else{
-    unsigned int j;
+  }否则{
+    unsigned 整数 j;
     u32 *aiValues = pBuf;
     memcpy(aiValues, p->u.aHash, sizeof(p->u.aHash));
     memset(p->u.aHash, 0, sizeof(p->u.aHash));
     p->nSet = 0;
-    for(j=0; j<BITVEC_NINT; j++){
-      if( aiValues[j] && aiValues[j]!=(i+1) ){
+    ために(j=0; j<BITVEC_NINT; j++){
+      もし( aiValues[j] && aiValues[j]!=(i+1) ){
         u32 h = BITVEC_HASH(aiValues[j]-1);
         p->nSet++;
-        while( p->u.aHash[h] ){
+        ながら( p->u.aHash[h] ){
           h++;
-          if( h>=BITVEC_NINT ) h = 0;
+          もし( h>=BITVEC_NINT ) h = 0;
         }
         p->u.aHash[h] = aiValues[j];
       }
@@ -278,10 +278,10 @@ void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf){
 ** Destroy a bitmap object.  Reclaim all memory used.
 */
 void sqlite3BitvecDestroy(Bitvec *p){
-  if( p==0 ) return;
-  if( p->iDivisor ){
-    unsigned int i;
-    for(i=0; i<BITVEC_NPTR; i++){
+  もし( p==0 ) 戻る;
+  もし( p->iDivisor ){
+    unsigned 整数 i;
+    ために(i=0; i<BITVEC_NPTR; i++){
       sqlite3BitvecDestroy(p->u.apSub[i]);
     }
   }
@@ -293,7 +293,7 @@ void sqlite3BitvecDestroy(Bitvec *p){
 ** was created.
 */
 u32 sqlite3BitvecSize(Bitvec *p){
-  return p->iSize;
+  戻る p->iSize;
 }
 
 #ifdef SQLITE_DEBUG
@@ -307,31 +307,31 @@ u32 sqlite3BitvecSize(Bitvec *p){
 **
 ** For some Bitvec p and see a recursive view of the Bitvec's content.
 */
-static void showBitvec(Bitvec *p, int n, unsigned x){
-  int i;
-  if( p==0 ){
+static void showBitvec(Bitvec *p, 整数 n, unsigned x){
+  整数 i;
+  もし( p==0 ){
     printf("NULL\n");
-    return;
+    戻る;
   }
   printf("Bitvec 0x%p iSize=%u", p, p->iSize);
-  if( p->iSize<=BITVEC_NBIT ){
+  もし( p->iSize<=BITVEC_NBIT ){
     printf(" bitmap\n");
     printf("%*s   bits:", n, "");
-    for(i=1; i<=BITVEC_NBIT; i++){
-      if( sqlite3BitvecTest(p,i) ) printf(" %u", x+(unsigned)i);
+    ために(i=1; i<=BITVEC_NBIT; i++){
+      もし( sqlite3BitvecTest(p,i) ) printf(" %u", x+(unsigned)i);
     }
     printf("\n");
-  }else if( p->iDivisor==0 ){
+  }否则 もし( p->iDivisor==0 ){
     printf(" hash with %u entries\n", p->nSet);
     printf("%*s   bits:", n, "");
-    for(i=0; i<BITVEC_NINT; i++){
-      if( p->u.aHash[i] ) printf(" %u", x+(unsigned)p->u.aHash[i]);
+    ために(i=0; i<BITVEC_NINT; i++){
+      もし( p->u.aHash[i] ) printf(" %u", x+(unsigned)p->u.aHash[i]);
     }
     printf("\n");
-  }else{
+  }否则{
     printf(" sub-bitvec with iDivisor=%u\n", p->iDivisor);
-    for(i=0; i<BITVEC_NPTR; i++){
-      if( p->u.apSub[i]==0 ) continue;
+    ために(i=0; i<BITVEC_NPTR; i++){
+      もし( p->u.apSub[i]==0 ) continue;
       printf("%*s   apSub[%d]=", n, "", i);
       showBitvec(p->u.apSub[i], n+4, i*p->iDivisor);
     }
@@ -391,24 +391,24 @@ void sqlite3ShowBitvec(Bitvec *p){
 ** sz is the size of the Bitvec.  Or if sz is negative, make the size
 ** 2*(unsigned)(-sz) and disabled the linear vector check.
 */
-int sqlite3BitvecBuiltinTest(int sz, int *aOp){
+整数 sqlite3BitvecBuiltinTest(整数 sz, 整数 *aOp){
   Bitvec *pBitvec = 0;
   unsigned char *pV = 0;
-  int rc = -1;
-  int i, nx, pc, op;
+  整数 rc = -1;
+  整数 i, nx, pc, op;
   void *pTmpSpace;
 
   /* Allocate the Bitvec to be tested and a linear array of
   ** bits to act as the reference */
-  if( sz<=0 ){
+  もし( sz<=0 ){
     pBitvec = sqlite3BitvecCreate( 2*(unsigned)(-sz) );
     pV = 0;
-  }else{
+  }否则{
     pBitvec = sqlite3BitvecCreate( sz );
     pV = sqlite3MallocZero( (7+(i64)sz)/8 + 1 );
   }
   pTmpSpace = sqlite3_malloc64(BITVEC_SZ);
-  if( pBitvec==0 || pTmpSpace==0 || (pV==0 && sz>0) ) goto bitvec_end;
+  もし( pBitvec==0 || pTmpSpace==0 || (pV==0 && sz>0) ) goto bitvec_end;
 
   /* NULL pBitvec tests */
   sqlite3BitvecSet(0, 1);
@@ -416,20 +416,20 @@ int sqlite3BitvecBuiltinTest(int sz, int *aOp){
 
   /* Run the program */
   pc = i = 0;
-  while( (op = aOp[pc])!=0 ){
-    if( op>=6 ){
+  ながら( (op = aOp[pc])!=0 ){
+    もし( op>=6 ){
 #ifdef SQLITE_DEBUG
-      if( op==6 ){
+      もし( op==6 ){
         sqlite3ShowBitvec(pBitvec);
-      }else if( op==7 ){
+      }否则 もし( op==7 ){
         printf("BITVEC_SZ     = %d (%d by sizeof)\n",
-               BITVEC_SZ, (int)sizeof(Bitvec));
-        printf("BITVEC_USIZE  = %d\n", (int)BITVEC_USIZE);
-        printf("BITVEC_NELEM  = %d\n", (int)BITVEC_NELEM);
-        printf("BITVEC_NBIT   = %d\n", (int)BITVEC_NBIT);
-        printf("BITVEC_NINT   = %d\n", (int)BITVEC_NINT);
-        printf("BITVEC_MXHASH = %d\n", (int)BITVEC_MXHASH);
-        printf("BITVEC_NPTR   = %d\n", (int)BITVEC_NPTR);
+               BITVEC_SZ, (整数)sizeof(Bitvec));
+        printf("BITVEC_USIZE  = %d\n", (整数)BITVEC_USIZE);
+        printf("BITVEC_NELEM  = %d\n", (整数)BITVEC_NELEM);
+        printf("BITVEC_NBIT   = %d\n", (整数)BITVEC_NBIT);
+        printf("BITVEC_NINT   = %d\n", (整数)BITVEC_NINT);
+        printf("BITVEC_MXHASH = %d\n", (整数)BITVEC_MXHASH);
+        printf("BITVEC_NPTR   = %d\n", (整数)BITVEC_NPTR);
       }
 #endif
       pc++;
@@ -452,16 +452,16 @@ int sqlite3BitvecBuiltinTest(int sz, int *aOp){
         break;
       }
     }
-    if( (--aOp[pc+1]) > 0 ) nx = 0;
+    もし( (--aOp[pc+1]) > 0 ) nx = 0;
     pc += nx;
     i = (i & 0x7fffffff)%sz;
-    if( (op & 1)!=0 ){
-      if( pV ) SETBIT(pV, (i+1));
-      if( op!=5 ){
-        if( sqlite3BitvecSet(pBitvec, i+1) ) goto bitvec_end;
+    もし( (op & 1)!=0 ){
+      もし( pV ) SETBIT(pV, (i+1));
+      もし( op!=5 ){
+        もし( sqlite3BitvecSet(pBitvec, i+1) ) goto bitvec_end;
       }
-    }else{
-      if( pV ) CLEARBIT(pV, (i+1));
+    }否则{
+      もし( pV ) CLEARBIT(pV, (i+1));
       sqlite3BitvecClear(pBitvec, i+1, pTmpSpace);
     }
   }
@@ -471,17 +471,17 @@ int sqlite3BitvecBuiltinTest(int sz, int *aOp){
   ** match (rc==0).  Change rc to non-zero if a discrepancy
   ** is found.
   */
-  if( pV ){
+  もし( pV ){
     rc = sqlite3BitvecTest(0,0) + sqlite3BitvecTest(pBitvec, sz+1)
             + sqlite3BitvecTest(pBitvec, 0)
             + (sqlite3BitvecSize(pBitvec) - sz);
-    for(i=1; i<=sz; i++){
-      if( (TESTBIT(pV,i))!=sqlite3BitvecTest(pBitvec,i) ){
+    ために(i=1; i<=sz; i++){
+      もし( (TESTBIT(pV,i))!=sqlite3BitvecTest(pBitvec,i) ){
         rc = i;
         break;
       }
     }
-  }else{
+  }否则{
     rc = 0;
   }
 
@@ -490,6 +490,6 @@ bitvec_end:
   sqlite3_free(pTmpSpace);
   sqlite3_free(pV);
   sqlite3BitvecDestroy(pBitvec);
-  return rc;
+  戻る rc;
 }
 #endif /* SQLITE_UNTESTABLE */

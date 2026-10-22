@@ -18,15 +18,15 @@
 #include <assert.h>
 
 /* These functions are implemented in main.c. */
-extern const char *sqlite3ErrName(int);
+extern const char *sqlite3ErrName(整数);
 
 /* These functions are implemented in test1.c. */
-extern int getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
+extern 整数 getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
 
-static int SQLITE_TCLAPI backupTestCmd(
+static 整数 SQLITE_TCLAPI backupTestCmd(
   ClientData clientData, 
   Tcl_Interp *interp, 
-  int objc,
+  整数 objc,
   Tcl_Obj *const*objv
 ){
   enum BackupSubCommandEnum {
@@ -35,7 +35,7 @@ static int SQLITE_TCLAPI backupTestCmd(
   struct BackupSubCommand {
     const char *zCmd;
     enum BackupSubCommandEnum eCmd;
-    int nArg;
+    整数 nArg;
     const char *zArg;
   } aSub[] = {
     {"step",      BACKUP_STEP      , 1, "npage" },
@@ -46,18 +46,18 @@ static int SQLITE_TCLAPI backupTestCmd(
   };
 
   sqlite3_backup *p = (sqlite3_backup *)clientData;
-  int iCmd;
-  int rc;
+  整数 iCmd;
+  整数 rc;
 
   rc = Tcl_GetIndexFromObjStruct(
       interp, objv[1], aSub, sizeof(aSub[0]), "option", 0, &iCmd
   );
-  if( rc!=TCL_OK ){
-    return rc;
+  もし( rc!=TCL_OK ){
+    戻る rc;
   }
-  if( objc!=(2 + aSub[iCmd].nArg) ){
+  もし( objc!=(2 + aSub[iCmd].nArg) ){
     Tcl_WrongNumArgs(interp, 2, objv, aSub[iCmd].zArg);
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   switch( aSub[iCmd].eCmd ){
@@ -77,9 +77,9 @@ static int SQLITE_TCLAPI backupTestCmd(
     }
 
     case BACKUP_STEP: {
-      int nPage;
-      if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &nPage) ){
-        return TCL_ERROR;
+      整数 nPage;
+      もし( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &nPage) ){
+        戻る TCL_ERROR;
       }
       rc = sqlite3_backup_step(p, nPage);
       Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
@@ -95,7 +95,7 @@ static int SQLITE_TCLAPI backupTestCmd(
       break;
   }
 
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
 static void SQLITE_TCLAPI backupTestFinish(ClientData clientData){
@@ -107,10 +107,10 @@ static void SQLITE_TCLAPI backupTestFinish(ClientData clientData){
 **     sqlite3_backup CMDNAME DESTHANDLE DESTNAME SRCHANDLE SRCNAME
 **
 */
-static int SQLITE_TCLAPI backupTestInit(
+static 整数 SQLITE_TCLAPI backupTestInit(
   ClientData clientData, 
   Tcl_Interp *interp, 
-  int objc,
+  整数 objc,
   Tcl_Obj *const*objv
 ){
   sqlite3_backup *pBackup;
@@ -120,11 +120,11 @@ static int SQLITE_TCLAPI backupTestInit(
   const char *zSrcName;
   const char *zCmd;
 
-  if( objc!=6 ){
+  もし( objc!=6 ){
     Tcl_WrongNumArgs(
       interp, 1, objv, "CMDNAME DESTHANDLE DESTNAME SRCHANDLE SRCNAME"
     );
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   zCmd = Tcl_GetString(objv[1]);
@@ -134,17 +134,17 @@ static int SQLITE_TCLAPI backupTestInit(
   zSrcName = Tcl_GetString(objv[5]);
 
   pBackup = sqlite3_backup_init(pDestDb, zDestName, pSrcDb, zSrcName);
-  if( !pBackup ){
+  もし( !pBackup ){
     Tcl_AppendResult(interp, "sqlite3_backup_init() failed", NULL);
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   Tcl_CreateObjCommand(interp, zCmd, backupTestCmd, pBackup, backupTestFinish);
   Tcl_SetObjResult(interp, objv[1]);
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-int Sqlitetestbackup_Init(Tcl_Interp *interp){
+整数 Sqlitetestbackup_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "sqlite3_backup", backupTestInit, 0, 0);
-  return TCL_OK;
+  戻る TCL_OK;
 }

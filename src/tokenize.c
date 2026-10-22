@@ -187,20 +187,20 @@ const char sqlite3IsEbcdicIdChar[] = {
 #endif
 
 /* Make the IdChar function accessible from ctime.c and alter.c */
-int sqlite3IsIdChar(u8 c){ return IdChar(c); }
+整数 sqlite3IsIdChar(u8 c){ 戻る IdChar(c); }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
 /*
 ** Return the id of the next token in string (*pz). Before returning, set
 ** (*pz) to point to the byte following the parsed token.
 */
-static int getToken(const unsigned char **pz){
+static 整数 getToken(const unsigned char **pz){
   const unsigned char *z = *pz;
-  int t;                          /* Token type to return */
+  整数 t;                          /* Token type to return */
   do {
     z += sqlite3GetToken(z, &t);
-  }while( t==TK_SPACE || t==TK_COMMENT );
-  if( t==TK_ID 
+  }ながら( t==TK_SPACE || t==TK_COMMENT );
+  もし( t==TK_ID 
    || t==TK_STRING 
    || t==TK_JOIN_KW 
    || t==TK_WINDOW 
@@ -210,7 +210,7 @@ static int getToken(const unsigned char **pz){
     t = TK_ID;
   }
   *pz = z;
-  return t;
+  戻る t;
 }
 
 /*
@@ -243,26 +243,26 @@ static int getToken(const unsigned char **pz){
 **   * the previous token was TK_RP, and
 **   * the next token is TK_LP.
 */
-static int analyzeWindowKeyword(const unsigned char *z){
-  int t;
+static 整数 analyzeWindowKeyword(const unsigned char *z){
+  整数 t;
   t = getToken(&z);
-  if( t!=TK_ID ) return TK_ID;
+  もし( t!=TK_ID ) 戻る TK_ID;
   t = getToken(&z);
-  if( t!=TK_AS ) return TK_ID;
-  return TK_WINDOW;
+  もし( t!=TK_AS ) 戻る TK_ID;
+  戻る TK_WINDOW;
 }
-static int analyzeOverKeyword(const unsigned char *z, int lastToken){
-  if( lastToken==TK_RP ){
-    int t = getToken(&z);
-    if( t==TK_LP || t==TK_ID ) return TK_OVER;
+static 整数 analyzeOverKeyword(const unsigned char *z, 整数 lastToken){
+  もし( lastToken==TK_RP ){
+    整数 t = getToken(&z);
+    もし( t==TK_LP || t==TK_ID ) 戻る TK_OVER;
   }
-  return TK_ID;
+  戻る TK_ID;
 }
-static int analyzeFilterKeyword(const unsigned char *z, int lastToken){
-  if( lastToken==TK_RP && getToken(&z)==TK_LP ){
-    return TK_FILTER;
+static 整数 analyzeFilterKeyword(const unsigned char *z, 整数 lastToken){
+  もし( lastToken==TK_RP && getToken(&z)==TK_LP ){
+    戻る TK_FILTER;
   }
-  return TK_ID;
+  戻る TK_ID;
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
@@ -270,9 +270,9 @@ static int analyzeFilterKeyword(const unsigned char *z, int lastToken){
 ** Return the length (in bytes) of the token that begins at z[0]. 
 ** Store the token type in *tokenType before returning.
 */
-i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
+i64 sqlite3GetToken(const unsigned char *z, 整数 *tokenType){
   i64 i;
-  int c;
+  整数 c;
   switch( aiClass[*z] ){  /* Switch on the character-class of the first byte
                           ** of the token. See the comment on the CC_ defines
                           ** above. */
@@ -282,149 +282,149 @@ i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
       testcase( z[0]=='\n' );
       testcase( z[0]=='\f' );
       testcase( z[0]=='\r' );
-      for(i=1; sqlite3Isspace(z[i]); i++){}
+      ために(i=1; sqlite3Isspace(z[i]); i++){}
       *tokenType = TK_SPACE;
-      return i;
+      戻る i;
     }
     case CC_MINUS: {
-      if( z[1]=='-' ){
-        for(i=2; (c=z[i])!=0 && c!='\n'; i++){}
+      もし( z[1]=='-' ){
+        ために(i=2; (c=z[i])!=0 && c!='\n'; i++){}
         *tokenType = TK_COMMENT;
-        return i;
-      }else if( z[1]=='>' ){
+        戻る i;
+      }否则 もし( z[1]=='>' ){
         *tokenType = TK_PTR;
-        return 2 + (z[2]=='>');
+        戻る 2 + (z[2]=='>');
       }
       *tokenType = TK_MINUS;
-      return 1;
+      戻る 1;
     }
     case CC_LP: {
       *tokenType = TK_LP;
-      return 1;
+      戻る 1;
     }
     case CC_RP: {
       *tokenType = TK_RP;
-      return 1;
+      戻る 1;
     }
     case CC_SEMI: {
       *tokenType = TK_SEMI;
-      return 1;
+      戻る 1;
     }
     case CC_PLUS: {
       *tokenType = TK_PLUS;
-      return 1;
+      戻る 1;
     }
     case CC_STAR: {
       *tokenType = TK_STAR;
-      return 1;
+      戻る 1;
     }
     case CC_SLASH: {
-      if( z[1]!='*' || z[2]==0 ){
+      もし( z[1]!='*' || z[2]==0 ){
         *tokenType = TK_SLASH;
-        return 1;
+        戻る 1;
       }
-      for(i=3, c=z[2]; (c!='*' || z[i]!='/') && (c=z[i])!=0; i++){}
-      if( c ) i++;
+      ために(i=3, c=z[2]; (c!='*' || z[i]!='/') && (c=z[i])!=0; i++){}
+      もし( c ) i++;
       *tokenType = TK_COMMENT;
-      return i;
+      戻る i;
     }
     case CC_PERCENT: {
       *tokenType = TK_REM;
-      return 1;
+      戻る 1;
     }
     case CC_EQ: {
       *tokenType = TK_EQ;
-      return 1 + (z[1]=='=');
+      戻る 1 + (z[1]=='=');
     }
     case CC_LT: {
-      if( (c=z[1])=='=' ){
+      もし( (c=z[1])=='=' ){
         *tokenType = TK_LE;
-        return 2;
-      }else if( c=='>' ){
+        戻る 2;
+      }否则 もし( c=='>' ){
         *tokenType = TK_NE;
-        return 2;
-      }else if( c=='<' ){
+        戻る 2;
+      }否则 もし( c=='<' ){
         *tokenType = TK_LSHIFT;
-        return 2;
-      }else{
+        戻る 2;
+      }否则{
         *tokenType = TK_LT;
-        return 1;
+        戻る 1;
       }
     }
     case CC_GT: {
-      if( (c=z[1])=='=' ){
+      もし( (c=z[1])=='=' ){
         *tokenType = TK_GE;
-        return 2;
-      }else if( c=='>' ){
+        戻る 2;
+      }否则 もし( c=='>' ){
         *tokenType = TK_RSHIFT;
-        return 2;
-      }else{
+        戻る 2;
+      }否则{
         *tokenType = TK_GT;
-        return 1;
+        戻る 1;
       }
     }
     case CC_BANG: {
-      if( z[1]!='=' ){
+      もし( z[1]!='=' ){
         *tokenType = TK_ILLEGAL;
-        return 1;
-      }else{
+        戻る 1;
+      }否则{
         *tokenType = TK_NE;
-        return 2;
+        戻る 2;
       }
     }
     case CC_PIPE: {
-      if( z[1]!='|' ){
+      もし( z[1]!='|' ){
         *tokenType = TK_BITOR;
-        return 1;
-      }else{
+        戻る 1;
+      }否则{
         *tokenType = TK_CONCAT;
-        return 2;
+        戻る 2;
       }
     }
     case CC_COMMA: {
       *tokenType = TK_COMMA;
-      return 1;
+      戻る 1;
     }
     case CC_AND: {
       *tokenType = TK_BITAND;
-      return 1;
+      戻る 1;
     }
     case CC_TILDA: {
       *tokenType = TK_BITNOT;
-      return 1;
+      戻る 1;
     }
     case CC_QUOTE: {
-      int delim = z[0];
+      整数 delim = z[0];
       testcase( delim=='`' );
       testcase( delim=='\'' );
       testcase( delim=='"' );
-      for(i=1; (c=z[i])!=0; i++){
-        if( c==delim ){
-          if( z[i+1]==delim ){
+      ために(i=1; (c=z[i])!=0; i++){
+        もし( c==delim ){
+          もし( z[i+1]==delim ){
             i++;
-          }else{
+          }否则{
             break;
           }
         }
       }
-      if( c=='\'' ){
+      もし( c=='\'' ){
         *tokenType = TK_STRING;
-        return i+1;
-      }else if( c!=0 ){
+        戻る i+1;
+      }否则 もし( c!=0 ){
         *tokenType = TK_ID;
-        return i+1;
-      }else{
+        戻る i+1;
+      }否则{
         *tokenType = TK_ILLEGAL;
-        return i;
+        戻る i;
       }
     }
     case CC_DOT: {
 #ifndef SQLITE_OMIT_FLOATING_POINT
-      if( !sqlite3Isdigit(z[1]) )
+      もし( !sqlite3Isdigit(z[1]) )
 #endif
       {
         *tokenType = TK_DOT;
-        return 1;
+        戻る 1;
       }
       /* If the next character is a digit, this is a floating point
       ** number that begins with ".".  Fall thru into the next case */
@@ -437,52 +437,52 @@ i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
       testcase( z[0]=='9' );  testcase( z[0]=='.' );
       *tokenType = TK_INTEGER;
 #ifndef SQLITE_OMIT_HEX_INTEGER
-      if( z[0]=='0' && (z[1]=='x' || z[1]=='X') && sqlite3Isxdigit(z[2]) ){
-        for(i=3; 1; i++){
-          if( sqlite3Isxdigit(z[i])==0 ){
-            if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+      もし( z[0]=='0' && (z[1]=='x' || z[1]=='X') && sqlite3Isxdigit(z[2]) ){
+        ために(i=3; 1; i++){
+          もし( sqlite3Isxdigit(z[i])==0 ){
+            もし( z[i]==SQLITE_DIGIT_SEPARATOR ){
               *tokenType = TK_QNUMBER;
-            }else{
+            }否则{
               break;
             }
           }
         }
-      }else
+      }否则
 #endif
         {
-        for(i=0; 1; i++){
-          if( sqlite3Isdigit(z[i])==0 ){
-            if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+        ために(i=0; 1; i++){
+          もし( sqlite3Isdigit(z[i])==0 ){
+            もし( z[i]==SQLITE_DIGIT_SEPARATOR ){
               *tokenType = TK_QNUMBER;
-            }else{
+            }否则{
               break;
             }
           }
         }
 #ifndef SQLITE_OMIT_FLOATING_POINT
-        if( z[i]=='.' ){
-          if( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
-          for(i++; 1; i++){
-            if( sqlite3Isdigit(z[i])==0 ){
-              if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+        もし( z[i]=='.' ){
+          もし( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
+          ために(i++; 1; i++){
+            もし( sqlite3Isdigit(z[i])==0 ){
+              もし( z[i]==SQLITE_DIGIT_SEPARATOR ){
                 *tokenType = TK_QNUMBER;
-              }else{
+              }否则{
                 break;
               }
             }
           }
         }
-        if( (z[i]=='e' || z[i]=='E') &&
+        もし( (z[i]=='e' || z[i]=='E') &&
              ( sqlite3Isdigit(z[i+1]) 
               || ((z[i+1]=='+' || z[i+1]=='-') && sqlite3Isdigit(z[i+2]))
              )
         ){
-          if( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
-          for(i+=2; 1; i++){
-            if( sqlite3Isdigit(z[i])==0 ){
-              if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+          もし( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
+          ために(i+=2; 1; i++){
+            もし( sqlite3Isdigit(z[i])==0 ){
+              もし( z[i]==SQLITE_DIGIT_SEPARATOR ){
                 *tokenType = TK_QNUMBER;
-              }else{
+              }否则{
                 break;
               }
             }
@@ -490,21 +490,21 @@ i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
         }
 #endif
       }
-      while( IdChar(z[i]) ){
+      ながら( IdChar(z[i]) ){
         *tokenType = TK_ILLEGAL;
         i++;
       }
-      return i;
+      戻る i;
     }
     case CC_QUOTE2: {
-      for(i=1, c=z[0]; c!=']' && (c=z[i])!=0; i++){}
+      ために(i=1, c=z[0]; c!=']' && (c=z[i])!=0; i++){}
       *tokenType = c==']' ? TK_ID : TK_ILLEGAL;
-      return i;
+      戻る i;
     }
     case CC_VARNUM: {
       *tokenType = TK_VARIABLE;
-      for(i=1; sqlite3Isdigit(z[i]); i++){}
-      return i;
+      ために(i=1; sqlite3Isdigit(z[i]); i++){}
+      戻る i;
     }
     case CC_DOLLAR:
     case CC_VARALPHA: {
@@ -512,34 +512,34 @@ i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
       testcase( z[0]=='$' );  testcase( z[0]=='@' );
       testcase( z[0]==':' );  testcase( z[0]=='#' );
       *tokenType = TK_VARIABLE;
-      for(i=1; (c=z[i])!=0; i++){
-        if( IdChar(c) ){
+      ために(i=1; (c=z[i])!=0; i++){
+        もし( IdChar(c) ){
           n++;
 #ifndef SQLITE_OMIT_TCL_VARIABLE
-        }else if( c=='(' && n>0 ){
+        }否则 もし( c=='(' && n>0 ){
           do{
             i++;
-          }while( (c=z[i])!=0 && !sqlite3Isspace(c) && c!=')' );
-          if( c==')' ){
+          }ながら( (c=z[i])!=0 && !sqlite3Isspace(c) && c!=')' );
+          もし( c==')' ){
             i++;
-          }else{
+          }否则{
             *tokenType = TK_ILLEGAL;
           }
           break;
-        }else if( c==':' && z[i+1]==':' ){
+        }否则 もし( c==':' && z[i+1]==':' ){
           i++;
 #endif
-        }else{
+        }否则{
           break;
         }
       }
-      if( n==0 ) *tokenType = TK_ILLEGAL;
-      return i;
+      もし( n==0 ) *tokenType = TK_ILLEGAL;
+      戻る i;
     }
     case CC_KYWD0: {
-      if( aiClass[z[1]]>CC_KYWD ){ i = 1;  break; }
-      for(i=2; aiClass[z[i]]<=CC_KYWD; i++){}
-      if( IdChar(z[i]) ){
+      もし( aiClass[z[1]]>CC_KYWD ){ i = 1;  break; }
+      ために(i=2; aiClass[z[i]]<=CC_KYWD; i++){}
+      もし( IdChar(z[i]) ){
         /* This token started out using characters that can appear in keywords,
         ** but z[i] is a character not allowed within keywords, so this must
         ** be an identifier instead */
@@ -547,20 +547,20 @@ i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
         break;
       }
       *tokenType = TK_ID;
-      return keywordCode((char*)z, i, tokenType);
+      戻る keywordCode((char*)z, i, tokenType);
     }
     case CC_X: {
 #ifndef SQLITE_OMIT_BLOB_LITERAL
       testcase( z[0]=='x' ); testcase( z[0]=='X' );
-      if( z[1]=='\'' ){
+      もし( z[1]=='\'' ){
         *tokenType = TK_BLOB;
-        for(i=2; sqlite3Isxdigit(z[i]); i++){}
-        if( z[i]!='\'' || i%2 ){
+        ために(i=2; sqlite3Isxdigit(z[i]); i++){}
+        もし( z[i]!='\'' || i%2 ){
           *tokenType = TK_ILLEGAL;
-          while( z[i] && z[i]!='\'' ){ i++; }
+          ながら( z[i] && z[i]!='\'' ){ i++; }
         }
-        if( z[i] ) i++;
-        return i;
+        もし( z[i] ) i++;
+        戻る i;
       }
 #endif
       /* If it is not a BLOB literal, then it must be an ID, since no
@@ -573,36 +573,36 @@ i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
       break;
     }
     case CC_BOM: {
-      if( z[1]==0xbb && z[2]==0xbf ){
+      もし( z[1]==0xbb && z[2]==0xbf ){
         *tokenType = TK_SPACE;
-        return 3;
+        戻る 3;
       }
       i = 1;
       break;
     }
     case CC_NUL: {
       *tokenType = TK_ILLEGAL;
-      return 0;
+      戻る 0;
     }
     default: {
       *tokenType = TK_ILLEGAL;
-      return 1;
+      戻る 1;
     }
   }
-  while( IdChar(z[i]) ){ i++; }
+  ながら( IdChar(z[i]) ){ i++; }
   *tokenType = TK_ID;
-  return i;
+  戻る i;
 }
 
 /*
 ** Run the parser on the given SQL string.
 */
-int sqlite3RunParser(Parse *pParse, const char *zSql){
-  int nErr = 0;                   /* Number of errors encountered */
+整数 sqlite3RunParser(Parse *pParse, const char *zSql){
+  整数 nErr = 0;                   /* Number of errors encountered */
   void *pEngine;                  /* The LEMON-generated LALR(1) parser */
   i64 n = 0;                      /* Length of the next token token */
-  int tokenType;                  /* type of the next token */
-  int lastTokenParsed = -1;       /* type of the previous token */
+  整数 tokenType;                  /* type of the next token */
+  整数 lastTokenParsed = -1;       /* type of the previous token */
   sqlite3 *db = pParse->db;       /* The database connection */
   i64 mxSqlLen;                   /* Max length of an SQL string */
   Parse *pParentParse = 0;        /* Outer parse context, if any */
@@ -613,27 +613,27 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
 
   assert( zSql!=0 );
   mxSqlLen = db->aLimit[SQLITE_LIMIT_SQL_LENGTH];
-  if( db->nVdbeActive==0 ){
+  もし( db->nVdbeActive==0 ){
     AtomicStore(&db->u1.isInterrupted, 0);
   }
   pParse->rc = SQLITE_OK;
   pParse->zTail = zSql;
 #ifdef SQLITE_DEBUG
-  if( db->flags & SQLITE_ParserTrace ){
+  もし( db->flags & SQLITE_ParserTrace ){
     printf("parser: [[[%s]]]\n", zSql);
     sqlite3ParserTrace(stdout, "parser: ");
-  }else{
+  }否则{
     sqlite3ParserTrace(0, 0);
   }
 #endif
 #ifdef sqlite3Parser_ENGINEALWAYSONSTACK
   pEngine = &sEngine;
   sqlite3ParserInit(pEngine, pParse);
-#else
+#否则
   pEngine = sqlite3ParserAlloc(sqlite3Malloc, pParse);
-  if( pEngine==0 ){
+  もし( pEngine==0 ){
     sqlite3OomFault(db);
-    return SQLITE_NOMEM_BKPT;
+    戻る SQLITE_NOMEM_BKPT;
   }
 #endif
   assert( pParse->pNewTable==0 );
@@ -642,65 +642,65 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
   assert( pParse->pVList==0 );
   pParentParse = db->pParse;
   db->pParse = pParse;
-  while( 1 ){
+  ながら( 1 ){
     n = sqlite3GetToken((u8*)zSql, &tokenType);
     mxSqlLen -= n;
-    if( mxSqlLen<0 ){
+    もし( mxSqlLen<0 ){
       pParse->rc = SQLITE_TOOBIG;
       pParse->nErr++;
       break;
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( tokenType>=TK_WINDOW ){
+    もし( tokenType>=TK_WINDOW ){
       assert( tokenType==TK_SPACE || tokenType==TK_OVER || tokenType==TK_FILTER
            || tokenType==TK_ILLEGAL || tokenType==TK_WINDOW 
            || tokenType==TK_QNUMBER || tokenType==TK_COMMENT
       );
-#else
-    if( tokenType>=TK_SPACE ){
+#否则
+    もし( tokenType>=TK_SPACE ){
       assert( tokenType==TK_SPACE || tokenType==TK_ILLEGAL 
            || tokenType==TK_QNUMBER || tokenType==TK_COMMENT
       );
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-      if( AtomicLoad(&db->u1.isInterrupted) ){
+      もし( AtomicLoad(&db->u1.isInterrupted) ){
         pParse->rc = SQLITE_INTERRUPT;
         pParse->nErr++;
         break;
       }
-      if( tokenType==TK_SPACE ){
+      もし( tokenType==TK_SPACE ){
         zSql += n;
         continue;
       }
-      if( zSql[0]==0 ){
+      もし( zSql[0]==0 ){
         /* Upon reaching the end of input, call the parser two more times
         ** with tokens TK_SEMI and 0, in that order. */
-        if( lastTokenParsed==TK_SEMI ){
+        もし( lastTokenParsed==TK_SEMI ){
           tokenType = 0;
-        }else if( lastTokenParsed==0 ){
+        }否则 もし( lastTokenParsed==0 ){
           break;
-        }else{
+        }否则{
           tokenType = TK_SEMI;
         }
         n = 0;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      }else if( tokenType==TK_WINDOW ){
+      }否则 もし( tokenType==TK_WINDOW ){
         assert( n==6 );
         tokenType = analyzeWindowKeyword((const u8*)&zSql[6]);
-      }else if( tokenType==TK_OVER ){
+      }否则 もし( tokenType==TK_OVER ){
         assert( n==4 );
         tokenType = analyzeOverKeyword((const u8*)&zSql[4], lastTokenParsed);
-      }else if( tokenType==TK_FILTER ){
+      }否则 もし( tokenType==TK_FILTER ){
         assert( n==6 );
         tokenType = analyzeFilterKeyword((const u8*)&zSql[6], lastTokenParsed);
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-      }else if( tokenType==TK_COMMENT
+      }否则 もし( tokenType==TK_COMMENT
              && (db->init.busy || (db->flags & SQLITE_Comments)!=0)
       ){
         /* Ignore SQL comments if either (1) we are reparsing the schema or
         ** (2) SQLITE_DBCONFIG_ENABLE_COMMENTS is turned on (the default). */
         zSql += n;
         continue;
-      }else if( tokenType!=TK_QNUMBER ){
+      }否则 もし( tokenType!=TK_QNUMBER ){
         Token x;
         x.z = zSql;
         x.n = (u32)n;
@@ -714,7 +714,7 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
     lastTokenParsed = tokenType;
     zSql += n;
     assert( db->mallocFailed==0 || pParse->rc!=SQLITE_OK || startedWithOom );
-    if( pParse->rc!=SQLITE_OK ) break;
+    もし( pParse->rc!=SQLITE_OK ) break;
   }
   assert( nErr==0 );
 #ifdef YYTRACKMAXSTACKDEPTH
@@ -726,17 +726,17 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
 #endif /* YYDEBUG */
 #ifdef sqlite3Parser_ENGINEALWAYSONSTACK
   sqlite3ParserFinalize(pEngine);
-#else
+#否则
   sqlite3ParserFree(pEngine, sqlite3_free);
 #endif
-  if( db->mallocFailed ){
+  もし( db->mallocFailed ){
     pParse->rc = SQLITE_NOMEM_BKPT;
   }
-  if( pParse->zErrMsg || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_DONE) ){
-    if( pParse->zErrMsg==0 ){
+  もし( pParse->zErrMsg || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_DONE) ){
+    もし( pParse->zErrMsg==0 ){
       pParse->zErrMsg = sqlite3DbStrDup(db, sqlite3ErrStr(pParse->rc));
     }
-    if( (pParse->prepFlags & SQLITE_PREPARE_DONT_LOG)==0 ){
+    もし( (pParse->prepFlags & SQLITE_PREPARE_DONT_LOG)==0 ){
       sqlite3_log(pParse->rc, "%s in \"%s\"", pParse->zErrMsg, pParse->zTail);
     }
     nErr++;
@@ -746,20 +746,20 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
   sqlite3_free(pParse->apVtabLock);
 #endif
 
-  if( pParse->pNewTable && !IN_SPECIAL_PARSE ){
+  もし( pParse->pNewTable && !IN_SPECIAL_PARSE ){
     /* If the pParse->declareVtab flag is set, do not delete any table 
     ** structure built up in pParse->pNewTable. The calling code (see vtab.c)
     ** will take responsibility for freeing the Table structure.
     */
     sqlite3DeleteTable(db, pParse->pNewTable);
   }
-  if( pParse->pNewTrigger && !IN_RENAME_OBJECT ){
+  もし( pParse->pNewTrigger && !IN_RENAME_OBJECT ){
     sqlite3DeleteTrigger(db, pParse->pNewTrigger);
   }
-  if( pParse->pVList ) sqlite3DbNNFreeNN(db, pParse->pVList);
+  もし( pParse->pVList ) sqlite3DbNNFreeNN(db, pParse->pVList);
   db->pParse = pParentParse;
   assert( nErr==0 || pParse->rc!=SQLITE_OK );
-  return nErr;
+  戻る nErr;
 }
 
 
@@ -769,7 +769,7 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
 ** ends with an identifier
 */
 static void addSpaceSeparator(sqlite3_str *pStr){
-  if( pStr->nChar && sqlite3IsIdChar(pStr->zText[pStr->nChar-1]) ){
+  もし( pStr->nChar && sqlite3IsIdChar(pStr->zText[pStr->nChar-1]) ){
     sqlite3_str_append(pStr, " ", 1);
   }
 }
@@ -784,13 +784,13 @@ char *sqlite3Normalize(
   const char *zSql   /* The original SQL string */
 ){
   sqlite3 *db;       /* The database connection */
-  int i;             /* Next unread byte of zSql[] */
+  整数 i;             /* Next unread byte of zSql[] */
   i64 n;             /* length of current token */
-  int tokenType;     /* type of current token */
-  int prevType = 0;  /* Previous non-whitespace token */
-  int nParen;        /* Number of nested levels of parentheses */
-  int iStartIN;      /* Start of RHS of IN operator in z[] */
-  int nParenAtIN;    /* Value of nParent at start of RHS of IN operator */
+  整数 tokenType;     /* type of current token */
+  整数 prevType = 0;  /* Previous non-whitespace token */
+  整数 nParen;        /* Number of nested levels of parentheses */
+  整数 iStartIN;      /* Start of RHS of IN operator in z[] */
+  整数 nParenAtIN;    /* Value of nParent at start of RHS of IN operator */
   u32 j;             /* Bytes of normalized SQL generated so far */
   sqlite3_str *pStr; /* The normalized SQL string under construction */
 
@@ -799,19 +799,19 @@ char *sqlite3Normalize(
   nParen = iStartIN = nParenAtIN = 0;
   pStr = sqlite3_str_new(db);
   assert( pStr!=0 );  /* sqlite3_str_new() never returns NULL */
-  for(i=0; zSql[i] && pStr->accError==0; i+=n){
-    if( tokenType!=TK_SPACE ){
+  ために(i=0; zSql[i] && pStr->accError==0; i+=n){
+    もし( tokenType!=TK_SPACE ){
       prevType = tokenType;
     }
     n = sqlite3GetToken((unsigned char*)zSql+i, &tokenType);
-    if( NEVER(n<=0) ) break;
+    もし( NEVER(n<=0) ) break;
     switch( tokenType ){
       case TK_COMMENT:
       case TK_SPACE: {
         break;
       }
       case TK_NULL: {
-        if( prevType==TK_IS || prevType==TK_NOT ){
+        もし( prevType==TK_IS || prevType==TK_NOT ){
           sqlite3_str_append(pStr, " NULL", 5);
           break;
         }
@@ -827,7 +827,7 @@ char *sqlite3Normalize(
       }
       case TK_LP: {
         nParen++;
-        if( prevType==TK_IN ){
+        もし( prevType==TK_IN ){
           iStartIN = pStr->nChar;
           nParenAtIN = nParen;
         }
@@ -835,7 +835,7 @@ char *sqlite3Normalize(
         break;
       }
       case TK_RP: {
-        if( iStartIN>0 && nParen==nParenAtIN ){
+        もし( iStartIN>0 && nParen==nParenAtIN ){
           assert( pStr->nChar>=(u32)iStartIN );
           pStr->nChar = iStartIN+1;
           sqlite3_str_append(pStr, "?,?,?", 5);
@@ -848,30 +848,30 @@ char *sqlite3Normalize(
       case TK_ID: {
         iStartIN = 0;
         j = pStr->nChar;
-        if( sqlite3Isquote(zSql[i]) ){
+        もし( sqlite3Isquote(zSql[i]) ){
           char *zId = sqlite3DbStrNDup(db, zSql+i, n);
-          int nId;
-          int eType = 0;
-          if( zId==0 ) break;
+          整数 nId;
+          整数 eType = 0;
+          もし( zId==0 ) break;
           sqlite3Dequote(zId);
-          if( zSql[i]=='"' && sqlite3VdbeUsesDoubleQuotedString(pVdbe, zId) ){
+          もし( zSql[i]=='"' && sqlite3VdbeUsesDoubleQuotedString(pVdbe, zId) ){
             sqlite3_str_append(pStr, "?", 1);
             sqlite3DbFree(db, zId);
             break;
           }
           nId = sqlite3Strlen30(zId);
-          if( sqlite3GetToken((u8*)zId, &eType)==nId && eType==TK_ID ){
+          もし( sqlite3GetToken((u8*)zId, &eType)==nId && eType==TK_ID ){
             addSpaceSeparator(pStr);
             sqlite3_str_append(pStr, zId, nId);
-          }else{
+          }否则{
             sqlite3_str_appendf(pStr, "\"%w\"", zId);
           }
           sqlite3DbFree(db, zId);
-        }else{
+        }否则{
           addSpaceSeparator(pStr);
           sqlite3_str_append(pStr, zSql+i, n);
         }
-        while( j<pStr->nChar ){
+        ながら( j<pStr->nChar ){
           pStr->zText[j] = sqlite3Tolower(pStr->zText[j]);
           j++;
         }
@@ -882,10 +882,10 @@ char *sqlite3Normalize(
         /* no break */ deliberate_fall_through
       }
       default: {
-        if( sqlite3IsIdChar(zSql[i]) ) addSpaceSeparator(pStr);
+        もし( sqlite3IsIdChar(zSql[i]) ) addSpaceSeparator(pStr);
         j = pStr->nChar;
         sqlite3_str_append(pStr, zSql+i, n);
-        while( j<pStr->nChar ){
+        ながら( j<pStr->nChar ){
           pStr->zText[j] = sqlite3Toupper(pStr->zText[j]);
           j++;
         }
@@ -893,7 +893,7 @@ char *sqlite3Normalize(
       }
     }
   }
-  if( tokenType!=TK_SEMI ) sqlite3_str_append(pStr, ";", 1);
-  return sqlite3_str_finish(pStr);
+  もし( tokenType!=TK_SEMI ) sqlite3_str_append(pStr, ";", 1);
+  戻る sqlite3_str_finish(pStr);
 }
 #endif /* SQLITE_ENABLE_NORMALIZE */

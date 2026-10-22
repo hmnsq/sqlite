@@ -26,15 +26,15 @@
 ** collating sequences are registered or if an authorizer function is
 ** added or changed.
 */
-int sqlite3_expired(sqlite3_stmt *pStmt){
-  int iRet = 1;
-  if( pStmt ){
+整数 sqlite3_expired(sqlite3_stmt *pStmt){
+  整数 iRet = 1;
+  もし( pStmt ){
     Vdbe *p = (Vdbe*)pStmt;
     sqlite3_mutex_enter(p->db->mutex);
     iRet = p->expired;
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return iRet;
+  戻る iRet;
 }
 #endif
 
@@ -43,20 +43,20 @@ int sqlite3_expired(sqlite3_stmt *pStmt){
 ** an error and return true if it has been finalized (or is otherwise
 ** invalid).  Return false if it is ok.
 */
-static int vdbeSafety(Vdbe *p){
-  if( p->db==0 ){
+static 整数 vdbeSafety(Vdbe *p){
+  もし( p->db==0 ){
     sqlite3_log(SQLITE_MISUSE, "API called with finalized prepared statement");
-    return 1;
-  }else{
-    return 0;
+    戻る 1;
+  }否则{
+    戻る 0;
   }
 }
-static int vdbeSafetyNotNull(Vdbe *p){
-  if( p==0 ){
+static 整数 vdbeSafetyNotNull(Vdbe *p){
+  もし( p==0 ){
     sqlite3_log(SQLITE_MISUSE, "API called with NULL prepared statement");
-    return 1;
-  }else{
-    return vdbeSafety(p);
+    戻る 1;
+  }否则{
+    戻る vdbeSafety(p);
   }
 }
 
@@ -74,11 +74,11 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
   sqlite3OsCurrentTimeInt64(db->pVfs, &iNow);
   iElapse = (iNow - p->startTime)*1000000;
 #ifndef SQLITE_OMIT_DEPRECATED
-  if( db->xProfile ){
+  もし( db->xProfile ){
     db->xProfile(db->pProfileArg, p->zSql, iElapse);
   }
 #endif
-  if( db->mTrace & SQLITE_TRACE_PROFILE ){
+  もし( db->mTrace & SQLITE_TRACE_PROFILE ){
     db->trace.xV2(SQLITE_TRACE_PROFILE, db->pTraceArg, p, (void*)&iElapse);
   }
   p->startTime = 0;
@@ -88,8 +88,8 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
 ** is needed, and it invokes the callback if it is needed.
 */
 # define checkProfileCallback(DB,P) \
-   if( ((P)->startTime)>0 ){ invokeProfileCallback(DB,P); }
-#else
+   もし( ((P)->startTime)>0 ){ invokeProfileCallback(DB,P); }
+#否则
 # define checkProfileCallback(DB,P)  /*no-op*/
 #endif
 
@@ -102,16 +102,16 @@ static SQLITE_NOINLINE void invokeProfileCallback(sqlite3 *db, Vdbe *p){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-int sqlite3_finalize(sqlite3_stmt *pStmt){
-  int rc;
-  if( pStmt==0 ){
+整数 sqlite3_finalize(sqlite3_stmt *pStmt){
+  整数 rc;
+  もし( pStmt==0 ){
     /* IMPLEMENTATION-OF: R-57228-12904 Invoking sqlite3_finalize() on a NULL
     ** pointer is a harmless no-op. */
     rc = SQLITE_OK;
-  }else{
+  }否则{
     Vdbe *v = (Vdbe*)pStmt;
     sqlite3 *db = v->db;
-    if( vdbeSafety(v) ) return SQLITE_MISUSE_BKPT;
+    もし( vdbeSafety(v) ) 戻る SQLITE_MISUSE_BKPT;
     sqlite3_mutex_enter(db->mutex);
     checkProfileCallback(db, v);
     assert( v->eVdbeState>=VDBE_READY_STATE );
@@ -120,7 +120,7 @@ int sqlite3_finalize(sqlite3_stmt *pStmt){
     rc = sqlite3ApiExit(db, rc);
     sqlite3LeaveMutexAndCloseZombie(db);
   }
-  return rc;
+  戻る rc;
 }
 
 /*
@@ -131,11 +131,11 @@ int sqlite3_finalize(sqlite3_stmt *pStmt){
 ** This routine sets the error code and string returned by
 ** sqlite3_errcode(), sqlite3_errmsg() and sqlite3_errmsg16().
 */
-int sqlite3_reset(sqlite3_stmt *pStmt){
-  int rc;
-  if( pStmt==0 ){
+整数 sqlite3_reset(sqlite3_stmt *pStmt){
+  整数 rc;
+  もし( pStmt==0 ){
     rc = SQLITE_OK;
-  }else{
+  }否则{
     Vdbe *v = (Vdbe*)pStmt;
     sqlite3 *db = v->db;
     sqlite3_mutex_enter(db->mutex);
@@ -146,44 +146,44 @@ int sqlite3_reset(sqlite3_stmt *pStmt){
     rc = sqlite3ApiExit(db, rc);
     sqlite3_mutex_leave(db->mutex);
   }
-  return rc;
+  戻る rc;
 }
 
 /*
 ** Set all the parameters in the compiled SQL statement to NULL.
 */
-int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
-  int i;
-  int rc = SQLITE_OK;
+整数 sqlite3_clear_bindings(sqlite3_stmt *pStmt){
+  整数 i;
+  整数 rc = SQLITE_OK;
   Vdbe *p = (Vdbe*)pStmt;
   u32 maskSmallInt = 0;  /* Bitmask of bindings with value 0 or 1 */
-#if SQLITE_THREADSAFE
+#もし SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
 #endif
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ){
-    return SQLITE_MISUSE_BKPT;
+  もし( pStmt==0 ){
+    戻る SQLITE_MISUSE_BKPT;
   }
 #endif
-#if SQLITE_THREADSAFE
+#もし SQLITE_THREADSAFE
   mutex = p->db->mutex;
 #endif
 
   sqlite3_mutex_enter(mutex);
-  for(i=0; i<p->nVar; i++){
+  ために(i=0; i<p->nVar; i++){
     Mem *pVar = &p->aVar[i];
-    if( (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1 ){
+    もし( (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1 ){
       maskSmallInt |= i>=31 ? 0x80000000 : ((u32)1)<<i;
     }
     sqlite3VdbeMemRelease(pVar);
     pVar->flags = MEM_Null;
   }
   assert( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
-  if( (p->expmask&~p->smimask)!=0 || (p->smimask&maskSmallInt)!=0 ){
+  もし( (p->expmask&~p->smimask)!=0 || (p->smimask&maskSmallInt)!=0 ){
     p->expired = 1;
   }
   sqlite3_mutex_leave(mutex);
-  return rc;
+  戻る rc;
 }
 
 
@@ -193,68 +193,68 @@ int sqlite3_clear_bindings(sqlite3_stmt *pStmt){
 */
 const void *sqlite3_value_blob(sqlite3_value *pVal){
   Mem *p = (Mem*)pVal;
-  if( p->flags & (MEM_Blob|MEM_Str) ){
-    if( ExpandBlob(p)!=SQLITE_OK ){
+  もし( p->flags & (MEM_Blob|MEM_Str) ){
+    もし( ExpandBlob(p)!=SQLITE_OK ){
       assert( p->flags==MEM_Null && p->z==0 );
-      return 0;
+      戻る 0;
     }
     p->flags |= MEM_Blob;
-    return p->n ? p->z : 0;
-  }else{
-    return sqlite3_value_text(pVal);
+    戻る p->n ? p->z : 0;
+  }否则{
+    戻る sqlite3_value_text(pVal);
   }
 }
-int sqlite3_value_bytes(sqlite3_value *pVal){
-  return sqlite3ValueBytes(pVal, SQLITE_UTF8);
+整数 sqlite3_value_bytes(sqlite3_value *pVal){
+  戻る sqlite3ValueBytes(pVal, SQLITE_UTF8);
 }
-int sqlite3_value_bytes16(sqlite3_value *pVal){
-  return sqlite3ValueBytes(pVal, SQLITE_UTF16NATIVE);
+整数 sqlite3_value_bytes16(sqlite3_value *pVal){
+  戻る sqlite3ValueBytes(pVal, SQLITE_UTF16NATIVE);
 }
 double sqlite3_value_double(sqlite3_value *pVal){
-  return sqlite3VdbeRealValue((Mem*)pVal);
+  戻る sqlite3VdbeRealValue((Mem*)pVal);
 }
-int sqlite3_value_int(sqlite3_value *pVal){
-  return (int)sqlite3VdbeIntValue((Mem*)pVal);
+整数 sqlite3_value_int(sqlite3_value *pVal){
+  戻る (整数)sqlite3VdbeIntValue((Mem*)pVal);
 }
 sqlite_int64 sqlite3_value_int64(sqlite3_value *pVal){
-  return sqlite3VdbeIntValue((Mem*)pVal);
+  戻る sqlite3VdbeIntValue((Mem*)pVal);
 }
-unsigned int sqlite3_value_subtype(sqlite3_value *pVal){
+unsigned 整数 sqlite3_value_subtype(sqlite3_value *pVal){
   Mem *pMem = (Mem*)pVal;
-  return ((pMem->flags & MEM_Subtype) ? pMem->eSubtype : 0);
+  戻る ((pMem->flags & MEM_Subtype) ? pMem->eSubtype : 0);
 }
 void *sqlite3_value_pointer(sqlite3_value *pVal, const char *zPType){
   Mem *p = (Mem*)pVal;
-  if( (p->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
+  もし( (p->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
                  (MEM_Null|MEM_Term|MEM_Subtype)
    && zPType!=0
    && p->eSubtype=='p'
    && strcmp(p->u.zPType, zPType)==0
   ){
-    return (void*)p->z;
-  }else{
-    return 0;
+    戻る (void*)p->z;
+  }否则{
+    戻る 0;
   }
 }
 const unsigned char *sqlite3_value_text(sqlite3_value *pVal){
-  return (const unsigned char *)sqlite3ValueText(pVal, SQLITE_UTF8);
+  戻る (const unsigned char *)sqlite3ValueText(pVal, SQLITE_UTF8);
 }
 #ifndef SQLITE_OMIT_UTF16
 const void *sqlite3_value_text16(sqlite3_value* pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
+  戻る sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
 }
 const void *sqlite3_value_text16be(sqlite3_value *pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16BE);
+  戻る sqlite3ValueText(pVal, SQLITE_UTF16BE);
 }
 const void *sqlite3_value_text16le(sqlite3_value *pVal){
-  return sqlite3ValueText(pVal, SQLITE_UTF16LE);
+  戻る sqlite3ValueText(pVal, SQLITE_UTF16LE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 /* EVIDENCE-OF: R-12793-43283 Every value in SQLite has one of five
 ** fundamental datatypes: 64-bit signed integer 64-bit IEEE floating
 ** point number string BLOB NULL
 */
-int sqlite3_value_type(sqlite3_value* pVal){
+整数 sqlite3_value_type(sqlite3_value* pVal){
   static const u8 aType[] = {
      SQLITE_BLOB,     /* 0x00 (not possible) */
      SQLITE_NULL,     /* 0x01 NULL */
@@ -323,58 +323,58 @@ int sqlite3_value_type(sqlite3_value* pVal){
   };
 #ifdef SQLITE_DEBUG
   {
-    int eType = SQLITE_BLOB;
-    if( pVal->flags & MEM_Null ){
+    整数 eType = SQLITE_BLOB;
+    もし( pVal->flags & MEM_Null ){
       eType = SQLITE_NULL;
-    }else if( pVal->flags & (MEM_Real|MEM_IntReal) ){
+    }否则 もし( pVal->flags & (MEM_Real|MEM_IntReal) ){
       eType = SQLITE_FLOAT;
-    }else if( pVal->flags & MEM_Int ){
+    }否则 もし( pVal->flags & MEM_Int ){
       eType = SQLITE_INTEGER;
-    }else if( pVal->flags & MEM_Str ){
+    }否则 もし( pVal->flags & MEM_Str ){
       eType = SQLITE_TEXT;
     }
     assert( eType == aType[pVal->flags&MEM_AffMask] );
   }
 #endif
-  return aType[pVal->flags&MEM_AffMask];
+  戻る aType[pVal->flags&MEM_AffMask];
 }
-int sqlite3_value_encoding(sqlite3_value *pVal){
-  return pVal->enc;
+整数 sqlite3_value_encoding(sqlite3_value *pVal){
+  戻る pVal->enc;
 }
 
 /* Return true if a parameter to xUpdate represents an unchanged column */
-int sqlite3_value_nochange(sqlite3_value *pVal){
-  return (pVal->flags&(MEM_Null|MEM_Zero))==(MEM_Null|MEM_Zero);
+整数 sqlite3_value_nochange(sqlite3_value *pVal){
+  戻る (pVal->flags&(MEM_Null|MEM_Zero))==(MEM_Null|MEM_Zero);
 }
 
 /* Return true if a parameter value originated from an sqlite3_bind() */
-int sqlite3_value_frombind(sqlite3_value *pVal){
-  return (pVal->flags&MEM_FromBind)!=0;
+整数 sqlite3_value_frombind(sqlite3_value *pVal){
+  戻る (pVal->flags&MEM_FromBind)!=0;
 }
 
 /* Make a copy of an sqlite3_value object
 */
 sqlite3_value *sqlite3_value_dup(const sqlite3_value *pOrig){
   sqlite3_value *pNew;
-  if( pOrig==0 ) return 0;
+  もし( pOrig==0 ) 戻る 0;
   pNew = sqlite3_malloc( sizeof(*pNew) );
-  if( pNew==0 ) return 0;
+  もし( pNew==0 ) 戻る 0;
   memset(pNew, 0, sizeof(*pNew));
   memcpy(pNew, pOrig, MEMCELLSIZE);
   pNew->flags &= ~MEM_Dyn;
   pNew->db = 0;
-  if( pNew->flags&(MEM_Str|MEM_Blob) ){
+  もし( pNew->flags&(MEM_Str|MEM_Blob) ){
     pNew->flags &= ~(MEM_Static|MEM_Dyn);
     pNew->flags |= MEM_Ephem;
-    if( sqlite3VdbeMemMakeWriteable(pNew)!=SQLITE_OK ){
+    もし( sqlite3VdbeMemMakeWriteable(pNew)!=SQLITE_OK ){
       sqlite3ValueFree(pNew);
       pNew = 0;
     }
-  }else if( pNew->flags & MEM_Null ){
+  }否则 もし( pNew->flags & MEM_Null ){
     /* Do not duplicate pointer values */
     pNew->flags &= ~(MEM_Term|MEM_Subtype);
   }
-  return pNew;
+  戻る pNew;
 }
 
 /* Destroy an sqlite3_value object previously obtained from
@@ -402,15 +402,15 @@ void sqlite3_value_free(sqlite3_value *pOld){
 static void setResultStrOrError(
   sqlite3_context *pCtx,  /* Function context */
   const char *z,          /* String pointer */
-  int n,                  /* Bytes in string, or negative */
+  整数 n,                  /* Bytes in string, or negative */
   u8 enc,                 /* Encoding of z.  0 for BLOBs */
   void (*xDel)(void*)     /* Destructor function */
 ){
   Mem *pOut = pCtx->pOut;
-  int rc;
-  if( enc==SQLITE_UTF8 ){
+  整数 rc;
+  もし( enc==SQLITE_UTF8 ){
     rc = sqlite3VdbeMemSetText(pOut, z, n, xDel);
-  }else if( enc==SQLITE_UTF8_ZT ){
+  }否则 もし( enc==SQLITE_UTF8_ZT ){
     /* It is usually considered improper to assert() on an input. However,
     ** the following assert() is checking for inputs that are documented
     ** to result in undefined behavior. */
@@ -421,58 +421,58 @@ static void setResultStrOrError(
     );
     rc = sqlite3VdbeMemSetText(pOut, z, n, xDel);
     pOut->flags |= MEM_Term;
-  }else{
+  }否则{
     rc = sqlite3VdbeMemSetStr(pOut, z, n, enc, xDel);
   }
-  if( rc ){
-    if( rc==SQLITE_TOOBIG ){
+  もし( rc ){
+    もし( rc==SQLITE_TOOBIG ){
       sqlite3_result_error_toobig(pCtx);
-    }else{
+    }否则{
       /* The only errors possible from sqlite3VdbeMemSetStr are
       ** SQLITE_TOOBIG and SQLITE_NOMEM */
       assert( rc==SQLITE_NOMEM );
       sqlite3_result_error_nomem(pCtx);
     }
-    return;
+    戻る;
   }
   sqlite3VdbeChangeEncoding(pOut, pCtx->enc);
-  if( sqlite3VdbeMemTooBig(pOut) ){
+  もし( sqlite3VdbeMemTooBig(pOut) ){
     sqlite3_result_error_toobig(pCtx);
   }
 }
-static int invokeValueDestructor(
+static 整数 invokeValueDestructor(
   const void *p,             /* Value to destroy */
   void (*xDel)(void*),       /* The destructor */
   sqlite3_context *pCtx      /* Set a SQLITE_TOOBIG error if not NULL */
 ){
   assert( xDel!=SQLITE_DYNAMIC );
-  if( xDel==0 ){
+  もし( xDel==0 ){
     /* noop */
-  }else if( xDel==SQLITE_TRANSIENT ){
+  }否则 もし( xDel==SQLITE_TRANSIENT ){
     /* noop */
-  }else{
+  }否则{
     xDel((void*)p);
   }
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx!=0 ){
+  もし( pCtx!=0 ){
     sqlite3_result_error_toobig(pCtx);
   }
-#else
+#否则
   assert( pCtx!=0 );
   sqlite3_result_error_toobig(pCtx);
 #endif
-  return SQLITE_TOOBIG;
+  戻る SQLITE_TOOBIG;
 }
 void sqlite3_result_blob(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  整数 n,
   void (*xDel)(void *)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 || n<0 ){
+  もし( pCtx==0 || n<0 ){
     invokeValueDestructor(z, xDel, pCtx);
-    return;
+    戻る;
   }
 #endif
   assert( n>=0 );
@@ -487,60 +487,60 @@ void sqlite3_result_blob64(
 ){
   assert( xDel!=SQLITE_DYNAMIC );
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  もし( pCtx==0 ){
     invokeValueDestructor(z, xDel, 0);
-    return;
+    戻る;
   }
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  if( n>0x7fffffff ){
+  もし( n>0x7fffffff ){
     (void)invokeValueDestructor(z, xDel, pCtx);
-  }else{
-    setResultStrOrError(pCtx, z, (int)n, 0, xDel);
+  }否则{
+    setResultStrOrError(pCtx, z, (整数)n, 0, xDel);
   }
 }
 void sqlite3_result_double(sqlite3_context *pCtx, double rVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetDouble(pCtx->pOut, rVal);
 }
-void sqlite3_result_error(sqlite3_context *pCtx, const char *z, int n){
+void sqlite3_result_error(sqlite3_context *pCtx, const char *z, 整数 n){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_ERROR;
   sqlite3VdbeMemSetStr(pCtx->pOut, z, n, SQLITE_UTF8, SQLITE_TRANSIENT);
 }
 #ifndef SQLITE_OMIT_UTF16
-void sqlite3_result_error16(sqlite3_context *pCtx, const void *z, int n){
+void sqlite3_result_error16(sqlite3_context *pCtx, const void *z, 整数 n){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_ERROR;
   sqlite3VdbeMemSetStr(pCtx->pOut, z, n, SQLITE_UTF16NATIVE, SQLITE_TRANSIENT);
 }
 #endif
-void sqlite3_result_int(sqlite3_context *pCtx, int iVal){
+void sqlite3_result_int(sqlite3_context *pCtx, 整数 iVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetInt64(pCtx->pOut, (i64)iVal);
 }
 void sqlite3_result_int64(sqlite3_context *pCtx, i64 iVal){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetInt64(pCtx->pOut, iVal);
 }
 void sqlite3_result_null(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetNull(pCtx->pOut);
@@ -553,9 +553,9 @@ void sqlite3_result_pointer(
 ){
   Mem *pOut;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  もし( pCtx==0 ){
     invokeValueDestructor(pPtr, xDestructor, 0);
-    return;
+    戻る;
   }
 #endif
   pOut = pCtx->pOut;
@@ -564,13 +564,13 @@ void sqlite3_result_pointer(
   pOut->flags = MEM_Null;
   sqlite3VdbeMemSetPointer(pOut, pPtr, zPType, xDestructor);
 }
-void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned int eSubtype){
+void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned 整数 eSubtype){
   Mem *pOut;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
-#if defined(SQLITE_STRICT_SUBTYPE) && SQLITE_STRICT_SUBTYPE+0!=0
-  if( pCtx->pFunc!=0
+#もし defined(SQLITE_STRICT_SUBTYPE) && SQLITE_STRICT_SUBTYPE+0!=0
+  もし( pCtx->pFunc!=0
    && (pCtx->pFunc->funcFlags & SQLITE_RESULT_SUBTYPE)==0
   ){
     char zErr[200];
@@ -578,7 +578,7 @@ void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned int eSubtype){
                      "misuse of sqlite3_result_subtype() by %s()", 
                      pCtx->pFunc->zName);
     sqlite3_result_error(pCtx, zErr, -1);
-    return;
+    戻る;
   }
 #endif /* SQLITE_STRICT_SUBTYPE */
   pOut = pCtx->pOut;
@@ -589,13 +589,13 @@ void sqlite3_result_subtype(sqlite3_context *pCtx, unsigned int eSubtype){
 void sqlite3_result_text(
   sqlite3_context *pCtx,
   const char *z,
-  int n,
+  整数 n,
   void (*xDel)(void *)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  もし( pCtx==0 ){
     invokeValueDestructor(z, xDel, 0);
-    return;
+    戻る;
   }
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -609,21 +609,21 @@ void sqlite3_result_text64(
   unsigned char enc
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ){
+  もし( pCtx==0 ){
     invokeValueDestructor(z, xDel, 0);
-    return;
+    戻る;
   }
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   assert( xDel!=SQLITE_DYNAMIC );
-  if( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
-    if( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
+  もし( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
+    もし( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
     n &= ~(u64)1;
   }
-  if( n>0x7fffffff ){
+  もし( n>0x7fffffff ){
     (void)invokeValueDestructor(z, xDel, pCtx);
-  }else{
-    setResultStrOrError(pCtx, z, (int)n, enc, xDel);
+  }否则{
+    setResultStrOrError(pCtx, z, (整数)n, enc, xDel);
     sqlite3VdbeMemZeroTerminateIfAble(pCtx->pOut);
   }
 }
@@ -631,7 +631,7 @@ void sqlite3_result_text64(
 void sqlite3_result_text16(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  整数 n,
   void (*xDel)(void *)
 ){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -640,7 +640,7 @@ void sqlite3_result_text16(
 void sqlite3_result_text16be(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  整数 n,
   void (*xDel)(void *)
 ){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -649,7 +649,7 @@ void sqlite3_result_text16be(
 void sqlite3_result_text16le(
   sqlite3_context *pCtx,
   const void *z,
-  int n,
+  整数 n,
   void (*xDel)(void *)
 ){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
@@ -660,51 +660,51 @@ void sqlite3_result_value(sqlite3_context *pCtx, sqlite3_value *pValue){
   Mem *pOut;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
-  if( pValue==0 ){
+  もし( pCtx==0 ) 戻る;
+  もし( pValue==0 ){
     sqlite3_result_null(pCtx);
-    return;
+    戻る;
   }
 #endif
   pOut = pCtx->pOut;
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemCopy(pOut, pValue);
   sqlite3VdbeChangeEncoding(pOut, pCtx->enc);
-  if( sqlite3VdbeMemTooBig(pOut) ){
+  もし( sqlite3VdbeMemTooBig(pOut) ){
     sqlite3_result_error_toobig(pCtx);
   }
 }
-void sqlite3_result_zeroblob(sqlite3_context *pCtx, int n){
+void sqlite3_result_zeroblob(sqlite3_context *pCtx, 整数 n){
   sqlite3_result_zeroblob64(pCtx, n>0 ? n : 0);
 }
-int sqlite3_result_zeroblob64(sqlite3_context *pCtx, u64 n){
+整数 sqlite3_result_zeroblob64(sqlite3_context *pCtx, u64 n){
   Mem *pOut;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return SQLITE_MISUSE_BKPT;
+  もし( pCtx==0 ) 戻る SQLITE_MISUSE_BKPT;
 #endif
   pOut = pCtx->pOut;
   assert( sqlite3_mutex_held(pOut->db->mutex) );
-  if( n>(u64)pOut->db->aLimit[SQLITE_LIMIT_LENGTH] ){
+  もし( n>(u64)pOut->db->aLimit[SQLITE_LIMIT_LENGTH] ){
     sqlite3_result_error_toobig(pCtx);
-    return SQLITE_TOOBIG;
+    戻る SQLITE_TOOBIG;
   }
 #ifndef SQLITE_OMIT_INCRBLOB
-  sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (int)n);
-  return SQLITE_OK;
-#else
-  return sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (int)n);
+  sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (整数)n);
+  戻る SQLITE_OK;
+#否则
+  戻る sqlite3VdbeMemSetZeroBlob(pCtx->pOut, (整数)n);
 #endif
 }
-void sqlite3_result_error_code(sqlite3_context *pCtx, int errCode){
+void sqlite3_result_error_code(sqlite3_context *pCtx, 整数 errCode){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   pCtx->isError = errCode ? errCode : -1;
 #ifdef SQLITE_DEBUG
-  if( pCtx->pVdbe ) pCtx->pVdbe->rcApp = errCode;
+  もし( pCtx->pVdbe ) pCtx->pVdbe->rcApp = errCode;
 #endif
-  if( pCtx->pOut->flags & MEM_Null ){
+  もし( pCtx->pOut->flags & MEM_Null ){
     setResultStrOrError(pCtx, sqlite3ErrStr(errCode), -1, SQLITE_UTF8,
                         SQLITE_STATIC);
   }
@@ -713,7 +713,7 @@ void sqlite3_result_error_code(sqlite3_context *pCtx, int errCode){
 /* Cause the SQL function to raise an SQLITE_TOOBIG error. */
 void sqlite3_result_error_toobig(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   pCtx->isError = SQLITE_TOOBIG;
@@ -724,7 +724,7 @@ void sqlite3_result_error_toobig(sqlite3_context *pCtx){
 /* Cause the SQL function to raise an SQLITE_NOMEM error. */
 void sqlite3_result_error_nomem(sqlite3_context *pCtx){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
   sqlite3VdbeMemSetNull(pCtx->pOut);
@@ -752,17 +752,17 @@ void sqlite3_result_error_nomem(sqlite3_context *pCtx){
 **    SQLITE_FINISH    Like SQLITE_XFER except that the pStr is also
 **                     freed using sqlite3_str_free().
 */
-void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, int eOwn){
+void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, 整数 eOwn){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
-  if( pStr==0 ) return;
+  もし( pCtx==0 ) 戻る;
+  もし( pStr==0 ) 戻る;
 #endif
   testcase( pStr==(sqlite3_str*)&sqlite3OomStr );
-  if( pStr->accError==0 ){
-    if( pStr->nChar==0 ){
+  もし( pStr->accError==0 ){
+    もし( pStr->nChar==0 ){
       setResultStrOrError(pCtx, "", 0, SQLITE_UTF8_ZT, SQLITE_STATIC);
       sqlite3_str_reset(pStr);
-    }else{
+    }否则{
       const char *zText = sqlite3_str_value(pStr);
       /* Only internal code has the ability to capture a pointer to
       ** an sqlite3_str object that uses static buffer.  And none of
@@ -770,22 +770,22 @@ void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, int eOwn){
       ** interface on a static-buffer sqlite3_str.  Should this change
       ** in the future, the following assert() will let us know. */
       assert( isMalloced(pStr) );
-      if( eOwn==SQLITE_COPY ){
+      もし( eOwn==SQLITE_COPY ){
         setResultStrOrError(pCtx, zText, pStr->nChar, 
                             SQLITE_UTF8, SQLITE_TRANSIENT);
-      }else{
+      }否则{
         setResultStrOrError(pCtx, zText, pStr->nChar,
                             SQLITE_UTF8_ZT, SQLITE_DYNAMIC);
         sqlite3StrAccumInit(pStr, pStr->db, 0, 0, pStr->mxAlloc);
       }
     }
-  }else if( pStr->accError==SQLITE_NOMEM ){
+  }否则 もし( pStr->accError==SQLITE_NOMEM ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }否则{
     assert( pStr->accError==SQLITE_TOOBIG );
     sqlite3_result_error_toobig(pCtx);
   }
-  if( eOwn==SQLITE_FINISH ){
+  もし( eOwn==SQLITE_FINISH ){
     sqlite3_str_free(pStr);
   }
 }
@@ -797,7 +797,7 @@ void sqlite3_result_str(sqlite3_context *pCtx, sqlite3_str *pStr, int eOwn){
 */
 void sqlite3ResultIntReal(sqlite3_context *pCtx){
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-  if( pCtx->pOut->flags & MEM_Int ){
+  もし( pCtx->pOut->flags & MEM_Int ){
     pCtx->pOut->flags &= ~MEM_Int;
     pCtx->pOut->flags |= MEM_IntReal;
   }
@@ -809,26 +809,26 @@ void sqlite3ResultIntReal(sqlite3_context *pCtx){
 ** This function is called after a transaction has been committed. It
 ** invokes callbacks registered with sqlite3_wal_hook() as required.
 */
-static int doWalCallbacks(sqlite3 *db){
-  int rc = SQLITE_OK;
+static 整数 doWalCallbacks(sqlite3 *db){
+  整数 rc = SQLITE_OK;
 #ifndef SQLITE_OMIT_WAL
-  int i;
-  for(i=0; i<db->nDb; i++){
+  整数 i;
+  ために(i=0; i<db->nDb; i++){
     Btree *pBt = db->aDb[i].pBt;
-    if( pBt ){
-      int nEntry;
+    もし( pBt ){
+      整数 nEntry;
       sqlite3BtreeEnter(pBt);
       nEntry = sqlite3PagerWalCallback(sqlite3BtreePager(pBt));
       sqlite3BtreeLeave(pBt);
-      if( nEntry>0 && db->xWalCallback && rc==SQLITE_OK ){
+      もし( nEntry>0 && db->xWalCallback && rc==SQLITE_OK ){
         rc = db->xWalCallback(db->pWalArg, db, db->aDb[i].zDbSName, nEntry);
       }
     }
   }
-#else
+#否则
   UNUSED_PARAMETER(db);
 #endif
-  return rc;
+  戻る rc;
 }
 
 
@@ -841,19 +841,19 @@ static int doWalCallbacks(sqlite3 *db){
 ** schema change has occurred.  That detail is handled by the
 ** outer sqlite3_step() wrapper procedure.
 */
-static int sqlite3Step(Vdbe *p){
+static 整数 sqlite3Step(Vdbe *p){
   sqlite3 *db;
-  int rc;
+  整数 rc;
 
   assert(p);
   db = p->db;
-  if( p->eVdbeState!=VDBE_RUN_STATE ){
+  もし( p->eVdbeState!=VDBE_RUN_STATE ){
     restart_step:
-    if( p->eVdbeState==VDBE_READY_STATE ){
-      if( p->expired ){
+    もし( p->eVdbeState==VDBE_READY_STATE ){
+      もし( p->expired ){
         p->rc = SQLITE_SCHEMA;
         rc = SQLITE_ERROR;
-        if( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
+        もし( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
           /* If this statement was prepared using saved SQL and an
           ** error has occurred, then return the error code in p->rc to the
           ** caller. Set the error code in the database handle to the same
@@ -868,7 +868,7 @@ static int sqlite3Step(Vdbe *p){
       ** reset the interrupt flag.  This prevents a call to sqlite3_interrupt
       ** from interrupting a statement that has not yet started.
       */
-      if( db->nVdbeActive==0 ){
+      もし( db->nVdbeActive==0 ){
         AtomicStore(&db->u1.isInterrupted, 0);
       }
 
@@ -877,22 +877,22 @@ static int sqlite3Step(Vdbe *p){
       );
 
 #ifndef SQLITE_OMIT_TRACE
-      if( (db->mTrace & (SQLITE_TRACE_PROFILE|SQLITE_TRACE_XPROFILE))!=0
+      もし( (db->mTrace & (SQLITE_TRACE_PROFILE|SQLITE_TRACE_XPROFILE))!=0
           && !db->init.busy && p->zSql ){
         sqlite3OsCurrentTimeInt64(db->pVfs, &p->startTime);
-      }else{
+      }否则{
         assert( p->startTime==0 );
       }
 #endif
 
       db->nVdbeActive++;
-      if( p->readOnly==0 ) db->nVdbeWrite++;
-      if( p->bIsReader ) db->nVdbeRead++;
+      もし( p->readOnly==0 ) db->nVdbeWrite++;
+      もし( p->bIsReader ) db->nVdbeRead++;
       p->pc = 0;
       p->eVdbeState = VDBE_RUN_STATE;
-    }else
+    }否则
 
-    if( ALWAYS(p->eVdbeState==VDBE_HALT_STATE) ){
+    もし( ALWAYS(p->eVdbeState==VDBE_HALT_STATE) ){
       /* We used to require that sqlite3_reset() be called before retrying
       ** sqlite3_step() after any error or after SQLITE_DONE.  But beginning
       ** with version 3.7.0, we changed this so that sqlite3_reset() would
@@ -910,12 +910,12 @@ static int sqlite3Step(Vdbe *p){
       ** or SQLITE_BUSY error.
       */
 #ifdef SQLITE_OMIT_AUTORESET
-      if( (rc = p->rc&0xff)==SQLITE_BUSY || rc==SQLITE_LOCKED ){
+      もし( (rc = p->rc&0xff)==SQLITE_BUSY || rc==SQLITE_LOCKED ){
         sqlite3_reset((sqlite3_stmt*)p);
-      }else{
-        return SQLITE_MISUSE_BKPT;
+      }否则{
+        戻る SQLITE_MISUSE_BKPT;
       }
-#else
+#否则
       sqlite3_reset((sqlite3_stmt*)p);
 #endif
       assert( p->eVdbeState==VDBE_READY_STATE );
@@ -927,9 +927,9 @@ static int sqlite3Step(Vdbe *p){
   p->rcApp = SQLITE_OK;
 #endif
 #ifndef SQLITE_OMIT_EXPLAIN
-  if( p->explain ){
+  もし( p->explain ){
     rc = sqlite3VdbeList(p);
-  }else
+  }否则
 #endif /* SQLITE_OMIT_EXPLAIN */
   {
     db->nVdbeExec++;
@@ -937,24 +937,24 @@ static int sqlite3Step(Vdbe *p){
     db->nVdbeExec--;
   }
 
-  if( rc==SQLITE_ROW ){
+  もし( rc==SQLITE_ROW ){
     assert( p->rc==SQLITE_OK );
     assert( db->mallocFailed==0 );
     db->errCode = SQLITE_ROW;
-    return SQLITE_ROW;
-  }else{
+    戻る SQLITE_ROW;
+  }否则{
 #ifndef SQLITE_OMIT_TRACE
     /* If the statement completed successfully, invoke the profile callback */
     checkProfileCallback(db, p);
 #endif
     p->pResultRow = 0;
-    if( rc==SQLITE_DONE && db->autoCommit ){
+    もし( rc==SQLITE_DONE && db->autoCommit ){
       assert( p->rc==SQLITE_OK );
       p->rc = doWalCallbacks(db);
-      if( p->rc!=SQLITE_OK ){
+      もし( p->rc!=SQLITE_OK ){
         rc = SQLITE_ERROR;
       }
-    }else if( rc!=SQLITE_DONE && (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
+    }否则 もし( rc!=SQLITE_DONE && (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ){
       /* If this statement was prepared using saved SQL and an
       ** error has occurred, then return the error code in p->rc to the
       ** caller. Set the error code in the database handle to the same value.
@@ -964,9 +964,9 @@ static int sqlite3Step(Vdbe *p){
   }
 
   db->errCode = rc;
-  if( SQLITE_NOMEM==sqlite3ApiExit(p->db, p->rc) ){
+  もし( SQLITE_NOMEM==sqlite3ApiExit(p->db, p->rc) ){
     p->rc = SQLITE_NOMEM_BKPT;
-    if( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ) rc = p->rc;
+    もし( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 ) rc = p->rc;
   }
 end_of_step:
   /* There are only a limited number of result codes allowed from the
@@ -975,7 +975,7 @@ end_of_step:
        || rc==SQLITE_ROW  || rc==SQLITE_DONE   || rc==SQLITE_ERROR
        || (rc&0xff)==SQLITE_BUSY || rc==SQLITE_MISUSE
   );
-  return (rc&db->errMask);
+  戻る (rc&db->errMask);
 }
 
 /*
@@ -983,22 +983,22 @@ end_of_step:
 ** sqlite3Step() to do most of the work.  If a schema error occurs,
 ** call sqlite3Reprepare() and try again.
 */
-int sqlite3_step(sqlite3_stmt *pStmt){
-  int rc = SQLITE_OK;      /* Result from sqlite3Step() */
+整数 sqlite3_step(sqlite3_stmt *pStmt){
+  整数 rc = SQLITE_OK;      /* Result from sqlite3Step() */
   Vdbe *v = (Vdbe*)pStmt;  /* the prepared statement */
-  int cnt = 0;             /* Counter to prevent infinite loop of reprepares */
+  整数 cnt = 0;             /* Counter to prevent infinite loop of reprepares */
   sqlite3 *db;             /* The database connection */
 
-  if( vdbeSafetyNotNull(v) ){
-    return SQLITE_MISUSE_BKPT;
+  もし( vdbeSafetyNotNull(v) ){
+    戻る SQLITE_MISUSE_BKPT;
   }
   db = v->db;
   sqlite3_mutex_enter(db->mutex);
-  while( (rc = sqlite3Step(v))==SQLITE_SCHEMA
+  ながら( (rc = sqlite3Step(v))==SQLITE_SCHEMA
          && cnt++ < SQLITE_MAX_SCHEMA_RETRY ){
-    int savedPc = v->pc;
+    整数 savedPc = v->pc;
     rc = sqlite3Reprepare(v);
-    if( rc!=SQLITE_OK ){
+    もし( rc!=SQLITE_OK ){
       /* This case occurs after failing to recompile an sql statement.
       ** The error message from the SQL compiler has already been loaded
       ** into the database handle. This block copies the error message
@@ -1009,17 +1009,17 @@ int sqlite3_step(sqlite3_stmt *pStmt){
       */
       const char *zErr = (const char *)sqlite3_value_text(db->pErr);
       sqlite3DbFree(db, v->zErrMsg);
-      if( !db->mallocFailed ){
+      もし( !db->mallocFailed ){
         v->zErrMsg = sqlite3DbStrDup(db, zErr);
         v->rc = rc = sqlite3ApiExit(db, rc);
-      } else {
+      } 否则 {
         v->zErrMsg = 0;
         v->rc = rc = SQLITE_NOMEM_BKPT;
       }
       break;
     }
     sqlite3_reset(pStmt);
-    if( savedPc>=0 ){
+    もし( savedPc>=0 ){
       /* Setting minWriteFileFormat to 254 is a signal to the OP_Init and
       ** OP_Trace opcodes to *not* perform SQLITE_TRACE_STMT because it has
       ** already been done once on a prior invocation that failed due to
@@ -1029,7 +1029,7 @@ int sqlite3_step(sqlite3_stmt *pStmt){
     assert( v->expired==0 );
   }
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  戻る rc;
 }
 
 
@@ -1039,10 +1039,10 @@ int sqlite3_step(sqlite3_stmt *pStmt){
 */
 void *sqlite3_user_data(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
+  もし( p==0 ) 戻る 0;
 #endif
   assert( p && p->pFunc );
-  return p->pFunc->pUserData;
+  戻る p->pFunc->pUserData;
 }
 
 /*
@@ -1057,11 +1057,11 @@ void *sqlite3_user_data(sqlite3_context *p){
 */
 sqlite3 *sqlite3_context_db_handle(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
-#else
+  もし( p==0 ) 戻る 0;
+#否则
   assert( p && p->pOut );
 #endif
-  return p->pOut->db;
+  戻る p->pOut->db;
 }
 
 /*
@@ -1078,13 +1078,13 @@ sqlite3 *sqlite3_context_db_handle(sqlite3_context *p){
 ** performance by substituting a NULL result, or some other light-weight
 ** value, as a signal to the xUpdate routine that the column is unchanged.
 */
-int sqlite3_vtab_nochange(sqlite3_context *p){
+整数 sqlite3_vtab_nochange(sqlite3_context *p){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return 0;
-#else
+  もし( p==0 ) 戻る 0;
+#否则
   assert( p );
 #endif
-  return sqlite3_value_nochange(p->pOut);
+  戻る sqlite3_value_nochange(p->pOut);
 }
 
 /*
@@ -1102,71 +1102,71 @@ void sqlite3VdbeValueListFree(void *pToDelete){
 ** Implementation of sqlite3_vtab_in_first() (if bNext==0) and
 ** sqlite3_vtab_in_next() (if bNext!=0).
 */
-static int valueFromValueList(
+static 整数 valueFromValueList(
   sqlite3_value *pVal,        /* Pointer to the ValueList object */
   sqlite3_value **ppOut,      /* Store the next value from the list here */
-  int bNext                   /* 1 for _next(). 0 for _first() */
+  整数 bNext                   /* 1 for _next(). 0 for _first() */
 ){
-  int rc;
+  整数 rc;
   ValueList *pRhs;
 
   *ppOut = 0;
-  if( pVal==0 ) return SQLITE_MISUSE_BKPT;
-  if( (pVal->flags & MEM_Dyn)==0 || pVal->xDel!=sqlite3VdbeValueListFree ){
-    return SQLITE_ERROR;
-  }else{
+  もし( pVal==0 ) 戻る SQLITE_MISUSE_BKPT;
+  もし( (pVal->flags & MEM_Dyn)==0 || pVal->xDel!=sqlite3VdbeValueListFree ){
+    戻る SQLITE_ERROR;
+  }否则{
     assert( (pVal->flags&(MEM_TypeMask|MEM_Term|MEM_Subtype)) ==
                  (MEM_Null|MEM_Term|MEM_Subtype) );
     assert( pVal->eSubtype=='p' );
     assert( pVal->u.zPType!=0 && strcmp(pVal->u.zPType,"ValueList")==0 );
     pRhs = (ValueList*)pVal->z;
   }
-  if( bNext ){
+  もし( bNext ){
     rc = sqlite3BtreeNext(pRhs->pCsr, 0);
-  }else{
-    int dummy = 0;
+  }否则{
+    整数 dummy = 0;
     rc = sqlite3BtreeFirst(pRhs->pCsr, &dummy);
     assert( rc==SQLITE_OK || sqlite3BtreeEof(pRhs->pCsr) );
-    if( sqlite3BtreeEof(pRhs->pCsr) ) rc = SQLITE_DONE;
+    もし( sqlite3BtreeEof(pRhs->pCsr) ) rc = SQLITE_DONE;
   }
-  if( rc==SQLITE_OK ){
+  もし( rc==SQLITE_OK ){
     u32 sz;       /* Size of current row in bytes */
     Mem sMem;     /* Raw content of current row */
     memset(&sMem, 0, sizeof(sMem));
     sz = sqlite3BtreePayloadSize(pRhs->pCsr);
     rc = sqlite3VdbeMemFromBtreeZeroOffset(pRhs->pCsr,sz,&sMem);
-    if( rc==SQLITE_OK ){
+    もし( rc==SQLITE_OK ){
       u8 *zBuf = (u8*)sMem.z;
       u32 iSerial;
       sqlite3_value *pOut = pRhs->pOut;
-      int iOff = 1 + getVarint32(&zBuf[1], iSerial);
+      整数 iOff = 1 + getVarint32(&zBuf[1], iSerial);
       sqlite3VdbeSerialGet(&zBuf[iOff], iSerial, pOut);
       pOut->enc = ENC(pOut->db);
-      if( (pOut->flags & MEM_Ephem)!=0 && sqlite3VdbeMemMakeWriteable(pOut) ){
+      もし( (pOut->flags & MEM_Ephem)!=0 && sqlite3VdbeMemMakeWriteable(pOut) ){
         rc = SQLITE_NOMEM;
-      }else{
+      }否则{
         *ppOut = pOut;
       }
     }
     sqlite3VdbeMemRelease(&sMem);
   }
-  return rc;
+  戻る rc;
 }
 
 /*
 ** Set the iterator value pVal to point to the first value in the set.
 ** Set (*ppOut) to point to this value before returning.
 */
-int sqlite3_vtab_in_first(sqlite3_value *pVal, sqlite3_value **ppOut){
-  return valueFromValueList(pVal, ppOut, 0);
+整数 sqlite3_vtab_in_first(sqlite3_value *pVal, sqlite3_value **ppOut){
+  戻る valueFromValueList(pVal, ppOut, 0);
 }
 
 /*
 ** Set the iterator value pVal to point to the next value in the set.
 ** Set (*ppOut) to point to this value before returning.
 */
-int sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
-  return valueFromValueList(pVal, ppOut, 1);
+整数 sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
+  戻る valueFromValueList(pVal, ppOut, 1);
 }
 
 /*
@@ -1177,40 +1177,40 @@ int sqlite3_vtab_in_next(sqlite3_value *pVal, sqlite3_value **ppOut){
 ** the time returned is always the time of the first call.
 */
 sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context *p){
-  int rc;
+  整数 rc;
 #ifndef SQLITE_ENABLE_STAT4
   sqlite3_int64 *piTime = &p->pVdbe->iCurrentTime;
   assert( p->pVdbe!=0 );
-#else
+#否则
   sqlite3_int64 iTime = 0;
   sqlite3_int64 *piTime = p->pVdbe!=0 ? &p->pVdbe->iCurrentTime : &iTime;
 #endif
-  if( *piTime==0 ){
+  もし( *piTime==0 ){
     rc = sqlite3OsCurrentTimeInt64(p->pOut->db->pVfs, piTime);
-    if( rc ) *piTime = 0;
+    もし( rc ) *piTime = 0;
   }
-  return *piTime;
+  戻る *piTime;
 }
 
 /*
 ** Create a new aggregate context for p and return a pointer to
 ** its pMem->z element.
 */
-static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, int nByte){
+static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, 整数 nByte){
   Mem *pMem = p->pMem;
   assert( (pMem->flags & MEM_Agg)==0 );
-  if( nByte<=0 ){
+  もし( nByte<=0 ){
     sqlite3VdbeMemSetNull(pMem);
     pMem->z = 0;
-  }else{
+  }否则{
     sqlite3VdbeMemClearAndResize(pMem, nByte);
     pMem->flags = MEM_Agg;
     pMem->u.pDef = p->pFunc;
-    if( pMem->z ){
+    もし( pMem->z ){
       memset(pMem->z, 0, nByte);
     }
   }
-  return (void*)pMem->z;
+  戻る (void*)pMem->z;
 }
 
 /*
@@ -1218,14 +1218,14 @@ static SQLITE_NOINLINE void *createAggContext(sqlite3_context *p, int nByte){
 ** context is allocated on the first call.  Subsequent calls return the
 ** same context that was returned on prior calls.
 */
-void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
+void *sqlite3_aggregate_context(sqlite3_context *p, 整数 nByte){
   assert( p && p->pFunc && p->pFunc->xFinalize );
   assert( sqlite3_mutex_held(p->pOut->db->mutex) );
   testcase( nByte<0 );
-  if( (p->pMem->flags & MEM_Agg)==0 ){
-    return createAggContext(p, nByte);
-  }else{
-    return (void*)p->pMem->z;
+  もし( (p->pMem->flags & MEM_Agg)==0 ){
+    戻る createAggContext(p, nByte);
+  }否则{
+    戻る (void*)p->pMem->z;
   }
 }
 
@@ -1239,24 +1239,24 @@ void *sqlite3_aggregate_context(sqlite3_context *p, int nByte){
 ** auxiliary data pointers that is available to all functions within a
 ** single prepared statement.  The iArg values must match.
 */
-void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
+void *sqlite3_get_auxdata(sqlite3_context *pCtx, 整数 iArg){
   AuxData *pAuxData;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return 0;
+  もし( pCtx==0 ) 戻る 0;
 #endif
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
-#if SQLITE_ENABLE_STAT4
-  if( pCtx->pVdbe==0 ) return 0;
-#else
+#もし SQLITE_ENABLE_STAT4
+  もし( pCtx->pVdbe==0 ) 戻る 0;
+#否则
   assert( pCtx->pVdbe!=0 );
 #endif
-  for(pAuxData=pCtx->pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
-    if(  pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
-      return pAuxData->pAux;
+  ために(pAuxData=pCtx->pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
+    もし(  pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
+      戻る pAuxData->pAux;
     }
   }
-  return 0;
+  戻る 0;
 }
 
 /*
@@ -1272,7 +1272,7 @@ void *sqlite3_get_auxdata(sqlite3_context *pCtx, int iArg){
 */
 void sqlite3_set_auxdata(
   sqlite3_context *pCtx,
-  int iArg,
+  整数 iArg,
   void *pAux,
   void (*xDelete)(void*)
 ){
@@ -1280,39 +1280,39 @@ void sqlite3_set_auxdata(
   Vdbe *pVdbe;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pCtx==0 ) return;
+  もし( pCtx==0 ) 戻る;
 #endif
   pVdbe= pCtx->pVdbe;
   assert( sqlite3_mutex_held(pCtx->pOut->db->mutex) );
 #ifdef SQLITE_ENABLE_STAT4
-  if( pVdbe==0 ) goto failed;
-#else
+  もし( pVdbe==0 ) goto failed;
+#否则
   assert( pVdbe!=0 );
 #endif
 
-  for(pAuxData=pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
-    if( pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
+  ために(pAuxData=pVdbe->pAuxData; pAuxData; pAuxData=pAuxData->pNextAux){
+    もし( pAuxData->iAuxArg==iArg && (pAuxData->iAuxOp==pCtx->iOp || iArg<0) ){
       break;
     }
   }
-  if( pAuxData==0 ){
+  もし( pAuxData==0 ){
     pAuxData = sqlite3DbMallocZero(pVdbe->db, sizeof(AuxData));
-    if( !pAuxData ) goto failed;
+    もし( !pAuxData ) goto failed;
     pAuxData->iAuxOp = pCtx->iOp;
     pAuxData->iAuxArg = iArg;
     pAuxData->pNextAux = pVdbe->pAuxData;
     pVdbe->pAuxData = pAuxData;
-    if( pCtx->isError==0 ) pCtx->isError = -1;
-  }else if( pAuxData->xDeleteAux ){
+    もし( pCtx->isError==0 ) pCtx->isError = -1;
+  }否则 もし( pAuxData->xDeleteAux ){
     pAuxData->xDeleteAux(pAuxData->pAux);
   }
 
   pAuxData->pAux = pAux;
   pAuxData->xDeleteAux = xDelete;
-  return;
+  戻る;
 
 failed:
-  if( xDelete ){
+  もし( xDelete ){
     xDelete(pAux);
   }
 }
@@ -1327,29 +1327,29 @@ failed:
 ** implementations should keep their own counts within their aggregate
 ** context.
 */
-int sqlite3_aggregate_count(sqlite3_context *p){
+整数 sqlite3_aggregate_count(sqlite3_context *p){
   assert( p && p->pMem && p->pFunc && p->pFunc->xFinalize );
-  return p->pMem->n;
+  戻る p->pMem->n;
 }
 #endif
 
 /*
 ** Return the number of columns in the result set for the statement pStmt.
 */
-int sqlite3_column_count(sqlite3_stmt *pStmt){
+整数 sqlite3_column_count(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
-  if( pVm==0 ) return 0;
-  return pVm->nResColumn;
+  もし( pVm==0 ) 戻る 0;
+  戻る pVm->nResColumn;
 }
 
 /*
 ** Return the number of values available from the current row of the
 ** currently executing statement pStmt.
 */
-int sqlite3_data_count(sqlite3_stmt *pStmt){
+整数 sqlite3_data_count(sqlite3_stmt *pStmt){
   Vdbe *pVm = (Vdbe *)pStmt;
-  if( pVm==0 || pVm->pResultRow==0 ) return 0;
-  return pVm->nResColumn;
+  もし( pVm==0 || pVm->pResultRow==0 ) 戻る 0;
+  戻る pVm->nResColumn;
 }
 
 /*
@@ -1366,18 +1366,18 @@ static const Mem *columnNullValue(void){
   ** using gcc, we force nullMem to be 8-byte aligned using the magical
   ** __attribute__((aligned(8))) macro.  */
   static const Mem nullMem
-#if defined(SQLITE_DEBUG) && defined(__GNUC__)
+#もし defined(SQLITE_DEBUG) && defined(__GNUC__)
     __attribute__((aligned(8)))
 #endif
     = {
         /* .u          = */ {0},
         /* .z          = */ (char*)0,
-        /* .n          = */ (int)0,
+        /* .n          = */ (整数)0,
         /* .flags      = */ (u16)MEM_Null,
         /* .enc        = */ (u8)0,
         /* .eSubtype   = */ (u8)0,
         /* .db         = */ (sqlite3*)0,
-        /* .szMalloc   = */ (int)0,
+        /* .szMalloc   = */ (整数)0,
         /* .uTemp      = */ (u32)0,
         /* .zMalloc    = */ (char*)0,
         /* .xDel       = */ (void(*)(void*))0,
@@ -1387,7 +1387,7 @@ static const Mem *columnNullValue(void){
         /* .bScopy     = */ 0,
 #endif
       };
-  return &nullMem;
+  戻る &nullMem;
 }
 
 /*
@@ -1396,21 +1396,21 @@ static const Mem *columnNullValue(void){
 ** If iCol is not valid, return a pointer to a Mem which has a value
 ** of NULL.
 */
-static Mem *columnMem(sqlite3_stmt *pStmt, int i){
+static Mem *columnMem(sqlite3_stmt *pStmt, 整数 i){
   Vdbe *pVm;
   Mem *pOut;
 
   pVm = (Vdbe *)pStmt;
-  if( pVm==0 ) return (Mem*)columnNullValue();
+  もし( pVm==0 ) 戻る (Mem*)columnNullValue();
   assert( pVm->db );
   sqlite3_mutex_enter(pVm->db->mutex);
-  if( pVm->pResultRow!=0 && i<pVm->nResColumn && i>=0 ){
+  もし( pVm->pResultRow!=0 && i<pVm->nResColumn && i>=0 ){
     pOut = &pVm->pResultRow[i];
-  }else{
+  }否则{
     sqlite3Error(pVm->db, SQLITE_RANGE);
     pOut = (Mem*)columnNullValue();
   }
-  return pOut;
+  戻る pOut;
 }
 
 /*
@@ -1439,7 +1439,7 @@ static void columnMallocFailure(sqlite3_stmt *pStmt)
   ** and _finalize() will return NOMEM.
   */
   Vdbe *p = (Vdbe *)pStmt;
-  if( p ){
+  もし( p ){
     assert( p->db!=0 );
     assert( sqlite3_mutex_held(p->db->mutex) );
     p->rc = sqlite3ApiExit(p->db, p->rc);
@@ -1451,7 +1451,7 @@ static void columnMallocFailure(sqlite3_stmt *pStmt)
 ** The following routines are used to access elements of the current row
 ** in the result set.
 */
-const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
+const void *sqlite3_column_blob(sqlite3_stmt *pStmt, 整数 i){
   const void *val;
   val = sqlite3_value_blob( columnMem(pStmt,i) );
   /* Even though there is no encoding conversion, value_blob() might
@@ -1459,58 +1459,58 @@ const void *sqlite3_column_blob(sqlite3_stmt *pStmt, int i){
   ** expression.
   */
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
-int sqlite3_column_bytes(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_bytes( columnMem(pStmt,i) );
+整数 sqlite3_column_bytes(sqlite3_stmt *pStmt, 整数 i){
+  整数 val = sqlite3_value_bytes( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
-int sqlite3_column_bytes16(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_bytes16( columnMem(pStmt,i) );
+整数 sqlite3_column_bytes16(sqlite3_stmt *pStmt, 整数 i){
+  整数 val = sqlite3_value_bytes16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
-double sqlite3_column_double(sqlite3_stmt *pStmt, int i){
+double sqlite3_column_double(sqlite3_stmt *pStmt, 整数 i){
   double val = sqlite3_value_double( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
-int sqlite3_column_int(sqlite3_stmt *pStmt, int i){
-  int val = sqlite3_value_int( columnMem(pStmt,i) );
+整数 sqlite3_column_int(sqlite3_stmt *pStmt, 整数 i){
+  整数 val = sqlite3_value_int( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
-sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, int i){
+sqlite_int64 sqlite3_column_int64(sqlite3_stmt *pStmt, 整数 i){
   sqlite_int64 val = sqlite3_value_int64( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
-const unsigned char *sqlite3_column_text(sqlite3_stmt *pStmt, int i){
+const unsigned char *sqlite3_column_text(sqlite3_stmt *pStmt, 整数 i){
   const unsigned char *val = sqlite3_value_text( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
-sqlite3_value *sqlite3_column_value(sqlite3_stmt *pStmt, int i){
+sqlite3_value *sqlite3_column_value(sqlite3_stmt *pStmt, 整数 i){
   Mem *pOut = columnMem(pStmt, i);
-  if( pOut->flags&MEM_Static ){
+  もし( pOut->flags&MEM_Static ){
     pOut->flags &= ~MEM_Static;
     pOut->flags |= MEM_Ephem;
   }
   columnMallocFailure(pStmt);
-  return (sqlite3_value *)pOut;
+  戻る (sqlite3_value *)pOut;
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_text16(sqlite3_stmt *pStmt, int i){
+const void *sqlite3_column_text16(sqlite3_stmt *pStmt, 整数 i){
   const void *val = sqlite3_value_text16( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return val;
+  戻る val;
 }
 #endif /* SQLITE_OMIT_UTF16 */
-int sqlite3_column_type(sqlite3_stmt *pStmt, int i){
-  int iType = sqlite3_value_type( columnMem(pStmt,i) );
+整数 sqlite3_column_type(sqlite3_stmt *pStmt, 整数 i){
+  整数 iType = sqlite3_value_type( columnMem(pStmt,i) );
   columnMallocFailure(pStmt);
-  return iType;
+  戻る iType;
 }
 
 /*
@@ -1557,47 +1557,47 @@ static const u8 iExplainColNames16[] = {
 */
 static const void *columnName(
   sqlite3_stmt *pStmt,     /* The statement */
-  int N,                   /* Which column to get the name for */
-  int useUtf16,            /* True to return the name as UTF16 */
-  int useType              /* What type of name */
+  整数 N,                   /* Which column to get the name for */
+  整数 useUtf16,            /* True to return the name as UTF16 */
+  整数 useType              /* What type of name */
 ){
   const void *ret;
   Vdbe *p;
-  int n;
+  整数 n;
   sqlite3 *db;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ){
+  もし( pStmt==0 ){
     (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    戻る 0;
   }
 #endif
-  if( N<0 ) return 0;
+  もし( N<0 ) 戻る 0;
   ret = 0;
   p = (Vdbe *)pStmt;
   db = p->db;
   assert( db!=0 );
   sqlite3_mutex_enter(db->mutex);
 
-  if( p->explain ){
-    if( useType>0 ) goto columnName_end;
+  もし( p->explain ){
+    もし( useType>0 ) goto columnName_end;
     n = p->explain==1 ? 8 : 4;
-    if( N>=n ) goto columnName_end;
-    if( useUtf16 ){
-      int i = iExplainColNames16[N + 8*p->explain - 8];
+    もし( N>=n ) goto columnName_end;
+    もし( useUtf16 ){
+      整数 i = iExplainColNames16[N + 8*p->explain - 8];
       ret = (void*)&azExplainColNames16data[i];
-    }else{
+    }否则{
       ret = (void*)azExplainColNames8[N + 8*p->explain - 8];
     }
     goto columnName_end;
   }
   n = p->nResColumn;
-  if( N<n ){
+  もし( N<n ){
     u8 prior_mallocFailed = db->mallocFailed;
     N += useType*n;
 #ifndef SQLITE_OMIT_UTF16
-    if( useUtf16 ){
+    もし( useUtf16 ){
       ret = sqlite3_value_text16((sqlite3_value*)&p->aColName[N]);
-    }else
+    }否则
 #endif
     {
       ret = sqlite3_value_text((sqlite3_value*)&p->aColName[N]);
@@ -1606,26 +1606,26 @@ static const void *columnName(
     ** is the case, clear the mallocFailed flag and return NULL.
     */
     assert( db->mallocFailed==0 || db->mallocFailed==1 );
-    if( db->mallocFailed > prior_mallocFailed ){
+    もし( db->mallocFailed > prior_mallocFailed ){
       sqlite3OomClear(db);
       ret = 0;
     }
   }
 columnName_end:
   sqlite3_mutex_leave(db->mutex);
-  return ret;
+  戻る ret;
 }
 
 /*
 ** Return the name of the Nth column of the result set returned by SQL
 ** statement pStmt.
 */
-const char *sqlite3_column_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_NAME);
+const char *sqlite3_column_name(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 0, COLNAME_NAME);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_NAME);
+const void *sqlite3_column_name16(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 1, COLNAME_NAME);
 }
 #endif
 
@@ -1633,7 +1633,7 @@ const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
 ** Constraint:  If you have ENABLE_COLUMN_METADATA then you must
 ** not define OMIT_DECLTYPE.
 */
-#if defined(SQLITE_OMIT_DECLTYPE) && defined(SQLITE_ENABLE_COLUMN_METADATA)
+#もし defined(SQLITE_OMIT_DECLTYPE) && defined(SQLITE_ENABLE_COLUMN_METADATA)
 # error "Must not define both SQLITE_OMIT_DECLTYPE \
          and SQLITE_ENABLE_COLUMN_METADATA"
 #endif
@@ -1643,12 +1643,12 @@ const void *sqlite3_column_name16(sqlite3_stmt *pStmt, int N){
 ** Return the column declaration type (if applicable) of the 'i'th column
 ** of the result set of SQL statement pStmt.
 */
-const char *sqlite3_column_decltype(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_DECLTYPE);
+const char *sqlite3_column_decltype(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 0, COLNAME_DECLTYPE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_DECLTYPE);
+const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 1, COLNAME_DECLTYPE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_OMIT_DECLTYPE */
@@ -1659,12 +1659,12 @@ const void *sqlite3_column_decltype16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_database_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_DATABASE);
+const char *sqlite3_column_database_name(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 0, COLNAME_DATABASE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_DATABASE);
+const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 1, COLNAME_DATABASE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -1673,12 +1673,12 @@ const void *sqlite3_column_database_name16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_table_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_TABLE);
+const char *sqlite3_column_table_name(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 0, COLNAME_TABLE);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_TABLE);
+const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 1, COLNAME_TABLE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 
@@ -1687,12 +1687,12 @@ const void *sqlite3_column_table_name16(sqlite3_stmt *pStmt, int N){
 ** NULL is returned if the result column is an expression or constant or
 ** anything else which is not an unambiguous reference to a database column.
 */
-const char *sqlite3_column_origin_name(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 0, COLNAME_COLUMN);
+const char *sqlite3_column_origin_name(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 0, COLNAME_COLUMN);
 }
 #ifndef SQLITE_OMIT_UTF16
-const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, int N){
-  return columnName(pStmt, N, 1, COLNAME_COLUMN);
+const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, 整数 N){
+  戻る columnName(pStmt, N, 1, COLNAME_COLUMN);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_ENABLE_COLUMN_METADATA */
@@ -1724,23 +1724,23 @@ const void *sqlite3_column_origin_name16(sqlite3_stmt *pStmt, int N){
 ** An assert() is normally added after vdbeUnbind() to help static analyzers
 ** realize this.
 */
-static int vdbeUnbind(Vdbe *p, unsigned int i){
+static 整数 vdbeUnbind(Vdbe *p, unsigned 整数 i){
   Mem *pVar;
-  if( vdbeSafetyNotNull(p) ){
-    return SQLITE_MISUSE_BKPT;
+  もし( vdbeSafetyNotNull(p) ){
+    戻る SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(p->db->mutex);
-  if( p->eVdbeState!=VDBE_READY_STATE ){
+  もし( p->eVdbeState!=VDBE_READY_STATE ){
     sqlite3Error(p->db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(p->db->mutex);
     sqlite3_log(SQLITE_MISUSE,
         "bind on a busy prepared statement: [%s]", p->zSql);
-    return SQLITE_MISUSE_BKPT;
+    戻る SQLITE_MISUSE_BKPT;
   }
-  if( i>=(unsigned int)p->nVar ){
+  もし( i>=(unsigned 整数)p->nVar ){
     sqlite3Error(p->db, SQLITE_RANGE);
     sqlite3_mutex_leave(p->db->mutex);
-    return SQLITE_RANGE;
+    戻る SQLITE_RANGE;
   }
 
   pVar = &p->aVar[i];
@@ -1756,10 +1756,10 @@ static int vdbeUnbind(Vdbe *p, unsigned int i){
   */
   assert( (p->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || p->expmask==0 );
   assert( (p->expmask & p->smimask)==p->smimask );
-  if( p->expmask!=0 && (p->expmask & (i>=31 ? 0x80000000 : (u32)1<<i))!=0 ){
+  もし( p->expmask!=0 && (p->expmask & (i>=31 ? 0x80000000 : (u32)1<<i))!=0 ){
     /* If the p->smimask bit is also set, then only expire the statement if
     ** the value being clobbered was integer value 0 or 1. */
-    if( (p->smimask==0) 
+    もし( (p->smimask==0) 
      || (p->smimask & (i>=31 ? 0x80000000 : (u32)1<<i))==0 
      || ((pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1)
     ){
@@ -1771,15 +1771,15 @@ static int vdbeUnbind(Vdbe *p, unsigned int i){
   pVar->flags = MEM_Null;
   p->db->errCode = SQLITE_OK;
 
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
 ** Bind a text or BLOB value.
 */
-static int bindText(
+static 整数 bindText(
   sqlite3_stmt *pStmt,   /* The statement to bind against */
-  int i,                 /* Index of the parameter to bind */
+  整数 i,                 /* Index of the parameter to bind */
   const void *zData,     /* Pointer to the data to be bound */
   i64 nData,             /* Number of bytes of data to be bound */
   void (*xDel)(void*),   /* Destructor for the data */
@@ -1787,16 +1787,16 @@ static int bindText(
 ){
   Vdbe *p = (Vdbe *)pStmt;
   Mem *pVar;
-  int rc;
+  整数 rc;
 
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  もし( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
-    if( zData!=0 ){
+    もし( zData!=0 ){
       pVar = &p->aVar[i-1];
-      if( encoding==SQLITE_UTF8 ){
+      もし( encoding==SQLITE_UTF8 ){
         rc = sqlite3VdbeMemSetText(pVar, zData, nData, xDel);
-      }else if( encoding==SQLITE_UTF8_ZT ){
+      }否则 もし( encoding==SQLITE_UTF8_ZT ){
         /* It is usually consider improper to assert() on an input.
         ** However, the following assert() is checking for inputs
         ** that are documented to result in undefined behavior. */
@@ -1807,98 +1807,98 @@ static int bindText(
         );
         rc = sqlite3VdbeMemSetText(pVar, zData, nData, xDel);
         pVar->flags |= MEM_Term;
-      }else{
+      }否则{
         rc = sqlite3VdbeMemSetStr(pVar, zData, nData, encoding, xDel);
-        if( encoding==0 ) pVar->enc = ENC(p->db);
+        もし( encoding==0 ) pVar->enc = ENC(p->db);
       }
-      if( rc==SQLITE_OK && encoding!=0 ){
+      もし( rc==SQLITE_OK && encoding!=0 ){
         rc = sqlite3VdbeChangeEncoding(pVar, ENC(p->db));
       }
-      if( rc ){
+      もし( rc ){
         sqlite3Error(p->db, rc);
         rc = sqlite3ApiExit(p->db, rc);
       }
     }
     sqlite3_mutex_leave(p->db->mutex);
-  }else if( xDel!=SQLITE_STATIC && xDel!=SQLITE_TRANSIENT ){
+  }否则 もし( xDel!=SQLITE_STATIC && xDel!=SQLITE_TRANSIENT ){
     xDel((void*)zData);
   }
-  return rc;
+  戻る rc;
 }
 
 
 /*
 ** Bind a blob value to an SQL statement variable.
 */
-int sqlite3_bind_blob(
+整数 sqlite3_bind_blob(
   sqlite3_stmt *pStmt,
-  int i,
+  整数 i,
   const void *zData,
-  int nData,
+  整数 nData,
   void (*xDel)(void*)
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( nData<0 ) return SQLITE_MISUSE_BKPT;
+  もし( nData<0 ) 戻る SQLITE_MISUSE_BKPT;
 #endif
-  return bindText(pStmt, i, zData, nData, xDel, 0);
+  戻る bindText(pStmt, i, zData, nData, xDel, 0);
 }
-int sqlite3_bind_blob64(
+整数 sqlite3_bind_blob64(
   sqlite3_stmt *pStmt,
-  int i,
+  整数 i,
   const void *zData,
   sqlite3_uint64 nData,
   void (*xDel)(void*)
 ){
   assert( xDel!=SQLITE_DYNAMIC );
-  return bindText(pStmt, i, zData, nData, xDel, 0);
+  戻る bindText(pStmt, i, zData, nData, xDel, 0);
 }
-int sqlite3_bind_double(sqlite3_stmt *pStmt, int i, double rValue){
-  int rc;
+整数 sqlite3_bind_double(sqlite3_stmt *pStmt, 整数 i, double rValue){
+  整数 rc;
   Vdbe *p = (Vdbe *)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  もし( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3VdbeMemSetDouble(&p->aVar[i-1], rValue);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  戻る rc;
 }
-int sqlite3_bind_int(sqlite3_stmt *p, int i, int iValue){
-  return sqlite3_bind_int64(p, i, (i64)iValue);
+整数 sqlite3_bind_int(sqlite3_stmt *p, 整数 i, 整数 iValue){
+  戻る sqlite3_bind_int64(p, i, (i64)iValue);
 }
-int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue){
+整数 sqlite3_bind_int64(sqlite3_stmt *pStmt, 整数 i, sqlite_int64 iValue){
   Mem *pVar;
   Vdbe *p = (Vdbe*)pStmt;
-  if( vdbeSafetyNotNull(p) ){
-    return SQLITE_MISUSE_BKPT;
+  もし( vdbeSafetyNotNull(p) ){
+    戻る SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(p->db->mutex);
-  if( p->eVdbeState!=VDBE_READY_STATE ){
+  もし( p->eVdbeState!=VDBE_READY_STATE ){
     sqlite3Error(p->db, SQLITE_MISUSE_BKPT);
     sqlite3_mutex_leave(p->db->mutex);
     sqlite3_log(SQLITE_MISUSE,
         "bind on a busy prepared statement: [%s]", p->zSql);
-    return SQLITE_MISUSE_BKPT;
+    戻る SQLITE_MISUSE_BKPT;
   }
-  if( i<=0 || (--i)>=p->nVar ){
+  もし( i<=0 || (--i)>=p->nVar ){
     sqlite3Error(p->db, SQLITE_RANGE);
     sqlite3_mutex_leave(p->db->mutex);
-    return SQLITE_RANGE;
+    戻る SQLITE_RANGE;
   }
   pVar = &p->aVar[i];
-  if( p->expmask!=0 ){
+  もし( p->expmask!=0 ){
     u32 expireMask = i>=32 ? 0x80000000 : (u32)1 << i;
     assert( (p->expmask & p->smimask)==p->smimask );
-    if( (p->expmask & expireMask)!=0 ){
-      if( (p->smimask & expireMask)!=0 ){
+    もし( (p->expmask & expireMask)!=0 ){
+      もし( (p->smimask & expireMask)!=0 ){
         /* If the smimask bit is set, only expire the prepared statement
         ** if the value is changing to or from (0,1) and something else */
-        int sm1 = (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1;
-        int sm2 = iValue>=0 && iValue<=1;
-        if( sm1!=sm2 ){
+        整数 sm1 = (pVar->flags & MEM_Int)!=0 && pVar->u.i>=0 && pVar->u.i<=1;
+        整数 sm2 = iValue>=0 && iValue<=1;
+        もし( sm1!=sm2 ){
           p->expired = 1;
         }
-      }else if( (pVar->flags & MEM_Int)==0 || iValue!=pVar->u.i ){
+      }否则 もし( (pVar->flags & MEM_Int)==0 || iValue!=pVar->u.i ){
         /* Always expire if the smimask bit is clear */
         p->expired = 1;
       }
@@ -1906,74 +1906,74 @@ int sqlite3_bind_int64(sqlite3_stmt *pStmt, int i, sqlite_int64 iValue){
   }
   sqlite3VdbeMemSetInt64(pVar, iValue);
   sqlite3_mutex_leave(p->db->mutex);
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
-int sqlite3_bind_null(sqlite3_stmt *pStmt, int i){
-  int rc;
+整数 sqlite3_bind_null(sqlite3_stmt *pStmt, 整数 i){
+  整数 rc;
   Vdbe *p = (Vdbe*)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  もし( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  戻る rc;
 }
-int sqlite3_bind_pointer(
+整数 sqlite3_bind_pointer(
   sqlite3_stmt *pStmt,
-  int i,
+  整数 i,
   void *pPtr,
   const char *zPTtype,
   void (*xDestructor)(void*)
 ){
-  int rc;
+  整数 rc;
   Vdbe *p = (Vdbe*)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  もし( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
     sqlite3VdbeMemSetPointer(&p->aVar[i-1], pPtr, zPTtype, xDestructor);
     sqlite3_mutex_leave(p->db->mutex);
-  }else if( xDestructor ){
+  }否则 もし( xDestructor ){
     xDestructor(pPtr);
   }
-  return rc;
+  戻る rc;
 }
-int sqlite3_bind_text(
+整数 sqlite3_bind_text(
   sqlite3_stmt *pStmt,
-  int i,
+  整数 i,
   const char *zData,
-  int nData,
+  整数 nData,
   void (*xDel)(void*)
 ){
-  return bindText(pStmt, i, zData, nData, xDel, SQLITE_UTF8);
+  戻る bindText(pStmt, i, zData, nData, xDel, SQLITE_UTF8);
 }
-int sqlite3_bind_text64(
+整数 sqlite3_bind_text64(
   sqlite3_stmt *pStmt,
-  int i,
+  整数 i,
   const char *zData,
   sqlite3_uint64 nData,
   void (*xDel)(void*),
   unsigned char enc
 ){
   assert( xDel!=SQLITE_DYNAMIC );
-  if( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
-    if( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
+  もし( enc!=SQLITE_UTF8 && enc!=SQLITE_UTF8_ZT ){
+    もし( enc==SQLITE_UTF16 ) enc = SQLITE_UTF16NATIVE;
     nData &= ~(u64)1;
   }
-  return bindText(pStmt, i, zData, nData, xDel, enc);
+  戻る bindText(pStmt, i, zData, nData, xDel, enc);
 }
 #ifndef SQLITE_OMIT_UTF16
-int sqlite3_bind_text16(
+整数 sqlite3_bind_text16(
   sqlite3_stmt *pStmt,
-  int i,
+  整数 i,
   const void *zData,
-  int n,
+  整数 n,
   void (*xDel)(void*)
 ){
-  return bindText(pStmt, i, zData, n & ~(u64)1, xDel, SQLITE_UTF16NATIVE);
+  戻る bindText(pStmt, i, zData, n & ~(u64)1, xDel, SQLITE_UTF16NATIVE);
 }
 #endif /* SQLITE_OMIT_UTF16 */
-int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value *pValue){
-  int rc;
+整数 sqlite3_bind_value(sqlite3_stmt *pStmt, 整数 i, const sqlite3_value *pValue){
+  整数 rc;
   switch( sqlite3_value_type((sqlite3_value*)pValue) ){
     case SQLITE_INTEGER: {
       rc = sqlite3_bind_int64(pStmt, i, pValue->u.i);
@@ -1987,9 +1987,9 @@ int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value *pValue){
       break;
     }
     case SQLITE_BLOB: {
-      if( pValue->flags & MEM_Zero ){
+      もし( pValue->flags & MEM_Zero ){
         rc = sqlite3_bind_zeroblob(pStmt, i, pValue->u.nZero);
-      }else{
+      }否则{
         rc = sqlite3_bind_blob(pStmt, i, pValue->z, pValue->n,SQLITE_TRANSIENT);
       }
       break;
@@ -2004,48 +2004,48 @@ int sqlite3_bind_value(sqlite3_stmt *pStmt, int i, const sqlite3_value *pValue){
       break;
     }
   }
-  return rc;
+  戻る rc;
 }
-int sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, int i, int n){
-  int rc;
+整数 sqlite3_bind_zeroblob(sqlite3_stmt *pStmt, 整数 i, 整数 n){
+  整数 rc;
   Vdbe *p = (Vdbe *)pStmt;
   rc = vdbeUnbind(p, (u32)(i-1));
-  if( rc==SQLITE_OK ){
+  もし( rc==SQLITE_OK ){
     assert( p!=0 && p->aVar!=0 && i>0 && i<=p->nVar ); /* tag-20240917-01 */
 #ifndef SQLITE_OMIT_INCRBLOB
     sqlite3VdbeMemSetZeroBlob(&p->aVar[i-1], n);
-#else
+#否则
     rc = sqlite3VdbeMemSetZeroBlob(&p->aVar[i-1], n);
 #endif
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return rc;
+  戻る rc;
 }
-int sqlite3_bind_zeroblob64(sqlite3_stmt *pStmt, int i, sqlite3_uint64 n){
-  int rc;
+整数 sqlite3_bind_zeroblob64(sqlite3_stmt *pStmt, 整数 i, sqlite3_uint64 n){
+  整数 rc;
   Vdbe *p = (Vdbe *)pStmt;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
+  もし( p==0 ) 戻る SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(p->db->mutex);
-  if( n>(u64)p->db->aLimit[SQLITE_LIMIT_LENGTH] ){
+  もし( n>(u64)p->db->aLimit[SQLITE_LIMIT_LENGTH] ){
     rc = SQLITE_TOOBIG;
-  }else{
+  }否则{
     assert( (n & 0x7FFFFFFF)==n );
     rc = sqlite3_bind_zeroblob(pStmt, i, n);
   }
   rc = sqlite3ApiExit(p->db, rc);
   sqlite3_mutex_leave(p->db->mutex);
-  return rc;
+  戻る rc;
 }
 
 /*
 ** Return the number of wildcards that can be potentially bound to.
 ** This routine is added to support DBD::SQLite. 
 */
-int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
+整数 sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
-  return p ? p->nVar : 0;
+  戻る p ? p->nVar : 0;
 }
 
 /*
@@ -2054,10 +2054,10 @@ int sqlite3_bind_parameter_count(sqlite3_stmt *pStmt){
 **
 ** The result is always UTF-8.
 */
-const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
+const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, 整数 i){
   Vdbe *p = (Vdbe*)pStmt;
-  if( p==0 ) return 0;
-  return sqlite3VListNumToName(p->pVList, i);
+  もし( p==0 ) 戻る 0;
+  戻る sqlite3VListNumToName(p->pVList, i);
 }
 
 /*
@@ -2065,29 +2065,29 @@ const char *sqlite3_bind_parameter_name(sqlite3_stmt *pStmt, int i){
 ** with that name.  If there is no variable with the given name,
 ** return 0.
 */
-int sqlite3VdbeParameterIndex(Vdbe *p, const char *zName, int nName){
-  if( p==0 || zName==0 ) return 0;
-  return sqlite3VListNameToNum(p->pVList, zName, nName);
+整数 sqlite3VdbeParameterIndex(Vdbe *p, const char *zName, 整数 nName){
+  もし( p==0 || zName==0 ) 戻る 0;
+  戻る sqlite3VListNameToNum(p->pVList, zName, nName);
 }
-int sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const char *zName){
-  return sqlite3VdbeParameterIndex((Vdbe*)pStmt, zName, sqlite3Strlen30(zName));
+整数 sqlite3_bind_parameter_index(sqlite3_stmt *pStmt, const char *zName){
+  戻る sqlite3VdbeParameterIndex((Vdbe*)pStmt, zName, sqlite3Strlen30(zName));
 }
 
 /*
 ** Transfer all bindings from the first statement over to the second.
 */
-int sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
+整数 sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
   Vdbe *pFrom = (Vdbe*)pFromStmt;
   Vdbe *pTo = (Vdbe*)pToStmt;
-  int i;
+  整数 i;
   assert( pTo->db==pFrom->db );
   assert( pTo->nVar==pFrom->nVar );
   sqlite3_mutex_enter(pTo->db->mutex);
-  for(i=0; i<pFrom->nVar; i++){
+  ために(i=0; i<pFrom->nVar; i++){
     sqlite3VdbeMemMove(&pTo->aVar[i], &pFrom->aVar[i]);
   }
   sqlite3_mutex_leave(pTo->db->mutex);
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -2103,21 +2103,21 @@ int sqlite3TransferBindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
 ** an SQLITE_ERROR is returned.  Nothing else can go wrong, so otherwise
 ** SQLITE_OK is returned.
 */
-int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
+整数 sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
   Vdbe *pFrom = (Vdbe*)pFromStmt;
   Vdbe *pTo = (Vdbe*)pToStmt;
-  if( pFrom->nVar!=pTo->nVar ){
-    return SQLITE_ERROR;
+  もし( pFrom->nVar!=pTo->nVar ){
+    戻る SQLITE_ERROR;
   }
   assert( (pTo->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pTo->expmask==0 );
-  if( pTo->expmask ){
+  もし( pTo->expmask ){
     pTo->expired = 1;
   }
   assert( (pFrom->prepFlags & SQLITE_PREPARE_SAVESQL)!=0 || pFrom->expmask==0 );
-  if( pFrom->expmask ){
+  もし( pFrom->expmask ){
     pFrom->expired = 1;
   }
-  return sqlite3TransferBindings(pFromStmt, pToStmt);
+  戻る sqlite3TransferBindings(pFromStmt, pToStmt);
 }
 #endif
 
@@ -2128,72 +2128,72 @@ int sqlite3_transfer_bindings(sqlite3_stmt *pFromStmt, sqlite3_stmt *pToStmt){
 ** the statement in the first place.
 */
 sqlite3 *sqlite3_db_handle(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->db : 0;
+  戻る pStmt ? ((Vdbe*)pStmt)->db : 0;
 }
 
 /*
 ** Return true if the prepared statement is guaranteed to not modify the
 ** database.
 */
-int sqlite3_stmt_readonly(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->readOnly : 1;
+整数 sqlite3_stmt_readonly(sqlite3_stmt *pStmt){
+  戻る pStmt ? ((Vdbe*)pStmt)->readOnly : 1;
 }
 
 /*
 ** Return 1 if the statement is an EXPLAIN and return 2 if the
 ** statement is an EXPLAIN QUERY PLAN
 */
-int sqlite3_stmt_isexplain(sqlite3_stmt *pStmt){
-  return pStmt ? ((Vdbe*)pStmt)->explain : 0;
+整数 sqlite3_stmt_isexplain(sqlite3_stmt *pStmt){
+  戻る pStmt ? ((Vdbe*)pStmt)->explain : 0;
 }
 
 /*
 ** Set the explain mode for a statement.
 */
-int sqlite3_stmt_explain(sqlite3_stmt *pStmt, int eMode){
+整数 sqlite3_stmt_explain(sqlite3_stmt *pStmt, 整数 eMode){
   Vdbe *v = (Vdbe*)pStmt;
-  int rc;
+  整数 rc;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pStmt==0 ) return SQLITE_MISUSE_BKPT;
+  もし( pStmt==0 ) 戻る SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(v->db->mutex);
-  if( ((int)v->explain)==eMode ){
+  もし( ((整数)v->explain)==eMode ){
     rc = SQLITE_OK;
-  }else if( eMode<0 || eMode>2 ){
+  }否则 もし( eMode<0 || eMode>2 ){
     rc = SQLITE_ERROR;
-  }else if( (v->prepFlags & SQLITE_PREPARE_SAVESQL)==0 ){
+  }否则 もし( (v->prepFlags & SQLITE_PREPARE_SAVESQL)==0 ){
     rc = SQLITE_ERROR;
-  }else if( v->eVdbeState!=VDBE_READY_STATE ){
+  }否则 もし( v->eVdbeState!=VDBE_READY_STATE ){
     rc = SQLITE_BUSY;
-  }else if( v->nMem>=10 && (eMode!=2 || v->haveEqpOps) ){
+  }否则 もし( v->nMem>=10 && (eMode!=2 || v->haveEqpOps) ){
     /* No reprepare necessary */
     v->explain = eMode;
     rc = SQLITE_OK;
-  }else{
-    int savedMode = v->explain;
+  }否则{
+    整数 savedMode = v->explain;
     v->explain = eMode;
     rc = sqlite3Reprepare(v);
-    if( rc ){
+    もし( rc ){
       v->explain = savedMode;
-    }else{
+    }否则{
       v->haveEqpOps = eMode==2;
     }
   }
-  if( v->explain ){
+  もし( v->explain ){
     v->nResColumn = 12 - 4*v->explain;
-  }else{
+  }否则{
     v->nResColumn = v->nResAlloc;
   }
   sqlite3_mutex_leave(v->db->mutex);
-  return rc;
+  戻る rc;
 }
 
 /*
 ** Return true if the prepared statement is in need of being reset.
 */
-int sqlite3_stmt_busy(sqlite3_stmt *pStmt){
+整数 sqlite3_stmt_busy(sqlite3_stmt *pStmt){
   Vdbe *v = (Vdbe*)pStmt;
-  return v!=0 && v->eVdbeState==VDBE_RUN_STATE;
+  戻る v!=0 && v->eVdbeState==VDBE_RUN_STATE;
 }
 
 /*
@@ -2205,51 +2205,51 @@ int sqlite3_stmt_busy(sqlite3_stmt *pStmt){
 sqlite3_stmt *sqlite3_next_stmt(sqlite3 *pDb, sqlite3_stmt *pStmt){
   sqlite3_stmt *pNext;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(pDb) ){
+  もし( !sqlite3SafetyCheckOk(pDb) ){
     (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    戻る 0;
   }
 #endif
   sqlite3_mutex_enter(pDb->mutex);
-  if( pStmt==0 ){
+  もし( pStmt==0 ){
     pNext = (sqlite3_stmt*)pDb->pVdbe;
-  }else{
+  }否则{
     pNext = (sqlite3_stmt*)((Vdbe*)pStmt)->pVNext;
   }
   sqlite3_mutex_leave(pDb->mutex);
-  return pNext;
+  戻る pNext;
 }
 
 /*
 ** Return the value of a status counter for a prepared statement
 */
-int sqlite3_stmt_status(sqlite3_stmt *pStmt, int op, int resetFlag){
+整数 sqlite3_stmt_status(sqlite3_stmt *pStmt, 整数 op, 整数 resetFlag){
   Vdbe *pVdbe = (Vdbe*)pStmt;
   u32 v;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !pStmt
+  もし( !pStmt
    || (op!=SQLITE_STMTSTATUS_MEMUSED && (op<0||op>=ArraySize(pVdbe->aCounter)))
   ){
     (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    戻る 0;
   }
 #endif
-  if( op==SQLITE_STMTSTATUS_MEMUSED ){
+  もし( op==SQLITE_STMTSTATUS_MEMUSED ){
     sqlite3 *db = pVdbe->db;
     sqlite3_mutex_enter(db->mutex);
     v = 0;
-    db->pnBytesFreed = (int*)&v;
+    db->pnBytesFreed = (整数*)&v;
     assert( db->lookaside.pEnd==db->lookaside.pTrueEnd );
     db->lookaside.pEnd = db->lookaside.pStart;
     sqlite3VdbeDelete(pVdbe);
     db->pnBytesFreed = 0;
     db->lookaside.pEnd = db->lookaside.pTrueEnd;
     sqlite3_mutex_leave(db->mutex);
-  }else{
+  }否则{
     v = pVdbe->aCounter[op];
-    if( resetFlag ) pVdbe->aCounter[op] = 0;
+    もし( resetFlag ) pVdbe->aCounter[op] = 0;
   }
-  return (int)v;
+  戻る (整数)v;
 }
 
 /*
@@ -2257,7 +2257,7 @@ int sqlite3_stmt_status(sqlite3_stmt *pStmt, int op, int resetFlag){
 */
 const char *sqlite3_sql(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe *)pStmt;
-  return p ? p->zSql : 0;
+  戻る p ? p->zSql : 0;
 }
 
 /*
@@ -2271,17 +2271,17 @@ const char *sqlite3_sql(sqlite3_stmt *pStmt){
 */
 char *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
 #ifdef SQLITE_OMIT_TRACE
-  return 0;
-#else
+  戻る 0;
+#否则
   char *z = 0;
   const char *zSql = sqlite3_sql(pStmt);
-  if( zSql ){
+  もし( zSql ){
     Vdbe *p = (Vdbe *)pStmt;
     sqlite3_mutex_enter(p->db->mutex);
     z = sqlite3VdbeExpandSql(p, zSql);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return z;
+  戻る z;
 #endif
 }
 
@@ -2291,13 +2291,13 @@ char *sqlite3_expanded_sql(sqlite3_stmt *pStmt){
 */
 const char *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe *)pStmt;
-  if( p==0 ) return 0;
-  if( p->zNormSql==0 && ALWAYS(p->zSql!=0) ){
+  もし( p==0 ) 戻る 0;
+  もし( p->zNormSql==0 && ALWAYS(p->zSql!=0) ){
     sqlite3_mutex_enter(p->db->mutex);
     p->zNormSql = sqlite3Normalize(p, p->zSql);
     sqlite3_mutex_leave(p->db->mutex);
   }
-  return p->zNormSql;
+  戻る p->zNormSql;
 }
 #endif /* SQLITE_ENABLE_NORMALIZE */
 
@@ -2309,75 +2309,75 @@ const char *sqlite3_normalized_sql(sqlite3_stmt *pStmt){
 */
 static UnpackedRecord *vdbeUnpackRecord(
   KeyInfo *pKeyInfo,
-  int nKey,
+  整数 nKey,
   const void *pKey
 ){
   UnpackedRecord *pRet;           /* Return value */
 
   pRet = sqlite3VdbeAllocUnpackedRecord(pKeyInfo);
-  if( pRet ){
+  もし( pRet ){
     memset(pRet->aMem, 0, sizeof(Mem)*(pKeyInfo->nKeyField+1));
     sqlite3VdbeRecordUnpack(nKey, pKey, pRet);
   }
-  return pRet;
+  戻る pRet;
 }
 
 /*
 ** This function is called from within a pre-update callback to retrieve
 ** a field of the row currently being updated or deleted.
 */
-int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
+整数 sqlite3_preupdate_old(sqlite3 *db, 整数 iIdx, sqlite3_value **ppValue){
   PreUpdate *p;
   Mem *pMem;
-  int rc = SQLITE_OK;
-  int iStore = 0;
+  整数 rc = SQLITE_OK;
+  整数 iStore = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( db==0 || ppValue==0 ){
-    return SQLITE_MISUSE_BKPT;
+  もし( db==0 || ppValue==0 ){
+    戻る SQLITE_MISUSE_BKPT;
   }
 #endif
   p = db->pPreUpdate;
   /* Test that this call is being made from within an SQLITE_DELETE or
   ** SQLITE_UPDATE pre-update callback, and that iIdx is within range. */
-  if( !p || p->op==SQLITE_INSERT ){
+  もし( !p || p->op==SQLITE_INSERT ){
     rc = SQLITE_MISUSE_BKPT;
     goto preupdate_old_out;
   }
-  if( p->pPk ){
+  もし( p->pPk ){
     iStore = sqlite3TableColumnToIndex(p->pPk, iIdx);
-  }else if( iIdx >= p->pTab->nCol ){
+  }否则 もし( iIdx >= p->pTab->nCol ){
     rc = SQLITE_MISUSE_BKPT;
     goto preupdate_old_out;
-  }else{
+  }否则{
     iStore = sqlite3TableColumnToStorage(p->pTab, iIdx);
   }
-  if( iStore>=p->pCsr->nField || iStore<0 ){
+  もし( iStore>=p->pCsr->nField || iStore<0 ){
     rc = SQLITE_RANGE;
     goto preupdate_old_out;
   }
 
-  if( iIdx==p->pTab->iPKey ){
+  もし( iIdx==p->pTab->iPKey ){
     *ppValue = pMem = &p->oldipk;
     sqlite3VdbeMemSetInt64(pMem, p->iKey1);
-  }else{
+  }否则{
 
     /* If the old.* record has not yet been loaded into memory, do so now. */
-    if( p->pUnpacked==0 ){
+    もし( p->pUnpacked==0 ){
       u32 nRec;
       u8 *aRec;
 
       assert( p->pCsr->eCurType==CURTYPE_BTREE );
       nRec = sqlite3BtreePayloadSize(p->pCsr->uc.pCursor);
       aRec = sqlite3DbMallocRaw(db, (u64)nRec+8);
-      if( !aRec ) goto preupdate_old_out;
+      もし( !aRec ) goto preupdate_old_out;
       rc = sqlite3BtreePayload(p->pCsr->uc.pCursor, 0, nRec, aRec);
-      if( rc==SQLITE_OK ){
+      もし( rc==SQLITE_OK ){
         memset(aRec+nRec, 0, 8);
         p->pUnpacked = vdbeUnpackRecord(p->pKeyinfo, nRec, aRec);
-        if( !p->pUnpacked ) rc = SQLITE_NOMEM;
+        もし( !p->pUnpacked ) rc = SQLITE_NOMEM;
       }
-      if( rc!=SQLITE_OK ){
+      もし( rc!=SQLITE_OK ){
         sqlite3DbFree(db, aRec);
         goto preupdate_old_out;
       }
@@ -2385,35 +2385,35 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
     }
 
     pMem = *ppValue = &p->pUnpacked->aMem[iStore];
-    if( iStore>=p->pUnpacked->nField ){
+    もし( iStore>=p->pUnpacked->nField ){
       /* This occurs when the table has been extended using ALTER TABLE
       ** ADD COLUMN. The value to return is the default value of the column. */
       Column *pCol = &p->pTab->aCol[iIdx];
-      if( pCol->iDflt>0 ){
-        if( p->apDflt==0 ){
-          int nByte;
+      もし( pCol->iDflt>0 ){
+        もし( p->apDflt==0 ){
+          整数 nByte;
           assert( sizeof(sqlite3_value*)*UMXV(p->pTab->nCol) < 0x7fffffff );
           nByte = sizeof(sqlite3_value*)*p->pTab->nCol;
           p->apDflt = (sqlite3_value**)sqlite3DbMallocZero(db, nByte);
-          if( p->apDflt==0 ) goto preupdate_old_out;
+          もし( p->apDflt==0 ) goto preupdate_old_out;
         }
-        if( p->apDflt[iIdx]==0 ){
+        もし( p->apDflt[iIdx]==0 ){
           sqlite3_value *pVal = 0;
           Expr *pDflt;
           assert( p->pTab!=0 && IsOrdinaryTable(p->pTab) );
           pDflt = p->pTab->u.tab.pDfltList->a[pCol->iDflt-1].pExpr;
           rc = sqlite3ValueFromExpr(db, pDflt, ENC(db), pCol->affinity, &pVal);
-          if( rc==SQLITE_OK && pVal==0 ){
+          もし( rc==SQLITE_OK && pVal==0 ){
             rc = SQLITE_CORRUPT_BKPT;
           }
           p->apDflt[iIdx] = pVal;
         }
         *ppValue = p->apDflt[iIdx];
-      }else{
+      }否则{
         *ppValue = (sqlite3_value *)columnNullValue();
       }
-    }else if( p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL ){
-      if( pMem->flags & (MEM_Int|MEM_IntReal) ){
+    }否则 もし( p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL ){
+      もし( pMem->flags & (MEM_Int|MEM_IntReal) ){
         testcase( pMem->flags & MEM_Int );
         testcase( pMem->flags & MEM_IntReal );
         sqlite3VdbeMemRealify(pMem);
@@ -2423,7 +2423,7 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 
  preupdate_old_out:
   sqlite3Error(db, rc);
-  return sqlite3ApiExit(db, rc);
+  戻る sqlite3ApiExit(db, rc);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2432,14 +2432,14 @@ int sqlite3_preupdate_old(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 ** This function is called from within a pre-update callback to retrieve
 ** the number of columns in the row being updated, deleted or inserted.
 */
-int sqlite3_preupdate_count(sqlite3 *db){
+整数 sqlite3_preupdate_count(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#否则
   p = db->pPreUpdate;
 #endif
-  return (p ? p->pKeyinfo->nKeyField : 0);
+  戻る (p ? p->pKeyinfo->nKeyField : 0);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2455,14 +2455,14 @@ int sqlite3_preupdate_count(sqlite3 *db){
 ** For the purposes of the previous paragraph, a foreign key CASCADE, SET NULL
 ** or SET DEFAULT action is considered a trigger.
 */
-int sqlite3_preupdate_depth(sqlite3 *db){
+整数 sqlite3_preupdate_depth(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#否则
   p = db->pPreUpdate;
 #endif
-  return (p ? p->v->nFrame : 0);
+  戻る (p ? p->v->nFrame : 0);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2471,14 +2471,14 @@ int sqlite3_preupdate_depth(sqlite3 *db){
 ** This function is designed to be called from within a pre-update callback
 ** only.
 */
-int sqlite3_preupdate_blobwrite(sqlite3 *db){
+整数 sqlite3_preupdate_blobwrite(sqlite3 *db){
   PreUpdate *p;
 #ifdef SQLITE_ENABLE_API_ARMOR
   p = db!=0 ? db->pPreUpdate : 0;
-#else
+#否则
   p = db->pPreUpdate;
 #endif
-  return (p ? p->iBlobWrite : -1);
+  戻る (p ? p->iBlobWrite : -1);
 }
 #endif
 
@@ -2487,84 +2487,84 @@ int sqlite3_preupdate_blobwrite(sqlite3 *db){
 ** This function is called from within a pre-update callback to retrieve
 ** a field of the row currently being updated or inserted.
 */
-int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
+整数 sqlite3_preupdate_new(sqlite3 *db, 整数 iIdx, sqlite3_value **ppValue){
   PreUpdate *p;
-  int rc = SQLITE_OK;
+  整数 rc = SQLITE_OK;
   Mem *pMem;
-  int iStore = 0;
+  整数 iStore = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( db==0 || ppValue==0 ){
-    return SQLITE_MISUSE_BKPT;
+  もし( db==0 || ppValue==0 ){
+    戻る SQLITE_MISUSE_BKPT;
   }
 #endif
   p = db->pPreUpdate;
-  if( !p || p->op==SQLITE_DELETE ){
+  もし( !p || p->op==SQLITE_DELETE ){
     rc = SQLITE_MISUSE_BKPT;
     goto preupdate_new_out;
   }
-  if( p->pPk && p->op!=SQLITE_UPDATE ){
+  もし( p->pPk && p->op!=SQLITE_UPDATE ){
     iStore = sqlite3TableColumnToIndex(p->pPk, iIdx);
-  }else if( iIdx >= p->pTab->nCol ){
-    return SQLITE_MISUSE_BKPT;
-  }else{
+  }否则 もし( iIdx >= p->pTab->nCol ){
+    戻る SQLITE_MISUSE_BKPT;
+  }否则{
     iStore = sqlite3TableColumnToStorage(p->pTab, iIdx);
   }
 
-  if( iStore>=p->pCsr->nField || iStore<0 ){
+  もし( iStore>=p->pCsr->nField || iStore<0 ){
     rc = SQLITE_RANGE;
     goto preupdate_new_out;
   }
 
-  if( p->op==SQLITE_INSERT ){
+  もし( p->op==SQLITE_INSERT ){
     /* For an INSERT, memory cell p->iNewReg contains the serialized record
     ** that is being inserted. Deserialize it. */
     UnpackedRecord *pUnpack = p->pNewUnpacked;
-    if( !pUnpack ){
+    もし( !pUnpack ){
       Mem *pData = &p->v->aMem[p->iNewReg];
       rc = ExpandBlob(pData);
-      if( rc!=SQLITE_OK ) goto preupdate_new_out;
+      もし( rc!=SQLITE_OK ) goto preupdate_new_out;
       pUnpack = vdbeUnpackRecord(p->pKeyinfo, pData->n, pData->z);
-      if( !pUnpack ){
+      もし( !pUnpack ){
         rc = SQLITE_NOMEM;
         goto preupdate_new_out;
       }
       p->pNewUnpacked = pUnpack;
     }
     pMem = &pUnpack->aMem[iStore];
-    if( iIdx==p->pTab->iPKey ){
+    もし( iIdx==p->pTab->iPKey ){
       sqlite3VdbeMemSetInt64(pMem, p->iKey2);
-    }else if( iStore>=pUnpack->nField ){
+    }否则 もし( iStore>=pUnpack->nField ){
       pMem = (sqlite3_value *)columnNullValue();
-    }else if( (p->pTab->aCol)
+    }否则 もし( (p->pTab->aCol)
            && (p->pTab->aCol[iIdx].affinity==SQLITE_AFF_REAL)
            && (pMem->flags & (MEM_Int|MEM_IntReal))
     ){
       sqlite3VdbeMemRealify(pMem);
     }
-  }else{
+  }否则{
     /* For an UPDATE, memory cell (p->iNewReg+1+iStore) contains the required
     ** value. Make a copy of the cell contents and return a pointer to it.
     ** It is not safe to return a pointer to the memory cell itself as the
     ** caller may modify the value text encoding.
     */
     assert( p->op==SQLITE_UPDATE );
-    if( !p->aNew ){
+    もし( !p->aNew ){
       assert( sizeof(Mem)*UMXV(p->pCsr->nField) < 0x7fffffff );
       p->aNew = (Mem *)sqlite3DbMallocZero(db, sizeof(Mem)*p->pCsr->nField);
-      if( !p->aNew ){
+      もし( !p->aNew ){
         rc = SQLITE_NOMEM;
         goto preupdate_new_out;
       }
     }
     assert( iStore>=0 && iStore<p->pCsr->nField );
     pMem = &p->aNew[iStore];
-    if( pMem->flags==0 ){
-      if( iIdx==p->pTab->iPKey ){
+    もし( pMem->flags==0 ){
+      もし( iIdx==p->pTab->iPKey ){
         sqlite3VdbeMemSetInt64(pMem, p->iKey2);
-      }else{
+      }否则{
         rc = sqlite3VdbeMemCopy(pMem, &p->v->aMem[p->iNewReg+1+iStore]);
-        if( rc!=SQLITE_OK ) goto preupdate_new_out;
+        もし( rc!=SQLITE_OK ) goto preupdate_new_out;
       }
     }
   }
@@ -2572,7 +2572,7 @@ int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 
  preupdate_new_out:
   sqlite3Error(db, rc);
-  return sqlite3ApiExit(db, rc);
+  戻る sqlite3ApiExit(db, rc);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2580,77 +2580,77 @@ int sqlite3_preupdate_new(sqlite3 *db, int iIdx, sqlite3_value **ppValue){
 /*
 ** Return status data for a single loop within query pStmt.
 */
-int sqlite3_stmt_scanstatus_v2(
+整数 sqlite3_stmt_scanstatus_v2(
   sqlite3_stmt *pStmt,            /* Prepared statement being queried */
-  int iScan,                      /* Index of loop to report on */
-  int iScanStatusOp,              /* Which metric to return */
-  int flags,
+  整数 iScan,                      /* Index of loop to report on */
+  整数 iScanStatusOp,              /* Which metric to return */
+  整数 flags,
   void *pOut                      /* OUT: Write the answer here */
 ){
   Vdbe *p = (Vdbe*)pStmt;
   VdbeOp *aOp;
-  int nOp;
+  整数 nOp;
   ScanStatus *pScan = 0;
-  int idx;
+  整数 idx;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 || pOut==0
+  もし( p==0 || pOut==0
       || iScanStatusOp<SQLITE_SCANSTAT_NLOOP
       || iScanStatusOp>SQLITE_SCANSTAT_NCYCLE ){
-    return 1;
+    戻る 1;
   }
 #endif
   aOp = p->aOp;
   nOp = p->nOp;
-  if( p->pFrame ){
+  もし( p->pFrame ){
     VdbeFrame *pFrame;
-    for(pFrame=p->pFrame; pFrame->pParent; pFrame=pFrame->pParent);
+    ために(pFrame=p->pFrame; pFrame->pParent; pFrame=pFrame->pParent);
     aOp = pFrame->aOp;
     nOp = pFrame->nOp;
   }
 
-  if( iScan<0 ){
-    int ii;
-    if( iScanStatusOp==SQLITE_SCANSTAT_NCYCLE ){
+  もし( iScan<0 ){
+    整数 ii;
+    もし( iScanStatusOp==SQLITE_SCANSTAT_NCYCLE ){
       i64 res = 0;
-      for(ii=0; ii<nOp; ii++){
+      ために(ii=0; ii<nOp; ii++){
         res += aOp[ii].nCycle;
       }
       *(i64*)pOut = res;
-      return 0;
+      戻る 0;
     }
-    return 1;
+    戻る 1;
   }
-  if( flags & SQLITE_SCANSTAT_COMPLEX ){
+  もし( flags & SQLITE_SCANSTAT_COMPLEX ){
     idx = iScan;
-  }else{
+  }否则{
     /* If the COMPLEX flag is clear, then this function must ignore any
     ** ScanStatus structures with ScanStatus.addrLoop set to 0. */
-    for(idx=0; idx<p->nScan; idx++){
+    ために(idx=0; idx<p->nScan; idx++){
       pScan = &p->aScan[idx];
-      if( pScan->zName ){
+      もし( pScan->zName ){
         iScan--;
-        if( iScan<0 ) break;
+        もし( iScan<0 ) break;
       }
     }
   }
-  if( idx>=p->nScan ) return 1;
+  もし( idx>=p->nScan ) 戻る 1;
   assert( pScan==0 || pScan==&p->aScan[idx] );
   pScan = &p->aScan[idx];
 
   switch( iScanStatusOp ){
     case SQLITE_SCANSTAT_NLOOP: {
-      if( pScan->addrLoop>0 ){
+      もし( pScan->addrLoop>0 ){
         *(sqlite3_int64*)pOut = aOp[pScan->addrLoop].nExec;
-      }else{
+      }否则{
         *(sqlite3_int64*)pOut = -1;
       }
       break;
     }
     case SQLITE_SCANSTAT_NVISIT: {
-      if( pScan->addrVisit>0 ){
+      もし( pScan->addrVisit>0 ){
         *(sqlite3_int64*)pOut = aOp[pScan->addrVisit].nExec;
-      }else{
+      }否则{
         *(sqlite3_int64*)pOut = -1;
       }
       break;
@@ -2658,7 +2658,7 @@ int sqlite3_stmt_scanstatus_v2(
     case SQLITE_SCANSTAT_EST: {
       double r = 1.0;
       LogEst x = pScan->nEst;
-      while( x<100 ){
+      ながら( x<100 ){
         x += 10;
         r *= 0.5;
       }
@@ -2670,50 +2670,50 @@ int sqlite3_stmt_scanstatus_v2(
       break;
     }
     case SQLITE_SCANSTAT_EXPLAIN: {
-      if( pScan->addrExplain ){
+      もし( pScan->addrExplain ){
         *(const char**)pOut = aOp[ pScan->addrExplain ].p4.z;
-      }else{
+      }否则{
         *(const char**)pOut = 0;
       }
       break;
     }
     case SQLITE_SCANSTAT_SELECTID: {
-      if( pScan->addrExplain ){
-        *(int*)pOut = aOp[ pScan->addrExplain ].p1;
-      }else{
-        *(int*)pOut = -1;
+      もし( pScan->addrExplain ){
+        *(整数*)pOut = aOp[ pScan->addrExplain ].p1;
+      }否则{
+        *(整数*)pOut = -1;
       }
       break;
     }
     case SQLITE_SCANSTAT_PARENTID: {
-      if( pScan->addrExplain ){
-        *(int*)pOut = aOp[ pScan->addrExplain ].p2;
-      }else{
-        *(int*)pOut = -1;
+      もし( pScan->addrExplain ){
+        *(整数*)pOut = aOp[ pScan->addrExplain ].p2;
+      }否则{
+        *(整数*)pOut = -1;
       }
       break;
     }
     case SQLITE_SCANSTAT_NCYCLE: {
       i64 res = 0;
-      if( pScan->aAddrRange[0]==0 ){
+      もし( pScan->aAddrRange[0]==0 ){
         res = -1;
-      }else{
-        int ii;
-        for(ii=0; ii<ArraySize(pScan->aAddrRange); ii+=2){
-          int iIns = pScan->aAddrRange[ii];
-          int iEnd = pScan->aAddrRange[ii+1];
-          if( iIns==0 ) break;
-          if( iIns>0 ){
-            while( iIns<=iEnd ){
+      }否则{
+        整数 ii;
+        ために(ii=0; ii<ArraySize(pScan->aAddrRange); ii+=2){
+          整数 iIns = pScan->aAddrRange[ii];
+          整数 iEnd = pScan->aAddrRange[ii+1];
+          もし( iIns==0 ) break;
+          もし( iIns>0 ){
+            ながら( iIns<=iEnd ){
               res += aOp[iIns].nCycle;
               iIns++;
             }
-          }else{
-            int iOp;
-            for(iOp=0; iOp<nOp; iOp++){
+          }否则{
+            整数 iOp;
+            ために(iOp=0; iOp<nOp; iOp++){
               Op *pOp = &aOp[iOp];
-              if( pOp->p1!=iEnd ) continue;
-              if( (sqlite3OpcodeProperty[pOp->opcode] & OPFLG_NCYCLE)==0 ){
+              もし( pOp->p1!=iEnd ) continue;
+              もし( (sqlite3OpcodeProperty[pOp->opcode] & OPFLG_NCYCLE)==0 ){
                 continue;
               }
               res += aOp[iOp].nCycle;
@@ -2725,22 +2725,22 @@ int sqlite3_stmt_scanstatus_v2(
       break;
     }
     default: {
-      return 1;
+      戻る 1;
     }
   }
-  return 0;
+  戻る 0;
 }
 
 /*
 ** Return status data for a single loop within query pStmt.
 */
-int sqlite3_stmt_scanstatus(
+整数 sqlite3_stmt_scanstatus(
   sqlite3_stmt *pStmt,            /* Prepared statement being queried */
-  int iScan,                      /* Index of loop to report on */
-  int iScanStatusOp,              /* Which metric to return */
+  整数 iScan,                      /* Index of loop to report on */
+  整数 iScanStatusOp,              /* Which metric to return */
   void *pOut                      /* OUT: Write the answer here */
 ){
-  return sqlite3_stmt_scanstatus_v2(pStmt, iScan, iScanStatusOp, 0, pOut);
+  戻る sqlite3_stmt_scanstatus_v2(pStmt, iScan, iScanStatusOp, 0, pOut);
 }
 
 /*
@@ -2748,8 +2748,8 @@ int sqlite3_stmt_scanstatus(
 */
 void sqlite3_stmt_scanstatus_reset(sqlite3_stmt *pStmt){
   Vdbe *p = (Vdbe*)pStmt;
-  int ii;
-  for(ii=0; p!=0 && ii<p->nOp; ii++){
+  整数 ii;
+  ために(ii=0; p!=0 && ii<p->nOp; ii++){
     Op *pOp = &p->aOp[ii];
     pOp->nExec = 0;
     pOp->nCycle = 0;

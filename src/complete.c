@@ -145,7 +145,7 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
   u8 state = 0;   /* Current state, using numbers defined in header comment */
   u8 token;       /* Value of the next token */
   u8 pending = 0; /* unmatched structure character */
-  int nParen = 0; /* Nested parentheses */
+  整数 nParen = 0; /* Nested parentheses */
 
 #ifndef SQLITE_OMIT_TRIGGER
   /* A complex statement machine used to detect the end of a CREATE TRIGGER
@@ -163,7 +163,7 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
      /* 6    SEMI: */ {    6,  6,     5,       5,      5,    5,       5,   7, },
      /* 7     END: */ {    1,  7,     5,       5,      5,    5,       5,   5, },
   };
-#else
+#否则
   /* If triggers are not supported by this compile then the statement machine
   ** used to detect the end of a statement is much simpler
   */
@@ -188,12 +188,12 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
   };
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  もし( zSql==0 ){
+    戻る SQLITE_MISUSE_BKPT;
   }
 #endif
 
-  while( *zSql ){
+  ながら( *zSql ){
     switch( *zSql ){
       case ';': {  /* A semicolon */
         token = tkSEMI;
@@ -208,13 +208,13 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
         break;
       }
       case '/': {   /* C-style comments */
-        if( zSql[1]!='*' ){
+        もし( zSql[1]!='*' ){
           token = tkOTHER;
           break;
         }
         zSql += 2;
-        while( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
-        if( zSql[0]==0 ){
+        ながら( zSql[0] && (zSql[0]!='*' || zSql[1]!='/') ){ zSql++; }
+        もし( zSql[0]==0 ){
           pending = '/';
           goto incomplete_finish;
         }
@@ -223,12 +223,12 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
         break;
       }
       case '-': {   /* SQL-style comments from "--" to end of line */
-        if( zSql[1]!='-' ){
+        もし( zSql[1]!='-' ){
           token = tkOTHER;
           break;
         }
-        while( *zSql && *zSql!='\n' ){ zSql++; }
-        if( *zSql==0 ){
+        ながら( *zSql && *zSql!='\n' ){ zSql++; }
+        もし( *zSql==0 ){
           pending = '-';
           goto incomplete_finish;
         }
@@ -237,8 +237,8 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
       }
       case '[': {   /* Microsoft-style identifiers in [...] */
         zSql++;
-        while( *zSql && *zSql!=']' ){ zSql++; }
-        if( *zSql==0 ){
+        ながら( *zSql && *zSql!=']' ){ zSql++; }
+        もし( *zSql==0 ){
           pending = ']';
           goto incomplete_finish;
         }
@@ -248,10 +248,10 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
       case '`':     /* Grave-accent quoted symbols used by MySQL */
       case '"':     /* single- and double-quoted strings */
       case '\'': {
-        int c = *zSql;
+        整数 c = *zSql;
         zSql++;
-        while( *zSql && *zSql!=c ){ zSql++; }
-        if( *zSql==0 ){
+        ながら( *zSql && *zSql!=c ){ zSql++; }
+        もし( *zSql==0 ){
           pending = c;
           goto incomplete_finish;
         }
@@ -272,42 +272,42 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
 #ifdef SQLITE_EBCDIC
         unsigned char c;
 #endif
-        if( IdChar((u8)*zSql) ){
+        もし( IdChar((u8)*zSql) ){
           /* Keywords and unquoted identifiers */
-          int nId;
-          for(nId=1; IdChar(zSql[nId]); nId++){}
+          整数 nId;
+          ために(nId=1; IdChar(zSql[nId]); nId++){}
 #ifdef SQLITE_OMIT_TRIGGER
           token = tkOTHER;
-#else
+#否则
           switch( *zSql ){
             case 'c': case 'C': {
-              if( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
+              もし( nId==6 && sqlite3StrNICmp(zSql, "create", 6)==0 ){
                 token = tkCREATE;
-              }else{
+              }否则{
                 token = tkOTHER;
               }
               break;
             }
             case 't': case 'T': {
-              if( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
+              もし( nId==7 && sqlite3StrNICmp(zSql, "trigger", 7)==0 ){
                 token = tkTRIGGER;
-              }else if( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
+              }否则 もし( nId==4 && sqlite3StrNICmp(zSql, "temp", 4)==0 ){
                 token = tkTEMP;
-              }else if( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
+              }否则 もし( nId==9 && sqlite3StrNICmp(zSql, "temporary", 9)==0 ){
                 token = tkTEMP;
-              }else{
+              }否则{
                 token = tkOTHER;
               }
               break;
             }
             case 'e':  case 'E': {
-              if( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
+              もし( nId==3 && sqlite3StrNICmp(zSql, "end", 3)==0 ){
                 token = tkEND;
-              }else
+              }否则
 #ifndef SQLITE_OMIT_EXPLAIN
-              if( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
+              もし( nId==7 && sqlite3StrNICmp(zSql, "explain", 7)==0 ){
                 token = tkEXPLAIN;
-              }else
+              }否则
 #endif
               {
                 token = tkOTHER;
@@ -321,7 +321,7 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
           }
 #endif /* SQLITE_OMIT_TRIGGER */
           zSql += nId-1;
-        }else{
+        }否则{
           /* Operators and special symbols */
           token = tkOTHER;
         }
@@ -332,15 +332,15 @@ sqlite3_int64 sqlite3_incomplete(const char *zSql){
     zSql++;
   }
 incomplete_finish:
-  if( state==0 && pending==0 ) return SQLITE_EMPTY;
-  if( state==1 ) nParen = 0;
-  return (i64)((((u64)nParen)<<32) |
+  もし( state==0 && pending==0 ) 戻る SQLITE_EMPTY;
+  もし( state==1 ) nParen = 0;
+  戻る (i64)((((u64)nParen)<<32) |
                ((u64)pending<<16) |
                ((u64)statemap[state]<<8) |
                (state>1 || pending!=0));
 }
-int sqlite3_complete(const char *zSql){
-  return sqlite3_incomplete(zSql)==0;
+整数 sqlite3_complete(const char *zSql){
+  戻る sqlite3_incomplete(zSql)==0;
 }
 
 #ifndef SQLITE_OMIT_UTF16
@@ -349,25 +349,25 @@ int sqlite3_complete(const char *zSql){
 ** above, except that the parameter is required to be UTF-16 encoded, not
 ** UTF-8.
 */
-int sqlite3_complete16(const void *zSql){
+整数 sqlite3_complete16(const void *zSql){
   sqlite3_value *pVal;
   char const *zSql8;
-  int rc;
+  整数 rc;
 
 #ifndef SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
+  もし( rc ) 戻る rc;
 #endif
   pVal = sqlite3ValueNew(0);
   sqlite3ValueSetStr(pVal, -1, zSql, SQLITE_UTF16NATIVE, SQLITE_STATIC);
   zSql8 = sqlite3ValueText(pVal, SQLITE_UTF8);
-  if( zSql8 ){
+  もし( zSql8 ){
     rc = sqlite3_incomplete(zSql8)==0;
-  }else{
+  }否则{
     rc = SQLITE_NOMEM_BKPT;
   }
   sqlite3ValueFree(pVal);
-  return rc & 0xff;
+  戻る rc & 0xff;
 }
 #endif /* SQLITE_OMIT_UTF16 */
 #endif /* SQLITE_OMIT_COMPLETE */

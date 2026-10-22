@@ -81,51 +81,51 @@
 #include <string.h>
 #include <assert.h>
 
-#if SQLITE_OS_UNIX
+#もし SQLITE_OS_UNIX
 
 /* From main.c */
-extern const char *sqlite3ErrName(int);
+extern const char *sqlite3ErrName(整数);
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <errno.h>
 
 static struct TestSyscallGlobal {
-  int bPersist;                   /* 1 for persistent errors, 0 for transient */
-  int nCount;                     /* Fail after this many more calls */
-  int nFail;                      /* Number of failures that have occurred */
-  int pgsz;
+  整数 bPersist;                   /* 1 for persistent errors, 0 for transient */
+  整数 nCount;                     /* Fail after this many more calls */
+  整数 nFail;                      /* Number of failures that have occurred */
+  整数 pgsz;
   sqlite3_syscall_ptr orig_getpagesize;
 } gSyscall = { 0, 0, 0, 0, 0 };
 
-static int ts_open(const char *, int, int);
-static int ts_close(int fd);
-static int ts_access(const char *zPath, int mode);
+static 整数 ts_open(const char *, 整数, 整数);
+static 整数 ts_close(整数 fd);
+static 整数 ts_access(const char *zPath, 整数 mode);
 static char *ts_getcwd(char *zPath, size_t nPath);
-static int ts_stat(const char *zPath, struct stat *p);
-static int ts_fstat(int fd, struct stat *p);
-static int ts_ftruncate(int fd, off_t n);
-static int ts_fcntl(int fd, int cmd, ... );
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf);
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off);
+static 整数 ts_stat(const char *zPath, struct stat *p);
+static 整数 ts_fstat(整数 fd, struct stat *p);
+static 整数 ts_ftruncate(整数 fd, off_t n);
+static 整数 ts_fcntl(整数 fd, 整数 cmd, ... );
+static ssize_t ts_read(整数 fd, void *aBuf, size_t nBuf);
+static ssize_t ts_pread(整数 fd, void *aBuf, size_t nBuf, off_t off);
 /* Note:  pread64() and pwrite64() actually use off64_t as the type on their
 ** last parameter.  But that datatype is not defined on many systems 
 ** (ex: Mac, OpenBSD).  So substitute a likely equivalent: sqlite3_uint64 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf);
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off);
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static int ts_fchmod(int fd, mode_t mode);
-static int ts_fallocate(int fd, off_t off, off_t len);
-static void *ts_mmap(void *, size_t, int, int, int, off_t);
-static void *ts_mremap(void*, size_t, size_t, int, ...);
+static ssize_t ts_pread64(整数 fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static ssize_t ts_write(整数 fd, const void *aBuf, size_t nBuf);
+static ssize_t ts_pwrite(整数 fd, const void *aBuf, size_t nBuf, off_t off);
+static ssize_t ts_pwrite64(整数 fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static 整数 ts_fchmod(整数 fd, mode_t mode);
+static 整数 ts_fallocate(整数 fd, off_t off, off_t len);
+static void *ts_mmap(void *, size_t, 整数, 整数, 整数, off_t);
+static void *ts_mremap(void*, size_t, size_t, 整数, ...);
 
 struct TestSyscallArray {
   const char *zName;
   sqlite3_syscall_ptr xTest;
   sqlite3_syscall_ptr xOrig;
-  int default_errno;              /* Default value for errno following errors */
-  int custom_errno;               /* Current value for errno if error */
+  整数 default_errno;              /* Default value for errno following errors */
+  整数 custom_errno;               /* Current value for errno if error */
 } aSyscall[] = {
   /*  0 */ { "open",      (sqlite3_syscall_ptr)ts_open,      0, EACCES, 0 },
   /*  1 */ { "close",     (sqlite3_syscall_ptr)ts_close,     0, 0, 0 },
@@ -148,39 +148,39 @@ struct TestSyscallArray {
            { 0, 0, 0, 0, 0 }
 };
 
-#define orig_open      ((int(*)(const char *, int, int))aSyscall[0].xOrig)
-#define orig_close     ((int(*)(int))aSyscall[1].xOrig)
-#define orig_access    ((int(*)(const char*,int))aSyscall[2].xOrig)
+#define orig_open      ((整数(*)(const char *, 整数, 整数))aSyscall[0].xOrig)
+#define orig_close     ((整数(*)(整数))aSyscall[1].xOrig)
+#define orig_access    ((整数(*)(const char*,整数))aSyscall[2].xOrig)
 #define orig_getcwd    ((char*(*)(char*,size_t))aSyscall[3].xOrig)
-#define orig_stat      ((int(*)(const char*,struct stat*))aSyscall[4].xOrig)
-#define orig_fstat     ((int(*)(int,struct stat*))aSyscall[5].xOrig)
-#define orig_ftruncate ((int(*)(int,off_t))aSyscall[6].xOrig)
-#define orig_fcntl     ((int(*)(int,int,...))aSyscall[7].xOrig)
-#define orig_read      ((ssize_t(*)(int,void*,size_t))aSyscall[8].xOrig)
-#define orig_pread     ((ssize_t(*)(int,void*,size_t,off_t))aSyscall[9].xOrig)
-#define orig_pread64   ((ssize_t(*)(int,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
-#define orig_write     ((ssize_t(*)(int,const void*,size_t))aSyscall[11].xOrig)
-#define orig_pwrite    ((ssize_t(*)(int,const void*,size_t,off_t))\
+#define orig_stat      ((整数(*)(const char*,struct stat*))aSyscall[4].xOrig)
+#define orig_fstat     ((整数(*)(整数,struct stat*))aSyscall[5].xOrig)
+#define orig_ftruncate ((整数(*)(整数,off_t))aSyscall[6].xOrig)
+#define orig_fcntl     ((整数(*)(整数,整数,...))aSyscall[7].xOrig)
+#define orig_read      ((ssize_t(*)(整数,void*,size_t))aSyscall[8].xOrig)
+#define orig_pread     ((ssize_t(*)(整数,void*,size_t,off_t))aSyscall[9].xOrig)
+#define orig_pread64   ((ssize_t(*)(整数,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
+#define orig_write     ((ssize_t(*)(整数,const void*,size_t))aSyscall[11].xOrig)
+#define orig_pwrite    ((ssize_t(*)(整数,const void*,size_t,off_t))\
                        aSyscall[12].xOrig)
-#define orig_pwrite64  ((ssize_t(*)(int,const void*,size_t,sqlite3_uint64))\
+#define orig_pwrite64  ((ssize_t(*)(整数,const void*,size_t,sqlite3_uint64))\
                        aSyscall[13].xOrig)
-#define orig_fchmod    ((int(*)(int,mode_t))aSyscall[14].xOrig)
-#define orig_fallocate ((int(*)(int,off_t,off_t))aSyscall[15].xOrig)
-#define orig_mmap      ((void*(*)(void*,size_t,int,int,int,off_t))aSyscall[16].xOrig)
-#define orig_mremap    ((void*(*)(void*,size_t,size_t,int,...))aSyscall[17].xOrig)
+#define orig_fchmod    ((整数(*)(整数,mode_t))aSyscall[14].xOrig)
+#define orig_fallocate ((整数(*)(整数,off_t,off_t))aSyscall[15].xOrig)
+#define orig_mmap      ((void*(*)(void*,size_t,整数,整数,整数,off_t))aSyscall[16].xOrig)
+#define orig_mremap    ((void*(*)(void*,size_t,size_t,整数,...))aSyscall[17].xOrig)
 
 /*
 ** This function is called exactly once from within each invocation of a
 ** system call wrapper in this file. It returns 1 if the function should
 ** fail, or 0 if it should succeed.
 */
-static int tsIsFail(void){
+static 整数 tsIsFail(void){
   gSyscall.nCount--;
-  if( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
+  もし( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
     gSyscall.nFail++;
-    return 1;
+    戻る 1;
   }
-  return 0;
+  戻る 0;
 }
 
 /*
@@ -191,190 +191,190 @@ static int tsIsFail(void){
 ** to if the named system call fails. The exception is "fallocate". See 
 ** comments above the implementation of ts_fallocate() for details.
 */
-static int tsErrno(const char *zFunc){
-  int i;
+static 整数 tsErrno(const char *zFunc){
+  整数 i;
   size_t nFunc = strlen(zFunc);
-  for(i=0; aSyscall[i].zName; i++){
-    if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-    if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
-    return aSyscall[i].custom_errno;
+  ために(i=0; aSyscall[i].zName; i++){
+    もし( strlen(aSyscall[i].zName)!=nFunc ) continue;
+    もし( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    戻る aSyscall[i].custom_errno;
   }
 
   assert(0);
-  return 0;
+  戻る 0;
 }
 
 /*
 ** A wrapper around tsIsFail(). If tsIsFail() returns non-zero, set the
 ** value of errno before returning.
 */
-static int tsIsFailErrno(const char *zFunc){
-  if( tsIsFail() ){
+static 整数 tsIsFailErrno(const char *zFunc){
+  もし( tsIsFail() ){
     errno = tsErrno(zFunc);
-    return 1;
+    戻る 1;
   }
-  return 0;
+  戻る 0;
 }
 
 /*
 ** A wrapper around open().
 */
-static int ts_open(const char *zFile, int flags, int mode){
-  if( tsIsFailErrno("open") ){
-    return -1;
+static 整数 ts_open(const char *zFile, 整数 flags, 整数 mode){
+  もし( tsIsFailErrno("open") ){
+    戻る -1;
   }
-  return orig_open(zFile, flags, mode);
+  戻る orig_open(zFile, flags, mode);
 }
 
 /*
 ** A wrapper around close().
 */
-static int ts_close(int fd){
-  if( tsIsFail() ){
+static 整数 ts_close(整数 fd){
+  もし( tsIsFail() ){
     /* Even if simulating an error, close the original file-descriptor. 
     ** This is to stop the test process from running out of file-descriptors
     ** when running a long test. If a call to close() appears to fail, SQLite
     ** never attempts to use the file-descriptor afterwards (or even to close
     ** it a second time).  */
     orig_close(fd);
-    return -1;
+    戻る -1;
   }
-  return orig_close(fd);
+  戻る orig_close(fd);
 }
 
 /*
 ** A wrapper around access().
 */
-static int ts_access(const char *zPath, int mode){
-  if( tsIsFail() ){
-    return -1;
+static 整数 ts_access(const char *zPath, 整数 mode){
+  もし( tsIsFail() ){
+    戻る -1;
   }
-  return orig_access(zPath, mode);
+  戻る orig_access(zPath, mode);
 }
 
 /*
 ** A wrapper around getcwd().
 */
 static char *ts_getcwd(char *zPath, size_t nPath){
-  if( tsIsFail() ){
-    return NULL;
+  もし( tsIsFail() ){
+    戻る NULL;
   }
-  return orig_getcwd(zPath, nPath);
+  戻る orig_getcwd(zPath, nPath);
 }
 
 /*
 ** A wrapper around stat().
 */
-static int ts_stat(const char *zPath, struct stat *p){
-  if( tsIsFail() ){
-    return -1;
+static 整数 ts_stat(const char *zPath, struct stat *p){
+  もし( tsIsFail() ){
+    戻る -1;
   }
-  return orig_stat(zPath, p);
+  戻る orig_stat(zPath, p);
 }
 
 /*
 ** A wrapper around fstat().
 */
-static int ts_fstat(int fd, struct stat *p){
-  if( tsIsFailErrno("fstat") ){
-    return -1;
+static 整数 ts_fstat(整数 fd, struct stat *p){
+  もし( tsIsFailErrno("fstat") ){
+    戻る -1;
   }
-  return orig_fstat(fd, p);
+  戻る orig_fstat(fd, p);
 }
 
 /*
 ** A wrapper around ftruncate().
 */
-static int ts_ftruncate(int fd, off_t n){
-  if( tsIsFailErrno("ftruncate") ){
-    return -1;
+static 整数 ts_ftruncate(整数 fd, off_t n){
+  もし( tsIsFailErrno("ftruncate") ){
+    戻る -1;
   }
-  return orig_ftruncate(fd, n);
+  戻る orig_ftruncate(fd, n);
 }
 
 /*
 ** A wrapper around fcntl().
 */
-static int ts_fcntl(int fd, int cmd, ... ){
+static 整数 ts_fcntl(整数 fd, 整数 cmd, ... ){
   va_list ap;
   void *pArg;
-  if( tsIsFailErrno("fcntl") ){
-    return -1;
+  もし( tsIsFailErrno("fcntl") ){
+    戻る -1;
   }
   va_start(ap, cmd);
   pArg = va_arg(ap, void *);
-  return orig_fcntl(fd, cmd, pArg);
+  戻る orig_fcntl(fd, cmd, pArg);
 }
 
 /*
 ** A wrapper around read().
 */
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("read") ){
-    return -1;
+static ssize_t ts_read(整数 fd, void *aBuf, size_t nBuf){
+  もし( tsIsFailErrno("read") ){
+    戻る -1;
   }
-  return orig_read(fd, aBuf, nBuf);
+  戻る orig_read(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pread().
 */
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pread") ){
-    return -1;
+static ssize_t ts_pread(整数 fd, void *aBuf, size_t nBuf, off_t off){
+  もし( tsIsFailErrno("pread") ){
+    戻る -1;
   }
-  return orig_pread(fd, aBuf, nBuf, off);
+  戻る orig_pread(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pread64().
 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pread64") ){
-    return -1;
+static ssize_t ts_pread64(整数 fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  もし( tsIsFailErrno("pread64") ){
+    戻る -1;
   }
-  return orig_pread64(fd, aBuf, nBuf, off);
+  戻る orig_pread64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around write().
 */
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("write") ){
-    if( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
-    return -1;
+static ssize_t ts_write(整数 fd, const void *aBuf, size_t nBuf){
+  もし( tsIsFailErrno("write") ){
+    もし( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
+    戻る -1;
   }
-  return orig_write(fd, aBuf, nBuf);
+  戻る orig_write(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pwrite().
 */
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pwrite") ){
-    return -1;
+static ssize_t ts_pwrite(整数 fd, const void *aBuf, size_t nBuf, off_t off){
+  もし( tsIsFailErrno("pwrite") ){
+    戻る -1;
   }
-  return orig_pwrite(fd, aBuf, nBuf, off);
+  戻る orig_pwrite(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pwrite64().
 */
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pwrite64") ){
-    return -1;
+static ssize_t ts_pwrite64(整数 fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  もし( tsIsFailErrno("pwrite64") ){
+    戻る -1;
   }
-  return orig_pwrite64(fd, aBuf, nBuf, off);
+  戻る orig_pwrite64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around fchmod().
 */
-static int ts_fchmod(int fd, mode_t mode){
-  if( tsIsFail() ){
-    return -1;
+static 整数 ts_fchmod(整数 fd, mode_t mode){
+  もし( tsIsFail() ){
+    戻る -1;
   }
-  return orig_fchmod(fd, mode);
+  戻る orig_fchmod(fd, mode);
 }
 
 /*
@@ -386,30 +386,30 @@ static int ts_fchmod(int fd, mode_t mode){
 **   posix_fallocate() returns  zero on success, or an error number on
 **   failure. Note that errno is not set.
 */
-static int ts_fallocate(int fd, off_t off, off_t len){
-  if( tsIsFail() ){
-    return tsErrno("fallocate");
+static 整数 ts_fallocate(整数 fd, off_t off, off_t len){
+  もし( tsIsFail() ){
+    戻る tsErrno("fallocate");
   }
-  return orig_fallocate(fd, off, len);
+  戻る orig_fallocate(fd, off, len);
 }
 
 static void *ts_mmap(
   void *pAddr, 
   size_t nByte, 
-  int prot, 
-  int flags, 
-  int fd, 
+  整数 prot, 
+  整数 flags, 
+  整数 fd, 
   off_t iOff
 ){
-  if( tsIsFailErrno("mmap") ){
-    return MAP_FAILED;
+  もし( tsIsFailErrno("mmap") ){
+    戻る MAP_FAILED;
   }
-  return orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
+  戻る orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
 }
 
-static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
-  if( tsIsFailErrno("mremap") ){
-    return MAP_FAILED;
+static void *ts_mremap(void *a, size_t b, size_t c, 整数 d, ...){
+  もし( tsIsFailErrno("mremap") ){
+    戻る MAP_FAILED;
   }
   /* mremap() may be called with 4 or 5 arguments (when MREMAP_FIXED) is
   ** set. But SQLite only ever calls the 4 argument form, and attempting to
@@ -418,147 +418,147 @@ static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
 #ifdef MREMAP_FIXED
   assert( (d & MREMAP_FIXED)==0 );
 #endif
-  return orig_mremap(a, b, c, d);
+  戻る orig_mremap(a, b, c, d);
 }
 
-static int SQLITE_TCLAPI test_syscall_install(
+static 整数 SQLITE_TCLAPI test_syscall_install(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   Tcl_Size nElem;
-  int i;
+  整数 i;
   Tcl_Obj **apElem;
 
-  if( objc!=3 ){
+  もし( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL-LIST");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
-  if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
-    return TCL_ERROR;
+  もし( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
+    戻る TCL_ERROR;
   }
   pVfs = sqlite3_vfs_find(0);
 
-  for(i=0; i<(int)nElem; i++){
-    int iCall;
-    int rc = Tcl_GetIndexFromObjStruct(interp, 
+  ために(i=0; i<(整数)nElem; i++){
+    整数 iCall;
+    整数 rc = Tcl_GetIndexFromObjStruct(interp, 
         apElem[i], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
     );
-    if( rc ) return rc;
-    if( aSyscall[iCall].xOrig==0 ){
+    もし( rc ) 戻る rc;
+    もし( aSyscall[iCall].xOrig==0 ){
       aSyscall[iCall].xOrig = pVfs->xGetSystemCall(pVfs, aSyscall[iCall].zName);
       pVfs->xSetSystemCall(pVfs, aSyscall[iCall].zName, aSyscall[iCall].xTest);
     }
     aSyscall[iCall].custom_errno = aSyscall[iCall].default_errno;
   }
 
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_uninstall(
+static 整数 SQLITE_TCLAPI test_syscall_uninstall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
+  整数 i;
 
-  if( objc!=2 ){
+  もし( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  for(i=0; aSyscall[i].zName; i++){
-    if( aSyscall[i].xOrig ){
+  ために(i=0; aSyscall[i].zName; i++){
+    もし( aSyscall[i].xOrig ){
       pVfs->xSetSystemCall(pVfs, aSyscall[i].zName, 0);
       aSyscall[i].xOrig = 0;
     }
   }
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_reset(
+static 整数 SQLITE_TCLAPI test_syscall_reset(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
-  int rc;
+  整数 i;
+  整数 rc;
 
-  if( objc!=2 && objc!=3 ){
+  もし( objc!=2 && objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  if( objc==2 ){
+  もし( objc==2 ){
     rc = pVfs->xSetSystemCall(pVfs, 0, 0);
-    for(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
-  }else{
+    ために(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
+  }否则{
     Tcl_Size nFunc;
     char *zFunc = Tcl_GetStringFromObj(objv[2], &nFunc);
     rc = pVfs->xSetSystemCall(pVfs, Tcl_GetString(objv[2]), 0);
-    for(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
-      if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-      if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    ために(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
+      もし( strlen(aSyscall[i].zName)!=nFunc ) continue;
+      もし( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
       aSyscall[i].xOrig = 0;
     }
   }
-  if( rc!=SQLITE_OK ){
+  もし( rc!=SQLITE_OK ){
     Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_exists(
+static 整数 SQLITE_TCLAPI test_syscall_exists(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   sqlite3_syscall_ptr x;
 
-  if( objc!=3 ){
+  もし( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   x = pVfs->xGetSystemCall(pVfs, Tcl_GetString(objv[2]));
 
   Tcl_SetObjResult(interp, Tcl_NewBooleanObj(x!=0));
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_fault(
+static 整数 SQLITE_TCLAPI test_syscall_fault(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nCount = 0;
-  int bPersist = 0;
+  整数 nCount = 0;
+  整数 bPersist = 0;
 
-  if( objc!=2 && objc!=4 ){
+  もし( objc!=2 && objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "?COUNT PERSIST?");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
-  if( objc==4 ){
-    if( Tcl_GetIntFromObj(interp, objv[2], &nCount)
+  もし( objc==4 ){
+    もし( Tcl_GetIntFromObj(interp, objv[2], &nCount)
      || Tcl_GetBooleanFromObj(interp, objv[3], &bPersist)
     ){
-      return TCL_ERROR;
+      戻る TCL_ERROR;
     }
   }
 
@@ -566,22 +566,22 @@ static int SQLITE_TCLAPI test_syscall_fault(
   gSyscall.nCount = nCount;
   gSyscall.bPersist = bPersist;
   gSyscall.nFail = 0;
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_errno(
+static 整数 SQLITE_TCLAPI test_syscall_errno(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
-  int iCall;
-  int iErrno;
-  int rc;
+  整数 iCall;
+  整数 iErrno;
+  整数 rc;
 
   struct Errno {
     const char *z;
-    int i;
+    整数 i;
   } aErrno[] = {
     { "EACCES",    EACCES },
     { "EINTR",     EINTR },
@@ -597,43 +597,43 @@ static int SQLITE_TCLAPI test_syscall_errno(
     { 0, 0 }
   };
 
-  if( objc!=4 ){
+  もし( objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL ERRNO");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   rc = Tcl_GetIndexFromObjStruct(interp, 
       objv[2], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
   );
-  if( rc!=TCL_OK ) return rc;
+  もし( rc!=TCL_OK ) 戻る rc;
   rc = Tcl_GetIndexFromObjStruct(interp, 
       objv[3], aErrno, sizeof(aErrno[0]), "errno", 0, &iErrno
   );
-  if( rc!=TCL_OK ) return rc;
+  もし( rc!=TCL_OK ) 戻る rc;
 
   aSyscall[iCall].custom_errno = aErrno[iErrno].i;
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_list(
+static 整数 SQLITE_TCLAPI test_syscall_list(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   const char *zSys;
   sqlite3_vfs *pVfs; 
   Tcl_Obj *pList;
 
-  if( objc!=2 ){
+  もし( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   pList = Tcl_NewObj();
   Tcl_IncrRefCount(pList);
-  for(zSys = pVfs->xNextSystemCall(pVfs, 0); 
+  ために(zSys = pVfs->xNextSystemCall(pVfs, 0); 
       zSys!=0;
       zSys = pVfs->xNextSystemCall(pVfs, zSys)
   ){
@@ -642,55 +642,55 @@ static int SQLITE_TCLAPI test_syscall_list(
 
   Tcl_SetObjResult(interp, pList);
   Tcl_DecrRefCount(pList);
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_defaultvfs(
+static 整数 SQLITE_TCLAPI test_syscall_defaultvfs(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
 
-  if( objc!=2 ){
+  もし( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   Tcl_SetObjResult(interp, Tcl_NewStringObj(pVfs->zName, -1));
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int ts_getpagesize(void){
-  return gSyscall.pgsz;
+static 整数 ts_getpagesize(void){
+  戻る gSyscall.pgsz;
 }
 
-static int SQLITE_TCLAPI test_syscall_pagesize(
+static 整数 SQLITE_TCLAPI test_syscall_pagesize(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-  int pgsz;
-  if( objc!=3 ){
+  整数 pgsz;
+  もし( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "PGSZ");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
-    return TCL_ERROR;
+  もし( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
+    戻る TCL_ERROR;
   }
 
-  if( pgsz<0 ){
-    if( gSyscall.orig_getpagesize ){
+  もし( pgsz<0 ){
+    もし( gSyscall.orig_getpagesize ){
       pVfs->xSetSystemCall(pVfs, "getpagesize", gSyscall.orig_getpagesize);
     }
-  }else{
-    if( pgsz<512 || (pgsz & (pgsz-1)) ){
+  }否则{
+    もし( pgsz<512 || (pgsz & (pgsz-1)) ){
       Tcl_AppendResult(interp, "pgsz out of range", NULL);
-      return TCL_ERROR;
+      戻る TCL_ERROR;
     }
     gSyscall.orig_getpagesize = pVfs->xGetSystemCall(pVfs, "getpagesize");
     gSyscall.pgsz = pgsz;
@@ -699,13 +699,13 @@ static int SQLITE_TCLAPI test_syscall_pagesize(
     );
   }
 
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall(
+static 整数 SQLITE_TCLAPI test_syscall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
   struct SyscallCmd {
@@ -723,42 +723,42 @@ static int SQLITE_TCLAPI test_syscall(
     { "pagesize",   test_syscall_pagesize },
     { 0, 0 }
   };
-  int iCmd;
-  int rc;
+  整数 iCmd;
+  整数 rc;
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
 
-  if( objc<2 ){
+  もし( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
-    return TCL_ERROR;
+    戻る TCL_ERROR;
   }
-  if( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
+  もし( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
     Tcl_AppendResult(interp, "VFS does not support xSetSystemCall", NULL);
     rc = TCL_ERROR;
-  }else{
+  }否则{
     rc = Tcl_GetIndexFromObjStruct(interp, 
         objv[1], aCmd, sizeof(aCmd[0]), "sub-command", 0, &iCmd
     );
   }
-  if( rc!=TCL_OK ) return rc;
-  return aCmd[iCmd].xCmd(clientData, interp, objc, objv);
+  もし( rc!=TCL_OK ) 戻る rc;
+  戻る aCmd[iCmd].xCmd(clientData, interp, objc, objv);
 }
 
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
+整数 SqlitetestSyscall_Init(Tcl_Interp *interp){
   struct SyscallCmd {
     const char *zName;
     Tcl_ObjCmdProc *xCmd;
   } aCmd[] = {
     { "test_syscall",     test_syscall},
   };
-  int i;
+  整数 i;
 
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  ために(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xCmd, 0, 0);
   }
-  return TCL_OK;
+  戻る TCL_OK;
 }
-#else
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
-  return TCL_OK;
+#否则
+整数 SqlitetestSyscall_Init(Tcl_Interp *interp){
+  戻る TCL_OK;
 }
 #endif

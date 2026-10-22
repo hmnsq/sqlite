@@ -113,7 +113,7 @@
 **   operations.
 */
 
-#if !defined(SQLITE_TEST) || SQLITE_OS_UNIX
+#もし !defined(SQLITE_TEST) || SQLITE_OS_UNIX
 
 #include "sqlite3.h"
 
@@ -147,10 +147,10 @@
 typedef struct DemoFile DemoFile;
 struct DemoFile {
   sqlite3_file base;              /* Base class. Must be first. */
-  int fd;                         /* File descriptor */
+  整数 fd;                         /* File descriptor */
 
   char *aBuffer;                  /* Pointer to malloc'd buffer */
-  int nBuffer;                    /* Valid bytes of data in zBuffer */
+  整数 nBuffer;                    /* Valid bytes of data in zBuffer */
   sqlite3_int64 iBufferOfst;      /* Offset in file of zBuffer[0] */
 };
 
@@ -158,26 +158,26 @@ struct DemoFile {
 ** Write directly to the file passed as the first argument. Even if the
 ** file has a write-buffer (DemoFile.aBuffer), ignore it.
 */
-static int demoDirectWrite(
+static 整数 demoDirectWrite(
   DemoFile *p,                    /* File handle */
   const void *zBuf,               /* Buffer containing data to write */
-  int iAmt,                       /* Size of data to write in bytes */
+  整数 iAmt,                       /* Size of data to write in bytes */
   sqlite_int64 iOfst              /* File offset to write to */
 ){
   off_t ofst;                     /* Return value from lseek() */
   size_t nWrite;                  /* Return value from write() */
 
   ofst = lseek(p->fd, iOfst, SEEK_SET);
-  if( ofst!=iOfst ){
-    return SQLITE_IOERR_WRITE;
+  もし( ofst!=iOfst ){
+    戻る SQLITE_IOERR_WRITE;
   }
 
   nWrite = write(p->fd, zBuf, iAmt);
-  if( nWrite!=iAmt ){
-    return SQLITE_IOERR_WRITE;
+  もし( nWrite!=iAmt ){
+    戻る SQLITE_IOERR_WRITE;
   }
 
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
@@ -185,40 +185,40 @@ static int demoDirectWrite(
 ** no-op if this particular file does not have a buffer (i.e. it is not
 ** a journal file) or if the buffer is currently empty.
 */
-static int demoFlushBuffer(DemoFile *p){
-  int rc = SQLITE_OK;
-  if( p->nBuffer ){
+static 整数 demoFlushBuffer(DemoFile *p){
+  整数 rc = SQLITE_OK;
+  もし( p->nBuffer ){
     rc = demoDirectWrite(p, p->aBuffer, p->nBuffer, p->iBufferOfst);
     p->nBuffer = 0;
   }
-  return rc;
+  戻る rc;
 }
 
 /*
 ** Close a file.
 */
-static int demoClose(sqlite3_file *pFile){
-  int rc;
+static 整数 demoClose(sqlite3_file *pFile){
+  整数 rc;
   DemoFile *p = (DemoFile*)pFile;
   rc = demoFlushBuffer(p);
   sqlite3_free(p->aBuffer);
   close(p->fd);
-  return rc;
+  戻る rc;
 }
 
 /*
 ** Read data from a file.
 */
-static int demoRead(
+static 整数 demoRead(
   sqlite3_file *pFile, 
   void *zBuf, 
-  int iAmt, 
+  整数 iAmt, 
   sqlite_int64 iOfst
 ){
   DemoFile *p = (DemoFile*)pFile;
   off_t ofst;                     /* Return value from lseek() */
-  int nRead;                      /* Return value from read() */
-  int rc;                         /* Return code from demoFlushBuffer() */
+  整数 nRead;                      /* Return value from read() */
+  整数 rc;                         /* Return code from demoFlushBuffer() */
 
   /* Flush any data in the write buffer to disk in case this operation
   ** is trying to read data the file-region currently cached in the buffer.
@@ -227,55 +227,55 @@ static int demoRead(
   ** a journal file when there is data cached in the write-buffer.
   */
   rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  もし( rc!=SQLITE_OK ){
+    戻る rc;
   }
 
   ofst = lseek(p->fd, iOfst, SEEK_SET);
-  if( ofst!=iOfst ){
-    return SQLITE_IOERR_READ;
+  もし( ofst!=iOfst ){
+    戻る SQLITE_IOERR_READ;
   }
   nRead = read(p->fd, zBuf, iAmt);
 
-  if( nRead==iAmt ){
-    return SQLITE_OK;
-  }else if( nRead>=0 ){
-    if( nRead<iAmt ){
+  もし( nRead==iAmt ){
+    戻る SQLITE_OK;
+  }否则 もし( nRead>=0 ){
+    もし( nRead<iAmt ){
       memset(&((char*)zBuf)[nRead], 0, iAmt-nRead);
     }
-    return SQLITE_IOERR_SHORT_READ;
+    戻る SQLITE_IOERR_SHORT_READ;
   }
 
-  return SQLITE_IOERR_READ;
+  戻る SQLITE_IOERR_READ;
 }
 
 /*
 ** Write data to a crash-file.
 */
-static int demoWrite(
+static 整数 demoWrite(
   sqlite3_file *pFile, 
   const void *zBuf, 
-  int iAmt, 
+  整数 iAmt, 
   sqlite_int64 iOfst
 ){
   DemoFile *p = (DemoFile*)pFile;
   
-  if( p->aBuffer ){
+  もし( p->aBuffer ){
     char *z = (char *)zBuf;       /* Pointer to remaining data to write */
-    int n = iAmt;                 /* Number of bytes at z */
+    整数 n = iAmt;                 /* Number of bytes at z */
     sqlite3_int64 i = iOfst;      /* File offset to write to */
 
-    while( n>0 ){
-      int nCopy;                  /* Number of bytes to copy into buffer */
+    ながら( n>0 ){
+      整数 nCopy;                  /* Number of bytes to copy into buffer */
 
       /* If the buffer is full, or if this data is not being written directly
       ** following the data already buffered, flush the buffer. Flushing
       ** the buffer is a no-op if it is empty.  
       */
-      if( p->nBuffer==SQLITE_DEMOVFS_BUFFERSZ || p->iBufferOfst+p->nBuffer!=i ){
-        int rc = demoFlushBuffer(p);
-        if( rc!=SQLITE_OK ){
-          return rc;
+      もし( p->nBuffer==SQLITE_DEMOVFS_BUFFERSZ || p->iBufferOfst+p->nBuffer!=i ){
+        整数 rc = demoFlushBuffer(p);
+        もし( rc!=SQLITE_OK ){
+          戻る rc;
         }
       }
       assert( p->nBuffer==0 || p->iBufferOfst+p->nBuffer==i );
@@ -283,7 +283,7 @@ static int demoWrite(
 
       /* Copy as much data as possible into the buffer. */
       nCopy = SQLITE_DEMOVFS_BUFFERSZ - p->nBuffer;
-      if( nCopy>n ){
+      もし( nCopy>n ){
         nCopy = n;
       }
       memcpy(&p->aBuffer[p->nBuffer], z, nCopy);
@@ -293,46 +293,46 @@ static int demoWrite(
       i += nCopy;
       z += nCopy;
     }
-  }else{
-    return demoDirectWrite(p, zBuf, iAmt, iOfst);
+  }否则{
+    戻る demoDirectWrite(p, zBuf, iAmt, iOfst);
   }
 
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
 ** Truncate a file. This is a no-op for this VFS (see header comments at
 ** the top of the file).
 */
-static int demoTruncate(sqlite3_file *pFile, sqlite_int64 size){
-#if 0
-  if( ftruncate(((DemoFile *)pFile)->fd, size) ) return SQLITE_IOERR_TRUNCATE;
+static 整数 demoTruncate(sqlite3_file *pFile, sqlite_int64 size){
+#もし 0
+  もし( ftruncate(((DemoFile *)pFile)->fd, size) ) 戻る SQLITE_IOERR_TRUNCATE;
 #endif
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
 ** Sync the contents of the file to the persistent media.
 */
-static int demoSync(sqlite3_file *pFile, int flags){
+static 整数 demoSync(sqlite3_file *pFile, 整数 flags){
   DemoFile *p = (DemoFile*)pFile;
-  int rc;
+  整数 rc;
 
   rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  もし( rc!=SQLITE_OK ){
+    戻る rc;
   }
 
   rc = fsync(p->fd);
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+  戻る (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
 }
 
 /*
 ** Write the size of the file in bytes to *pSize.
 */
-static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+static 整数 demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   DemoFile *p = (DemoFile*)pFile;
-  int rc;                         /* Return code from fstat() call */
+  整数 rc;                         /* Return code from fstat() call */
   struct stat sStat;              /* Output of fstat() call */
 
   /* Flush the contents of the buffer to disk. As with the flush in the
@@ -341,14 +341,14 @@ static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   ** not worth the trouble.
   */
   rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  もし( rc!=SQLITE_OK ){
+    戻る rc;
   }
 
   rc = fstat(p->fd, &sStat);
-  if( rc!=0 ) return SQLITE_IOERR_FSTAT;
+  もし( rc!=0 ) 戻る SQLITE_IOERR_FSTAT;
   *pSize = sStat.st_size;
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
@@ -357,22 +357,22 @@ static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
 ** a reserved lock on the database file. This ensures that if a hot-journal
 ** file is found in the file-system it is rolled back.
 */
-static int demoLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+static 整数 demoLock(sqlite3_file *pFile, 整数 eLock){
+  戻る SQLITE_OK;
 }
-static int demoUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+static 整数 demoUnlock(sqlite3_file *pFile, 整数 eLock){
+  戻る SQLITE_OK;
 }
-static int demoCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+static 整数 demoCheckReservedLock(sqlite3_file *pFile, 整数 *pResOut){
   *pResOut = 0;
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
 ** No xFileControl() verbs are implemented by this VFS.
 */
-static int demoFileControl(sqlite3_file *pFile, int op, void *pArg){
-  return SQLITE_NOTFOUND;
+static 整数 demoFileControl(sqlite3_file *pFile, 整数 op, void *pArg){
+  戻る SQLITE_NOTFOUND;
 }
 
 /*
@@ -380,22 +380,22 @@ static int demoFileControl(sqlite3_file *pFile, int op, void *pArg){
 ** may return special values allowing SQLite to optimize file-system 
 ** access to some extent. But it is also safe to simply return 0.
 */
-static int demoSectorSize(sqlite3_file *pFile){
-  return 0;
+static 整数 demoSectorSize(sqlite3_file *pFile){
+  戻る 0;
 }
-static int demoDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+static 整数 demoDeviceCharacteristics(sqlite3_file *pFile){
+  戻る 0;
 }
 
 /*
 ** Open a file handle.
 */
-static int demoOpen(
+static 整数 demoOpen(
   sqlite3_vfs *pVfs,              /* VFS */
   const char *zName,              /* File to open, or 0 for a temp file */
   sqlite3_file *pFile,            /* Pointer to DemoFile struct to populate */
-  int flags,                      /* Input SQLITE_OPEN_XXX flags */
-  int *pOutFlags                  /* Output SQLITE_OPEN_XXX flags (or NULL) */
+  整数 flags,                      /* Input SQLITE_OPEN_XXX flags */
+  整数 *pOutFlags                  /* Output SQLITE_OPEN_XXX flags (or NULL) */
 ){
   static const sqlite3_io_methods demoio = {
     1,                            /* iVersion */
@@ -414,38 +414,38 @@ static int demoOpen(
   };
 
   DemoFile *p = (DemoFile*)pFile; /* Populate this structure */
-  int oflags = 0;                 /* flags to pass to open() call */
+  整数 oflags = 0;                 /* flags to pass to open() call */
   char *aBuf = 0;
 
-  if( zName==0 ){
-    return SQLITE_IOERR;
+  もし( zName==0 ){
+    戻る SQLITE_IOERR;
   }
 
-  if( flags&SQLITE_OPEN_MAIN_JOURNAL ){
+  もし( flags&SQLITE_OPEN_MAIN_JOURNAL ){
     aBuf = (char *)sqlite3_malloc(SQLITE_DEMOVFS_BUFFERSZ);
-    if( !aBuf ){
-      return SQLITE_NOMEM;
+    もし( !aBuf ){
+      戻る SQLITE_NOMEM;
     }
   }
 
-  if( flags&SQLITE_OPEN_EXCLUSIVE ) oflags |= O_EXCL;
-  if( flags&SQLITE_OPEN_CREATE )    oflags |= O_CREAT;
-  if( flags&SQLITE_OPEN_READONLY )  oflags |= O_RDONLY;
-  if( flags&SQLITE_OPEN_READWRITE ) oflags |= O_RDWR;
+  もし( flags&SQLITE_OPEN_EXCLUSIVE ) oflags |= O_EXCL;
+  もし( flags&SQLITE_OPEN_CREATE )    oflags |= O_CREAT;
+  もし( flags&SQLITE_OPEN_READONLY )  oflags |= O_RDONLY;
+  もし( flags&SQLITE_OPEN_READWRITE ) oflags |= O_RDWR;
 
   memset(p, 0, sizeof(DemoFile));
   p->fd = open(zName, oflags, 0600);
-  if( p->fd<0 ){
+  もし( p->fd<0 ){
     sqlite3_free(aBuf);
-    return SQLITE_CANTOPEN;
+    戻る SQLITE_CANTOPEN;
   }
   p->aBuffer = aBuf;
 
-  if( pOutFlags ){
+  もし( pOutFlags ){
     *pOutFlags = flags;
   }
   p->base.pMethods = &demoio;
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
@@ -453,14 +453,14 @@ static int demoOpen(
 ** is non-zero, then ensure the file-system modification to delete the
 ** file has been synced to disk before returning.
 */
-static int demoDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc;                         /* Return code */
+static 整数 demoDelete(sqlite3_vfs *pVfs, const char *zPath, 整数 dirSync){
+  整数 rc;                         /* Return code */
 
   rc = unlink(zPath);
-  if( rc!=0 && errno==ENOENT ) return SQLITE_OK;
+  もし( rc!=0 && errno==ENOENT ) 戻る SQLITE_OK;
 
-  if( rc==0 && dirSync ){
-    int dfd;                      /* File descriptor open on directory */
+  もし( rc==0 && dirSync ){
+    整数 dfd;                      /* File descriptor open on directory */
     char *zSlash;
     char zDir[MAXPATHNAME+1];     /* Name of directory containing file zPath */
 
@@ -468,19 +468,19 @@ static int demoDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
     sqlite3_snprintf(MAXPATHNAME, zDir, "%s", zPath);
     zDir[MAXPATHNAME] = '\0';
     zSlash = strrchr(zDir,'/');
-    if( zSlash ){
+    もし( zSlash ){
       /* Open a file-descriptor on the directory. Sync. Close. */
       zSlash[0] = 0;
       dfd = open(zDir, O_RDONLY, 0);
-      if( dfd<0 ){
+      もし( dfd<0 ){
         rc = -1;
-      }else{
+      }否则{
         rc = fsync(dfd);
         close(dfd);
       }
     }
   }
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_DELETE);
+  戻る (rc==0 ? SQLITE_OK : SQLITE_IOERR_DELETE);
 }
 
 #ifndef F_OK
@@ -497,26 +497,26 @@ static int demoDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
 ** Query the file-system to see if the named file exists, is readable or
 ** is both readable and writable.
 */
-static int demoAccess(
+static 整数 demoAccess(
   sqlite3_vfs *pVfs, 
   const char *zPath, 
-  int flags, 
-  int *pResOut
+  整数 flags, 
+  整数 *pResOut
 ){
-  int rc;                         /* access() return code */
-  int eAccess = F_OK;             /* Second argument to access() */
+  整数 rc;                         /* access() return code */
+  整数 eAccess = F_OK;             /* Second argument to access() */
 
   assert( flags==SQLITE_ACCESS_EXISTS       /* access(zPath, F_OK) */
        || flags==SQLITE_ACCESS_READ         /* access(zPath, R_OK) */
        || flags==SQLITE_ACCESS_READWRITE    /* access(zPath, R_OK|W_OK) */
   );
 
-  if( flags==SQLITE_ACCESS_READWRITE ) eAccess = R_OK|W_OK;
-  if( flags==SQLITE_ACCESS_READ )      eAccess = R_OK;
+  もし( flags==SQLITE_ACCESS_READWRITE ) eAccess = R_OK|W_OK;
+  もし( flags==SQLITE_ACCESS_READ )      eAccess = R_OK;
 
   rc = access(zPath, eAccess);
   *pResOut = (rc==0);
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
@@ -530,24 +530,24 @@ static int demoAccess(
 **   1. Path components are separated by a '/'. and 
 **   2. Full paths begin with a '/' character.
 */
-static int demoFullPathname(
+static 整数 demoFullPathname(
   sqlite3_vfs *pVfs,              /* VFS */
   const char *zPath,              /* Input path (possibly a relative path) */
-  int nPathOut,                   /* Size of output buffer in bytes */
+  整数 nPathOut,                   /* Size of output buffer in bytes */
   char *zPathOut                  /* Pointer to output buffer */
 ){
   char zDir[MAXPATHNAME+1];
-  if( zPath[0]=='/' ){
+  もし( zPath[0]=='/' ){
     zDir[0] = '\0';
-  }else{
-    if( getcwd(zDir, sizeof(zDir))==0 ) return SQLITE_IOERR;
+  }否则{
+    もし( getcwd(zDir, sizeof(zDir))==0 ) 戻る SQLITE_IOERR;
   }
   zDir[MAXPATHNAME] = '\0';
 
   sqlite3_snprintf(nPathOut, zPathOut, "%s/%s", zDir, zPath);
   zPathOut[nPathOut-1] = '\0';
 
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
@@ -563,35 +563,35 @@ static int demoFullPathname(
 ** this functionality, so the following functions are no-ops.
 */
 static void *demoDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return 0;
+  戻る 0;
 }
-static void demoDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+static void demoDlError(sqlite3_vfs *pVfs, 整数 nByte, char *zErrMsg){
   sqlite3_snprintf(nByte, zErrMsg, "Loadable extensions are not supported");
   zErrMsg[nByte-1] = '\0';
 }
 static void (*demoDlSym(sqlite3_vfs *pVfs, void *pH, const char *z))(void){
-  return 0;
+  戻る 0;
 }
 static void demoDlClose(sqlite3_vfs *pVfs, void *pHandle){
-  return;
+  戻る;
 }
 
 /*
 ** Parameter zByte points to a buffer nByte bytes in size. Populate this
 ** buffer with pseudo-random data.
 */
-static int demoRandomness(sqlite3_vfs *pVfs, int nByte, char *zByte){
-  return SQLITE_OK;
+static 整数 demoRandomness(sqlite3_vfs *pVfs, 整数 nByte, char *zByte){
+  戻る SQLITE_OK;
 }
 
 /*
 ** Sleep for at least nMicro microseconds. Return the (approximate) number 
 ** of microseconds slept for.
 */
-static int demoSleep(sqlite3_vfs *pVfs, int nMicro){
+static 整数 demoSleep(sqlite3_vfs *pVfs, 整数 nMicro){
   sleep(nMicro / 1000000);
   usleep(nMicro % 1000000);
-  return nMicro;
+  戻る nMicro;
 }
 
 /*
@@ -605,10 +605,10 @@ static int demoSleep(sqlite3_vfs *pVfs, int nMicro){
 ** value, it will stop working some time in the year 2038 AD (the so-called
 ** "year 2038" problem that afflicts systems that store time this way). 
 */
-static int demoCurrentTime(sqlite3_vfs *pVfs, double *pTime){
+static 整数 demoCurrentTime(sqlite3_vfs *pVfs, double *pTime){
   time_t t = time(0);
   *pTime = t/86400.0 + 2440587.5; 
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
@@ -637,7 +637,7 @@ sqlite3_vfs *sqlite3_demovfs(void){
     demoSleep,                    /* xSleep */
     demoCurrentTime,              /* xCurrentTime */
   };
-  return &demovfs;
+  戻る &demovfs;
 }
 
 #endif /* !defined(SQLITE_TEST) || SQLITE_OS_UNIX */
@@ -647,37 +647,37 @@ sqlite3_vfs *sqlite3_demovfs(void){
 
 #include "tclsqlite.h"
 
-#if SQLITE_OS_UNIX
-static int SQLITE_TCLAPI register_demovfs(
+#もし SQLITE_OS_UNIX
+static 整数 SQLITE_TCLAPI register_demovfs(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  整数 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_vfs_register(sqlite3_demovfs(), 1);
-  return TCL_OK;
+  戻る TCL_OK;
 }
-static int SQLITE_TCLAPI unregister_demovfs(
+static 整数 SQLITE_TCLAPI unregister_demovfs(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  整数 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_vfs_unregister(sqlite3_demovfs());
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_demovfs_Init(Tcl_Interp *interp){
+整数 Sqlitetest_demovfs_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "register_demovfs", register_demovfs, 0, 0);
   Tcl_CreateObjCommand(interp, "unregister_demovfs", unregister_demovfs, 0, 0);
-  return TCL_OK;
+  戻る TCL_OK;
 }
 
-#else
-int Sqlitetest_demovfs_Init(Tcl_Interp *interp){ return TCL_OK; }
+#否则
+整数 Sqlitetest_demovfs_Init(Tcl_Interp *interp){ 戻る TCL_OK; }
 #endif
 
 #endif /* SQLITE_TEST */

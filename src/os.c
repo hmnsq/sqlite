@@ -20,21 +20,21 @@
 ** of code will give us the ability to simulate a disk I/O error.  This
 ** is used for testing the I/O recovery logic.
 */
-#if defined(SQLITE_TEST)
-int sqlite3_io_error_hit = 0;            /* Total number of I/O Errors */
-int sqlite3_io_error_hardhit = 0;        /* Number of non-benign errors */
-int sqlite3_io_error_pending = 0;        /* Count down to first I/O error */
-int sqlite3_io_error_persist = 0;        /* True if I/O errors persist */
-int sqlite3_io_error_benign = 0;         /* True if errors are benign */
-int sqlite3_diskfull_pending = 0;
-int sqlite3_diskfull = 0;
+#もし defined(SQLITE_TEST)
+整数 sqlite3_io_error_hit = 0;            /* Total number of I/O Errors */
+整数 sqlite3_io_error_hardhit = 0;        /* Number of non-benign errors */
+整数 sqlite3_io_error_pending = 0;        /* Count down to first I/O error */
+整数 sqlite3_io_error_persist = 0;        /* True if I/O errors persist */
+整数 sqlite3_io_error_benign = 0;         /* True if errors are benign */
+整数 sqlite3_diskfull_pending = 0;
+整数 sqlite3_diskfull = 0;
 #endif /* defined(SQLITE_TEST) */
 
 /*
 ** When testing, also keep a count of the number of open files.
 */
-#if defined(SQLITE_TEST)
-int sqlite3_open_file_count = 0;
+#もし defined(SQLITE_TEST)
+整数 sqlite3_open_file_count = 0;
 #endif /* defined(SQLITE_TEST) */
 
 /*
@@ -61,15 +61,15 @@ int sqlite3_open_file_count = 0;
 **     sqlite3OsFullPathname()
 **
 */
-#if defined(SQLITE_TEST)
-int sqlite3_memdebug_vfs_oom_test = 1;
+#もし defined(SQLITE_TEST)
+整数 sqlite3_memdebug_vfs_oom_test = 1;
   #define DO_OS_MALLOC_TEST(x)                                       \
-  if (sqlite3_memdebug_vfs_oom_test && (!x || !sqlite3JournalIsInMemory(x))) { \
+  もし (sqlite3_memdebug_vfs_oom_test && (!x || !sqlite3JournalIsInMemory(x))) { \
     void *pTstAlloc = sqlite3Malloc(10);                             \
-    if (!pTstAlloc) return SQLITE_IOERR_NOMEM_BKPT;                  \
+    もし (!pTstAlloc) 戻る SQLITE_IOERR_NOMEM_BKPT;                  \
     sqlite3_free(pTstAlloc);                                         \
   }
-#else
+#否则
   #define DO_OS_MALLOC_TEST(x)
 #endif
 
@@ -80,42 +80,42 @@ int sqlite3_memdebug_vfs_oom_test = 1;
 ** C++ instead of plain old C.
 */
 void sqlite3OsClose(sqlite3_file *pId){
-  if( pId->pMethods ){
+  もし( pId->pMethods ){
     pId->pMethods->xClose(pId);
     pId->pMethods = 0;
   }
 }
-int sqlite3OsRead(sqlite3_file *id, void *pBuf, int amt, i64 offset){
+整数 sqlite3OsRead(sqlite3_file *id, void *pBuf, 整数 amt, i64 offset){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xRead(id, pBuf, amt, offset);
+  戻る id->pMethods->xRead(id, pBuf, amt, offset);
 }
-int sqlite3OsWrite(sqlite3_file *id, const void *pBuf, int amt, i64 offset){
+整数 sqlite3OsWrite(sqlite3_file *id, const void *pBuf, 整数 amt, i64 offset){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xWrite(id, pBuf, amt, offset);
+  戻る id->pMethods->xWrite(id, pBuf, amt, offset);
 }
-int sqlite3OsTruncate(sqlite3_file *id, i64 size){
-  return id->pMethods->xTruncate(id, size);
+整数 sqlite3OsTruncate(sqlite3_file *id, i64 size){
+  戻る id->pMethods->xTruncate(id, size);
 }
-int sqlite3OsSync(sqlite3_file *id, int flags){
+整数 sqlite3OsSync(sqlite3_file *id, 整数 flags){
   DO_OS_MALLOC_TEST(id);
-  return flags ? id->pMethods->xSync(id, flags) : SQLITE_OK;
+  戻る flags ? id->pMethods->xSync(id, flags) : SQLITE_OK;
 }
-int sqlite3OsFileSize(sqlite3_file *id, i64 *pSize){
+整数 sqlite3OsFileSize(sqlite3_file *id, i64 *pSize){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xFileSize(id, pSize);
+  戻る id->pMethods->xFileSize(id, pSize);
 }
-int sqlite3OsLock(sqlite3_file *id, int lockType){
+整数 sqlite3OsLock(sqlite3_file *id, 整数 lockType){
   DO_OS_MALLOC_TEST(id);
   assert( lockType>=SQLITE_LOCK_SHARED && lockType<=SQLITE_LOCK_EXCLUSIVE );
-  return id->pMethods->xLock(id, lockType);
+  戻る id->pMethods->xLock(id, lockType);
 }
-int sqlite3OsUnlock(sqlite3_file *id, int lockType){
+整数 sqlite3OsUnlock(sqlite3_file *id, 整数 lockType){
   assert( lockType==SQLITE_LOCK_NONE || lockType==SQLITE_LOCK_SHARED );
-  return id->pMethods->xUnlock(id, lockType);
+  戻る id->pMethods->xUnlock(id, lockType);
 }
-int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut){
+整数 sqlite3OsCheckReservedLock(sqlite3_file *id, 整数 *pResOut){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xCheckReservedLock(id, pResOut);
+  戻る id->pMethods->xCheckReservedLock(id, pResOut);
 }
 
 /*
@@ -126,10 +126,10 @@ int sqlite3OsCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** is only a hint and can be safely ignored.  The sqlite3OsFileControlHint()
 ** routine has no return value since the return value would be meaningless.
 */
-int sqlite3OsFileControl(sqlite3_file *id, int op, void *pArg){
-  if( id->pMethods==0 ) return SQLITE_NOTFOUND;
+整数 sqlite3OsFileControl(sqlite3_file *id, 整数 op, void *pArg){
+  もし( id->pMethods==0 ) 戻る SQLITE_NOTFOUND;
 #ifdef SQLITE_TEST
-  if( op!=SQLITE_FCNTL_COMMIT_PHASETWO
+  もし( op!=SQLITE_FCNTL_COMMIT_PHASETWO
    && op!=SQLITE_FCNTL_LOCK_TIMEOUT
    && op!=SQLITE_FCNTL_CKPT_DONE
    && op!=SQLITE_FCNTL_CKPT_START
@@ -152,59 +152,59 @@ int sqlite3OsFileControl(sqlite3_file *id, int op, void *pArg){
     DO_OS_MALLOC_TEST(id);
   }
 #endif
-  return id->pMethods->xFileControl(id, op, pArg);
+  戻る id->pMethods->xFileControl(id, op, pArg);
 }
-void sqlite3OsFileControlHint(sqlite3_file *id, int op, void *pArg){
-  if( id->pMethods ) (void)id->pMethods->xFileControl(id, op, pArg);
+void sqlite3OsFileControlHint(sqlite3_file *id, 整数 op, void *pArg){
+  もし( id->pMethods ) (void)id->pMethods->xFileControl(id, op, pArg);
 }
 
-int sqlite3OsSectorSize(sqlite3_file *id){
-  int (*xSectorSize)(sqlite3_file*) = id->pMethods->xSectorSize;
-  return (xSectorSize ? xSectorSize(id) : SQLITE_DEFAULT_SECTOR_SIZE);
+整数 sqlite3OsSectorSize(sqlite3_file *id){
+  整数 (*xSectorSize)(sqlite3_file*) = id->pMethods->xSectorSize;
+  戻る (xSectorSize ? xSectorSize(id) : SQLITE_DEFAULT_SECTOR_SIZE);
 }
-int sqlite3OsDeviceCharacteristics(sqlite3_file *id){
-  if( NEVER(id->pMethods==0) ) return 0;
-  return id->pMethods->xDeviceCharacteristics(id);
+整数 sqlite3OsDeviceCharacteristics(sqlite3_file *id){
+  もし( NEVER(id->pMethods==0) ) 戻る 0;
+  戻る id->pMethods->xDeviceCharacteristics(id);
 }
 #ifndef SQLITE_OMIT_WAL
-int sqlite3OsShmLock(sqlite3_file *id, int offset, int n, int flags){
-  return id->pMethods->xShmLock(id, offset, n, flags);
+整数 sqlite3OsShmLock(sqlite3_file *id, 整数 offset, 整数 n, 整数 flags){
+  戻る id->pMethods->xShmLock(id, offset, n, flags);
 }
 void sqlite3OsShmBarrier(sqlite3_file *id){
   id->pMethods->xShmBarrier(id);
 }
-int sqlite3OsShmUnmap(sqlite3_file *id, int deleteFlag){
-  return id->pMethods->xShmUnmap(id, deleteFlag);
+整数 sqlite3OsShmUnmap(sqlite3_file *id, 整数 deleteFlag){
+  戻る id->pMethods->xShmUnmap(id, deleteFlag);
 }
-int sqlite3OsShmMap(
+整数 sqlite3OsShmMap(
   sqlite3_file *id,               /* Database file handle */
-  int iPage,
-  int pgsz,
-  int bExtend,                    /* True to extend file if necessary */
+  整数 iPage,
+  整数 pgsz,
+  整数 bExtend,                    /* True to extend file if necessary */
   void volatile **pp              /* OUT: Pointer to mapping */
 ){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xShmMap(id, iPage, pgsz, bExtend, pp);
+  戻る id->pMethods->xShmMap(id, iPage, pgsz, bExtend, pp);
 }
 #endif /* SQLITE_OMIT_WAL */
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#もし SQLITE_MAX_MMAP_SIZE>0
 /* The real implementation of xFetch and xUnfetch */
-int sqlite3OsFetch(sqlite3_file *id, i64 iOff, int iAmt, void **pp){
+整数 sqlite3OsFetch(sqlite3_file *id, i64 iOff, 整数 iAmt, void **pp){
   DO_OS_MALLOC_TEST(id);
-  return id->pMethods->xFetch(id, iOff, iAmt, pp);
+  戻る id->pMethods->xFetch(id, iOff, iAmt, pp);
 }
-int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
-  return id->pMethods->xUnfetch(id, iOff, p);
+整数 sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
+  戻る id->pMethods->xUnfetch(id, iOff, p);
 }
-#else
+#否则
 /* No-op stubs to use when memory-mapped I/O is disabled */
-int sqlite3OsFetch(sqlite3_file *id, i64 iOff, int iAmt, void **pp){
+整数 sqlite3OsFetch(sqlite3_file *id, i64 iOff, 整数 iAmt, void **pp){
   *pp = 0;
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
-int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
-  return SQLITE_OK;
+整数 sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
+  戻る SQLITE_OK;
 }
 #endif
 
@@ -212,14 +212,14 @@ int sqlite3OsUnfetch(sqlite3_file *id, i64 iOff, void *p){
 ** The next group of routines are convenience wrappers around the
 ** VFS methods.
 */
-int sqlite3OsOpen(
+整数 sqlite3OsOpen(
   sqlite3_vfs *pVfs,
   const char *zPath,
   sqlite3_file *pFile,
-  int flags,
-  int *pFlagsOut
+  整数 flags,
+  整数 *pFlagsOut
 ){
-  int rc;
+  整数 rc;
   DO_OS_MALLOC_TEST(0);
   /* 0x87f7f is a mask of SQLITE_OPEN_ flags that are valid to be passed
   ** down into the VFS layer.  Some SQLITE_OPEN_ flags (for example,
@@ -228,107 +228,107 @@ int sqlite3OsOpen(
   assert( zPath || (flags & SQLITE_OPEN_EXCLUSIVE) );
   rc = pVfs->xOpen(pVfs, zPath, pFile, flags & 0x1087f7f, pFlagsOut);
   assert( rc==SQLITE_OK || pFile->pMethods==0 );
-  return rc;
+  戻る rc;
 }
-int sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
+整数 sqlite3OsDelete(sqlite3_vfs *pVfs, const char *zPath, 整数 dirSync){
   DO_OS_MALLOC_TEST(0);
   assert( dirSync==0 || dirSync==1 );
-  return pVfs->xDelete!=0 ? pVfs->xDelete(pVfs, zPath, dirSync) : SQLITE_OK;
+  戻る pVfs->xDelete!=0 ? pVfs->xDelete(pVfs, zPath, dirSync) : SQLITE_OK;
 }
-int sqlite3OsAccess(
+整数 sqlite3OsAccess(
   sqlite3_vfs *pVfs,
   const char *zPath,
-  int flags,
-  int *pResOut
+  整数 flags,
+  整数 *pResOut
 ){
   DO_OS_MALLOC_TEST(0);
-  return pVfs->xAccess(pVfs, zPath, flags, pResOut);
+  戻る pVfs->xAccess(pVfs, zPath, flags, pResOut);
 }
-int sqlite3OsFullPathname(
+整数 sqlite3OsFullPathname(
   sqlite3_vfs *pVfs,
   const char *zPath,
-  int nPathOut,
+  整数 nPathOut,
   char *zPathOut
 ){
   DO_OS_MALLOC_TEST(0);
   zPathOut[0] = 0;
-  return pVfs->xFullPathname(pVfs, zPath, nPathOut, zPathOut);
+  戻る pVfs->xFullPathname(pVfs, zPath, nPathOut, zPathOut);
 }
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 void *sqlite3OsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
   assert( zPath!=0 );
   assert( strlen(zPath)<=SQLITE_MAX_PATHLEN );  /* tag-20210611-1 */
-  return pVfs->xDlOpen(pVfs, zPath);
+  戻る pVfs->xDlOpen(pVfs, zPath);
 }
-void sqlite3OsDlError(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
+void sqlite3OsDlError(sqlite3_vfs *pVfs, 整数 nByte, char *zBufOut){
   pVfs->xDlError(pVfs, nByte, zBufOut);
 }
 void (*sqlite3OsDlSym(sqlite3_vfs *pVfs, void *pHdle, const char *zSym))(void){
-  return pVfs->xDlSym(pVfs, pHdle, zSym);
+  戻る pVfs->xDlSym(pVfs, pHdle, zSym);
 }
 void sqlite3OsDlClose(sqlite3_vfs *pVfs, void *pHandle){
   pVfs->xDlClose(pVfs, pHandle);
 }
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
-int sqlite3OsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  if( sqlite3Config.iPrngSeed ){
+整数 sqlite3OsRandomness(sqlite3_vfs *pVfs, 整数 nByte, char *zBufOut){
+  もし( sqlite3Config.iPrngSeed ){
     memset(zBufOut, 0, nByte);
-    if( ALWAYS(nByte>(signed)sizeof(unsigned)) ) nByte = sizeof(unsigned int);
+    もし( ALWAYS(nByte>(signed)sizeof(unsigned)) ) nByte = sizeof(unsigned 整数);
     memcpy(zBufOut, &sqlite3Config.iPrngSeed, nByte);
-    return SQLITE_OK;
-  }else{
-    return pVfs->xRandomness(pVfs, nByte, zBufOut);
+    戻る SQLITE_OK;
+  }否则{
+    戻る pVfs->xRandomness(pVfs, nByte, zBufOut);
   }
 
 }
-int sqlite3OsSleep(sqlite3_vfs *pVfs, int nMicro){
-  return pVfs->xSleep(pVfs, nMicro);
+整数 sqlite3OsSleep(sqlite3_vfs *pVfs, 整数 nMicro){
+  戻る pVfs->xSleep(pVfs, nMicro);
 }
-int sqlite3OsGetLastError(sqlite3_vfs *pVfs){
-  return pVfs->xGetLastError ? pVfs->xGetLastError(pVfs, 0, 0) : 0;
+整数 sqlite3OsGetLastError(sqlite3_vfs *pVfs){
+  戻る pVfs->xGetLastError ? pVfs->xGetLastError(pVfs, 0, 0) : 0;
 }
-int sqlite3OsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
-  int rc;
+整数 sqlite3OsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
+  整数 rc;
   /* IMPLEMENTATION-OF: R-49045-42493 SQLite will use the xCurrentTimeInt64()
   ** method to get the current date and time if that method is available
   ** (if iVersion is 2 or greater and the function pointer is not NULL) and
   ** will fall back to xCurrentTime() if xCurrentTimeInt64() is
   ** unavailable.
   */
-  if( pVfs->iVersion>=2 && pVfs->xCurrentTimeInt64 ){
+  もし( pVfs->iVersion>=2 && pVfs->xCurrentTimeInt64 ){
     rc = pVfs->xCurrentTimeInt64(pVfs, pTimeOut);
-  }else{
+  }否则{
     double r;
     rc = pVfs->xCurrentTime(pVfs, &r);
     *pTimeOut = sqlite3RealToI64(r*86400000.0);
   }
-  return rc;
+  戻る rc;
 }
 
-int sqlite3OsOpenMalloc(
+整数 sqlite3OsOpenMalloc(
   sqlite3_vfs *pVfs,
   const char *zFile,
   sqlite3_file **ppFile,
-  int flags,
-  int *pOutFlags
+  整数 flags,
+  整数 *pOutFlags
 ){
-  int rc;
+  整数 rc;
   sqlite3_file *pFile;
   pFile = (sqlite3_file *)sqlite3MallocZero(pVfs->szOsFile);
-  if( pFile ){
+  もし( pFile ){
     rc = sqlite3OsOpen(pVfs, zFile, pFile, flags, pOutFlags);
-    if( rc!=SQLITE_OK ){
+    もし( rc!=SQLITE_OK ){
       sqlite3_free(pFile);
       *ppFile = 0;
-    }else{
+    }否则{
       *ppFile = pFile;
     }
-  }else{
+  }否则{
     *ppFile = 0;
     rc = SQLITE_NOMEM_BKPT;
   }
   assert( *ppFile!=0 || rc!=SQLITE_OK );
-  return rc;
+  戻る rc;
 }
 void sqlite3OsCloseFree(sqlite3_file *pFile){
   assert( pFile );
@@ -342,11 +342,11 @@ void sqlite3OsCloseFree(sqlite3_file *pFile){
 ** ability to simulate a malloc failure, so that the handling of an
 ** error in sqlite3_os_init() by the upper layers can be tested.
 */
-int sqlite3OsInit(void){
+整数 sqlite3OsInit(void){
   void *p = sqlite3_malloc(10);
-  if( p==0 ) return SQLITE_NOMEM_BKPT;
+  もし( p==0 ) 戻る SQLITE_NOMEM_BKPT;
   sqlite3_free(p);
-  return sqlite3_os_init();
+  戻る sqlite3_os_init();
 }
 
 /*
@@ -361,23 +361,23 @@ static sqlite3_vfs * SQLITE_WSD vfsList = 0;
 */
 sqlite3_vfs *sqlite3_vfs_find(const char *zVfs){
   sqlite3_vfs *pVfs = 0;
-#if SQLITE_THREADSAFE
+#もし SQLITE_THREADSAFE
   sqlite3_mutex *mutex;
 #endif
 #ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return 0;
+  整数 rc = sqlite3_initialize();
+  もし( rc ) 戻る 0;
 #endif
-#if SQLITE_THREADSAFE
+#もし SQLITE_THREADSAFE
   mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
   sqlite3_mutex_enter(mutex);
-  for(pVfs = vfsList; pVfs; pVfs=pVfs->pNext){
-    if( zVfs==0 ) break;
-    if( strcmp(zVfs, pVfs->zName)==0 ) break;
+  ために(pVfs = vfsList; pVfs; pVfs=pVfs->pNext){
+    もし( zVfs==0 ) break;
+    もし( strcmp(zVfs, pVfs->zName)==0 ) break;
   }
   sqlite3_mutex_leave(mutex);
-  return pVfs;
+  戻る pVfs;
 }
 
 /*
@@ -385,16 +385,16 @@ sqlite3_vfs *sqlite3_vfs_find(const char *zVfs){
 */
 static void vfsUnlink(sqlite3_vfs *pVfs){
   assert( sqlite3_mutex_held(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN)) );
-  if( pVfs==0 ){
+  もし( pVfs==0 ){
     /* No-op */
-  }else if( vfsList==pVfs ){
+  }否则 もし( vfsList==pVfs ){
     vfsList = pVfs->pNext;
-  }else if( vfsList ){
+  }否则 もし( vfsList ){
     sqlite3_vfs *p = vfsList;
-    while( p->pNext && p->pNext!=pVfs ){
+    ながら( p->pNext && p->pNext!=pVfs ){
       p = p->pNext;
     }
-    if( p->pNext==pVfs ){
+    もし( p->pNext==pVfs ){
       p->pNext = pVfs->pNext;
     }
   }
@@ -405,43 +405,43 @@ static void vfsUnlink(sqlite3_vfs *pVfs){
 ** VFS multiple times.  The new VFS becomes the default if makeDflt is
 ** true.
 */
-int sqlite3_vfs_register(sqlite3_vfs *pVfs, int makeDflt){
+整数 sqlite3_vfs_register(sqlite3_vfs *pVfs, 整数 makeDflt){
   MUTEX_LOGIC(sqlite3_mutex *mutex;)
 #ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return rc;
+  整数 rc = sqlite3_initialize();
+  もし( rc ) 戻る rc;
 #endif
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( pVfs==0 ) return SQLITE_MISUSE_BKPT;
+  もし( pVfs==0 ) 戻る SQLITE_MISUSE_BKPT;
 #endif
 
   MUTEX_LOGIC( mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
   sqlite3_mutex_enter(mutex);
   vfsUnlink(pVfs);
-  if( makeDflt || vfsList==0 ){
+  もし( makeDflt || vfsList==0 ){
     pVfs->pNext = vfsList;
     vfsList = pVfs;
-  }else{
+  }否则{
     pVfs->pNext = vfsList->pNext;
     vfsList->pNext = pVfs;
   }
   assert(vfsList);
   sqlite3_mutex_leave(mutex);
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }
 
 /*
 ** Unregister a VFS so that it is no longer accessible.
 */
-int sqlite3_vfs_unregister(sqlite3_vfs *pVfs){
+整数 sqlite3_vfs_unregister(sqlite3_vfs *pVfs){
   MUTEX_LOGIC(sqlite3_mutex *mutex;)
 #ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return rc;
+  整数 rc = sqlite3_initialize();
+  もし( rc ) 戻る rc;
 #endif
   MUTEX_LOGIC( mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
   sqlite3_mutex_enter(mutex);
   vfsUnlink(pVfs);
   sqlite3_mutex_leave(mutex);
-  return SQLITE_OK;
+  戻る SQLITE_OK;
 }

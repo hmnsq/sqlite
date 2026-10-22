@@ -114,7 +114,7 @@ struct RowSet {
   struct RowSetEntry *pForest;   /* List of binary trees of entries */
   u16 nFresh;                    /* Number of objects on pFresh */
   u16 rsFlags;                   /* Various flags */
-  int iBatch;                    /* Current insert batch */
+  整数 iBatch;                    /* Current insert batch */
 };
 
 /*
@@ -129,8 +129,8 @@ struct RowSet {
 */
 RowSet *sqlite3RowSetInit(sqlite3 *db){
   RowSet *p = sqlite3DbMallocRawNN(db, sizeof(*p));
-  if( p ){
-    int N = sqlite3DbMallocSize(db, p);
+  もし( p ){
+    整数 N = sqlite3DbMallocSize(db, p);
     p->pChunk = 0;
     p->db = db;
     p->pEntry = 0;
@@ -141,7 +141,7 @@ RowSet *sqlite3RowSetInit(sqlite3 *db){
     p->rsFlags = ROWSET_SORTED;
     p->iBatch = 0;
   }
-  return p;
+  戻る p;
 }
 
 /*
@@ -152,7 +152,7 @@ RowSet *sqlite3RowSetInit(sqlite3 *db){
 void sqlite3RowSetClear(void *pArg){
   RowSet *p = (RowSet*)pArg;
   struct RowSetChunk *pChunk, *pNextChunk;
-  for(pChunk=p->pChunk; pChunk; pChunk = pNextChunk){
+  ために(pChunk=p->pChunk; pChunk; pChunk = pNextChunk){
     pNextChunk = pChunk->pNextChunk;
     sqlite3DbFree(p->db, pChunk);
   }
@@ -184,13 +184,13 @@ void sqlite3RowSetDelete(void *pArg){
 */
 static struct RowSetEntry *rowSetEntryAlloc(RowSet *p){
   assert( p!=0 );
-  if( p->nFresh==0 ){  /*OPTIMIZATION-IF-FALSE*/
+  もし( p->nFresh==0 ){  /*OPTIMIZATION-IF-FALSE*/
     /* We could allocate a fresh RowSetEntry each time one is needed, but it
     ** is more efficient to pull a preallocated entry from the pool */
     struct RowSetChunk *pNew;
     pNew = sqlite3DbMallocRawNN(p->db, sizeof(*pNew));
-    if( pNew==0 ){
-      return 0;
+    もし( pNew==0 ){
+      戻る 0;
     }
     pNew->pNextChunk = p->pChunk;
     p->pChunk = pNew;
@@ -198,7 +198,7 @@ static struct RowSetEntry *rowSetEntryAlloc(RowSet *p){
     p->nFresh = ROWSET_ENTRY_PER_CHUNK;
   }
   p->nFresh--;
-  return p->pFresh++;
+  戻る p->pFresh++;
 }
 
 /*
@@ -215,18 +215,18 @@ void sqlite3RowSetInsert(RowSet *p, i64 rowid){
   assert( p!=0 && (p->rsFlags & ROWSET_NEXT)==0 );
 
   pEntry = rowSetEntryAlloc(p);
-  if( pEntry==0 ) return;
+  もし( pEntry==0 ) 戻る;
   pEntry->v = rowid;
   pEntry->pRight = 0;
   pLast = p->pLast;
-  if( pLast ){
-    if( rowid<=pLast->v ){  /*OPTIMIZATION-IF-FALSE*/
+  もし( pLast ){
+    もし( rowid<=pLast->v ){  /*OPTIMIZATION-IF-FALSE*/
       /* Avoid unnecessary sorts by preserving the ROWSET_SORTED flags
       ** where possible */
       p->rsFlags &= ~ROWSET_SORTED;
     }
     pLast->pRight = pEntry;
-  }else{
+  }否则{
     p->pEntry = pEntry;
   }
   p->pLast = pEntry;
@@ -247,26 +247,26 @@ static struct RowSetEntry *rowSetEntryMerge(
 
   pTail = &head;
   assert( pA!=0 && pB!=0 );
-  for(;;){
+  ために(;;){
     assert( pA->pRight==0 || pA->v<=pA->pRight->v );
     assert( pB->pRight==0 || pB->v<=pB->pRight->v );
-    if( pA->v<=pB->v ){
-      if( pA->v<pB->v ) pTail = pTail->pRight = pA;
+    もし( pA->v<=pB->v ){
+      もし( pA->v<pB->v ) pTail = pTail->pRight = pA;
       pA = pA->pRight;
-      if( pA==0 ){
+      もし( pA==0 ){
         pTail->pRight = pB;
         break;
       }
-    }else{
+    }否则{
       pTail = pTail->pRight = pB;
       pB = pB->pRight;
-      if( pB==0 ){
+      もし( pB==0 ){
         pTail->pRight = pA;
         break;
       }
     }
   }
-  return head.pRight;
+  戻る head.pRight;
 }
 
 /*
@@ -274,14 +274,14 @@ static struct RowSetEntry *rowSetEntryMerge(
 ** increasing v.
 */
 static struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn){
-  unsigned int i;
+  unsigned 整数 i;
   struct RowSetEntry *pNext, *aBucket[40];
 
   memset(aBucket, 0, sizeof(aBucket));
-  while( pIn ){
+  ながら( pIn ){
     pNext = pIn->pRight;
     pIn->pRight = 0;
-    for(i=0; aBucket[i]; i++){
+    ために(i=0; aBucket[i]; i++){
       pIn = rowSetEntryMerge(aBucket[i], pIn);
       aBucket[i] = 0;
     }
@@ -289,11 +289,11 @@ static struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn){
     pIn = pNext;
   }
   pIn = aBucket[0];
-  for(i=1; i<sizeof(aBucket)/sizeof(aBucket[0]); i++){
-    if( aBucket[i]==0 ) continue;
+  ために(i=1; i<sizeof(aBucket)/sizeof(aBucket[0]); i++){
+    もし( aBucket[i]==0 ) continue;
     pIn = pIn ? rowSetEntryMerge(pIn, aBucket[i]) : aBucket[i];
   }
-  return pIn;
+  戻る pIn;
 }
 
 
@@ -308,16 +308,16 @@ static void rowSetTreeToList(
   struct RowSetEntry **ppLast      /* Write tail of the output list here */
 ){
   assert( pIn!=0 );
-  if( pIn->pLeft ){
+  もし( pIn->pLeft ){
     struct RowSetEntry *p;
     rowSetTreeToList(pIn->pLeft, ppFirst, &p);
     p->pRight = pIn;
-  }else{
+  }否则{
     *ppFirst = pIn;
   }
-  if( pIn->pRight ){
+  もし( pIn->pRight ){
     rowSetTreeToList(pIn->pRight, &pIn->pRight, ppLast);
-  }else{
+  }否则{
     *ppLast = pIn;
   }
   assert( (*ppLast)->pRight==0 );
@@ -339,34 +339,34 @@ static void rowSetTreeToList(
 */
 static struct RowSetEntry *rowSetNDeepTree(
   struct RowSetEntry **ppList,
-  int iDepth
+  整数 iDepth
 ){
   struct RowSetEntry *p;         /* Root of the new tree */
   struct RowSetEntry *pLeft;     /* Left subtree */
-  if( *ppList==0 ){ /*OPTIMIZATION-IF-TRUE*/
+  もし( *ppList==0 ){ /*OPTIMIZATION-IF-TRUE*/
     /* Prevent unnecessary deep recursion when we run out of entries */
-    return 0;
+    戻る 0;
   }
-  if( iDepth>1 ){   /*OPTIMIZATION-IF-TRUE*/
+  もし( iDepth>1 ){   /*OPTIMIZATION-IF-TRUE*/
     /* This branch causes a *balanced* tree to be generated.  A valid tree
     ** is still generated without this branch, but the tree is wildly
     ** unbalanced and inefficient. */
     pLeft = rowSetNDeepTree(ppList, iDepth-1);
     p = *ppList;
-    if( p==0 ){     /*OPTIMIZATION-IF-FALSE*/
+    もし( p==0 ){     /*OPTIMIZATION-IF-FALSE*/
       /* It is safe to always return here, but the resulting tree
       ** would be unbalanced */
-      return pLeft;
+      戻る pLeft;
     }
     p->pLeft = pLeft;
     *ppList = p->pRight;
     p->pRight = rowSetNDeepTree(ppList, iDepth-1);
-  }else{
+  }否则{
     p = *ppList;
     *ppList = p->pRight;
     p->pLeft = p->pRight = 0;
   }
-  return p;
+  戻る p;
 }
 
 /*
@@ -374,7 +374,7 @@ static struct RowSetEntry *rowSetNDeepTree(
 ** as deep as it needs to be in order to contain the entire list.
 */
 static struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList){
-  int iDepth;           /* Depth of the tree so far */
+  整数 iDepth;           /* Depth of the tree so far */
   struct RowSetEntry *p;       /* Current tree root */
   struct RowSetEntry *pLeft;   /* Left subtree */
 
@@ -382,14 +382,14 @@ static struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList){
   p = pList;
   pList = p->pRight;
   p->pLeft = p->pRight = 0;
-  for(iDepth=1; pList; iDepth++){
+  ために(iDepth=1; pList; iDepth++){
     pLeft = p;
     p = pList;
     pList = p->pRight;
     p->pLeft = pLeft;
     p->pRight = rowSetNDeepTree(&pList, iDepth);
   }
-  return p;
+  戻る p;
 }
 
 /*
@@ -405,29 +405,29 @@ static struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList){
 ** capability was not used by the code generator, it was removed
 ** for code economy.
 */
-int sqlite3RowSetNext(RowSet *p, i64 *pRowid){
+整数 sqlite3RowSetNext(RowSet *p, i64 *pRowid){
   assert( p!=0 );
   assert( p->pForest==0 );  /* Cannot be used with sqlite3RowSetText() */
 
   /* Merge the forest into a single sorted list on first call */
-  if( (p->rsFlags & ROWSET_NEXT)==0 ){  /*OPTIMIZATION-IF-FALSE*/
-    if( (p->rsFlags & ROWSET_SORTED)==0 ){  /*OPTIMIZATION-IF-FALSE*/
+  もし( (p->rsFlags & ROWSET_NEXT)==0 ){  /*OPTIMIZATION-IF-FALSE*/
+    もし( (p->rsFlags & ROWSET_SORTED)==0 ){  /*OPTIMIZATION-IF-FALSE*/
       p->pEntry = rowSetEntrySort(p->pEntry);
     }
     p->rsFlags |= ROWSET_SORTED|ROWSET_NEXT;
   }
 
   /* Return the next entry on the list */
-  if( p->pEntry ){
+  もし( p->pEntry ){
     *pRowid = p->pEntry->v;
     p->pEntry = p->pEntry->pRight;
-    if( p->pEntry==0 ){ /*OPTIMIZATION-IF-TRUE*/
+    もし( p->pEntry==0 ){ /*OPTIMIZATION-IF-TRUE*/
       /* Free memory immediately, rather than waiting on sqlite3_finalize() */
       sqlite3RowSetClear(p);
     }
-    return 1;
-  }else{
-    return 0;
+    戻る 1;
+  }否则{
+    戻る 0;
   }
 }
 
@@ -439,7 +439,7 @@ int sqlite3RowSetNext(RowSet *p, i64 *pRowid){
 ** on pRowSet->pEntry, then sort those entries into the forest at
 ** pRowSet->pForest so that they can be tested.
 */
-int sqlite3RowSetTest(RowSet *pRowSet, int iBatch, sqlite3_int64 iRowid){
+整数 sqlite3RowSetTest(RowSet *pRowSet, 整数 iBatch, sqlite3_int64 iRowid){
   struct RowSetEntry *p, *pTree;
 
   /* This routine is never called after sqlite3RowSetNext() */
@@ -448,29 +448,29 @@ int sqlite3RowSetTest(RowSet *pRowSet, int iBatch, sqlite3_int64 iRowid){
   /* Sort entries into the forest on the first test of a new batch.
   ** To save unnecessary work, only do this when the batch number changes.
   */
-  if( iBatch!=pRowSet->iBatch ){  /*OPTIMIZATION-IF-FALSE*/
+  もし( iBatch!=pRowSet->iBatch ){  /*OPTIMIZATION-IF-FALSE*/
     p = pRowSet->pEntry;
-    if( p ){
+    もし( p ){
       struct RowSetEntry **ppPrevTree = &pRowSet->pForest;
-      if( (pRowSet->rsFlags & ROWSET_SORTED)==0 ){ /*OPTIMIZATION-IF-FALSE*/
+      もし( (pRowSet->rsFlags & ROWSET_SORTED)==0 ){ /*OPTIMIZATION-IF-FALSE*/
         /* Only sort the current set of entries if they need it */
         p = rowSetEntrySort(p);
       }
-      for(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
+      ために(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
         ppPrevTree = &pTree->pRight;
-        if( pTree->pLeft==0 ){
+        もし( pTree->pLeft==0 ){
           pTree->pLeft = rowSetListToTree(p);
           break;
-        }else{
+        }否则{
           struct RowSetEntry *pAux, *pTail;
           rowSetTreeToList(pTree->pLeft, &pAux, &pTail);
           pTree->pLeft = 0;
           p = rowSetEntryMerge(pAux, p);
         }
       }
-      if( pTree==0 ){
+      もし( pTree==0 ){
         *ppPrevTree = pTree = rowSetEntryAlloc(pRowSet);
-        if( pTree ){
+        もし( pTree ){
           pTree->v = 0;
           pTree->pRight = 0;
           pTree->pLeft = rowSetListToTree(p);
@@ -486,17 +486,17 @@ int sqlite3RowSetTest(RowSet *pRowSet, int iBatch, sqlite3_int64 iRowid){
   /* Test to see if the iRowid value appears anywhere in the forest.
   ** Return 1 if it does and 0 if not.
   */
-  for(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
+  ために(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
     p = pTree->pLeft;
-    while( p ){
-      if( p->v<iRowid ){
+    ながら( p ){
+      もし( p->v<iRowid ){
         p = p->pRight;
-      }else if( p->v>iRowid ){
+      }否则 もし( p->v>iRowid ){
         p = p->pLeft;
-      }else{
-        return 1;
+      }否则{
+        戻る 1;
       }
     }
   }
-  return 0;
+  戻る 0;
 }

@@ -37,15 +37,15 @@
 **
 **   SQLITE_MUTEX_W32          For multi-threaded applications on Win32.
 */
-#if !SQLITE_THREADSAFE
+#もし !SQLITE_THREADSAFE
 # define SQLITE_MUTEX_OMIT
 #endif
-#if SQLITE_THREADSAFE && !defined(SQLITE_MUTEX_NOOP)
-#  if SQLITE_OS_UNIX || defined(__CYGWIN__)
+#もし SQLITE_THREADSAFE && !defined(SQLITE_MUTEX_NOOP)
+#  もし SQLITE_OS_UNIX || defined(__CYGWIN__)
 #    define SQLITE_MUTEX_PTHREADS
 #  elif SQLITE_OS_WIN
 #    define SQLITE_MUTEX_W32
-#  else
+#  否则
 #    define SQLITE_MUTEX_NOOP
 #  endif
 #endif
@@ -65,7 +65,7 @@
 #define sqlite3MutexInit()        SQLITE_OK
 #define sqlite3MutexEnd()
 #define MUTEX_LOGIC(X)
-#else
+#否则
 #define MUTEX_LOGIC(X)            X
-int sqlite3_mutex_held(sqlite3_mutex*);
+整数 sqlite3_mutex_held(sqlite3_mutex*);
 #endif /* defined(SQLITE_MUTEX_OMIT) */
