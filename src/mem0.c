@@ -16,7 +16,7 @@
 ** are merely placeholders.  Real drivers must be substituted using
 ** sqlite3_config() before SQLite will operate.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is the default.  It is
@@ -28,13 +28,13 @@
 /*
 ** No-op versions of all memory allocation routines
 */
-static void *sqlite3MemMalloc(int nByte){ return 0; }
-static void sqlite3MemFree(void *pPrior){ return; }
-static void *sqlite3MemRealloc(void *pPrior, int nByte){ return 0; }
-static int sqlite3MemSize(void *pPrior){ return 0; }
-static int sqlite3MemRoundup(int n){ return n; }
-static int sqlite3MemInit(void *NotUsed){ return SQLITE_OK; }
-static void sqlite3MemShutdown(void *NotUsed){ return; }
+स्थिर शून्य *sqlite3MemMalloc(पूर्णाङ्क nByte){ प्रत्यागम 0; }
+स्थिर शून्य sqlite3MemFree(शून्य *pPrior){ प्रत्यागम; }
+स्थिर शून्य *sqlite3MemRealloc(शून्य *pPrior, पूर्णाङ्क nByte){ प्रत्यागम 0; }
+स्थिर पूर्णाङ्क sqlite3MemSize(शून्य *pPrior){ प्रत्यागम 0; }
+स्थिर पूर्णाङ्क sqlite3MemRoundup(पूर्णाङ्क n){ प्रत्यागम n; }
+स्थिर पूर्णाङ्क sqlite3MemInit(शून्य *NotUsed){ प्रत्यागम SQLITE_OK; }
+स्थिर शून्य sqlite3MemShutdown(शून्य *NotUsed){ प्रत्यागम; }
 
 /*
 ** This routine is the only routine in this file with external linkage.
@@ -42,8 +42,8 @@ static void sqlite3MemShutdown(void *NotUsed){ return; }
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
-  static const sqlite3_mem_methods defaultMethods = {
+शून्य sqlite3MemSetDefault(शून्य){
+  स्थिर ध्रुव sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
      sqlite3MemRealloc,
