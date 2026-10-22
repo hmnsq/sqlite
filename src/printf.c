@@ -72,7 +72,7 @@ typedef struct et_info {   /* Information about each format field */
 ** The order of the entries in fmtinfo[] and the hash chain was entered
 ** manually, but based on the output of the following TCL script:
 */
-#if 0  /*****  Beginning of script ******/
+#якщо 0  /*****  Beginning of script ******/
 foreach c {d s g z q Q w c o u x X f e E G i n % p T S r J j} {
   scan $c %c x
   set n($c) $x
@@ -82,10 +82,10 @@ puts "count: $mx"
 
 set mx 25
 puts "*********** mx=$mx ************"
-for {set r 0} {$r<$mx} {incr r} {
+для {set r 0} {$r<$mx} {incr r} {
   puts -nonewline [format %2d: $r]
   foreach c [array names n] {
-    if {($n($c))%$mx==$r} {puts -nonewline " $c"}
+    якщо {($n($c))%$mx==$r} {puts -nonewline " $c"}
   }
   puts ""
 }
@@ -134,24 +134,24 @@ static const et_info fmtinfo[25] = {
 void sqlite3StrAccumSetError(StrAccum *p, u8 eError){
   assert( eError==SQLITE_NOMEM || eError==SQLITE_TOOBIG );
   p->accError = eError;
-  if( p->mxAlloc ) sqlite3_str_reset(p);
-  if( eError==SQLITE_TOOBIG ) sqlite3ErrorToParser(p->db, eError);
+  якщо( p->mxAlloc ) sqlite3_str_reset(p);
+  якщо( eError==SQLITE_TOOBIG ) sqlite3ErrorToParser(p->db, eError);
 }
 
 /*
 ** Extra argument values from a PrintfArguments object
 */
 static sqlite3_int64 getIntArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0;
-  return sqlite3_value_int64(p->apArg[p->nUsed++]);
+  якщо( p->nArg<=p->nUsed ) повернути 0;
+  повернути sqlite3_value_int64(p->apArg[p->nUsed++]);
 }
 static double getDoubleArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0.0;
-  return sqlite3_value_double(p->apArg[p->nUsed++]);
+  якщо( p->nArg<=p->nUsed ) повернути 0.0;
+  повернути sqlite3_value_double(p->apArg[p->nUsed++]);
 }
 static char *getTextArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0;
-  return (char*)sqlite3_value_text(p->apArg[p->nUsed++]);
+  якщо( p->nArg<=p->nUsed ) повернути 0;
+  повернути (char*)sqlite3_value_text(p->apArg[p->nUsed++]);
 }
 
 /*
@@ -165,16 +165,16 @@ static char *getTextArg(PrintfArguments *p){
 */
 static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
   char *z;
-  if( pAccum->accError ) return 0;
-  if( n>pAccum->nAlloc && n>pAccum->mxAlloc ){
+  якщо( pAccum->accError ) повернути 0;
+  якщо( n>pAccum->nAlloc && n>pAccum->mxAlloc ){
     sqlite3StrAccumSetError(pAccum, SQLITE_TOOBIG);
-    return 0;
+    повернути 0;
   }
   z = sqlite3_malloc(n);
-  if( z==0 ){
+  якщо( z==0 ){
     sqlite3StrAccumSetError(pAccum, SQLITE_NOMEM);
   }
-  return z;
+  повернути z;
 }
 
 /*
@@ -191,12 +191,12 @@ static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
 ** the minimum of SQLITE_PRINTF_PRECISION_LIMIT and 100 million.
 */
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-# if SQLITE_PRINTF_PRECISION_LIMIT<100000000
+# якщо SQLITE_PRINTF_PRECISION_LIMIT<100000000
 #   define SQLITE_FP_PRECISION_LIMIT SQLITE_PRINTF_PRECISION_LIMIT
-# else
+# інакше
 #   define SQLITE_FP_PRECISION_LIMIT 100000000
 # endif
-#else
+#інакше
 # define SQLITE_FP_PRECISION_LIMIT 100000000
 #endif
 
@@ -212,11 +212,11 @@ void sqlite3_str_vappendf(
   const char *fmt,           /* Format string */
   va_list ap                 /* arguments */
 ){
-  int c;                     /* Next character in the format string */
+  ціле c;                     /* Next character in the format string */
   char *bufpt;               /* Pointer to the conversion buffer */
   i64 precision;             /* Precision of the current field */
   i64 length;                /* Length of the field */
-  int idx;                   /* A general purpose loop counter */
+  ціле idx;                   /* A general purpose loop counter */
   i64 width;                 /* Width of the current field */
   etByte flag_leftjustify;   /* True if "-" flag is present */
   etByte flag_prefix;        /* '+' or ' ' or 0 for prefix */
@@ -233,9 +233,9 @@ void sqlite3_str_vappendf(
   double realvalue;          /* Value for real types */
   const et_info *infop;      /* Pointer to the appropriate info structure */
   char *zOut;                /* Rendering buffer */
-  int nOut;                  /* Size of the rendering buffer */
+  ціле nOut;                  /* Size of the rendering buffer */
   char *zExtra = 0;          /* Malloced memory used by some conversion */
-  int exp, e2;               /* exponent of real numbers */
+  ціле exp, e2;               /* exponent of real numbers */
   etByte flag_dp;            /* True if decimal point should be shown */
   etByte flag_rtz;           /* True if trailing zeros should be removed */
 
@@ -248,27 +248,27 @@ void sqlite3_str_vappendf(
   assert( pAccum->nChar>0 || (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
 
   bufpt = 0;
-  if( (pAccum->printfFlags & SQLITE_PRINTF_SQLFUNC)!=0 ){
+  якщо( (pAccum->printfFlags & SQLITE_PRINTF_SQLFUNC)!=0 ){
     pArgList = va_arg(ap, PrintfArguments*);
     bArgList = 1;
-  }else{
+  }інакше{
     bArgList = 0;
   }
-  for(; (c=(*fmt))!=0; ++fmt){
-    if( c!='%' ){
+  для(; (c=(*fmt))!=0; ++fmt){
+    якщо( c!='%' ){
       bufpt = (char *)fmt;
-#if HAVE_STRCHRNUL
+#якщо HAVE_STRCHRNUL
       fmt = strchrnul(fmt, '%');
-#else
+#інакше
       fmt = strchr(fmt, '%');
-      if( fmt==0 ){
+      якщо( fmt==0 ){
         fmt = bufpt + strlen(bufpt);
       }
 #endif
       sqlite3StrAppend64(pAccum, bufpt, fmt - bufpt);
-      if( *fmt==0 ) break;
+      якщо( *fmt==0 ) break;
     }
-    if( (c=(*++fmt))==0 ){
+    якщо( (c=(*++fmt))==0 ){
       sqlite3_str_append(pAccum, "%", 1);
       break;
     }
@@ -292,7 +292,7 @@ void sqlite3_str_vappendf(
         case 'l': {
           flag_long = 1;
           c = *++fmt;
-          if( c=='l' ){
+          якщо( c=='l' ){
             c = *++fmt;
             flag_long = 2;
           }
@@ -302,39 +302,39 @@ void sqlite3_str_vappendf(
         case '1': case '2': case '3': case '4': case '5':
         case '6': case '7': case '8': case '9': {
           unsigned wx = c - '0';
-          while( (c = *++fmt)>='0' && c<='9' ){
+          поки( (c = *++fmt)>='0' && c<='9' ){
             wx = wx*10 + c - '0';
           }
           testcase( wx>0x7fffffff );
           width = wx & 0x7fffffff;
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( width>SQLITE_PRINTF_PRECISION_LIMIT ){
+          якщо( width>SQLITE_PRINTF_PRECISION_LIMIT ){
             width = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( c!='.' && c!='l' ){
+          якщо( c!='.' && c!='l' ){
             done = 1;
-          }else{
+          }інакше{
             fmt--;
           }
           break;
         }
         case '*': {
-          if( bArgList ){
-            width = (int)getIntArg(pArgList);
-          }else{
-            width = va_arg(ap,int);
+          якщо( bArgList ){
+            width = (ціле)getIntArg(pArgList);
+          }інакше{
+            width = va_arg(ap,ціле);
           }
-          if( width<0 ){
+          якщо( width<0 ){
             flag_leftjustify = 1;
             width = width >= -2147483647 ? -width : 0;
           }
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( width>SQLITE_PRINTF_PRECISION_LIMIT ){
+          якщо( width>SQLITE_PRINTF_PRECISION_LIMIT ){
             width = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( (c = fmt[1])!='.' && c!='l' ){
+          якщо( (c = fmt[1])!='.' && c!='l' ){
             c = *++fmt;
             done = 1;
           }
@@ -342,19 +342,19 @@ void sqlite3_str_vappendf(
         }
         case '.': {
           c = *++fmt;
-          if( c=='*' ){
-            if( bArgList ){
-              precision = (int)getIntArg(pArgList);
-            }else{
-              precision = va_arg(ap,int);
+          якщо( c=='*' ){
+            якщо( bArgList ){
+              precision = (ціле)getIntArg(pArgList);
+            }інакше{
+              precision = va_arg(ap,ціле);
             }
-            if( precision<0 ){
+            якщо( precision<0 ){
               precision = precision >= -2147483647 ? -precision : -1;
             }
             c = *++fmt;
-          }else{
+          }інакше{
             unsigned px = 0;
-            while( c>='0' && c<='9' ){
+            поки( c>='0' && c<='9' ){
               px = px*10 + c - '0';
               c = *++fmt;
             }
@@ -362,19 +362,19 @@ void sqlite3_str_vappendf(
             precision = px & 0x7fffffff;
           }
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( precision>SQLITE_PRINTF_PRECISION_LIMIT ){
+          якщо( precision>SQLITE_PRINTF_PRECISION_LIMIT ){
             precision = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( c=='l' ){
+          якщо( c=='l' ){
             --fmt;
-          }else{
+          }інакше{
             done = 1;
           }
           break;
         }
       }
-    }while( !done && (c=(*++fmt))!=0 );
+    }поки( !done && (c=(*++fmt))!=0 );
 
     /* Fetch the info entry for the field */
 #ifdef SQLITE_EBCDIC
@@ -382,23 +382,23 @@ void sqlite3_str_vappendf(
     ** a linear search of the table */
     infop = &fmtinfo[0];
     xtype = etINVALID;
-    for(idx=0; idx<ArraySize(fmtinfo); idx++){
-      if( c==fmtinfo[idx].fmttype ){
+    для(idx=0; idx<ArraySize(fmtinfo); idx++){
+      якщо( c==fmtinfo[idx].fmttype ){
         infop = &fmtinfo[idx];
         xtype = infop->type;
         break;
       }
     }
-#else
+#інакше
     /* Fast hash-table lookup */
     assert( ArraySize(fmtinfo)==25 );
     idx = ((unsigned)c) % 25;
-    if( fmtinfo[idx].fmttype==c
+    якщо( fmtinfo[idx].fmttype==c
      || fmtinfo[idx = fmtinfo[idx].iNxt].fmttype==c
     ){
       infop = &fmtinfo[idx];
       xtype = infop->type;
-    }else{
+    }інакше{
       infop = &fmtinfo[0];
       xtype = etINVALID;
     }
@@ -426,78 +426,78 @@ void sqlite3_str_vappendf(
     switch( xtype ){
       case etPOINTER:
         flag_long = sizeof(char*)==sizeof(i64) ? 2 :
-                     sizeof(char*)==sizeof(long int) ? 1 : 0;
+                     sizeof(char*)==sizeof(long ціле) ? 1 : 0;
         /* no break */ deliberate_fall_through
       case etORDINAL:
       case etRADIX:      
         cThousand = 0;
         /* no break */ deliberate_fall_through
       case etDECIMAL:
-        if( infop->flags & FLAG_SIGNED ){
+        якщо( infop->flags & FLAG_SIGNED ){
           i64 v;
-          if( bArgList ){
+          якщо( bArgList ){
             v = getIntArg(pArgList);
-          }else if( flag_long ){
-            if( flag_long==2 ){
+          }інакше якщо( flag_long ){
+            якщо( flag_long==2 ){
               v = va_arg(ap,i64) ;
-            }else{
-              v = va_arg(ap,long int);
+            }інакше{
+              v = va_arg(ap,long ціле);
             }
-          }else{
-            v = va_arg(ap,int);
+          }інакше{
+            v = va_arg(ap,ціле);
           }
-          if( v<0 ){
+          якщо( v<0 ){
             testcase( v==SMALLEST_INT64 );
             testcase( v==(-1) );
             longvalue = ~v;
             longvalue++;
             prefix = '-';
-          }else{
+          }інакше{
             longvalue = v;
             prefix = flag_prefix;
           }
-        }else{
-          if( bArgList ){
+        }інакше{
+          якщо( bArgList ){
             longvalue = (u64)getIntArg(pArgList);
-          }else if( flag_long ){
-            if( flag_long==2 ){
+          }інакше якщо( flag_long ){
+            якщо( flag_long==2 ){
               longvalue = va_arg(ap,u64);
-            }else{
-              longvalue = va_arg(ap,unsigned long int);
+            }інакше{
+              longvalue = va_arg(ap,unsigned long ціле);
             }
-          }else{
-            longvalue = va_arg(ap,unsigned int);
+          }інакше{
+            longvalue = va_arg(ap,unsigned ціле);
           }
           prefix = 0;
         }
 
-#if WHERETRACE_ENABLED
-        if( xtype==etPOINTER && sqlite3WhereTrace & 0x100000 ) longvalue = 0;
+#якщо WHERETRACE_ENABLED
+        якщо( xtype==etPOINTER && sqlite3WhereTrace & 0x100000 ) longvalue = 0;
 #endif
-#if TREETRACE_ENABLED
-        if( xtype==etPOINTER && sqlite3TreeTrace & 0x100000 ) longvalue = 0;
+#якщо TREETRACE_ENABLED
+        якщо( xtype==etPOINTER && sqlite3TreeTrace & 0x100000 ) longvalue = 0;
 #endif
 
-        if( longvalue==0 ) flag_alternateform = 0;
-        if( flag_zeropad && precision<width-(prefix!=0) ){
+        якщо( longvalue==0 ) flag_alternateform = 0;
+        якщо( flag_zeropad && precision<width-(prefix!=0) ){
           precision = width-(prefix!=0);
         }
-        if( precision<etBUFSIZE-10-etBUFSIZE/3 ){
+        якщо( precision<etBUFSIZE-10-etBUFSIZE/3 ){
           nOut = etBUFSIZE;
           zOut = buf;
-        }else{
+        }інакше{
           u64 n;
           n = (u64)precision + 10;
-          if( cThousand ) n += precision/3;
+          якщо( cThousand ) n += precision/3;
           zOut = zExtra = printfTempBuf(pAccum, n);
-          if( zOut==0 ) return;
-          nOut = (int)n;
+          якщо( zOut==0 ) повернути;
+          nOut = (ціле)n;
         }
         bufpt = &zOut[nOut-1];
-        if( xtype==etORDINAL ){
+        якщо( xtype==etORDINAL ){
           static const char zOrd[] = "thstndrd";
-          int x = (int)(longvalue % 10);
-          if( x>=4 || (longvalue/10)%10==1 ){
+          ціле x = (ціле)(longvalue % 10);
+          якщо( x>=4 || (longvalue/10)%10==1 ){
             x = 0;
           }
           *(--bufpt) = zOrd[x*2+1];
@@ -509,36 +509,36 @@ void sqlite3_str_vappendf(
           do{                                           /* Convert to ascii */
             *(--bufpt) = cset[longvalue%base];
             longvalue = longvalue/base;
-          }while( longvalue>0 );
+          }поки( longvalue>0 );
         }
         length = &zOut[nOut-1] - bufpt;
-        if( precision>length ){                         /* zero pad */
+        якщо( precision>length ){                         /* zero pad */
           i64 nn = precision-length;
           bufpt -= nn;
           memset(bufpt,'0',nn);
           length = precision;
         }
-        if( cThousand ){
+        якщо( cThousand ){
           i64 nn = (length - 1)/3;  /* Number of "," to insert */
           i64 ix = (length - 1)%3 + 1;
-          int ii;
+          ціле ii;
           bufpt -= nn;
-          for(ii=0; nn>0; ii++){
+          для(ii=0; nn>0; ii++){
             bufpt[ii] = bufpt[ii+nn];
             ix--;
-            if( ix==0 ){
+            якщо( ix==0 ){
               bufpt[++ii] = cThousand;
               nn--;
               ix = 3;
             }
           }
         }
-        if( prefix ) *(--bufpt) = prefix;               /* Add sign */
-        if( flag_alternateform && infop->prefix ){      /* Add "0" or "0x" */
+        якщо( prefix ) *(--bufpt) = prefix;               /* Add sign */
+        якщо( flag_alternateform && infop->prefix ){      /* Add "0" or "0x" */
           const char *pre;
           char x;
           pre = &aPrefix[infop->prefix];
-          for(; (x=(*pre))!=0; pre++) *(--bufpt) = x;
+          для(; (x=(*pre))!=0; pre++) *(--bufpt) = x;
         }
         length = &zOut[nOut-1] - bufpt;
         break;
@@ -546,58 +546,58 @@ void sqlite3_str_vappendf(
       case etEXP:
       case etGENERIC: {
         FpDecode s;
-        int iRound;
-        int j;
+        ціле iRound;
+        ціле j;
         i64 szBufNeeded;       /* Size needed to hold the output */
 
-        if( bArgList ){
+        якщо( bArgList ){
           realvalue = getDoubleArg(pArgList);
-        }else{
+        }інакше{
           realvalue = va_arg(ap,double);
         }
-        if( precision<0 ) precision = 6;         /* Set default precision */
-        if( precision>SQLITE_FP_PRECISION_LIMIT ){
+        якщо( precision<0 ) precision = 6;         /* Set default precision */
+        якщо( precision>SQLITE_FP_PRECISION_LIMIT ){
           precision = SQLITE_FP_PRECISION_LIMIT;
         }
-        if( xtype==etFLOAT ){
+        якщо( xtype==etFLOAT ){
           iRound = -precision;
-        }else if( xtype==etGENERIC ){
-          if( precision==0 ) precision = 1;
+        }інакше якщо( xtype==etGENERIC ){
+          якщо( precision==0 ) precision = 1;
           iRound = precision;
-        }else{
+        }інакше{
           iRound = precision+1;
         }
         sqlite3FpDecode(&s, realvalue, iRound, flag_altform2 ? 20 : 16);
-        if( s.isSpecial ){
-          if( s.isSpecial==2 ){
-            if( flag_zeropad ){
+        якщо( s.isSpecial ){
+          якщо( s.isSpecial==2 ){
+            якщо( flag_zeropad ){
               bufpt = "null";
               length = 4;
-            }else{
+            }інакше{
               bufpt = "NaN";
               length = 3;
             }
             break;
-          }else if( flag_zeropad ){
+          }інакше якщо( flag_zeropad ){
             s.z[0] = '9';
             s.iDP = 1000;
             s.n = 1;
-          }else{
+          }інакше{
             memcpy(buf, "-Inf", 5);
             bufpt = buf;
-            if( s.sign=='-' ){
+            якщо( s.sign=='-' ){
               /* no-op */
-            }else if( flag_prefix ){
+            }інакше якщо( flag_prefix ){
               buf[0] = flag_prefix;
-            }else{
+            }інакше{
               bufpt++;
             }
             length = strlen(bufpt);
             break;
           }
         }
-        if( s.sign=='-' ){
-          if( flag_alternateform
+        якщо( s.sign=='-' ){
+          якщо( flag_alternateform
            && !flag_prefix
            && xtype==etFLOAT
            && s.iDP<=iRound
@@ -609,10 +609,10 @@ void sqlite3_str_vappendf(
             **   *  The format is %f
             */
             prefix = 0;
-          }else{
+          }інакше{
             prefix = '-';
           }
-        }else{
+        }інакше{
           prefix = flag_prefix;
         }
 
@@ -622,125 +622,125 @@ void sqlite3_str_vappendf(
         ** If the field type is etGENERIC, then convert to either etEXP
         ** or etFLOAT, as appropriate.
         */
-        if( xtype==etGENERIC ){
+        якщо( xtype==etGENERIC ){
           assert( precision>0 );
           precision--;
           flag_rtz = !flag_alternateform;
-          if( exp<-4 || exp>precision ){
+          якщо( exp<-4 || exp>precision ){
             xtype = etEXP;
-          }else{
+          }інакше{
             precision = precision - exp;
             xtype = etFLOAT;
           }
-        }else{
+        }інакше{
           flag_rtz = flag_altform2;
         }
-        if( xtype==etEXP ){
+        якщо( xtype==etEXP ){
           e2 = 0;
-        }else{
+        }інакше{
           e2 = s.iDP - 1;
         }
 
         szBufNeeded = MAX(e2,0)+(i64)precision+(i64)width+10;
-        if( cThousand && e2>0 ) szBufNeeded += (e2+2)/3;
-        if( szBufNeeded + pAccum->nChar >= pAccum->nAlloc ){
-          if( pAccum->mxAlloc==0 && pAccum->accError==0 ){
+        якщо( cThousand && e2>0 ) szBufNeeded += (e2+2)/3;
+        якщо( szBufNeeded + pAccum->nChar >= pAccum->nAlloc ){
+          якщо( pAccum->mxAlloc==0 && pAccum->accError==0 ){
             /* Unable to allocate space in pAccum, perhaps because it
             ** is coming from sqlite3_snprintf() or similar.  We'll have
             ** to render into temporary space and the memcpy() it over. */
             bufpt = sqlite3_malloc64(szBufNeeded);
-            if( bufpt==0 ){
+            якщо( bufpt==0 ){
               sqlite3StrAccumSetError(pAccum, SQLITE_NOMEM);
-              return;
+              повернути;
             }
             zExtra = bufpt;
-          }else if( sqlite3StrAccumEnlarge(pAccum, szBufNeeded)<szBufNeeded ){
+          }інакше якщо( sqlite3StrAccumEnlarge(pAccum, szBufNeeded)<szBufNeeded ){
             width = length = 0;
             break;
-          }else{
+          }інакше{
             bufpt = pAccum->zText + pAccum->nChar;
           }
-        }else{
+        }інакше{
           bufpt = pAccum->zText + pAccum->nChar;
         }
         zOut = bufpt;
 
         flag_dp = (precision>0 ?1:0) | flag_alternateform | flag_altform2;
         /* The sign in front of the number */
-        if( prefix ){
+        якщо( prefix ){
           *(bufpt++) = prefix;
         }
         /* Digits prior to the decimal point */
         j = 0;
         assert( s.n>0 );
-        if( e2<0 ){
+        якщо( e2<0 ){
           *(bufpt++) = '0';
-        }else if( cThousand ){
-          for(; e2>=0; e2--){
+        }інакше якщо( cThousand ){
+          для(; e2>=0; e2--){
             *(bufpt++) = j<s.n ? s.z[j++] : '0';
-            if( (e2%3)==0 && e2>1 ) *(bufpt++) = ',';
+            якщо( (e2%3)==0 && e2>1 ) *(bufpt++) = ',';
           }
-        }else{
+        }інакше{
           j = e2+1;
-          if( j>s.n ) j = s.n;
+          якщо( j>s.n ) j = s.n;
           memcpy(bufpt, s.z, j);
           bufpt += j;
           e2 -= j;
-          if( e2>=0 ){
+          якщо( e2>=0 ){
             memset(bufpt, '0', e2+1);
             bufpt += e2+1;
             e2 = -1;
           }
         }
         /* The decimal point */
-        if( flag_dp ){
+        якщо( flag_dp ){
           *(bufpt++) = '.';
         }
         /* "0" digits after the decimal point but before the first
         ** significant digit of the number */
-        if( e2<(-1) && precision>0 ){
-          int nn = -1-e2;
-          if( nn>precision ) nn = precision;
+        якщо( e2<(-1) && precision>0 ){
+          ціле nn = -1-e2;
+          якщо( nn>precision ) nn = precision;
           memset(bufpt, '0', nn);
           bufpt += nn;
           precision -= nn;
         }
         /* Significant digits after the decimal point */
-        if( precision>0 ){
-          int nn = s.n - j;
-          if( NEVER(nn>precision) ) nn = precision;
-          if( nn>0 ){
+        якщо( precision>0 ){
+          ціле nn = s.n - j;
+          якщо( NEVER(nn>precision) ) nn = precision;
+          якщо( nn>0 ){
             memcpy(bufpt, s.z+j, nn);
             bufpt += nn;
             precision -= nn;
           }
-          if( precision>0 && !flag_rtz ){
+          якщо( precision>0 && !flag_rtz ){
             memset(bufpt, '0', precision);
             bufpt += precision;
           }
         }
         /* Remove trailing zeros and the "." if no digits follow the "." */
-        if( flag_rtz && flag_dp ){
-          while( bufpt[-1]=='0' ) *(--bufpt) = 0;
+        якщо( flag_rtz && flag_dp ){
+          поки( bufpt[-1]=='0' ) *(--bufpt) = 0;
           assert( bufpt>zOut );
-          if( bufpt[-1]=='.' ){
-            if( flag_altform2 ){
+          якщо( bufpt[-1]=='.' ){
+            якщо( flag_altform2 ){
               *(bufpt++) = '0';
-            }else{
+            }інакше{
               *(--bufpt) = 0;
             }
           }
         }
         /* Add the "eNNN" suffix */
-        if( xtype==etEXP ){
+        якщо( xtype==etEXP ){
           exp = s.iDP - 1;
           *(bufpt++) = aDigits[infop->charset];
-          if( exp<0 ){
+          якщо( exp<0 ){
             *(bufpt++) = '-'; exp = -exp;
-          }else{
+          }інакше{
             *(bufpt++) = '+';
           }
-          if( exp>=100 ){
+          якщо( exp>=100 ){
             *(bufpt++) = (char)((exp/100)+'0');        /* 100's digit */
             exp %= 100;
           }
@@ -750,29 +750,29 @@ void sqlite3_str_vappendf(
 
         length = bufpt - zOut;
         assert( length <= szBufNeeded );
-        if( length<width ){
+        якщо( length<width ){
           i64 nPad = width - length;
-          if( flag_leftjustify ){
+          якщо( flag_leftjustify ){
             memset(bufpt, ' ', nPad);
-          }else if( !flag_zeropad ){
+          }інакше якщо( !flag_zeropad ){
             memmove(zOut+nPad, zOut, length);
             memset(zOut, ' ', nPad);
-          }else{
-            int adj = prefix!=0;
+          }інакше{
+            ціле adj = prefix!=0;
             memmove(zOut+nPad+adj, zOut+adj, length-adj);
             memset(zOut+adj, '0', nPad);
           }
           length = width;
         }
 
-        if( zExtra==0 ){
+        якщо( zExtra==0 ){
           /* The result is being rendered directory into pAccum.  This
           ** is the common and fast case */
           assert( pAccum->nChar + length < SMXV(pAccum->nChar) );
           pAccum->nChar += length;
           zOut[length] = 0;
           continue;
-        }else{
+        }інакше{
           /* We were unable to render directly into pAccum because we
           ** couldn't allocate sufficient memory.  We need to memcpy()
           ** the rendering (or some prefix thereof) into the output
@@ -783,8 +783,8 @@ void sqlite3_str_vappendf(
         }
       }
       case etSIZE:
-        if( !bArgList ){
-          *(va_arg(ap,int*)) = pAccum->nChar;
+        якщо( !bArgList ){
+          *(va_arg(ap,ціле*)) = pAccum->nChar;
         }
         length = width = 0;
         break;
@@ -794,37 +794,37 @@ void sqlite3_str_vappendf(
         length = 1;
         break;
       case etCHARX:
-        if( bArgList ){
+        якщо( bArgList ){
           bufpt = getTextArg(pArgList);
           length = 1;
-          if( bufpt ){
+          якщо( bufpt ){
             buf[0] = c = *(bufpt++);
-            if( (c&0xc0)==0xc0 ){
-              while( length<4 && (bufpt[0]&0xc0)==0x80 ){
+            якщо( (c&0xc0)==0xc0 ){
+              поки( length<4 && (bufpt[0]&0xc0)==0x80 ){
                 buf[length++] = *(bufpt++);
               }
             }
-          }else{
+          }інакше{
             buf[0] = 0;
           }
-        }else{
-          unsigned int ch = va_arg(ap,unsigned int);
+        }інакше{
+          unsigned ціле ch = va_arg(ap,unsigned ціле);
           length = sqlite3AppendOneUtf8Character(buf, ch);
         }
-        if( precision>1 ){
+        якщо( precision>1 ){
           i64 nPrior = 1;
           width -= precision-1;
-          if( width>1 && !flag_leftjustify ){
+          якщо( width>1 && !flag_leftjustify ){
             sqlite3StrAppendchar64(pAccum, width-1, ' ');
             width = 0;
           }
           sqlite3StrAppend64(pAccum, buf, length);
           precision--;
-          while( precision > 1 ){
+          поки( precision > 1 ){
             i64 nCopyBytes;
-            if( nPrior > precision-1 ) nPrior = precision - 1;
+            якщо( nPrior > precision-1 ) nPrior = precision - 1;
             nCopyBytes = length*nPrior;
-            if( sqlite3StrAccumEnlargeIfNeeded(pAccum, nCopyBytes) ){
+            якщо( sqlite3StrAccumEnlargeIfNeeded(pAccum, nCopyBytes) ){
               break;
             }
             sqlite3_str_append(pAccum,
@@ -838,16 +838,16 @@ void sqlite3_str_vappendf(
         goto adjust_width_for_utf8;
       case etSTRING:
       case etDYNSTRING:
-        if( bArgList ){
+        якщо( bArgList ){
           bufpt = getTextArg(pArgList);
           xtype = etSTRING;
-        }else{
+        }інакше{
           bufpt = va_arg(ap,char*);
         }
-        if( bufpt==0 ){
+        якщо( bufpt==0 ){
           bufpt = "";
-        }else if( xtype==etDYNSTRING ){
-          if( pAccum->nChar==0
+        }інакше якщо( xtype==etDYNSTRING ){
+          якщо( pAccum->nChar==0
            && pAccum->mxAlloc
            && width==0
            && precision<0
@@ -859,33 +859,33 @@ void sqlite3_str_vappendf(
             assert( (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
             pAccum->zText = bufpt;
             pAccum->nAlloc = sqlite3DbMallocSize(pAccum->db, bufpt);
-            pAccum->nChar = 0x7fffffff & (int)strlen(bufpt);
+            pAccum->nChar = 0x7fffffff & (ціле)strlen(bufpt);
             pAccum->printfFlags |= SQLITE_PRINTF_MALLOCED;
             length = 0;
             break;
           }
           zExtra = bufpt;
         }
-        if( precision>=0 ){
-          if( flag_altform2 ){
+        якщо( precision>=0 ){
+          якщо( flag_altform2 ){
             /* Set length to the number of bytes needed in order to display
             ** precision characters */
             unsigned char *z = (unsigned char*)bufpt;
-            while( precision-- > 0 && z[0] ){
+            поки( precision-- > 0 && z[0] ){
               SQLITE_SKIP_UTF8(z);
             }
             length = z - (unsigned char*)bufpt;
-          }else{
-            for(length=0; length<precision && bufpt[length]; length++){}
+          }інакше{
+            для(length=0; length<precision && bufpt[length]; length++){}
           }
-        }else{
+        }інакше{
           length = strlen(bufpt);
         }
       adjust_width_for_utf8:
-        if( flag_altform2 && width>0 ){
+        якщо( flag_altform2 && width>0 ){
           /* Adjust width to account for extra bytes in UTF-8 characters */
           i64 ii = length - 1;
-          while( ii>=0 ) if( (bufpt[ii--] & 0xc0)==0x80 ) width++;
+          поки( ii>=0 ) якщо( (bufpt[ii--] & 0xc0)==0x80 ) width++;
         }
         break;
       case etESCAPE_j:           /* %j: JSON string literal w/o "..." */
@@ -894,65 +894,65 @@ void sqlite3_str_vappendf(
         i64 i, j, px, iStart;
         unsigned char ch;
 
-        if( bArgList ){
+        якщо( bArgList ){
           escarg = getTextArg(pArgList);
-        }else{
+        }інакше{
           escarg = va_arg(ap,char*);
         }
         iStart = sqlite3_str_length(pAccum);
-        if( escarg==0 ){
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "null", 4);
-        }else{
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
+        якщо( escarg==0 ){
+          якщо( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "null", 4);
+        }інакше{
+          якщо( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
           px = precision;
           testcase( px==0 );
-          if( px<0 ){
+          якщо( px<0 ){
             px = 0x7fffffff;
-          }else if( flag_altform2 ){
+          }інакше якщо( flag_altform2 ){
             /* Convert precision from code-points to bytes */
-            for(i=0; i<px && escarg[i]; i++){
-              if( (escarg[i]&0xc0)==0x80 ) px++;
+            для(i=0; i<px && escarg[i]; i++){
+              якщо( (escarg[i]&0xc0)==0x80 ) px++;
             }
-            if( i==px ){
-              while( (escarg[px]&0xc0)==0x80 ) px++;
+            якщо( i==px ){
+              поки( (escarg[px]&0xc0)==0x80 ) px++;
             }
           }
-          for(i=j=0; i<px; i++){
-            if( (ch = ((u8*)escarg)[i])<=0x1f || ch=='"' || ch=='\\' ){
-              if( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
+          для(i=j=0; i<px; i++){
+            якщо( (ch = ((u8*)escarg)[i])<=0x1f || ch=='"' || ch=='\\' ){
+              якщо( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
               j = i+1;
-              if( ch==0 ) break;
+              якщо( ch==0 ) break;
               sqlite3_str_appendchar(pAccum, 1, '\\');
-              if( ch>0x1f ){
+              якщо( ch>0x1f ){
                 sqlite3_str_appendchar(pAccum, 1, ch);
-              }else if( ((1u<<ch)&0x3700)!=0 ){
+              }інакше якщо( ((1u<<ch)&0x3700)!=0 ){
                 ch = "btn?fr"[ch-8];
                 sqlite3_str_appendchar(pAccum, 1, ch);
-              }else{
+              }інакше{
                 sqlite3_str_append(pAccum, "u00", 3);
                 sqlite3_str_appendchar(pAccum, 1, aHex[ch>>4]);
                 sqlite3_str_appendchar(pAccum, 1, aHex[ch&0xf]);
               }
             }
           }
-          if( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
+          якщо( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
+          якщо( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
         }
-        if( width>0 && sqlite3_str_errcode(pAccum)==SQLITE_OK ){
+        якщо( width>0 && sqlite3_str_errcode(pAccum)==SQLITE_OK ){
           sqlite3_int64 n = sqlite3_str_length(pAccum) - iStart;
           sqlite3_int64 len = n;
           char *zz;
-          if( flag_altform2 && n>0 ){
+          якщо( flag_altform2 && n>0 ){
             zz = sqlite3_str_value(pAccum);
-            for(i=iStart; zz[i]; i++){
-              if( (zz[i]&0xc0)==0x80 ) len--;
+            для(i=iStart; zz[i]; i++){
+              якщо( (zz[i]&0xc0)==0x80 ) len--;
             }
           }
-          if( width>len ){
+          якщо( width>len ){
             sqlite3_int64 sp = width-len;
             assert( sp>0 && sp<0x7fffffff );
-            sqlite3StrAppendchar64(pAccum, (int)sp, ' ');
-            if( !flag_leftjustify
+            sqlite3StrAppendchar64(pAccum, (ціле)sp, ' ');
+            якщо( !flag_leftjustify
              && n>0
              && sqlite3_str_errcode(pAccum)==0
             ){
@@ -969,25 +969,25 @@ void sqlite3_str_vappendf(
       case etESCAPE_Q:          /* %Q: Escape ' and enclose in '...' */
       case etESCAPE_w: {        /* %w: Escape " characters */
         i64 i, j, k, n;
-        int needQuote = 0;
+        ціле needQuote = 0;
         char ch;
         char *escarg;
         char q;
 
-        if( bArgList ){
+        якщо( bArgList ){
           escarg = getTextArg(pArgList);
-        }else{
+        }інакше{
           escarg = va_arg(ap,char*);
         }
-        if( escarg==0 ){
+        якщо( escarg==0 ){
           escarg = (xtype==etESCAPE_Q ? "NULL" : "(NULL)");
-        }else if( xtype==etESCAPE_Q ){
+        }інакше якщо( xtype==etESCAPE_Q ){
           needQuote = 1;
         }
-        if( xtype==etESCAPE_w ){
+        якщо( xtype==etESCAPE_w ){
           q = '"';
           flag_alternateform = 0;
-        }else{
+        }інакше{
           q = '\'';
         }
         /* For %q, %Q, and %w, the precision is the number of bytes (or
@@ -996,61 +996,61 @@ void sqlite3_str_vappendf(
         ** of output characters may be larger than the precision.
         */
         k = precision;
-        for(i=n=0; k!=0 && (ch=escarg[i])!=0; i++, k--){
-          if( ch==q )  n++;
-          if( flag_altform2 && (ch&0xc0)==0xc0 ){
-            while( (escarg[i+1]&0xc0)==0x80 ){ i++; }
+        для(i=n=0; k!=0 && (ch=escarg[i])!=0; i++, k--){
+          якщо( ch==q )  n++;
+          якщо( flag_altform2 && (ch&0xc0)==0xc0 ){
+            поки( (escarg[i+1]&0xc0)==0x80 ){ i++; }
           }
         }
-        if( flag_alternateform ){
+        якщо( flag_alternateform ){
           /* For %#q, do unistr()-style backslash escapes for
           ** all control characters, and for backslash itself.
           ** For %#Q, do the same but only if there is at least
           ** one control character. */
           i64 nBack = 0;
           i64 nCtrl = 0;
-          for(k=0; k<i; k++){
-            if( escarg[k]=='\\' ){
+          для(k=0; k<i; k++){
+            якщо( escarg[k]=='\\' ){
               nBack++;
-            }else if( ((u8*)escarg)[k]<=0x1f ){
+            }інакше якщо( ((u8*)escarg)[k]<=0x1f ){
               nCtrl++;
             }
           }
-          if( nCtrl || xtype==etESCAPE_q ){
+          якщо( nCtrl || xtype==etESCAPE_q ){
             n += nBack + 5*nCtrl;
-            if( xtype==etESCAPE_Q ){
+            якщо( xtype==etESCAPE_Q ){
               n += 10;
               needQuote = 2;
             }
-          }else{
+          }інакше{
             flag_alternateform = 0;
           }
         }
         n += i + 3;
-        if( n>etBUFSIZE ){
+        якщо( n>etBUFSIZE ){
           bufpt = zExtra = printfTempBuf(pAccum, n);
-          if( bufpt==0 ) return;
-        }else{
+          якщо( bufpt==0 ) повернути;
+        }інакше{
           bufpt = buf;
         }
         j = 0;
-        if( needQuote ){
-          if( needQuote==2 ){
+        якщо( needQuote ){
+          якщо( needQuote==2 ){
             memcpy(&bufpt[j], "unistr('", 8);
             j += 8;
-          }else{
+          }інакше{
             bufpt[j++] = '\'';
           }
         }
         k = i;
-        if( flag_alternateform ){
-          for(i=0; i<k; i++){
+        якщо( flag_alternateform ){
+          для(i=0; i<k; i++){
             bufpt[j++] = ch = escarg[i];
-            if( ch==q ){
+            якщо( ch==q ){
               bufpt[j++] = ch;
-            }else if( ch=='\\' ){
+            }інакше якщо( ch=='\\' ){
               bufpt[j++] = '\\';
-            }else if( ((unsigned char)ch)<=0x1f ){
+            }інакше якщо( ((unsigned char)ch)<=0x1f ){
               bufpt[j-1] = '\\';
               bufpt[j++] = 'u';
               bufpt[j++] = '0';
@@ -1059,34 +1059,34 @@ void sqlite3_str_vappendf(
               bufpt[j++] = aHex[ch&0xf];
             }
           }
-        }else{
-          for(i=0; i<k; i++){
+        }інакше{
+          для(i=0; i<k; i++){
             bufpt[j++] = ch = escarg[i];
-            if( ch==q ) bufpt[j++] = ch;
+            якщо( ch==q ) bufpt[j++] = ch;
           }
         }
-        if( needQuote ){
+        якщо( needQuote ){
           bufpt[j++] = '\'';
-          if( needQuote==2 ) bufpt[j++] = ')';
+          якщо( needQuote==2 ) bufpt[j++] = ')';
         }
         bufpt[j] = 0;
         length = j;
         goto adjust_width_for_utf8;
       }
       case etTOKEN: {
-        if( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) return;
-        if( flag_alternateform ){
+        якщо( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) повернути;
+        якщо( flag_alternateform ){
           /* %#T means an Expr pointer that uses Expr.u.zToken */
           Expr *pExpr = va_arg(ap,Expr*);
-          if( ALWAYS(pExpr) && ALWAYS(!ExprHasProperty(pExpr,EP_IntValue)) ){
+          якщо( ALWAYS(pExpr) && ALWAYS(!ExprHasProperty(pExpr,EP_IntValue)) ){
             sqlite3_str_appendall(pAccum, (const char*)pExpr->u.zToken);
             sqlite3RecordErrorOffsetOfExpr(pAccum->db, pExpr);
           }
-        }else{
+        }інакше{
           /* %T means a Token pointer */
           Token *pToken = va_arg(ap, Token*);
           assert( bArgList==0 );
-          if( pToken && pToken->n ){
+          якщо( pToken && pToken->n ){
             sqlite3_str_append(pAccum, (const char*)pToken->z, pToken->n);
             sqlite3RecordErrorByteOffset(pAccum->db, pToken->z);
           }
@@ -1096,13 +1096,13 @@ void sqlite3_str_vappendf(
       }
       case etSRCITEM: {
         SrcItem *pItem;
-        if( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) return;
+        якщо( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) повернути;
         pItem = va_arg(ap, SrcItem*);
         assert( bArgList==0 );
-        if( pItem->zAlias && !flag_altform2 ){
+        якщо( pItem->zAlias && !flag_altform2 ){
           sqlite3_str_appendall(pAccum, pItem->zAlias);
-        }else if( pItem->zName ){
-          if( pItem->fg.fixedSchema==0
+        }інакше якщо( pItem->zName ){
+          якщо( pItem->fg.fixedSchema==0
            && pItem->fg.isSubquery==0
            && pItem->u4.zDatabase!=0
           ){
@@ -1110,18 +1110,18 @@ void sqlite3_str_vappendf(
             sqlite3_str_append(pAccum, ".", 1);
           }
           sqlite3_str_appendall(pAccum, pItem->zName);
-        }else if( pItem->zAlias ){
+        }інакше якщо( pItem->zAlias ){
           sqlite3_str_appendall(pAccum, pItem->zAlias);
-        }else if( ALWAYS(pItem->fg.isSubquery) ){/* Because of tag-20240424-1 */
+        }інакше якщо( ALWAYS(pItem->fg.isSubquery) ){/* Because of tag-20240424-1 */
           Select *pSel = pItem->u4.pSubq->pSelect;
           assert( pSel!=0 ); 
-          if( pSel->selFlags & SF_NestedFrom ){
+          якщо( pSel->selFlags & SF_NestedFrom ){
             sqlite3_str_appendf(pAccum, "(join-%u)", pSel->selId);
-          }else if( pSel->selFlags & SF_MultiValue ){
+          }інакше якщо( pSel->selFlags & SF_MultiValue ){
             assert( !pItem->fg.isTabFunc && !pItem->fg.isIndexedBy );
             sqlite3_str_appendf(pAccum, "%u-ROW VALUES CLAUSE",
                                 pItem->u1.nRow);
-          }else{
+          }інакше{
             sqlite3_str_appendf(pAccum, "(subquery-%u)", pSel->selId);
           }
         }
@@ -1130,7 +1130,7 @@ void sqlite3_str_vappendf(
       }
       default: {
         assert( xtype==etINVALID );
-        return;
+        повернути;
       }
     }/* End switch over the format type */
     /*
@@ -1142,15 +1142,15 @@ void sqlite3_str_vappendf(
     ** then the values have been translated prior to reaching this point.
     */
     width -= length;
-    if( width>0 ){
-      if( !flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
+    якщо( width>0 ){
+      якщо( !flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
       sqlite3StrAppend64(pAccum, bufpt, length);
-      if( flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
-    }else{
+      якщо( flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
+    }інакше{
       sqlite3StrAppend64(pAccum, bufpt, length);
     }
 
-    if( zExtra ){
+    якщо( zExtra ){
       sqlite3DbFree(pAccum->db, zExtra);
       zExtra = 0;
     }
@@ -1169,15 +1169,15 @@ void sqlite3RecordErrorByteOffset(sqlite3 *db, const char *z){
   const char *zText;
   const char *zEnd;
   assert( z!=0 );
-  if( NEVER(db==0) ) return;
-  if( db->errByteOffset!=(-2) ) return;
+  якщо( NEVER(db==0) ) повернути;
+  якщо( db->errByteOffset!=(-2) ) повернути;
   pParse = db->pParse;
-  if( NEVER(pParse==0) ) return;
+  якщо( NEVER(pParse==0) ) повернути;
   zText =pParse->zTail;
-  if( NEVER(zText==0) ) return;
+  якщо( NEVER(zText==0) ) повернути;
   zEnd = &zText[strlen(zText)];
-  if( SQLITE_WITHIN(z,zText,zEnd) ){
-    db->errByteOffset = (int)(z-zText);
+  якщо( SQLITE_WITHIN(z,zText,zEnd) ){
+    db->errByteOffset = (ціле)(z-zText);
   }
 }
 
@@ -1186,16 +1186,16 @@ void sqlite3RecordErrorByteOffset(sqlite3 *db, const char *z){
 ** as the error offset.
 */
 void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExpr){
-  while( pExpr ){
-    if( ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) ) return;
-    if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) || pExpr->w.iOfst<=0 ){
+  поки( pExpr ){
+    якщо( ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) ) повернути;
+    якщо( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) || pExpr->w.iOfst<=0 ){
       pExpr = pExpr->pLeft;
-    }else{
+    }інакше{
       break;
     }
   }
-  if( pExpr==0 ) return;
-  if( ExprHasProperty(pExpr, EP_FromDDL) ) return;
+  якщо( pExpr==0 ) повернути;
+  якщо( ExprHasProperty(pExpr, EP_FromDDL) ) повернути;
   db->errByteOffset = pExpr->w.iOfst;
 }
 
@@ -1206,76 +1206,76 @@ void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExpr){
 ** Return the number of bytes of text that StrAccum is able to accept
 ** after the attempted enlargement.  The value returned might be zero.
 */
-int sqlite3StrAccumEnlarge(StrAccum *p, i64 N){
+ціле sqlite3StrAccumEnlarge(StrAccum *p, i64 N){
   char *zNew;
   assert( p->nChar+N >= p->nAlloc ); /* Only called if really needed */
-  if( p->accError ){
+  якщо( p->accError ){
     testcase(p->accError==SQLITE_TOOBIG);
     testcase(p->accError==SQLITE_NOMEM);
-    return 0;
+    повернути 0;
   }
-  if( p->mxAlloc==0 ){
+  якщо( p->mxAlloc==0 ){
     sqlite3StrAccumSetError(p, SQLITE_TOOBIG);
-    return p->nAlloc - p->nChar - 1;
-  }else{
+    повернути p->nAlloc - p->nChar - 1;
+  }інакше{
     char *zOld = isMalloced(p) ? p->zText : 0;
     i64 szNew = p->nChar + N + 1;
-    if( szNew+p->nChar<=p->mxAlloc ){
+    якщо( szNew+p->nChar<=p->mxAlloc ){
       /* Force exponential buffer size growth as long as it does not overflow,
       ** to avoid having to call this routine too often */
       szNew += p->nChar;
     }
-    if( szNew > p->mxAlloc ){
+    якщо( szNew > p->mxAlloc ){
       sqlite3_str_reset(p);
       sqlite3StrAccumSetError(p, SQLITE_TOOBIG);
-      return 0;
-    }else{
-      p->nAlloc = (int)szNew;
+      повернути 0;
+    }інакше{
+      p->nAlloc = (ціле)szNew;
     }
-    if( p->db ){
+    якщо( p->db ){
       zNew = sqlite3DbRealloc(p->db, zOld, p->nAlloc);
-    }else{
+    }інакше{
       zNew = sqlite3Realloc(zOld, p->nAlloc);
     }
-    if( zNew ){
+    якщо( zNew ){
       assert( p->zText!=0 || p->nChar==0 );
-      if( !isMalloced(p) && p->nChar>0 ) memcpy(zNew, p->zText, p->nChar);
+      якщо( !isMalloced(p) && p->nChar>0 ) memcpy(zNew, p->zText, p->nChar);
       p->zText = zNew;
       p->nAlloc = sqlite3DbMallocSize(p->db, zNew);
       p->printfFlags |= SQLITE_PRINTF_MALLOCED;
-    }else{
+    }інакше{
       sqlite3_str_reset(p);
       sqlite3StrAccumSetError(p, SQLITE_NOMEM);
-      return 0;
+      повернути 0;
     }
   }
   assert( N>=0 && N<=0x7fffffff );
-  return (int)N;
+  повернути (ціле)N;
 }
 
-int sqlite3StrAccumEnlargeIfNeeded(StrAccum *p, i64 N){
-  if( N + p->nChar >= p->nAlloc ){
+ціле sqlite3StrAccumEnlargeIfNeeded(StrAccum *p, i64 N){
+  якщо( N + p->nChar >= p->nAlloc ){
     sqlite3StrAccumEnlarge(p, N);
   }
-  return p->accError;
+  повернути p->accError;
 }
 
 /*
 ** Append N copies of character c to the given string buffer.
 */
-void sqlite3_str_appendchar(sqlite3_str *p, int N, char c){
+void sqlite3_str_appendchar(sqlite3_str *p, ціле N, char c){
   testcase( p->nChar + (i64)N > 0x7fffffff );
-  if( p->nChar+(i64)N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
-    return;
+  якщо( p->nChar+(i64)N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
+    повернути;
   }
-  while( (N--)>0 ) p->zText[p->nChar++] = c;
+  поки( (N--)>0 ) p->zText[p->nChar++] = c;
 }
 static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c){
   testcase( p->nChar + N > 0x7fffffff );
-  if( p->nChar+N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
-    return;
+  якщо( p->nChar+N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
+    повернути;
   }
-  while( (N--)>0 ) p->zText[p->nChar++] = c;
+  поки( (N--)>0 ) p->zText[p->nChar++] = c;
 }
 
 /*
@@ -1286,10 +1286,10 @@ static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c){
 ** work (enlarging the buffer) using tail recursion, so that the
 ** sqlite3_str_append() routine can use fast calling semantics.
 */
-static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
+static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, ціле N){
   N = sqlite3StrAccumEnlarge(p, N);
   assert( z!=0 || N==0 );
-  if( N>0 ){
+  якщо( N>0 ){
     memcpy(&p->zText[p->nChar], z, N);
     p->nChar += N;
   }
@@ -1299,14 +1299,14 @@ static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
 ** Append N bytes of text from z to the StrAccum object.  Increase the
 ** size of the memory allocation for StrAccum if necessary.
 */
-void sqlite3_str_append(sqlite3_str *p, const char *z, int N){
+void sqlite3_str_append(sqlite3_str *p, const char *z, ціле N){
   assert( z!=0 || N==0 );
   assert( p->zText!=0 || p->nChar==0 || p->accError );
   assert( N>=0 );
   assert( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
-  if( p->nChar+N >= p->nAlloc ){
+  якщо( p->nChar+N >= p->nAlloc ){
     enlargeAndAppend(p,z,N);
-  }else if( N ){
+  }інакше якщо( N ){
     assert( p->zText );
     p->nChar += N;
     memcpy(&p->zText[p->nChar-N], z, N);
@@ -1317,9 +1317,9 @@ static void sqlite3StrAppend64(sqlite3_str *p, const char *z, i64 N){
   assert( p->zText!=0 || p->nChar==0 || p->accError );
   assert( N>=0 );
   assert( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
-  if( p->nChar+N >= (i64)p->nAlloc ){
+  якщо( p->nChar+N >= (i64)p->nAlloc ){
     enlargeAndAppend(p,z,N);
-  }else if( N ){
+  }інакше якщо( N ){
     assert( p->zText );
     p->nChar += N;
     memcpy(&p->zText[p->nChar-N], z, N);
@@ -1344,51 +1344,51 @@ static SQLITE_NOINLINE char *strAccumFinishRealloc(StrAccum *p){
   char *zText;
   assert( p->mxAlloc>0 && !isMalloced(p) );
   zText = sqlite3DbMallocRaw(p->db, 1+(u64)p->nChar );
-  if( zText ){
+  якщо( zText ){
     memcpy(zText, p->zText, p->nChar+1);
     p->printfFlags |= SQLITE_PRINTF_MALLOCED;
-  }else{
+  }інакше{
     sqlite3StrAccumSetError(p, SQLITE_NOMEM);
   }
   p->zText = zText;
-  return zText;
+  повернути zText;
 }
 char *sqlite3StrAccumFinish(StrAccum *p){
-  if( p->zText ){
+  якщо( p->zText ){
     p->zText[p->nChar] = 0;
-    if( p->mxAlloc>0 && !isMalloced(p) ){
-      return strAccumFinishRealloc(p);
+    якщо( p->mxAlloc>0 && !isMalloced(p) ){
+      повернути strAccumFinishRealloc(p);
     }
   }
-  return p->zText;
+  повернути p->zText;
 }
 
 /* Finalize a string created using sqlite3_str_new().
 */
 char *sqlite3_str_finish(sqlite3_str *p){
   char *z;
-  if( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
+  якщо( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
     z = sqlite3StrAccumFinish(p);
     sqlite3_free(p);
-  }else{
+  }інакше{
     z = 0;
   }
-  return z;
+  повернути z;
 }
 
 /* Return any error code associated with p */
-int sqlite3_str_errcode(sqlite3_str *p){
-  return p ? p->accError : SQLITE_NOMEM;
+ціле sqlite3_str_errcode(sqlite3_str *p){
+  повернути p ? p->accError : SQLITE_NOMEM;
 }
 
 /* Return the current length of p in bytes */
-int sqlite3_str_length(sqlite3_str *p){
-  return p ? p->nChar : 0;
+ціле sqlite3_str_length(sqlite3_str *p){
+  повернути p ? p->nChar : 0;
 }
 
 /* Truncate the text of the string to be no more than N bytes. */
-void sqlite3_str_truncate(sqlite3_str *p, int N){
-  if( p!=0 && N>=0 && (u32)N<p->nChar ){
+void sqlite3_str_truncate(sqlite3_str *p, ціле N){
+  якщо( p!=0 && N>=0 && (u32)N<p->nChar ){
     p->nChar = N;
     p->zText[p->nChar] = 0;
   }
@@ -1396,20 +1396,20 @@ void sqlite3_str_truncate(sqlite3_str *p, int N){
 
 /* Return the current value for p */
 char *sqlite3_str_value(sqlite3_str *p){
-  if( p==0 || p->nChar==0 ) return 0;
+  якщо( p==0 || p->nChar==0 ) повернути 0;
   p->zText[p->nChar] = 0;
-  return p->zText;
+  повернути p->zText;
 }
 
 /*
 ** Reset an StrAccum string.  Reclaim all malloced memory.
 */
 void sqlite3_str_reset(StrAccum *p){
-  if( isMalloced(p) ){
+  якщо( isMalloced(p) ){
     sqlite3DbFree(p->db, p->zText);
     p->printfFlags &= ~SQLITE_PRINTF_MALLOCED;
-  }else if( p==(sqlite3_str*)&sqlite3OomStr ){
-    return;
+  }інакше якщо( p==(sqlite3_str*)&sqlite3OomStr ){
+    повернути;
   }
   p->nAlloc = 0;
   p->nChar = 0;
@@ -1421,7 +1421,7 @@ void sqlite3_str_reset(StrAccum *p){
 ** of its content, all in one call.
 */
 void sqlite3_str_free(sqlite3_str *p){
-  if( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
+  якщо( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
     sqlite3_str_reset(p);
     sqlite3_free(p);
   }
@@ -1441,7 +1441,7 @@ void sqlite3_str_free(sqlite3_str *p){
 ** mx:    Maximum number of bytes to accumulate.  If mx==0 then no memory
 **        allocations will ever occur.
 */
-void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, int n, int mx){
+void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, ціле n, ціле mx){
   p->zText = zBase;
   p->db = db;
   p->nAlloc = n;
@@ -1454,13 +1454,13 @@ void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, int n, int mx){
 /* Allocate and initialize a new dynamic string object */
 sqlite3_str *sqlite3_str_new(sqlite3 *db){
   sqlite3_str *p = sqlite3_malloc64(sizeof(*p));
-  if( p ){
+  якщо( p ){
     sqlite3StrAccumInit(p, 0, 0, 0,
             db ? db->aLimit[SQLITE_LIMIT_LENGTH] : SQLITE_MAX_LENGTH);
-  }else{
+  }інакше{
     p = (sqlite3_str*)&sqlite3OomStr;
   }
-  return p;
+  повернути p;
 }
 
 /*
@@ -1477,10 +1477,10 @@ char *sqlite3VMPrintf(sqlite3 *db, const char *zFormat, va_list ap){
   acc.printfFlags = SQLITE_PRINTF_INTERNAL;
   sqlite3_str_vappendf(&acc, zFormat, ap);
   z = sqlite3StrAccumFinish(&acc);
-  if( acc.accError==SQLITE_NOMEM ){
+  якщо( acc.accError==SQLITE_NOMEM ){
     sqlite3OomFault(db);
   }
-  return z;
+  повернути z;
 }
 
 /*
@@ -1493,7 +1493,7 @@ char *sqlite3MPrintf(sqlite3 *db, const char *zFormat, ...){
   va_start(ap, zFormat);
   z = sqlite3VMPrintf(db, zFormat, ap);
   va_end(ap);
-  return z;
+  повернути z;
 }
 
 /*
@@ -1506,18 +1506,18 @@ char *sqlite3_vmprintf(const char *zFormat, va_list ap){
   StrAccum acc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR  
-  if( zFormat==0 ){
+  якщо( zFormat==0 ){
     (void)SQLITE_MISUSE_BKPT;
-    return 0;
+    повернути 0;
   }
 #endif
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  якщо( sqlite3_initialize() ) повернути 0;
 #endif
   sqlite3StrAccumInit(&acc, 0, zBase, sizeof(zBase), SQLITE_MAX_LENGTH);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   z = sqlite3StrAccumFinish(&acc);
-  return z;
+  повернути z;
 }
 
 /*
@@ -1528,12 +1528,12 @@ char *sqlite3_mprintf(const char *zFormat, ...){
   va_list ap;
   char *z;
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  якщо( sqlite3_initialize() ) повернути 0;
 #endif
   va_start(ap, zFormat);
   z = sqlite3_vmprintf(zFormat, ap);
   va_end(ap);
-  return z;
+  повернути z;
 }
 
 /*
@@ -1549,30 +1549,30 @@ char *sqlite3_mprintf(const char *zFormat, ...){
 **
 ** sqlite3_vsnprintf() is the varargs version.
 */
-char *sqlite3_vsnprintf(int n, char *zBuf, const char *zFormat, va_list ap){
+char *sqlite3_vsnprintf(ціле n, char *zBuf, const char *zFormat, va_list ap){
   StrAccum acc;
-  if( n<=0 ) return zBuf;
+  якщо( n<=0 ) повернути zBuf;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zBuf==0 || zFormat==0 ) {
+  якщо( zBuf==0 || zFormat==0 ) {
     (void)SQLITE_MISUSE_BKPT;
-    if( zBuf ) zBuf[0] = 0;
-    return zBuf;
+    якщо( zBuf ) zBuf[0] = 0;
+    повернути zBuf;
   }
 #endif
   sqlite3StrAccumInit(&acc, 0, zBuf, n, 0);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   zBuf[acc.nChar] = 0;
-  return zBuf;
+  повернути zBuf;
 }
-char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
+char *sqlite3_snprintf(ціле n, char *zBuf, const char *zFormat, ...){
   StrAccum acc;
   va_list ap;
-  if( n<=0 ) return zBuf;
+  якщо( n<=0 ) повернути zBuf;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zBuf==0 || zFormat==0 ) {
+  якщо( zBuf==0 || zFormat==0 ) {
     (void)SQLITE_MISUSE_BKPT;
-    if( zBuf ) zBuf[0] = 0;
-    return zBuf;
+    якщо( zBuf ) zBuf[0] = 0;
+    повернути zBuf;
   }
 #endif
   sqlite3StrAccumInit(&acc, 0, zBuf, n, 0);
@@ -1580,15 +1580,15 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
   sqlite3_str_vappendf(&acc, zFormat, ap);
   va_end(ap);
   zBuf[acc.nChar] = 0;
-  return zBuf;
+  повернути zBuf;
 }
 
 /* Maximum size of an sqlite3_log() message. */
-#if defined(SQLITE_MAX_LOG_MESSAGE) 
+#якщо defined(SQLITE_MAX_LOG_MESSAGE) 
   /* Leave the definition as supplied */
 #elif SQLITE_PRINT_BUF_SIZE*10>10000
 # define SQLITE_MAX_LOG_MESSAGE 10000
-#else
+#інакше
 # define SQLITE_MAX_LOG_MESSAGE (SQLITE_PRINT_BUF_SIZE*10)
 #endif
 
@@ -1606,7 +1606,7 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
 ** Care must be taken that any sqlite3_log() calls that occur while the
 ** memory mutex is held do not use these mechanisms.
 */
-static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
+static void renderLogMsg(ціле iErrCode, const char *zFormat, va_list ap){
   StrAccum acc;                          /* String accumulator */
   char zMsg[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
 
@@ -1619,16 +1619,16 @@ static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
 /*
 ** Format and write a message to the log if logging is enabled.
 */
-void sqlite3_log(int iErrCode, const char *zFormat, ...){
+void sqlite3_log(ціле iErrCode, const char *zFormat, ...){
   va_list ap;                             /* Vararg list */
-  if( sqlite3GlobalConfig.xLog ){
+  якщо( sqlite3GlobalConfig.xLog ){
     va_start(ap, zFormat);
     renderLogMsg(iErrCode, zFormat, ap);
     va_end(ap);
   }
 }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+#якщо defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
 /*
 ** A version of printf() that understands %lld.  Used for debugging.
 ** The printf() built into some versions of windows does not understand %lld
@@ -1645,10 +1645,10 @@ void sqlite3DebugPrintf(const char *zFormat, ...){
   sqlite3StrAccumFinish(&acc);
 #ifdef SQLITE_OS_TRACE_PROC
   {
-    extern void SQLITE_OS_TRACE_PROC(const char *zBuf, int nBuf);
+    extern void SQLITE_OS_TRACE_PROC(const char *zBuf, ціле nBuf);
     SQLITE_OS_TRACE_PROC(zBuf, sizeof(zBuf));
   }
-#else
+#інакше
   fprintf(stdout,"%s", zBuf);
   fflush(stdout);
 #endif
@@ -1682,7 +1682,7 @@ char *sqlite3RCStrRef(char *z){
   assert( p!=0 );
   p--;
   p->nRCRef++;
-  return z;
+  повернути z;
 }
 
 /*
@@ -1694,9 +1694,9 @@ void sqlite3RCStrUnref(void *z){
   assert( p!=0 );
   p--;
   assert( p->nRCRef>0 );
-  if( p->nRCRef>=2 ){
+  якщо( p->nRCRef>=2 ){
     p->nRCRef--;
-  }else{
+  }інакше{
     sqlite3_free(p);
   }
 }
@@ -1712,9 +1712,9 @@ void sqlite3RCStrUnref(void *z){
 */
 char *sqlite3RCStrNew(u64 N){
   RCStr *p = sqlite3_malloc64( N + sizeof(*p) + 1 );
-  if( p==0 ) return 0;
+  якщо( p==0 ) повернути 0;
   p->nRCRef = 1;
-  return (char*)&p[1];
+  повернути (char*)&p[1];
 }
 
 /*
@@ -1728,10 +1728,10 @@ char *sqlite3RCStrResize(char *z, u64 N){
   p--;
   assert( p->nRCRef==1 );
   pNew = sqlite3_realloc64(p, N+sizeof(RCStr)+1);
-  if( pNew==0 ){
+  якщо( pNew==0 ){
     sqlite3_free(p);
-    return 0;
-  }else{
-    return (char*)&pNew[1];
+    повернути 0;
+  }інакше{
+    повернути (char*)&pNew[1];
   }
 }

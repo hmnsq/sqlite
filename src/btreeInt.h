@@ -219,7 +219,7 @@
 /* The following value is the maximum cell size assuming a maximum page
 ** size give above.
 */
-#define MX_CELL_SIZE(pBt)  ((int)(pBt->pageSize-8))
+#define MX_CELL_SIZE(pBt)  ((ціле)(pBt->pageSize-8))
 
 /* The maximum number of cells on a single page of the database.  This
 ** assumes a minimum cell size of 6 bytes  (4 bytes for the cell itself
@@ -285,7 +285,7 @@ struct MemPage {
   u16 maxLocal;        /* Copy of BtShared.maxLocal or BtShared.maxLeaf */
   u16 minLocal;        /* Copy of BtShared.minLocal or BtShared.minLeaf */
   u16 cellOffset;      /* Index in aData of first cell pointer */
-  int nFree;           /* Number of free bytes on the page. -1 for unknown */
+  ціле nFree;           /* Number of free bytes on the page. -1 for unknown */
   u16 nCell;           /* Number of cells on this page, local and ovfl */
   u16 maskPage;        /* Mask for page offset */
   u16 aiOvfl[4];       /* Insert the i-th overflow cell before the aiOvfl-th
@@ -349,8 +349,8 @@ struct Btree {
   u8 sharable;       /* True if we can share pBt with another db */
   u8 locked;         /* True if db currently has pBt locked */
   u8 hasIncrblobCur; /* True if there are one or more Incrblob cursors */
-  int wantToLock;    /* Number of nested calls to sqlite3BtreeEnter() */
-  int nBackup;       /* Number of backup operations reading this btree */
+  ціле wantToLock;    /* Number of nested calls to sqlite3BtreeEnter() */
+  ціле nBackup;       /* Number of backup operations reading this btree */
   u32 iBDataVersion; /* Combines with pBt->pPager->iDataVersion */
   Btree *pNext;      /* List of other sharable Btrees from the same db */
   Btree *pPrev;      /* Back pointer of the same list */
@@ -376,14 +376,14 @@ struct Btree {
 #define TRANS_READ  1
 #define TRANS_WRITE 2
 
-#if TRANS_NONE!=SQLITE_TXN_NONE
-# error wrong numeric code for no-transaction
+#якщо TRANS_NONE!=SQLITE_TXN_NONE
+# error wrong numeric code для no-transaction
 #endif
-#if TRANS_READ!=SQLITE_TXN_READ
-# error wrong numeric code for read-transaction
+#якщо TRANS_READ!=SQLITE_TXN_READ
+# error wrong numeric code для read-transaction
 #endif
-#if TRANS_WRITE!=SQLITE_TXN_WRITE
-# error wrong numeric code for write-transaction
+#якщо TRANS_WRITE!=SQLITE_TXN_WRITE
+# error wrong numeric code для write-transaction
 #endif
 
 
@@ -443,20 +443,20 @@ struct BtShared {
   u16 minLeaf;          /* Minimum local payload in a LEAFDATA table */
   u32 pageSize;         /* Total number of bytes on a page */
   u32 usableSize;       /* Number of usable bytes on each page */
-  int nTransaction;     /* Number of open transactions (read + write) */
+  ціле nTransaction;     /* Number of open transactions (read + write) */
   u32 nPage;            /* Number of pages in the database */
   void *pSchema;        /* Pointer to space allocated by sqlite3BtreeSchema() */
   void (*xFreeSchema)(void*);  /* Destructor for BtShared.pSchema */
   sqlite3_mutex *mutex; /* Non-recursive mutex required to access this object */
   Bitvec *pHasContent;  /* Set of pages moved to free-list this transaction */
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  int nRef;             /* Number of references to this structure */
+  ціле nRef;             /* Number of references to this structure */
   BtShared *pNext;      /* Next on a list of sharable BtShared structs */
   BtLock *pLock;        /* List of locks held on this shared-btree struct */
   Btree *pWriter;       /* Btree with currently open write transaction */
 #endif
   u8 *pTmpSpace;        /* Temp space sufficient to hold a single cell */
-  int nPreformatSize;   /* Size of last cell written by TransferRow() */
+  ціле nPreformatSize;   /* Size of last cell written by TransferRow() */
 };
 
 /*
@@ -533,12 +533,12 @@ struct BtCursor {
   u8 curFlags;              /* zero or more BTCF_* flags defined below */
   u8 curPagerFlags;         /* Flags to send to sqlite3PagerGet() */
   u8 hints;                 /* As configured by CursorSetHints() */
-  int skipNext;    /* Prev() is noop if negative. Next() is noop if positive.
+  ціле skipNext;    /* Prev() is noop if negative. Next() is noop if positive.
                    ** Error code if eState==CURSOR_FAULT */
   Btree *pBtree;            /* The Btree to which this cursor belongs */
   Pgno *aOverflow;          /* Cache of overflow page locations */
   void *pKey;               /* Saved key that was cursor last known position */
-#if defined(SQLITE_ENABLE_CURSOR_HINTS) && defined(SQLITE_DEBUG)
+#якщо defined(SQLITE_ENABLE_CURSOR_HINTS) && defined(SQLITE_DEBUG)
   BtCursor *pCursorHintTableCursor;
 #endif
   /* All fields above are zeroed when the cursor is allocated.  See
@@ -684,7 +684,7 @@ struct BtCursor {
 */
 #ifndef SQLITE_OMIT_AUTOVACUUM
 #define ISAUTOVACUUM(pBt) (pBt->autoVacuum)
-#else
+#інакше
 #define ISAUTOVACUUM(pBt) 0
 #endif
 
@@ -705,15 +705,15 @@ struct IntegrityCk {
   Pager *pPager;    /* The associated pager.  Also accessible by pBt->pPager */
   u8 *aPgRef;       /* 1 bit per page in the db (see above) */
   Pgno nCkPage;     /* Pages in the database.  0 for partial check */
-  int mxErr;        /* Stop accumulating errors when this reaches zero */
-  int nErr;         /* Number of messages written to zErrMsg so far */
-  int rc;           /* SQLITE_OK, SQLITE_NOMEM, or SQLITE_INTERRUPT */
+  ціле mxErr;        /* Stop accumulating errors when this reaches zero */
+  ціле nErr;         /* Number of messages written to zErrMsg so far */
+  ціле rc;           /* SQLITE_OK, SQLITE_NOMEM, or SQLITE_INTERRUPT */
   u32 nStep;        /* Number of steps into the integrity_check process */
   u8 nAbove;        /* Current btree recursion depth */
   const char *zPfx; /* Error message prefix */
   Pgno v0;          /* Value for first %u substitution in zPfx (root page) */
   Pgno v1;          /* Value for second %u substitution in zPfx (current pg) */
-  int v2;           /* Value for third %d substitution in zPfx */
+  ціле v2;           /* Value for third %d substitution in zPfx */
   StrAccum errMsg;  /* Accumulate the error message text here */
   u32 *heap;        /* Min-heap used for analyzing cell coverage */
   sqlite3 *db;      /* Database connection running the check */
@@ -736,12 +736,12 @@ struct IntegrityCk {
 ** two-byte aligned address.  get2byteAligned() is only used for accessing the
 ** cell addresses in a btree header.
 */
-#if SQLITE_BYTEORDER==4321
+#якщо SQLITE_BYTEORDER==4321
 # define get2byteAligned(x)  (*(u16*)(x))
 #elif SQLITE_BYTEORDER==1234 && GCC_VERSION>=4008000
 # define get2byteAligned(x)  __builtin_bswap16(*(u16*)(x))
 #elif SQLITE_BYTEORDER==1234 && MSVC_VERSION>=1300
 # define get2byteAligned(x)  _byteswap_ushort(*(u16*)(x))
-#else
+#інакше
 # define get2byteAligned(x)  ((x)[0]<<8 | (x)[1])
 #endif
