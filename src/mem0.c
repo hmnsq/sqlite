@@ -28,13 +28,13 @@
 /*
 ** No-op versions of all memory allocation routines
 */
-static void *sqlite3MemMalloc(int nByte){ return 0; }
-static void sqlite3MemFree(void *pPrior){ return; }
-static void *sqlite3MemRealloc(void *pPrior, int nByte){ return 0; }
-static int sqlite3MemSize(void *pPrior){ return 0; }
-static int sqlite3MemRoundup(int n){ return n; }
-static int sqlite3MemInit(void *NotUsed){ return SQLITE_OK; }
-static void sqlite3MemShutdown(void *NotUsed){ return; }
+static void *sqlite3MemMalloc(整数 nByte){ 返回 0; }
+static void sqlite3MemFree(void *pPrior){ 返回; }
+static void *sqlite3MemRealloc(void *pPrior, 整数 nByte){ 返回 0; }
+static 整数 sqlite3MemSize(void *pPrior){ 返回 0; }
+static 整数 sqlite3MemRoundup(整数 n){ 返回 n; }
+static 整数 sqlite3MemInit(void *NotUsed){ 返回 SQLITE_OK; }
+static void sqlite3MemShutdown(void *NotUsed){ 返回; }
 
 /*
 ** This routine is the only routine in this file with external linkage.

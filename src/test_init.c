@@ -34,56 +34,56 @@ static struct Wrapped {
   sqlite3_mem_methods     mem;
   sqlite3_mutex_methods   mutex;
 
-  int mem_init;              /* True if mem subsystem is initialized */
-  int mem_fail;              /* True to fail mem subsystem initialization */
-  int mutex_init;            /* True if mutex subsystem is initialized */
-  int mutex_fail;            /* True to fail mutex subsystem initialization */
-  int pcache_init;           /* True if pcache subsystem is initialized */
-  int pcache_fail;           /* True to fail pcache subsystem initialization */
+  整数 mem_init;              /* True if mem subsystem is initialized */
+  整数 mem_fail;              /* True to fail mem subsystem initialization */
+  整数 mutex_init;            /* True if mutex subsystem is initialized */
+  整数 mutex_fail;            /* True to fail mutex subsystem initialization */
+  整数 pcache_init;           /* True if pcache subsystem is initialized */
+  整数 pcache_fail;           /* True to fail pcache subsystem initialization */
 } wrapped;
 
-static int wrMemInit(void *pAppData){
-  int rc;
-  if( wrapped.mem_fail ){
+static 整数 wrMemInit(void *pAppData){
+  整数 rc;
+  如果( wrapped.mem_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }否则{
     rc = wrapped.mem.xInit(wrapped.mem.pAppData);
   }
-  if( rc==SQLITE_OK ){
+  如果( rc==SQLITE_OK ){
     wrapped.mem_init = 1;
   }
-  return rc;
+  返回 rc;
 }
 static void wrMemShutdown(void *pAppData){
   wrapped.mem.xShutdown(wrapped.mem.pAppData);
   wrapped.mem_init = 0;
 }
-static void *wrMemMalloc(int n)           {return wrapped.mem.xMalloc(n);}
+static void *wrMemMalloc(整数 n)           {返回 wrapped.mem.xMalloc(n);}
 static void wrMemFree(void *p)            {wrapped.mem.xFree(p);}
-static void *wrMemRealloc(void *p, int n) {return wrapped.mem.xRealloc(p, n);}
-static int wrMemSize(void *p)             {return wrapped.mem.xSize(p);}
-static int wrMemRoundup(int n)            {return wrapped.mem.xRoundup(n);}
+static void *wrMemRealloc(void *p, 整数 n) {返回 wrapped.mem.xRealloc(p, n);}
+static 整数 wrMemSize(void *p)             {返回 wrapped.mem.xSize(p);}
+static 整数 wrMemRoundup(整数 n)            {返回 wrapped.mem.xRoundup(n);}
 
 
-static int wrMutexInit(void){
-  int rc;
-  if( wrapped.mutex_fail ){
+static 整数 wrMutexInit(void){
+  整数 rc;
+  如果( wrapped.mutex_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }否则{
     rc = wrapped.mutex.xMutexInit();
   }
-  if( rc==SQLITE_OK ){
+  如果( rc==SQLITE_OK ){
     wrapped.mutex_init = 1;
   }
-  return rc;
+  返回 rc;
 }
-static int wrMutexEnd(void){
+static 整数 wrMutexEnd(void){
   wrapped.mutex.xMutexEnd();
   wrapped.mutex_init = 0;
-  return SQLITE_OK;
+  返回 SQLITE_OK;
 }
-static sqlite3_mutex *wrMutexAlloc(int e){
-  return wrapped.mutex.xMutexAlloc(e);
+static sqlite3_mutex *wrMutexAlloc(整数 e){
+  返回 wrapped.mutex.xMutexAlloc(e);
 }
 static void wrMutexFree(sqlite3_mutex *p){
   wrapped.mutex.xMutexFree(p);
@@ -91,51 +91,51 @@ static void wrMutexFree(sqlite3_mutex *p){
 static void wrMutexEnter(sqlite3_mutex *p){
   wrapped.mutex.xMutexEnter(p);
 }
-static int wrMutexTry(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexTry(p);
+static 整数 wrMutexTry(sqlite3_mutex *p){
+  返回 wrapped.mutex.xMutexTry(p);
 }
 static void wrMutexLeave(sqlite3_mutex *p){
   wrapped.mutex.xMutexLeave(p);
 }
-static int wrMutexHeld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexHeld(p);
+static 整数 wrMutexHeld(sqlite3_mutex *p){
+  返回 wrapped.mutex.xMutexHeld(p);
 }
-static int wrMutexNotheld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexNotheld(p);
+static 整数 wrMutexNotheld(sqlite3_mutex *p){
+  返回 wrapped.mutex.xMutexNotheld(p);
 }
 
 
 
-static int wrPCacheInit(void *pArg){
-  int rc;
-  if( wrapped.pcache_fail ){
+static 整数 wrPCacheInit(void *pArg){
+  整数 rc;
+  如果( wrapped.pcache_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }否则{
     rc = wrapped.pcache.xInit(wrapped.pcache.pArg);
   }
-  if( rc==SQLITE_OK ){
+  如果( rc==SQLITE_OK ){
     wrapped.pcache_init = 1;
   }
-  return rc;
+  返回 rc;
 }
 static void wrPCacheShutdown(void *pArg){
   wrapped.pcache.xShutdown(wrapped.pcache.pArg);
   wrapped.pcache_init = 0;
 }
 
-static sqlite3_pcache *wrPCacheCreate(int a, int b, int c){
-  return wrapped.pcache.xCreate(a, b, c);
+static sqlite3_pcache *wrPCacheCreate(整数 a, 整数 b, 整数 c){
+  返回 wrapped.pcache.xCreate(a, b, c);
 }  
-static void wrPCacheCachesize(sqlite3_pcache *p, int n){
+static void wrPCacheCachesize(sqlite3_pcache *p, 整数 n){
   wrapped.pcache.xCachesize(p, n);
 }  
-static int wrPCachePagecount(sqlite3_pcache *p){
-  return wrapped.pcache.xPagecount(p);
+static 整数 wrPCachePagecount(sqlite3_pcache *p){
+  返回 wrapped.pcache.xPagecount(p);
 }  
-static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, int b){
-  return wrapped.pcache.xFetch(p, a, b);
+static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, 整数 b){
+  返回 wrapped.pcache.xFetch(p, a, b);
 }  
-static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, int b){
+static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, 整数 b){
   wrapped.pcache.xUnpin(p, a, b);
 }  
 static void wrPCacheRekey(
@@ -184,94 +184,94 @@ static void installInitWrappers(void){
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &pcachemethods);
 }
 
-static int SQLITE_TCLAPI init_wrapper_install(
+static 整数 SQLITE_TCLAPI init_wrapper_install(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  整数 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int i;
+  整数 i;
   installInitWrappers();
-  for(i=1; i<objc; i++){
+  为(i=1; i<objc; i++){
     char *z = Tcl_GetString(objv[i]);
-    if( strcmp(z, "mem")==0 ){
+    如果( strcmp(z, "mem")==0 ){
       wrapped.mem_fail = 1;
-    }else if( strcmp(z, "mutex")==0 ){
+    }否则 如果( strcmp(z, "mutex")==0 ){
       wrapped.mutex_fail = 1;
-    }else if( strcmp(z, "pcache")==0 ){
+    }否则 如果( strcmp(z, "pcache")==0 ){
       wrapped.pcache_fail = 1;
-    }else{
+    }否则{
       Tcl_AppendResult(interp, "Unknown argument: \"", z, "\"", NULL);
-      return TCL_ERROR;
+      返回 TCL_ERROR;
     }
   }
-  return TCL_OK;
+  返回 TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_uninstall(
+static 整数 SQLITE_TCLAPI init_wrapper_uninstall(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  整数 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  如果( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    返回 TCL_ERROR;
   }
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_MUTEX, &wrapped.mutex);
   sqlite3_config(SQLITE_CONFIG_MALLOC, &wrapped.mem);
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &wrapped.pcache);
-  return TCL_OK;
+  返回 TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_clear(
+static 整数 SQLITE_TCLAPI init_wrapper_clear(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  整数 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  如果( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    返回 TCL_ERROR;
   }
 
   wrapped.mem_fail = 0;
   wrapped.mutex_fail = 0;
   wrapped.pcache_fail = 0;
-  return TCL_OK;
+  返回 TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_query(
+static 整数 SQLITE_TCLAPI init_wrapper_query(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  整数 objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   Tcl_Obj *pRet;
 
-  if( objc!=1 ){
+  如果( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    返回 TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  if( wrapped.mutex_init ){
+  如果( wrapped.mutex_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mutex", -1));
   }
-  if( wrapped.mem_init ){
+  如果( wrapped.mem_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mem", -1));
   }
-  if( wrapped.pcache_init ){
+  如果( wrapped.pcache_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("pcache", -1));
   }
 
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  返回 TCL_OK;
 }
 
-int Sqlitetest_init_Init(Tcl_Interp *interp){
+整数 Sqlitetest_init_Init(Tcl_Interp *interp){
   static struct {
      char *zName;
      Tcl_ObjCmdProc *xProc;
@@ -281,11 +281,11 @@ int Sqlitetest_init_Init(Tcl_Interp *interp){
     {"init_wrapper_uninstall", init_wrapper_uninstall},
     {"init_wrapper_clear",     init_wrapper_clear}
   };
-  int i;
+  整数 i;
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  为(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 
-  return TCL_OK;
+  返回 TCL_OK;
 }

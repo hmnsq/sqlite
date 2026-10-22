@@ -23,15 +23,15 @@
 #include "tclsqlite.h"
 
 /* Needed for the setrlimit() system call on unix */
-#if defined(unix)
+#如果 defined(unix)
 #include <sys/resource.h>
 #endif
 
 /* Forward declaration */
-static int SQLITE_TCLAPI load_testfixture_extensions(
+static 整数 SQLITE_TCLAPI load_testfixture_extensions(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 );
 
@@ -49,64 +49,64 @@ static int SQLITE_TCLAPI load_testfixture_extensions(
 **     test suite.
 */
 const char *sqlite3TestInit(Tcl_Interp *interp){
-  extern int Sqlite3_Init(Tcl_Interp*);
-  extern int Sqliteconfig_Init(Tcl_Interp*);
-  extern int Sqlitetest1_Init(Tcl_Interp*);
-  extern int Sqlitetest2_Init(Tcl_Interp*);
-  extern int Sqlitetest3_Init(Tcl_Interp*);
-  extern int Sqlitetest4_Init(Tcl_Interp*);
-  extern int Sqlitetest5_Init(Tcl_Interp*);
-  extern int Sqlitetest6_Init(Tcl_Interp*);
-  extern int Sqlitetest8_Init(Tcl_Interp*);
-  extern int Sqlitetest9_Init(Tcl_Interp*);
-  extern int Sqlitetest_autoext_Init(Tcl_Interp*);
-  extern int Sqlitetest_blob_Init(Tcl_Interp*);
-  extern int Sqlitetest_demovfs_Init(Tcl_Interp *);
-  extern int Sqlitetest_func_Init(Tcl_Interp*);
-  extern int Sqlitetest_hexio_Init(Tcl_Interp*);
-  extern int Sqlitetest_init_Init(Tcl_Interp*);
-  extern int Sqlitetest_malloc_Init(Tcl_Interp*);
-  extern int Sqlitetest_mutex_Init(Tcl_Interp*);
-  extern int Sqlitetestschema_Init(Tcl_Interp*);
-  extern int Sqlitetestsse_Init(Tcl_Interp*);
-  extern int Sqlitetesttclvar_Init(Tcl_Interp*);
-  extern int Sqlitetestfs_Init(Tcl_Interp*);
-  extern int SqlitetestThread_Init(Tcl_Interp*);
-  extern int SqlitetestOnefile_Init();
-  extern int SqlitetestOsinst_Init(Tcl_Interp*);
-  extern int Sqlitetestbackup_Init(Tcl_Interp*);
-  extern int Sqlitetestintarray_Init(Tcl_Interp*);
-  extern int Sqlitetestvfs_Init(Tcl_Interp *);
-  extern int Sqlitetestrtree_Init(Tcl_Interp*);
-  extern int Sqlitetestrtreedoc_Init(Tcl_Interp*);
-  extern int Sqlitequota_Init(Tcl_Interp*);
-  extern int Sqlitemultiplex_Init(Tcl_Interp*);
-  extern int SqliteSuperlock_Init(Tcl_Interp*);
-  extern int SqlitetestSyscall_Init(Tcl_Interp*);
-#if defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
-  extern int TestSession_Init(Tcl_Interp*);
+  extern 整数 Sqlite3_Init(Tcl_Interp*);
+  extern 整数 Sqliteconfig_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest1_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest2_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest3_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest4_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest5_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest6_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest8_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest9_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_autoext_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_blob_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_demovfs_Init(Tcl_Interp *);
+  extern 整数 Sqlitetest_func_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_hexio_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_init_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_malloc_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_mutex_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestschema_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestsse_Init(Tcl_Interp*);
+  extern 整数 Sqlitetesttclvar_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestfs_Init(Tcl_Interp*);
+  extern 整数 SqlitetestThread_Init(Tcl_Interp*);
+  extern 整数 SqlitetestOnefile_Init();
+  extern 整数 SqlitetestOsinst_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestbackup_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestintarray_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestvfs_Init(Tcl_Interp *);
+  extern 整数 Sqlitetestrtree_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestrtreedoc_Init(Tcl_Interp*);
+  extern 整数 Sqlitequota_Init(Tcl_Interp*);
+  extern 整数 Sqlitemultiplex_Init(Tcl_Interp*);
+  extern 整数 SqliteSuperlock_Init(Tcl_Interp*);
+  extern 整数 SqlitetestSyscall_Init(Tcl_Interp*);
+#如果 defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
+  extern 整数 TestSession_Init(Tcl_Interp*);
 #endif
-  extern int Md5_Init(Tcl_Interp*);
-  extern int Fts5tcl_Init(Tcl_Interp *);
-  extern int SqliteRbu_Init(Tcl_Interp*);
-  extern int Sqlitetesttcl_Init(Tcl_Interp*);
-#if defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
-  extern int Sqlitetestfts3_Init(Tcl_Interp *interp);
+  extern 整数 Md5_Init(Tcl_Interp*);
+  extern 整数 Fts5tcl_Init(Tcl_Interp *);
+  extern 整数 SqliteRbu_Init(Tcl_Interp*);
+  extern 整数 Sqlitetesttcl_Init(Tcl_Interp*);
+#如果 defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
+  extern 整数 Sqlitetestfts3_Init(Tcl_Interp *interp);
 #endif
 #ifdef SQLITE_ENABLE_ZIPVFS
-  extern int Zipvfs_Init(Tcl_Interp*);
+  extern 整数 Zipvfs_Init(Tcl_Interp*);
 #endif
-  extern int TestExpert_Init(Tcl_Interp*);
-  extern int Sqlitetest_window_Init(Tcl_Interp *);
-  extern int Sqlitetestvdbecov_Init(Tcl_Interp *);
-  extern int TestRecover_Init(Tcl_Interp*);
-  extern int Sqlitetestintck_Init(Tcl_Interp*);
+  extern 整数 TestExpert_Init(Tcl_Interp*);
+  extern 整数 Sqlitetest_window_Init(Tcl_Interp *);
+  extern 整数 Sqlitetestvdbecov_Init(Tcl_Interp *);
+  extern 整数 TestRecover_Init(Tcl_Interp*);
+  extern 整数 Sqlitetestintck_Init(Tcl_Interp*);
 
   Tcl_CmdInfo cmdInfo;
 
   /* Since the primary use case for this binary is testing of SQLite,
   ** be sure to generate core files if we crash */
-#if defined(unix)
+#如果 defined(unix)
   { struct rlimit x;
     getrlimit(RLIMIT_CORE, &x);
     x.rlim_cur = x.rlim_max;
@@ -114,7 +114,7 @@ const char *sqlite3TestInit(Tcl_Interp *interp){
   }
 #endif /* unix */
 
-  if( Tcl_GetCommandInfo(interp, "sqlite3", &cmdInfo)==0 ){
+  如果( Tcl_GetCommandInfo(interp, "sqlite3", &cmdInfo)==0 ){
     Sqlite3_Init(interp);
   }
 #ifdef SQLITE_ENABLE_ZIPVFS
@@ -153,14 +153,14 @@ const char *sqlite3TestInit(Tcl_Interp *interp){
   Sqlitemultiplex_Init(interp);
   SqliteSuperlock_Init(interp);
   SqlitetestSyscall_Init(interp);
-#if defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
+#如果 defined(SQLITE_ENABLE_SESSION) && defined(SQLITE_ENABLE_PREUPDATE_HOOK)
   TestSession_Init(interp);
 #endif
   Fts5tcl_Init(interp);
   SqliteRbu_Init(interp);
   Sqlitetesttcl_Init(interp);
 
-#if defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
+#如果 defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS4)
   Sqlitetestfts3_Init(interp);
 #endif
   TestExpert_Init(interp);
@@ -172,29 +172,29 @@ const char *sqlite3TestInit(Tcl_Interp *interp){
   Tcl_CreateObjCommand(
       interp, "load_testfixture_extensions", load_testfixture_extensions,0,0
   );
-  return 0;
+  返回 0;
 }
 
 /* tclcmd:   load_testfixture_extensions
 */
-static int SQLITE_TCLAPI load_testfixture_extensions(
+static 整数 SQLITE_TCLAPI load_testfixture_extensions(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  整数 objc,
   Tcl_Obj *CONST objv[]
 ){
 
   Tcl_Interp *slave;
-  if( objc!=2 ){
+  如果( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SLAVE");
-    return TCL_ERROR;
+    返回 TCL_ERROR;
   }
 
   slave = Tcl_GetSlave(interp, Tcl_GetString(objv[1]));
-  if( !slave ){
-    return TCL_ERROR;
+  如果( !slave ){
+    返回 TCL_ERROR;
   }
 
   (void)sqlite3TestInit(slave);
-  return TCL_OK;
+  返回 TCL_OK;
 }

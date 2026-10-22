@@ -26,15 +26,15 @@
 */
 static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
   TreeView *p = *pp;
-  if( p==0 ){
+  如果( p==0 ){
     *pp = p = sqlite3_malloc64( sizeof(*p) );
-    if( p==0 ) return;
+    如果( p==0 ) 返回;
     memset(p, 0, sizeof(*p));
-  }else{
+  }否则{
     p->iLevel++;
   }
   assert( moreToFollow==0 || moreToFollow==1 );
-  if( p->iLevel<(int)sizeof(p->bLine) ) p->bLine[p->iLevel] = moreToFollow;
+  如果( p->iLevel<(整数)sizeof(p->bLine) ) p->bLine[p->iLevel] = moreToFollow;
 }
 
 /*
@@ -42,9 +42,9 @@ static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
 */
 static void sqlite3TreeViewPop(TreeView **pp){
   TreeView *p = *pp;
-  if( p==0 ) return;
+  如果( p==0 ) 返回;
   p->iLevel--;
-  if( p->iLevel<0 ){
+  如果( p->iLevel<0 ){
     sqlite3_free(p);
     *pp = 0;
   }
@@ -56,17 +56,17 @@ static void sqlite3TreeViewPop(TreeView **pp){
 */
 void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
   va_list ap;
-  int i;
+  整数 i;
   StrAccum acc;
   char zBuf[1000];
   sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
-  if( p ){
-    for(i=0; i<p->iLevel && i<(int)sizeof(p->bLine)-1; i++){
+  如果( p ){
+    为(i=0; i<p->iLevel && i<(整数)sizeof(p->bLine)-1; i++){
       sqlite3_str_append(&acc, p->bLine[i] ? "|   " : "    ", 4);
     }
     sqlite3_str_append(&acc, p->bLine[i] ? "|-- " : "'-- ", 4);
   }
-  if( zFormat!=0 ){
+  如果( zFormat!=0 ){
     va_start(ap, zFormat);
     sqlite3_str_vappendf(&acc, zFormat, ap);
     va_end(ap);
@@ -92,15 +92,15 @@ static void sqlite3TreeViewItem(TreeView *p, const char *zLabel,u8 moreFollows){
 void sqlite3TreeViewColumnList(
   TreeView *pView,
   const Column *aCol,
-  int nCol,
+  整数 nCol,
   u8 moreToFollow
 ){
-  int i;
+  整数 i;
   sqlite3TreeViewPush(&pView, moreToFollow);
   sqlite3TreeViewLine(pView, "COLUMNS");
-  for(i=0; i<nCol; i++){
+  为(i=0; i<nCol; i++){
     u16 flg = aCol[i].colFlags;
-    int colMoreToFollow = i<(nCol - 1);
+    整数 colMoreToFollow = i<(nCol - 1);
     sqlite3TreeViewPush(&pView, colMoreToFollow);
     sqlite3TreeViewLine(pView, 0);
     printf(" %s", aCol[i].zCnName);
@@ -112,7 +112,7 @@ void sqlite3TreeViewColumnList(
       case COLTYPE_REAL:     printf(" REAL");       break;
       case COLTYPE_TEXT:     printf(" TEXT");       break;
       case COLTYPE_CUSTOM: {
-        if( flg & COLFLAG_HASTYPE ){
+        如果( flg & COLFLAG_HASTYPE ){
           const char *z = aCol[i].zCnName;
           z += strlen(z)+1;
           printf(" X-%s", z);
@@ -120,12 +120,12 @@ void sqlite3TreeViewColumnList(
         }
       }
     }
-    if( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
-    if( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
+    如果( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
+    如果( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
 #ifdef COLFLAG_NOEXPAND
-    if( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
+    如果( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
 #endif
-    if( flg ) printf(" flags=%04x", flg);
+    如果( flg ) printf(" flags=%04x", flg);
     printf("\n");      
     fflush(stdout);
     sqlite3TreeViewPop(&pView);
@@ -137,36 +137,36 @@ void sqlite3TreeViewColumnList(
 ** Generate a human-readable description of a WITH clause.
 */
 void sqlite3TreeViewWith(TreeView *pView, const With *pWith, u8 moreToFollow){
-  int i;
-  if( pWith==0 ) return;
-  if( pWith->nCte==0 ) return;
-  if( pWith->pOuter ){
+  整数 i;
+  如果( pWith==0 ) 返回;
+  如果( pWith->nCte==0 ) 返回;
+  如果( pWith->pOuter ){
     sqlite3TreeViewLine(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
-  }else{
+  }否则{
     sqlite3TreeViewLine(pView, "WITH (0x%p)", pWith);
   }
-  if( pWith->nCte>0 ){
+  如果( pWith->nCte>0 ){
     sqlite3TreeViewPush(&pView, moreToFollow);
-    for(i=0; i<pWith->nCte; i++){
+    为(i=0; i<pWith->nCte; i++){
       StrAccum x;
       char zLine[1000];
       const struct Cte *pCte = &pWith->a[i];
       sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
       sqlite3_str_appendf(&x, "%s", pCte->zName);
-      if( pCte->pCols && pCte->pCols->nExpr>0 ){
+      如果( pCte->pCols && pCte->pCols->nExpr>0 ){
         char cSep = '(';
-        int j;
-        for(j=0; j<pCte->pCols->nExpr; j++){
+        整数 j;
+        为(j=0; j<pCte->pCols->nExpr; j++){
           sqlite3_str_appendf(&x, "%c%s", cSep, pCte->pCols->a[j].zEName);
           cSep = ',';
         }
         sqlite3_str_appendf(&x, ")");
       }
-      if( pCte->eM10d!=M10d_Any ){
+      如果( pCte->eM10d!=M10d_Any ){
         sqlite3_str_appendf(&x, " %sMATERIALIZED", 
            pCte->eM10d==M10d_No ? "NOT " : "");
       }
-      if( pCte->pUse ){
+      如果( pCte->pUse ){
         sqlite3_str_appendf(&x, " (pUse=0x%p, nUse=%d)", pCte->pUse,
                  pCte->pUse->nUse);
       }
@@ -183,79 +183,79 @@ void sqlite3TreeViewWith(TreeView *pView, const With *pWith, u8 moreToFollow){
 ** Generate a human-readable description of a SrcList object.
 */
 void sqlite3TreeViewSrcList(TreeView *pView, const SrcList *pSrc){
-  int i;
-  if( pSrc==0 ) return;
-  for(i=0; i<pSrc->nSrc; i++){
+  整数 i;
+  如果( pSrc==0 ) 返回;
+  为(i=0; i<pSrc->nSrc; i++){
     const SrcItem *pItem = &pSrc->a[i];
     StrAccum x;
-    int n = 0;
+    整数 n = 0;
     char zLine[1000];
     sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
     x.printfFlags |= SQLITE_PRINTF_INTERNAL;
     sqlite3_str_appendf(&x, "{%d:*} %!S", pItem->iCursor, pItem);
-    if( pItem->pSTab ){
+    如果( pItem->pSTab ){
       sqlite3_str_appendf(&x, " tab=%Q nCol=%d ptr=%p used=%llx%s",
            pItem->pSTab->zName, pItem->pSTab->nCol, pItem->pSTab, 
            pItem->colUsed,
            pItem->fg.rowidUsed ? "+rowid" : "");
     }
-    if( (pItem->fg.jointype & (JT_LEFT|JT_RIGHT))==(JT_LEFT|JT_RIGHT) ){
+    如果( (pItem->fg.jointype & (JT_LEFT|JT_RIGHT))==(JT_LEFT|JT_RIGHT) ){
       sqlite3_str_appendf(&x, " FULL-OUTER-JOIN");
-    }else if( pItem->fg.jointype & JT_LEFT ){
+    }否则 如果( pItem->fg.jointype & JT_LEFT ){
       sqlite3_str_appendf(&x, " LEFT-JOIN");
-    }else if( pItem->fg.jointype & JT_RIGHT ){
+    }否则 如果( pItem->fg.jointype & JT_RIGHT ){
       sqlite3_str_appendf(&x, " RIGHT-JOIN");
-    }else if( pItem->fg.jointype & JT_CROSS ){
+    }否则 如果( pItem->fg.jointype & JT_CROSS ){
       sqlite3_str_appendf(&x, " CROSS-JOIN");
     }
-    if( pItem->fg.jointype & JT_LTORJ ){
+    如果( pItem->fg.jointype & JT_LTORJ ){
       sqlite3_str_appendf(&x, " LTORJ");
     }
-    if( pItem->fg.fromDDL ){
+    如果( pItem->fg.fromDDL ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( pItem->fg.isCte ){
+    如果( pItem->fg.isCte ){
       static const char *aMat[] = {",MAT", "", ",NO-MAT"};
       sqlite3_str_appendf(&x, " CteUse=%d%s",
                           pItem->u2.pCteUse->nUse,
                           aMat[pItem->u2.pCteUse->eM10d]);
     }
-    if( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
+    如果( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
       sqlite3_str_appendf(&x, " isOn");
     }
-    if( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
-    if( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
-    if( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
-    if( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
-    if( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
-    if( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
-    if( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
-    if( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
-    if( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
+    如果( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
+    如果( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
+    如果( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
+    如果( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
+    如果( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
+    如果( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
+    如果( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
+    如果( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
+    如果( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
 
     sqlite3StrAccumFinish(&x);
     sqlite3TreeViewItem(pView, zLine, i<pSrc->nSrc-1);
     n = 0;
-    if( pItem->fg.isSubquery ) n++;
-    if( pItem->fg.isTabFunc ) n++;
-    if( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
-    if( pItem->fg.isUsing ){
+    如果( pItem->fg.isSubquery ) n++;
+    如果( pItem->fg.isTabFunc ) n++;
+    如果( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
+    如果( pItem->fg.isUsing ){
       sqlite3TreeViewIdList(pView, pItem->u3.pUsing, (--n)>0, "USING");
-    }else if( pItem->u3.pOn!=0 ){
+    }否则 如果( pItem->u3.pOn!=0 ){
       sqlite3TreeViewItem(pView, "ON", (--n)>0);
       sqlite3TreeViewExpr(pView, pItem->u3.pOn, 0);
       sqlite3TreeViewPop(&pView);
     }
-    if( pItem->fg.isSubquery ){
+    如果( pItem->fg.isSubquery ){
       assert( n==1 );
-      if( pItem->pSTab ){
+      如果( pItem->pSTab ){
         Table *pTab = pItem->pSTab;
         sqlite3TreeViewColumnList(pView, pTab->aCol, pTab->nCol, 1);
       }
-      assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
+      assert( (整数)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
       sqlite3TreeViewSelect(pView, pItem->u4.pSubq->pSelect, 0);
     }
-    if( pItem->fg.isTabFunc ){
+    如果( pItem->fg.isTabFunc ){
       sqlite3TreeViewExprList(pView, pItem->u1.pFuncArg, 0, "func-args:");
     }
     sqlite3TreeViewPop(&pView);
@@ -266,104 +266,104 @@ void sqlite3TreeViewSrcList(TreeView *pView, const SrcList *pSrc){
 ** Generate a human-readable description of a Select object.
 */
 void sqlite3TreeViewSelect(TreeView *pView, const Select *p, u8 moreToFollow){
-  int n = 0;
-  int cnt = 0;
-  if( p==0 ){
+  整数 n = 0;
+  整数 cnt = 0;
+  如果( p==0 ){
     sqlite3TreeViewLine(pView, "nil-SELECT");
-    return;
+    返回;
   } 
   sqlite3TreeViewPush(&pView, moreToFollow);
-  if( p->pWith ){
+  如果( p->pWith ){
     sqlite3TreeViewWith(pView, p->pWith, 1);
     cnt = 1;
     sqlite3TreeViewPush(&pView, 1);
   }
   do{
-    if( p->selFlags & SF_WhereBegin ){
+    如果( p->selFlags & SF_WhereBegin ){
       sqlite3TreeViewLine(pView, "sqlite3WhereBegin()");
-    }else{
+    }否则{
       sqlite3TreeViewLine(pView,
         "SELECT%s%s (%u/%p) selFlags=0x%x nSelectRow=%d",
         ((p->selFlags & SF_Distinct) ? " DISTINCT" : ""),
         ((p->selFlags & SF_Aggregate) ? " agg_flag" : ""),
         p->selId, p, p->selFlags,
-        (int)p->nSelectRow
+        (整数)p->nSelectRow
       );
     }
-    if( cnt++ ) sqlite3TreeViewPop(&pView);
-    if( p->pPrior ){
+    如果( cnt++ ) sqlite3TreeViewPop(&pView);
+    如果( p->pPrior ){
       n = 1000;
-    }else{
+    }否则{
       n = 0;
-      if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
-      if( p->pWhere ) n++;
-      if( p->pGroupBy ) n++;
-      if( p->pHaving ) n++;
-      if( p->pOrderBy ) n++;
-      if( p->pLimit ) n++;
+      如果( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
+      如果( p->pWhere ) n++;
+      如果( p->pGroupBy ) n++;
+      如果( p->pHaving ) n++;
+      如果( p->pOrderBy ) n++;
+      如果( p->pLimit ) n++;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( p->pWin ) n++;
-      if( p->pWinDefn ) n++;
+      如果( p->pWin ) n++;
+      如果( p->pWinDefn ) n++;
 #endif
     }
-    if( p->pEList ){
+    如果( p->pEList ){
       sqlite3TreeViewExprList(pView, p->pEList, n>0, "result-set");
     }
     n--;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ){
+    如果( p->pWin ){
       Window *pX;
       sqlite3TreeViewPush(&pView, (n--)>0);
       sqlite3TreeViewLine(pView, "window-functions");
-      for(pX=p->pWin; pX; pX=pX->pNextWin){
+      为(pX=p->pWin; pX; pX=pX->pNextWin){
         sqlite3TreeViewWinFunc(pView, pX, pX->pNextWin!=0);
       }
       sqlite3TreeViewPop(&pView);
     }
 #endif
-    if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
+    如果( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
       sqlite3TreeViewPush(&pView, (n--)>0);
       sqlite3TreeViewLine(pView, "FROM");
       sqlite3TreeViewSrcList(pView, p->pSrc);
       sqlite3TreeViewPop(&pView);
     }
-    if( p->pWhere ){
+    如果( p->pWhere ){
       sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
       sqlite3TreeViewExpr(pView, p->pWhere, 0);
       sqlite3TreeViewPop(&pView);
     }
-    if( p->pGroupBy ){
+    如果( p->pGroupBy ){
       sqlite3TreeViewExprList(pView, p->pGroupBy, (n--)>0, "GROUPBY");
     }
-    if( p->pHaving ){
+    如果( p->pHaving ){
       sqlite3TreeViewItem(pView, "HAVING", (n--)>0);
       sqlite3TreeViewExpr(pView, p->pHaving, 0);
       sqlite3TreeViewPop(&pView);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWinDefn ){
+    如果( p->pWinDefn ){
       Window *pX;
       sqlite3TreeViewItem(pView, "WINDOW", (n--)>0);
-      for(pX=p->pWinDefn; pX; pX=pX->pNextWin){
+      为(pX=p->pWinDefn; pX; pX=pX->pNextWin){
         sqlite3TreeViewWindow(pView, pX, pX->pNextWin!=0);
       }
       sqlite3TreeViewPop(&pView);
     }
 #endif
-    if( p->pOrderBy ){
+    如果( p->pOrderBy ){
       sqlite3TreeViewExprList(pView, p->pOrderBy, (n--)>0, "ORDERBY");
     }
-    if( p->pLimit ){
+    如果( p->pLimit ){
       sqlite3TreeViewItem(pView, "LIMIT", (n--)>0);
       sqlite3TreeViewExpr(pView, p->pLimit->pLeft, p->pLimit->pRight!=0);
-      if( p->pLimit->pRight ){
+      如果( p->pLimit->pRight ){
         sqlite3TreeViewItem(pView, "OFFSET", 0);
         sqlite3TreeViewExpr(pView, p->pLimit->pRight, 0);
         sqlite3TreeViewPop(&pView);
       }
       sqlite3TreeViewPop(&pView);
     }
-    if( p->pPrior ){
+    如果( p->pPrior ){
       const char *zOp = "UNION";
       switch( p->op ){
         case TK_ALL:         zOp = "UNION ALL";  break;
@@ -373,7 +373,7 @@ void sqlite3TreeViewSelect(TreeView *pView, const Select *p, u8 moreToFollow){
       sqlite3TreeViewItem(pView, zOp, 1);
     }
     p = p->pPrior;
-  }while( p!=0 );
+  }当( p!=0 );
   sqlite3TreeViewPop(&pView);
 }
 
@@ -419,40 +419,40 @@ void sqlite3TreeViewBound(
 ** Generate a human-readable explanation for a Window object
 */
 void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
-  int nElement = 0;
-  if( pWin==0 ) return;
-  if( pWin->pFilter ){
+  整数 nElement = 0;
+  如果( pWin==0 ) 返回;
+  如果( pWin->pFilter ){
     sqlite3TreeViewItem(pView, "FILTER", 1);
     sqlite3TreeViewExpr(pView, pWin->pFilter, 0);
     sqlite3TreeViewPop(&pView);
-    if( pWin->eFrmType==TK_FILTER ) return;
+    如果( pWin->eFrmType==TK_FILTER ) 返回;
   }
   sqlite3TreeViewPush(&pView, more);
-  if( pWin->zName ){
+  如果( pWin->zName ){
     sqlite3TreeViewLine(pView, "OVER %s (%p)", pWin->zName, pWin);
-  }else{
+  }否则{
     sqlite3TreeViewLine(pView, "OVER (%p)", pWin);
   }
-  if( pWin->zBase )    nElement++;
-  if( pWin->pOrderBy ) nElement++;
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
-  if( pWin->eExclude ) nElement++;
-  if( pWin->zBase ){
+  如果( pWin->zBase )    nElement++;
+  如果( pWin->pOrderBy ) nElement++;
+  如果( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
+  如果( pWin->eExclude ) nElement++;
+  如果( pWin->zBase ){
     sqlite3TreeViewPush(&pView, (--nElement)>0);
     sqlite3TreeViewLine(pView, "window: %s", pWin->zBase);
     sqlite3TreeViewPop(&pView);
   }
-  if( pWin->pPartition ){
+  如果( pWin->pPartition ){
     sqlite3TreeViewExprList(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
   }
-  if( pWin->pOrderBy ){
+  如果( pWin->pOrderBy ){
     sqlite3TreeViewExprList(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
   }
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
+  如果( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
     char zBuf[30];
     const char *zFrmType = "ROWS";
-    if( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
-    if( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
+    如果( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
+    如果( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
     sqlite3_snprintf(sizeof(zBuf),zBuf,"%s%s",zFrmType,
         pWin->bImplicitFrame ? " (implied)" : "");
     sqlite3TreeViewItem(pView, zBuf, (--nElement)>0);
@@ -460,7 +460,7 @@ void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
     sqlite3TreeViewBound(pView, pWin->eEnd, pWin->pEnd, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pWin->eExclude ){
+  如果( pWin->eExclude ){
     char zBuf[30];
     const char *zExclude;
     switch( pWin->eExclude ){
@@ -486,7 +486,7 @@ void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
 ** Generate a human-readable explanation for a Window Function object
 */
 void sqlite3TreeViewWinFunc(TreeView *pView, const Window *pWin, u8 more){
-  if( pWin==0 ) return;
+  如果( pWin==0 ) 返回;
   sqlite3TreeViewPush(&pView, more);
   sqlite3TreeViewLine(pView, "WINFUNC %s(%d)",
                        pWin->pWFunc->zName, pWin->pWFunc->nArg);
@@ -503,33 +503,33 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
   const char *zUniOp = 0;   /* Unary operator */
   char zFlgs[200];
   sqlite3TreeViewPush(&pView, moreToFollow);
-  if( pExpr==0 ){
+  如果( pExpr==0 ){
     sqlite3TreeViewLine(pView, "nil");
     sqlite3TreeViewPop(&pView);
-    return;
+    返回;
   }
-  if( pExpr->flags || pExpr->affExpr || pExpr->vvaFlags || pExpr->pAggInfo ){
+  如果( pExpr->flags || pExpr->affExpr || pExpr->vvaFlags || pExpr->pAggInfo ){
     StrAccum x;
     sqlite3StrAccumInit(&x, 0, zFlgs, sizeof(zFlgs), 0);
     sqlite3_str_appendf(&x, " fg.af=%x.%c",
       pExpr->flags, pExpr->affExpr ? pExpr->affExpr : 'n');
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
+    如果( ExprHasProperty(pExpr, EP_OuterON) ){
       sqlite3_str_appendf(&x, " outer.iJoin=%d", pExpr->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_InnerON) ){
+    如果( ExprHasProperty(pExpr, EP_InnerON) ){
       sqlite3_str_appendf(&x, " inner.iJoin=%d", pExpr->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_FromDDL) ){
+    如果( ExprHasProperty(pExpr, EP_FromDDL) ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( ExprHasVVAProperty(pExpr, EP_Immutable) ){
+    如果( ExprHasVVAProperty(pExpr, EP_Immutable) ){
       sqlite3_str_appendf(&x, " IMMUTABLE");
     }
-    if( pExpr->pAggInfo!=0 ){
+    如果( pExpr->pAggInfo!=0 ){
       sqlite3_str_appendf(&x, " agg-column[%d]", pExpr->iAgg);
     }
     sqlite3StrAccumFinish(&x);
-  }else{
+  }否则{
     zFlgs[0] = 0;
   }
   switch( pExpr->op ){
@@ -539,31 +539,31 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       break;
     }
     case TK_COLUMN: {
-      if( pExpr->iTable<0 ){
+      如果( pExpr->iTable<0 ){
         /* This only happens when coding check constraints */
         char zOp2[16];
-        if( pExpr->op2 ){
+        如果( pExpr->op2 ){
           sqlite3_snprintf(sizeof(zOp2),zOp2," op2=0x%02x",pExpr->op2);
-        }else{
+        }否则{
           zOp2[0] = 0;
         }
         sqlite3TreeViewLine(pView, "COLUMN(%d)%s%s",
                                     pExpr->iColumn, zFlgs, zOp2);
-      }else{
+      }否则{
         assert( ExprUseYTab(pExpr) );
         sqlite3TreeViewLine(pView, "{%d:%d} pTab=%p%s",
                         pExpr->iTable, pExpr->iColumn,
                         pExpr->y.pTab, zFlgs);
       }
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
+      如果( ExprHasProperty(pExpr, EP_FixedCol) ){
         sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
       }
       break;
     }
     case TK_INTEGER: {
-      if( pExpr->flags & EP_IntValue ){
+      如果( pExpr->flags & EP_IntValue ){
         sqlite3TreeViewLine(pView, "%d", pExpr->u.iValue);
-      }else{
+      }否则{
         sqlite3TreeViewLine(pView, "%s", pExpr->u.zToken);
       }
       break;
@@ -655,7 +655,7 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
     case TK_NOTNULL: zUniOp = "NOTNULL"; break;
 
     case TK_TRUTH: {
-      int x;
+      整数 x;
       const char *azOp[] = {
          "IS-FALSE", "IS-TRUE", "IS-NOT-FALSE", "IS-NOT-TRUE"
       };
@@ -693,41 +693,41 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
     case TK_FUNCTION: {
       ExprList *pFarg;       /* List of function arguments */
       Window *pWin;
-      if( ExprHasProperty(pExpr, EP_TokenOnly) ){
+      如果( ExprHasProperty(pExpr, EP_TokenOnly) ){
         pFarg = 0;
         pWin = 0;
-      }else{
+      }否则{
         assert( ExprUseXList(pExpr) );
         pFarg = pExpr->x.pList;
 #ifndef SQLITE_OMIT_WINDOWFUNC
         pWin = IsWindowFunc(pExpr) ? pExpr->y.pWin : 0;
-#else
+#否则
         pWin = 0;
 #endif 
       }
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->op==TK_AGG_FUNCTION ){
+      如果( pExpr->op==TK_AGG_FUNCTION ){
         sqlite3TreeViewLine(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
                              pExpr->op2, pExpr->u.zToken, zFlgs,
                              pExpr->pAggInfo ? pExpr->pAggInfo->selId : 0,
                              pExpr->iAgg, pExpr->pAggInfo);
-      }else if( pExpr->op2!=0 ){
+      }否则 如果( pExpr->op2!=0 ){
         const char *zOp2;
         char zBuf[8];
         sqlite3_snprintf(sizeof(zBuf),zBuf,"0x%02x",pExpr->op2);
         zOp2 = zBuf;
-        if( pExpr->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
-        if( pExpr->op2==NC_IdxExpr ) zOp2 = "NC_IdxExpr";
-        if( pExpr->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
-        if( pExpr->op2==NC_GenCol ) zOp2 = "NC_GenCol";
+        如果( pExpr->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
+        如果( pExpr->op2==NC_IdxExpr ) zOp2 = "NC_IdxExpr";
+        如果( pExpr->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
+        如果( pExpr->op2==NC_GenCol ) zOp2 = "NC_GenCol";
         sqlite3TreeViewLine(pView, "FUNCTION %Q%s op2=%s",
                             pExpr->u.zToken, zFlgs, zOp2);
-      }else{
+      }否则{
         sqlite3TreeViewLine(pView, "FUNCTION %Q%s", pExpr->u.zToken, zFlgs);
       }
-      if( pFarg ){
+      如果( pFarg ){
         sqlite3TreeViewExprList(pView, pFarg, pWin!=0 || pExpr->pLeft, 0);
-        if( pExpr->pLeft ){
+        如果( pExpr->pLeft ){
           Expr *pOB = pExpr->pLeft;
           assert( pOB->op==TK_ORDER );
           assert( ExprUseXList(pOB) );
@@ -735,7 +735,7 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
         }
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pWin ){
+      如果( pWin ){
         sqlite3TreeViewWindow(pView, pWin, 0);
       }
 #endif
@@ -762,8 +762,8 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       sqlite3_str *pStr = sqlite3_str_new(0);
       char *z;
       sqlite3_str_appendf(pStr, "IN flags=0x%x", pExpr->flags);
-      if( pExpr->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",pExpr->iTable);
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
+      如果( pExpr->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",pExpr->iTable);
+      如果( ExprHasProperty(pExpr, EP_Subrtn) ){
         sqlite3_str_appendf(pStr, " subrtn(%d,%d)",
             pExpr->y.sub.regReturn, pExpr->y.sub.iAddr);
       }
@@ -771,9 +771,9 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       sqlite3TreeViewLine(pView, z);
       sqlite3_free(z);
       sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      if( ExprUseXSelect(pExpr) ){
+      如果( ExprUseXSelect(pExpr) ){
         sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      }else{
+      }否则{
         sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
       }
       break;
@@ -873,9 +873,9 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       break;
     }
     case TK_ROW: {
-      if( pExpr->iColumn<=0 ){
+      如果( pExpr->iColumn<=0 ){
         sqlite3TreeViewLine(pView, "First FROM table rowid");
-      }else{
+      }否则{
         sqlite3TreeViewLine(pView, "First FROM table column %d",
             pExpr->iColumn-1);
       }
@@ -886,11 +886,11 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       break;
     }
   }
-  if( zBinOp ){
+  如果( zBinOp ){
     sqlite3TreeViewLine(pView, "%s%s", zBinOp, zFlgs);
     sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
     sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-  }else if( zUniOp ){
+  }否则 如果( zUniOp ){
     sqlite3TreeViewLine(pView, "%s%s", zUniOp, zFlgs);
    sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
   }
@@ -906,50 +906,50 @@ void sqlite3TreeViewBareExprList(
   const ExprList *pList,
   const char *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
+  如果( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  如果( pList==0 ){
     sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
+  }否则{
+    整数 i;
     sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nExpr; i++){
-      int j = pList->a[i].u.x.iOrderByCol;
+    为(i=0; i<pList->nExpr; i++){
+      整数 j = pList->a[i].u.x.iOrderByCol;
       u8 sortFlags = pList->a[i].fg.sortFlags;
       char *zName = pList->a[i].zEName;
-      int moreToFollow = i<pList->nExpr - 1;
-      if( j || zName || sortFlags ){
+      整数 moreToFollow = i<pList->nExpr - 1;
+      如果( j || zName || sortFlags ){
         sqlite3TreeViewPush(&pView, moreToFollow);
         moreToFollow = 0;
         sqlite3TreeViewLine(pView, 0);
-        if( zName ){
+        如果( zName ){
           switch( pList->a[i].fg.eEName ){
             default:
               fprintf(stdout, "AS %s ", zName);
               break;
             case ENAME_TAB:
               fprintf(stdout, "TABLE-ALIAS-NAME(\"%s\") ", zName);
-              if( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
-              if( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
-              if( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
+              如果( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
+              如果( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
+              如果( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
               break;
             case ENAME_SPAN:
               fprintf(stdout, "SPAN(\"%s\") ", zName);
               break;
           }
         }
-        if( j ){
+        如果( j ){
           fprintf(stdout, "iOrderByCol=%d ", j);
         }
-        if( sortFlags & KEYINFO_ORDER_DESC ){
+        如果( sortFlags & KEYINFO_ORDER_DESC ){
           fprintf(stdout, "DESC ");
-        }else if( sortFlags & KEYINFO_ORDER_BIGNULL ){
+        }否则 如果( sortFlags & KEYINFO_ORDER_BIGNULL ){
           fprintf(stdout, "NULLS-LAST");
         }
         fprintf(stdout, "\n");
         fflush(stdout);
       }
       sqlite3TreeViewExpr(pView, pList->a[i].pExpr, moreToFollow);
-      if( j || zName || sortFlags ){
+      如果( j || zName || sortFlags ){
         sqlite3TreeViewPop(&pView);
       }
     }
@@ -974,16 +974,16 @@ void sqlite3TreeViewBareIdList(
   const IdList *pList,
   const char *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
+  如果( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  如果( pList==0 ){
     sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
+  }否则{
+    整数 i;
     sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nId; i++){
+    为(i=0; i<pList->nId; i++){
       char *zName = pList->a[i].zName;
-      int moreToFollow = i<pList->nId - 1;
-      if( zName==0 ) zName = "(null)";
+      整数 moreToFollow = i<pList->nId - 1;
+      如果( zName==0 ) zName = "(null)";
       sqlite3TreeViewPush(&pView, moreToFollow);
       sqlite3TreeViewLine(pView, 0);
       fprintf(stdout, "%s\n", zName);
@@ -1010,17 +1010,17 @@ void sqlite3TreeViewUpsert(
   const Upsert *pUpsert,
   u8 moreToFollow
 ){
-  if( pUpsert==0 ) return;
+  如果( pUpsert==0 ) 返回;
   sqlite3TreeViewPush(&pView, moreToFollow);
-  while( pUpsert ){
-    int n;
+  当( pUpsert ){
+    整数 n;
     sqlite3TreeViewPush(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
     sqlite3TreeViewLine(pView, "ON CONFLICT DO %s", 
          pUpsert->isDoUpdate ? "UPDATE" : "NOTHING");
     n = (pUpsert->pUpsertSet!=0) + (pUpsert->pUpsertWhere!=0);
     sqlite3TreeViewExprList(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
     sqlite3TreeViewExprList(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
-    if( pUpsert->pUpsertWhere ){
+    如果( pUpsert->pUpsertWhere ){
       sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
       sqlite3TreeViewExpr(pView, pUpsert->pUpsertWhere, 0);
       sqlite3TreeViewPop(&pView);
@@ -1031,7 +1031,7 @@ void sqlite3TreeViewUpsert(
   sqlite3TreeViewPop(&pView);
 }
 
-#if TREETRACE_ENABLED
+#如果 TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an DELETE statement.
@@ -1044,50 +1044,50 @@ void sqlite3TreeViewDelete(
   const Expr *pLimit,
   const Trigger *pTrigger
 ){
-  int n = 0;
+  整数 n = 0;
   TreeView *pView = 0;
   sqlite3TreeViewPush(&pView, 0);
   sqlite3TreeViewLine(pView, "DELETE");
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
+  如果( pWith ) n++;
+  如果( pTabList ) n++;
+  如果( pWhere ) n++;
+  如果( pOrderBy ) n++;
+  如果( pLimit ) n++;
+  如果( pTrigger ) n++;
+  如果( pWith ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewWith(pView, pWith, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pTabList ){
+  如果( pTabList ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "FROM");
     sqlite3TreeViewSrcList(pView, pTabList);
     sqlite3TreeViewPop(&pView);
   }
-  if( pWhere ){
+  如果( pWhere ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "WHERE");
     sqlite3TreeViewExpr(pView, pWhere, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pOrderBy ){
+  如果( pOrderBy ){
     sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
+  如果( pLimit ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "LIMIT");
     sqlite3TreeViewExpr(pView, pLimit, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pTrigger ){
+  如果( pTrigger ){
     sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
   }
   sqlite3TreeViewPop(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#如果 TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an INSERT statement.
@@ -1098,12 +1098,12 @@ void sqlite3TreeViewInsert(
   const IdList *pColumnList,
   const Select *pSelect,
   const ExprList *pExprList,
-  int onError,
+  整数 onError,
   const Upsert *pUpsert,
   const Trigger *pTrigger
 ){
   TreeView *pView = 0;
-  int n = 0;
+  整数 n = 0;
   const char *zLabel = "INSERT";
   switch( onError ){
     case OE_Replace:  zLabel = "REPLACE";             break;
@@ -1114,50 +1114,50 @@ void sqlite3TreeViewInsert(
   }
   sqlite3TreeViewPush(&pView, 0);
   sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pColumnList ) n++;
-  if( pSelect ) n++;
-  if( pExprList ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
+  如果( pWith ) n++;
+  如果( pTabList ) n++;
+  如果( pColumnList ) n++;
+  如果( pSelect ) n++;
+  如果( pExprList ) n++;
+  如果( pUpsert ) n++;
+  如果( pTrigger ) n++;
+  如果( pWith ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewWith(pView, pWith, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pTabList ){
+  如果( pTabList ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "INTO");
     sqlite3TreeViewSrcList(pView, pTabList);
     sqlite3TreeViewPop(&pView);
   }
-  if( pColumnList ){
+  如果( pColumnList ){
     sqlite3TreeViewIdList(pView, pColumnList, (--n)>0, "COLUMNS");
   }
-  if( pSelect ){
+  如果( pSelect ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "DATA-SOURCE");
     sqlite3TreeViewSelect(pView, pSelect, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pExprList ){
+  如果( pExprList ){
     sqlite3TreeViewExprList(pView, pExprList, (--n)>0, "VALUES");
   }
-  if( pUpsert ){
+  如果( pUpsert ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "UPSERT");
     sqlite3TreeViewUpsert(pView, pUpsert, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pTrigger ){
+  如果( pTrigger ){
     sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
   }
   sqlite3TreeViewPop(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#如果 TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an UPDATE statement.
@@ -1167,13 +1167,13 @@ void sqlite3TreeViewUpdate(
   const SrcList *pTabList,
   const ExprList *pChanges,
   const Expr *pWhere,
-  int onError,
+  整数 onError,
   const ExprList *pOrderBy,
   const Expr *pLimit,
   const Upsert *pUpsert,
   const Trigger *pTrigger
 ){
-  int n = 0;
+  整数 n = 0;
   TreeView *pView = 0;
   const char *zLabel = "UPDATE";
   switch( onError ){
@@ -1185,50 +1185,50 @@ void sqlite3TreeViewUpdate(
   }
   sqlite3TreeViewPush(&pView, 0);
   sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pChanges ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
+  如果( pWith ) n++;
+  如果( pTabList ) n++;
+  如果( pChanges ) n++;
+  如果( pWhere ) n++;
+  如果( pOrderBy ) n++;
+  如果( pLimit ) n++;
+  如果( pUpsert ) n++;
+  如果( pTrigger ) n++;
+  如果( pWith ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewWith(pView, pWith, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pTabList ){
+  如果( pTabList ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "FROM");
     sqlite3TreeViewSrcList(pView, pTabList);
     sqlite3TreeViewPop(&pView);
   }
-  if( pChanges ){
+  如果( pChanges ){
     sqlite3TreeViewExprList(pView, pChanges, (--n)>0, "SET");
   }
-  if( pWhere ){
+  如果( pWhere ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "WHERE");
     sqlite3TreeViewExpr(pView, pWhere, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pOrderBy ){
+  如果( pOrderBy ){
     sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
+  如果( pLimit ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "LIMIT");
     sqlite3TreeViewExpr(pView, pLimit, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pUpsert ){
+  如果( pUpsert ){
     sqlite3TreeViewPush(&pView, (--n)>0);
     sqlite3TreeViewLine(pView, "UPSERT");
     sqlite3TreeViewUpsert(pView, pUpsert, 0);
     sqlite3TreeViewPop(&pView);
   }
-  if( pTrigger ){
+  如果( pTrigger ){
     sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
   }
   sqlite3TreeViewPop(&pView);
@@ -1245,17 +1245,17 @@ void sqlite3TreeViewTriggerStep(
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pStep==0 ) return;
+  整数 cnt = 0;
+  如果( pStep==0 ) 返回;
   sqlite3TreeViewPush(&pView, 
       moreToFollow || (showFullList && pStep->pNext!=0));
   do{
-    if( cnt++ && pStep->pNext==0 ){
+    如果( cnt++ && pStep->pNext==0 ){
       sqlite3TreeViewPop(&pView);
       sqlite3TreeViewPush(&pView, 0);
     }
     sqlite3TreeViewLine(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
-  }while( showFullList && (pStep = pStep->pNext)!=0 );
+  }当( showFullList && (pStep = pStep->pNext)!=0 );
   sqlite3TreeViewPop(&pView);
 }
   
@@ -1268,12 +1268,12 @@ void sqlite3TreeViewTrigger(
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pTrigger==0 ) return;
+  整数 cnt = 0;
+  如果( pTrigger==0 ) 返回;
   sqlite3TreeViewPush(&pView,
      moreToFollow || (showFullList && pTrigger->pNext!=0));
   do{
-    if( cnt++ && pTrigger->pNext==0 ){
+    如果( cnt++ && pTrigger->pNext==0 ){
       sqlite3TreeViewPop(&pView);
       sqlite3TreeViewPush(&pView, 0);
     }
@@ -1281,7 +1281,7 @@ void sqlite3TreeViewTrigger(
     sqlite3TreeViewPush(&pView, 0);
     sqlite3TreeViewTriggerStep(pView, pTrigger->step_list, 0, 1);
     sqlite3TreeViewPop(&pView);
-  }while( showFullList && (pTrigger = pTrigger->pNext)!=0 );
+  }当( showFullList && (pTrigger = pTrigger->pNext)!=0 );
   sqlite3TreeViewPop(&pView);
 }
 #endif /* SQLITE_OMIT_TRIGGER */
