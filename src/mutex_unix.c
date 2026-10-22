@@ -11,7 +11,7 @@
 *************************************************************************
 ** This file contains the C functions that implement mutexes for pthreads
 */
-#include "sqliteInt.h"
+#અન્તર્ભાવ "sqliteInt.h"
 
 /*
 ** The code in this file is only used if we are compiling threadsafe
@@ -22,22 +22,22 @@
 */
 #ifdef SQLITE_MUTEX_PTHREADS
 
-#include <pthread.h>
+#અન્તર્ભાવ <pthread.h>
 
 /*
 ** The sqlite3_mutex.id, sqlite3_mutex.nRef, and sqlite3_mutex.owner fields
 ** are necessary under two conditions:  (1) Debug builds and (2) using
 ** home-grown mutexes.  Encapsulate these conditions into a single #define.
 */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HOMEGROWN_RECURSIVE_MUTEX)
+#જો defined(SQLITE_DEBUG) || defined(SQLITE_HOMEGROWN_RECURSIVE_MUTEX)
 # define SQLITE_MUTEX_NREF 1
-#else
+#નહીંતર
 # define SQLITE_MUTEX_NREF 0
 #endif
 
-#if GCC_VERSION>0
+#જો GCC_VERSION>0
 # define ALIGN128 __attribute__((aligned(128)))
-#else
+#નહીંતર
 # define ALIGN128
 #endif
 
@@ -45,23 +45,23 @@
 ** Each SQLite mutex is an instance of the following structure.
 **
 */
-struct sqlite3_mutex {
+સંરચના sqlite3_mutex {
   pthread_mutex_t mutex;     /* Mutex controlling the lock */
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
-  int id;                    /* Mutex type */
+#જો SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+  પૂર્ણાંક id;                    /* Mutex type */
 #endif
-#if SQLITE_MUTEX_NREF
-  volatile int nRef;         /* Number of entrances */
-  volatile pthread_t owner;  /* Thread that is within this mutex */
-  int trace;                 /* True to trace changes */
+#જો SQLITE_MUTEX_NREF
+  અસ્થિર પૂર્ણાંક nRef;         /* Number of entrances */
+  અસ્થિર pthread_t owner;  /* Thread that is within this mutex */
+  પૂર્ણાંક trace;                 /* True to trace changes */
 #endif
 };
-#if SQLITE_MUTEX_NREF
+#જો SQLITE_MUTEX_NREF
 # define SQLITE3_MUTEX_INITIALIZER(id) \
      {PTHREAD_MUTEX_INITIALIZER,id,0,(pthread_t)0,0}
-#elif defined(SQLITE_ENABLE_API_ARMOR)
+#અથવાજો defined(SQLITE_ENABLE_API_ARMOR)
 # define SQLITE3_MUTEX_INITIALIZER(id) { PTHREAD_MUTEX_INITIALIZER, id }
-#else
+#નહીંતર
 #define SQLITE3_MUTEX_INITIALIZER(id) { PTHREAD_MUTEX_INITIALIZER }
 #endif
 
@@ -81,12 +81,12 @@ struct sqlite3_mutex {
 ** make sure no assert() statements are evaluated and hence these
 ** routines are never called.
 */
-#if !defined(NDEBUG) || defined(SQLITE_DEBUG)
-static int pthreadMutexHeld(sqlite3_mutex *p){
-  return (p->nRef!=0 && pthread_equal(p->owner, pthread_self()));
+#જો !defined(NDEBUG) || defined(SQLITE_DEBUG)
+સ્થિર પૂર્ણાંક pthreadMutexHeld(sqlite3_mutex *p){
+  પાછા (p->nRef!=0 && pthread_equal(p->owner, pthread_self()));
 }
-static int pthreadMutexNotheld(sqlite3_mutex *p){
-  return p->nRef==0 || pthread_equal(p->owner, pthread_self())==0;
+સ્થિર પૂર્ણાંક pthreadMutexNotheld(sqlite3_mutex *p){
+  પાછા p->nRef==0 || pthread_equal(p->owner, pthread_self())==0;
 }
 #endif
 
@@ -95,10 +95,10 @@ static int pthreadMutexNotheld(sqlite3_mutex *p){
 ** and also for the implementation of xShmBarrier in the VFS in cases
 ** where SQLite is compiled without mutexes.
 */
-void sqlite3MemoryBarrier(void){
-#if defined(SQLITE_MEMORY_BARRIER)
+શૂન્ય sqlite3MemoryBarrier(શૂન્ય){
+#જો defined(SQLITE_MEMORY_BARRIER)
   SQLITE_MEMORY_BARRIER;
-#elif defined(__GNUC__) && GCC_VERSION>=4001000
+#અથવાજો defined(__GNUC__) && GCC_VERSION>=4001000
   __sync_synchronize();
 #endif
 }
@@ -106,8 +106,8 @@ void sqlite3MemoryBarrier(void){
 /*
 ** Initialize and deinitialize the mutex subsystem.
 */
-static int pthreadMutexInit(void){ return SQLITE_OK; }
-static int pthreadMutexEnd(void){ return SQLITE_OK; }
+સ્થિર પૂર્ણાંક pthreadMutexInit(શૂન્ય){ પાછા SQLITE_OK; }
+સ્થિર પૂર્ણાંક pthreadMutexEnd(શૂન્ય){ પાછા SQLITE_OK; }
 
 /*
 ** The sqlite3_mutex_alloc() routine allocates a new
@@ -157,7 +157,7 @@ static int pthreadMutexEnd(void){ return SQLITE_OK; }
 ** mutex types, the same mutex is returned on every call that has
 ** the same type number.
 */
-static sqlite3_mutex *pthreadMutexAlloc(int iType){
+સ્થિર sqlite3_mutex *pthreadMutexAlloc(પૂર્ણાંક iType){
   /* Static mutexes - those with IDs of 2 or more...
   **
   ** The ALIGN128 macro attempts to force 128-byte alignment on mutexes,
@@ -167,9 +167,9 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
   ** that 64 works just as well most of the time, but the internet says
   ** that 128-byte alignment works better.
   */
-  static ALIGN128 union staticMutex {
+  સ્થિર ALIGN128 સંઘ staticMutex {
      sqlite3_mutex m;
-     char aSpacer[128];
+     અક્ષર aSpacer[128];
   } aMutex[] = {
     { .m = SQLITE3_MUTEX_INITIALIZER(2) },
     { .m = SQLITE3_MUTEX_INITIALIZER(3) },
@@ -185,15 +185,15 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
     { .m = SQLITE3_MUTEX_INITIALIZER(13) },
   };
   sqlite3_mutex *p;
-  switch( iType ){
-    case SQLITE_MUTEX_RECURSIVE: {
-      p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
+  પસંદગી( iType ){
+    સ્થિતિ SQLITE_MUTEX_RECURSIVE: {
+      p = sqlite3MallocZero( કદ(*p) );
+      જો( p ){
 #ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
         /* If recursive mutexes are not available, we will have to
         ** build our own.  See below. */
         pthread_mutex_init(&p->mutex, 0);
-#else
+#નહીંતર
         /* Use a recursive mutex if it is available */
         pthread_mutexattr_t recursiveAttr;
         pthread_mutexattr_init(&recursiveAttr);
@@ -201,37 +201,37 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
         pthread_mutex_init(&p->mutex, &recursiveAttr);
         pthread_mutexattr_destroy(&recursiveAttr);
 #endif
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+#જો SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
         p->id = SQLITE_MUTEX_RECURSIVE;
 #endif
       }
-      break;
+      તોડો;
     }
-    case SQLITE_MUTEX_FAST: {
-      p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
+    સ્થિતિ SQLITE_MUTEX_FAST: {
+      p = sqlite3MallocZero( કદ(*p) );
+      જો( p ){
         pthread_mutex_init(&p->mutex, 0);
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+#જો SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
         p->id = SQLITE_MUTEX_FAST;
 #endif
       }
-      break;
+      તોડો;
     }
-    default: {
+    મૂળભૂત: {
 #ifdef SQLITE_ENABLE_API_ARMOR
-      if( iType-2<0 || iType-2>=ArraySize(aMutex) ){
-        (void)SQLITE_MISUSE_BKPT;
-        return 0;
+      જો( iType-2<0 || iType-2>=ArraySize(aMutex) ){
+        (શૂન્ય)SQLITE_MISUSE_BKPT;
+        પાછા 0;
       }
 #endif
       p = &aMutex[iType-2].m;
-      break;
+      તોડો;
     }
   }
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
-  assert( p==0 || p->id==iType );
+#જો SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+  પ્રતિજ્ઞા( p==0 || p->id==iType );
 #endif
-  return p;
+  પાછા p;
 }
 
 
@@ -240,18 +240,18 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
 ** allocated mutex.  SQLite is careful to deallocate every
 ** mutex that it allocates.
 */
-static void pthreadMutexFree(sqlite3_mutex *p){
-  assert( p->nRef==0 );
+સ્થિર શૂન્ય pthreadMutexFree(sqlite3_mutex *p){
+  પ્રતિજ્ઞા( p->nRef==0 );
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( p->id==SQLITE_MUTEX_FAST || p->id==SQLITE_MUTEX_RECURSIVE )
+  જો( p->id==SQLITE_MUTEX_FAST || p->id==SQLITE_MUTEX_RECURSIVE )
 #endif
   {
     pthread_mutex_destroy(&p->mutex);
     sqlite3_free(p);
   }
 #ifdef SQLITE_ENABLE_API_ARMOR
-  else{
-    (void)SQLITE_MISUSE_BKPT;
+  નહીંતર{
+    (શૂન્ય)SQLITE_MISUSE_BKPT;
   }
 #endif
 }
@@ -267,8 +267,8 @@ static void pthreadMutexFree(sqlite3_mutex *p){
 ** can enter.  If the same thread tries to enter any other kind of mutex
 ** more than once, the behavior is undefined.
 */
-static void pthreadMutexEnter(sqlite3_mutex *p){
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
+સ્થિર શૂન્ય pthreadMutexEnter(sqlite3_mutex *p){
+  પ્રતિજ્ઞા( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
 
 #ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
   /* If recursive mutexes are not available, then we have to grow
@@ -283,35 +283,35 @@ static void pthreadMutexEnter(sqlite3_mutex *p){
   */
   {
     pthread_t self = pthread_self();
-    if( p->nRef>0 && pthread_equal(p->owner, self) ){
+    જો( p->nRef>0 && pthread_equal(p->owner, self) ){
       p->nRef++;
-    }else{
+    }નહીંતર{
       pthread_mutex_lock(&p->mutex);
-      assert( p->nRef==0 );
+      પ્રતિજ્ઞા( p->nRef==0 );
       p->owner = self;
       p->nRef = 1;
     }
   }
-#else
+#નહીંતર
   /* Use the built-in recursive mutexes if they are available.
   */
   pthread_mutex_lock(&p->mutex);
-#if SQLITE_MUTEX_NREF
-  assert( p->nRef>0 || p->owner==0 );
+#જો SQLITE_MUTEX_NREF
+  પ્રતિજ્ઞા( p->nRef>0 || p->owner==0 );
   p->owner = pthread_self();
   p->nRef++;
 #endif
 #endif
 
 #ifdef SQLITE_DEBUG
-  if( p->trace ){
+  જો( p->trace ){
     printf("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
 #endif
 }
-static int pthreadMutexTry(sqlite3_mutex *p){
-  int rc;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
+સ્થિર પૂર્ણાંક pthreadMutexTry(sqlite3_mutex *p){
+  પૂર્ણાંક rc;
+  પ્રતિજ્ઞા( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
 
 #ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
   /* If recursive mutexes are not available, then we have to grow
@@ -326,38 +326,38 @@ static int pthreadMutexTry(sqlite3_mutex *p){
   */
   {
     pthread_t self = pthread_self();
-    if( p->nRef>0 && pthread_equal(p->owner, self) ){
+    જો( p->nRef>0 && pthread_equal(p->owner, self) ){
       p->nRef++;
       rc = SQLITE_OK;
-    }else if( pthread_mutex_trylock(&p->mutex)==0 ){
-      assert( p->nRef==0 );
+    }નહીંતર જો( pthread_mutex_trylock(&p->mutex)==0 ){
+      પ્રતિજ્ઞા( p->nRef==0 );
       p->owner = self;
       p->nRef = 1;
       rc = SQLITE_OK;
-    }else{
+    }નહીંતર{
       rc = SQLITE_BUSY;
     }
   }
-#else
+#નહીંતર
   /* Use the built-in recursive mutexes if they are available.
   */
-  if( pthread_mutex_trylock(&p->mutex)==0 ){
-#if SQLITE_MUTEX_NREF
+  જો( pthread_mutex_trylock(&p->mutex)==0 ){
+#જો SQLITE_MUTEX_NREF
     p->owner = pthread_self();
     p->nRef++;
 #endif
     rc = SQLITE_OK;
-  }else{
+  }નહીંતર{
     rc = SQLITE_BUSY;
   }
 #endif
 
 #ifdef SQLITE_DEBUG
-  if( rc==SQLITE_OK && p->trace ){
+  જો( rc==SQLITE_OK && p->trace ){
     printf("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
 #endif
-  return rc;
+  પાછા rc;
 }
 
 /*
@@ -366,31 +366,31 @@ static int pthreadMutexTry(sqlite3_mutex *p){
 ** is undefined if the mutex is not currently entered or
 ** is not currently allocated.  SQLite will never do either.
 */
-static void pthreadMutexLeave(sqlite3_mutex *p){
-  assert( pthreadMutexHeld(p) );
-#if SQLITE_MUTEX_NREF
+સ્થિર શૂન્ય pthreadMutexLeave(sqlite3_mutex *p){
+  પ્રતિજ્ઞા( pthreadMutexHeld(p) );
+#જો SQLITE_MUTEX_NREF
   p->nRef--;
-  if( p->nRef==0 ) p->owner = 0;
+  જો( p->nRef==0 ) p->owner = 0;
 #endif
-  assert( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
+  પ્રતિજ્ઞા( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
 
 #ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
-  if( p->nRef==0 ){
+  જો( p->nRef==0 ){
     pthread_mutex_unlock(&p->mutex);
   }
-#else
+#નહીંતર
   pthread_mutex_unlock(&p->mutex);
 #endif
 
 #ifdef SQLITE_DEBUG
-  if( p->trace ){
+  જો( p->trace ){
     printf("leave mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
 #endif
 }
 
-sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods અચલ *sqlite3DefaultMutex(શૂન્ય){
+  સ્થિર અચલ sqlite3_mutex_methods sMutex = {
     pthreadMutexInit,
     pthreadMutexEnd,
     pthreadMutexAlloc,
@@ -401,13 +401,13 @@ sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
 #ifdef SQLITE_DEBUG
     pthreadMutexHeld,
     pthreadMutexNotheld
-#else
+#નહીંતર
     0,
     0
 #endif
   };
 
-  return &sMutex;
+  પાછા &sMutex;
 }
 
 #endif /* SQLITE_MUTEX_PTHREADS */

@@ -61,7 +61,7 @@
 ** be possible, but the feature was not used, so it was removed in order
 ** to simplify the code.
 */
-#include "sqliteInt.h"
+#અન્તર્ભાવ "sqliteInt.h"
 
 
 /*
@@ -73,7 +73,7 @@
 ** The number of rowset entries per allocation chunk.
 */
 #define ROWSET_ENTRY_PER_CHUNK  \
-                       ((ROWSET_ALLOCATION_SIZE-8)/sizeof(struct RowSetEntry))
+                       ((ROWSET_ALLOCATION_SIZE-8)/કદ(સંરચના RowSetEntry))
 
 /*
 ** Each entry in a RowSet is an instance of the following object.
@@ -83,10 +83,10 @@
 ** in the list, pLeft points to the tree, and v is unused.  The
 ** RowSet.pForest value points to the head of this forest list.
 */
-struct RowSetEntry {           
+સંરચના RowSetEntry {           
   i64 v;                        /* ROWID value for this entry */
-  struct RowSetEntry *pRight;   /* Right subtree (larger entries) or list */
-  struct RowSetEntry *pLeft;    /* Left subtree (smaller entries) */
+  સંરચના RowSetEntry *p_જમણું;   /* Right subtree (larger entries) or list */
+  સંરચના RowSetEntry *p_ડાબું;    /* Left subtree (smaller entries) */
 };
 
 /*
@@ -95,9 +95,9 @@ struct RowSetEntry {
 ** chunks are kept on a linked list so that they can be deallocated
 ** when the RowSet is destroyed.
 */
-struct RowSetChunk {
-  struct RowSetChunk *pNextChunk;        /* Next chunk on list of them all */
-  struct RowSetEntry aEntry[ROWSET_ENTRY_PER_CHUNK]; /* Allocated entries */
+સંરચના RowSetChunk {
+  સંરચના RowSetChunk *pNextChunk;        /* Next chunk on list of them all */
+  સંરચના RowSetEntry aEntry[ROWSET_ENTRY_PER_CHUNK]; /* Allocated entries */
 };
 
 /*
@@ -105,16 +105,16 @@ struct RowSetChunk {
 **
 ** A typedef of this structure if found in sqliteInt.h.
 */
-struct RowSet {
-  struct RowSetChunk *pChunk;    /* List of all chunk allocations */
+સંરચના RowSet {
+  સંરચના RowSetChunk *pChunk;    /* List of all chunk allocations */
   sqlite3 *db;                   /* The database connection */
-  struct RowSetEntry *pEntry;    /* List of entries using pRight */
-  struct RowSetEntry *pLast;     /* Last entry on the pEntry list */
-  struct RowSetEntry *pFresh;    /* Source of new entry objects */
-  struct RowSetEntry *pForest;   /* List of binary trees of entries */
+  સંરચના RowSetEntry *pEntry;    /* List of entries using pRight */
+  સંરચના RowSetEntry *pLast;     /* Last entry on the pEntry list */
+  સંરચના RowSetEntry *pFresh;    /* Source of new entry objects */
+  સંરચના RowSetEntry *pForest;   /* List of binary trees of entries */
   u16 nFresh;                    /* Number of objects on pFresh */
   u16 rsFlags;                   /* Various flags */
-  int iBatch;                    /* Current insert batch */
+  પૂર્ણાંક iBatch;                    /* Current insert batch */
 };
 
 /*
@@ -128,20 +128,20 @@ struct RowSet {
 ** error occurs.
 */
 RowSet *sqlite3RowSetInit(sqlite3 *db){
-  RowSet *p = sqlite3DbMallocRawNN(db, sizeof(*p));
-  if( p ){
-    int N = sqlite3DbMallocSize(db, p);
+  RowSet *p = sqlite3DbMallocRawNN(db, કદ(*p));
+  જો( p ){
+    પૂર્ણાંક N = sqlite3DbMallocSize(db, p);
     p->pChunk = 0;
     p->db = db;
     p->pEntry = 0;
     p->pLast = 0;
     p->pForest = 0;
-    p->pFresh = (struct RowSetEntry*)(ROUND8(sizeof(*p)) + (char*)p);
-    p->nFresh = (u16)((N - ROUND8(sizeof(*p)))/sizeof(struct RowSetEntry));
+    p->pFresh = (સંરચના RowSetEntry*)(ROUND8(કદ(*p)) + (અક્ષર*)p);
+    p->nFresh = (u16)((N - ROUND8(કદ(*p)))/કદ(સંરચના RowSetEntry));
     p->rsFlags = ROWSET_SORTED;
     p->iBatch = 0;
   }
-  return p;
+  પાછા p;
 }
 
 /*
@@ -149,10 +149,10 @@ RowSet *sqlite3RowSetInit(sqlite3 *db){
 ** the RowSet has allocated over its lifetime.  This routine is
 ** the destructor for the RowSet.
 */
-void sqlite3RowSetClear(void *pArg){
+શૂન્ય sqlite3RowSetClear(શૂન્ય *pArg){
   RowSet *p = (RowSet*)pArg;
-  struct RowSetChunk *pChunk, *pNextChunk;
-  for(pChunk=p->pChunk; pChunk; pChunk = pNextChunk){
+  સંરચના RowSetChunk *pChunk, *pNextChunk;
+  માટે(pChunk=p->pChunk; pChunk; pChunk = pNextChunk){
     pNextChunk = pChunk->pNextChunk;
     sqlite3DbFree(p->db, pChunk);
   }
@@ -169,7 +169,7 @@ void sqlite3RowSetClear(void *pArg){
 ** the RowSet has allocated over its lifetime.  This routine is
 ** the destructor for the RowSet.
 */
-void sqlite3RowSetDelete(void *pArg){
+શૂન્ય sqlite3RowSetDelete(શૂન્ય *pArg){
   sqlite3RowSetClear(pArg);
   sqlite3DbFree(((RowSet*)pArg)->db, pArg);
 }
@@ -182,15 +182,15 @@ void sqlite3RowSetDelete(void *pArg){
 ** In an OOM situation, the RowSet.db->mallocFailed flag is set and this
 ** routine returns NULL.
 */
-static struct RowSetEntry *rowSetEntryAlloc(RowSet *p){
-  assert( p!=0 );
-  if( p->nFresh==0 ){  /*OPTIMIZATION-IF-FALSE*/
+સ્થિર સંરચના RowSetEntry *rowSetEntryAlloc(RowSet *p){
+  પ્રતિજ્ઞા( p!=0 );
+  જો( p->nFresh==0 ){  /*OPTIMIZATION-IF-FALSE*/
     /* We could allocate a fresh RowSetEntry each time one is needed, but it
     ** is more efficient to pull a preallocated entry from the pool */
-    struct RowSetChunk *pNew;
-    pNew = sqlite3DbMallocRawNN(p->db, sizeof(*pNew));
-    if( pNew==0 ){
-      return 0;
+    સંરચના RowSetChunk *pNew;
+    pNew = sqlite3DbMallocRawNN(p->db, કદ(*pNew));
+    જો( pNew==0 ){
+      પાછા 0;
     }
     pNew->pNextChunk = p->pChunk;
     p->pChunk = pNew;
@@ -198,7 +198,7 @@ static struct RowSetEntry *rowSetEntryAlloc(RowSet *p){
     p->nFresh = ROWSET_ENTRY_PER_CHUNK;
   }
   p->nFresh--;
-  return p->pFresh++;
+  પાછા p->pFresh++;
 }
 
 /*
@@ -207,26 +207,26 @@ static struct RowSetEntry *rowSetEntryAlloc(RowSet *p){
 ** The mallocFailed flag of the database connection is set if a
 ** memory allocation fails.
 */
-void sqlite3RowSetInsert(RowSet *p, i64 rowid){
-  struct RowSetEntry *pEntry;  /* The new entry */
-  struct RowSetEntry *pLast;   /* The last prior entry */
+શૂન્ય sqlite3_Row_Set_ઉમેરો(RowSet *p, i64 rowid){
+  સંરચના RowSetEntry *pEntry;  /* The new entry */
+  સંરચના RowSetEntry *pLast;   /* The last prior entry */
 
   /* This routine is never called after sqlite3RowSetNext() */
-  assert( p!=0 && (p->rsFlags & ROWSET_NEXT)==0 );
+  પ્રતિજ્ઞા( p!=0 && (p->rsFlags & ROWSET_NEXT)==0 );
 
   pEntry = rowSetEntryAlloc(p);
-  if( pEntry==0 ) return;
+  જો( pEntry==0 ) પાછા;
   pEntry->v = rowid;
-  pEntry->pRight = 0;
+  pEntry->p_જમણું = 0;
   pLast = p->pLast;
-  if( pLast ){
-    if( rowid<=pLast->v ){  /*OPTIMIZATION-IF-FALSE*/
+  જો( pLast ){
+    જો( rowid<=pLast->v ){  /*OPTIMIZATION-IF-FALSE*/
       /* Avoid unnecessary sorts by preserving the ROWSET_SORTED flags
       ** where possible */
       p->rsFlags &= ~ROWSET_SORTED;
     }
-    pLast->pRight = pEntry;
-  }else{
+    pLast->p_જમણું = pEntry;
+  }નહીંતર{
     p->pEntry = pEntry;
   }
   p->pLast = pEntry;
@@ -238,50 +238,50 @@ void sqlite3RowSetInsert(RowSet *p, i64 rowid){
 ** The input lists are connected via pRight pointers and are
 ** assumed to each already be in sorted order.
 */
-static struct RowSetEntry *rowSetEntryMerge(
-  struct RowSetEntry *pA,    /* First sorted list to be merged */
-  struct RowSetEntry *pB     /* Second sorted list to be merged */
+સ્થિર સંરચના RowSetEntry *rowSetEntryMerge(
+  સંરચના RowSetEntry *pA,    /* First sorted list to be merged */
+  સંરચના RowSetEntry *pB     /* Second sorted list to be merged */
 ){
-  struct RowSetEntry head;
-  struct RowSetEntry *pTail;
+  સંરચના RowSetEntry head;
+  સંરચના RowSetEntry *pTail;
 
   pTail = &head;
-  assert( pA!=0 && pB!=0 );
-  for(;;){
-    assert( pA->pRight==0 || pA->v<=pA->pRight->v );
-    assert( pB->pRight==0 || pB->v<=pB->pRight->v );
-    if( pA->v<=pB->v ){
-      if( pA->v<pB->v ) pTail = pTail->pRight = pA;
-      pA = pA->pRight;
-      if( pA==0 ){
-        pTail->pRight = pB;
-        break;
+  પ્રતિજ્ઞા( pA!=0 && pB!=0 );
+  માટે(;;){
+    પ્રતિજ્ઞા( pA->p_જમણું==0 || pA->v<=pA->p_જમણું->v );
+    પ્રતિજ્ઞા( pB->p_જમણું==0 || pB->v<=pB->p_જમણું->v );
+    જો( pA->v<=pB->v ){
+      જો( pA->v<pB->v ) pTail = pTail->p_જમણું = pA;
+      pA = pA->p_જમણું;
+      જો( pA==0 ){
+        pTail->p_જમણું = pB;
+        તોડો;
       }
-    }else{
-      pTail = pTail->pRight = pB;
-      pB = pB->pRight;
-      if( pB==0 ){
-        pTail->pRight = pA;
-        break;
+    }નહીંતર{
+      pTail = pTail->p_જમણું = pB;
+      pB = pB->p_જમણું;
+      જો( pB==0 ){
+        pTail->p_જમણું = pA;
+        તોડો;
       }
     }
   }
-  return head.pRight;
+  પાછા head.p_જમણું;
 }
 
 /*
 ** Sort all elements on the list of RowSetEntry objects into order of
 ** increasing v.
 */
-static struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn){
-  unsigned int i;
-  struct RowSetEntry *pNext, *aBucket[40];
+સ્થિર સંરચના RowSetEntry *rowSetEntrySort(સંરચના RowSetEntry *pIn){
+  unsigned પૂર્ણાંક i;
+  સંરચના RowSetEntry *pNext, *aBucket[40];
 
-  memset(aBucket, 0, sizeof(aBucket));
-  while( pIn ){
-    pNext = pIn->pRight;
-    pIn->pRight = 0;
-    for(i=0; aBucket[i]; i++){
+  memset(aBucket, 0, કદ(aBucket));
+  જ્યારે( pIn ){
+    pNext = pIn->p_જમણું;
+    pIn->p_જમણું = 0;
+    માટે(i=0; aBucket[i]; i++){
       pIn = rowSetEntryMerge(aBucket[i], pIn);
       aBucket[i] = 0;
     }
@@ -289,11 +289,11 @@ static struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn){
     pIn = pNext;
   }
   pIn = aBucket[0];
-  for(i=1; i<sizeof(aBucket)/sizeof(aBucket[0]); i++){
-    if( aBucket[i]==0 ) continue;
+  માટે(i=1; i<કદ(aBucket)/કદ(aBucket[0]); i++){
+    જો( aBucket[i]==0 ) ચાલુ;
     pIn = pIn ? rowSetEntryMerge(pIn, aBucket[i]) : aBucket[i];
   }
-  return pIn;
+  પાછા pIn;
 }
 
 
@@ -302,25 +302,25 @@ static struct RowSetEntry *rowSetEntrySort(struct RowSetEntry *pIn){
 ** Convert this tree into a linked list connected by the pRight pointers
 ** and return pointers to the first and last elements of the new list.
 */
-static void rowSetTreeToList(
-  struct RowSetEntry *pIn,         /* Root of the input tree */
-  struct RowSetEntry **ppFirst,    /* Write head of the output list here */
-  struct RowSetEntry **ppLast      /* Write tail of the output list here */
+સ્થિર શૂન્ય row_Set_વૃક્ષ_To_List(
+  સંરચના RowSetEntry *pIn,         /* Root of the input tree */
+  સંરચના RowSetEntry **ppFirst,    /* Write head of the output list here */
+  સંરચના RowSetEntry **ppLast      /* Write tail of the output list here */
 ){
-  assert( pIn!=0 );
-  if( pIn->pLeft ){
-    struct RowSetEntry *p;
-    rowSetTreeToList(pIn->pLeft, ppFirst, &p);
-    p->pRight = pIn;
-  }else{
+  પ્રતિજ્ઞા( pIn!=0 );
+  જો( pIn->p_ડાબું ){
+    સંરચના RowSetEntry *p;
+    row_Set_વૃક્ષ_To_List(pIn->p_ડાબું, ppFirst, &p);
+    p->p_જમણું = pIn;
+  }નહીંતર{
     *ppFirst = pIn;
   }
-  if( pIn->pRight ){
-    rowSetTreeToList(pIn->pRight, &pIn->pRight, ppLast);
-  }else{
+  જો( pIn->p_જમણું ){
+    row_Set_વૃક્ષ_To_List(pIn->p_જમણું, &pIn->p_જમણું, ppLast);
+  }નહીંતર{
     *ppLast = pIn;
   }
-  assert( (*ppLast)->pRight==0 );
+  પ્રતિજ્ઞા( (*ppLast)->p_જમણું==0 );
 }
 
 
@@ -337,59 +337,59 @@ static void rowSetTreeToList(
 **
 ** Return a pointer to the root of the constructed binary tree.
 */
-static struct RowSetEntry *rowSetNDeepTree(
-  struct RowSetEntry **ppList,
-  int iDepth
+સ્થિર સંરચના RowSetEntry *row_Set_NDeep_વૃક્ષ(
+  સંરચના RowSetEntry **ppList,
+  પૂર્ણાંક iDepth
 ){
-  struct RowSetEntry *p;         /* Root of the new tree */
-  struct RowSetEntry *pLeft;     /* Left subtree */
-  if( *ppList==0 ){ /*OPTIMIZATION-IF-TRUE*/
+  સંરચના RowSetEntry *p;         /* Root of the new tree */
+  સંરચના RowSetEntry *p_ડાબું;     /* Left subtree */
+  જો( *ppList==0 ){ /*OPTIMIZATION-IF-TRUE*/
     /* Prevent unnecessary deep recursion when we run out of entries */
-    return 0;
+    પાછા 0;
   }
-  if( iDepth>1 ){   /*OPTIMIZATION-IF-TRUE*/
+  જો( iDepth>1 ){   /*OPTIMIZATION-IF-TRUE*/
     /* This branch causes a *balanced* tree to be generated.  A valid tree
     ** is still generated without this branch, but the tree is wildly
     ** unbalanced and inefficient. */
-    pLeft = rowSetNDeepTree(ppList, iDepth-1);
+    p_ડાબું = row_Set_NDeep_વૃક્ષ(ppList, iDepth-1);
     p = *ppList;
-    if( p==0 ){     /*OPTIMIZATION-IF-FALSE*/
+    જો( p==0 ){     /*OPTIMIZATION-IF-FALSE*/
       /* It is safe to always return here, but the resulting tree
       ** would be unbalanced */
-      return pLeft;
+      પાછા p_ડાબું;
     }
-    p->pLeft = pLeft;
-    *ppList = p->pRight;
-    p->pRight = rowSetNDeepTree(ppList, iDepth-1);
-  }else{
+    p->p_ડાબું = p_ડાબું;
+    *ppList = p->p_જમણું;
+    p->p_જમણું = row_Set_NDeep_વૃક્ષ(ppList, iDepth-1);
+  }નહીંતર{
     p = *ppList;
-    *ppList = p->pRight;
-    p->pLeft = p->pRight = 0;
+    *ppList = p->p_જમણું;
+    p->p_ડાબું = p->p_જમણું = 0;
   }
-  return p;
+  પાછા p;
 }
 
 /*
 ** Convert a sorted list of elements into a binary tree. Make the tree
 ** as deep as it needs to be in order to contain the entire list.
 */
-static struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList){
-  int iDepth;           /* Depth of the tree so far */
-  struct RowSetEntry *p;       /* Current tree root */
-  struct RowSetEntry *pLeft;   /* Left subtree */
+સ્થિર સંરચના RowSetEntry *row_Set_List_To_વૃક્ષ(સંરચના RowSetEntry *pList){
+  પૂર્ણાંક iDepth;           /* Depth of the tree so far */
+  સંરચના RowSetEntry *p;       /* Current tree root */
+  સંરચના RowSetEntry *p_ડાબું;   /* Left subtree */
 
-  assert( pList!=0 );
+  પ્રતિજ્ઞા( pList!=0 );
   p = pList;
-  pList = p->pRight;
-  p->pLeft = p->pRight = 0;
-  for(iDepth=1; pList; iDepth++){
-    pLeft = p;
+  pList = p->p_જમણું;
+  p->p_ડાબું = p->p_જમણું = 0;
+  માટે(iDepth=1; pList; iDepth++){
+    p_ડાબું = p;
     p = pList;
-    pList = p->pRight;
-    p->pLeft = pLeft;
-    p->pRight = rowSetNDeepTree(&pList, iDepth);
+    pList = p->p_જમણું;
+    p->p_ડાબું = p_ડાબું;
+    p->p_જમણું = row_Set_NDeep_વૃક્ષ(&pList, iDepth);
   }
-  return p;
+  પાછા p;
 }
 
 /*
@@ -405,29 +405,29 @@ static struct RowSetEntry *rowSetListToTree(struct RowSetEntry *pList){
 ** capability was not used by the code generator, it was removed
 ** for code economy.
 */
-int sqlite3RowSetNext(RowSet *p, i64 *pRowid){
-  assert( p!=0 );
-  assert( p->pForest==0 );  /* Cannot be used with sqlite3RowSetText() */
+પૂર્ણાંક sqlite3RowSetNext(RowSet *p, i64 *pRowid){
+  પ્રતિજ્ઞા( p!=0 );
+  પ્રતિજ્ઞા( p->pForest==0 );  /* Cannot be used with sqlite3RowSetText() */
 
   /* Merge the forest into a single sorted list on first call */
-  if( (p->rsFlags & ROWSET_NEXT)==0 ){  /*OPTIMIZATION-IF-FALSE*/
-    if( (p->rsFlags & ROWSET_SORTED)==0 ){  /*OPTIMIZATION-IF-FALSE*/
+  જો( (p->rsFlags & ROWSET_NEXT)==0 ){  /*OPTIMIZATION-IF-FALSE*/
+    જો( (p->rsFlags & ROWSET_SORTED)==0 ){  /*OPTIMIZATION-IF-FALSE*/
       p->pEntry = rowSetEntrySort(p->pEntry);
     }
     p->rsFlags |= ROWSET_SORTED|ROWSET_NEXT;
   }
 
   /* Return the next entry on the list */
-  if( p->pEntry ){
+  જો( p->pEntry ){
     *pRowid = p->pEntry->v;
-    p->pEntry = p->pEntry->pRight;
-    if( p->pEntry==0 ){ /*OPTIMIZATION-IF-TRUE*/
+    p->pEntry = p->pEntry->p_જમણું;
+    જો( p->pEntry==0 ){ /*OPTIMIZATION-IF-TRUE*/
       /* Free memory immediately, rather than waiting on sqlite3_finalize() */
       sqlite3RowSetClear(p);
     }
-    return 1;
-  }else{
-    return 0;
+    પાછા 1;
+  }નહીંતર{
+    પાછા 0;
   }
 }
 
@@ -439,41 +439,41 @@ int sqlite3RowSetNext(RowSet *p, i64 *pRowid){
 ** on pRowSet->pEntry, then sort those entries into the forest at
 ** pRowSet->pForest so that they can be tested.
 */
-int sqlite3RowSetTest(RowSet *pRowSet, int iBatch, sqlite3_int64 iRowid){
-  struct RowSetEntry *p, *pTree;
+પૂર્ણાંક sqlite3RowSetTest(RowSet *pRowSet, પૂર્ણાંક iBatch, sqlite3_int64 iRowid){
+  સંરચના RowSetEntry *p, *p_વૃક્ષ;
 
   /* This routine is never called after sqlite3RowSetNext() */
-  assert( pRowSet!=0 && (pRowSet->rsFlags & ROWSET_NEXT)==0 );
+  પ્રતિજ્ઞા( pRowSet!=0 && (pRowSet->rsFlags & ROWSET_NEXT)==0 );
 
   /* Sort entries into the forest on the first test of a new batch.
   ** To save unnecessary work, only do this when the batch number changes.
   */
-  if( iBatch!=pRowSet->iBatch ){  /*OPTIMIZATION-IF-FALSE*/
+  જો( iBatch!=pRowSet->iBatch ){  /*OPTIMIZATION-IF-FALSE*/
     p = pRowSet->pEntry;
-    if( p ){
-      struct RowSetEntry **ppPrevTree = &pRowSet->pForest;
-      if( (pRowSet->rsFlags & ROWSET_SORTED)==0 ){ /*OPTIMIZATION-IF-FALSE*/
+    જો( p ){
+      સંરચના RowSetEntry **pp_Prev_વૃક્ષ = &pRowSet->pForest;
+      જો( (pRowSet->rsFlags & ROWSET_SORTED)==0 ){ /*OPTIMIZATION-IF-FALSE*/
         /* Only sort the current set of entries if they need it */
         p = rowSetEntrySort(p);
       }
-      for(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
-        ppPrevTree = &pTree->pRight;
-        if( pTree->pLeft==0 ){
-          pTree->pLeft = rowSetListToTree(p);
-          break;
-        }else{
-          struct RowSetEntry *pAux, *pTail;
-          rowSetTreeToList(pTree->pLeft, &pAux, &pTail);
-          pTree->pLeft = 0;
+      માટે(p_વૃક્ષ = pRowSet->pForest; p_વૃક્ષ; p_વૃક્ષ=p_વૃક્ષ->p_જમણું){
+        pp_Prev_વૃક્ષ = &p_વૃક્ષ->p_જમણું;
+        જો( p_વૃક્ષ->p_ડાબું==0 ){
+          p_વૃક્ષ->p_ડાબું = row_Set_List_To_વૃક્ષ(p);
+          તોડો;
+        }નહીંતર{
+          સંરચના RowSetEntry *pAux, *pTail;
+          row_Set_વૃક્ષ_To_List(p_વૃક્ષ->p_ડાબું, &pAux, &pTail);
+          p_વૃક્ષ->p_ડાબું = 0;
           p = rowSetEntryMerge(pAux, p);
         }
       }
-      if( pTree==0 ){
-        *ppPrevTree = pTree = rowSetEntryAlloc(pRowSet);
-        if( pTree ){
-          pTree->v = 0;
-          pTree->pRight = 0;
-          pTree->pLeft = rowSetListToTree(p);
+      જો( p_વૃક્ષ==0 ){
+        *pp_Prev_વૃક્ષ = p_વૃક્ષ = rowSetEntryAlloc(pRowSet);
+        જો( p_વૃક્ષ ){
+          p_વૃક્ષ->v = 0;
+          p_વૃક્ષ->p_જમણું = 0;
+          p_વૃક્ષ->p_ડાબું = row_Set_List_To_વૃક્ષ(p);
         }
       }
       pRowSet->pEntry = 0;
@@ -486,17 +486,17 @@ int sqlite3RowSetTest(RowSet *pRowSet, int iBatch, sqlite3_int64 iRowid){
   /* Test to see if the iRowid value appears anywhere in the forest.
   ** Return 1 if it does and 0 if not.
   */
-  for(pTree = pRowSet->pForest; pTree; pTree=pTree->pRight){
-    p = pTree->pLeft;
-    while( p ){
-      if( p->v<iRowid ){
-        p = p->pRight;
-      }else if( p->v>iRowid ){
-        p = p->pLeft;
-      }else{
-        return 1;
+  માટે(p_વૃક્ષ = pRowSet->pForest; p_વૃક્ષ; p_વૃક્ષ=p_વૃક્ષ->p_જમણું){
+    p = p_વૃક્ષ->p_ડાબું;
+    જ્યારે( p ){
+      જો( p->v<iRowid ){
+        p = p->p_જમણું;
+      }નહીંતર જો( p->v>iRowid ){
+        p = p->p_ડાબું;
+      }નહીંતર{
+        પાછા 1;
       }
     }
   }
-  return 0;
+  પાછા 0;
 }

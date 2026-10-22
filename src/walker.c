@@ -12,33 +12,33 @@
 ** This file contains routines used for walking the parser tree for
 ** an SQL statement.
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <string.h>
+#અન્તર્ભાવ "sqliteInt.h"
+#અન્તર્ભાવ <stdlib.h>
+#અન્તર્ભાવ <string.h>
 
 
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
+#જો !defined(SQLITE_OMIT_WINDOWFUNC)
 /*
 ** Walk all expressions linked into the list of Window objects passed
 ** as the second argument.
 */
-static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
+સ્થિર પૂર્ણાંક walkWindowList(Walker *pWalker, Window *pList, પૂર્ણાંક bOneOnly){
   Window *pWin;
-  for(pWin=pList; pWin; pWin=pWin->pNextWin){
-    int rc;
-    rc = sqlite3WalkExprList(pWalker, pWin->pOrderBy);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExprList(pWalker, pWin->pPartition);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pFilter);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pStart);
-    if( rc ) return WRC_Abort;
-    rc = sqlite3WalkExpr(pWalker, pWin->pEnd);
-    if( rc ) return WRC_Abort;
-    if( bOneOnly ) break;
+  માટે(pWin=pList; pWin; pWin=pWin->pNextWin){
+    પૂર્ણાંક rc;
+    rc = sqlite3_Walk_પદાવલિ_List(pWalker, pWin->pOrderBy);
+    જો( rc ) પાછા WRC_Abort;
+    rc = sqlite3_Walk_પદાવલિ_List(pWalker, pWin->pPartition);
+    જો( rc ) પાછા WRC_Abort;
+    rc = sqlite3_Walk_પદાવલિ(pWalker, pWin->pFilter);
+    જો( rc ) પાછા WRC_Abort;
+    rc = sqlite3_Walk_પદાવલિ(pWalker, pWin->pStart);
+    જો( rc ) પાછા WRC_Abort;
+    rc = sqlite3_Walk_પદાવલિ(pWalker, pWin->pEnd);
+    જો( rc ) પાછા WRC_Abort;
+    જો( bOneOnly ) તોડો;
   }
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }
 #endif
 
@@ -61,64 +61,64 @@ static int walkWindowList(Walker *pWalker, Window *pList, int bOneOnly){
 ** The return value from this routine is WRC_Abort to abandon the tree walk
 ** and WRC_Continue to continue.
 */
-SQLITE_NOINLINE int sqlite3WalkExprNN(Walker *pWalker, Expr *pExpr){
-  int rc;
-  testcase( ExprHasProperty(pExpr, EP_TokenOnly) );
-  testcase( ExprHasProperty(pExpr, EP_Reduced) );
-  while(1){
-    rc = pWalker->xExprCallback(pWalker, pExpr);
-    if( rc ) return rc & WRC_Abort;
-    if( !ExprHasProperty(pExpr,(EP_TokenOnly|EP_Leaf)) ){
-      assert( pExpr->x.pList==0 || pExpr->pRight==0 );
-      if( pExpr->pLeft && sqlite3WalkExprNN(pWalker, pExpr->pLeft) ){
-        return WRC_Abort;
+SQLITE_NOINLINE પૂર્ણાંક sqlite3_Walk_પદાવલિ_NN(Walker *pWalker, પદાવલિ *p_પદાવલિ){
+  પૂર્ણાંક rc;
+  testcase( પદાવલિ_Has_Property(p_પદાવલિ, EP_TokenOnly) );
+  testcase( પદાવલિ_Has_Property(p_પદાવલિ, EP_Reduced) );
+  જ્યારે(1){
+    rc = pWalker->x_પદાવલિ_Callback(pWalker, p_પદાવલિ);
+    જો( rc ) પાછા rc & WRC_Abort;
+    જો( !પદાવલિ_Has_Property(p_પદાવલિ,(EP_TokenOnly|EP_Leaf)) ){
+      પ્રતિજ્ઞા( p_પદાવલિ->x.pList==0 || p_પદાવલિ->p_જમણું==0 );
+      જો( p_પદાવલિ->p_ડાબું && sqlite3_Walk_પદાવલિ_NN(pWalker, p_પદાવલિ->p_ડાબું) ){
+        પાછા WRC_Abort;
       }
-      if( pExpr->pRight ){
-        assert( !ExprHasProperty(pExpr, EP_WinFunc) );
-        pExpr = pExpr->pRight;
-        continue;
-      }else if( ExprUseXSelect(pExpr) ){
-        assert( !ExprHasProperty(pExpr, EP_WinFunc) );
-        if( sqlite3WalkSelect(pWalker, pExpr->x.pSelect) ) return WRC_Abort;
-      }else{
-        if( pExpr->x.pList ){
-          if( sqlite3WalkExprList(pWalker, pExpr->x.pList) ) return WRC_Abort;
+      જો( p_પદાવલિ->p_જમણું ){
+        પ્રતિજ્ઞા( !પદાવલિ_Has_Property(p_પદાવલિ, EP_WinFunc) );
+        p_પદાવલિ = p_પદાવલિ->p_જમણું;
+        ચાલુ;
+      }નહીંતર જો( પદાવલિ_Use_XSelect(p_પદાવલિ) ){
+        પ્રતિજ્ઞા( !પદાવલિ_Has_Property(p_પદાવલિ, EP_WinFunc) );
+        જો( sqlite3WalkSelect(pWalker, p_પદાવલિ->x.pSelect) ) પાછા WRC_Abort;
+      }નહીંતર{
+        જો( p_પદાવલિ->x.pList ){
+          જો( sqlite3_Walk_પદાવલિ_List(pWalker, p_પદાવલિ->x.pList) ) પાછા WRC_Abort;
         }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        if( ExprHasProperty(pExpr, EP_WinFunc) ){
-          if( walkWindowList(pWalker, pExpr->y.pWin, 1) ) return WRC_Abort;
+        જો( પદાવલિ_Has_Property(p_પદાવલિ, EP_WinFunc) ){
+          જો( walkWindowList(pWalker, p_પદાવલિ->y.pWin, 1) ) પાછા WRC_Abort;
         }
 #endif
       }
     }
-    break;
+    તોડો;
   }
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }
-int sqlite3WalkExpr(Walker *pWalker, Expr *pExpr){
-  return pExpr ? sqlite3WalkExprNN(pWalker,pExpr) : WRC_Continue;
+પૂર્ણાંક sqlite3_Walk_પદાવલિ(Walker *pWalker, પદાવલિ *p_પદાવલિ){
+  પાછા p_પદાવલિ ? sqlite3_Walk_પદાવલિ_NN(pWalker,p_પદાવલિ) : WRC_Continue;
 }
 
 /*
 ** Call sqlite3WalkExpr() for every expression in list p or until
 ** an abort request is seen.
 */
-int sqlite3WalkExprList(Walker *pWalker, ExprList *p){
-  int i;
-  struct ExprList_item *pItem;
-  if( p ){
-    for(i=p->nExpr, pItem=p->a; i>0; i--, pItem++){
-      if( sqlite3WalkExpr(pWalker, pItem->pExpr) ) return WRC_Abort;
+પૂર્ણાંક sqlite3_Walk_પદાવલિ_List(Walker *pWalker, પદાવલિ_List *p){
+  પૂર્ણાંક i;
+  સંરચના પદાવલિ_List_item *pItem;
+  જો( p ){
+    માટે(i=p->n_પદાવલિ, pItem=p->a; i>0; i--, pItem++){
+      જો( sqlite3_Walk_પદાવલિ(pWalker, pItem->p_પદાવલિ) ) પાછા WRC_Abort;
     }
   }
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }
 
 /*
 ** This is a no-op callback for Walker->xSelectCallback2.  If this
 ** callback is set, then the Select->pWinDefn list is traversed.
 */
-void sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
+શૂન્ય sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
   UNUSED_PARAMETER(pWalker);
   UNUSED_PARAMETER(p);
   /* No-op */
@@ -130,30 +130,30 @@ void sqlite3WalkWinDefnDummyCallback(Walker *pWalker, Select *p){
 ** any expr callbacks and SELECT callbacks that come from subqueries.
 ** Return WRC_Abort or WRC_Continue.
 */
-int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
-  if( sqlite3WalkExprList(pWalker, p->pEList) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pWhere) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pGroupBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pHaving) ) return WRC_Abort;
-  if( sqlite3WalkExprList(pWalker, p->pOrderBy) ) return WRC_Abort;
-  if( sqlite3WalkExpr(pWalker, p->pLimit) ) return WRC_Abort;
-#if !defined(SQLITE_OMIT_WINDOWFUNC)
-  if( p->pWinDefn ){
+પૂર્ણાંક sqlite3_Walk_Select_પદાવલિ(Walker *pWalker, Select *p){
+  જો( sqlite3_Walk_પદાવલિ_List(pWalker, p->pEList) ) પાછા WRC_Abort;
+  જો( sqlite3_Walk_પદાવલિ(pWalker, p->pWhere) ) પાછા WRC_Abort;
+  જો( sqlite3_Walk_પદાવલિ_List(pWalker, p->pGroupBy) ) પાછા WRC_Abort;
+  જો( sqlite3_Walk_પદાવલિ(pWalker, p->pHaving) ) પાછા WRC_Abort;
+  જો( sqlite3_Walk_પદાવલિ_List(pWalker, p->pOrderBy) ) પાછા WRC_Abort;
+  જો( sqlite3_Walk_પદાવલિ(pWalker, p->pLimit) ) પાછા WRC_Abort;
+#જો !defined(SQLITE_OMIT_WINDOWFUNC)
+  જો( p->pWinDefn ){
     Parse *pParse;
-    if( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
+    જો( pWalker->xSelectCallback2==sqlite3WalkWinDefnDummyCallback
      || ((pParse = pWalker->pParse)!=0 && IN_RENAME_OBJECT)
 #ifndef SQLITE_OMIT_CTE
-     || pWalker->xSelectCallback2==sqlite3SelectPopWith
+     || pWalker->xSelectCallback2==sqlite3_Select_કાઢો_With
 #endif
     ){
       /* The following may return WRC_Abort if there are unresolvable
       ** symbols (e.g. a table that does not exist) in a window definition. */
-      int rc = walkWindowList(pWalker, p->pWinDefn, 0);
-      return rc;
+      પૂર્ણાંક rc = walkWindowList(pWalker, p->pWinDefn, 0);
+      પાછા rc;
     }
   }
 #endif
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }
 
 /*
@@ -163,27 +163,27 @@ int sqlite3WalkSelectExpr(Walker *pWalker, Select *p){
 ** and on any subqueries further down in the tree.  Return 
 ** WRC_Abort or WRC_Continue;
 */
-int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
+પૂર્ણાંક sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
   SrcList *pSrc;
-  int i;
+  પૂર્ણાંક i;
   SrcItem *pItem;
 
   pSrc = p->pSrc;
-  if( ALWAYS(pSrc) ){
-    for(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
-      if( pItem->fg.isSubquery
+  જો( ALWAYS(pSrc) ){
+    માટે(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
+      જો( pItem->fg.isSubquery
        && sqlite3WalkSelect(pWalker, pItem->u4.pSubq->pSelect)
       ){
-        return WRC_Abort;
+        પાછા WRC_Abort;
       }
-      if( pItem->fg.isTabFunc
-       && sqlite3WalkExprList(pWalker, pItem->u1.pFuncArg)
+      જો( pItem->fg.isTabFunc
+       && sqlite3_Walk_પદાવલિ_List(pWalker, pItem->u1.pFuncArg)
       ){
-        return WRC_Abort;
+        પાછા WRC_Abort;
       }
     }
   }
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }
 
 /*
@@ -203,35 +203,35 @@ int sqlite3WalkSelectFrom(Walker *pWalker, Select *p){
 ** If the Walker does not have an xSelectCallback() then this routine
 ** is a no-op returning WRC_Continue.
 */
-int sqlite3WalkSelect(Walker *pWalker, Select *p){
-  int rc;
-  if( p==0 ) return WRC_Continue;
-  if( pWalker->xSelectCallback==0 ) return WRC_Continue;
-  do{
+પૂર્ણાંક sqlite3WalkSelect(Walker *pWalker, Select *p){
+  પૂર્ણાંક rc;
+  જો( p==0 ) પાછા WRC_Continue;
+  જો( pWalker->xSelectCallback==0 ) પાછા WRC_Continue;
+  કરો{
     rc = pWalker->xSelectCallback(pWalker, p);
-    if( rc ) return rc & WRC_Abort;
-    if( sqlite3WalkSelectExpr(pWalker, p)
+    જો( rc ) પાછા rc & WRC_Abort;
+    જો( sqlite3_Walk_Select_પદાવલિ(pWalker, p)
      || sqlite3WalkSelectFrom(pWalker, p)
     ){
-      return WRC_Abort;
+      પાછા WRC_Abort;
     }
-    if( pWalker->xSelectCallback2 ){
+    જો( pWalker->xSelectCallback2 ){
       pWalker->xSelectCallback2(pWalker, p);
     }
     p = p->pPrior;
-  }while( p!=0 );
-  return WRC_Continue;
+  }જ્યારે( p!=0 );
+  પાછા WRC_Continue;
 }
 
 /* Increase the walkerDepth when entering a subquery, and
 ** decrease when leaving the subquery.
 */
-int sqlite3WalkerDepthIncrease(Walker *pWalker, Select *pSelect){
+પૂર્ણાંક sqlite3WalkerDepthIncrease(Walker *pWalker, Select *pSelect){
   UNUSED_PARAMETER(pSelect);
   pWalker->walkerDepth++;
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }
-void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
+શૂન્ય sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
   UNUSED_PARAMETER(pSelect);
   pWalker->walkerDepth--;
 }
@@ -246,16 +246,16 @@ void sqlite3WalkerDepthDecrease(Walker *pWalker, Select *pSelect){
 ** Walker.xSelectCallback is set to do something useful for every 
 ** subquery in the parser tree.
 */
-int sqlite3ExprWalkNoop(Walker *NotUsed, Expr *NotUsed2){
+પૂર્ણાંક sqlite3_પદાવલિ_Walk_Noop(Walker *NotUsed, પદાવલિ *NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }
 
 /*
 ** No-op routine for the parse-tree walker for SELECT statements.
 ** subquery in the parser tree.
 */
-int sqlite3SelectWalkNoop(Walker *NotUsed, Select *NotUsed2){
+પૂર્ણાંક sqlite3SelectWalkNoop(Walker *NotUsed, Select *NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  return WRC_Continue;
+  પાછા WRC_Continue;
 }

@@ -43,10 +43,10 @@
 **      Willmann-Bell, Inc
 **      Richmond, Virginia (USA)
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <assert.h>
-#include <time.h>
+#અન્તર્ભાવ "sqliteInt.h"
+#અન્તર્ભાવ <stdlib.h>
+#અન્તર્ભાવ <assert.h>
+#અન્તર્ભાવ <time.h>
 
 #ifndef SQLITE_OMIT_DATETIME_FUNCS
 
@@ -55,25 +55,25 @@
 ** So declare a substitute.  The substitute function itself is
 ** defined in "os_win.c".
 */
-#if !defined(SQLITE_OMIT_LOCALTIME) && defined(_WIN32_WCE) && \
+#જો !defined(SQLITE_OMIT_LOCALTIME) && defined(_WIN32_WCE) && \
     (!defined(SQLITE_MSVC_LOCALTIME_API) || !SQLITE_MSVC_LOCALTIME_API)
-struct tm *__cdecl localtime(const time_t *);
+સંરચના tm *__cdecl localtime(અચલ time_t *);
 #endif
 
 /*
 ** A structure for holding a single date and time.
 */
-typedef struct DateTime DateTime;
-struct DateTime {
+પ્રકારવ્યાખ્યા સંરચના DateTime DateTime;
+સંરચના DateTime {
   sqlite3_int64 iJD;  /* The julian day number times 86400000 */
-  int Y, M, D;        /* Year, month, and day */
-  int h, m;           /* Hour and minutes */
-  int tz;             /* Timezone offset in minutes */
-  double s;           /* Seconds */
-  char validJD;       /* True (1) if iJD is valid */
-  char validYMD;      /* True (1) if Y,M,D are valid */
-  char validHMS;      /* True (1) if h,m,s are valid */
-  char nFloor;            /* Days to implement "floor" */
+  પૂર્ણાંક Y, M, D;        /* Year, month, and day */
+  પૂર્ણાંક h, m;           /* Hour and minutes */
+  પૂર્ણાંક tz;             /* Timezone offset in minutes */
+  દ્વિગુણ s;           /* Seconds */
+  અક્ષર validJD;       /* True (1) if iJD is valid */
+  અક્ષર validYMD;      /* True (1) if Y,M,D are valid */
+  અક્ષર validHMS;      /* True (1) if h,m,s are valid */
+  અક્ષર nFloor;            /* Days to implement "floor" */
   unsigned rawS      : 1; /* Raw numeric value stored in s */
   unsigned isError   : 1; /* An overflow has occurred */
   unsigned useSubsec : 1; /* Display subsecond precision */
@@ -109,42 +109,42 @@ struct DateTime {
 **
 ** The function returns the number of successful conversions.
 */
-static int getDigits(const char *zDate, const char *zFormat, ...){
+સ્થિર પૂર્ણાંક getDigits(અચલ અક્ષર *zDate, અચલ અક્ષર *zFormat, ...){
   /* The aMx[] array translates the 3rd character of each format
   ** spec into a max size:    a   b   c   d   e      f */
-  static const u16 aMx[] = { 12, 14, 24, 31, 59, 14712 };
+  સ્થિર અચલ u16 aMx[] = { 12, 14, 24, 31, 59, 14712 };
   va_list ap;
-  int cnt = 0;
-  char nextC;
+  પૂર્ણાંક cnt = 0;
+  અક્ષર nextC;
   va_start(ap, zFormat);
-  do{
-    char N = zFormat[0] - '0';
-    char min = zFormat[1] - '0';
-    int val = 0;
+  કરો{
+    અક્ષર N = zFormat[0] - '0';
+    અક્ષર min = zFormat[1] - '0';
+    પૂર્ણાંક val = 0;
     u16 max;
 
-    assert( zFormat[2]>='a' && zFormat[2]<='f' );
+    પ્રતિજ્ઞા( zFormat[2]>='a' && zFormat[2]<='f' );
     max = aMx[zFormat[2] - 'a'];
     nextC = zFormat[3];
     val = 0;
-    while( N-- ){
-      if( !sqlite3Isdigit(*zDate) ){
-        goto end_getDigits;
+    જ્યારે( N-- ){
+      જો( !sqlite3Isdigit(*zDate) ){
+        જાઓ end_getDigits;
       }
       val = val*10 + *zDate - '0';
       zDate++;
     }
-    if( val<(int)min || val>(int)max || (nextC!=0 && nextC!=*zDate) ){
-      goto end_getDigits;
+    જો( val<(પૂર્ણાંક)min || val>(પૂર્ણાંક)max || (nextC!=0 && nextC!=*zDate) ){
+      જાઓ end_getDigits;
     }
-    *va_arg(ap,int*) = val;
+    *va_arg(ap,પૂર્ણાંક*) = val;
     zDate++;
     cnt++;
     zFormat += 4;
-  }while( nextC );
+  }જ્યારે( nextC );
 end_getDigits:
   va_end(ap);
-  return cnt;
+  પાછા cnt;
 }
 
 /*
@@ -163,38 +163,38 @@ end_getDigits:
 **
 ** A missing specifier is not considered an error.
 */
-static int parseTimezone(const char *zDate, DateTime *p){
-  int sgn = 0;
-  int nHr, nMn;
-  int c;
-  while( sqlite3Isspace(*zDate) ){ zDate++; }
+સ્થિર પૂર્ણાંક parseTimezone(અચલ અક્ષર *zDate, DateTime *p){
+  પૂર્ણાંક sgn = 0;
+  પૂર્ણાંક nHr, nMn;
+  પૂર્ણાંક c;
+  જ્યારે( sqlite3Isspace(*zDate) ){ zDate++; }
   p->tz = 0;
   c = *zDate;
-  if( c=='-' ){
+  જો( c=='-' ){
     sgn = -1;
-  }else if( c=='+' ){
+  }નહીંતર જો( c=='+' ){
     sgn = +1;
-  }else if( c=='Z' || c=='z' ){
+  }નહીંતર જો( c=='Z' || c=='z' ){
     zDate++;
     p->isLocal = 0;
     p->isUtc = 1;
-    goto zulu_time;
-  }else{
-    return c!=0;
+    જાઓ zulu_time;
+  }નહીંતર{
+    પાછા c!=0;
   }
   zDate++;
-  if( getDigits(zDate, "20b:20e", &nHr, &nMn)!=2 ){
-    return 1;
+  જો( getDigits(zDate, "20b:20e", &nHr, &nMn)!=2 ){
+    પાછા 1;
   }
   zDate += 5;
   p->tz = sgn*(nMn + nHr*60);
-  if( p->tz==0 ){   /* Forum post 2025-09-17T10:12:14z */
+  જો( p->tz==0 ){   /* Forum post 2025-09-17T10:12:14z */
     p->isLocal = 0;
     p->isUtc = 1;
   }
 zulu_time:
-  while( sqlite3Isspace(*zDate) ){ zDate++; }
-  return *zDate!=0;
+  જ્યારે( sqlite3Isspace(*zDate) ){ zDate++; }
+  પાછા *zDate!=0;
 }
 
 /*
@@ -204,23 +204,23 @@ zulu_time:
 **
 ** Return 1 if there is a parsing error and 0 on success.
 */
-static int parseHhMmSs(const char *zDate, DateTime *p){
-  int h, m, s;
-  double ms = 0.0;
-  if( getDigits(zDate, "20c:20e", &h, &m)!=2 ){
-    return 1;
+સ્થિર પૂર્ણાંક parseHhMmSs(અચલ અક્ષર *zDate, DateTime *p){
+  પૂર્ણાંક h, m, s;
+  દ્વિગુણ ms = 0.0;
+  જો( getDigits(zDate, "20c:20e", &h, &m)!=2 ){
+    પાછા 1;
   }
   zDate += 5;
-  if( *zDate==':' ){
+  જો( *zDate==':' ){
     zDate++;
-    if( getDigits(zDate, "20e", &s)!=1 ){
-      return 1;
+    જો( getDigits(zDate, "20e", &s)!=1 ){
+      પાછા 1;
     }
     zDate += 2;
-    if( *zDate=='.' && sqlite3Isdigit(zDate[1]) ){
-      double rScale = 1.0;
+    જો( *zDate=='.' && sqlite3Isdigit(zDate[1]) ){
+      દ્વિગુણ rScale = 1.0;
       zDate++;
-      while( sqlite3Isdigit(*zDate) ){
+      જ્યારે( sqlite3Isdigit(*zDate) ){
         ms = ms*10.0 + *zDate - '0';
         rScale *= 10.0;
         zDate++;
@@ -228,27 +228,27 @@ static int parseHhMmSs(const char *zDate, DateTime *p){
       ms /= rScale;
       /* Truncate to avoid problems with sub-milliseconds
       ** rounding. https://sqlite.org/forum/forumpost/766a2c9231 */
-      if( ms>0.999 ) ms = 0.999;
+      જો( ms>0.999 ) ms = 0.999;
     }
-  }else{
+  }નહીંતર{
     s = 0;
   }
-  if( h==24 && (m!=0 || s!=0 || ms!=0.0) ) return 1;
+  જો( h==24 && (m!=0 || s!=0 || ms!=0.0) ) પાછા 1;
   p->validJD = 0;
   p->rawS = 0;
   p->validHMS = 1;
   p->h = h;
   p->m = m;
   p->s = s + ms;
-  if( parseTimezone(zDate, p) ) return 1;
-  return 0;
+  જો( parseTimezone(zDate, p) ) પાછા 1;
+  પાછા 0;
 }
 
 /*
 ** Put the DateTime object into its error state.
 */
-static void datetimeError(DateTime *p){
-  memset(p, 0, sizeof(*p));
+સ્થિર શૂન્ય datetimeError(DateTime *p){
+  memset(p, 0, કદ(*p));
   p->isError = 1;
 }
 
@@ -258,28 +258,28 @@ static void datetimeError(DateTime *p){
 **
 ** Reference:  Meeus page 61
 */
-static void computeJD(DateTime *p){
-  int Y, M, D, A, B, X1, X2;
+સ્થિર શૂન્ય computeJD(DateTime *p){
+  પૂર્ણાંક Y, M, D, A, B, X1, X2;
 
-  if( p->validJD ) return;
-  if( p->validYMD ){
+  જો( p->validJD ) પાછા;
+  જો( p->validYMD ){
     Y = p->Y;
     M = p->M;
     D = p->D;
-  }else{
+  }નહીંતર{
     Y = 2000;  /* If no YMD specified, assume 2000-Jan-01 */
     M = 1;
     D = 1;
-    if( p->validHMS && p->h==24 ){
+    જો( p->validHMS && p->h==24 ){
       p->h = 0;
       D = 2;
     }
   }
-  if( Y<-4713 || Y>9999 || p->rawS ){
+  જો( Y<-4713 || Y>9999 || p->rawS ){
     datetimeError(p);
-    return;
+    પાછા;
   }
-  if( M<=2 ){
+  જો( M<=2 ){
     Y--;
     M += 12;
   }
@@ -289,9 +289,9 @@ static void computeJD(DateTime *p){
   X2 = 306001*(M+1)/10000;
   p->iJD = (sqlite3_int64)((X1 + X2 + D + B - 1524.5 ) * 86400000);
   p->validJD = 1;
-  if( p->validHMS ){
+  જો( p->validHMS ){
     p->iJD += p->h*3600000 + p->m*60000 + (sqlite3_int64)(p->s*1000 + 0.5);
-    if( p->tz ){
+    જો( p->tz ){
       p->iJD -= p->tz*60000;
       p->validYMD = 0;
       p->validHMS = 0;
@@ -305,15 +305,15 @@ static void computeJD(DateTime *p){
 /*
 ** Return the number of dates in a specific month.
 */
-static int daysOfMonth(int Y, int M){
-  if( (1<<M) & 0x15aa ){
-    return 31;
-  }else if( M!=2 ){
-    return 30;
-  }else if( Y%4==0 && (Y%100!=0 || Y%400==0) ){
-    return 29;
-  }else{
-    return 28;
+સ્થિર પૂર્ણાંક daysOfMonth(પૂર્ણાંક Y, પૂર્ણાંક M){
+  જો( (1<<M) & 0x15aa ){
+    પાછા 31;
+  }નહીંતર જો( M!=2 ){
+    પાછા 30;
+  }નહીંતર જો( Y%4==0 && (Y%100!=0 || Y%400==0) ){
+    પાછા 29;
+  }નહીંતર{
+    પાછા 28;
   }
 }
 
@@ -323,11 +323,11 @@ static int daysOfMonth(int Y, int M){
 ** would need to be subtracted from the date in order to bring the
 ** date back to the end of the month.
 */
-static void computeFloor(DateTime *p){
-  int mxD;         /* Maximum day number for the current month */
-  assert( p->validYMD || p->isError );
-  assert( p->D>=0 && p->D<=32 );
-  assert( p->M>=0 && p->M<=12 );
+સ્થિર શૂન્ય computeFloor(DateTime *p){
+  પૂર્ણાંક mxD;         /* Maximum day number for the current month */
+  પ્રતિજ્ઞા( p->validYMD || p->isError );
+  પ્રતિજ્ઞા( p->D>=0 && p->D<=32 );
+  પ્રતિજ્ઞા( p->M>=0 && p->M<=12 );
   mxD = daysOfMonth(p->Y, p->M);
   p->nFloor = p->D>mxD ? p->D - mxD : 0;
 }
@@ -344,39 +344,39 @@ static void computeFloor(DateTime *p){
 ** on success and 1 if the input string is not a well-formed
 ** date.
 */
-static int parseYyyyMmDd(const char *zDate, DateTime *p){
-  int Y, M, D, neg;
+સ્થિર પૂર્ણાંક parseYyyyMmDd(અચલ અક્ષર *zDate, DateTime *p){
+  પૂર્ણાંક Y, M, D, neg;
 
-  if( zDate[0]=='-' ){
+  જો( zDate[0]=='-' ){
     zDate++;
     neg = 1;
-  }else{
+  }નહીંતર{
     neg = 0;
   }
-  if( getDigits(zDate, "40f-21a-21d", &Y, &M, &D)!=3 ){
-    return 1;
+  જો( getDigits(zDate, "40f-21a-21d", &Y, &M, &D)!=3 ){
+    પાછા 1;
   }
-  if( neg ) Y = -Y;
+  જો( neg ) Y = -Y;
   zDate += 10;
-  while( sqlite3Isspace(*zDate) || 'T'==*(u8*)zDate ){ zDate++; }
-  if( parseHhMmSs(zDate, p)==0 ){
-    if( p->h==24 ){
-      int mxD = daysOfMonth(Y,M);
+  જ્યારે( sqlite3Isspace(*zDate) || 'T'==*(u8*)zDate ){ zDate++; }
+  જો( parseHhMmSs(zDate, p)==0 ){
+    જો( p->h==24 ){
+      પૂર્ણાંક mxD = daysOfMonth(Y,M);
       p->h = 0;
       D++;
-      if( D>mxD ){
+      જો( D>mxD ){
         D -= mxD;
         M++;
-        if( M>12 ){
+        જો( M>12 ){
           M = 1;
           Y++;
         }
       }
     }
-  }else if( *zDate==0 ){
+  }નહીંતર જો( *zDate==0 ){
     p->validHMS = 0;
-  }else{
-    return 1;
+  }નહીંતર{
+    પાછા 1;
   }
   p->validJD = 0;
   p->validYMD = 1;
@@ -384,30 +384,30 @@ static int parseYyyyMmDd(const char *zDate, DateTime *p){
   p->M = M;
   p->D = D;
   computeFloor(p);
-  if( p->tz ){
+  જો( p->tz ){
     computeJD(p);
   }
-  return 0;
+  પાછા 0;
 }
 
 
-static void clearYMD_HMS_TZ(DateTime *p);  /* Forward declaration */
+સ્થિર શૂન્ય clearYMD_HMS_TZ(DateTime *p);  /* Forward declaration */
 
 /*
 ** Set the time to the current time reported by the VFS.
 **
 ** Return the number of errors.
 */
-static int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
+સ્થિર પૂર્ણાંક setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
   p->iJD = sqlite3StmtCurrentTime(context);
-  if( p->iJD>0 ){
+  જો( p->iJD>0 ){
     p->validJD = 1;
     p->isUtc = 1;
     p->isLocal = 0;
     clearYMD_HMS_TZ(p);
-    return 0;
-  }else{
-    return 1;
+    પાછા 0;
+  }નહીંતર{
+    પાછા 1;
   }
 }
 
@@ -417,10 +417,10 @@ static int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
 ** range of a julian day number, install it as such and set validJD.
 ** If the value is a valid unix timestamp, put it in p->s and set p->rawS.
 */
-static void setRawDateNumber(DateTime *p, double r){
+સ્થિર શૂન્ય set_Raw_Date_સંખ્યા(DateTime *p, દ્વિગુણ r){
   p->s = r;
   p->rawS = 1;
-  if( r>=0.0 && r<5373484.5 ){
+  જો( r>=0.0 && r<5373484.5 ){
     p->iJD = (sqlite3_int64)(r*86400000.0 + 0.5);
     p->validJD = 1;
   }
@@ -442,28 +442,28 @@ static void setRawDateNumber(DateTime *p, double r){
 ** as there is a time string.  The time string can be omitted as long
 ** as there is a year and date.
 */
-static int parseDateOrTime(
+સ્થિર પૂર્ણાંક parseDateOrTime(
   sqlite3_context *context, 
-  const char *zDate, 
+  અચલ અક્ષર *zDate, 
   DateTime *p
 ){
-  double r;
-  if( parseYyyyMmDd(zDate,p)==0 ){
-    return 0;
-  }else if( parseHhMmSs(zDate, p)==0 ){
-    return 0;
-  }else if( sqlite3StrICmp(zDate,"now")==0 && sqlite3NotPureFunc(context) ){
-    return setDateTimeToCurrent(context, p);
-  }else if( sqlite3AtoF(zDate, &r)>0 ){
-    setRawDateNumber(p, r);
-    return 0;
-  }else if( (sqlite3StrICmp(zDate,"subsec")==0
+  દ્વિગુણ r;
+  જો( parseYyyyMmDd(zDate,p)==0 ){
+    પાછા 0;
+  }નહીંતર જો( parseHhMmSs(zDate, p)==0 ){
+    પાછા 0;
+  }નહીંતર જો( sqlite3StrICmp(zDate,"now")==0 && sqlite3NotPureFunc(context) ){
+    પાછા setDateTimeToCurrent(context, p);
+  }નહીંતર જો( sqlite3AtoF(zDate, &r)>0 ){
+    set_Raw_Date_સંખ્યા(p, r);
+    પાછા 0;
+  }નહીંતર જો( (sqlite3StrICmp(zDate,"subsec")==0
              || sqlite3StrICmp(zDate,"subsecond")==0)
            && sqlite3NotPureFunc(context) ){
     p->useSubsec = 1;
-    return setDateTimeToCurrent(context, p);
+    પાછા setDateTimeToCurrent(context, p);
   }
-  return 1;
+  પાછા 1;
 }
 
 /* The julian day number for 9999-12-31 23:59:59.999 is 5373484.4999999.
@@ -480,32 +480,32 @@ static int parseDateOrTime(
 **
 ** The input is the JulianDay times 86400000.
 */
-static int validJulianDay(sqlite3_int64 iJD){
-  return iJD>=0 && iJD<=INT_464269060799999;
+સ્થિર પૂર્ણાંક validJulianDay(sqlite3_int64 iJD){
+  પાછા iJD>=0 && iJD<=INT_464269060799999;
 }
 
 /*
 ** Compute the Year, Month, and Day from the julian day number.
 */
-static void computeYMD(DateTime *p){
-  int Z, alpha, A, B, C, D, E, X1;
-  if( p->validYMD ) return;
-  if( !p->validJD ){
+સ્થિર શૂન્ય computeYMD(DateTime *p){
+  પૂર્ણાંક Z, alpha, A, B, C, D, E, X1;
+  જો( p->validYMD ) પાછા;
+  જો( !p->validJD ){
     p->Y = 2000;
     p->M = 1;
     p->D = 1;
-  }else if( !validJulianDay(p->iJD) ){
+  }નહીંતર જો( !validJulianDay(p->iJD) ){
     datetimeError(p);
-    return;
-  }else{
-    Z = (int)((p->iJD + 43200000)/86400000);
-    alpha = (int)((Z + 32044.75)/36524.25) - 52;
+    પાછા;
+  }નહીંતર{
+    Z = (પૂર્ણાંક)((p->iJD + 43200000)/86400000);
+    alpha = (પૂર્ણાંક)((Z + 32044.75)/36524.25) - 52;
     A = Z + 1 + alpha - ((alpha+100)/4) + 25;
     B = A + 1524;
-    C = (int)((B - 122.1)/365.25);
+    C = (પૂર્ણાંક)((B - 122.1)/365.25);
     D = (36525*(C&32767))/100;
-    E = (int)((B-D)/30.6001);
-    X1 = (int)(30.6001*E);
+    E = (પૂર્ણાંક)((B-D)/30.6001);
+    X1 = (પૂર્ણાંક)(30.6001*E);
     p->D = B - D - X1;
     p->M = E<14 ? E-1 : E-13;
     p->Y = p->M>2 ? C - 4716 : C - 4715;
@@ -516,11 +516,11 @@ static void computeYMD(DateTime *p){
 /*
 ** Compute the Hour, Minute, and Seconds from the julian day number.
 */
-static void computeHMS(DateTime *p){
-  int day_ms, day_min; /* milliseconds, minutes into the day */
-  if( p->validHMS ) return;
+સ્થિર શૂન્ય computeHMS(DateTime *p){
+  પૂર્ણાંક day_ms, day_min; /* milliseconds, minutes into the day */
+  જો( p->validHMS ) પાછા;
   computeJD(p);
-  day_ms = (int)((p->iJD + 43200000) % 86400000);
+  day_ms = (પૂર્ણાંક)((p->iJD + 43200000) % 86400000);
   p->s = (day_ms % 60000)/1000.0;
   day_min = day_ms/60000;
   p->m = day_min % 60;
@@ -532,7 +532,7 @@ static void computeHMS(DateTime *p){
 /*
 ** Compute both YMD and HMS
 */
-static void computeYMD_HMS(DateTime *p){
+સ્થિર શૂન્ય computeYMD_HMS(DateTime *p){
   computeYMD(p);
   computeHMS(p);
 }
@@ -540,7 +540,7 @@ static void computeYMD_HMS(DateTime *p){
 /*
 ** Clear the YMD and HMS and the TZ
 */
-static void clearYMD_HMS_TZ(DateTime *p){
+સ્થિર શૂન્ય clearYMD_HMS_TZ(DateTime *p){
   p->validYMD = 0;
   p->validHMS = 0;
   p->tz = 0;
@@ -559,7 +559,7 @@ static void clearYMD_HMS_TZ(DateTime *p){
 ** already, check for an MSVC build environment that provides 
 ** localtime_s().
 */
-#if !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S \
+#જો !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S \
     && defined(_MSC_VER) && defined(_CRT_INSECURE_DEPRECATE)
 #undef  HAVE_LOCALTIME_S
 #define HAVE_LOCALTIME_S 1
@@ -580,48 +580,48 @@ static void clearYMD_HMS_TZ(DateTime *p){
 ** library function localtime_r() is used to assist in the calculation of
 ** local time.
 */
-static int osLocaltime(time_t *t, struct tm *pTm){
-  int rc;
-#if !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S
-  struct tm *pX;
-#if SQLITE_THREADSAFE>0
+સ્થિર પૂર્ણાંક osLocaltime(time_t *t, સંરચના tm *pTm){
+  પૂર્ણાંક rc;
+#જો !HAVE_LOCALTIME_R && !HAVE_LOCALTIME_S
+  સંરચના tm *pX;
+#જો SQLITE_THREADSAFE>0
   sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
   sqlite3_mutex_enter(mutex);
   pX = localtime(t);
 #ifndef SQLITE_UNTESTABLE
-  if( sqlite3GlobalConfig.bLocaltimeFault ){
-    if( sqlite3GlobalConfig.xAltLocaltime!=0
-     && 0==sqlite3GlobalConfig.xAltLocaltime((const void*)t,(void*)pTm)
+  જો( sqlite3GlobalConfig.bLocaltimeFault ){
+    જો( sqlite3GlobalConfig.xAltLocaltime!=0
+     && 0==sqlite3GlobalConfig.xAltLocaltime((અચલ શૂન્ય*)t,(શૂન્ય*)pTm)
     ){
       pX = pTm;
-    }else{
+    }નહીંતર{
       pX = 0;
     }
   }
 #endif
-  if( pX ) *pTm = *pX;
-#if SQLITE_THREADSAFE>0
+  જો( pX ) *pTm = *pX;
+#જો SQLITE_THREADSAFE>0
   sqlite3_mutex_leave(mutex);
 #endif
   rc = pX==0;
-#else
+#નહીંતર
 #ifndef SQLITE_UNTESTABLE
-  if( sqlite3GlobalConfig.bLocaltimeFault ){
-    if( sqlite3GlobalConfig.xAltLocaltime!=0 ){
-      return sqlite3GlobalConfig.xAltLocaltime((const void*)t,(void*)pTm);
-    }else{
-      return 1;
+  જો( sqlite3GlobalConfig.bLocaltimeFault ){
+    જો( sqlite3GlobalConfig.xAltLocaltime!=0 ){
+      પાછા sqlite3GlobalConfig.xAltLocaltime((અચલ શૂન્ય*)t,(શૂન્ય*)pTm);
+    }નહીંતર{
+      પાછા 1;
     }
   }
 #endif
-#if HAVE_LOCALTIME_R
+#જો HAVE_LOCALTIME_R
   rc = localtime_r(t, pTm)==0;
-#else
+#નહીંતર
   rc = localtime_s(pTm, t);
 #endif /* HAVE_LOCALTIME_R */
 #endif /* HAVE_LOCALTIME_R || HAVE_LOCALTIME_S */
-  return rc;
+  પાછા rc;
 }
 #endif /* SQLITE_OMIT_LOCALTIME */
 
@@ -630,19 +630,19 @@ static int osLocaltime(time_t *t, struct tm *pTm){
 /*
 ** Assuming the input DateTime is UTC, move it to its localtime equivalent.
 */
-static int toLocaltime(
+સ્થિર પૂર્ણાંક toLocaltime(
   DateTime *p,                   /* Date at which to calculate offset */
   sqlite3_context *pCtx          /* Write error here if one occurs */
 ){
   time_t t;
-  struct tm sLocal;
-  int iYearDiff;
+  સંરચના tm sLocal;
+  પૂર્ણાંક iYearDiff;
 
   /* Initialize the contents of sLocal to avoid a compiler warning. */
-  memset(&sLocal, 0, sizeof(sLocal));
+  memset(&sLocal, 0, કદ(sLocal));
 
   computeJD(p);
-  if( p->iJD<2108667600*(i64)100000 /* 1970-01-01 */
+  જો( p->iJD<2108667600*(i64)100000 /* 1970-01-01 */
    || p->iJD>2130141456*(i64)100000 /* 2038-01-18 */
   ){
     /* EVIDENCE-OF: R-55269-29598 The localtime_r() C function normally only
@@ -657,13 +657,13 @@ static int toLocaltime(
     x.validJD = 0;
     computeJD(&x);
     t = (time_t)(x.iJD/1000 -  21086676*(i64)10000);
-  }else{
+  }નહીંતર{
     iYearDiff = 0;
     t = (time_t)(p->iJD/1000 -  21086676*(i64)10000);
   }
-  if( osLocaltime(&t, &sLocal) ){
+  જો( osLocaltime(&t, &sLocal) ){
     sqlite3_result_error(pCtx, "local time unavailable", -1);
-    return SQLITE_ERROR;
+    પાછા SQLITE_ERROR;
   }
   p->Y = sLocal.tm_year + 1900 - iYearDiff;
   p->M = sLocal.tm_mon + 1;
@@ -677,7 +677,7 @@ static int toLocaltime(
   p->rawS = 0;
   p->tz = 0;
   p->isError = 0;
-  return SQLITE_OK;
+  પાછા SQLITE_OK;
 }
 #endif /* SQLITE_OMIT_LOCALTIME */
 
@@ -689,11 +689,11 @@ static int toLocaltime(
 ** Where NNN is an arbitrary floating-point number and "days" can be one
 ** of several units of time.
 */
-static const struct {
+સ્થિર અચલ સંરચના {
   u8 nName;           /* Length of the name */
-  char zName[7];      /* Name of the transformation */
-  float rLimit;       /* Maximum NNN value for this transform */
-  float rXform;       /* Constant used for this transform */
+  અક્ષર zName[7];      /* Name of the transformation */
+  દશાંશ rLimit;       /* Maximum NNN value for this transform */
+  દશાંશ rXform;       /* Constant used for this transform */
 } aXformType[] = {
   /* 0 */ { 6, "second",   4.6427e+14,         1.0  },
   /* 1 */ { 6, "minute",   7.7379e+12,        60.0  },
@@ -708,13 +708,13 @@ static const struct {
 ** a julian day number of a unix timestamp.  Set the p value
 ** appropriately.
 */
-static void autoAdjustDate(DateTime *p){
-  if( !p->rawS || p->validJD ){
+સ્થિર શૂન્ય autoAdjustDate(DateTime *p){
+  જો( !p->rawS || p->validJD ){
     p->rawS = 0;
-  }else if( p->s>=-21086676*(i64)10000        /* -4713-11-24 12:00:00 */
+  }નહીંતર જો( p->s>=-21086676*(i64)10000        /* -4713-11-24 12:00:00 */
          && p->s<=(25340230*(i64)10000)+799   /*  9999-12-31 23:59:59 */
   ){
-    double r = p->s*1000.0 + 210866760000000.0;
+    દ્વિગુણ r = p->s*1000.0 + 210866760000000.0;
     clearYMD_HMS_TZ(p);
     p->iJD = (sqlite3_int64)(r + 0.5);
     p->validJD = 1;
@@ -752,31 +752,31 @@ static void autoAdjustDate(DateTime *p){
 ** to context pCtx. If the error is an unrecognized modifier, no error is
 ** written to pCtx.
 */
-static int parseModifier(
+સ્થિર પૂર્ણાંક parseModifier(
   sqlite3_context *pCtx,      /* Function context */
-  const char *z,              /* The text of the modifier */
-  int n,                      /* Length of zMod in bytes */
+  અચલ અક્ષર *z,              /* The text of the modifier */
+  પૂર્ણાંક n,                      /* Length of zMod in bytes */
   DateTime *p,                /* The date/time value to be modified */
-  int idx                     /* Parameter index of the modifier */
+  પૂર્ણાંક idx                     /* Parameter index of the modifier */
 ){
-  int rc = 1;
-  double r;
-  switch(sqlite3UpperToLower[(u8)z[0]] ){
-    case 'a': {
+  પૂર્ણાંક rc = 1;
+  દ્વિગુણ r;
+  પસંદગી(sqlite3UpperToLower[(u8)z[0]] ){
+    સ્થિતિ 'a': {
       /*
       **    auto
       **
       ** If rawS is available, then interpret as a julian day number, or
       ** a unix timestamp, depending on its magnitude.
       */
-      if( sqlite3_stricmp(z, "auto")==0 ){
-        if( idx>1 ) return 1; /* IMP: R-33611-57934 */
+      જો( sqlite3_stricmp(z, "auto")==0 ){
+        જો( idx>1 ) પાછા 1; /* IMP: R-33611-57934 */
         autoAdjustDate(p);
         rc = 0;
       }
-      break;
+      તોડો;
     }
-    case 'c': {
+    સ્થિતિ 'c': {
       /*
       **    ceiling
       **
@@ -784,15 +784,15 @@ static int parseModifier(
       ** month.  As this is the default action, this modifier is really
       ** a no-op that is only included for symmetry.  See "floor".
       */
-      if( sqlite3_stricmp(z, "ceiling")==0 ){
+      જો( sqlite3_stricmp(z, "ceiling")==0 ){
         computeJD(p);
         clearYMD_HMS_TZ(p);
         rc = 0;
         p->nFloor = 0;
       }
-      break;
+      તોડો;
     }
-    case 'e': {
+    સ્થિતિ 'e': {
       /*
       **    end of day
       **    end of month
@@ -801,10 +801,10 @@ static int parseModifier(
       ** Move the date forwards to the last millisecond of the current
       ** day, month or year.
       */
-      if( sqlite3_strnicmp(z, "end of ", 7)!=0 ){
-        break;
+      જો( sqlite3_strnicmp(z, "end of ", 7)!=0 ){
+        તોડો;
       }        
-      if( !p->validJD && !p->validYMD && !p->validHMS ) break;
+      જો( !p->validJD && !p->validYMD && !p->validHMS ) તોડો;
       z += 7;
       computeYMD(p);
       p->validHMS = 1;
@@ -814,10 +814,10 @@ static int parseModifier(
       p->rawS = 0;
       p->tz = 0;
       p->validJD = 0;
-      if( sqlite3_stricmp(z,"month")==0 ){
+      જો( sqlite3_stricmp(z,"month")==0 ){
         p->D = 1;
         p->M++;
-        if( p->M>12 ){
+        જો( p->M>12 ){
           p->Y++;
           p->M = 1;
         }
@@ -826,31 +826,31 @@ static int parseModifier(
         p->iJD -= (p->nFloor+1)*86400000;
         clearYMD_HMS_TZ(p);
         rc = 0;
-      }else if( sqlite3_stricmp(z,"year")==0 ){
+      }નહીંતર જો( sqlite3_stricmp(z,"year")==0 ){
         p->M = 12;
         p->D = 31;
         rc = 0;
-      }else if( sqlite3_stricmp(z,"day")==0 ){
+      }નહીંતર જો( sqlite3_stricmp(z,"day")==0 ){
         rc = 0;
       }
-      break;
+      તોડો;
     }
-    case 'f': {
+    સ્થિતિ 'f': {
       /*
       **    floor
       **
       ** Resolve day-of-month overflow by rolling back to the end of the
       ** previous month.
       */
-      if( sqlite3_stricmp(z, "floor")==0 ){
+      જો( sqlite3_stricmp(z, "floor")==0 ){
         computeJD(p);
         p->iJD -= p->nFloor*86400000;
         clearYMD_HMS_TZ(p);
         rc = 0;
       }
-      break;
+      તોડો;
     }
-    case 'j': {
+    સ્થિતિ 'j': {
       /*
       **    julianday
       **
@@ -859,41 +859,41 @@ static int parseModifier(
       ** value in the allowed range of julian day numbers understood by
       ** SQLite (0..5373484.5) then the result will be NULL.
       */
-      if( sqlite3_stricmp(z, "julianday")==0 ){
-        if( idx>1 ) return 1;  /* IMP: R-31176-64601 */
-        if( p->validJD && p->rawS ){
+      જો( sqlite3_stricmp(z, "julianday")==0 ){
+        જો( idx>1 ) પાછા 1;  /* IMP: R-31176-64601 */
+        જો( p->validJD && p->rawS ){
           rc = 0;
           p->rawS = 0;
         }
       }
-      break;
+      તોડો;
     }
 #ifndef SQLITE_OMIT_LOCALTIME
-    case 'l': {
+    સ્થિતિ 'l': {
       /*    localtime
       **
       ** Assuming the current time value is UTC (a.k.a. GMT), shift it to
       ** show local time.
       */
-      if( sqlite3_stricmp(z, "localtime")==0 && sqlite3NotPureFunc(pCtx) ){
+      જો( sqlite3_stricmp(z, "localtime")==0 && sqlite3NotPureFunc(pCtx) ){
         rc = p->isLocal ? SQLITE_OK : toLocaltime(p, pCtx);
         p->isUtc = 0;
         p->isLocal = 1;
       }
-      break;
+      તોડો;
     }
 #endif
-    case 'u': {
+    સ્થિતિ 'u': {
       /*
       **    unixepoch
       **
       ** Treat the current value of p->s as the number of
       ** seconds since 1970.  Convert to a real julian day number.
       */
-      if( sqlite3_stricmp(z, "unixepoch")==0 && p->rawS ){
-        if( idx>1 ) return 1;  /* IMP: R-49255-55373 */
+      જો( sqlite3_stricmp(z, "unixepoch")==0 && p->rawS ){
+        જો( idx>1 ) પાછા 1;  /* IMP: R-49255-55373 */
         r = p->s*1000.0 + 210866760000000.0;
-        if( r>=0.0 && r<464269060800000.0 ){
+        જો( r>=0.0 && r<464269060800000.0 ){
           clearYMD_HMS_TZ(p);
           p->iJD = (sqlite3_int64)(r + 0.5);
           p->validJD = 1;
@@ -902,28 +902,28 @@ static int parseModifier(
         }
       }
 #ifndef SQLITE_OMIT_LOCALTIME
-      else if( sqlite3_stricmp(z, "utc")==0 && sqlite3NotPureFunc(pCtx) ){
-        if( p->isUtc==0 ){
+      નહીંતર જો( sqlite3_stricmp(z, "utc")==0 && sqlite3NotPureFunc(pCtx) ){
+        જો( p->isUtc==0 ){
           i64 iOrigJD;              /* Original localtime */
           i64 iGuess;               /* Guess at the corresponding utc time */
-          int cnt = 0;              /* Safety to prevent infinite loop */
+          પૂર્ણાંક cnt = 0;              /* Safety to prevent infinite loop */
           i64 iErr;                 /* Guess is off by this much */
 
           computeJD(p);
           iGuess = iOrigJD = p->iJD;
           iErr = 0;
-          do{
+          કરો{
             DateTime new;
-            memset(&new, 0, sizeof(new));
+            memset(&new, 0, કદ(new));
             iGuess -= iErr;
             new.iJD = iGuess;
             new.validJD = 1;
             rc = toLocaltime(&new, pCtx);
-            if( rc ) return rc;
+            જો( rc ) પાછા rc;
             computeJD(&new);
             iErr = new.iJD - iOrigJD;
-          }while( iErr && cnt++<3 );
-          memset(p, 0, sizeof(*p));
+          }જ્યારે( iErr && cnt++<3 );
+          memset(p, 0, કદ(*p));
           p->iJD = iGuess;
           p->validJD = 1;
           p->isUtc = 1;
@@ -932,9 +932,9 @@ static int parseModifier(
         rc = SQLITE_OK;
       }
 #endif
-      break;
+      તોડો;
     }
-    case 'w': {
+    સ્થિતિ 'w': {
       /*
       **    weekday N
       **    weekday -N
@@ -944,10 +944,10 @@ static int parseModifier(
       ** where 0==Sunday, 1==Monday, and so forth.  If the date is already
       ** on the appropriate weekday, this is a no-op.
       */
-      if( sqlite3_strnicmp(z, "weekday ", 8)==0
+      જો( sqlite3_strnicmp(z, "weekday ", 8)==0
        && sqlite3AtoF(&z[8], &r)>0
        && r>=-6.0 && r<=6.0
-       && sqlite3RealSameAsInt(r,(i64)(n=(int)r))
+       && sqlite3RealSameAsInt(r,(i64)(n=(પૂર્ણાંક)r))
       ){
         sqlite3_int64 Z;
         computeYMD_HMS(p);
@@ -955,18 +955,18 @@ static int parseModifier(
         p->validJD = 0;
         computeJD(p);
         Z = ((p->iJD + 129600000)/86400000) % 7;
-        if( n<0 ) n = -n;
-        if( Z!=n ){
-          if( Z>n ) Z -= 7;
+        જો( n<0 ) n = -n;
+        જો( Z!=n ){
+          જો( Z>n ) Z -= 7;
           p->iJD += (n - Z)*86400000;
-          if( strchr(z+8,'-')!=0 ) p->iJD -= 7*86400000;
+          જો( strchr(z+8,'-')!=0 ) p->iJD -= 7*86400000;
         }
         clearYMD_HMS_TZ(p);
         rc = 0;
       }
-      break;
+      તોડો;
     }
-    case 's': {
+    સ્થિતિ 's': {
       /*
       **    start of day
       **    start of month
@@ -981,16 +981,16 @@ static int parseModifier(
       ** Show subsecond precision in the output of datetime() and
       ** unixepoch() and strftime('%s').
       */
-      if( sqlite3_strnicmp(z, "start of ", 9)!=0 ){
-        if( sqlite3_stricmp(z, "subsec")==0
+      જો( sqlite3_strnicmp(z, "start of ", 9)!=0 ){
+        જો( sqlite3_stricmp(z, "subsec")==0
          || sqlite3_stricmp(z, "subsecond")==0
         ){
           p->useSubsec = 1;
           rc = 0;
         }
-        break;
+        તોડો;
       }        
-      if( !p->validJD && !p->validYMD && !p->validHMS ) break;
+      જો( !p->validJD && !p->validYMD && !p->validHMS ) તોડો;
       z += 9;
       computeYMD(p);
       p->validHMS = 1;
@@ -999,75 +999,75 @@ static int parseModifier(
       p->rawS = 0;
       p->tz = 0;
       p->validJD = 0;
-      if( sqlite3_stricmp(z,"month")==0 ){
+      જો( sqlite3_stricmp(z,"month")==0 ){
         p->D = 1;
         rc = 0;
-      }else if( sqlite3_stricmp(z,"year")==0 ){
+      }નહીંતર જો( sqlite3_stricmp(z,"year")==0 ){
         p->M = 1;
         p->D = 1;
         rc = 0;
-      }else if( sqlite3_stricmp(z,"day")==0 ){
+      }નહીંતર જો( sqlite3_stricmp(z,"day")==0 ){
         rc = 0;
       }
-      break;
+      તોડો;
     }
-    case '+':
-    case '-':
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9': {
-      double rRounder;
-      int i, rx;
-      int Y,M,D,h,m,x;
-      const char *z2 = z;
-      char *zCopy;
+    સ્થિતિ '+':
+    સ્થિતિ '-':
+    સ્થિતિ '0':
+    સ્થિતિ '1':
+    સ્થિતિ '2':
+    સ્થિતિ '3':
+    સ્થિતિ '4':
+    સ્થિતિ '5':
+    સ્થિતિ '6':
+    સ્થિતિ '7':
+    સ્થિતિ '8':
+    સ્થિતિ '9': {
+      દ્વિગુણ rRounder;
+      પૂર્ણાંક i, rx;
+      પૂર્ણાંક Y,M,D,h,m,x;
+      અચલ અક્ષર *z2 = z;
+      અક્ષર *zCopy;
       sqlite3 *db = sqlite3_context_db_handle(pCtx);
-      char z0 = z[0];
-      for(n=1; z[n]; n++){
-        if( z[n]==':' ) break;
-        if( sqlite3Isspace(z[n]) ) break;
-        if( z[n]=='-' ){
-          if( n==5 && getDigits(&z[1], "40f", &Y)==1 ) break;
-          if( n==6 && getDigits(&z[1], "50f", &Y)==1 ) break;
+      અક્ષર z0 = z[0];
+      માટે(n=1; z[n]; n++){
+        જો( z[n]==':' ) તોડો;
+        જો( sqlite3Isspace(z[n]) ) તોડો;
+        જો( z[n]=='-' ){
+          જો( n==5 && getDigits(&z[1], "40f", &Y)==1 ) તોડો;
+          જો( n==6 && getDigits(&z[1], "50f", &Y)==1 ) તોડો;
         }
       }
       zCopy = sqlite3DbStrNDup(db, z, n);
-      if( zCopy==0 ) break;
+      જો( zCopy==0 ) તોડો;
       rx = sqlite3AtoF(zCopy, &r)<=0;
       sqlite3DbFree(db, zCopy);
-      if( rx ){
-        assert( rc==1 );
-        break;
+      જો( rx ){
+        પ્રતિજ્ઞા( rc==1 );
+        તોડો;
       }
-      if( z[n]=='-' ){
+      જો( z[n]=='-' ){
         /* A modifier of the form (+|-)YYYY-MM-DD adds or subtracts the
         ** specified number of years, months, and days.  MM is limited to
         ** the range 0-11 and DD is limited to 0-30.
         */
-        if( z0!='+' && z0!='-' ) break;  /* Must start with +/- */
-        if( n==5 ){
-          if( getDigits(&z[1], "40f-20a-20d", &Y, &M, &D)!=3 ) break;
-        }else{
-          assert( n==6 );
-          if( getDigits(&z[1], "50f-20a-20d", &Y, &M, &D)!=3 ) break;
+        જો( z0!='+' && z0!='-' ) તોડો;  /* Must start with +/- */
+        જો( n==5 ){
+          જો( getDigits(&z[1], "40f-20a-20d", &Y, &M, &D)!=3 ) તોડો;
+        }નહીંતર{
+          પ્રતિજ્ઞા( n==6 );
+          જો( getDigits(&z[1], "50f-20a-20d", &Y, &M, &D)!=3 ) તોડો;
           z++;
         }
-        if( M>=12 ) break;                   /* M range 0..11 */
-        if( D>=31 ) break;                   /* D range 0..30 */
+        જો( M>=12 ) તોડો;                   /* M range 0..11 */
+        જો( D>=31 ) તોડો;                   /* D range 0..30 */
         computeYMD_HMS(p);
         p->validJD = 0;
-        if( z0=='-' ){
+        જો( z0=='-' ){
           p->Y -= Y;
           p->M -= M;
           D = -D;
-        }else{
+        }નહીંતર{
           p->Y += Y;
           p->M += M;
         }
@@ -1079,20 +1079,20 @@ static int parseModifier(
         p->validHMS = 0;
         p->validYMD = 0;
         p->iJD += (i64)D*86400000;
-        if( z[11]==0 ){
+        જો( z[11]==0 ){
           rc = 0;
-          break;
+          તોડો;
         }
-        if( sqlite3Isspace(z[11])
+        જો( sqlite3Isspace(z[11])
          && getDigits(&z[12], "20c:20e", &h, &m)==2
         ){
           z2 = &z[12];
           n = 2;
-        }else{
-          break;
+        }નહીંતર{
+          તોડો;
         }
       }
-      if( z2[n]==':' ){
+      જો( z2[n]==':' ){
         /* A modifier of the form (+|-)HH:MM:SS.FFF adds (or subtracts) the
         ** specified number of hours, minutes, seconds, and fractional seconds
         ** to the time.  The ".FFF" may be omitted.  The ":SS.FFF" may be
@@ -1101,76 +1101,76 @@ static int parseModifier(
 
         DateTime tx;
         sqlite3_int64 day;
-        if( !sqlite3Isdigit(*z2) ) z2++;
-        memset(&tx, 0, sizeof(tx));
-        if( parseHhMmSs(z2, &tx) ) break;
+        જો( !sqlite3Isdigit(*z2) ) z2++;
+        memset(&tx, 0, કદ(tx));
+        જો( parseHhMmSs(z2, &tx) ) તોડો;
         computeJD(&tx);
         tx.iJD -= 43200000;
         day = tx.iJD/86400000;
         tx.iJD -= day*86400000;
-        if( z0=='-' ) tx.iJD = -tx.iJD;
+        જો( z0=='-' ) tx.iJD = -tx.iJD;
         computeJD(p);
         clearYMD_HMS_TZ(p);
         p->iJD += tx.iJD;
         rc = 0;
-        break;
+        તોડો;
       }
 
       /* If control reaches this point, it means the transformation is
       ** one of the forms like "+NNN days".  */
       z += n;
-      while( sqlite3Isspace(*z) ) z++;
+      જ્યારે( sqlite3Isspace(*z) ) z++;
       n = sqlite3Strlen30(z);
-      if( n<3 || n>10 ) break;
-      if( sqlite3UpperToLower[(u8)z[n-1]]=='s' ) n--;
+      જો( n<3 || n>10 ) તોડો;
+      જો( sqlite3UpperToLower[(u8)z[n-1]]=='s' ) n--;
       computeJD(p);
-      assert( rc==1 );
+      પ્રતિજ્ઞા( rc==1 );
       rRounder = r<0 ? -0.5 : +0.5;
       p->nFloor = 0;
-      for(i=0; i<ArraySize(aXformType); i++){
-        if( aXformType[i].nName==n
+      માટે(i=0; i<ArraySize(aXformType); i++){
+        જો( aXformType[i].nName==n
          && sqlite3_strnicmp(aXformType[i].zName, z, n)==0
          && r>-aXformType[i].rLimit && r<aXformType[i].rLimit
         ){
-          switch( i ){
-            case 4: { /* Special processing to add months */
-              assert( strcmp(aXformType[4].zName,"month")==0 );
+          પસંદગી( i ){
+            સ્થિતિ 4: { /* Special processing to add months */
+              પ્રતિજ્ઞા( strcmp(aXformType[4].zName,"month")==0 );
               computeYMD_HMS(p);
-              p->M += (int)r;
+              p->M += (પૂર્ણાંક)r;
               x = p->M>0 ? (p->M-1)/12 : (p->M-12)/12;
               p->Y += x;
               p->M -= x*12;
               computeFloor(p);
               p->validJD = 0;
-              r -= (int)r;
-              break;
+              r -= (પૂર્ણાંક)r;
+              તોડો;
             }
-            case 5: { /* Special processing to add years */
-              int y = (int)r;
-              assert( strcmp(aXformType[5].zName,"year")==0 );
+            સ્થિતિ 5: { /* Special processing to add years */
+              પૂર્ણાંક y = (પૂર્ણાંક)r;
+              પ્રતિજ્ઞા( strcmp(aXformType[5].zName,"year")==0 );
               computeYMD_HMS(p);
-              assert( p->M>=0 && p->M<=12 );
+              પ્રતિજ્ઞા( p->M>=0 && p->M<=12 );
               p->Y += y;
               computeFloor(p);
               p->validJD = 0;
-              r -= (int)r;
-              break;
+              r -= (પૂર્ણાંક)r;
+              તોડો;
             }
           }
           computeJD(p);
           p->iJD += (sqlite3_int64)(r*1000.0*aXformType[i].rXform + rRounder);
           rc = 0;
-          break;
+          તોડો;
         }
       }
       clearYMD_HMS_TZ(p);
-      break;
+      તોડો;
     }
-    default: {
-      break;
+    મૂળભૂત: {
+      તોડો;
     }
   }
-  return rc;
+  પાછા rc;
 }
 
 /*
@@ -1182,43 +1182,43 @@ static int parseModifier(
 ** If there are zero parameters (if even argv[0] is undefined)
 ** then assume a default value of "now" for argv[0].
 */
-static int isDate(
+સ્થિર પૂર્ણાંક isDate(
   sqlite3_context *context, 
-  int argc, 
-  sqlite3_value **argv, 
+  પૂર્ણાંક argc, 
+  sqlite3_કિંમત **argv, 
   DateTime *p
 ){
-  int i, n;
-  const unsigned char *z;
-  int eType;
-  memset(p, 0, sizeof(*p));
-  if( argc==0 ){
-    if( !sqlite3NotPureFunc(context) ) return 1;
-    return setDateTimeToCurrent(context, p);
+  પૂર્ણાંક i, n;
+  અચલ unsigned અક્ષર *z;
+  પૂર્ણાંક eType;
+  memset(p, 0, કદ(*p));
+  જો( argc==0 ){
+    જો( !sqlite3NotPureFunc(context) ) પાછા 1;
+    પાછા setDateTimeToCurrent(context, p);
   }
-  if( (eType = sqlite3_value_type(argv[0]))==SQLITE_FLOAT
+  જો( (eType = sqlite3_કિંમત_type(argv[0]))==SQLITE_FLOAT
                    || eType==SQLITE_INTEGER ){
-    setRawDateNumber(p, sqlite3_value_double(argv[0]));
-  }else{
-    z = sqlite3_value_text(argv[0]);
-    if( !z || parseDateOrTime(context, (char*)z, p) ){
-      return 1;
+    set_Raw_Date_સંખ્યા(p, sqlite3_કિંમત_double(argv[0]));
+  }નહીંતર{
+    z = sqlite3_કિંમત_text(argv[0]);
+    જો( !z || parseDateOrTime(context, (અક્ષર*)z, p) ){
+      પાછા 1;
     }
   }
-  for(i=1; i<argc; i++){
-    z = sqlite3_value_text(argv[i]);
-    n = sqlite3_value_bytes(argv[i]);
-    if( z==0 || parseModifier(context, (char*)z, n, p, i) ) return 1;
+  માટે(i=1; i<argc; i++){
+    z = sqlite3_કિંમત_text(argv[i]);
+    n = sqlite3_કિંમત_bytes(argv[i]);
+    જો( z==0 || parseModifier(context, (અક્ષર*)z, n, p, i) ) પાછા 1;
   }
   computeJD(p);
-  if( p->isError || !validJulianDay(p->iJD) ) return 1;
-  if( argc==1 && p->validYMD && p->D>28 ){
+  જો( p->isError || !validJulianDay(p->iJD) ) પાછા 1;
+  જો( argc==1 && p->validYMD && p->D>28 ){
     /* Make sure a YYYY-MM-DD is normalized.
     ** Example: 2023-02-31 -> 2023-03-03 */
-    assert( p->validJD );
+    પ્રતિજ્ઞા( p->validJD );
     p->validYMD = 0;  
   }
-  return 0;
+  પાછા 0;
 }
 
 
@@ -1232,13 +1232,13 @@ static int isDate(
 **
 ** Return the julian day number of the date specified in the arguments
 */
-static void juliandayFunc(
+સ્થિર શૂન્ય juliandayFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
+  જો( isDate(context, argc, argv, &x)==0 ){
     computeJD(&x);
     sqlite3_result_double(context, x.iJD/86400000.0);
   }
@@ -1250,17 +1250,17 @@ static void juliandayFunc(
 ** Return the number of seconds (including fractional seconds) since
 ** the unix epoch of 1970-01-01 00:00:00 GMT.
 */
-static void unixepochFunc(
+સ્થિર શૂન્ય unixepochFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
+  જો( isDate(context, argc, argv, &x)==0 ){
     computeJD(&x);
-    if( x.useSubsec ){
+    જો( x.useSubsec ){
       sqlite3_result_double(context, (x.iJD - 21086676*(i64)10000000)/1000.0);
-    }else{
+    }નહીંતર{
       sqlite3_result_int64(context, x.iJD/1000 - 21086676*(i64)10000);
     }
   }
@@ -1271,18 +1271,18 @@ static void unixepochFunc(
 **
 ** Return YYYY-MM-DD HH:MM:SS
 */
-static void datetimeFunc(
+સ્થિર શૂન્ય datetimeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
-    int Y, s, n;
-    char zBuf[32];
+  જો( isDate(context, argc, argv, &x)==0 ){
+    પૂર્ણાંક Y, s, n;
+    અક્ષર zBuf[32];
     computeYMD_HMS(&x);
     Y = x.Y;
-    if( Y<0 ) Y = -Y;
+    જો( Y<0 ) Y = -Y;
     zBuf[1] = '0' + (Y/1000)%10;
     zBuf[2] = '0' + (Y/100)%10;
     zBuf[3] = '0' + (Y/10)%10;
@@ -1300,8 +1300,8 @@ static void datetimeFunc(
     zBuf[15] = '0' + (x.m/10)%10;
     zBuf[16] = '0' + (x.m)%10;
     zBuf[17] = ':';
-    if( x.useSubsec ){
-      s = (int)(1000.0*x.s + 0.5);
+    જો( x.useSubsec ){
+      s = (પૂર્ણાંક)(1000.0*x.s + 0.5);
       zBuf[18] = '0' + (s/10000)%10;
       zBuf[19] = '0' + (s/1000)%10;
       zBuf[20] = '.';
@@ -1310,17 +1310,17 @@ static void datetimeFunc(
       zBuf[23] = '0' + (s)%10;
       zBuf[24] = 0;
       n = 24;
-    }else{
-      s = (int)x.s;
+    }નહીંતર{
+      s = (પૂર્ણાંક)x.s;
       zBuf[18] = '0' + (s/10)%10;
       zBuf[19] = '0' + (s)%10;
       zBuf[20] = 0;
       n = 20;
     }
-    if( x.Y<0 ){
+    જો( x.Y<0 ){
       zBuf[0] = '-';
       sqlite3_result_text(context, zBuf, n, SQLITE_TRANSIENT);
-    }else{
+    }નહીંતર{
       sqlite3_result_text(context, &zBuf[1], n-1, SQLITE_TRANSIENT);
     }
   }
@@ -1331,15 +1331,15 @@ static void datetimeFunc(
 **
 ** Return HH:MM:SS
 */
-static void timeFunc(
+સ્થિર શૂન્ય timeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
-    int s, n;
-    char zBuf[16];
+  જો( isDate(context, argc, argv, &x)==0 ){
+    પૂર્ણાંક s, n;
+    અક્ષર zBuf[16];
     computeHMS(&x);
     zBuf[0] = '0' + (x.h/10)%10;
     zBuf[1] = '0' + (x.h)%10;
@@ -1347,8 +1347,8 @@ static void timeFunc(
     zBuf[3] = '0' + (x.m/10)%10;
     zBuf[4] = '0' + (x.m)%10;
     zBuf[5] = ':';
-    if( x.useSubsec ){
-      s = (int)(1000.0*x.s + 0.5);
+    જો( x.useSubsec ){
+      s = (પૂર્ણાંક)(1000.0*x.s + 0.5);
       zBuf[6] = '0' + (s/10000)%10;
       zBuf[7] = '0' + (s/1000)%10;
       zBuf[8] = '.';
@@ -1357,8 +1357,8 @@ static void timeFunc(
       zBuf[11] = '0' + (s)%10;
       zBuf[12] = 0;
       n = 12;
-    }else{
-      s = (int)x.s;
+    }નહીંતર{
+      s = (પૂર્ણાંક)x.s;
       zBuf[6] = '0' + (s/10)%10;
       zBuf[7] = '0' + (s)%10;
       zBuf[8] = 0;
@@ -1373,18 +1373,18 @@ static void timeFunc(
 **
 ** Return YYYY-MM-DD
 */
-static void dateFunc(
+સ્થિર શૂન્ય dateFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
-    int Y;
-    char zBuf[16];
+  જો( isDate(context, argc, argv, &x)==0 ){
+    પૂર્ણાંક Y;
+    અક્ષર zBuf[16];
     computeYMD(&x);
     Y = x.Y;
-    if( Y<0 ) Y = -Y;
+    જો( Y<0 ) Y = -Y;
     zBuf[1] = '0' + (Y/1000)%10;
     zBuf[2] = '0' + (Y/100)%10;
     zBuf[3] = '0' + (Y/10)%10;
@@ -1396,10 +1396,10 @@ static void dateFunc(
     zBuf[9] = '0' + (x.D/10)%10;
     zBuf[10] = '0' + (x.D)%10;
     zBuf[11] = 0;
-    if( x.Y<0 ){
+    જો( x.Y<0 ){
       zBuf[0] = '-';
       sqlite3_result_text(context, zBuf, 11, SQLITE_TRANSIENT);
-    }else{
+    }નહીંતર{
       sqlite3_result_text(context, &zBuf[1], 10, SQLITE_TRANSIENT);
     }
   }
@@ -1414,16 +1414,16 @@ static void dateFunc(
 **   Jan01 = 0,  Jan02 = 1, ..., Jan31 = 30, Feb01 = 31, ...
 **   Dec31 = 364 or 365.
 */
-static int daysAfterJan01(DateTime *pDate){
+સ્થિર પૂર્ણાંક daysAfterJan01(DateTime *pDate){
   DateTime jan01 = *pDate;
-  assert( jan01.validYMD );
-  assert( jan01.validHMS );
-  assert( pDate->validJD );
+  પ્રતિજ્ઞા( jan01.validYMD );
+  પ્રતિજ્ઞા( jan01.validHMS );
+  પ્રતિજ્ઞા( pDate->validJD );
   jan01.validJD = 0;
   jan01.M = 1;
   jan01.D = 1;
   computeJD(&jan01);
-  return (int)((pDate->iJD-jan01.iJD+43200000)/86400000);
+  પાછા (પૂર્ણાંક)((pDate->iJD-jan01.iJD+43200000)/86400000);
 }
 
 /*
@@ -1434,9 +1434,9 @@ static int daysAfterJan01(DateTime *pDate){
 **
 **   0=Monday, 1=Tuesday, 2=Wednesday, ..., 6=Sunday.
 */
-static int daysAfterMonday(DateTime *pDate){
-  assert( pDate->validJD );
-  return (int)((pDate->iJD+43200000)/86400000) % 7;
+સ્થિર પૂર્ણાંક daysAfterMonday(DateTime *pDate){
+  પ્રતિજ્ઞા( pDate->validJD );
+  પાછા (પૂર્ણાંક)((pDate->iJD+43200000)/86400000) % 7;
 }
 
 /*
@@ -1447,9 +1447,9 @@ static int daysAfterMonday(DateTime *pDate){
 **
 **   0=Sunday, 1=Monday, 2=Tuesday, ..., 6=Saturday
 */
-static int daysAfterSunday(DateTime *pDate){
-  assert( pDate->validJD );
-  return (int)((pDate->iJD+129600000)/86400000) % 7;
+સ્થિર પૂર્ણાંક daysAfterSunday(DateTime *pDate){
+  પ્રતિજ્ઞા( pDate->validJD );
+  પાછા (પૂર્ણાંક)((pDate->iJD+129600000)/86400000) % 7;
 }
 
 /*
@@ -1485,166 +1485,166 @@ static int daysAfterSunday(DateTime *pDate){
 **   %Y  year 0000-9999
 **   %%  %
 */
-static void strftimeFunc(
+સ્થિર શૂન્ય strftimeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   DateTime x;
   size_t i,j;
   sqlite3 *db;
-  const char *zFmt;
+  અચલ અક્ષર *zFmt;
   sqlite3_str *pRes;
 
 
-  if( argc==0 ) return;
-  zFmt = (const char*)sqlite3_value_text(argv[0]);
-  if( zFmt==0 || isDate(context, argc-1, argv+1, &x) ) return;
+  જો( argc==0 ) પાછા;
+  zFmt = (અચલ અક્ષર*)sqlite3_કિંમત_text(argv[0]);
+  જો( zFmt==0 || isDate(context, argc-1, argv+1, &x) ) પાછા;
   db = sqlite3_context_db_handle(context);
   pRes = sqlite3_str_new(db);
 
   computeJD(&x);
   computeYMD_HMS(&x);
-  for(i=j=0; zFmt[i]; i++){
-    char cf;
-    if( zFmt[i]!='%' ) continue;
-    if( j<i ) sqlite3_str_append(pRes, zFmt+j, (int)(i-j));
+  માટે(i=j=0; zFmt[i]; i++){
+    અક્ષર cf;
+    જો( zFmt[i]!='%' ) ચાલુ;
+    જો( j<i ) sqlite3_str_append(pRes, zFmt+j, (પૂર્ણાંક)(i-j));
     i++;
     j = i + 1;
     cf = zFmt[i];
-    switch( cf ){
-      case 'd':  /* Fall thru */
-      case 'e': {
+    પસંદગી( cf ){
+      સ્થિતિ 'd':  /* Fall thru */
+      સ્થિતિ 'e': {
         sqlite3_str_appendf(pRes, cf=='d' ? "%02d" : "%2d", x.D);
-        break;
+        તોડો;
       }
-      case 'f': {  /* Fractional seconds.  (Non-standard) */
-        double s = x.s;
-        if( NEVER(s>59.999) ) s = 59.999;
+      સ્થિતિ 'f': {  /* Fractional seconds.  (Non-standard) */
+        દ્વિગુણ s = x.s;
+        જો( NEVER(s>59.999) ) s = 59.999;
         sqlite3_str_appendf(pRes, "%06.3f", s);
-        break;
+        તોડો;
       }
-      case 'F': {
+      સ્થિતિ 'F': {
         sqlite3_str_appendf(pRes, "%04d-%02d-%02d", x.Y, x.M, x.D);
-        break;
+        તોડો;
       }
-      case 'G': /* Fall thru */
-      case 'g': {
+      સ્થિતિ 'G': /* Fall thru */
+      સ્થિતિ 'g': {
         DateTime y = x;
-        assert( y.validJD );
+        પ્રતિજ્ઞા( y.validJD );
         /* Move y so that it is the Thursday in the same week as x */
         y.iJD += (3 - daysAfterMonday(&x))*86400000;
         y.validYMD = 0;
         computeYMD(&y);
-        if( cf=='g' ){
+        જો( cf=='g' ){
           sqlite3_str_appendf(pRes, "%02d", y.Y%100);
-        }else{
+        }નહીંતર{
           sqlite3_str_appendf(pRes, "%04d", y.Y);
         }
-        break;
+        તોડો;
       }
-      case 'H':
-      case 'k': {
+      સ્થિતિ 'H':
+      સ્થિતિ 'k': {
         sqlite3_str_appendf(pRes, cf=='H' ? "%02d" : "%2d", x.h);
-        break;
+        તોડો;
       }
-      case 'I': /* Fall thru */
-      case 'l': {
-        int h = x.h;
-        if( h>12 ) h -= 12;
-        if( h==0 ) h = 12;
+      સ્થિતિ 'I': /* Fall thru */
+      સ્થિતિ 'l': {
+        પૂર્ણાંક h = x.h;
+        જો( h>12 ) h -= 12;
+        જો( h==0 ) h = 12;
         sqlite3_str_appendf(pRes, cf=='I' ? "%02d" : "%2d", h);
-        break;
+        તોડો;
       }
-      case 'j': {  /* Day of year.  Jan01==1, Jan02==2, and so forth */
+      સ્થિતિ 'j': {  /* Day of year.  Jan01==1, Jan02==2, and so forth */
         sqlite3_str_appendf(pRes,"%03d",daysAfterJan01(&x)+1);
-        break;
+        તોડો;
       }
-      case 'J': {  /* Julian day number.  (Non-standard) */
+      સ્થિતિ 'J': {  /* Julian day number.  (Non-standard) */
         sqlite3_str_appendf(pRes,"%.16g",x.iJD/86400000.0);
-        break;
+        તોડો;
       }
-      case 'm': {
+      સ્થિતિ 'm': {
         sqlite3_str_appendf(pRes,"%02d",x.M);
-        break;
+        તોડો;
       }
-      case 'M': {
+      સ્થિતિ 'M': {
         sqlite3_str_appendf(pRes,"%02d",x.m);
-        break;
+        તોડો;
       }
-      case 'p': /* Fall thru */
-      case 'P': {
-        if( x.h>=12 ){
+      સ્થિતિ 'p': /* Fall thru */
+      સ્થિતિ 'P': {
+        જો( x.h>=12 ){
           sqlite3_str_append(pRes, cf=='p' ? "PM" : "pm", 2);
-        }else{
+        }નહીંતર{
           sqlite3_str_append(pRes, cf=='p' ? "AM" : "am", 2);
         }
-        break;
+        તોડો;
       }
-      case 'R': {
+      સ્થિતિ 'R': {
         sqlite3_str_appendf(pRes, "%02d:%02d", x.h, x.m);
-        break;
+        તોડો;
       }
-      case 's': {
-        if( x.useSubsec ){
+      સ્થિતિ 's': {
+        જો( x.useSubsec ){
           sqlite3_str_appendf(pRes,"%.3f",
                 (x.iJD - 21086676*(i64)10000000)/1000.0);
-        }else{
+        }નહીંતર{
           i64 iS = (i64)(x.iJD/1000 - 21086676*(i64)10000);
           sqlite3_str_appendf(pRes,"%lld",iS);
         }
-        break;
+        તોડો;
       }
-      case 'S': {
-        sqlite3_str_appendf(pRes,"%02d",(int)x.s);
-        break;
+      સ્થિતિ 'S': {
+        sqlite3_str_appendf(pRes,"%02d",(પૂર્ણાંક)x.s);
+        તોડો;
       }
-      case 'T': {
-        sqlite3_str_appendf(pRes,"%02d:%02d:%02d", x.h, x.m, (int)x.s);
-        break;
+      સ્થિતિ 'T': {
+        sqlite3_str_appendf(pRes,"%02d:%02d:%02d", x.h, x.m, (પૂર્ણાંક)x.s);
+        તોડો;
       }
-      case 'u':    /* Day of week.  1 to 7.  Monday==1, Sunday==7 */
-      case 'w': {  /* Day of week.  0 to 6.  Sunday==0, Monday==1 */
-        char c = (char)daysAfterSunday(&x) + '0';
-        if( c=='0' && cf=='u' ) c = '7';
+      સ્થિતિ 'u':    /* Day of week.  1 to 7.  Monday==1, Sunday==7 */
+      સ્થિતિ 'w': {  /* Day of week.  0 to 6.  Sunday==0, Monday==1 */
+        અક્ષર c = (અક્ષર)daysAfterSunday(&x) + '0';
+        જો( c=='0' && cf=='u' ) c = '7';
         sqlite3_str_appendchar(pRes, 1, c);
-        break;
+        તોડો;
       }
-      case 'U': {  /* Week num. 00-53. First Sun of the year is week 01 */
+      સ્થિતિ 'U': {  /* Week num. 00-53. First Sun of the year is week 01 */
         sqlite3_str_appendf(pRes,"%02d",
               (daysAfterJan01(&x)-daysAfterSunday(&x)+7)/7);
-        break;
+        તોડો;
       }
-      case 'V': {  /* Week num. 01-53. First week with a Thur is week 01 */
+      સ્થિતિ 'V': {  /* Week num. 01-53. First week with a Thur is week 01 */
         DateTime y = x;
         /* Adjust y so that is the Thursday in the same week as x */
-        assert( y.validJD );
+        પ્રતિજ્ઞા( y.validJD );
         y.iJD += (3 - daysAfterMonday(&x))*86400000;
         y.validYMD = 0;
         computeYMD(&y);
         sqlite3_str_appendf(pRes,"%02d", daysAfterJan01(&y)/7+1);
-        break;
+        તોડો;
       }
-      case 'W': {  /* Week num. 00-53. First Mon of the year is week 01 */
+      સ્થિતિ 'W': {  /* Week num. 00-53. First Mon of the year is week 01 */
         sqlite3_str_appendf(pRes,"%02d",
            (daysAfterJan01(&x)-daysAfterMonday(&x)+7)/7);
-        break;
+        તોડો;
       }
-      case 'Y': {
+      સ્થિતિ 'Y': {
         sqlite3_str_appendf(pRes,"%04d",x.Y);
-        break;
+        તોડો;
       }
-      case '%': {
+      સ્થિતિ '%': {
         sqlite3_str_appendchar(pRes, 1, '%');
-        break;
+        તોડો;
       }
-      default: {
+      મૂળભૂત: {
         sqlite3_str_free(pRes);
-        return;
+        પાછા;
       }
     }
   }
-  if( j<i ) sqlite3_str_append(pRes, zFmt+j, (int)(i-j));
+  જો( j<i ) sqlite3_str_append(pRes, zFmt+j, (પૂર્ણાંક)(i-j));
   sqlite3_result_str(context, pRes, SQLITE_FINISH);
 }
 
@@ -1653,10 +1653,10 @@ static void strftimeFunc(
 **
 ** This function returns the same value as time('now').
 */
-static void ctimeFunc(
+સ્થિર શૂન્ય ctimeFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  પૂર્ણાંક NotUsed,
+  sqlite3_કિંમત **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   timeFunc(context, 0, 0);
@@ -1667,10 +1667,10 @@ static void ctimeFunc(
 **
 ** This function returns the same value as date('now').
 */
-static void cdateFunc(
+સ્થિર શૂન્ય cdateFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  પૂર્ણાંક NotUsed,
+  sqlite3_કિંમત **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   dateFunc(context, 0, 0);
@@ -1693,46 +1693,46 @@ static void cdateFunc(
 ** ISO-8601 string.  The unix timestamps are not supported by this
 ** routine.
 */
-static void timediffFunc(
+સ્થિર શૂન્ય timediffFunc(
   sqlite3_context *context,
-  int NotUsed1,
-  sqlite3_value **argv
+  પૂર્ણાંક NotUsed1,
+  sqlite3_કિંમત **argv
 ){
-  char sign;
-  int Y, M;
+  અક્ષર sign;
+  પૂર્ણાંક Y, M;
   DateTime d1, d2;
   sqlite3_str sRes;
   UNUSED_PARAMETER(NotUsed1);
-  if( isDate(context, 1, &argv[0], &d1) ) return;
-  if( isDate(context, 1, &argv[1], &d2) ) return;
+  જો( isDate(context, 1, &argv[0], &d1) ) પાછા;
+  જો( isDate(context, 1, &argv[1], &d2) ) પાછા;
   computeYMD_HMS(&d1);
   computeYMD_HMS(&d2);
-  if( d1.iJD>=d2.iJD ){
+  જો( d1.iJD>=d2.iJD ){
     sign = '+';
     Y = d1.Y - d2.Y;
-    if( Y ){
+    જો( Y ){
       d2.Y = d1.Y;
       d2.validJD = 0;
       computeJD(&d2);
     }
     M = d1.M - d2.M;
-    if( M<0 ){
+    જો( M<0 ){
       Y--;
       M += 12;
     }
-    if( M!=0 ){
+    જો( M!=0 ){
       d2.M = d1.M;
       d2.validJD = 0;
       computeJD(&d2);
     }
-    while( d1.iJD<d2.iJD ){
+    જ્યારે( d1.iJD<d2.iJD ){
       M--;
-      if( M<0 ){
+      જો( M<0 ){
         M = 11;
         Y--;
       }
       d2.M--;
-      if( d2.M<1 ){
+      જો( d2.M<1 ){
         d2.M = 12;
         d2.Y--;
       }
@@ -1741,32 +1741,32 @@ static void timediffFunc(
     }
     d1.iJD -= d2.iJD;
     d1.iJD += (u64)1486995408 * (u64)100000;
-  }else /* d1<d2 */{
+  }નહીંતર /* d1<d2 */{
     sign = '-';
     Y = d2.Y - d1.Y;
-    if( Y ){
+    જો( Y ){
       d2.Y = d1.Y;
       d2.validJD = 0;
       computeJD(&d2);
     }
     M = d2.M - d1.M;
-    if( M<0 ){
+    જો( M<0 ){
       Y--;
       M += 12;
     }
-    if( M!=0 ){
+    જો( M!=0 ){
       d2.M = d1.M;
       d2.validJD = 0;
       computeJD(&d2);
     }
-    while( d1.iJD>d2.iJD ){
+    જ્યારે( d1.iJD>d2.iJD ){
       M--;
-      if( M<0 ){
+      જો( M<0 ){
         M = 11;
         Y--;
       }
       d2.M++;
-      if( d2.M>12 ){
+      જો( d2.M>12 ){
         d2.M = 1;
         d2.Y++;
       }
@@ -1790,10 +1790,10 @@ static void timediffFunc(
 **
 ** This function returns the same value as datetime('now').
 */
-static void ctimestampFunc(
+સ્થિર શૂન્ય ctimestampFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  પૂર્ણાંક NotUsed,
+  sqlite3_કિંમત **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   datetimeFunc(context, 0, 0);
@@ -1812,54 +1812,54 @@ static void ctimestampFunc(
 ** and strftime(). The format string to pass to strftime() is supplied
 ** as the user-data for the function.
 */
-static void currentTimeFunc(
+સ્થિર શૂન્ય currentTimeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   time_t t;
-  char *zFormat = (char *)sqlite3_user_data(context);
+  અક્ષર *zFormat = (અક્ષર *)sqlite3_user_data(context);
   sqlite3_int64 iT;
-  struct tm *pTm;
-  struct tm sNow;
-  char zBuf[20];
+  સંરચના tm *pTm;
+  સંરચના tm sNow;
+  અક્ષર zBuf[20];
 
   UNUSED_PARAMETER(argc);
   UNUSED_PARAMETER(argv);
 
   iT = sqlite3StmtCurrentTime(context);
-  if( iT<=0 ) return;
+  જો( iT<=0 ) પાછા;
   t = iT/1000 - 10000*(sqlite3_int64)21086676;
-#if HAVE_GMTIME_R
+#જો HAVE_GMTIME_R
   pTm = gmtime_r(&t, &sNow);
-#else
+#નહીંતર
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN));
   pTm = gmtime(&t);
-  if( pTm ) memcpy(&sNow, pTm, sizeof(sNow));
+  જો( pTm ) memcpy(&sNow, pTm, કદ(sNow));
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN));
 #endif
-  if( pTm ){
+  જો( pTm ){
     strftime(zBuf, 20, zFormat, &sNow);
     sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
   }
 }
 #endif
 
-#if !defined(SQLITE_OMIT_DATETIME_FUNCS) && defined(SQLITE_DEBUG)
+#જો !defined(SQLITE_OMIT_DATETIME_FUNCS) && defined(SQLITE_DEBUG)
 /*
 **   datedebug(...)
 **
 ** This routine returns JSON that describes the internal DateTime object.
 ** Used for debugging and testing only.  Subject to change.
 */
-static void datedebugFunc(
+સ્થિર શૂન્ય datedebugFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  પૂર્ણાંક argc,
+  sqlite3_કિંમત **argv
 ){
   DateTime x;
-  if( isDate(context, argc, argv, &x)==0 ){
-    char *zJson;
+  જો( isDate(context, argc, argv, &x)==0 ){
+    અક્ષર *zJson;
     zJson = sqlite3_mprintf(
       "{iJD:%lld,Y:%d,M:%d,D:%d,h:%d,m:%d,tz:%d,"
       "s:%.3f,validJD:%d,validYMD:%d,validHMS:%d,"
@@ -1880,8 +1880,8 @@ static void datedebugFunc(
 ** functions.  This should be the only routine in this file with
 ** external linkage.
 */
-void sqlite3RegisterDateTimeFunctions(void){
-  static FuncDef aDateTimeFuncs[] = {
+શૂન્ય sqlite3RegisterDateTimeFunctions(શૂન્ય){
+  સ્થિર FuncDef aDateTimeFuncs[] = {
 #ifndef SQLITE_OMIT_DATETIME_FUNCS
     PURE_DATE(julianday,        -1, 0, 0, juliandayFunc ),
     PURE_DATE(unixepoch,        -1, 0, 0, unixepochFunc ),
@@ -1896,11 +1896,11 @@ void sqlite3RegisterDateTimeFunctions(void){
     DFUNCTION(current_time,      0, 0, 0, ctimeFunc     ),
     DFUNCTION(current_timestamp, 0, 0, 0, ctimestampFunc),
     DFUNCTION(current_date,      0, 0, 0, cdateFunc     ),
-#else
+#નહીંતર
     STR_FUNCTION(current_time,      0, "%H:%M:%S",          0, currentTimeFunc),
     STR_FUNCTION(current_date,      0, "%Y-%m-%d",          0, currentTimeFunc),
     STR_FUNCTION(current_timestamp, 0, "%Y-%m-%d %H:%M:%S", 0, currentTimeFunc),
 #endif
   };
-  sqlite3InsertBuiltinFuncs(aDateTimeFuncs, ArraySize(aDateTimeFuncs));
+  sqlite3_ઉમેરો_Builtin_Funcs(aDateTimeFuncs, ArraySize(aDateTimeFuncs));
 }
