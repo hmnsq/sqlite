@@ -11,106 +11,106 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#जर SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#अन्तर्भाव "sqlite3.h"
+#अन्तर्भाव "sqliteInt.h"
+#अन्तर्भाव "tclsqlite.h"
 
 #ifdef SQLITE_VDBE_COVERAGE
 
-static u8 aBranchArray[200000];
+स्थिर u8 aBranchArray[200000];
 
-static void test_vdbe_branch(
-  void *pCtx, 
-  unsigned int iSrc, 
-  unsigned char iBranch, 
-  unsigned char iType
+स्थिर शून्य test_vdbe_branch(
+  शून्य *pCtx, 
+  अचिन्हित पूर्णांक iSrc, 
+  अचिन्हित अक्षर iBranch, 
+  अचिन्हित अक्षर iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  जर( iSrc<आकार(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
-static void appendToList(
+स्थिर शून्य appendToList(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
-  const char *zNever
+  पूर्णांक i_ओळ, 
+  पूर्णांक iPath, 
+  स्थिरांक अक्षर *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
-  Tcl_IncrRefCount(pNew);
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iLine));
+  Tcl_Incr_Ref_मोजणी(pNew);
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_ओळ));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iPath));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zNever, -1));
   Tcl_ListObjAppendElement(0, pList, pNew);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_मोजणी(pNew);
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
+स्थिर पूर्णांक SQLITE_TCLAPI test_vdbe_coverage(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णांक objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+  स्थिरांक अक्षर *aSub[] = { "start", "report", "stop", 0 };
+  पूर्णांक iSub = -1;
+  जर( objc!=2 ){
+    Tcl_Wrong_अंक_Args(interp, 1, objv, "sub-command");
+    परत TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  जर( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    परत TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
-  assert( iSub==0 || iSub==1 || iSub==2 );
-  switch( iSub ){
-    case 0:       /* start */
-      memset(aBranchArray, 0, sizeof(aBranchArray));
+  प्रतिज्ञा( iSub==0 || iSub==1 || iSub==2 );
+  निवड( iSub ){
+    स्थिती 0:       /* start */
+      स_रखो(aBranchArray, 0, आकार(aBranchArray));
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
-      break;
-    case 1: {     /* report */
-      int i;
+      थांबा;
+    स्थिती 1: {     /* report */
+      पूर्णांक i;
       Tcl_Obj *pRes = Tcl_NewObj();
-      Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      Tcl_Incr_Ref_मोजणी(pRes);
+      साठी(i=0; i<आकार(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
+        पूर्णांक bFlag = ((b >> 4)==4);
+        जर( b ){
+          जर( (b & 0x01)==0 ){
             appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
+          जर( (b & 0x02)==0 ){
             appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
+          जर( (b & 0x04)==0 ){
             appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
       }
       Tcl_SetObjResult(interp, pRes);
-      Tcl_DecrRefCount(pRes);
-      break;
+      Tcl_Decr_Ref_मोजणी(pRes);
+      थांबा;
     };
       
-    default:      /* stop */         
+    पूर्वनिर्धारित:      /* stop */         
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, 0, 0);
-      break;
+      थांबा;
   }
 
-  return TCL_OK;
+  परत TCL_OK;
 }
 
 #endif  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+पूर्णांक Sqlitetestvdbecov_Init(Tcl_Interp *interp){
 #ifdef SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
 #endif
-  return TCL_OK;
+  परत TCL_OK;
 }
 
 #endif

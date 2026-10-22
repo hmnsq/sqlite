@@ -20,26 +20,26 @@
 
 /* Forward references
 */
-typedef struct WhereClause WhereClause;
-typedef struct WhereMaskSet WhereMaskSet;
-typedef struct WhereOrInfo WhereOrInfo;
-typedef struct WhereAndInfo WhereAndInfo;
-typedef struct WhereLevel WhereLevel;
-typedef struct WhereLoop WhereLoop;
-typedef struct WherePath WherePath;
-typedef struct WhereTerm WhereTerm;
-typedef struct WhereLoopBuilder WhereLoopBuilder;
-typedef struct WhereScan WhereScan;
-typedef struct WhereOrCost WhereOrCost;
-typedef struct WhereOrSet WhereOrSet;
-typedef struct WhereMemBlock WhereMemBlock;
-typedef struct WhereRightJoin WhereRightJoin;
+प्रकारव्याख्या संरचना WhereClause WhereClause;
+प्रकारव्याख्या संरचना WhereMaskSet WhereMaskSet;
+प्रकारव्याख्या संरचना WhereOrInfo WhereOrInfo;
+प्रकारव्याख्या संरचना WhereAndInfo WhereAndInfo;
+प्रकारव्याख्या संरचना WhereLevel WhereLevel;
+प्रकारव्याख्या संरचना WhereLoop WhereLoop;
+प्रकारव्याख्या संरचना WherePath WherePath;
+प्रकारव्याख्या संरचना WhereTerm WhereTerm;
+प्रकारव्याख्या संरचना WhereLoopBuilder WhereLoopBuilder;
+प्रकारव्याख्या संरचना WhereScan WhereScan;
+प्रकारव्याख्या संरचना WhereOrCost WhereOrCost;
+प्रकारव्याख्या संरचना WhereOrSet WhereOrSet;
+प्रकारव्याख्या संरचना WhereMemBlock WhereMemBlock;
+प्रकारव्याख्या संरचना Where_उजवा_Join Where_उजवा_Join;
 
 /*
 ** This object is a header on a block of allocated memory that will be
 ** automatically freed when its WInfo object is destructed.
 */
-struct WhereMemBlock {
+संरचना WhereMemBlock {
   WhereMemBlock *pNext;      /* Next block in the chain */
   u64 sz;                    /* Bytes of space */
 };
@@ -47,12 +47,12 @@ struct WhereMemBlock {
 /*
 ** Extra information attached to a WhereLevel that is a RIGHT JOIN.
 */
-struct WhereRightJoin {
-  int iMatch;          /* Cursor used to determine prior matched rows */
-  int regBloom;        /* Bloom filter for iRJMatch */
-  int regReturn;       /* Return register for the interior subroutine */
-  int addrSubrtn;      /* Starting address for the interior subroutine */
-  int endSubrtn;       /* The last opcode in the interior subroutine */
+संरचना Where_उजवा_Join {
+  पूर्णांक iMatch;          /* Cursor used to determine prior matched rows */
+  पूर्णांक regBloom;        /* Bloom filter for iRJMatch */
+  पूर्णांक regReturn;       /* Return register for the interior subroutine */
+  पूर्णांक addrSubrtn;      /* Starting address for the interior subroutine */
+  पूर्णांक endSubrtn;       /* The last opcode in the interior subroutine */
 };
 
 /*
@@ -70,46 +70,46 @@ struct WhereRightJoin {
 ** the loop nested order, with WhereInfo.a[0] being the outer loop and
 ** WhereInfo.a[WhereInfo.nLevel-1] being the inner loop.
 */
-struct WhereLevel {
-  int iLeftJoin;        /* Memory cell used to implement LEFT OUTER JOIN */
-  int iTabCur;          /* The VDBE cursor used to access the table */
-  int iIdxCur;          /* The VDBE cursor used to access pIdx */
-  int addrBrk;          /* Jump here to break out of the loop */
-  int addrHalt;         /* Abort the query due to empty table or similar */
-  int addrNxt;          /* Jump here to start the next IN combination */
-  int addrSkip;         /* Jump here for next iteration of skip-scan */
-  int addrCont;         /* Jump here to continue with the next loop cycle */
-  int addrDeleteCont;   /* Delete auto-index entry then same as addrCont */
-  int addrFirst;        /* First instruction of interior of the loop */
-  int addrBody;         /* Beginning of the body of this loop */
-  int regBignull;       /* big-null flag reg. True if a NULL-scan is needed */
-  int addrBignull;      /* Jump here for next part of big-null scan */
+संरचना WhereLevel {
+  पूर्णांक i_डावा_Join;        /* Memory cell used to implement LEFT OUTER JOIN */
+  पूर्णांक iTabCur;          /* The VDBE cursor used to access the table */
+  पूर्णांक iIdxCur;          /* The VDBE cursor used to access pIdx */
+  पूर्णांक addrBrk;          /* Jump here to break out of the loop */
+  पूर्णांक addrHalt;         /* Abort the query due to empty table or similar */
+  पूर्णांक addrNxt;          /* Jump here to start the next IN combination */
+  पूर्णांक addrSkip;         /* Jump here for next iteration of skip-scan */
+  पूर्णांक addrCont;         /* Jump here to continue with the next loop cycle */
+  पूर्णांक addrDeleteCont;   /* Delete auto-index entry then same as addrCont */
+  पूर्णांक addrFirst;        /* First instruction of interior of the loop */
+  पूर्णांक addrBody;         /* Beginning of the body of this loop */
+  पूर्णांक regBignull;       /* big-null flag reg. True if a NULL-scan is needed */
+  पूर्णांक addrBignull;      /* Jump here for next part of big-null scan */
 #ifndef SQLITE_LIKE_DOESNT_MATCH_BLOBS
   u32 iLikeRepCntr;     /* LIKE range processing counter register (times 2) */
-  int addrLikeRep;      /* LIKE range processing address */
+  पूर्णांक addrLikeRep;      /* LIKE range processing address */
 #endif
-  int regFilter;        /* Bloom filter */
-  WhereRightJoin *pRJ;  /* Extra information for RIGHT JOIN */
+  पूर्णांक regFilter;        /* Bloom filter */
+  Where_उजवा_Join *pRJ;  /* Extra information for RIGHT JOIN */
   u8 iFrom;             /* Which entry in the FROM clause */
   u8 op, p3, p5;        /* Opcode, P3 & P5 of the opcode that ends the loop */
-  int p1, p2;           /* Operands of the opcode used to end the loop */
-  union {               /* Information that depends on pWLoop->wsFlags */
-    struct {
-      int nIn;              /* Number of entries in aInLoop[] */
-      struct InLoop {
-        int iCur;              /* The VDBE cursor used by this IN operator */
-        int addrInTop;         /* Top of the IN loop */
-        int iBase;             /* Base register of multi-key index record */
-        int nPrefix;           /* Number of prior entries in the key */
+  पूर्णांक p1, p2;           /* Operands of the opcode used to end the loop */
+  संघ {               /* Information that depends on pWLoop->wsFlags */
+    संरचना {
+      पूर्णांक nIn;              /* Number of entries in aInLoop[] */
+      संरचना InLoop {
+        पूर्णांक iCur;              /* The VDBE cursor used by this IN operator */
+        पूर्णांक addr_In_शीर्ष;         /* Top of the IN loop */
+        पूर्णांक iBase;             /* Base register of multi-key index record */
+        पूर्णांक nPrefix;           /* Number of prior entries in the key */
         u8 eEndLoopOp;         /* IN Loop terminator. OP_Next or OP_Prev */
       } *aInLoop;           /* Information about each nested IN operator */
     } in;                 /* Used when pWLoop->wsFlags&WHERE_IN_ABLE */
     Index *pCoveringIdx;  /* Possible covering index for WHERE_MULTI_OR */
   } u;
-  struct WhereLoop *pWLoop;  /* The selected WhereLoop object */
+  संरचना WhereLoop *pWLoop;  /* The selected WhereLoop object */
   Bitmask notReady;          /* FROM entries not usable at this level */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrVisit;        /* Address at which row is visited */
+  पूर्णांक addrVisit;        /* Address at which row is visited */
 #endif
 };
 
@@ -127,34 +127,34 @@ struct WhereLevel {
 ** one WhereLoop object per FROM clause term, that satisfy all dependencies
 ** and that minimize the overall cost.
 */
-struct WhereLoop {
+संरचना WhereLoop {
   Bitmask prereq;       /* Bitmask of other loops that must run first */
   Bitmask maskSelf;     /* Bitmask identifying table iTab */
 #ifdef SQLITE_DEBUG
-  char cId;             /* Symbolic ID of this loop for debugging use */
+  अक्षर cId;             /* Symbolic ID of this loop for debugging use */
 #endif
   u8 iTab;              /* Position in FROM clause of table for this loop */
   u8 iSortIdx;          /* Sorting index number.  0==None */
   LogEst rSetup;        /* One-time setup cost (ex: create transient index) */
   LogEst rRun;          /* Cost of running each loop */
   LogEst nOut;          /* Estimated number of output rows */
-  union {
-    struct {               /* Information for internal btree tables */
+  संघ {
+    संरचना {               /* Information for internal btree tables */
       u16 nEq;               /* Number of equality constraints */
       u16 nBtm;              /* Size of BTM vector */
-      u16 nTop;              /* Size of TOP vector */
+      u16 n_शीर्ष;              /* Size of TOP vector */
       u16 nDistinctCol;      /* Index columns used to sort for DISTINCT */
       Index *pIndex;         /* Index used, or NULL */
-      ExprList *pOrderBy;    /* ORDER BY clause if this is really a subquery */
+      अभिव्यक्ती_List *pOrderBy;    /* ORDER BY clause if this is really a subquery */
     } btree;
-    struct {               /* Information for virtual tables */
-      int idxNum;            /* Index number */
+    संरचना {               /* Information for virtual tables */
+      पूर्णांक idx_अंक;            /* Index number */
       u32 needFree : 1;      /* True if sqlite3_free(idxStr) is needed */
       u32 bOmitOffset : 1;   /* True to let virtual table handle offset */
-      u32 bIdxNumHex : 1;    /* Show idxNum as hex in EXPLAIN QUERY PLAN */
+      u32 b_Idx_अंक_Hex : 1;    /* Show idxNum as hex in EXPLAIN QUERY PLAN */
       i8 isOrdered;          /* True if satisfies ORDER BY */
       u16 omitMask;          /* Terms that may be omitted */
-      char *idxStr;          /* Index identifier string */
+      अक्षर *idxStr;          /* Index identifier string */
       u32 mHandleIn;         /* Terms to handle as IN(...) instead of == */
     } vtab;
   } u;
@@ -162,7 +162,7 @@ struct WhereLoop {
   u16 nLTerm;           /* Number of entries in aLTerm[] */
   u16 nSkip;            /* Number of NULL aLTerm[] entries */
   /**** whereLoopXfer() copies fields above ***********************/
-# define WHERE_LOOP_XFER_SZ offsetof(WhereLoop,nLSlot)
+# define WHERE_LOOP_XFER_SZ दुरत्व(WhereLoop,nLSlot)
   u16 nLSlot;           /* Number of slots allocated for aLTerm[] */
 #ifdef WHERETRACE_ENABLED
   LogEst rStarDelta;    /* Cost delta due to star-schema heuristic.  Not
@@ -177,7 +177,7 @@ struct WhereLoop {
 ** subquery on one operand of an OR operator in the WHERE clause.
 ** See WhereOrSet for additional information
 */
-struct WhereOrCost {
+संरचना WhereOrCost {
   Bitmask prereq;     /* Prerequisites */
   LogEst rRun;        /* Cost of running this subquery */
   LogEst nOut;        /* Number of outputs for this subquery */
@@ -188,7 +188,7 @@ struct WhereOrCost {
 ** best N_OR_COST elements are retained.
 */
 #define N_OR_COST 3
-struct WhereOrSet {
+संरचना WhereOrSet {
   u16 n;                      /* Number of valid a[] entries */
   WhereOrCost a[N_OR_COST];   /* Set of best costs */
 };
@@ -211,7 +211,7 @@ struct WhereOrSet {
 ** number of nodes in the FROM clause.  The best (lowest cost) WherePath
 ** at the end is the chosen query plan.
 */
-struct WherePath {
+संरचना WherePath {
   Bitmask maskLoop;     /* Bitmask of all WhereLoop objects in this path */
   Bitmask revLoop;      /* aLoop[]s that should be reversed for ORDER BY */
   LogEst nRow;          /* Estimated number of rows generated by this path */
@@ -272,28 +272,28 @@ struct WherePath {
 ** in prereqRight and prereqAll.  The default is 64 bits, hence SQLite
 ** is only able to process joins with 64 or fewer tables.
 */
-struct WhereTerm {
-  Expr *pExpr;            /* Pointer to the subexpression that is this term */
+संरचना WhereTerm {
+  अभिव्यक्ती *p_अभिव्यक्ती;            /* Pointer to the subexpression that is this term */
   WhereClause *pWC;       /* The clause this term is part of */
   LogEst truthProb;       /* Probability of truth for this expression */
   u16 wtFlags;            /* TERM_xxx bit flags.  See below */
   u16 eOperator;          /* A WO_xx value describing <op> */
   u8 nChild;              /* Number of children that must disable us */
   u8 eMatchOp;            /* Op for vtab MATCH/LIKE/GLOB/REGEXP terms */
-  int iParent;            /* Disable pWC->a[iParent] when this term disabled */
-  int leftCursor;         /* Cursor number of X in "X <op> <expr>" */
+  पूर्णांक iParent;            /* Disable pWC->a[iParent] when this term disabled */
+  पूर्णांक डावा_Cursor;         /* Cursor number of X in "X <op> <expr>" */
 #ifdef SQLITE_DEBUG
-  int iTerm;              /* Which WhereTerm is this, for debug purposes */
+  पूर्णांक iTerm;              /* Which WhereTerm is this, for debug purposes */
 #endif
-  union {
-    struct {
-      int leftColumn;         /* Column number of X in "X <op> <expr>" */
-      int iField;             /* Field in (?,?,?) IN (SELECT...) vector */
+  संघ {
+    संरचना {
+      पूर्णांक डावा_Column;         /* Column number of X in "X <op> <expr>" */
+      पूर्णांक iField;             /* Field in (?,?,?) IN (SELECT...) vector */
     } x;                    /* Opcode other than OP_OR or OP_AND */
     WhereOrInfo *pOrInfo;   /* Extra information if (eOperator & WO_OR)!=0 */
     WhereAndInfo *pAndInfo; /* Extra information if (eOperator& WO_AND)!=0 */
   } u;
-  Bitmask prereqRight;    /* Bitmask of tables used by pExpr->pRight */
+  Bitmask prereq_उजवा;    /* Bitmask of tables used by pExpr->pRight */
   Bitmask prereqAll;      /* Bitmask of tables referenced by pExpr */
 };
 
@@ -316,7 +316,7 @@ struct WhereTerm {
 #define TERM_HEURTRUTH  0x2000 /* Heuristic truthProb used */
 #ifdef SQLITE_ENABLE_STAT4
 #  define TERM_HIGHTRUTH  0x4000 /* Term excludes few rows */
-#else
+#अन्यथा
 #  define TERM_HIGHTRUTH  0      /* Only used with STAT4 */
 #endif
 #define TERM_SLICE      0x8000 /* One slice of a row-value/vector comparison */
@@ -325,17 +325,17 @@ struct WhereTerm {
 ** An instance of the WhereScan object is used as an iterator for locating
 ** terms in the WHERE clause that are useful to the query planner.
 */
-struct WhereScan {
+संरचना WhereScan {
   WhereClause *pOrigWC;      /* Original, innermost WhereClause */
   WhereClause *pWC;          /* WhereClause currently being scanned */
-  const char *zCollName;     /* Required collating sequence, if not NULL */
-  Expr *pIdxExpr;            /* Search for this index expression */
-  int k;                     /* Resume scanning at this->pWC->a[this->k] */
+  स्थिरांक अक्षर *zCollName;     /* Required collating sequence, if not NULL */
+  अभिव्यक्ती *p_Idx_अभिव्यक्ती;            /* Search for this index expression */
+  पूर्णांक k;                     /* Resume scanning at this->pWC->a[this->k] */
   u32 opMask;                /* Acceptable operators */
-  char idxaff;               /* Must match this affinity, if zCollName!=NULL */
-  unsigned char iEquiv;      /* Current slot in aiCur[] and aiColumn[] */
-  unsigned char nEquiv;      /* Number of entries in aiCur[] and aiColumn[] */
-  int aiCur[11];             /* Cursors in the equivalence class */
+  अक्षर idxaff;               /* Must match this affinity, if zCollName!=NULL */
+  अचिन्हित अक्षर iEquiv;      /* Current slot in aiCur[] and aiColumn[] */
+  अचिन्हित अक्षर nEquiv;      /* Number of entries in aiCur[] and aiColumn[] */
+  पूर्णांक aiCur[11];             /* Cursors in the equivalence class */
   i16 aiColumn[11];          /* Corresponding column number in the eq-class */
 };
 
@@ -351,18 +351,18 @@ struct WhereScan {
 ** the subclauses "(b AND c)" and "(d AND e)".  The pOuter field of the
 ** subclauses points to the WhereClause object for the whole clause.
 */
-struct WhereClause {
+संरचना WhereClause {
   WhereInfo *pWInfo;       /* WHERE clause processing context */
   WhereClause *pOuter;     /* Outer conjunction */
   u8 op;                   /* Split operator.  TK_AND or TK_OR */
   u8 hasOr;                /* True if any a[].eOperator is WO_OR */
-  int nTerm;               /* Number of terms */
-  int nSlot;               /* Number of entries in a[] */
-  int nBase;               /* Number of terms through the last non-Virtual */
+  पूर्णांक nTerm;               /* Number of terms */
+  पूर्णांक nSlot;               /* Number of entries in a[] */
+  पूर्णांक nBase;               /* Number of terms through the last non-Virtual */
   WhereTerm *a;            /* Each a[] describes a term of the WHERE clause */
-#if defined(SQLITE_SMALL_STACK)
+#जर defined(SQLITE_SMALL_चळत)
   WhereTerm aStatic[1];    /* Initial static space for a[] */
-#else
+#अन्यथा
   WhereTerm aStatic[8];    /* Initial static space for a[] */
 #endif
 };
@@ -371,7 +371,7 @@ struct WhereClause {
 ** A WhereTerm with eOperator==WO_OR has its u.pOrInfo pointer set to
 ** a dynamically allocated instance of the following structure.
 */
-struct WhereOrInfo {
+संरचना WhereOrInfo {
   WhereClause wc;          /* Decomposition into subterms */
   Bitmask indexable;       /* Bitmask of all indexable tables in the clause */
 };
@@ -380,7 +380,7 @@ struct WhereOrInfo {
 ** A WhereTerm with eOperator==WO_AND has its u.pAndInfo pointer set to
 ** a dynamically allocated instance of the following structure.
 */
-struct WhereAndInfo {
+संरचना WhereAndInfo {
   WhereClause wc;          /* The subexpression broken out */
 };
 
@@ -410,28 +410,28 @@ struct WhereAndInfo {
 ** numbers all get mapped into bit numbers that begin with 0 and contain
 ** no gaps.
 */
-struct WhereMaskSet {
-  int bVarSelect;               /* Used by sqlite3WhereExprUsage() */
-  int n;                        /* Number of assigned cursor values */
-  int ix[BMS];                  /* Cursor assigned to each bit */
+संरचना WhereMaskSet {
+  पूर्णांक bVarSelect;               /* Used by sqlite3WhereExprUsage() */
+  पूर्णांक n;                        /* Number of assigned cursor values */
+  पूर्णांक ix[BMS];                  /* Cursor assigned to each bit */
 };
 
 /*
 ** This object is a convenience wrapper holding all information needed
 ** to construct WhereLoop objects for a particular query.
 */
-struct WhereLoopBuilder {
+संरचना WhereLoopBuilder {
   WhereInfo *pWInfo;        /* Information about this WHERE */
   WhereClause *pWC;         /* WHERE clause terms */
   WhereLoop *pNew;          /* Template WhereLoop */
   WhereOrSet *pOrSet;       /* Record best loops here, if not NULL */
 #ifdef SQLITE_ENABLE_STAT4
   UnpackedRecord *pRec;     /* Probe for stat4 (if required) */
-  int nRecValid;            /* Number of valid fields currently in pRec */
+  पूर्णांक nRecValid;            /* Number of valid fields currently in pRec */
 #endif
-  unsigned char bldFlags1;  /* First set of SQLITE_BLDF_* flags */
-  unsigned char bldFlags2;  /* Second set of SQLITE_BLDF_* flags */
-  unsigned int iPlanLimit;  /* Search limiter */
+  अचिन्हित अक्षर bldFlags1;  /* First set of SQLITE_BLDF_* flags */
+  अचिन्हित अक्षर bldFlags2;  /* Second set of SQLITE_BLDF_* flags */
+  अचिन्हित पूर्णांक iPlanLimit;  /* Search limiter */
 };
 
 /* Allowed values for WhereLoopBuider.bldFlags */
@@ -470,37 +470,37 @@ struct WhereLoopBuilder {
 ** An instance of this object holds the complete state of the query
 ** planner.
 */
-struct WhereInfo {
+संरचना WhereInfo {
   Parse *pParse;            /* Parsing and code generating context */
   SrcList *pTabList;        /* List of tables in the join */
-  ExprList *pOrderBy;       /* The ORDER BY clause or NULL */
-  ExprList *pResultSet;     /* Result set of the query */
-#if WHERETRACE_ENABLED
-  Expr *pWhere;             /* The complete WHERE clause */
+  अभिव्यक्ती_List *pOrderBy;       /* The ORDER BY clause or NULL */
+  अभिव्यक्ती_List *pResultSet;     /* Result set of the query */
+#जर WHERETRACE_ENABLED
+  अभिव्यक्ती *pWhere;             /* The complete WHERE clause */
 #endif
   Select *pSelect;          /* The entire SELECT statement containing WHERE */
-  int aiCurOnePass[2];      /* OP_OpenWrite cursors for the ONEPASS opt */
-  int iContinue;            /* Jump here to continue with next record */
-  int iBreak;               /* Jump here to break out of the loop */
-  int savedNQueryLoop;      /* pParse->nQueryLoop outside the WHERE loop */
+  पूर्णांक aiCurOnePass[2];      /* OP_OpenWrite cursors for the ONEPASS opt */
+  पूर्णांक iContinue;            /* Jump here to continue with next record */
+  पूर्णांक iBreak;               /* Jump here to break out of the loop */
+  पूर्णांक savedNQueryLoop;      /* pParse->nQueryLoop outside the WHERE loop */
   u16 wctrlFlags;           /* Flags originally passed to sqlite3WhereBegin() */
   LogEst iLimit;            /* LIMIT if wctrlFlags has WHERE_USE_LIMIT */
   u8 nLevel;                /* Number of nested loop */
   i8 nOBSat;                /* Number of ORDER BY terms satisfied by indices */
   u8 eOnePass;              /* ONEPASS_OFF, or _SINGLE, or _MULTI */
   u8 eDistinct;             /* One of the WHERE_DISTINCT_* values */
-  unsigned bDeferredSeek :1;   /* Uses OP_DeferredSeek */
-  unsigned untestedTerms :1;   /* Not all WHERE terms resolved by outer loop */
-  unsigned bOrderedInnerLoop:1;/* True if only the inner-most loop is ordered */
-  unsigned sorted        :1;   /* True if really sorted (not just grouped) */
-  unsigned bStarDone     :1;   /* True if check for star-query is complete */
-  unsigned bStarUsed     :1;   /* True if star-query heuristic is used */
+  अचिन्हित bDeferredSeek :1;   /* Uses OP_DeferredSeek */
+  अचिन्हित untestedTerms :1;   /* Not all WHERE terms resolved by outer loop */
+  अचिन्हित bOrderedInnerLoop:1;/* True if only the inner-most loop is ordered */
+  अचिन्हित sorted        :1;   /* True if really sorted (not just grouped) */
+  अचिन्हित bStarDone     :1;   /* True if check for star-query is complete */
+  अचिन्हित bStarUsed     :1;   /* True if star-query heuristic is used */
   LogEst nRowOut;           /* Estimated number of output rows */
 #ifdef WHERETRACE_ENABLED
   LogEst rTotalCost;        /* Total cost of the solution */
 #endif
-  int iTop;                 /* The very beginning of the WHERE loop */
-  int iEndWhere;            /* End of the WHERE clause itself */
+  पूर्णांक i_शीर्ष;                 /* The very beginning of the WHERE loop */
+  पूर्णांक iEndWhere;            /* End of the WHERE clause itself */
   WhereLoop *pLoops;        /* List of all WhereLoop objects */
   WhereMemBlock *pMemToFree;/* Memory to free when this object destroyed */
   Bitmask revMask;          /* Mask of ORDER BY terms that need reversing */
@@ -512,90 +512,90 @@ struct WhereInfo {
 /*
 ** The size (in bytes) of a WhereInfo object that holds N WhereLevels.
 */
-#define SZ_WHEREINFO(N) ROUND8(offsetof(WhereInfo,a)+(N)*sizeof(WhereLevel))
+#define SZ_WHEREINFO(N) ROUND8(दुरत्व(WhereInfo,a)+(N)*आकार(WhereLevel))
 
 /*
 ** Private interfaces - callable only by other where.c routines.
 **
 ** where.c:
 */
-Bitmask sqlite3WhereGetMask(WhereMaskSet*,int);
+Bitmask sqlite3WhereGetMask(WhereMaskSet*,पूर्णांक);
 #ifdef WHERETRACE_ENABLED
-void sqlite3WhereClausePrint(WhereClause *pWC);
-void sqlite3WhereTermPrint(WhereTerm *pTerm, int iTerm);
-void sqlite3WhereLoopPrint(const WhereLoop *p, const WhereClause *pWC);
+शून्य sqlite3WhereClausePrint(WhereClause *pWC);
+शून्य sqlite3WhereTermPrint(WhereTerm *pTerm, पूर्णांक iTerm);
+शून्य sqlite3WhereLoopPrint(स्थिरांक WhereLoop *p, स्थिरांक WhereClause *pWC);
 #endif
 WhereTerm *sqlite3WhereFindTerm(
   WhereClause *pWC,     /* The WHERE clause to be searched */
-  int iCur,             /* Cursor number of LHS */
-  int iColumn,          /* Column number of LHS */
+  पूर्णांक iCur,             /* Cursor number of LHS */
+  पूर्णांक iColumn,          /* Column number of LHS */
   Bitmask notReady,     /* RHS must not overlap with this mask */
   u32 op,               /* Mask of WO_xx values describing operator */
   Index *pIdx           /* Must be compatible with this index, if not NULL */
 );
-void *sqlite3WhereMalloc(WhereInfo *pWInfo, u64 nByte);
-void *sqlite3WhereRealloc(WhereInfo *pWInfo, void *pOld, u64 nByte);
+शून्य *sqlite3WhereMalloc(WhereInfo *pWInfo, u64 nByte);
+शून्य *sqlite3WhereRealloc(WhereInfo *pWInfo, शून्य *pOld, u64 nByte);
 
 /* wherecode.c: */
 #ifndef SQLITE_OMIT_EXPLAIN
-int sqlite3WhereExplainOneScan(
+पूर्णांक sqlite3WhereExplainOneScan(
   Parse *pParse,                  /* Parse context */
   SrcList *pTabList,              /* Table list this loop refers to */
   WhereLevel *pLevel,             /* Scan to write OP_Explain opcode for */
   u16 wctrlFlags                  /* Flags passed to sqlite3WhereBegin() */
 );
-int sqlite3WhereExplainBloomFilter(
-  const Parse *pParse,            /* Parse context */
-  const WhereInfo *pWInfo,        /* WHERE clause */
-  const WhereLevel *pLevel        /* Bloom filter on this level */
+पूर्णांक sqlite3WhereExplainBloomFilter(
+  स्थिरांक Parse *pParse,            /* Parse context */
+  स्थिरांक WhereInfo *pWInfo,        /* WHERE clause */
+  स्थिरांक WhereLevel *pLevel        /* Bloom filter on this level */
 );
-void sqlite3WhereAddExplainText(
+शून्य sqlite3WhereAddExplainText(
   Parse *pParse,                  /* Parse context */
-  int addr, 
+  पूर्णांक addr, 
   SrcList *pTabList,              /* Table list this loop refers to */
   WhereLevel *pLevel,             /* Scan to write OP_Explain opcode for */
   u16 wctrlFlags                  /* Flags passed to sqlite3WhereBegin() */
 );
-#else
+#अन्यथा
 # define sqlite3WhereExplainOneScan(u,v,w,x) 0
 # define sqlite3WhereExplainBloomFilter(u,v,w) 0
 # define  sqlite3WhereAddExplainText(u,v,w,x,y)
 #endif /* SQLITE_OMIT_EXPLAIN */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-void sqlite3WhereAddScanStatus(
+शून्य sqlite3WhereAddScanStatus(
   Vdbe *v,                        /* Vdbe to add scanstatus entry to */
   SrcList *pSrclist,              /* FROM clause pLvl reads data from */
   WhereLevel *pLvl,               /* Level to add scanstatus() entry for */
-  int addrExplain                 /* Address of OP_Explain (or 0) */
+  पूर्णांक addrExplain                 /* Address of OP_Explain (or 0) */
 );
-#else
-# define sqlite3WhereAddScanStatus(a, b, c, d) ((void)d)
+#अन्यथा
+# define sqlite3WhereAddScanStatus(a, b, c, d) ((शून्य)d)
 #endif
 Bitmask sqlite3WhereCodeOneLoopStart(
   Parse *pParse,       /* Parsing context */
   Vdbe *v,             /* Prepared statement under construction */
   WhereInfo *pWInfo,   /* Complete information about the WHERE clause */
-  int iLevel,          /* Which level of pWInfo->a[] should be coded */
+  पूर्णांक iLevel,          /* Which level of pWInfo->a[] should be coded */
   WhereLevel *pLevel,  /* The current level pointer */
   Bitmask notReady     /* Which tables are currently available */
 );
-SQLITE_NOINLINE void sqlite3WhereRightJoinLoop(
+SQLITE_NOINLINE शून्य sqlite3_Where_उजवा_Join_Loop(
   WhereInfo *pWInfo,
-  int iLevel,
+  पूर्णांक iLevel,
   WhereLevel *pLevel
 );
 
 /* whereexpr.c: */
-void sqlite3WhereClauseInit(WhereClause*,WhereInfo*);
-void sqlite3WhereClauseClear(WhereClause*);
-void sqlite3WhereSplit(WhereClause*,Expr*,u8);
-void sqlite3WhereAddLimit(WhereClause*, Select*);
-Bitmask sqlite3WhereExprUsage(WhereMaskSet*, Expr*);
-Bitmask sqlite3WhereExprUsageNN(WhereMaskSet*, Expr*);
-Bitmask sqlite3WhereExprListUsage(WhereMaskSet*, ExprList*);
-void sqlite3WhereExprAnalyze(SrcList*, WhereClause*);
-void sqlite3WhereTabFuncArgs(Parse*, SrcItem*, WhereClause*);
-int sqlite3WhereLoopBloomable(const WhereLoop*);
+शून्य sqlite3WhereClauseInit(WhereClause*,WhereInfo*);
+शून्य sqlite3WhereClauseClear(WhereClause*);
+शून्य sqlite3WhereSplit(WhereClause*,अभिव्यक्ती*,u8);
+शून्य sqlite3WhereAddLimit(WhereClause*, Select*);
+Bitmask sqlite3_Where_अभिव्यक्ती_Usage(WhereMaskSet*, अभिव्यक्ती*);
+Bitmask sqlite3_Where_अभिव्यक्ती_Usage_NN(WhereMaskSet*, अभिव्यक्ती*);
+Bitmask sqlite3_Where_अभिव्यक्ती_List_Usage(WhereMaskSet*, अभिव्यक्ती_List*);
+शून्य sqlite3_Where_अभिव्यक्ती_Analyze(SrcList*, WhereClause*);
+शून्य sqlite3WhereTabFuncArgs(Parse*, SrcItem*, WhereClause*);
+पूर्णांक sqlite3WhereLoopBloomable(स्थिरांक WhereLoop*);
 
 /*
 ** Bitmasks for the operators on WhereTerm objects.  These are all
@@ -638,7 +638,7 @@ int sqlite3WhereLoopBloomable(const WhereLoop*);
 #define WHERE_COLUMN_IN    0x00000004  /* x IN (...) */
 #define WHERE_COLUMN_NULL  0x00000008  /* x IS NULL */
 #define WHERE_CONSTRAINT   0x0000000f  /* Any of the WHERE_COLUMN_xxx values */
-#define WHERE_TOP_LIMIT    0x00000010  /* x<EXPR or x<=EXPR constraint */
+#define WHERE_शीर्ष_LIMIT    0x00000010  /* x<EXPR or x<=EXPR constraint */
 #define WHERE_BTM_LIMIT    0x00000020  /* x>EXPR or x>=EXPR constraint */
 #define WHERE_BOTH_LIMIT   0x00000030  /* Both x>EXPR and x<EXPR */
 #define WHERE_IDX_ONLY     0x00000040  /* Use index only - omit table */

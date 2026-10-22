@@ -24,17 +24,17 @@
 ** during a hash table resize is a benign fault.
 */
 
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
 #ifndef SQLITE_UNTESTABLE
 
 /*
 ** Global variables.
 */
-typedef struct BenignMallocHooks BenignMallocHooks;
-static SQLITE_WSD struct BenignMallocHooks {
-  void (*xBenignBegin)(void);
-  void (*xBenignEnd)(void);
+प्रकारव्याख्या संरचना BenignMallocHooks BenignMallocHooks;
+स्थिर SQLITE_WSD संरचना BenignMallocHooks {
+  शून्य (*xBenignBegin)(शून्य);
+  शून्य (*xBenignEnd)(शून्य);
 } sqlite3Hooks = { 0, 0 };
 
 /* The "wsdHooks" macro will resolve to the appropriate BenignMallocHooks
@@ -47,7 +47,7 @@ static SQLITE_WSD struct BenignMallocHooks {
 # define wsdHooksInit \
   BenignMallocHooks *x = &GLOBAL(BenignMallocHooks,sqlite3Hooks)
 # define wsdHooks x[0]
-#else
+#अन्यथा
 # define wsdHooksInit
 # define wsdHooks sqlite3Hooks
 #endif
@@ -57,9 +57,9 @@ static SQLITE_WSD struct BenignMallocHooks {
 ** Register hooks to call when sqlite3BeginBenignMalloc() and
 ** sqlite3EndBenignMalloc() are called, respectively.
 */
-void sqlite3BenignMallocHooks(
-  void (*xBenignBegin)(void),
-  void (*xBenignEnd)(void)
+शून्य sqlite3BenignMallocHooks(
+  शून्य (*xBenignBegin)(शून्य),
+  शून्य (*xBenignEnd)(शून्य)
 ){
   wsdHooksInit;
   wsdHooks.xBenignBegin = xBenignBegin;
@@ -71,15 +71,15 @@ void sqlite3BenignMallocHooks(
 ** subsequent malloc failures are benign. A call to sqlite3EndBenignMalloc()
 ** indicates that subsequent malloc failures are non-benign.
 */
-void sqlite3BeginBenignMalloc(void){
+शून्य sqlite3BeginBenignMalloc(शून्य){
   wsdHooksInit;
-  if( wsdHooks.xBenignBegin ){
+  जर( wsdHooks.xBenignBegin ){
     wsdHooks.xBenignBegin();
   }
 }
-void sqlite3EndBenignMalloc(void){
+शून्य sqlite3EndBenignMalloc(शून्य){
   wsdHooksInit;
-  if( wsdHooks.xBenignEnd ){
+  जर( wsdHooks.xBenignEnd ){
     wsdHooks.xBenignEnd();
   }
 }

@@ -16,47 +16,47 @@
 #ifndef SQLITE_HWTIME_H
 #define SQLITE_HWTIME_H
 
-#if defined(_MSC_VER) && defined(_WIN32)
+#जर defined(_MSC_VER) && defined(_WIN32)
 
-  #include "windows.h"
-  #include <profileapi.h>
+  #अन्तर्भाव "windows.h"
+  #अन्तर्भाव <profileapi.h>
 
-  __inline sqlite3_uint64 sqlite3Hwtime(void){
-    LARGE_INTEGER tm;
-    QueryPerformanceCounter(&tm);
-    return (sqlite3_uint64)tm.QuadPart;
+  __inline sqlite3_uint64 sqlite3Hwtime(शून्य){
+    LARGE_INTEGER पंचांग;
+    QueryPerformanceCounter(&पंचांग);
+    परत (sqlite3_uint64)पंचांग.QuadPart;
   }
 
-#elif !defined(__STRICT_ANSI__) && defined(__GNUC__) && \
+#किंवाजर !defined(__STRICT_ANSI__) && defined(__GNUC__) && \
     (defined(i586) || defined(__i586__) || defined(_M_IX86))
 
-  __inline__ sqlite_uint64 sqlite3Hwtime(void){
-     unsigned int lo, hi;
+  __inline__ sqlite_uint64 sqlite3Hwtime(शून्य){
+     अचिन्हित पूर्णांक lo, hi;
      __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
-     return (sqlite_uint64)hi << 32 | lo;
+     परत (sqlite_uint64)hi << 32 | lo;
   }
 
-#elif !defined(__STRICT_ANSI__) && (defined(__GNUC__) && defined(__x86_64__))
+#किंवाजर !defined(__STRICT_ANSI__) && (defined(__GNUC__) && defined(__x86_64__))
 
-  __inline__ sqlite_uint64 sqlite3Hwtime(void){
-     unsigned int lo, hi;
+  __inline__ sqlite_uint64 sqlite3Hwtime(शून्य){
+     अचिन्हित पूर्णांक lo, hi;
      __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
-     return (sqlite_uint64)hi << 32 | lo;
+     परत (sqlite_uint64)hi << 32 | lo;
   }
 
-#elif !defined(__STRICT_ANSI__) && defined(__GNUC__) &&  defined(__aarch64__)
+#किंवाजर !defined(__STRICT_ANSI__) && defined(__GNUC__) &&  defined(__aarch64__)
 
-  __inline__ sqlite_uint64 sqlite3Hwtime(void){
+  __inline__ sqlite_uint64 sqlite3Hwtime(शून्य){
      sqlite3_uint64 cnt;
      __asm__ __volatile__ ("mrs %0, cntvct_el0" : "=r" (cnt));
-     return cnt;
+     परत cnt;
   }
  
-#elif !defined(__STRICT_ANSI__) && (defined(__GNUC__) && defined(__ppc__))
+#किंवाजर !defined(__STRICT_ANSI__) && (defined(__GNUC__) && defined(__ppc__))
 
-  __inline__ sqlite_uint64 sqlite3Hwtime(void){
-      unsigned long long retval;
-      unsigned long junk;
+  __inline__ sqlite_uint64 sqlite3Hwtime(शून्य){
+      अचिन्हित दीर्घ दीर्घ retval;
+      अचिन्हित दीर्घ junk;
       __asm__ __volatile__ ("\n\
           1:      mftbu   %1\n\
                   mftb    %L0\n\
@@ -64,10 +64,10 @@
                   cmpw    %0,%1\n\
                   bne     1b"
                   : "=r" (retval), "=r" (junk));
-      return retval;
+      परत retval;
   }
 
-#else
+#अन्यथा
 
   /*
   ** asm() is needed for hardware timing support.  Without asm(),
@@ -77,7 +77,7 @@
   ** and analysis configurations, not in any deliverable, so this
   ** should not be a great loss.
   */
-  sqlite_uint64 sqlite3Hwtime(void){ return ((sqlite_uint64)0); }
+  sqlite_uint64 sqlite3Hwtime(शून्य){ परत ((sqlite_uint64)0); }
 
 #endif
 

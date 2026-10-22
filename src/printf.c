@@ -9,7 +9,7 @@
 ** library, though the implementation here has enhancements to support
 ** SQLite.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
 /*
 ** Conversion types fall into various categories as defined by the
@@ -43,20 +43,20 @@
 /*
 ** An "etByte" is an 8-bit unsigned value.
 */
-typedef unsigned char etByte;
+प्रकारव्याख्या अचिन्हित अक्षर etByte;
 
 /*
 ** Each builtin conversion character (ex: the 'd' in "%d") is described
 ** by an instance of the following structure
 */
-typedef struct et_info {   /* Information about each format field */
-  char fmttype;            /* The format field code letter */
+प्रकारव्याख्या संरचना et_info {   /* Information about each format field */
+  अक्षर fmttype;            /* The format field code letter */
   etByte base;             /* The base for radix conversion */
   etByte flags;            /* One or more of FLAG_ constants below */
   etByte type;             /* Conversion paradigm */
   etByte charset;          /* Offset into aDigits[] of the digits string */
   etByte prefix;           /* Offset into aPrefix[] of the prefix string */
-  char iNxt;               /* Next with same hash, or 0 for end of chain */
+  अक्षर iNxt;               /* Next with same hash, or 0 for end of chain */
 } et_info;
 
 /*
@@ -72,29 +72,29 @@ typedef struct et_info {   /* Information about each format field */
 ** The order of the entries in fmtinfo[] and the hash chain was entered
 ** manually, but based on the output of the following TCL script:
 */
-#if 0  /*****  Beginning of script ******/
+#जर 0  /*****  Beginning of script ******/
 foreach c {d s g z q Q w c o u x X f e E G i n % p T S r J j} {
   scan $c %c x
   set n($c) $x
 }
 set mx [llength [array names n]]
-puts "count: $mx"
+माला_दो "count: $mx"
 
 set mx 25
-puts "*********** mx=$mx ************"
-for {set r 0} {$r<$mx} {incr r} {
-  puts -nonewline [format %2d: $r]
+माला_दो "*********** mx=$mx ************"
+साठी {set r 0} {$r<$mx} {incr r} {
+  माला_दो -nonewline [format %2d: $r]
   foreach c [array names n] {
-    if {($n($c))%$mx==$r} {puts -nonewline " $c"}
+    जर {($n($c))%$mx==$r} {माला_दो -nonewline " $c"}
   }
-  puts ""
+  माला_दो ""
 }
 #endif /***** End of script ********/
 
-static const char aDigits[] = "0123456789ABCDEF0123456789abcdef";
-static const char aHex[]    = "0123456789abcdef";
-static const char aPrefix[] = "-x0\000X0";
-static const et_info fmtinfo[25] = {
+स्थिर स्थिरांक अक्षर aDigits[] = "0123456789ABCDEF0123456789abcdef";
+स्थिर स्थिरांक अक्षर aHex[]    = "0123456789abcdef";
+स्थिर स्थिरांक अक्षर aPrefix[] = "-x0\000X0";
+स्थिर स्थिरांक et_info fmtinfo[25] = {
   /*  0 */  {  'd', 10, 1, etDECIMAL,    0,  0,  0 },
   /*  1 */  {  'e',  0, 1, etEXP,        30, 0,  0 },
   /*  2 */  {  'f',  0, 1, etFLOAT,      0,  0,  0 },
@@ -131,27 +131,27 @@ static const et_info fmtinfo[25] = {
 /*
 ** Set the StrAccum object to an error mode.
 */
-void sqlite3StrAccumSetError(StrAccum *p, u8 eError){
-  assert( eError==SQLITE_NOMEM || eError==SQLITE_TOOBIG );
+शून्य sqlite3StrAccumSetError(StrAccum *p, u8 eError){
+  प्रतिज्ञा( eError==SQLITE_NOMEM || eError==SQLITE_TOOBIG );
   p->accError = eError;
-  if( p->mxAlloc ) sqlite3_str_reset(p);
-  if( eError==SQLITE_TOOBIG ) sqlite3ErrorToParser(p->db, eError);
+  जर( p->mxAlloc ) sqlite3_str_reset(p);
+  जर( eError==SQLITE_TOOBIG ) sqlite3ErrorToParser(p->db, eError);
 }
 
 /*
 ** Extra argument values from a PrintfArguments object
 */
-static sqlite3_int64 getIntArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0;
-  return sqlite3_value_int64(p->apArg[p->nUsed++]);
+स्थिर sqlite3_int64 getIntArg(PrintfArguments *p){
+  जर( p->nArg<=p->nUsed ) परत 0;
+  परत sqlite3_मूल्य_int64(p->apArg[p->nUsed++]);
 }
-static double getDoubleArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0.0;
-  return sqlite3_value_double(p->apArg[p->nUsed++]);
+स्थिर द्विगुण getDoubleArg(PrintfArguments *p){
+  जर( p->nArg<=p->nUsed ) परत 0.0;
+  परत sqlite3_मूल्य_double(p->apArg[p->nUsed++]);
 }
-static char *getTextArg(PrintfArguments *p){
-  if( p->nArg<=p->nUsed ) return 0;
-  return (char*)sqlite3_value_text(p->apArg[p->nUsed++]);
+स्थिर अक्षर *getTextArg(PrintfArguments *p){
+  जर( p->nArg<=p->nUsed ) परत 0;
+  परत (अक्षर*)sqlite3_मूल्य_text(p->apArg[p->nUsed++]);
 }
 
 /*
@@ -163,18 +163,18 @@ static char *getTextArg(PrintfArguments *p){
 ** SQL from requesting large allocations using the precision or width
 ** field of the printf() function.
 */
-static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
-  char *z;
-  if( pAccum->accError ) return 0;
-  if( n>pAccum->nAlloc && n>pAccum->mxAlloc ){
+स्थिर अक्षर *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
+  अक्षर *z;
+  जर( pAccum->accError ) परत 0;
+  जर( n>pAccum->nAlloc && n>pAccum->mxAlloc ){
     sqlite3StrAccumSetError(pAccum, SQLITE_TOOBIG);
-    return 0;
+    परत 0;
   }
   z = sqlite3_malloc(n);
-  if( z==0 ){
+  जर( z==0 ){
     sqlite3StrAccumSetError(pAccum, SQLITE_NOMEM);
   }
-  return z;
+  परत z;
 }
 
 /*
@@ -191,32 +191,32 @@ static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
 ** the minimum of SQLITE_PRINTF_PRECISION_LIMIT and 100 million.
 */
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-# if SQLITE_PRINTF_PRECISION_LIMIT<100000000
+# जर SQLITE_PRINTF_PRECISION_LIMIT<100000000
 #   define SQLITE_FP_PRECISION_LIMIT SQLITE_PRINTF_PRECISION_LIMIT
-# else
+# अन्यथा
 #   define SQLITE_FP_PRECISION_LIMIT 100000000
 # endif
-#else
+#अन्यथा
 # define SQLITE_FP_PRECISION_LIMIT 100000000
 #endif
 
 /* Forward reference */
-static void sqlite3StrAppend64(sqlite3_str *p, const char *z, i64 N);
-static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c);
+स्थिर शून्य sqlite3StrAppend64(sqlite3_str *p, स्थिरांक अक्षर *z, i64 N);
+स्थिर शून्य sqlite3StrAppendchar64(sqlite3_str *p, i64 N, अक्षर c);
 
 /*
 ** Render a string given by "fmt" into the StrAccum object.
 */
-void sqlite3_str_vappendf(
+शून्य sqlite3_str_vappendf(
   sqlite3_str *pAccum,       /* Accumulate results here */
-  const char *fmt,           /* Format string */
-  va_list ap                 /* arguments */
+  स्थिरांक अक्षर *fmt,           /* Format string */
+  बहु_सूची ap                 /* arguments */
 ){
-  int c;                     /* Next character in the format string */
-  char *bufpt;               /* Pointer to the conversion buffer */
+  पूर्णांक c;                     /* Next character in the format string */
+  अक्षर *bufpt;               /* Pointer to the conversion buffer */
   i64 precision;             /* Precision of the current field */
   i64 length;                /* Length of the field */
-  int idx;                   /* A general purpose loop counter */
+  पूर्णांक idx;                   /* A general purpose loop counter */
   i64 width;                 /* Width of the current field */
   etByte flag_leftjustify;   /* True if "-" flag is present */
   etByte flag_prefix;        /* '+' or ' ' or 0 for prefix */
@@ -228,49 +228,49 @@ void sqlite3_str_vappendf(
   etByte cThousand;          /* Thousands separator for %d and %u */
   etByte xtype = etINVALID;  /* Conversion paradigm */
   u8 bArgList;               /* True for SQLITE_PRINTF_SQLFUNC */
-  char prefix;               /* Prefix character.  "+" or "-" or " " or '\0'. */
+  अक्षर prefix;               /* Prefix character.  "+" or "-" or " " or '\0'. */
   sqlite_uint64 longvalue;   /* Value for integer types */
-  double realvalue;          /* Value for real types */
-  const et_info *infop;      /* Pointer to the appropriate info structure */
-  char *zOut;                /* Rendering buffer */
-  int nOut;                  /* Size of the rendering buffer */
-  char *zExtra = 0;          /* Malloced memory used by some conversion */
-  int exp, e2;               /* exponent of real numbers */
+  द्विगुण realvalue;          /* Value for real types */
+  स्थिरांक et_info *infop;      /* Pointer to the appropriate info structure */
+  अक्षर *zOut;                /* Rendering buffer */
+  पूर्णांक nOut;                  /* Size of the rendering buffer */
+  अक्षर *zExtra = 0;          /* Malloced memory used by some conversion */
+  पूर्णांक exp, e2;               /* exponent of real numbers */
   etByte flag_dp;            /* True if decimal point should be shown */
   etByte flag_rtz;           /* True if trailing zeros should be removed */
 
   PrintfArguments *pArgList = 0; /* Arguments for SQLITE_PRINTF_SQLFUNC */
-  char buf[etBUFSIZE];       /* Conversion buffer */
+  अक्षर buf[etBUFSIZE];       /* Conversion buffer */
 
   /* pAccum never starts out with an empty buffer that was obtained from 
   ** malloc().  This precondition is required by the mprintf("%z...")
   ** optimization. */
-  assert( pAccum->nChar>0 || (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
+  प्रतिज्ञा( pAccum->nChar>0 || (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
 
   bufpt = 0;
-  if( (pAccum->printfFlags & SQLITE_PRINTF_SQLFUNC)!=0 ){
-    pArgList = va_arg(ap, PrintfArguments*);
+  जर( (pAccum->printfFlags & SQLITE_PRINTF_SQLFUNC)!=0 ){
+    pArgList = बहु_तर्क(ap, PrintfArguments*);
     bArgList = 1;
-  }else{
+  }अन्यथा{
     bArgList = 0;
   }
-  for(; (c=(*fmt))!=0; ++fmt){
-    if( c!='%' ){
-      bufpt = (char *)fmt;
-#if HAVE_STRCHRNUL
+  साठी(; (c=(*fmt))!=0; ++fmt){
+    जर( c!='%' ){
+      bufpt = (अक्षर *)fmt;
+#जर HAVE_STRCHRNUL
       fmt = strchrnul(fmt, '%');
-#else
-      fmt = strchr(fmt, '%');
-      if( fmt==0 ){
-        fmt = bufpt + strlen(bufpt);
+#अन्यथा
+      fmt = म_अक्षर(fmt, '%');
+      जर( fmt==0 ){
+        fmt = bufpt + म_माप(bufpt);
       }
 #endif
       sqlite3StrAppend64(pAccum, bufpt, fmt - bufpt);
-      if( *fmt==0 ) break;
+      जर( *fmt==0 ) थांबा;
     }
-    if( (c=(*++fmt))==0 ){
+    जर( (c=(*++fmt))==0 ){
       sqlite3_str_append(pAccum, "%", 1);
-      break;
+      थांबा;
     }
     /* Find out what flags are present */
     flag_leftjustify = flag_prefix = cThousand =
@@ -279,82 +279,82 @@ void sqlite3_str_vappendf(
     width = 0;
     flag_long = 0;
     precision = -1;
-    do{
-      switch( c ){
-        case '-':   flag_leftjustify = 1;     break;
-        case '+':   flag_prefix = '+';        break;
-        case ' ':   flag_prefix = ' ';        break;
-        case '#':   flag_alternateform = 1;   break;
-        case '!':   flag_altform2 = 1;        break;
-        case '0':   flag_zeropad = 1;         break;
-        case ',':   cThousand = ',';          break;
-        default:    done = 1;                 break;
-        case 'l': {
+    करा{
+      निवड( c ){
+        स्थिती '-':   flag_leftjustify = 1;     थांबा;
+        स्थिती '+':   flag_prefix = '+';        थांबा;
+        स्थिती ' ':   flag_prefix = ' ';        थांबा;
+        स्थिती '#':   flag_alternateform = 1;   थांबा;
+        स्थिती '!':   flag_altform2 = 1;        थांबा;
+        स्थिती '0':   flag_zeropad = 1;         थांबा;
+        स्थिती ',':   cThousand = ',';          थांबा;
+        पूर्वनिर्धारित:    done = 1;                 थांबा;
+        स्थिती 'l': {
           flag_long = 1;
           c = *++fmt;
-          if( c=='l' ){
+          जर( c=='l' ){
             c = *++fmt;
             flag_long = 2;
           }
           done = 1;
-          break;
+          थांबा;
         }
-        case '1': case '2': case '3': case '4': case '5':
-        case '6': case '7': case '8': case '9': {
-          unsigned wx = c - '0';
-          while( (c = *++fmt)>='0' && c<='9' ){
+        स्थिती '1': स्थिती '2': स्थिती '3': स्थिती '4': स्थिती '5':
+        स्थिती '6': स्थिती '7': स्थिती '8': स्थिती '9': {
+          अचिन्हित wx = c - '0';
+          पर्यंत( (c = *++fmt)>='0' && c<='9' ){
             wx = wx*10 + c - '0';
           }
           testcase( wx>0x7fffffff );
           width = wx & 0x7fffffff;
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( width>SQLITE_PRINTF_PRECISION_LIMIT ){
+          जर( width>SQLITE_PRINTF_PRECISION_LIMIT ){
             width = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( c!='.' && c!='l' ){
+          जर( c!='.' && c!='l' ){
             done = 1;
-          }else{
+          }अन्यथा{
             fmt--;
           }
-          break;
+          थांबा;
         }
-        case '*': {
-          if( bArgList ){
-            width = (int)getIntArg(pArgList);
-          }else{
-            width = va_arg(ap,int);
+        स्थिती '*': {
+          जर( bArgList ){
+            width = (पूर्णांक)getIntArg(pArgList);
+          }अन्यथा{
+            width = बहु_तर्क(ap,पूर्णांक);
           }
-          if( width<0 ){
+          जर( width<0 ){
             flag_leftjustify = 1;
             width = width >= -2147483647 ? -width : 0;
           }
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( width>SQLITE_PRINTF_PRECISION_LIMIT ){
+          जर( width>SQLITE_PRINTF_PRECISION_LIMIT ){
             width = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( (c = fmt[1])!='.' && c!='l' ){
+          जर( (c = fmt[1])!='.' && c!='l' ){
             c = *++fmt;
             done = 1;
           }
-          break;
+          थांबा;
         }
-        case '.': {
+        स्थिती '.': {
           c = *++fmt;
-          if( c=='*' ){
-            if( bArgList ){
-              precision = (int)getIntArg(pArgList);
-            }else{
-              precision = va_arg(ap,int);
+          जर( c=='*' ){
+            जर( bArgList ){
+              precision = (पूर्णांक)getIntArg(pArgList);
+            }अन्यथा{
+              precision = बहु_तर्क(ap,पूर्णांक);
             }
-            if( precision<0 ){
+            जर( precision<0 ){
               precision = precision >= -2147483647 ? -precision : -1;
             }
             c = *++fmt;
-          }else{
-            unsigned px = 0;
-            while( c>='0' && c<='9' ){
+          }अन्यथा{
+            अचिन्हित px = 0;
+            पर्यंत( c>='0' && c<='9' ){
               px = px*10 + c - '0';
               c = *++fmt;
             }
@@ -362,19 +362,19 @@ void sqlite3_str_vappendf(
             precision = px & 0x7fffffff;
           }
 #ifdef SQLITE_PRINTF_PRECISION_LIMIT
-          if( precision>SQLITE_PRINTF_PRECISION_LIMIT ){
+          जर( precision>SQLITE_PRINTF_PRECISION_LIMIT ){
             precision = SQLITE_PRINTF_PRECISION_LIMIT;
           }
 #endif
-          if( c=='l' ){
+          जर( c=='l' ){
             --fmt;
-          }else{
+          }अन्यथा{
             done = 1;
           }
-          break;
+          थांबा;
         }
       }
-    }while( !done && (c=(*++fmt))!=0 );
+    }पर्यंत( !done && (c=(*++fmt))!=0 );
 
     /* Fetch the info entry for the field */
 #ifdef SQLITE_EBCDIC
@@ -382,23 +382,23 @@ void sqlite3_str_vappendf(
     ** a linear search of the table */
     infop = &fmtinfo[0];
     xtype = etINVALID;
-    for(idx=0; idx<ArraySize(fmtinfo); idx++){
-      if( c==fmtinfo[idx].fmttype ){
+    साठी(idx=0; idx<ArraySize(fmtinfo); idx++){
+      जर( c==fmtinfo[idx].fmttype ){
         infop = &fmtinfo[idx];
         xtype = infop->type;
-        break;
+        थांबा;
       }
     }
-#else
+#अन्यथा
     /* Fast hash-table lookup */
-    assert( ArraySize(fmtinfo)==25 );
-    idx = ((unsigned)c) % 25;
-    if( fmtinfo[idx].fmttype==c
+    प्रतिज्ञा( ArraySize(fmtinfo)==25 );
+    idx = ((अचिन्हित)c) % 25;
+    जर( fmtinfo[idx].fmttype==c
      || fmtinfo[idx = fmtinfo[idx].iNxt].fmttype==c
     ){
       infop = &fmtinfo[idx];
       xtype = infop->type;
-    }else{
+    }अन्यथा{
       infop = &fmtinfo[0];
       xtype = etINVALID;
     }
@@ -421,183 +421,183 @@ void sqlite3_str_vappendf(
     **   xtype                       The class of the conversion.
     **   infop                       Pointer to the appropriate info struct.
     */
-    assert( width>=0 );
-    assert( precision>=(-1) );
-    switch( xtype ){
-      case etPOINTER:
-        flag_long = sizeof(char*)==sizeof(i64) ? 2 :
-                     sizeof(char*)==sizeof(long int) ? 1 : 0;
+    प्रतिज्ञा( width>=0 );
+    प्रतिज्ञा( precision>=(-1) );
+    निवड( xtype ){
+      स्थिती etPOINTER:
+        flag_long = आकार(अक्षर*)==आकार(i64) ? 2 :
+                     आकार(अक्षर*)==आकार(दीर्घ पूर्णांक) ? 1 : 0;
         /* no break */ deliberate_fall_through
-      case etORDINAL:
-      case etRADIX:      
+      स्थिती etORDINAL:
+      स्थिती etRADIX:      
         cThousand = 0;
         /* no break */ deliberate_fall_through
-      case etDECIMAL:
-        if( infop->flags & FLAG_SIGNED ){
+      स्थिती etDECIMAL:
+        जर( infop->flags & FLAG_SIGNED ){
           i64 v;
-          if( bArgList ){
+          जर( bArgList ){
             v = getIntArg(pArgList);
-          }else if( flag_long ){
-            if( flag_long==2 ){
-              v = va_arg(ap,i64) ;
-            }else{
-              v = va_arg(ap,long int);
+          }अन्यथा जर( flag_long ){
+            जर( flag_long==2 ){
+              v = बहु_तर्क(ap,i64) ;
+            }अन्यथा{
+              v = बहु_तर्क(ap,दीर्घ पूर्णांक);
             }
-          }else{
-            v = va_arg(ap,int);
+          }अन्यथा{
+            v = बहु_तर्क(ap,पूर्णांक);
           }
-          if( v<0 ){
+          जर( v<0 ){
             testcase( v==SMALLEST_INT64 );
             testcase( v==(-1) );
             longvalue = ~v;
             longvalue++;
             prefix = '-';
-          }else{
+          }अन्यथा{
             longvalue = v;
             prefix = flag_prefix;
           }
-        }else{
-          if( bArgList ){
+        }अन्यथा{
+          जर( bArgList ){
             longvalue = (u64)getIntArg(pArgList);
-          }else if( flag_long ){
-            if( flag_long==2 ){
-              longvalue = va_arg(ap,u64);
-            }else{
-              longvalue = va_arg(ap,unsigned long int);
+          }अन्यथा जर( flag_long ){
+            जर( flag_long==2 ){
+              longvalue = बहु_तर्क(ap,u64);
+            }अन्यथा{
+              longvalue = बहु_तर्क(ap,अचिन्हित दीर्घ पूर्णांक);
             }
-          }else{
-            longvalue = va_arg(ap,unsigned int);
+          }अन्यथा{
+            longvalue = बहु_तर्क(ap,अचिन्हित पूर्णांक);
           }
           prefix = 0;
         }
 
-#if WHERETRACE_ENABLED
-        if( xtype==etPOINTER && sqlite3WhereTrace & 0x100000 ) longvalue = 0;
+#जर WHERETRACE_ENABLED
+        जर( xtype==etPOINTER && sqlite3WhereTrace & 0x100000 ) longvalue = 0;
 #endif
-#if TREETRACE_ENABLED
-        if( xtype==etPOINTER && sqlite3TreeTrace & 0x100000 ) longvalue = 0;
+#जर TREETRACE_ENABLED
+        जर( xtype==etPOINTER && sqlite3_वृक्ष_Trace & 0x100000 ) longvalue = 0;
 #endif
 
-        if( longvalue==0 ) flag_alternateform = 0;
-        if( flag_zeropad && precision<width-(prefix!=0) ){
+        जर( longvalue==0 ) flag_alternateform = 0;
+        जर( flag_zeropad && precision<width-(prefix!=0) ){
           precision = width-(prefix!=0);
         }
-        if( precision<etBUFSIZE-10-etBUFSIZE/3 ){
+        जर( precision<etBUFSIZE-10-etBUFSIZE/3 ){
           nOut = etBUFSIZE;
           zOut = buf;
-        }else{
+        }अन्यथा{
           u64 n;
           n = (u64)precision + 10;
-          if( cThousand ) n += precision/3;
+          जर( cThousand ) n += precision/3;
           zOut = zExtra = printfTempBuf(pAccum, n);
-          if( zOut==0 ) return;
-          nOut = (int)n;
+          जर( zOut==0 ) परत;
+          nOut = (पूर्णांक)n;
         }
         bufpt = &zOut[nOut-1];
-        if( xtype==etORDINAL ){
-          static const char zOrd[] = "thstndrd";
-          int x = (int)(longvalue % 10);
-          if( x>=4 || (longvalue/10)%10==1 ){
+        जर( xtype==etORDINAL ){
+          स्थिर स्थिरांक अक्षर zOrd[] = "thstndrd";
+          पूर्णांक x = (पूर्णांक)(longvalue % 10);
+          जर( x>=4 || (longvalue/10)%10==1 ){
             x = 0;
           }
           *(--bufpt) = zOrd[x*2+1];
           *(--bufpt) = zOrd[x*2];
         }
         {
-          const char *cset = &aDigits[infop->charset];
+          स्थिरांक अक्षर *cset = &aDigits[infop->charset];
           u8 base = infop->base;
-          do{                                           /* Convert to ascii */
+          करा{                                           /* Convert to ascii */
             *(--bufpt) = cset[longvalue%base];
             longvalue = longvalue/base;
-          }while( longvalue>0 );
+          }पर्यंत( longvalue>0 );
         }
         length = &zOut[nOut-1] - bufpt;
-        if( precision>length ){                         /* zero pad */
+        जर( precision>length ){                         /* zero pad */
           i64 nn = precision-length;
           bufpt -= nn;
-          memset(bufpt,'0',nn);
+          स_रखो(bufpt,'0',nn);
           length = precision;
         }
-        if( cThousand ){
+        जर( cThousand ){
           i64 nn = (length - 1)/3;  /* Number of "," to insert */
           i64 ix = (length - 1)%3 + 1;
-          int ii;
+          पूर्णांक ii;
           bufpt -= nn;
-          for(ii=0; nn>0; ii++){
+          साठी(ii=0; nn>0; ii++){
             bufpt[ii] = bufpt[ii+nn];
             ix--;
-            if( ix==0 ){
+            जर( ix==0 ){
               bufpt[++ii] = cThousand;
               nn--;
               ix = 3;
             }
           }
         }
-        if( prefix ) *(--bufpt) = prefix;               /* Add sign */
-        if( flag_alternateform && infop->prefix ){      /* Add "0" or "0x" */
-          const char *pre;
-          char x;
+        जर( prefix ) *(--bufpt) = prefix;               /* Add sign */
+        जर( flag_alternateform && infop->prefix ){      /* Add "0" or "0x" */
+          स्थिरांक अक्षर *pre;
+          अक्षर x;
           pre = &aPrefix[infop->prefix];
-          for(; (x=(*pre))!=0; pre++) *(--bufpt) = x;
+          साठी(; (x=(*pre))!=0; pre++) *(--bufpt) = x;
         }
         length = &zOut[nOut-1] - bufpt;
-        break;
-      case etFLOAT:
-      case etEXP:
-      case etGENERIC: {
+        थांबा;
+      स्थिती etFLOAT:
+      स्थिती etEXP:
+      स्थिती etGENERIC: {
         FpDecode s;
-        int iRound;
-        int j;
+        पूर्णांक iRound;
+        पूर्णांक j;
         i64 szBufNeeded;       /* Size needed to hold the output */
 
-        if( bArgList ){
+        जर( bArgList ){
           realvalue = getDoubleArg(pArgList);
-        }else{
-          realvalue = va_arg(ap,double);
+        }अन्यथा{
+          realvalue = बहु_तर्क(ap,द्विगुण);
         }
-        if( precision<0 ) precision = 6;         /* Set default precision */
-        if( precision>SQLITE_FP_PRECISION_LIMIT ){
+        जर( precision<0 ) precision = 6;         /* Set default precision */
+        जर( precision>SQLITE_FP_PRECISION_LIMIT ){
           precision = SQLITE_FP_PRECISION_LIMIT;
         }
-        if( xtype==etFLOAT ){
+        जर( xtype==etFLOAT ){
           iRound = -precision;
-        }else if( xtype==etGENERIC ){
-          if( precision==0 ) precision = 1;
+        }अन्यथा जर( xtype==etGENERIC ){
+          जर( precision==0 ) precision = 1;
           iRound = precision;
-        }else{
+        }अन्यथा{
           iRound = precision+1;
         }
         sqlite3FpDecode(&s, realvalue, iRound, flag_altform2 ? 20 : 16);
-        if( s.isSpecial ){
-          if( s.isSpecial==2 ){
-            if( flag_zeropad ){
+        जर( s.isSpecial ){
+          जर( s.isSpecial==2 ){
+            जर( flag_zeropad ){
               bufpt = "null";
               length = 4;
-            }else{
+            }अन्यथा{
               bufpt = "NaN";
               length = 3;
             }
-            break;
-          }else if( flag_zeropad ){
+            थांबा;
+          }अन्यथा जर( flag_zeropad ){
             s.z[0] = '9';
             s.iDP = 1000;
             s.n = 1;
-          }else{
-            memcpy(buf, "-Inf", 5);
+          }अन्यथा{
+            स_नकल(buf, "-Inf", 5);
             bufpt = buf;
-            if( s.sign=='-' ){
+            जर( s.sign=='-' ){
               /* no-op */
-            }else if( flag_prefix ){
+            }अन्यथा जर( flag_prefix ){
               buf[0] = flag_prefix;
-            }else{
+            }अन्यथा{
               bufpt++;
             }
-            length = strlen(bufpt);
-            break;
+            length = म_माप(bufpt);
+            थांबा;
           }
         }
-        if( s.sign=='-' ){
-          if( flag_alternateform
+        जर( s.sign=='-' ){
+          जर( flag_alternateform
            && !flag_prefix
            && xtype==etFLOAT
            && s.iDP<=iRound
@@ -609,10 +609,10 @@ void sqlite3_str_vappendf(
             **   *  The format is %f
             */
             prefix = 0;
-          }else{
+          }अन्यथा{
             prefix = '-';
           }
-        }else{
+        }अन्यथा{
           prefix = flag_prefix;
         }
 
@@ -622,210 +622,210 @@ void sqlite3_str_vappendf(
         ** If the field type is etGENERIC, then convert to either etEXP
         ** or etFLOAT, as appropriate.
         */
-        if( xtype==etGENERIC ){
-          assert( precision>0 );
+        जर( xtype==etGENERIC ){
+          प्रतिज्ञा( precision>0 );
           precision--;
           flag_rtz = !flag_alternateform;
-          if( exp<-4 || exp>precision ){
+          जर( exp<-4 || exp>precision ){
             xtype = etEXP;
-          }else{
+          }अन्यथा{
             precision = precision - exp;
             xtype = etFLOAT;
           }
-        }else{
+        }अन्यथा{
           flag_rtz = flag_altform2;
         }
-        if( xtype==etEXP ){
+        जर( xtype==etEXP ){
           e2 = 0;
-        }else{
+        }अन्यथा{
           e2 = s.iDP - 1;
         }
 
         szBufNeeded = MAX(e2,0)+(i64)precision+(i64)width+10;
-        if( cThousand && e2>0 ) szBufNeeded += (e2+2)/3;
-        if( szBufNeeded + pAccum->nChar >= pAccum->nAlloc ){
-          if( pAccum->mxAlloc==0 && pAccum->accError==0 ){
+        जर( cThousand && e2>0 ) szBufNeeded += (e2+2)/3;
+        जर( szBufNeeded + pAccum->nChar >= pAccum->nAlloc ){
+          जर( pAccum->mxAlloc==0 && pAccum->accError==0 ){
             /* Unable to allocate space in pAccum, perhaps because it
             ** is coming from sqlite3_snprintf() or similar.  We'll have
             ** to render into temporary space and the memcpy() it over. */
             bufpt = sqlite3_malloc64(szBufNeeded);
-            if( bufpt==0 ){
+            जर( bufpt==0 ){
               sqlite3StrAccumSetError(pAccum, SQLITE_NOMEM);
-              return;
+              परत;
             }
             zExtra = bufpt;
-          }else if( sqlite3StrAccumEnlarge(pAccum, szBufNeeded)<szBufNeeded ){
+          }अन्यथा जर( sqlite3StrAccumEnlarge(pAccum, szBufNeeded)<szBufNeeded ){
             width = length = 0;
-            break;
-          }else{
+            थांबा;
+          }अन्यथा{
             bufpt = pAccum->zText + pAccum->nChar;
           }
-        }else{
+        }अन्यथा{
           bufpt = pAccum->zText + pAccum->nChar;
         }
         zOut = bufpt;
 
         flag_dp = (precision>0 ?1:0) | flag_alternateform | flag_altform2;
         /* The sign in front of the number */
-        if( prefix ){
+        जर( prefix ){
           *(bufpt++) = prefix;
         }
         /* Digits prior to the decimal point */
         j = 0;
-        assert( s.n>0 );
-        if( e2<0 ){
+        प्रतिज्ञा( s.n>0 );
+        जर( e2<0 ){
           *(bufpt++) = '0';
-        }else if( cThousand ){
-          for(; e2>=0; e2--){
+        }अन्यथा जर( cThousand ){
+          साठी(; e2>=0; e2--){
             *(bufpt++) = j<s.n ? s.z[j++] : '0';
-            if( (e2%3)==0 && e2>1 ) *(bufpt++) = ',';
+            जर( (e2%3)==0 && e2>1 ) *(bufpt++) = ',';
           }
-        }else{
+        }अन्यथा{
           j = e2+1;
-          if( j>s.n ) j = s.n;
-          memcpy(bufpt, s.z, j);
+          जर( j>s.n ) j = s.n;
+          स_नकल(bufpt, s.z, j);
           bufpt += j;
           e2 -= j;
-          if( e2>=0 ){
-            memset(bufpt, '0', e2+1);
+          जर( e2>=0 ){
+            स_रखो(bufpt, '0', e2+1);
             bufpt += e2+1;
             e2 = -1;
           }
         }
         /* The decimal point */
-        if( flag_dp ){
+        जर( flag_dp ){
           *(bufpt++) = '.';
         }
         /* "0" digits after the decimal point but before the first
         ** significant digit of the number */
-        if( e2<(-1) && precision>0 ){
-          int nn = -1-e2;
-          if( nn>precision ) nn = precision;
-          memset(bufpt, '0', nn);
+        जर( e2<(-1) && precision>0 ){
+          पूर्णांक nn = -1-e2;
+          जर( nn>precision ) nn = precision;
+          स_रखो(bufpt, '0', nn);
           bufpt += nn;
           precision -= nn;
         }
         /* Significant digits after the decimal point */
-        if( precision>0 ){
-          int nn = s.n - j;
-          if( NEVER(nn>precision) ) nn = precision;
-          if( nn>0 ){
-            memcpy(bufpt, s.z+j, nn);
+        जर( precision>0 ){
+          पूर्णांक nn = s.n - j;
+          जर( NEVER(nn>precision) ) nn = precision;
+          जर( nn>0 ){
+            स_नकल(bufpt, s.z+j, nn);
             bufpt += nn;
             precision -= nn;
           }
-          if( precision>0 && !flag_rtz ){
-            memset(bufpt, '0', precision);
+          जर( precision>0 && !flag_rtz ){
+            स_रखो(bufpt, '0', precision);
             bufpt += precision;
           }
         }
         /* Remove trailing zeros and the "." if no digits follow the "." */
-        if( flag_rtz && flag_dp ){
-          while( bufpt[-1]=='0' ) *(--bufpt) = 0;
-          assert( bufpt>zOut );
-          if( bufpt[-1]=='.' ){
-            if( flag_altform2 ){
+        जर( flag_rtz && flag_dp ){
+          पर्यंत( bufpt[-1]=='0' ) *(--bufpt) = 0;
+          प्रतिज्ञा( bufpt>zOut );
+          जर( bufpt[-1]=='.' ){
+            जर( flag_altform2 ){
               *(bufpt++) = '0';
-            }else{
+            }अन्यथा{
               *(--bufpt) = 0;
             }
           }
         }
         /* Add the "eNNN" suffix */
-        if( xtype==etEXP ){
+        जर( xtype==etEXP ){
           exp = s.iDP - 1;
           *(bufpt++) = aDigits[infop->charset];
-          if( exp<0 ){
+          जर( exp<0 ){
             *(bufpt++) = '-'; exp = -exp;
-          }else{
+          }अन्यथा{
             *(bufpt++) = '+';
           }
-          if( exp>=100 ){
-            *(bufpt++) = (char)((exp/100)+'0');        /* 100's digit */
+          जर( exp>=100 ){
+            *(bufpt++) = (अक्षर)((exp/100)+'0');        /* 100's digit */
             exp %= 100;
           }
-          *(bufpt++) = (char)(exp/10+'0');             /* 10's digit */
-          *(bufpt++) = (char)(exp%10+'0');             /* 1's digit */
+          *(bufpt++) = (अक्षर)(exp/10+'0');             /* 10's digit */
+          *(bufpt++) = (अक्षर)(exp%10+'0');             /* 1's digit */
         }
 
         length = bufpt - zOut;
-        assert( length <= szBufNeeded );
-        if( length<width ){
+        प्रतिज्ञा( length <= szBufNeeded );
+        जर( length<width ){
           i64 nPad = width - length;
-          if( flag_leftjustify ){
-            memset(bufpt, ' ', nPad);
-          }else if( !flag_zeropad ){
-            memmove(zOut+nPad, zOut, length);
-            memset(zOut, ' ', nPad);
-          }else{
-            int adj = prefix!=0;
-            memmove(zOut+nPad+adj, zOut+adj, length-adj);
-            memset(zOut+adj, '0', nPad);
+          जर( flag_leftjustify ){
+            स_रखो(bufpt, ' ', nPad);
+          }अन्यथा जर( !flag_zeropad ){
+            स_हटाओ(zOut+nPad, zOut, length);
+            स_रखो(zOut, ' ', nPad);
+          }अन्यथा{
+            पूर्णांक adj = prefix!=0;
+            स_हटाओ(zOut+nPad+adj, zOut+adj, length-adj);
+            स_रखो(zOut+adj, '0', nPad);
           }
           length = width;
         }
 
-        if( zExtra==0 ){
+        जर( zExtra==0 ){
           /* The result is being rendered directory into pAccum.  This
           ** is the common and fast case */
-          assert( pAccum->nChar + length < SMXV(pAccum->nChar) );
+          प्रतिज्ञा( pAccum->nChar + length < SMXV(pAccum->nChar) );
           pAccum->nChar += length;
           zOut[length] = 0;
-          continue;
-        }else{
+          सुरूठेवा;
+        }अन्यथा{
           /* We were unable to render directly into pAccum because we
           ** couldn't allocate sufficient memory.  We need to memcpy()
           ** the rendering (or some prefix thereof) into the output
           ** buffer. */
           bufpt[0] = 0;
           bufpt = zExtra;
-          break;
+          थांबा;
         }
       }
-      case etSIZE:
-        if( !bArgList ){
-          *(va_arg(ap,int*)) = pAccum->nChar;
+      स्थिती etSIZE:
+        जर( !bArgList ){
+          *(बहु_तर्क(ap,पूर्णांक*)) = pAccum->nChar;
         }
         length = width = 0;
-        break;
-      case etPERCENT:
+        थांबा;
+      स्थिती etPERCENT:
         buf[0] = '%';
         bufpt = buf;
         length = 1;
-        break;
-      case etCHARX:
-        if( bArgList ){
+        थांबा;
+      स्थिती etCHARX:
+        जर( bArgList ){
           bufpt = getTextArg(pArgList);
           length = 1;
-          if( bufpt ){
+          जर( bufpt ){
             buf[0] = c = *(bufpt++);
-            if( (c&0xc0)==0xc0 ){
-              while( length<4 && (bufpt[0]&0xc0)==0x80 ){
+            जर( (c&0xc0)==0xc0 ){
+              पर्यंत( length<4 && (bufpt[0]&0xc0)==0x80 ){
                 buf[length++] = *(bufpt++);
               }
             }
-          }else{
+          }अन्यथा{
             buf[0] = 0;
           }
-        }else{
-          unsigned int ch = va_arg(ap,unsigned int);
+        }अन्यथा{
+          अचिन्हित पूर्णांक ch = बहु_तर्क(ap,अचिन्हित पूर्णांक);
           length = sqlite3AppendOneUtf8Character(buf, ch);
         }
-        if( precision>1 ){
+        जर( precision>1 ){
           i64 nPrior = 1;
           width -= precision-1;
-          if( width>1 && !flag_leftjustify ){
+          जर( width>1 && !flag_leftjustify ){
             sqlite3StrAppendchar64(pAccum, width-1, ' ');
             width = 0;
           }
           sqlite3StrAppend64(pAccum, buf, length);
           precision--;
-          while( precision > 1 ){
+          पर्यंत( precision > 1 ){
             i64 nCopyBytes;
-            if( nPrior > precision-1 ) nPrior = precision - 1;
+            जर( nPrior > precision-1 ) nPrior = precision - 1;
             nCopyBytes = length*nPrior;
-            if( sqlite3StrAccumEnlargeIfNeeded(pAccum, nCopyBytes) ){
-              break;
+            जर( sqlite3StrAccumEnlargeIfNeeded(pAccum, nCopyBytes) ){
+              थांबा;
             }
             sqlite3_str_append(pAccum,
                  &pAccum->zText[pAccum->nChar-nCopyBytes], nCopyBytes);
@@ -835,19 +835,19 @@ void sqlite3_str_vappendf(
         }
         bufpt = buf;
         flag_altform2 = 1;
-        goto adjust_width_for_utf8;
-      case etSTRING:
-      case etDYNSTRING:
-        if( bArgList ){
+        जा adjust_width_for_utf8;
+      स्थिती etSTRING:
+      स्थिती etDYNSTRING:
+        जर( bArgList ){
           bufpt = getTextArg(pArgList);
           xtype = etSTRING;
-        }else{
-          bufpt = va_arg(ap,char*);
+        }अन्यथा{
+          bufpt = बहु_तर्क(ap,अक्षर*);
         }
-        if( bufpt==0 ){
+        जर( bufpt==0 ){
           bufpt = "";
-        }else if( xtype==etDYNSTRING ){
-          if( pAccum->nChar==0
+        }अन्यथा जर( xtype==etDYNSTRING ){
+          जर( pAccum->nChar==0
            && pAccum->mxAlloc
            && width==0
            && precision<0
@@ -856,138 +856,138 @@ void sqlite3_str_vappendf(
             /* Special optimization for sqlite3_mprintf("%z..."):
             ** Extend an existing memory allocation rather than creating
             ** a new one. */
-            assert( (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
+            प्रतिज्ञा( (pAccum->printfFlags&SQLITE_PRINTF_MALLOCED)==0 );
             pAccum->zText = bufpt;
             pAccum->nAlloc = sqlite3DbMallocSize(pAccum->db, bufpt);
-            pAccum->nChar = 0x7fffffff & (int)strlen(bufpt);
+            pAccum->nChar = 0x7fffffff & (पूर्णांक)म_माप(bufpt);
             pAccum->printfFlags |= SQLITE_PRINTF_MALLOCED;
             length = 0;
-            break;
+            थांबा;
           }
           zExtra = bufpt;
         }
-        if( precision>=0 ){
-          if( flag_altform2 ){
+        जर( precision>=0 ){
+          जर( flag_altform2 ){
             /* Set length to the number of bytes needed in order to display
             ** precision characters */
-            unsigned char *z = (unsigned char*)bufpt;
-            while( precision-- > 0 && z[0] ){
+            अचिन्हित अक्षर *z = (अचिन्हित अक्षर*)bufpt;
+            पर्यंत( precision-- > 0 && z[0] ){
               SQLITE_SKIP_UTF8(z);
             }
-            length = z - (unsigned char*)bufpt;
-          }else{
-            for(length=0; length<precision && bufpt[length]; length++){}
+            length = z - (अचिन्हित अक्षर*)bufpt;
+          }अन्यथा{
+            साठी(length=0; length<precision && bufpt[length]; length++){}
           }
-        }else{
-          length = strlen(bufpt);
+        }अन्यथा{
+          length = म_माप(bufpt);
         }
       adjust_width_for_utf8:
-        if( flag_altform2 && width>0 ){
+        जर( flag_altform2 && width>0 ){
           /* Adjust width to account for extra bytes in UTF-8 characters */
           i64 ii = length - 1;
-          while( ii>=0 ) if( (bufpt[ii--] & 0xc0)==0x80 ) width++;
+          पर्यंत( ii>=0 ) जर( (bufpt[ii--] & 0xc0)==0x80 ) width++;
         }
-        break;
-      case etESCAPE_j:           /* %j: JSON string literal w/o "..." */
-      case etESCAPE_J: {         /* %J: Generate a JSON string literal */
-        char *escarg;
+        थांबा;
+      स्थिती etESCAPE_j:           /* %j: JSON string literal w/o "..." */
+      स्थिती etESCAPE_J: {         /* %J: Generate a JSON string literal */
+        अक्षर *escarg;
         i64 i, j, px, iStart;
-        unsigned char ch;
+        अचिन्हित अक्षर ch;
 
-        if( bArgList ){
+        जर( bArgList ){
           escarg = getTextArg(pArgList);
-        }else{
-          escarg = va_arg(ap,char*);
+        }अन्यथा{
+          escarg = बहु_तर्क(ap,अक्षर*);
         }
         iStart = sqlite3_str_length(pAccum);
-        if( escarg==0 ){
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "null", 4);
-        }else{
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
+        जर( escarg==0 ){
+          जर( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "null", 4);
+        }अन्यथा{
+          जर( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
           px = precision;
           testcase( px==0 );
-          if( px<0 ){
+          जर( px<0 ){
             px = 0x7fffffff;
-          }else if( flag_altform2 ){
+          }अन्यथा जर( flag_altform2 ){
             /* Convert precision from code-points to bytes */
-            for(i=0; i<px && escarg[i]; i++){
-              if( (escarg[i]&0xc0)==0x80 ) px++;
+            साठी(i=0; i<px && escarg[i]; i++){
+              जर( (escarg[i]&0xc0)==0x80 ) px++;
             }
-            if( i==px ){
-              while( (escarg[px]&0xc0)==0x80 ) px++;
+            जर( i==px ){
+              पर्यंत( (escarg[px]&0xc0)==0x80 ) px++;
             }
           }
-          for(i=j=0; i<px; i++){
-            if( (ch = ((u8*)escarg)[i])<=0x1f || ch=='"' || ch=='\\' ){
-              if( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
+          साठी(i=j=0; i<px; i++){
+            जर( (ch = ((u8*)escarg)[i])<=0x1f || ch=='"' || ch=='\\' ){
+              जर( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
               j = i+1;
-              if( ch==0 ) break;
+              जर( ch==0 ) थांबा;
               sqlite3_str_appendchar(pAccum, 1, '\\');
-              if( ch>0x1f ){
+              जर( ch>0x1f ){
                 sqlite3_str_appendchar(pAccum, 1, ch);
-              }else if( ((1u<<ch)&0x3700)!=0 ){
+              }अन्यथा जर( ((1u<<ch)&0x3700)!=0 ){
                 ch = "btn?fr"[ch-8];
                 sqlite3_str_appendchar(pAccum, 1, ch);
-              }else{
+              }अन्यथा{
                 sqlite3_str_append(pAccum, "u00", 3);
                 sqlite3_str_appendchar(pAccum, 1, aHex[ch>>4]);
                 sqlite3_str_appendchar(pAccum, 1, aHex[ch&0xf]);
               }
             }
           }
-          if( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
-          if( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
+          जर( j<i ) sqlite3StrAppend64(pAccum, &escarg[j], i-j);
+          जर( xtype==etESCAPE_J ) sqlite3_str_append(pAccum, "\"", 1);
         }
-        if( width>0 && sqlite3_str_errcode(pAccum)==SQLITE_OK ){
+        जर( width>0 && sqlite3_str_errcode(pAccum)==SQLITE_OK ){
           sqlite3_int64 n = sqlite3_str_length(pAccum) - iStart;
           sqlite3_int64 len = n;
-          char *zz;
-          if( flag_altform2 && n>0 ){
-            zz = sqlite3_str_value(pAccum);
-            for(i=iStart; zz[i]; i++){
-              if( (zz[i]&0xc0)==0x80 ) len--;
+          अक्षर *zz;
+          जर( flag_altform2 && n>0 ){
+            zz = sqlite3_str_मूल्य(pAccum);
+            साठी(i=iStart; zz[i]; i++){
+              जर( (zz[i]&0xc0)==0x80 ) len--;
             }
           }
-          if( width>len ){
+          जर( width>len ){
             sqlite3_int64 sp = width-len;
-            assert( sp>0 && sp<0x7fffffff );
-            sqlite3StrAppendchar64(pAccum, (int)sp, ' ');
-            if( !flag_leftjustify
+            प्रतिज्ञा( sp>0 && sp<0x7fffffff );
+            sqlite3StrAppendchar64(pAccum, (पूर्णांक)sp, ' ');
+            जर( !flag_leftjustify
              && n>0
              && sqlite3_str_errcode(pAccum)==0
             ){
-              zz = sqlite3_str_value(pAccum);
+              zz = sqlite3_str_मूल्य(pAccum);
               zz += iStart;
-              memmove(zz+sp, zz, n);
-              memset(zz, ' ', sp);
+              स_हटाओ(zz+sp, zz, n);
+              स_रखो(zz, ' ', sp);
             }
           }
         }
-        continue;
+        सुरूठेवा;
       }
-      case etESCAPE_q:          /* %q: Escape ' characters */
-      case etESCAPE_Q:          /* %Q: Escape ' and enclose in '...' */
-      case etESCAPE_w: {        /* %w: Escape " characters */
+      स्थिती etESCAPE_q:          /* %q: Escape ' characters */
+      स्थिती etESCAPE_Q:          /* %Q: Escape ' and enclose in '...' */
+      स्थिती etESCAPE_w: {        /* %w: Escape " characters */
         i64 i, j, k, n;
-        int needQuote = 0;
-        char ch;
-        char *escarg;
-        char q;
+        पूर्णांक needQuote = 0;
+        अक्षर ch;
+        अक्षर *escarg;
+        अक्षर q;
 
-        if( bArgList ){
+        जर( bArgList ){
           escarg = getTextArg(pArgList);
-        }else{
-          escarg = va_arg(ap,char*);
+        }अन्यथा{
+          escarg = बहु_तर्क(ap,अक्षर*);
         }
-        if( escarg==0 ){
+        जर( escarg==0 ){
           escarg = (xtype==etESCAPE_Q ? "NULL" : "(NULL)");
-        }else if( xtype==etESCAPE_Q ){
+        }अन्यथा जर( xtype==etESCAPE_Q ){
           needQuote = 1;
         }
-        if( xtype==etESCAPE_w ){
+        जर( xtype==etESCAPE_w ){
           q = '"';
           flag_alternateform = 0;
-        }else{
+        }अन्यथा{
           q = '\'';
         }
         /* For %q, %Q, and %w, the precision is the number of bytes (or
@@ -996,61 +996,61 @@ void sqlite3_str_vappendf(
         ** of output characters may be larger than the precision.
         */
         k = precision;
-        for(i=n=0; k!=0 && (ch=escarg[i])!=0; i++, k--){
-          if( ch==q )  n++;
-          if( flag_altform2 && (ch&0xc0)==0xc0 ){
-            while( (escarg[i+1]&0xc0)==0x80 ){ i++; }
+        साठी(i=n=0; k!=0 && (ch=escarg[i])!=0; i++, k--){
+          जर( ch==q )  n++;
+          जर( flag_altform2 && (ch&0xc0)==0xc0 ){
+            पर्यंत( (escarg[i+1]&0xc0)==0x80 ){ i++; }
           }
         }
-        if( flag_alternateform ){
+        जर( flag_alternateform ){
           /* For %#q, do unistr()-style backslash escapes for
           ** all control characters, and for backslash itself.
           ** For %#Q, do the same but only if there is at least
           ** one control character. */
           i64 nBack = 0;
           i64 nCtrl = 0;
-          for(k=0; k<i; k++){
-            if( escarg[k]=='\\' ){
+          साठी(k=0; k<i; k++){
+            जर( escarg[k]=='\\' ){
               nBack++;
-            }else if( ((u8*)escarg)[k]<=0x1f ){
+            }अन्यथा जर( ((u8*)escarg)[k]<=0x1f ){
               nCtrl++;
             }
           }
-          if( nCtrl || xtype==etESCAPE_q ){
+          जर( nCtrl || xtype==etESCAPE_q ){
             n += nBack + 5*nCtrl;
-            if( xtype==etESCAPE_Q ){
+            जर( xtype==etESCAPE_Q ){
               n += 10;
               needQuote = 2;
             }
-          }else{
+          }अन्यथा{
             flag_alternateform = 0;
           }
         }
         n += i + 3;
-        if( n>etBUFSIZE ){
+        जर( n>etBUFSIZE ){
           bufpt = zExtra = printfTempBuf(pAccum, n);
-          if( bufpt==0 ) return;
-        }else{
+          जर( bufpt==0 ) परत;
+        }अन्यथा{
           bufpt = buf;
         }
         j = 0;
-        if( needQuote ){
-          if( needQuote==2 ){
-            memcpy(&bufpt[j], "unistr('", 8);
+        जर( needQuote ){
+          जर( needQuote==2 ){
+            स_नकल(&bufpt[j], "unistr('", 8);
             j += 8;
-          }else{
+          }अन्यथा{
             bufpt[j++] = '\'';
           }
         }
         k = i;
-        if( flag_alternateform ){
-          for(i=0; i<k; i++){
+        जर( flag_alternateform ){
+          साठी(i=0; i<k; i++){
             bufpt[j++] = ch = escarg[i];
-            if( ch==q ){
+            जर( ch==q ){
               bufpt[j++] = ch;
-            }else if( ch=='\\' ){
+            }अन्यथा जर( ch=='\\' ){
               bufpt[j++] = '\\';
-            }else if( ((unsigned char)ch)<=0x1f ){
+            }अन्यथा जर( ((अचिन्हित अक्षर)ch)<=0x1f ){
               bufpt[j-1] = '\\';
               bufpt[j++] = 'u';
               bufpt[j++] = '0';
@@ -1059,50 +1059,50 @@ void sqlite3_str_vappendf(
               bufpt[j++] = aHex[ch&0xf];
             }
           }
-        }else{
-          for(i=0; i<k; i++){
+        }अन्यथा{
+          साठी(i=0; i<k; i++){
             bufpt[j++] = ch = escarg[i];
-            if( ch==q ) bufpt[j++] = ch;
+            जर( ch==q ) bufpt[j++] = ch;
           }
         }
-        if( needQuote ){
+        जर( needQuote ){
           bufpt[j++] = '\'';
-          if( needQuote==2 ) bufpt[j++] = ')';
+          जर( needQuote==2 ) bufpt[j++] = ')';
         }
         bufpt[j] = 0;
         length = j;
-        goto adjust_width_for_utf8;
+        जा adjust_width_for_utf8;
       }
-      case etTOKEN: {
-        if( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) return;
-        if( flag_alternateform ){
+      स्थिती etTOKEN: {
+        जर( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) परत;
+        जर( flag_alternateform ){
           /* %#T means an Expr pointer that uses Expr.u.zToken */
-          Expr *pExpr = va_arg(ap,Expr*);
-          if( ALWAYS(pExpr) && ALWAYS(!ExprHasProperty(pExpr,EP_IntValue)) ){
-            sqlite3_str_appendall(pAccum, (const char*)pExpr->u.zToken);
-            sqlite3RecordErrorOffsetOfExpr(pAccum->db, pExpr);
+          अभिव्यक्ती *p_अभिव्यक्ती = बहु_तर्क(ap,अभिव्यक्ती*);
+          जर( ALWAYS(p_अभिव्यक्ती) && ALWAYS(!अभिव्यक्ती_Has_Property(p_अभिव्यक्ती,EP_Int_मूल्य)) ){
+            sqlite3_str_appendall(pAccum, (स्थिरांक अक्षर*)p_अभिव्यक्ती->u.zToken);
+            sqlite3_Record_Error_Offset_Of_अभिव्यक्ती(pAccum->db, p_अभिव्यक्ती);
           }
-        }else{
+        }अन्यथा{
           /* %T means a Token pointer */
-          Token *pToken = va_arg(ap, Token*);
-          assert( bArgList==0 );
-          if( pToken && pToken->n ){
-            sqlite3_str_append(pAccum, (const char*)pToken->z, pToken->n);
+          Token *pToken = बहु_तर्क(ap, Token*);
+          प्रतिज्ञा( bArgList==0 );
+          जर( pToken && pToken->n ){
+            sqlite3_str_append(pAccum, (स्थिरांक अक्षर*)pToken->z, pToken->n);
             sqlite3RecordErrorByteOffset(pAccum->db, pToken->z);
           }
         }
         length = width = 0;
-        break;
+        थांबा;
       }
-      case etSRCITEM: {
+      स्थिती etSRCITEM: {
         SrcItem *pItem;
-        if( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) return;
-        pItem = va_arg(ap, SrcItem*);
-        assert( bArgList==0 );
-        if( pItem->zAlias && !flag_altform2 ){
+        जर( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) परत;
+        pItem = बहु_तर्क(ap, SrcItem*);
+        प्रतिज्ञा( bArgList==0 );
+        जर( pItem->zAlias && !flag_altform2 ){
           sqlite3_str_appendall(pAccum, pItem->zAlias);
-        }else if( pItem->zName ){
-          if( pItem->fg.fixedSchema==0
+        }अन्यथा जर( pItem->zName ){
+          जर( pItem->fg.fixedSchema==0
            && pItem->fg.isSubquery==0
            && pItem->u4.zDatabase!=0
           ){
@@ -1110,27 +1110,27 @@ void sqlite3_str_vappendf(
             sqlite3_str_append(pAccum, ".", 1);
           }
           sqlite3_str_appendall(pAccum, pItem->zName);
-        }else if( pItem->zAlias ){
+        }अन्यथा जर( pItem->zAlias ){
           sqlite3_str_appendall(pAccum, pItem->zAlias);
-        }else if( ALWAYS(pItem->fg.isSubquery) ){/* Because of tag-20240424-1 */
+        }अन्यथा जर( ALWAYS(pItem->fg.isSubquery) ){/* Because of tag-20240424-1 */
           Select *pSel = pItem->u4.pSubq->pSelect;
-          assert( pSel!=0 ); 
-          if( pSel->selFlags & SF_NestedFrom ){
+          प्रतिज्ञा( pSel!=0 ); 
+          जर( pSel->selFlags & SF_NestedFrom ){
             sqlite3_str_appendf(pAccum, "(join-%u)", pSel->selId);
-          }else if( pSel->selFlags & SF_MultiValue ){
-            assert( !pItem->fg.isTabFunc && !pItem->fg.isIndexedBy );
+          }अन्यथा जर( pSel->selFlags & SF_Multi_मूल्य ){
+            प्रतिज्ञा( !pItem->fg.isTabFunc && !pItem->fg.isIndexedBy );
             sqlite3_str_appendf(pAccum, "%u-ROW VALUES CLAUSE",
                                 pItem->u1.nRow);
-          }else{
+          }अन्यथा{
             sqlite3_str_appendf(pAccum, "(subquery-%u)", pSel->selId);
           }
         }
         length = width = 0;
-        break;
+        थांबा;
       }
-      default: {
-        assert( xtype==etINVALID );
-        return;
+      पूर्वनिर्धारित: {
+        प्रतिज्ञा( xtype==etINVALID );
+        परत;
       }
     }/* End switch over the format type */
     /*
@@ -1142,15 +1142,15 @@ void sqlite3_str_vappendf(
     ** then the values have been translated prior to reaching this point.
     */
     width -= length;
-    if( width>0 ){
-      if( !flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
+    जर( width>0 ){
+      जर( !flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
       sqlite3StrAppend64(pAccum, bufpt, length);
-      if( flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
-    }else{
+      जर( flag_leftjustify ) sqlite3StrAppendchar64(pAccum, width, ' ');
+    }अन्यथा{
       sqlite3StrAppend64(pAccum, bufpt, length);
     }
 
-    if( zExtra ){
+    जर( zExtra ){
       sqlite3DbFree(pAccum->db, zExtra);
       zExtra = 0;
     }
@@ -1164,20 +1164,20 @@ void sqlite3_str_vappendf(
 ** byte offset recorded, try to compute the error byte offset for
 ** z and set the error byte offset in db.
 */
-void sqlite3RecordErrorByteOffset(sqlite3 *db, const char *z){
-  const Parse *pParse;
-  const char *zText;
-  const char *zEnd;
-  assert( z!=0 );
-  if( NEVER(db==0) ) return;
-  if( db->errByteOffset!=(-2) ) return;
+शून्य sqlite3RecordErrorByteOffset(sqlite3 *db, स्थिरांक अक्षर *z){
+  स्थिरांक Parse *pParse;
+  स्थिरांक अक्षर *zText;
+  स्थिरांक अक्षर *zEnd;
+  प्रतिज्ञा( z!=0 );
+  जर( NEVER(db==0) ) परत;
+  जर( db->errByteOffset!=(-2) ) परत;
   pParse = db->pParse;
-  if( NEVER(pParse==0) ) return;
+  जर( NEVER(pParse==0) ) परत;
   zText =pParse->zTail;
-  if( NEVER(zText==0) ) return;
-  zEnd = &zText[strlen(zText)];
-  if( SQLITE_WITHIN(z,zText,zEnd) ){
-    db->errByteOffset = (int)(z-zText);
+  जर( NEVER(zText==0) ) परत;
+  zEnd = &zText[म_माप(zText)];
+  जर( SQLITE_WITHIN(z,zText,zEnd) ){
+    db->errByteOffset = (पूर्णांक)(z-zText);
   }
 }
 
@@ -1185,18 +1185,18 @@ void sqlite3RecordErrorByteOffset(sqlite3 *db, const char *z){
 ** If pExpr has a byte offset for the start of a token, record that as
 ** as the error offset.
 */
-void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExpr){
-  while( pExpr ){
-    if( ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) ) return;
-    if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) || pExpr->w.iOfst<=0 ){
-      pExpr = pExpr->pLeft;
-    }else{
-      break;
+शून्य sqlite3_Record_Error_Offset_Of_अभिव्यक्ती(sqlite3 *db, स्थिरांक अभिव्यक्ती *p_अभिव्यक्ती){
+  पर्यंत( p_अभिव्यक्ती ){
+    जर( अभिव्यक्ती_Has_Property(p_अभिव्यक्ती, EP_Reduced|EP_TokenOnly) ) परत;
+    जर( अभिव्यक्ती_Has_Property(p_अभिव्यक्ती,EP_OuterON|EP_InnerON) || p_अभिव्यक्ती->w.iOfst<=0 ){
+      p_अभिव्यक्ती = p_अभिव्यक्ती->p_डावा;
+    }अन्यथा{
+      थांबा;
     }
   }
-  if( pExpr==0 ) return;
-  if( ExprHasProperty(pExpr, EP_FromDDL) ) return;
-  db->errByteOffset = pExpr->w.iOfst;
+  जर( p_अभिव्यक्ती==0 ) परत;
+  जर( अभिव्यक्ती_Has_Property(p_अभिव्यक्ती, EP_FromDDL) ) परत;
+  db->errByteOffset = p_अभिव्यक्ती->w.iOfst;
 }
 
 /*
@@ -1206,76 +1206,76 @@ void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExpr){
 ** Return the number of bytes of text that StrAccum is able to accept
 ** after the attempted enlargement.  The value returned might be zero.
 */
-int sqlite3StrAccumEnlarge(StrAccum *p, i64 N){
-  char *zNew;
-  assert( p->nChar+N >= p->nAlloc ); /* Only called if really needed */
-  if( p->accError ){
+पूर्णांक sqlite3StrAccumEnlarge(StrAccum *p, i64 N){
+  अक्षर *zNew;
+  प्रतिज्ञा( p->nChar+N >= p->nAlloc ); /* Only called if really needed */
+  जर( p->accError ){
     testcase(p->accError==SQLITE_TOOBIG);
     testcase(p->accError==SQLITE_NOMEM);
-    return 0;
+    परत 0;
   }
-  if( p->mxAlloc==0 ){
+  जर( p->mxAlloc==0 ){
     sqlite3StrAccumSetError(p, SQLITE_TOOBIG);
-    return p->nAlloc - p->nChar - 1;
-  }else{
-    char *zOld = isMalloced(p) ? p->zText : 0;
+    परत p->nAlloc - p->nChar - 1;
+  }अन्यथा{
+    अक्षर *zOld = isMalloced(p) ? p->zText : 0;
     i64 szNew = p->nChar + N + 1;
-    if( szNew+p->nChar<=p->mxAlloc ){
+    जर( szNew+p->nChar<=p->mxAlloc ){
       /* Force exponential buffer size growth as long as it does not overflow,
       ** to avoid having to call this routine too often */
       szNew += p->nChar;
     }
-    if( szNew > p->mxAlloc ){
+    जर( szNew > p->mxAlloc ){
       sqlite3_str_reset(p);
       sqlite3StrAccumSetError(p, SQLITE_TOOBIG);
-      return 0;
-    }else{
-      p->nAlloc = (int)szNew;
+      परत 0;
+    }अन्यथा{
+      p->nAlloc = (पूर्णांक)szNew;
     }
-    if( p->db ){
+    जर( p->db ){
       zNew = sqlite3DbRealloc(p->db, zOld, p->nAlloc);
-    }else{
+    }अन्यथा{
       zNew = sqlite3Realloc(zOld, p->nAlloc);
     }
-    if( zNew ){
-      assert( p->zText!=0 || p->nChar==0 );
-      if( !isMalloced(p) && p->nChar>0 ) memcpy(zNew, p->zText, p->nChar);
+    जर( zNew ){
+      प्रतिज्ञा( p->zText!=0 || p->nChar==0 );
+      जर( !isMalloced(p) && p->nChar>0 ) स_नकल(zNew, p->zText, p->nChar);
       p->zText = zNew;
       p->nAlloc = sqlite3DbMallocSize(p->db, zNew);
       p->printfFlags |= SQLITE_PRINTF_MALLOCED;
-    }else{
+    }अन्यथा{
       sqlite3_str_reset(p);
       sqlite3StrAccumSetError(p, SQLITE_NOMEM);
-      return 0;
+      परत 0;
     }
   }
-  assert( N>=0 && N<=0x7fffffff );
-  return (int)N;
+  प्रतिज्ञा( N>=0 && N<=0x7fffffff );
+  परत (पूर्णांक)N;
 }
 
-int sqlite3StrAccumEnlargeIfNeeded(StrAccum *p, i64 N){
-  if( N + p->nChar >= p->nAlloc ){
+पूर्णांक sqlite3StrAccumEnlargeIfNeeded(StrAccum *p, i64 N){
+  जर( N + p->nChar >= p->nAlloc ){
     sqlite3StrAccumEnlarge(p, N);
   }
-  return p->accError;
+  परत p->accError;
 }
 
 /*
 ** Append N copies of character c to the given string buffer.
 */
-void sqlite3_str_appendchar(sqlite3_str *p, int N, char c){
+शून्य sqlite3_str_appendchar(sqlite3_str *p, पूर्णांक N, अक्षर c){
   testcase( p->nChar + (i64)N > 0x7fffffff );
-  if( p->nChar+(i64)N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
-    return;
+  जर( p->nChar+(i64)N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
+    परत;
   }
-  while( (N--)>0 ) p->zText[p->nChar++] = c;
+  पर्यंत( (N--)>0 ) p->zText[p->nChar++] = c;
 }
-static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c){
+स्थिर शून्य sqlite3StrAppendchar64(sqlite3_str *p, i64 N, अक्षर c){
   testcase( p->nChar + N > 0x7fffffff );
-  if( p->nChar+N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
-    return;
+  जर( p->nChar+N >= p->nAlloc && (N = sqlite3StrAccumEnlarge(p, N))<=0 ){
+    परत;
   }
-  while( (N--)>0 ) p->zText[p->nChar++] = c;
+  पर्यंत( (N--)>0 ) p->zText[p->nChar++] = c;
 }
 
 /*
@@ -1286,11 +1286,11 @@ static void sqlite3StrAppendchar64(sqlite3_str *p, i64 N, char c){
 ** work (enlarging the buffer) using tail recursion, so that the
 ** sqlite3_str_append() routine can use fast calling semantics.
 */
-static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
+स्थिर शून्य SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, स्थिरांक अक्षर *z, पूर्णांक N){
   N = sqlite3StrAccumEnlarge(p, N);
-  assert( z!=0 || N==0 );
-  if( N>0 ){
-    memcpy(&p->zText[p->nChar], z, N);
+  प्रतिज्ञा( z!=0 || N==0 );
+  जर( N>0 ){
+    स_नकल(&p->zText[p->nChar], z, N);
     p->nChar += N;
   }
 }
@@ -1299,30 +1299,30 @@ static void SQLITE_NOINLINE enlargeAndAppend(StrAccum *p, const char *z, int N){
 ** Append N bytes of text from z to the StrAccum object.  Increase the
 ** size of the memory allocation for StrAccum if necessary.
 */
-void sqlite3_str_append(sqlite3_str *p, const char *z, int N){
-  assert( z!=0 || N==0 );
-  assert( p->zText!=0 || p->nChar==0 || p->accError );
-  assert( N>=0 );
-  assert( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
-  if( p->nChar+N >= p->nAlloc ){
+शून्य sqlite3_str_append(sqlite3_str *p, स्थिरांक अक्षर *z, पूर्णांक N){
+  प्रतिज्ञा( z!=0 || N==0 );
+  प्रतिज्ञा( p->zText!=0 || p->nChar==0 || p->accError );
+  प्रतिज्ञा( N>=0 );
+  प्रतिज्ञा( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
+  जर( p->nChar+N >= p->nAlloc ){
     enlargeAndAppend(p,z,N);
-  }else if( N ){
-    assert( p->zText );
+  }अन्यथा जर( N ){
+    प्रतिज्ञा( p->zText );
     p->nChar += N;
-    memcpy(&p->zText[p->nChar-N], z, N);
+    स_नकल(&p->zText[p->nChar-N], z, N);
   }
 }
-static void sqlite3StrAppend64(sqlite3_str *p, const char *z, i64 N){
-  assert( z!=0 || N==0 );
-  assert( p->zText!=0 || p->nChar==0 || p->accError );
-  assert( N>=0 );
-  assert( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
-  if( p->nChar+N >= (i64)p->nAlloc ){
+स्थिर शून्य sqlite3StrAppend64(sqlite3_str *p, स्थिरांक अक्षर *z, i64 N){
+  प्रतिज्ञा( z!=0 || N==0 );
+  प्रतिज्ञा( p->zText!=0 || p->nChar==0 || p->accError );
+  प्रतिज्ञा( N>=0 );
+  प्रतिज्ञा( p->accError==0 || p->nAlloc==0 || p->mxAlloc==0 );
+  जर( p->nChar+N >= (i64)p->nAlloc ){
     enlargeAndAppend(p,z,N);
-  }else if( N ){
-    assert( p->zText );
+  }अन्यथा जर( N ){
+    प्रतिज्ञा( p->zText );
     p->nChar += N;
-    memcpy(&p->zText[p->nChar-N], z, N);
+    स_नकल(&p->zText[p->nChar-N], z, N);
   }
 }
 
@@ -1330,7 +1330,7 @@ static void sqlite3StrAppend64(sqlite3_str *p, const char *z, i64 N){
 /*
 ** Append the complete text of zero-terminated string z[] to the p string.
 */
-void sqlite3_str_appendall(sqlite3_str *p, const char *z){
+शून्य sqlite3_str_appendall(sqlite3_str *p, स्थिरांक अक्षर *z){
   sqlite3_str_append(p, z, sqlite3Strlen30(z));
 }
 
@@ -1340,76 +1340,76 @@ void sqlite3_str_appendall(sqlite3_str *p, const char *z){
 ** Return a pointer to the resulting string.  Return a NULL
 ** pointer if any kind of error was encountered.
 */
-static SQLITE_NOINLINE char *strAccumFinishRealloc(StrAccum *p){
-  char *zText;
-  assert( p->mxAlloc>0 && !isMalloced(p) );
+स्थिर SQLITE_NOINLINE अक्षर *strAccumFinishRealloc(StrAccum *p){
+  अक्षर *zText;
+  प्रतिज्ञा( p->mxAlloc>0 && !isMalloced(p) );
   zText = sqlite3DbMallocRaw(p->db, 1+(u64)p->nChar );
-  if( zText ){
-    memcpy(zText, p->zText, p->nChar+1);
+  जर( zText ){
+    स_नकल(zText, p->zText, p->nChar+1);
     p->printfFlags |= SQLITE_PRINTF_MALLOCED;
-  }else{
+  }अन्यथा{
     sqlite3StrAccumSetError(p, SQLITE_NOMEM);
   }
   p->zText = zText;
-  return zText;
+  परत zText;
 }
-char *sqlite3StrAccumFinish(StrAccum *p){
-  if( p->zText ){
+अक्षर *sqlite3StrAccumFinish(StrAccum *p){
+  जर( p->zText ){
     p->zText[p->nChar] = 0;
-    if( p->mxAlloc>0 && !isMalloced(p) ){
-      return strAccumFinishRealloc(p);
+    जर( p->mxAlloc>0 && !isMalloced(p) ){
+      परत strAccumFinishRealloc(p);
     }
   }
-  return p->zText;
+  परत p->zText;
 }
 
 /* Finalize a string created using sqlite3_str_new().
 */
-char *sqlite3_str_finish(sqlite3_str *p){
-  char *z;
-  if( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
+अक्षर *sqlite3_str_finish(sqlite3_str *p){
+  अक्षर *z;
+  जर( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
     z = sqlite3StrAccumFinish(p);
     sqlite3_free(p);
-  }else{
+  }अन्यथा{
     z = 0;
   }
-  return z;
+  परत z;
 }
 
 /* Return any error code associated with p */
-int sqlite3_str_errcode(sqlite3_str *p){
-  return p ? p->accError : SQLITE_NOMEM;
+पूर्णांक sqlite3_str_errcode(sqlite3_str *p){
+  परत p ? p->accError : SQLITE_NOMEM;
 }
 
 /* Return the current length of p in bytes */
-int sqlite3_str_length(sqlite3_str *p){
-  return p ? p->nChar : 0;
+पूर्णांक sqlite3_str_length(sqlite3_str *p){
+  परत p ? p->nChar : 0;
 }
 
 /* Truncate the text of the string to be no more than N bytes. */
-void sqlite3_str_truncate(sqlite3_str *p, int N){
-  if( p!=0 && N>=0 && (u32)N<p->nChar ){
+शून्य sqlite3_str_truncate(sqlite3_str *p, पूर्णांक N){
+  जर( p!=0 && N>=0 && (u32)N<p->nChar ){
     p->nChar = N;
     p->zText[p->nChar] = 0;
   }
 }
 
 /* Return the current value for p */
-char *sqlite3_str_value(sqlite3_str *p){
-  if( p==0 || p->nChar==0 ) return 0;
+अक्षर *sqlite3_str_मूल्य(sqlite3_str *p){
+  जर( p==0 || p->nChar==0 ) परत 0;
   p->zText[p->nChar] = 0;
-  return p->zText;
+  परत p->zText;
 }
 
 /*
 ** Reset an StrAccum string.  Reclaim all malloced memory.
 */
-void sqlite3_str_reset(StrAccum *p){
-  if( isMalloced(p) ){
+शून्य sqlite3_str_reset(StrAccum *p){
+  जर( isMalloced(p) ){
     sqlite3DbFree(p->db, p->zText);
     p->printfFlags &= ~SQLITE_PRINTF_MALLOCED;
-  }else if( p==(sqlite3_str*)&sqlite3OomStr ){
-    return;
+  }अन्यथा जर( p==(sqlite3_str*)&sqlite3OomStr ){
+    परत;
   }
   p->nAlloc = 0;
   p->nChar = 0;
@@ -1420,8 +1420,8 @@ void sqlite3_str_reset(StrAccum *p){
 ** Destroy a dynamically allocate sqlite3_str object and all
 ** of its content, all in one call.
 */
-void sqlite3_str_free(sqlite3_str *p){
-  if( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
+शून्य sqlite3_str_free(sqlite3_str *p){
+  जर( p!=0 && p!=(sqlite3_str*)&sqlite3OomStr ){
     sqlite3_str_reset(p);
     sqlite3_free(p);
   }
@@ -1441,7 +1441,7 @@ void sqlite3_str_free(sqlite3_str *p){
 ** mx:    Maximum number of bytes to accumulate.  If mx==0 then no memory
 **        allocations will ever occur.
 */
-void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, int n, int mx){
+शून्य sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, अक्षर *zBase, पूर्णांक n, पूर्णांक mx){
   p->zText = zBase;
   p->db = db;
   p->nAlloc = n;
@@ -1453,87 +1453,87 @@ void sqlite3StrAccumInit(StrAccum *p, sqlite3 *db, char *zBase, int n, int mx){
 
 /* Allocate and initialize a new dynamic string object */
 sqlite3_str *sqlite3_str_new(sqlite3 *db){
-  sqlite3_str *p = sqlite3_malloc64(sizeof(*p));
-  if( p ){
+  sqlite3_str *p = sqlite3_malloc64(आकार(*p));
+  जर( p ){
     sqlite3StrAccumInit(p, 0, 0, 0,
             db ? db->aLimit[SQLITE_LIMIT_LENGTH] : SQLITE_MAX_LENGTH);
-  }else{
+  }अन्यथा{
     p = (sqlite3_str*)&sqlite3OomStr;
   }
-  return p;
+  परत p;
 }
 
 /*
 ** Print into memory obtained from sqliteMalloc().  Use the internal
 ** %-conversion extensions.
 */
-char *sqlite3VMPrintf(sqlite3 *db, const char *zFormat, va_list ap){
-  char *z;
-  char zBase[SQLITE_PRINT_BUF_SIZE];
+अक्षर *sqlite3VMPrintf(sqlite3 *db, स्थिरांक अक्षर *zFormat, बहु_सूची ap){
+  अक्षर *z;
+  अक्षर zBase[SQLITE_PRINT_BUF_SIZE];
   StrAccum acc;
-  assert( db!=0 );
-  sqlite3StrAccumInit(&acc, db, zBase, sizeof(zBase),
+  प्रतिज्ञा( db!=0 );
+  sqlite3StrAccumInit(&acc, db, zBase, आकार(zBase),
                       db->aLimit[SQLITE_LIMIT_LENGTH]);
   acc.printfFlags = SQLITE_PRINTF_INTERNAL;
   sqlite3_str_vappendf(&acc, zFormat, ap);
   z = sqlite3StrAccumFinish(&acc);
-  if( acc.accError==SQLITE_NOMEM ){
+  जर( acc.accError==SQLITE_NOMEM ){
     sqlite3OomFault(db);
   }
-  return z;
+  परत z;
 }
 
 /*
 ** Print into memory obtained from sqliteMalloc().  Use the internal
 ** %-conversion extensions.
 */
-char *sqlite3MPrintf(sqlite3 *db, const char *zFormat, ...){
-  va_list ap;
-  char *z;
-  va_start(ap, zFormat);
+अक्षर *sqlite3MPrintf(sqlite3 *db, स्थिरांक अक्षर *zFormat, ...){
+  बहु_सूची ap;
+  अक्षर *z;
+  बहु_शुरू(ap, zFormat);
   z = sqlite3VMPrintf(db, zFormat, ap);
-  va_end(ap);
-  return z;
+  बहु_पूर्ण(ap);
+  परत z;
 }
 
 /*
 ** Print into memory obtained from sqlite3_malloc().  Omit the internal
 ** %-conversion extensions.
 */
-char *sqlite3_vmprintf(const char *zFormat, va_list ap){
-  char *z;
-  char zBase[SQLITE_PRINT_BUF_SIZE];
+अक्षर *sqlite3_vmprintf(स्थिरांक अक्षर *zFormat, बहु_सूची ap){
+  अक्षर *z;
+  अक्षर zBase[SQLITE_PRINT_BUF_SIZE];
   StrAccum acc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR  
-  if( zFormat==0 ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+  जर( zFormat==0 ){
+    (शून्य)SQLITE_MISUSE_BKPT;
+    परत 0;
   }
 #endif
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  जर( sqlite3_initialize() ) परत 0;
 #endif
-  sqlite3StrAccumInit(&acc, 0, zBase, sizeof(zBase), SQLITE_MAX_LENGTH);
+  sqlite3StrAccumInit(&acc, 0, zBase, आकार(zBase), SQLITE_MAX_LENGTH);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   z = sqlite3StrAccumFinish(&acc);
-  return z;
+  परत z;
 }
 
 /*
 ** Print into memory obtained from sqlite3_malloc()().  Omit the internal
 ** %-conversion extensions.
 */
-char *sqlite3_mprintf(const char *zFormat, ...){
-  va_list ap;
-  char *z;
+अक्षर *sqlite3_mprintf(स्थिरांक अक्षर *zFormat, ...){
+  बहु_सूची ap;
+  अक्षर *z;
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
+  जर( sqlite3_initialize() ) परत 0;
 #endif
-  va_start(ap, zFormat);
+  बहु_शुरू(ap, zFormat);
   z = sqlite3_vmprintf(zFormat, ap);
-  va_end(ap);
-  return z;
+  बहु_पूर्ण(ap);
+  परत z;
 }
 
 /*
@@ -1549,46 +1549,46 @@ char *sqlite3_mprintf(const char *zFormat, ...){
 **
 ** sqlite3_vsnprintf() is the varargs version.
 */
-char *sqlite3_vsnprintf(int n, char *zBuf, const char *zFormat, va_list ap){
+अक्षर *sqlite3_vsnprintf(पूर्णांक n, अक्षर *zBuf, स्थिरांक अक्षर *zFormat, बहु_सूची ap){
   StrAccum acc;
-  if( n<=0 ) return zBuf;
+  जर( n<=0 ) परत zBuf;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zBuf==0 || zFormat==0 ) {
-    (void)SQLITE_MISUSE_BKPT;
-    if( zBuf ) zBuf[0] = 0;
-    return zBuf;
+  जर( zBuf==0 || zFormat==0 ) {
+    (शून्य)SQLITE_MISUSE_BKPT;
+    जर( zBuf ) zBuf[0] = 0;
+    परत zBuf;
   }
 #endif
   sqlite3StrAccumInit(&acc, 0, zBuf, n, 0);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   zBuf[acc.nChar] = 0;
-  return zBuf;
+  परत zBuf;
 }
-char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
+अक्षर *sqlite3_snprintf(पूर्णांक n, अक्षर *zBuf, स्थिरांक अक्षर *zFormat, ...){
   StrAccum acc;
-  va_list ap;
-  if( n<=0 ) return zBuf;
+  बहु_सूची ap;
+  जर( n<=0 ) परत zBuf;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( zBuf==0 || zFormat==0 ) {
-    (void)SQLITE_MISUSE_BKPT;
-    if( zBuf ) zBuf[0] = 0;
-    return zBuf;
+  जर( zBuf==0 || zFormat==0 ) {
+    (शून्य)SQLITE_MISUSE_BKPT;
+    जर( zBuf ) zBuf[0] = 0;
+    परत zBuf;
   }
 #endif
   sqlite3StrAccumInit(&acc, 0, zBuf, n, 0);
-  va_start(ap,zFormat);
+  बहु_शुरू(ap,zFormat);
   sqlite3_str_vappendf(&acc, zFormat, ap);
-  va_end(ap);
+  बहु_पूर्ण(ap);
   zBuf[acc.nChar] = 0;
-  return zBuf;
+  परत zBuf;
 }
 
 /* Maximum size of an sqlite3_log() message. */
-#if defined(SQLITE_MAX_LOG_MESSAGE) 
+#जर defined(SQLITE_MAX_LOG_MESSAGE) 
   /* Leave the definition as supplied */
-#elif SQLITE_PRINT_BUF_SIZE*10>10000
+#किंवाजर SQLITE_PRINT_BUF_SIZE*10>10000
 # define SQLITE_MAX_LOG_MESSAGE 10000
-#else
+#अन्यथा
 # define SQLITE_MAX_LOG_MESSAGE (SQLITE_PRINT_BUF_SIZE*10)
 #endif
 
@@ -1606,11 +1606,11 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
 ** Care must be taken that any sqlite3_log() calls that occur while the
 ** memory mutex is held do not use these mechanisms.
 */
-static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
+स्थिर शून्य render_Log_संदेश(पूर्णांक iErrCode, स्थिरांक अक्षर *zFormat, बहु_सूची ap){
   StrAccum acc;                          /* String accumulator */
-  char zMsg[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
+  अक्षर z_संदेश[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
 
-  sqlite3StrAccumInit(&acc, 0, zMsg, sizeof(zMsg), 0);
+  sqlite3StrAccumInit(&acc, 0, z_संदेश, आकार(z_संदेश), 0);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   sqlite3GlobalConfig.xLog(sqlite3GlobalConfig.pLogArg, iErrCode,
                            sqlite3StrAccumFinish(&acc));
@@ -1619,38 +1619,38 @@ static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
 /*
 ** Format and write a message to the log if logging is enabled.
 */
-void sqlite3_log(int iErrCode, const char *zFormat, ...){
-  va_list ap;                             /* Vararg list */
-  if( sqlite3GlobalConfig.xLog ){
-    va_start(ap, zFormat);
-    renderLogMsg(iErrCode, zFormat, ap);
-    va_end(ap);
+शून्य sqlite3_log(पूर्णांक iErrCode, स्थिरांक अक्षर *zFormat, ...){
+  बहु_सूची ap;                             /* Vararg list */
+  जर( sqlite3GlobalConfig.xLog ){
+    बहु_शुरू(ap, zFormat);
+    render_Log_संदेश(iErrCode, zFormat, ap);
+    बहु_पूर्ण(ap);
   }
 }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+#जर defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
 /*
 ** A version of printf() that understands %lld.  Used for debugging.
 ** The printf() built into some versions of windows does not understand %lld
 ** and segfaults if you give it a long long int.
 */
-void sqlite3DebugPrintf(const char *zFormat, ...){
-  va_list ap;
+शून्य sqlite3DebugPrintf(स्थिरांक अक्षर *zFormat, ...){
+  बहु_सूची ap;
   StrAccum acc;
-  char zBuf[SQLITE_PRINT_BUF_SIZE*10];
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
-  va_start(ap,zFormat);
+  अक्षर zBuf[SQLITE_PRINT_BUF_SIZE*10];
+  sqlite3StrAccumInit(&acc, 0, zBuf, आकार(zBuf), 0);
+  बहु_शुरू(ap,zFormat);
   sqlite3_str_vappendf(&acc, zFormat, ap);
-  va_end(ap);
+  बहु_पूर्ण(ap);
   sqlite3StrAccumFinish(&acc);
 #ifdef SQLITE_OS_TRACE_PROC
   {
-    extern void SQLITE_OS_TRACE_PROC(const char *zBuf, int nBuf);
-    SQLITE_OS_TRACE_PROC(zBuf, sizeof(zBuf));
+    बाह्य शून्य SQLITE_OS_TRACE_PROC(स्थिरांक अक्षर *zBuf, पूर्णांक nBuf);
+    SQLITE_OS_TRACE_PROC(zBuf, आकार(zBuf));
   }
-#else
-  fprintf(stdout,"%s", zBuf);
-  fflush(stdout);
+#अन्यथा
+  ख_लिखो(मानक_निकास,"%s", zBuf);
+  ख_साफ(मानक_निकास);
 #endif
 }
 #endif
@@ -1660,11 +1660,11 @@ void sqlite3DebugPrintf(const char *zFormat, ...){
 ** variable-argument wrapper around sqlite3_str_vappendf(). The bFlags argument
 ** can contain the bit SQLITE_PRINTF_INTERNAL enable internal formats.
 */
-void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...){
-  va_list ap;
-  va_start(ap,zFormat);
+शून्य sqlite3_str_appendf(StrAccum *p, स्थिरांक अक्षर *zFormat, ...){
+  बहु_सूची ap;
+  बहु_शुरू(ap,zFormat);
   sqlite3_str_vappendf(p, zFormat, ap);
-  va_end(ap);
+  बहु_पूर्ण(ap);
 }
 
 
@@ -1677,26 +1677,26 @@ void sqlite3_str_appendf(StrAccum *p, const char *zFormat, ...){
 **
 ** The input parameter is returned.
 */
-char *sqlite3RCStrRef(char *z){
+अक्षर *sqlite3RCStrRef(अक्षर *z){
   RCStr *p = (RCStr*)z;
-  assert( p!=0 );
+  प्रतिज्ञा( p!=0 );
   p--;
   p->nRCRef++;
-  return z;
+  परत z;
 }
 
 /*
 ** Decrease the reference count by one.  Free the string when the
 ** reference count reaches zero.
 */
-void sqlite3RCStrUnref(void *z){
+शून्य sqlite3RCStrUnref(शून्य *z){
   RCStr *p = (RCStr*)z;
-  assert( p!=0 );
+  प्रतिज्ञा( p!=0 );
   p--;
-  assert( p->nRCRef>0 );
-  if( p->nRCRef>=2 ){
+  प्रतिज्ञा( p->nRCRef>0 );
+  जर( p->nRCRef>=2 ){
     p->nRCRef--;
-  }else{
+  }अन्यथा{
     sqlite3_free(p);
   }
 }
@@ -1710,28 +1710,28 @@ void sqlite3RCStrUnref(void *z){
 **
 ** This routine returns 0 on an OOM.
 */
-char *sqlite3RCStrNew(u64 N){
-  RCStr *p = sqlite3_malloc64( N + sizeof(*p) + 1 );
-  if( p==0 ) return 0;
+अक्षर *sqlite3RCStrNew(u64 N){
+  RCStr *p = sqlite3_malloc64( N + आकार(*p) + 1 );
+  जर( p==0 ) परत 0;
   p->nRCRef = 1;
-  return (char*)&p[1];
+  परत (अक्षर*)&p[1];
 }
 
 /*
 ** Change the size of the string so that it is able to hold N bytes.
 ** The string might be reallocated, so return the new allocation.
 */
-char *sqlite3RCStrResize(char *z, u64 N){
+अक्षर *sqlite3RCStrResize(अक्षर *z, u64 N){
   RCStr *p = (RCStr*)z;
   RCStr *pNew;
-  assert( p!=0 );
+  प्रतिज्ञा( p!=0 );
   p--;
-  assert( p->nRCRef==1 );
-  pNew = sqlite3_realloc64(p, N+sizeof(RCStr)+1);
-  if( pNew==0 ){
+  प्रतिज्ञा( p->nRCRef==1 );
+  pNew = sqlite3_realloc64(p, N+आकार(RCStr)+1);
+  जर( pNew==0 ){
     sqlite3_free(p);
-    return 0;
-  }else{
-    return (char*)&pNew[1];
+    परत 0;
+  }अन्यथा{
+    परत (अक्षर*)&pNew[1];
   }
 }

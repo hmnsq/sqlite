@@ -140,11 +140,11 @@
 ** integer in the equivalent columns in sqlite_stat4.
 */
 #ifndef SQLITE_OMIT_ANALYZE
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
-#if defined(SQLITE_ENABLE_STAT4)
+#जर defined(SQLITE_ENABLE_STAT4)
 # define IsStat4     1
-#else
+#अन्यथा
 # define IsStat4     0
 # undef SQLITE_STAT4_SAMPLES
 # define SQLITE_STAT4_SAMPLES 1
@@ -163,51 +163,51 @@
 ** the sqlite_statN tables associated with the named table are deleted.
 ** If zWhere==0, then code is generated to delete all stat table entries.
 */
-static void openStatTable(
+स्थिर शून्य openStatTable(
   Parse *pParse,          /* Parsing context */
-  int iDb,                /* The database we are looking in */
-  int iStatCur,           /* Open the sqlite_stat1 table on this cursor */
-  const char *zWhere,     /* Delete entries for this table or index */
-  const char *zWhereType  /* Either "tbl" or "idx" */
+  पूर्णांक iDb,                /* The database we are looking in */
+  पूर्णांक iStatCur,           /* Open the sqlite_stat1 table on this cursor */
+  स्थिरांक अक्षर *zWhere,     /* Delete entries for this table or index */
+  स्थिरांक अक्षर *zWhereType  /* Either "tbl" or "idx" */
 ){
-  static const struct {
-    const char *zName;
-    const char *zCols;
+  स्थिर स्थिरांक संरचना {
+    स्थिरांक अक्षर *zName;
+    स्थिरांक अक्षर *zCols;
   } aTable[] = {
     { "sqlite_stat1", "tbl,idx,stat" },
-#if defined(SQLITE_ENABLE_STAT4)
+#जर defined(SQLITE_ENABLE_STAT4)
     { "sqlite_stat4", "tbl,idx,neq,nlt,ndlt,sample" },
-#else
+#अन्यथा
     { "sqlite_stat4", 0 },
 #endif
     { "sqlite_stat3", 0 },
   };
-  int i;
+  पूर्णांक i;
   sqlite3 *db = pParse->db;
   Db *pDb;
   Vdbe *v = sqlite3GetVdbe(pParse);
-  u32 aRoot[ArraySize(aTable)];
+  u32 a_मूळ[ArraySize(aTable)];
   u8 aCreateTbl[ArraySize(aTable)];
 #ifdef SQLITE_ENABLE_STAT4
-  const int nToOpen = OptimizationEnabled(db,SQLITE_Stat4) ? 2 : 1;
-#else
-  const int nToOpen = 1;
+  स्थिरांक पूर्णांक nToOpen = OptimizationEnabled(db,SQLITE_Stat4) ? 2 : 1;
+#अन्यथा
+  स्थिरांक पूर्णांक nToOpen = 1;
 #endif
 
-  if( v==0 ) return;
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
-  assert( sqlite3VdbeDb(v)==db );
+  जर( v==0 ) परत;
+  प्रतिज्ञा( sqlite3BtreeHoldsAllMutexes(db) );
+  प्रतिज्ञा( sqlite3VdbeDb(v)==db );
   pDb = &db->aDb[iDb];
 
   /* Create new statistic tables if they do not exist, or clear them
   ** if they do already exist.
   */
-  for(i=0; i<ArraySize(aTable); i++){
-    const char *zTab = aTable[i].zName;
+  साठी(i=0; i<ArraySize(aTable); i++){
+    स्थिरांक अक्षर *zTab = aTable[i].zName;
     Table *pStat;
     aCreateTbl[i] = 0;
-    if( (pStat = sqlite3FindTable(db, zTab, pDb->zDbSName))==0 ){
-      if( i<nToOpen ){
+    जर( (pStat = sqlite3FindTable(db, zTab, pDb->zDbSName))==0 ){
+      जर( i<nToOpen ){
         /* The sqlite_statN table does not exist. Create it. Note that a 
         ** side-effect of the CREATE TABLE statement is to leave the rootpage 
         ** of the new table in register pParse->regRoot. This is important 
@@ -215,36 +215,36 @@ static void openStatTable(
         sqlite3NestedParse(pParse,
             "CREATE TABLE %Q.%s(%s)", pDb->zDbSName, zTab, aTable[i].zCols
         );
-        assert( pParse->isCreate || pParse->nErr );
-        aRoot[i] = (u32)pParse->u1.cr.regRoot;
+        प्रतिज्ञा( pParse->isCreate || pParse->nErr );
+        a_मूळ[i] = (u32)pParse->u1.cr.reg_मूळ;
         aCreateTbl[i] = OPFLAG_P2ISREG;
       }
-    }else{
+    }अन्यथा{
       /* The table already exists. If zWhere is not NULL, delete all entries 
       ** associated with the table zWhere. If zWhere is NULL, delete the
       ** entire contents of the table. */
-      aRoot[i] = pStat->tnum;
-      sqlite3TableLock(pParse, iDb, aRoot[i], 1, zTab);
-      if( zWhere ){
+      a_मूळ[i] = pStat->tnum;
+      sqlite3TableLock(pParse, iDb, a_मूळ[i], 1, zTab);
+      जर( zWhere ){
         sqlite3NestedParse(pParse,
            "DELETE FROM %Q.%s WHERE %s=%Q",
            pDb->zDbSName, zTab, zWhereType, zWhere
         );
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-      }else if( db->xPreUpdateCallback ){
+      }अन्यथा जर( db->xPreUpdateCallback ){
         sqlite3NestedParse(pParse, "DELETE FROM %Q.%s", pDb->zDbSName, zTab);
 #endif
-      }else{
+      }अन्यथा{
         /* The sqlite_stat[134] table already exists.  Delete all rows. */
-        sqlite3VdbeAddOp2(v, OP_Clear, (int)aRoot[i], iDb);
+        sqlite3VdbeAddOp2(v, OP_Clear, (पूर्णांक)a_मूळ[i], iDb);
       }
     }
   }
 
   /* Open the sqlite_stat[134] tables for writing. */
-  for(i=0; i<nToOpen; i++){
-    assert( i<ArraySize(aTable) );
-    sqlite3VdbeAddOp4Int(v, OP_OpenWrite, iStatCur+i, (int)aRoot[i], iDb, 3);
+  साठी(i=0; i<nToOpen; i++){
+    प्रतिज्ञा( i<ArraySize(aTable) );
+    sqlite3VdbeAddOp4Int(v, OP_OpenWrite, iStatCur+i, (पूर्णांक)a_मूळ[i], iDb, 3);
     sqlite3VdbeChangeP5(v, aCreateTbl[i]);
     VdbeComment((v, aTable[i].zName));
   }
@@ -262,41 +262,41 @@ static void openStatTable(
 ** share an instance of the following structure to hold their state
 ** information.
 */
-typedef struct StatAccum StatAccum;
-typedef struct StatSample StatSample;
-struct StatSample {
+प्रकारव्याख्या संरचना StatAccum StatAccum;
+प्रकारव्याख्या संरचना StatSample StatSample;
+संरचना StatSample {
   tRowcnt *anDLt;                 /* sqlite_stat4.nDLt */
 #ifdef SQLITE_ENABLE_STAT4
   tRowcnt *anEq;                  /* sqlite_stat4.nEq */
   tRowcnt *anLt;                  /* sqlite_stat4.nLt */
-  union {
+  संघ {
     i64 iRowid;                     /* Rowid in main table of the key */
     u8 *aRowid;                     /* Key for WITHOUT ROWID tables */
   } u;
   u32 nRowid;                     /* Sizeof aRowid[] */
   u8 isPSample;                   /* True if a periodic sample */
-  int iCol;                       /* If !isPSample, the reason for inclusion */
+  पूर्णांक iCol;                       /* If !isPSample, the reason for inclusion */
   u32 iHash;                      /* Tiebreaker hash */
 #endif
 };                                                    
-struct StatAccum {
+संरचना StatAccum {
   sqlite3 *db;              /* Database connection, for malloc() */
   tRowcnt nEst;             /* Estimated number of rows */
   tRowcnt nRow;             /* Number of rows visited so far */
-  int nLimit;               /* Analysis row-scan limit */
-  int nCol;                 /* Number of columns in index + pk/rowid */
-  int nKeyCol;              /* Number of index columns w/o the pk/rowid */
+  पूर्णांक nLimit;               /* Analysis row-scan limit */
+  पूर्णांक nCol;                 /* Number of columns in index + pk/rowid */
+  पूर्णांक n_किल्ली_Col;              /* Number of index columns w/o the pk/rowid */
   u8 nSkipAhead;            /* Number of times of skip-ahead */
   StatSample current;       /* Current row as a StatSample */
 #ifdef SQLITE_ENABLE_STAT4
   tRowcnt nPSample;         /* How often to do a periodic sample */
-  int mxSample;             /* Maximum number of samples to accumulate */
+  पूर्णांक mxSample;             /* Maximum number of samples to accumulate */
   u32 iPrn;                 /* Pseudo-random number used for sampling */
   StatSample *aBest;        /* Array of nCol best samples */
-  int iMin;                 /* Index in a[] of entry with minimum score */
-  int nSample;              /* Current number of samples */
-  int nMaxEqZero;           /* Max leading 0 in anEq[] for any a[] entry */
-  int iGet;                 /* Index of current sample accessed by stat_get() */
+  पूर्णांक iMin;                 /* Index in a[] of entry with minimum score */
+  पूर्णांक nSample;              /* Current number of samples */
+  पूर्णांक nMaxEqZero;           /* Max leading 0 in anEq[] for any a[] entry */
+  पूर्णांक iGet;                 /* Index of current sample accessed by stat_get() */
   StatSample *a;            /* Array of mxSample StatSample objects */
 #endif
 };
@@ -304,9 +304,9 @@ struct StatAccum {
 /* Reclaim memory used by a StatSample
 */
 #ifdef SQLITE_ENABLE_STAT4
-static void sampleClear(sqlite3 *db, StatSample *p){
-  assert( db!=0 );
-  if( p->nRowid ){
+स्थिर शून्य sampleClear(sqlite3 *db, StatSample *p){
+  प्रतिज्ञा( db!=0 );
+  जर( p->nRowid ){
     sqlite3DbFree(db, p->u.aRowid);
     p->nRowid = 0;
   }
@@ -316,14 +316,14 @@ static void sampleClear(sqlite3 *db, StatSample *p){
 /* Initialize the BLOB value of a ROWID
 */
 #ifdef SQLITE_ENABLE_STAT4
-static void sampleSetRowid(sqlite3 *db, StatSample *p, int n, const u8 *pData){
-  assert( db!=0 );
-  if( p->nRowid ) sqlite3DbFree(db, p->u.aRowid);
+स्थिर शून्य sampleSetRowid(sqlite3 *db, StatSample *p, पूर्णांक n, स्थिरांक u8 *pData){
+  प्रतिज्ञा( db!=0 );
+  जर( p->nRowid ) sqlite3DbFree(db, p->u.aRowid);
   p->u.aRowid = sqlite3DbMallocRawNN(db, n);
-  if( p->u.aRowid ){
+  जर( p->u.aRowid ){
     p->nRowid = n;
-    memcpy(p->u.aRowid, pData, n);
-  }else{
+    स_नकल(p->u.aRowid, pData, n);
+  }अन्यथा{
     p->nRowid = 0;
   }
 }
@@ -332,9 +332,9 @@ static void sampleSetRowid(sqlite3 *db, StatSample *p, int n, const u8 *pData){
 /* Initialize the INTEGER value of a ROWID.
 */
 #ifdef SQLITE_ENABLE_STAT4
-static void sampleSetRowidInt64(sqlite3 *db, StatSample *p, i64 iRowid){
-  assert( db!=0 );
-  if( p->nRowid ) sqlite3DbFree(db, p->u.aRowid);
+स्थिर शून्य sampleSetRowidInt64(sqlite3 *db, StatSample *p, i64 iRowid){
+  प्रतिज्ञा( db!=0 );
+  जर( p->nRowid ) sqlite3DbFree(db, p->u.aRowid);
   p->nRowid = 0;
   p->u.iRowid = iRowid;
 }
@@ -345,16 +345,16 @@ static void sampleSetRowidInt64(sqlite3 *db, StatSample *p, i64 iRowid){
 ** Copy the contents of object (*pFrom) into (*pTo).
 */
 #ifdef SQLITE_ENABLE_STAT4
-static void sampleCopy(StatAccum *p, StatSample *pTo, StatSample *pFrom){
+स्थिर शून्य sampleCopy(StatAccum *p, StatSample *pTo, StatSample *pFrom){
   pTo->isPSample = pFrom->isPSample;
   pTo->iCol = pFrom->iCol;
   pTo->iHash = pFrom->iHash;
-  memcpy(pTo->anEq, pFrom->anEq, sizeof(tRowcnt)*p->nCol);
-  memcpy(pTo->anLt, pFrom->anLt, sizeof(tRowcnt)*p->nCol);
-  memcpy(pTo->anDLt, pFrom->anDLt, sizeof(tRowcnt)*p->nCol);
-  if( pFrom->nRowid ){
+  स_नकल(pTo->anEq, pFrom->anEq, आकार(tRowcnt)*p->nCol);
+  स_नकल(pTo->anLt, pFrom->anLt, आकार(tRowcnt)*p->nCol);
+  स_नकल(pTo->anDLt, pFrom->anDLt, आकार(tRowcnt)*p->nCol);
+  जर( pFrom->nRowid ){
     sampleSetRowid(p->db, pTo, pFrom->nRowid, pFrom->u.aRowid);
-  }else{
+  }अन्यथा{
     sampleSetRowidInt64(p->db, pTo, pFrom->u.iRowid);
   }
 }
@@ -363,13 +363,13 @@ static void sampleCopy(StatAccum *p, StatSample *pTo, StatSample *pFrom){
 /*
 ** Reclaim all memory of a StatAccum structure.
 */
-static void statAccumDestructor(void *pOld){
+स्थिर शून्य statAccumDestructor(शून्य *pOld){
   StatAccum *p = (StatAccum*)pOld;
 #ifdef SQLITE_ENABLE_STAT4
-  if( p->mxSample ){
-    int i;
-    for(i=0; i<p->nCol; i++) sampleClear(p->db, p->aBest+i);
-    for(i=0; i<p->mxSample; i++) sampleClear(p->db, p->a+i);
+  जर( p->mxSample ){
+    पूर्णांक i;
+    साठी(i=0; i<p->nCol; i++) sampleClear(p->db, p->aBest+i);
+    साठी(i=0; i<p->mxSample; i++) sampleClear(p->db, p->a+i);
     sampleClear(p->db, &p->current);
   }
 #endif
@@ -398,81 +398,81 @@ static void statAccumDestructor(void *pOld){
 ** return value is BLOB, but it is really just a pointer to the StatAccum
 ** object.
 */
-static void statInit(
+स्थिर शून्य statInit(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
   StatAccum *p;
-  int nCol;                       /* Number of columns in index being sampled */
-  int nKeyCol;                    /* Number of key columns */
-  int nColUp;                     /* nCol rounded up for alignment */
+  पूर्णांक nCol;                       /* Number of columns in index being sampled */
+  पूर्णांक n_किल्ली_Col;                    /* Number of key columns */
+  पूर्णांक nColUp;                     /* nCol rounded up for alignment */
   i64 n;                          /* Bytes of space to allocate */
   sqlite3 *db = sqlite3_context_db_handle(context);   /* Database connection */
 #ifdef SQLITE_ENABLE_STAT4
   /* Maximum number of samples.  0 if STAT4 data is not collected */
-  int mxSample = OptimizationEnabled(db,SQLITE_Stat4) ?SQLITE_STAT4_SAMPLES :0;
+  पूर्णांक mxSample = OptimizationEnabled(db,SQLITE_Stat4) ?SQLITE_STAT4_SAMPLES :0;
 #endif
 
   /* Decode the three function arguments */
   UNUSED_PARAMETER(argc);
-  nCol = sqlite3_value_int(argv[0]);
-  assert( nCol>0 );
-  nColUp = sizeof(tRowcnt)<8 ? (nCol+1)&~1 : nCol;
-  nKeyCol = sqlite3_value_int(argv[1]);
-  assert( nKeyCol<=nCol );
-  assert( nKeyCol>0 );
+  nCol = sqlite3_मूल्य_int(argv[0]);
+  प्रतिज्ञा( nCol>0 );
+  nColUp = आकार(tRowcnt)<8 ? (nCol+1)&~1 : nCol;
+  n_किल्ली_Col = sqlite3_मूल्य_int(argv[1]);
+  प्रतिज्ञा( n_किल्ली_Col<=nCol );
+  प्रतिज्ञा( n_किल्ली_Col>0 );
 
   /* Allocate the space required for the StatAccum object */
-  n = sizeof(*p) 
-    + sizeof(tRowcnt)*nColUp;                    /* StatAccum.anDLt */
+  n = आकार(*p) 
+    + आकार(tRowcnt)*nColUp;                    /* StatAccum.anDLt */
 #ifdef SQLITE_ENABLE_STAT4
-  n += sizeof(tRowcnt)*nColUp;                   /* StatAccum.anEq */
-  if( mxSample ){
-    n += sizeof(tRowcnt)*nColUp                  /* StatAccum.anLt */
-      + sizeof(StatSample)*(nCol+mxSample)       /* StatAccum.aBest[], a[] */
-      + sizeof(tRowcnt)*3*nColUp*(nCol+mxSample);
+  n += आकार(tRowcnt)*nColUp;                   /* StatAccum.anEq */
+  जर( mxSample ){
+    n += आकार(tRowcnt)*nColUp                  /* StatAccum.anLt */
+      + आकार(StatSample)*(nCol+mxSample)       /* StatAccum.aBest[], a[] */
+      + आकार(tRowcnt)*3*nColUp*(nCol+mxSample);
   }
 #endif
   p = sqlite3DbMallocZero(db, n);
-  if( p==0 ){
+  जर( p==0 ){
     sqlite3_result_error_nomem(context);
-    return;
+    परत;
   }
 
   p->db = db;
-  p->nEst = sqlite3_value_int64(argv[2]);
+  p->nEst = sqlite3_मूल्य_int64(argv[2]);
   p->nRow = 0;
-  p->nLimit = sqlite3_value_int(argv[3]);
+  p->nLimit = sqlite3_मूल्य_int(argv[3]);
   p->nCol = nCol;
-  p->nKeyCol = nKeyCol;
+  p->n_किल्ली_Col = n_किल्ली_Col;
   p->nSkipAhead = 0;
   p->current.anDLt = (tRowcnt*)&p[1];
 
 #ifdef SQLITE_ENABLE_STAT4
   p->current.anEq = &p->current.anDLt[nColUp];
   p->mxSample = p->nLimit==0 ? mxSample : 0;
-  if( mxSample ){
+  जर( mxSample ){
     u8 *pSpace;                     /* Allocated space not yet assigned */
-    int i;                          /* Used to iterate through p->aSample[] */
+    पूर्णांक i;                          /* Used to iterate through p->aSample[] */
 
     p->iGet = -1;
     p->nPSample = (tRowcnt)(p->nEst/(mxSample/3+1) + 1);
     p->current.anLt = &p->current.anEq[nColUp];
-    p->iPrn = 0x689e962d*(u32)nCol ^ 0xd0944565*(u32)sqlite3_value_int(argv[2]);
+    p->iPrn = 0x689e962d*(u32)nCol ^ 0xd0944565*(u32)sqlite3_मूल्य_int(argv[2]);
   
     /* Set up the StatAccum.a[] and aBest[] arrays */
-    p->a = (struct StatSample*)&p->current.anLt[nColUp];
+    p->a = (संरचना StatSample*)&p->current.anLt[nColUp];
     p->aBest = &p->a[mxSample];
     pSpace = (u8*)(&p->a[mxSample+nCol]);
-    for(i=0; i<(mxSample+nCol); i++){
-      p->a[i].anEq = (tRowcnt *)pSpace; pSpace += (sizeof(tRowcnt) * nColUp);
-      p->a[i].anLt = (tRowcnt *)pSpace; pSpace += (sizeof(tRowcnt) * nColUp);
-      p->a[i].anDLt = (tRowcnt *)pSpace; pSpace += (sizeof(tRowcnt) * nColUp);
+    साठी(i=0; i<(mxSample+nCol); i++){
+      p->a[i].anEq = (tRowcnt *)pSpace; pSpace += (आकार(tRowcnt) * nColUp);
+      p->a[i].anLt = (tRowcnt *)pSpace; pSpace += (आकार(tRowcnt) * nColUp);
+      p->a[i].anDLt = (tRowcnt *)pSpace; pSpace += (आकार(tRowcnt) * nColUp);
     }
-    assert( (pSpace - (u8*)p)==n );
+    प्रतिज्ञा( (pSpace - (u8*)p)==n );
   
-    for(i=0; i<nCol; i++){
+    साठी(i=0; i<nCol; i++){
       p->aBest[i].iCol = i;
     }
   }
@@ -482,9 +482,9 @@ static void statInit(
   ** only the pointer (the 2nd parameter) matters.  The size of the object
   ** (given by the 3rd parameter) is never used and can be any positive
   ** value. */
-  sqlite3_result_blob(context, p, sizeof(*p), statAccumDestructor);
+  sqlite3_result_blob(context, p, आकार(*p), statAccumDestructor);
 }
-static const FuncDef statInitFuncdef = {
+स्थिर स्थिरांक FuncDef statInitFuncdef = {
   4,               /* nArg */
   SQLITE_UTF8,     /* funcFlags */
   0,               /* pUserData */
@@ -508,20 +508,20 @@ static const FuncDef statInitFuncdef = {
 ** This function assumes that for each argument sample, the contents of
 ** the anEq[] array from pSample->anEq[pSample->iCol+1] onwards are valid. 
 */
-static int sampleIsBetterPost(
+स्थिर पूर्णांक sampleIsBetterPost(
   StatAccum *pAccum, 
   StatSample *pNew, 
   StatSample *pOld
 ){
-  int nCol = pAccum->nCol;
-  int i;
-  assert( pNew->iCol==pOld->iCol );
-  for(i=pNew->iCol+1; i<nCol; i++){
-    if( pNew->anEq[i]>pOld->anEq[i] ) return 1;
-    if( pNew->anEq[i]<pOld->anEq[i] ) return 0;
+  पूर्णांक nCol = pAccum->nCol;
+  पूर्णांक i;
+  प्रतिज्ञा( pNew->iCol==pOld->iCol );
+  साठी(i=pNew->iCol+1; i<nCol; i++){
+    जर( pNew->anEq[i]>pOld->anEq[i] ) परत 1;
+    जर( pNew->anEq[i]<pOld->anEq[i] ) परत 0;
   }
-  if( pNew->iHash>pOld->iHash ) return 1;
-  return 0;
+  जर( pNew->iHash>pOld->iHash ) परत 1;
+  परत 0;
 }
 #endif
 
@@ -532,7 +532,7 @@ static int sampleIsBetterPost(
 ** This function assumes that for each argument sample, the contents of
 ** the anEq[] array from pSample->anEq[pSample->iCol] onwards are valid. 
 */
-static int sampleIsBetter(
+स्थिर पूर्णांक sampleIsBetter(
   StatAccum *pAccum, 
   StatSample *pNew, 
   StatSample *pOld
@@ -540,69 +540,69 @@ static int sampleIsBetter(
   tRowcnt nEqNew = pNew->anEq[pNew->iCol];
   tRowcnt nEqOld = pOld->anEq[pOld->iCol];
 
-  assert( pOld->isPSample==0 && pNew->isPSample==0 );
-  assert( IsStat4 || (pNew->iCol==0 && pOld->iCol==0) );
+  प्रतिज्ञा( pOld->isPSample==0 && pNew->isPSample==0 );
+  प्रतिज्ञा( IsStat4 || (pNew->iCol==0 && pOld->iCol==0) );
 
-  if( (nEqNew>nEqOld) ) return 1;
-  if( nEqNew==nEqOld ){
-    if( pNew->iCol<pOld->iCol ) return 1;
-    return (pNew->iCol==pOld->iCol && sampleIsBetterPost(pAccum, pNew, pOld));
+  जर( (nEqNew>nEqOld) ) परत 1;
+  जर( nEqNew==nEqOld ){
+    जर( pNew->iCol<pOld->iCol ) परत 1;
+    परत (pNew->iCol==pOld->iCol && sampleIsBetterPost(pAccum, pNew, pOld));
   }
-  return 0;
+  परत 0;
 }
 
 /*
 ** Copy the contents of sample *pNew into the p->a[] array. If necessary,
 ** remove the least desirable sample from p->a[] to make room.
 */
-static void sampleInsert(StatAccum *p, StatSample *pNew, int nEqZero){
+स्थिर शून्य sample_घाला(StatAccum *p, StatSample *pNew, पूर्णांक nEqZero){
   StatSample *pSample = 0;
-  int i;
+  पूर्णांक i;
 
-  assert( IsStat4 || nEqZero==0 );
+  प्रतिज्ञा( IsStat4 || nEqZero==0 );
 
   /* StatAccum.nMaxEqZero is set to the maximum number of leading 0
   ** values in the anEq[] array of any sample in StatAccum.a[]. In
   ** other words, if nMaxEqZero is n, then it is guaranteed that there
   ** are no samples with StatSample.anEq[m]==0 for (m>=n). */
-  if( nEqZero>p->nMaxEqZero ){
+  जर( nEqZero>p->nMaxEqZero ){
     p->nMaxEqZero = nEqZero;
   }
-  if( pNew->isPSample==0 ){
+  जर( pNew->isPSample==0 ){
     StatSample *pUpgrade = 0;
-    assert( pNew->anEq[pNew->iCol]>0 );
+    प्रतिज्ञा( pNew->anEq[pNew->iCol]>0 );
 
     /* This sample is being added because the prefix that ends in column 
     ** iCol occurs many times in the table. However, if we have already
     ** added a sample that shares this prefix, there is no need to add
     ** this one. Instead, upgrade the priority of the highest priority
     ** existing sample that shares this prefix.  */
-    for(i=p->nSample-1; i>=0; i--){
+    साठी(i=p->nSample-1; i>=0; i--){
       StatSample *pOld = &p->a[i];
-      if( pOld->anEq[pNew->iCol]==0 ){
-        if( pOld->isPSample ) return;
-        assert( pOld->iCol>pNew->iCol );
-        assert( sampleIsBetter(p, pNew, pOld) );
-        if( pUpgrade==0 || sampleIsBetter(p, pOld, pUpgrade) ){
+      जर( pOld->anEq[pNew->iCol]==0 ){
+        जर( pOld->isPSample ) परत;
+        प्रतिज्ञा( pOld->iCol>pNew->iCol );
+        प्रतिज्ञा( sampleIsBetter(p, pNew, pOld) );
+        जर( pUpgrade==0 || sampleIsBetter(p, pOld, pUpgrade) ){
           pUpgrade = pOld;
         }
       }
     }
-    if( pUpgrade ){
+    जर( pUpgrade ){
       pUpgrade->iCol = pNew->iCol;
       pUpgrade->anEq[pUpgrade->iCol] = pNew->anEq[pUpgrade->iCol];
-      goto find_new_min;
+      जा find_new_min;
     }
   }
 
   /* If necessary, remove sample iMin to make room for the new sample. */
-  if( p->nSample>=p->mxSample ){
+  जर( p->nSample>=p->mxSample ){
     StatSample *pMin = &p->a[p->iMin];
     tRowcnt *anEq = pMin->anEq;
     tRowcnt *anLt = pMin->anLt;
     tRowcnt *anDLt = pMin->anDLt;
     sampleClear(p->db, pMin);
-    memmove(pMin, &pMin[1], sizeof(p->a[0])*(p->nSample-p->iMin-1));
+    स_हटाओ(pMin, &pMin[1], आकार(p->a[0])*(p->nSample-p->iMin-1));
     pSample = &p->a[p->nSample-1];
     pSample->nRowid = 0;
     pSample->anEq = anEq;
@@ -614,7 +614,7 @@ static void sampleInsert(StatAccum *p, StatSample *pNew, int nEqZero){
   /* The "rows less-than" for the rowid column must be greater than that
   ** for the last sample in the p->a[] array. Otherwise, the samples would
   ** be out of order. */
-  assert( p->nSample==0 
+  प्रतिज्ञा( p->nSample==0 
        || pNew->anLt[p->nCol-1] > p->a[p->nSample-1].anLt[p->nCol-1] );
 
   /* Insert the new sample */
@@ -623,18 +623,18 @@ static void sampleInsert(StatAccum *p, StatSample *pNew, int nEqZero){
   p->nSample++;
 
   /* Zero the first nEqZero entries in the anEq[] array. */
-  memset(pSample->anEq, 0, sizeof(tRowcnt)*nEqZero);
+  स_रखो(pSample->anEq, 0, आकार(tRowcnt)*nEqZero);
 
 find_new_min:
-  if( p->nSample>=p->mxSample ){
-    int iMin = -1;
-    for(i=0; i<p->mxSample; i++){
-      if( p->a[i].isPSample ) continue;
-      if( iMin<0 || sampleIsBetter(p, &p->a[iMin], &p->a[i]) ){
+  जर( p->nSample>=p->mxSample ){
+    पूर्णांक iMin = -1;
+    साठी(i=0; i<p->mxSample; i++){
+      जर( p->a[i].isPSample ) सुरूठेवा;
+      जर( iMin<0 || sampleIsBetter(p, &p->a[iMin], &p->a[i]) ){
         iMin = i;
       }
     }
-    assert( iMin>=0 );
+    प्रतिज्ञा( iMin>=0 );
     p->iMin = iMin;
   }
 }
@@ -647,32 +647,32 @@ find_new_min:
 ** index. The value of anEq[iChng] and subsequent anEq[] elements are
 ** correct at this point.
 */
-static void samplePushPrevious(StatAccum *p, int iChng){
-  int i;
+स्थिर शून्य sample_ढकला_Previous(StatAccum *p, पूर्णांक iChng){
+  पूर्णांक i;
 
   /* Check if any samples from the aBest[] array should be pushed
   ** into IndexSample.a[] at this point.  */
-  for(i=(p->nCol-2); i>=iChng; i--){
+  साठी(i=(p->nCol-2); i>=iChng; i--){
     StatSample *pBest = &p->aBest[i];
     pBest->anEq[i] = p->current.anEq[i];
-    if( p->nSample<p->mxSample || sampleIsBetter(p, pBest, &p->a[p->iMin]) ){
-      sampleInsert(p, pBest, i);
+    जर( p->nSample<p->mxSample || sampleIsBetter(p, pBest, &p->a[p->iMin]) ){
+      sample_घाला(p, pBest, i);
     }
   }
 
   /* Check that no sample contains an anEq[] entry with an index of
   ** p->nMaxEqZero or greater set to zero. */
-  for(i=p->nSample-1; i>=0; i--){
-    int j;
-    for(j=p->nMaxEqZero; j<p->nCol; j++) assert( p->a[i].anEq[j]>0 );
+  साठी(i=p->nSample-1; i>=0; i--){
+    पूर्णांक j;
+    साठी(j=p->nMaxEqZero; j<p->nCol; j++) प्रतिज्ञा( p->a[i].anEq[j]>0 );
   }
 
   /* Update the anEq[] fields of any samples already collected. */
-  if( iChng<p->nMaxEqZero ){
-    for(i=p->nSample-1; i>=0; i--){
-      int j;
-      for(j=iChng; j<p->nCol; j++){
-        if( p->a[i].anEq[j]==0 ) p->a[i].anEq[j] = p->current.anEq[j];
+  जर( iChng<p->nMaxEqZero ){
+    साठी(i=p->nSample-1; i>=0; i--){
+      पूर्णांक j;
+      साठी(j=iChng; j<p->nCol; j++){
+        जर( p->a[i].anEq[j]==0 ) p->a[i].anEq[j] = p->current.anEq[j];
       }
     }
     p->nMaxEqZero = iChng;
@@ -699,44 +699,44 @@ static void samplePushPrevious(StatAccum *p, int iChng){
 **
 ** The R parameter is only used for STAT4
 */
-static void statPush(
+स्थिर शून्य stat_ढकला(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  int i;
+  पूर्णांक i;
 
   /* The three function arguments */
-  StatAccum *p = (StatAccum*)sqlite3_value_blob(argv[0]);
-  int iChng = sqlite3_value_int(argv[1]);
+  StatAccum *p = (StatAccum*)sqlite3_मूल्य_blob(argv[0]);
+  पूर्णांक iChng = sqlite3_मूल्य_int(argv[1]);
 
   UNUSED_PARAMETER( argc );
   UNUSED_PARAMETER( context );
-  assert( p->nCol>0 );
-  assert( iChng<p->nCol );
+  प्रतिज्ञा( p->nCol>0 );
+  प्रतिज्ञा( iChng<p->nCol );
 
-  if( p->nRow==0 ){
+  जर( p->nRow==0 ){
     /* This is the first call to this function. Do initialization. */
 #ifdef SQLITE_ENABLE_STAT4
-    for(i=0; i<p->nCol; i++) p->current.anEq[i] = 1;
+    साठी(i=0; i<p->nCol; i++) p->current.anEq[i] = 1;
 #endif
-  }else{
+  }अन्यथा{
     /* Second and subsequent calls get processed here */
 #ifdef SQLITE_ENABLE_STAT4
-    if( p->mxSample ) samplePushPrevious(p, iChng);
+    जर( p->mxSample ) sample_ढकला_Previous(p, iChng);
 #endif
 
     /* Update anDLt[], anLt[] and anEq[] to reflect the values that apply
     ** to the current row of the index. */
 #ifdef SQLITE_ENABLE_STAT4
-    for(i=0; i<iChng; i++){
+    साठी(i=0; i<iChng; i++){
       p->current.anEq[i]++;
     }
 #endif
-    for(i=iChng; i<p->nCol; i++){
+    साठी(i=iChng; i<p->nCol; i++){
       p->current.anDLt[i]++;
 #ifdef SQLITE_ENABLE_STAT4
-      if( p->mxSample ) p->current.anLt[i] += p->current.anEq[i];
+      जर( p->mxSample ) p->current.anLt[i] += p->current.anEq[i];
       p->current.anEq[i] = 1;
 #endif
     }
@@ -744,46 +744,46 @@ static void statPush(
 
   p->nRow++;
 #ifdef SQLITE_ENABLE_STAT4
-  if( p->mxSample ){
+  जर( p->mxSample ){
     tRowcnt nLt;
-    if( sqlite3_value_type(argv[2])==SQLITE_INTEGER ){
-      sampleSetRowidInt64(p->db, &p->current, sqlite3_value_int64(argv[2]));
-    }else{
-      sampleSetRowid(p->db, &p->current, sqlite3_value_bytes(argv[2]),
-                                         sqlite3_value_blob(argv[2]));
+    जर( sqlite3_मूल्य_type(argv[2])==SQLITE_INTEGER ){
+      sampleSetRowidInt64(p->db, &p->current, sqlite3_मूल्य_int64(argv[2]));
+    }अन्यथा{
+      sampleSetRowid(p->db, &p->current, sqlite3_मूल्य_bytes(argv[2]),
+                                         sqlite3_मूल्य_blob(argv[2]));
     }
     p->current.iHash = p->iPrn = p->iPrn*1103515245 + 12345;
 
     nLt = p->current.anLt[p->nCol-1];
     /* Check if this is to be a periodic sample. If so, add it. */
-    if( (nLt/p->nPSample)!=(nLt+1)/p->nPSample ){
+    जर( (nLt/p->nPSample)!=(nLt+1)/p->nPSample ){
       p->current.isPSample = 1;
       p->current.iCol = 0;
-      sampleInsert(p, &p->current, p->nCol-1);
+      sample_घाला(p, &p->current, p->nCol-1);
       p->current.isPSample = 0;
     }
 
     /* Update the aBest[] array. */
-    for(i=0; i<(p->nCol-1); i++){
+    साठी(i=0; i<(p->nCol-1); i++){
       p->current.iCol = i;
-      if( i>=iChng || sampleIsBetterPost(p, &p->current, &p->aBest[i]) ){
+      जर( i>=iChng || sampleIsBetterPost(p, &p->current, &p->aBest[i]) ){
         sampleCopy(p, &p->aBest[i], &p->current);
       }
     }
-  }else
+  }अन्यथा
 #endif
-  if( p->nLimit && p->nRow>(tRowcnt)p->nLimit*(p->nSkipAhead+1) ){
+  जर( p->nLimit && p->nRow>(tRowcnt)p->nLimit*(p->nSkipAhead+1) ){
     p->nSkipAhead++;
     sqlite3_result_int(context, p->current.anDLt[0]>0);
   }
 }
 
-static const FuncDef statPushFuncdef = {
+स्थिर स्थिरांक FuncDef stat_ढकला_Funcdef = {
   2+IsStat4,       /* nArg */
   SQLITE_UTF8,     /* funcFlags */
   0,               /* pUserData */
   0,               /* pNext */
-  statPush,        /* xSFunc */
+  stat_ढकला,        /* xSFunc */
   0,               /* xFinalize */
   0, 0,            /* xValue, xInverse */
   "stat_push",     /* zName */
@@ -815,24 +815,24 @@ static const FuncDef statPushFuncdef = {
 ** a one-parameter function, stat_get(P), that always returns the
 ** stat1 table entry information.
 */
-static void statGet(
+स्थिर शून्य statGet(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  पूर्णांक argc,
+  sqlite3_मूल्य **argv
 ){
-  StatAccum *p = (StatAccum*)sqlite3_value_blob(argv[0]);
+  StatAccum *p = (StatAccum*)sqlite3_मूल्य_blob(argv[0]);
 #ifdef SQLITE_ENABLE_STAT4
   /* STAT4 has a parameter on this routine. */
-  int eCall = sqlite3_value_int(argv[1]);
-  assert( argc==2 );
-  assert( eCall==STAT_GET_STAT1 || eCall==STAT_GET_NEQ 
+  पूर्णांक eCall = sqlite3_मूल्य_int(argv[1]);
+  प्रतिज्ञा( argc==2 );
+  प्रतिज्ञा( eCall==STAT_GET_STAT1 || eCall==STAT_GET_NEQ 
        || eCall==STAT_GET_ROWID || eCall==STAT_GET_NLT
        || eCall==STAT_GET_NDLT 
   );
-  assert( eCall==STAT_GET_STAT1 || p->mxSample );
-  if( eCall==STAT_GET_STAT1 )
-#else
-  assert( argc==1 );
+  प्रतिज्ञा( eCall==STAT_GET_STAT1 || p->mxSample );
+  जर( eCall==STAT_GET_STAT1 )
+#अन्यथा
+  प्रतिज्ञा( argc==1 );
 #endif
   {
     /* Return the value to store in the "stat" column of the sqlite_stat1
@@ -862,57 +862,57 @@ static void statGet(
     ** instead keep the I value at 1.0.
     */
     sqlite3_str sStat;   /* Text of the constructed "stat" line */
-    int i;               /* Loop counter */
+    पूर्णांक i;               /* Loop counter */
 
-    sqlite3StrAccumInit(&sStat, 0, 0, 0, (p->nKeyCol+1)*100);
+    sqlite3StrAccumInit(&sStat, 0, 0, 0, (p->n_किल्ली_Col+1)*100);
     sqlite3_str_appendf(&sStat, "%llu", 
         p->nSkipAhead ? (u64)p->nEst : (u64)p->nRow);
-    for(i=0; i<p->nKeyCol; i++){
+    साठी(i=0; i<p->n_किल्ली_Col; i++){
       u64 nDistinct = p->current.anDLt[i] + 1;
       u64 iVal = (p->nRow + nDistinct - 1) / nDistinct;
-      if( iVal==2 && p->nRow*10 <= nDistinct*11 ) iVal = 1;
+      जर( iVal==2 && p->nRow*10 <= nDistinct*11 ) iVal = 1;
       sqlite3_str_appendf(&sStat, " %llu", iVal);
 #ifdef SQLITE_ENABLE_STAT4
-      assert( p->current.anEq[i] || p->nRow==0 );
+      प्रतिज्ञा( p->current.anEq[i] || p->nRow==0 );
 #endif
     }
     sqlite3_result_str(context, &sStat, SQLITE_XFER);
   }
 #ifdef SQLITE_ENABLE_STAT4
-  else if( eCall==STAT_GET_ROWID ){
-    if( p->iGet<0 ){
-      samplePushPrevious(p, 0);
+  अन्यथा जर( eCall==STAT_GET_ROWID ){
+    जर( p->iGet<0 ){
+      sample_ढकला_Previous(p, 0);
       p->iGet = 0;
     }
-    if( p->iGet<p->nSample ){
+    जर( p->iGet<p->nSample ){
       StatSample *pS = p->a + p->iGet;
-      if( pS->nRowid==0 ){
+      जर( pS->nRowid==0 ){
         sqlite3_result_int64(context, pS->u.iRowid);
-      }else{
+      }अन्यथा{
         sqlite3_result_blob(context, pS->u.aRowid, pS->nRowid,
                             SQLITE_TRANSIENT);
       }
     }
-  }else{
+  }अन्यथा{
     tRowcnt *aCnt = 0;
     sqlite3_str sStat;
-    int i;
+    पूर्णांक i;
 
-    assert( p->iGet<p->nSample );
-    switch( eCall ){
-      case STAT_GET_NEQ:  aCnt = p->a[p->iGet].anEq; break;
-      case STAT_GET_NLT:  aCnt = p->a[p->iGet].anLt; break;
-      default: {
+    प्रतिज्ञा( p->iGet<p->nSample );
+    निवड( eCall ){
+      स्थिती STAT_GET_NEQ:  aCnt = p->a[p->iGet].anEq; थांबा;
+      स्थिती STAT_GET_NLT:  aCnt = p->a[p->iGet].anLt; थांबा;
+      पूर्वनिर्धारित: {
         aCnt = p->a[p->iGet].anDLt; 
         p->iGet++;
-        break;
+        थांबा;
       }
     }
     sqlite3StrAccumInit(&sStat, 0, 0, 0, p->nCol*100);
-    for(i=0; i<p->nCol; i++){
+    साठी(i=0; i<p->nCol; i++){
       sqlite3_str_appendf(&sStat, "%llu ", (u64)aCnt[i]);
     }
-    if( sStat.nChar ) sStat.nChar--;
+    जर( sStat.nChar ) sStat.nChar--;
     sqlite3_result_str(context, &sStat, SQLITE_XFER);
   }
 #endif /* SQLITE_ENABLE_STAT4 */
@@ -920,7 +920,7 @@ static void statGet(
   UNUSED_PARAMETER( argc );
 #endif
 }
-static const FuncDef statGetFuncdef = {
+स्थिर स्थिरांक FuncDef statGetFuncdef = {
   1+IsStat4,       /* nArg */
   SQLITE_UTF8,     /* funcFlags */
   0,               /* pUserData */
@@ -932,15 +932,15 @@ static const FuncDef statGetFuncdef = {
   {0}
 };
 
-static void callStatGet(Parse *pParse, int regStat, int iParam, int regOut){
+स्थिर शून्य callStatGet(Parse *pParse, पूर्णांक regStat, पूर्णांक iParam, पूर्णांक regOut){
 #ifdef SQLITE_ENABLE_STAT4
   sqlite3VdbeAddOp2(pParse->pVdbe, OP_Integer, iParam, regStat+1);
-#elif SQLITE_DEBUG
-  assert( iParam==STAT_GET_STAT1 );
-#else
+#किंवाजर SQLITE_DEBUG
+  प्रतिज्ञा( iParam==STAT_GET_STAT1 );
+#अन्यथा
   UNUSED_PARAMETER( iParam );
 #endif
-  assert( regOut!=regStat && regOut!=regStat+1 );
+  प्रतिज्ञा( regOut!=regStat && regOut!=regStat+1 );
   sqlite3VdbeAddFunctionCall(pParse, 0, regStat, regOut, 1+IsStat4,
                              &statGetFuncdef, 0);
 }
@@ -949,24 +949,24 @@ static void callStatGet(Parse *pParse, int regStat, int iParam, int regOut){
 /* Add a comment to the most recent VDBE opcode that is the name
 ** of the k-th column of the pIdx index.
 */
-static void analyzeVdbeCommentIndexWithColumnName(
+स्थिर शून्य analyzeVdbeCommentIndexWithColumnName(
   Vdbe *v,         /* Prepared statement under construction */
   Index *pIdx,     /* Index whose column is being loaded */
-  int k            /* Which column index */
+  पूर्णांक k            /* Which column index */
 ){
-  int i;           /* Index of column in the table */
-  assert( k>=0 && k<pIdx->nColumn );
+  पूर्णांक i;           /* Index of column in the table */
+  प्रतिज्ञा( k>=0 && k<pIdx->nColumn );
   i = pIdx->aiColumn[k];
-  if( NEVER(i==XN_ROWID) ){
+  जर( NEVER(i==XN_ROWID) ){
     VdbeComment((v,"%s.rowid",pIdx->zName));
-  }else if( i==XN_EXPR ){
-    assert( pIdx->bHasExpr );
+  }अन्यथा जर( i==XN_अभिव्यक्ती ){
+    प्रतिज्ञा( pIdx->b_Has_अभिव्यक्ती );
     VdbeComment((v,"%s.expr(%d)",pIdx->zName, k));
-  }else{
+  }अन्यथा{
     VdbeComment((v,"%s.%s", pIdx->zName, pIdx->pTable->aCol[i].zCnName));
   }
 }
-#else
+#अन्यथा
 # define analyzeVdbeCommentIndexWithColumnName(a,b,c)
 #endif /* SQLITE_DEBUG */
 
@@ -974,74 +974,74 @@ static void analyzeVdbeCommentIndexWithColumnName(
 ** Generate code to do an analysis of all indices associated with
 ** a single table.
 */
-static void analyzeOneTable(
+स्थिर शून्य analyzeOneTable(
   Parse *pParse,   /* Parser context */
   Table *pTab,     /* Table whose indices are to be analyzed */
   Index *pOnlyIdx, /* If not NULL, only analyze this one index */
-  int iStatCur,    /* Index of VdbeCursor that writes the sqlite_stat1 table */
-  int iMem,        /* Available memory locations begin here */
-  int iTab         /* Next available cursor */
+  पूर्णांक iStatCur,    /* Index of VdbeCursor that writes the sqlite_stat1 table */
+  पूर्णांक iMem,        /* Available memory locations begin here */
+  पूर्णांक iTab         /* Next available cursor */
 ){
   sqlite3 *db = pParse->db;    /* Database handle */
   Index *pIdx;                 /* An index to being analyzed */
-  int iIdxCur;                 /* Cursor open on index being analyzed */
-  int iTabCur;                 /* Table cursor */
+  पूर्णांक iIdxCur;                 /* Cursor open on index being analyzed */
+  पूर्णांक iTabCur;                 /* Table cursor */
   Vdbe *v;                     /* The virtual machine being built up */
-  int i;                       /* Loop counter */
-  int jZeroRows = -1;          /* Jump from here if number of rows is zero */
-  int iDb;                     /* Index of database containing pTab */
+  पूर्णांक i;                       /* Loop counter */
+  पूर्णांक jZeroRows = -1;          /* Jump from here if number of rows is zero */
+  पूर्णांक iDb;                     /* Index of database containing pTab */
   u8 needTableCnt = 1;         /* True to count the table */
-  int regNewRowid = iMem++;    /* Rowid for the inserted record */
-  int regStat = iMem++;        /* Register to hold StatAccum object */
-  int regChng = iMem++;        /* Index of changed index field */
-  int regRowid = iMem++;       /* Rowid argument passed to stat_push() */
-  int regTemp = iMem++;        /* Temporary use register */
-  int regTemp2 = iMem++;       /* Second temporary use register */
-  int regTabname = iMem++;     /* Register containing table name */
-  int regIdxname = iMem++;     /* Register containing index name */
-  int regStat1 = iMem++;       /* Value for the stat column of sqlite_stat1 */
-  int regPrev = iMem;          /* MUST BE LAST (see below) */
+  पूर्णांक regNewRowid = iMem++;    /* Rowid for the inserted record */
+  पूर्णांक regStat = iMem++;        /* Register to hold StatAccum object */
+  पूर्णांक regChng = iMem++;        /* Index of changed index field */
+  पूर्णांक regRowid = iMem++;       /* Rowid argument passed to stat_push() */
+  पूर्णांक regTemp = iMem++;        /* Temporary use register */
+  पूर्णांक regTemp2 = iMem++;       /* Second temporary use register */
+  पूर्णांक regTabname = iMem++;     /* Register containing table name */
+  पूर्णांक regIdxname = iMem++;     /* Register containing index name */
+  पूर्णांक regStat1 = iMem++;       /* Value for the stat column of sqlite_stat1 */
+  पूर्णांक regPrev = iMem;          /* MUST BE LAST (see below) */
 #ifdef SQLITE_ENABLE_STAT4
-  int doOnce = 1;              /* Flag for a one-time computation */
+  पूर्णांक doOnce = 1;              /* Flag for a one-time computation */
 #endif
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
   Table *pStat1 = 0;
 #endif
 
   sqlite3TouchRegister(pParse, iMem);
-  assert( sqlite3NoTempsInRange(pParse, regNewRowid, iMem) );
+  प्रतिज्ञा( sqlite3NoTempsInRange(pParse, regNewRowid, iMem) );
   v = sqlite3GetVdbe(pParse);
-  if( v==0 || NEVER(pTab==0) ){
-    return;
+  जर( v==0 || NEVER(pTab==0) ){
+    परत;
   }
-  if( !IsOrdinaryTable(pTab) ){
+  जर( !IsOrdinaryTable(pTab) ){
     /* Do not gather statistics on views or virtual tables */
-    return;
+    परत;
   }
-  if( sqlite3_strlike("sqlite\\_%", pTab->zName, '\\')==0 ){
+  जर( sqlite3_strlike("sqlite\\_%", pTab->zName, '\\')==0 ){
     /* Do not gather statistics on system tables */
-    return;
+    परत;
   }
-  assert( sqlite3BtreeHoldsAllMutexes(db) );
+  प्रतिज्ञा( sqlite3BtreeHoldsAllMutexes(db) );
   iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb>=0 );
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  प्रतिज्ञा( iDb>=0 );
+  प्रतिज्ञा( sqlite3SchemaMutexHeld(db, iDb, 0) );
 #ifndef SQLITE_OMIT_AUTHORIZATION
-  if( sqlite3AuthCheck(pParse, SQLITE_ANALYZE, pTab->zName, 0,
+  जर( sqlite3AuthCheck(pParse, SQLITE_ANALYZE, pTab->zName, 0,
       db->aDb[iDb].zDbSName ) ){
-    return;
+    परत;
   }
 #endif
 
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-  if( db->xPreUpdateCallback ){
-    pStat1 = (Table*)sqlite3DbMallocZero(db, sizeof(Table) + 13);
-    if( pStat1==0 ) return;
-    pStat1->zName = (char*)&pStat1[1];
-    memcpy(pStat1->zName, "sqlite_stat1", 13);
+  जर( db->xPreUpdateCallback ){
+    pStat1 = (Table*)sqlite3DbMallocZero(db, आकार(Table) + 13);
+    जर( pStat1==0 ) परत;
+    pStat1->zName = (अक्षर*)&pStat1[1];
+    स_नकल(pStat1->zName, "sqlite_stat1", 13);
     pStat1->nCol = 3;
     pStat1->iPKey = -1;
-    sqlite3VdbeAddOp4(pParse->pVdbe, OP_Noop, 0, 0, 0,(char*)pStat1,P4_DYNAMIC);
+    sqlite3VdbeAddOp4(pParse->pVdbe, OP_Noop, 0, 0, 0,(अक्षर*)pStat1,P4_DYNAMIC);
   }
 #endif
 
@@ -1056,23 +1056,23 @@ static void analyzeOneTable(
   sqlite3OpenTable(pParse, iTabCur, iDb, pTab, OP_OpenRead);
   sqlite3VdbeLoadString(v, regTabname, pTab->zName);
 
-  for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-    int nCol;                     /* Number of columns in pIdx. "N" */
-    int addrGotoEnd;               /* Address of "OP_Rewind iIdxCur" */
-    int addrNextRow;              /* Address of "next_row:" */
-    const char *zIdxName;         /* Name of the index */
-    int nColTest;                 /* Number of columns to test for changes */
+  साठी(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+    पूर्णांक nCol;                     /* Number of columns in pIdx. "N" */
+    पूर्णांक addrGotoEnd;               /* Address of "OP_Rewind iIdxCur" */
+    पूर्णांक addrNextRow;              /* Address of "next_row:" */
+    स्थिरांक अक्षर *zIdxName;         /* Name of the index */
+    पूर्णांक nColTest;                 /* Number of columns to test for changes */
 
-    if( pOnlyIdx && pOnlyIdx!=pIdx ) continue;
-    if( pIdx->pPartIdxWhere==0 ) needTableCnt = 0;
-    if( !HasRowid(pTab) && IsPrimaryKeyIndex(pIdx) ){
-      nCol = pIdx->nKeyCol;
+    जर( pOnlyIdx && pOnlyIdx!=pIdx ) सुरूठेवा;
+    जर( pIdx->pPartIdxWhere==0 ) needTableCnt = 0;
+    जर( !HasRowid(pTab) && Is_Primary_किल्ली_Index(pIdx) ){
+      nCol = pIdx->n_किल्ली_Col;
       zIdxName = pTab->zName;
       nColTest = nCol - 1;
-    }else{
+    }अन्यथा{
       nCol = pIdx->nColumn;
       zIdxName = pIdx->zName;
-      nColTest = pIdx->uniqNotNull ? pIdx->nKeyCol-1 : nCol-1;
+      nColTest = pIdx->uniqNotNull ? pIdx->n_किल्ली_Col-1 : nCol-1;
     }
 
     /* Populate the register containing the index name. */
@@ -1123,9 +1123,9 @@ static void analyzeOneTable(
     sqlite3TouchRegister(pParse, regPrev+nColTest);
 
     /* Open a read-only cursor on the index being analyzed. */
-    assert( iDb==sqlite3SchemaToIndex(db, pIdx->pSchema) );
+    प्रतिज्ञा( iDb==sqlite3SchemaToIndex(db, pIdx->pSchema) );
     sqlite3VdbeAddOp3(v, OP_OpenRead, iIdxCur, pIdx->tnum, iDb);
-    sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+    sqlite3_Vdbe_Set_P4_किल्ली_Info(pParse, pIdx);
     VdbeComment((v, "%s", pIdx->zName));
 
     /* Implementation of the following:
@@ -1140,7 +1140,7 @@ static void analyzeOneTable(
     **   stat_init()
     **   goto chng_addr_0;
     */
-    assert( regTemp2==regStat+4 );
+    प्रतिज्ञा( regTemp2==regStat+4 );
     sqlite3VdbeAddOp2(v, OP_Integer, db->nAnalysisLimit, regTemp2);
 
     /* Arguments to stat_init(): 
@@ -1149,9 +1149,9 @@ static void analyzeOneTable(
     **    (2) the number of columns in the key without the rowid/pk
     **    (3) estimated number of rows in the index. */
     sqlite3VdbeAddOp2(v, OP_Integer, nCol, regStat+1);
-    assert( regRowid==regStat+2 );
-    sqlite3VdbeAddOp2(v, OP_Integer, pIdx->nKeyCol, regRowid);
-    sqlite3VdbeAddOp3(v, OP_Count, iIdxCur, regTemp,
+    प्रतिज्ञा( regRowid==regStat+2 );
+    sqlite3VdbeAddOp2(v, OP_Integer, pIdx->n_किल्ली_Col, regRowid);
+    sqlite3VdbeAddOp3(v, OP_मोजणी, iIdxCur, regTemp,
                       OptimizationDisabled(db, SQLITE_Stat4));
     sqlite3VdbeAddFunctionCall(pParse, 0, regStat+1, regStat, 4,
                                &statInitFuncdef, 0);
@@ -1161,11 +1161,11 @@ static void analyzeOneTable(
     sqlite3VdbeAddOp2(v, OP_Integer, 0, regChng);
     addrNextRow = sqlite3VdbeCurrentAddr(v);
 
-    if( nColTest>0 ){
-      int endDistinctTest = sqlite3VdbeMakeLabel(pParse);
-      int *aGotoChng;               /* Array of jump instruction addresses */
-      aGotoChng = sqlite3DbMallocRawNN(db, sizeof(int)*nColTest);
-      if( aGotoChng==0 ) continue;
+    जर( nColTest>0 ){
+      पूर्णांक endDistinctTest = sqlite3VdbeMakeLabel(pParse);
+      पूर्णांक *aGotoChng;               /* Array of jump instruction addresses */
+      aGotoChng = sqlite3DbMallocRawNN(db, आकार(पूर्णांक)*nColTest);
+      जर( aGotoChng==0 ) सुरूठेवा;
 
       /*
       **  next_row:
@@ -1179,15 +1179,15 @@ static void analyzeOneTable(
       */
       sqlite3VdbeAddOp0(v, OP_Goto);
       addrNextRow = sqlite3VdbeCurrentAddr(v);
-      if( nColTest==1 && pIdx->nKeyCol==1 && IsUniqueIndex(pIdx) ){
+      जर( nColTest==1 && pIdx->n_किल्ली_Col==1 && IsUniqueIndex(pIdx) ){
         /* For a single-column UNIQUE index, once we have found a non-NULL
         ** row, we know that all the rest will be distinct, so skip 
         ** subsequent distinctness tests. */
         sqlite3VdbeAddOp2(v, OP_NotNull, regPrev, endDistinctTest);
         VdbeCoverage(v);
       }
-      for(i=0; i<nColTest; i++){
-        char *pColl = (char*)sqlite3LocateCollSeq(pParse, pIdx->azColl[i]);
+      साठी(i=0; i<nColTest; i++){
+        अक्षर *pColl = (अक्षर*)sqlite3LocateCollSeq(pParse, pIdx->azColl[i]);
         sqlite3VdbeAddOp2(v, OP_Integer, i, regChng);
         sqlite3VdbeAddOp3(v, OP_Column, iIdxCur, i, regTemp);
         analyzeVdbeCommentIndexWithColumnName(v,pIdx,i);
@@ -1208,7 +1208,7 @@ static void analyzeOneTable(
       **  ...
       */
       sqlite3VdbeJumpHere(v, addrNextRow-1);
-      for(i=0; i<nColTest; i++){
+      साठी(i=0; i<nColTest; i++){
         sqlite3VdbeJumpHere(v, aGotoChng[i]);
         sqlite3VdbeAddOp3(v, OP_Column, iIdxCur, i, regPrev+i);
         analyzeVdbeCommentIndexWithColumnName(v,pIdx,i);
@@ -1225,31 +1225,31 @@ static void analyzeOneTable(
     **   if !eof(csr) goto next_row;
     */
 #ifdef SQLITE_ENABLE_STAT4
-    if( OptimizationEnabled(db, SQLITE_Stat4) ){
-      assert( regRowid==(regStat+2) );
-      if( HasRowid(pTab) ){
+    जर( OptimizationEnabled(db, SQLITE_Stat4) ){
+      प्रतिज्ञा( regRowid==(regStat+2) );
+      जर( HasRowid(pTab) ){
         sqlite3VdbeAddOp2(v, OP_IdxRowid, iIdxCur, regRowid);
-      }else{
-        Index *pPk = sqlite3PrimaryKeyIndex(pIdx->pTable);
-        int j, k, regKey;
-        regKey = sqlite3GetTempRange(pParse, pPk->nKeyCol);
-        for(j=0; j<pPk->nKeyCol; j++){
+      }अन्यथा{
+        Index *pPk = sqlite3_Primary_किल्ली_Index(pIdx->pTable);
+        पूर्णांक j, k, reg_किल्ली;
+        reg_किल्ली = sqlite3GetTempRange(pParse, pPk->n_किल्ली_Col);
+        साठी(j=0; j<pPk->n_किल्ली_Col; j++){
           k = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[j]);
-          assert( k>=0 && k<pIdx->nColumn );
-          sqlite3VdbeAddOp3(v, OP_Column, iIdxCur, k, regKey+j);
+          प्रतिज्ञा( k>=0 && k<pIdx->nColumn );
+          sqlite3VdbeAddOp3(v, OP_Column, iIdxCur, k, reg_किल्ली+j);
           analyzeVdbeCommentIndexWithColumnName(v,pIdx,k);
         }
-        sqlite3VdbeAddOp3(v, OP_MakeRecord, regKey, pPk->nKeyCol, regRowid);
-        sqlite3ReleaseTempRange(pParse, regKey, pPk->nKeyCol);
+        sqlite3VdbeAddOp3(v, OP_MakeRecord, reg_किल्ली, pPk->n_किल्ली_Col, regRowid);
+        sqlite3ReleaseTempRange(pParse, reg_किल्ली, pPk->n_किल्ली_Col);
       }
     }
 #endif
-    assert( regChng==(regStat+1) );
+    प्रतिज्ञा( regChng==(regStat+1) );
     {
       sqlite3VdbeAddFunctionCall(pParse, 1, regStat, regTemp, 2+IsStat4,
-                                 &statPushFuncdef, 0);
-      if( db->nAnalysisLimit ){
-        int j1, j2, j3;
+                                 &stat_ढकला_Funcdef, 0);
+      जर( db->nAnalysisLimit ){
+        पूर्णांक j1, j2, j3;
         j1 = sqlite3VdbeAddOp1(v, OP_IsNull, regTemp); VdbeCoverage(v);
         j2 = sqlite3VdbeAddOp1(v, OP_If, regTemp); VdbeCoverage(v);
         j3 = sqlite3VdbeAddOp4Int(v, OP_SeekGT, iIdxCur, 0, regPrev, 1);
@@ -1258,61 +1258,61 @@ static void analyzeOneTable(
         sqlite3VdbeAddOp2(v, OP_Next, iIdxCur, addrNextRow); VdbeCoverage(v);
         sqlite3VdbeJumpHere(v, j2);
         sqlite3VdbeJumpHere(v, j3);
-      }else{
+      }अन्यथा{
         sqlite3VdbeAddOp2(v, OP_Next, iIdxCur, addrNextRow); VdbeCoverage(v);
       }
     }
 
     /* Add the entry to the stat1 table. */
-    if( pIdx->pPartIdxWhere ){
+    जर( pIdx->pPartIdxWhere ){
       /* Partial indexes might get a zero-entry in sqlite_stat1.  But
       ** an empty table is omitted from sqlite_stat1. */
       sqlite3VdbeJumpHere(v, addrGotoEnd);
       addrGotoEnd = 0;
     }
     callStatGet(pParse, regStat, STAT_GET_STAT1, regStat1);
-    assert( "BBB"[0]==SQLITE_AFF_TEXT );
+    प्रतिज्ञा( "BBB"[0]==SQLITE_AFF_TEXT );
     sqlite3VdbeAddOp4(v, OP_MakeRecord, regTabname, 3, regTemp, "BBB", 0);
     sqlite3VdbeAddOp2(v, OP_NewRowid, iStatCur, regNewRowid);
-    sqlite3VdbeAddOp3(v, OP_Insert, iStatCur, regTemp, regNewRowid);
+    sqlite3VdbeAddOp3(v, OP_घाला, iStatCur, regTemp, regNewRowid);
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-    sqlite3VdbeChangeP4(v, -1, (char*)pStat1, P4_TABLE);
+    sqlite3VdbeChangeP4(v, -1, (अक्षर*)pStat1, P4_TABLE);
 #endif
     sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
 
     /* Add the entries to the stat4 table. */
 #ifdef SQLITE_ENABLE_STAT4
-    if( OptimizationEnabled(db, SQLITE_Stat4) && db->nAnalysisLimit==0 ){
-      int regEq = regStat1;
-      int regLt = regStat1+1;
-      int regDLt = regStat1+2;
-      int regSample = regStat1+3;
-      int regCol = regStat1+4;
-      int regSampleRowid = regCol + nCol;
-      int addrNext;
-      int addrIsNull;
+    जर( OptimizationEnabled(db, SQLITE_Stat4) && db->nAnalysisLimit==0 ){
+      पूर्णांक regEq = regStat1;
+      पूर्णांक regLt = regStat1+1;
+      पूर्णांक regDLt = regStat1+2;
+      पूर्णांक regSample = regStat1+3;
+      पूर्णांक regCol = regStat1+4;
+      पूर्णांक regSampleRowid = regCol + nCol;
+      पूर्णांक addrNext;
+      पूर्णांक addrIsNull;
       u8 seekOp = HasRowid(pTab) ? OP_NotExists : OP_NotFound;
 
       /* No STAT4 data is generated if the number of rows is zero */
-      if( addrGotoEnd==0 ){
+      जर( addrGotoEnd==0 ){
         sqlite3VdbeAddOp2(v, OP_Cast, regStat1, SQLITE_AFF_INTEGER);
         addrGotoEnd = sqlite3VdbeAddOp1(v, OP_IfNot, regStat1);
         VdbeCoverage(v);
       }
 
-      if( doOnce ){
-        int mxCol = nCol;
+      जर( doOnce ){
+        पूर्णांक mxCol = nCol;
         Index *pX;
 
         /* Compute the maximum number of columns in any index */
-        for(pX=pTab->pIndex; pX; pX=pX->pNext){
-          int nColX;                     /* Number of columns in pX */
-          if( !HasRowid(pTab) && IsPrimaryKeyIndex(pX) ){
-            nColX = pX->nKeyCol;
-          }else{
+        साठी(pX=pTab->pIndex; pX; pX=pX->pNext){
+          पूर्णांक nColX;                     /* Number of columns in pX */
+          जर( !HasRowid(pTab) && Is_Primary_किल्ली_Index(pX) ){
+            nColX = pX->n_किल्ली_Col;
+          }अन्यथा{
             nColX = pX->nColumn;
           }
-          if( nColX>mxCol ) mxCol = nColX;
+          जर( nColX>mxCol ) mxCol = nColX;
         }
 
         /* Allocate space to compute results for the largest index */
@@ -1326,9 +1326,9 @@ static void analyzeOneTable(
         testcase( !sqlite3NoTempsInRange(pParse, regEq, regCol+mxCol) );
 #endif
         sqlite3ClearTempRegCache(pParse);  /* tag-20230325-1 */
-        assert( sqlite3NoTempsInRange(pParse, regEq, regCol+mxCol) );
+        प्रतिज्ञा( sqlite3NoTempsInRange(pParse, regEq, regCol+mxCol) );
       }
-      assert( sqlite3NoTempsInRange(pParse, regEq, regCol+nCol) );
+      प्रतिज्ञा( sqlite3NoTempsInRange(pParse, regEq, regCol+nCol) );
 
       addrNext = sqlite3VdbeCurrentAddr(v);
       callStatGet(pParse, regStat, STAT_GET_ROWID, regSampleRowid);
@@ -1339,38 +1339,38 @@ static void analyzeOneTable(
       callStatGet(pParse, regStat, STAT_GET_NDLT, regDLt);
       sqlite3VdbeAddOp4Int(v, seekOp, iTabCur, addrNext, regSampleRowid, 0);
       VdbeCoverage(v);
-      for(i=0; i<nCol; i++){
-        sqlite3ExprCodeLoadIndexColumn(pParse, pIdx, iTabCur, i, regCol+i);
+      साठी(i=0; i<nCol; i++){
+        sqlite3_अभिव्यक्ती_Code_Load_Index_Column(pParse, pIdx, iTabCur, i, regCol+i);
       }
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regCol, nCol, regSample);
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regTabname, 6, regTemp);
       sqlite3VdbeAddOp2(v, OP_NewRowid, iStatCur+1, regNewRowid);
-      sqlite3VdbeAddOp3(v, OP_Insert, iStatCur+1, regTemp, regNewRowid);
+      sqlite3VdbeAddOp3(v, OP_घाला, iStatCur+1, regTemp, regNewRowid);
       sqlite3VdbeAddOp2(v, OP_Goto, 1, addrNext); /* P1==1 for end-of-loop */
       sqlite3VdbeJumpHere(v, addrIsNull);
     }
 #endif /* SQLITE_ENABLE_STAT4 */
 
     /* End of analysis */
-    if( addrGotoEnd ) sqlite3VdbeJumpHere(v, addrGotoEnd);
+    जर( addrGotoEnd ) sqlite3VdbeJumpHere(v, addrGotoEnd);
   }
 
 
   /* Create a single sqlite_stat1 entry containing NULL as the index
   ** name and the row count as the content.
   */
-  if( pOnlyIdx==0 && needTableCnt ){
+  जर( pOnlyIdx==0 && needTableCnt ){
     VdbeComment((v, "%s", pTab->zName));
-    sqlite3VdbeAddOp2(v, OP_Count, iTabCur, regStat1);
+    sqlite3VdbeAddOp2(v, OP_मोजणी, iTabCur, regStat1);
     jZeroRows = sqlite3VdbeAddOp1(v, OP_IfNot, regStat1); VdbeCoverage(v);
     sqlite3VdbeAddOp2(v, OP_Null, 0, regIdxname);
-    assert( "BBB"[0]==SQLITE_AFF_TEXT );
+    प्रतिज्ञा( "BBB"[0]==SQLITE_AFF_TEXT );
     sqlite3VdbeAddOp4(v, OP_MakeRecord, regTabname, 3, regTemp, "BBB", 0);
     sqlite3VdbeAddOp2(v, OP_NewRowid, iStatCur, regNewRowid);
-    sqlite3VdbeAddOp3(v, OP_Insert, iStatCur, regTemp, regNewRowid);
+    sqlite3VdbeAddOp3(v, OP_घाला, iStatCur, regTemp, regNewRowid);
     sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-    sqlite3VdbeChangeP4(v, -1, (char*)pStat1, P4_TABLE);
+    sqlite3VdbeChangeP4(v, -1, (अक्षर*)pStat1, P4_TABLE);
 #endif
     sqlite3VdbeJumpHere(v, jZeroRows);
   }
@@ -1381,9 +1381,9 @@ static void analyzeOneTable(
 ** Generate code that will cause the most recent index analysis to
 ** be loaded into internal hash tables where is can be used.
 */
-static void loadAnalysis(Parse *pParse, int iDb){
+स्थिर शून्य loadAnalysis(Parse *pParse, पूर्णांक iDb){
   Vdbe *v = sqlite3GetVdbe(pParse);
-  if( v ){
+  जर( v ){
     sqlite3VdbeAddOp1(v, OP_LoadAnalysis, iDb);
   }
 }
@@ -1391,13 +1391,13 @@ static void loadAnalysis(Parse *pParse, int iDb){
 /*
 ** Generate code that will do an analysis of an entire database
 */
-static void analyzeDatabase(Parse *pParse, int iDb){
+स्थिर शून्य analyzeDatabase(Parse *pParse, पूर्णांक iDb){
   sqlite3 *db = pParse->db;
   Schema *pSchema = db->aDb[iDb].pSchema;    /* Schema of database iDb */
   HashElem *k;
-  int iStatCur;
-  int iMem;
-  int iTab;
+  पूर्णांक iStatCur;
+  पूर्णांक iMem;
+  पूर्णांक iTab;
 
   sqlite3BeginWriteOperation(pParse, 0, iDb);
   iStatCur = pParse->nTab;
@@ -1405,14 +1405,14 @@ static void analyzeDatabase(Parse *pParse, int iDb){
   openStatTable(pParse, iDb, iStatCur, 0, 0);
   iMem = pParse->nMem+1;
   iTab = pParse->nTab;
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-  for(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
+  प्रतिज्ञा( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  साठी(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
     Table *pTab = (Table*)sqliteHashData(k);
     analyzeOneTable(pParse, pTab, 0, iStatCur, iMem, iTab);
 #ifdef SQLITE_ENABLE_STAT4
     iMem = sqlite3FirstAvailableRegister(pParse, iMem);
-#else
-    assert( iMem==sqlite3FirstAvailableRegister(pParse,iMem) );
+#अन्यथा
+    प्रतिज्ञा( iMem==sqlite3FirstAvailableRegister(pParse,iMem) );
 #endif
   }
   loadAnalysis(pParse, iDb);
@@ -1423,19 +1423,19 @@ static void analyzeDatabase(Parse *pParse, int iDb){
 ** a database.  If pOnlyIdx is not NULL then it is a single index
 ** in pTab that should be analyzed.
 */
-static void analyzeTable(Parse *pParse, Table *pTab, Index *pOnlyIdx){
-  int iDb;
-  int iStatCur;
+स्थिर शून्य analyzeTable(Parse *pParse, Table *pTab, Index *pOnlyIdx){
+  पूर्णांक iDb;
+  पूर्णांक iStatCur;
 
-  assert( pTab!=0 );
-  assert( sqlite3BtreeHoldsAllMutexes(pParse->db) );
+  प्रतिज्ञा( pTab!=0 );
+  प्रतिज्ञा( sqlite3BtreeHoldsAllMutexes(pParse->db) );
   iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
   sqlite3BeginWriteOperation(pParse, 0, iDb);
   iStatCur = pParse->nTab;
   pParse->nTab += 3;
-  if( pOnlyIdx ){
+  जर( pOnlyIdx ){
     openStatTable(pParse, iDb, iStatCur, pOnlyIdx->zName, "idx");
-  }else{
+  }अन्यथा{
     openStatTable(pParse, iDb, iStatCur, pTab->zName, "tbl");
   }
   analyzeOneTable(pParse, pTab, pOnlyIdx, iStatCur,pParse->nMem+1,pParse->nTab);
@@ -1454,11 +1454,11 @@ static void analyzeTable(Parse *pParse, Table *pTab, Index *pOnlyIdx){
 ** Form 2 analyzes all indices the single database named.
 ** Form 3 analyzes all indices associated with the named table.
 */
-void sqlite3Analyze(Parse *pParse, Token *pName1, Token *pName2){
+शून्य sqlite3Analyze(Parse *pParse, Token *pName1, Token *pName2){
   sqlite3 *db = pParse->db;
-  int iDb;
-  int i;
-  char *z, *zDb;
+  पूर्णांक iDb;
+  पूर्णांक i;
+  अक्षर *z, *zDb;
   Table *pTab;
   Index *pIdx;
   Token *pTableName;
@@ -1466,38 +1466,38 @@ void sqlite3Analyze(Parse *pParse, Token *pName1, Token *pName2){
 
   /* Read the database schema. If an error occurs, leave an error message
   ** and code in pParse and return NULL. */
-  assert( sqlite3BtreeHoldsAllMutexes(pParse->db) );
-  if( SQLITE_OK!=sqlite3ReadSchema(pParse) ){
-    return;
+  प्रतिज्ञा( sqlite3BtreeHoldsAllMutexes(pParse->db) );
+  जर( SQLITE_OK!=sqlite3ReadSchema(pParse) ){
+    परत;
   }
 
-  assert( pName2!=0 || pName1==0 );
-  if( pName1==0 ){
+  प्रतिज्ञा( pName2!=0 || pName1==0 );
+  जर( pName1==0 ){
     /* Form 1:  Analyze everything */
-    for(i=0; i<db->nDb; i++){
-      if( i==1 ) continue;  /* Do not analyze the TEMP database */
+    साठी(i=0; i<db->nDb; i++){
+      जर( i==1 ) सुरूठेवा;  /* Do not analyze the TEMP database */
       analyzeDatabase(pParse, i);
     }
-  }else if( pName2->n==0 && (iDb = sqlite3FindDb(db, pName1))>=0 ){
+  }अन्यथा जर( pName2->n==0 && (iDb = sqlite3FindDb(db, pName1))>=0 ){
     /* Analyze the schema named as the argument */
     analyzeDatabase(pParse, iDb);
-  }else{
+  }अन्यथा{
     /* Form 3: Analyze the table or index named as an argument */
     iDb = sqlite3TwoPartName(pParse, pName1, pName2, &pTableName);
-    if( iDb>=0 ){
+    जर( iDb>=0 ){
       zDb = pName2->n ? db->aDb[iDb].zDbSName : 0;
       z = sqlite3NameFromToken(db, pTableName);
-      if( z ){
-        if( (pIdx = sqlite3FindIndex(db, z, zDb))!=0 ){
+      जर( z ){
+        जर( (pIdx = sqlite3FindIndex(db, z, zDb))!=0 ){
           analyzeTable(pParse, pIdx->pTable, pIdx);
-        }else if( (pTab = sqlite3LocateTable(pParse, 0, z, zDb))!=0 ){
+        }अन्यथा जर( (pTab = sqlite3LocateTable(pParse, 0, z, zDb))!=0 ){
           analyzeTable(pParse, pTab, 0);
         }
         sqlite3DbFree(db, z);
       }
     }
   }
-  if( db->nSqlExec==0 && (v = sqlite3GetVdbe(pParse))!=0 ){
+  जर( db->nSqlExec==0 && (v = sqlite3GetVdbe(pParse))!=0 ){
     sqlite3VdbeAddOp0(v, OP_Expire);
   }
 }
@@ -1506,10 +1506,10 @@ void sqlite3Analyze(Parse *pParse, Token *pName1, Token *pName2){
 ** Used to pass information from the analyzer reader through to the
 ** callback routine.
 */
-typedef struct analysisInfo analysisInfo;
-struct analysisInfo {
+प्रकारव्याख्या संरचना analysisInfo analysisInfo;
+संरचना analysisInfo {
   sqlite3 *db;
-  const char *zDatabase;
+  स्थिरांक अक्षर *zDatabase;
 };
 
 /*
@@ -1517,64 +1517,64 @@ struct analysisInfo {
 ** list of space separated integers. Read the first nOut of these into
 ** the array aOut[].
 */
-static void decodeIntArray(
-  char *zIntArray,       /* String containing int array to decode */
-  int nOut,              /* Number of slots in aOut[] */
+स्थिर शून्य decodeIntArray(
+  अक्षर *zIntArray,       /* String containing int array to decode */
+  पूर्णांक nOut,              /* Number of slots in aOut[] */
   tRowcnt *aOut,         /* Store integers here */
   LogEst *aLog,          /* Or, if aOut==0, here */
   Index *pIndex          /* Handle extra flags for this index, if not NULL */
 ){
-  char *z = zIntArray;
-  int c;
-  int i;
+  अक्षर *z = zIntArray;
+  पूर्णांक c;
+  पूर्णांक i;
   tRowcnt v;
 
 #ifdef SQLITE_ENABLE_STAT4
-  if( z==0 ) z = "";
-#else
-  assert( z!=0 );
+  जर( z==0 ) z = "";
+#अन्यथा
+  प्रतिज्ञा( z!=0 );
 #endif
-  for(i=0; *z && i<nOut; i++){
+  साठी(i=0; *z && i<nOut; i++){
     v = 0;
-    while( (c=z[0])>='0' && c<='9' ){
+    पर्यंत( (c=z[0])>='0' && c<='9' ){
       v = v*10 + c - '0';
       z++;
     }
 #ifdef SQLITE_ENABLE_STAT4
-    if( aOut ) aOut[i] = v;
-    if( aLog ) aLog[i] = sqlite3LogEst(v);
-#else
-    assert( aOut==0 );
+    जर( aOut ) aOut[i] = v;
+    जर( aLog ) aLog[i] = sqlite3LogEst(v);
+#अन्यथा
+    प्रतिज्ञा( aOut==0 );
     UNUSED_PARAMETER(aOut);
-    assert( aLog!=0 );
+    प्रतिज्ञा( aLog!=0 );
     aLog[i] = sqlite3LogEst(v);
 #endif
-    if( *z==' ' ) z++;
+    जर( *z==' ' ) z++;
   }
 #ifndef SQLITE_ENABLE_STAT4
-  assert( pIndex!=0 ); {
-#else
-  if( pIndex ){
+  प्रतिज्ञा( pIndex!=0 ); {
+#अन्यथा
+  जर( pIndex ){
 #endif
     pIndex->bUnordered = 0;
     pIndex->noSkipScan = 0;
-    while( z[0] ){
-      if( sqlite3_strglob("unordered*", z)==0 ){
+    पर्यंत( z[0] ){
+      जर( sqlite3_strglob("unordered*", z)==0 ){
         pIndex->bUnordered = 1;
-      }else if( sqlite3_strglob("sz=[0-9]*", z)==0 ){
-        int sz = sqlite3Atoi(z+3);
-        if( sz<2 ) sz = 2;
+      }अन्यथा जर( sqlite3_strglob("sz=[0-9]*", z)==0 ){
+        पूर्णांक sz = sqlite3Atoi(z+3);
+        जर( sz<2 ) sz = 2;
         pIndex->szIdxRow = sqlite3LogEst(sz);
-      }else if( sqlite3_strglob("noskipscan*", z)==0 ){
+      }अन्यथा जर( sqlite3_strglob("noskipscan*", z)==0 ){
         pIndex->noSkipScan = 1;
       }
 #ifdef SQLITE_ENABLE_COSTMULT
-      else if( sqlite3_strglob("costmult=[0-9]*",z)==0 ){
+      अन्यथा जर( sqlite3_strglob("costmult=[0-9]*",z)==0 ){
         pIndex->pTable->costMult = sqlite3LogEst(sqlite3Atoi(z+9));
       }
 #endif
-      while( z[0]!=0 && z[0]!=' ' ) z++;
-      while( z[0]==' ' ) z++;
+      पर्यंत( z[0]!=0 && z[0]!=' ' ) z++;
+      पर्यंत( z[0]==' ' ) z++;
     }
   }
 }
@@ -1590,86 +1590,86 @@ static void decodeIntArray(
 ** Entries for which argv[1]==NULL simply record the number of rows in
 ** the table.
 */
-static int analysisLoader(void *pData, int argc, char **argv, char **NotUsed){
+स्थिर पूर्णांक analysisLoader(शून्य *pData, पूर्णांक argc, अक्षर **argv, अक्षर **NotUsed){
   analysisInfo *pInfo = (analysisInfo*)pData;
   Index *pIndex;
   Table *pTable;
-  const char *z;
+  स्थिरांक अक्षर *z;
 
-  assert( argc==3 );
+  प्रतिज्ञा( argc==3 );
   UNUSED_PARAMETER2(NotUsed, argc);
 
-  if( argv==0 || argv[0]==0 || argv[2]==0 ){
-    return 0;
+  जर( argv==0 || argv[0]==0 || argv[2]==0 ){
+    परत 0;
   }
   pTable = sqlite3FindTable(pInfo->db, argv[0], pInfo->zDatabase);
-  if( pTable==0 ){
-    return 0;
+  जर( pTable==0 ){
+    परत 0;
   }
-  if( argv[1]==0 ){
+  जर( argv[1]==0 ){
     pIndex = 0;
-  }else if( sqlite3_stricmp(argv[0],argv[1])==0 ){
-    pIndex = sqlite3PrimaryKeyIndex(pTable);
-  }else{
+  }अन्यथा जर( sqlite3_stricmp(argv[0],argv[1])==0 ){
+    pIndex = sqlite3_Primary_किल्ली_Index(pTable);
+  }अन्यथा{
     pIndex = sqlite3FindIndex(pInfo->db, argv[1], pInfo->zDatabase);
   }
   z = argv[2];
 
-  if( pIndex ){
+  जर( pIndex ){
     tRowcnt *aiRowEst = 0;
-    int nCol = pIndex->nKeyCol+1;
+    पूर्णांक nCol = pIndex->n_किल्ली_Col+1;
 #ifdef SQLITE_ENABLE_STAT4
     /* Index.aiRowEst may already be set here if there are duplicate 
     ** sqlite_stat1 entries for this index. In that case just clobber
     ** the old data with the new instead of allocating a new array.  */
-    if( pIndex->aiRowEst==0 ){
-      pIndex->aiRowEst = (tRowcnt*)sqlite3MallocZero(sizeof(tRowcnt) * nCol);
-      if( pIndex->aiRowEst==0 ) sqlite3OomFault(pInfo->db);
+    जर( pIndex->aiRowEst==0 ){
+      pIndex->aiRowEst = (tRowcnt*)sqlite3MallocZero(आकार(tRowcnt) * nCol);
+      जर( pIndex->aiRowEst==0 ) sqlite3OomFault(pInfo->db);
     }
     aiRowEst = pIndex->aiRowEst;
 #endif
     pIndex->bUnordered = 0;
-    decodeIntArray((char*)z, nCol, aiRowEst, pIndex->aiRowLogEst, pIndex);
+    decodeIntArray((अक्षर*)z, nCol, aiRowEst, pIndex->aiRowLogEst, pIndex);
     pIndex->hasStat1 = 1;
-    if( pIndex->pPartIdxWhere==0 ){
+    जर( pIndex->pPartIdxWhere==0 ){
       pTable->nRowLogEst = pIndex->aiRowLogEst[0];
       pTable->tabFlags |= TF_HasStat1;
     }
-  }else{
+  }अन्यथा{
     Index fakeIdx;
     fakeIdx.szIdxRow = pTable->szTabRow;
 #ifdef SQLITE_ENABLE_COSTMULT
     fakeIdx.pTable = pTable;
 #endif
-    decodeIntArray((char*)z, 1, 0, &pTable->nRowLogEst, &fakeIdx);
+    decodeIntArray((अक्षर*)z, 1, 0, &pTable->nRowLogEst, &fakeIdx);
     pTable->szTabRow = fakeIdx.szIdxRow;
     pTable->tabFlags |= TF_HasStat1;
   }
 
-  return 0;
+  परत 0;
 }
 
 /*
 ** If the Index.aSample variable is not NULL, delete the aSample[] array
 ** and its contents.
 */
-void sqlite3DeleteIndexSamples(sqlite3 *db, Index *pIdx){
-  assert( db!=0 );
-  assert( pIdx!=0 );
+शून्य sqlite3DeleteIndexSamples(sqlite3 *db, Index *pIdx){
+  प्रतिज्ञा( db!=0 );
+  प्रतिज्ञा( pIdx!=0 );
 #ifdef SQLITE_ENABLE_STAT4
-  if( pIdx->aSample ){
-    int j;
-    for(j=0; j<pIdx->nSample; j++){
+  जर( pIdx->aSample ){
+    पूर्णांक j;
+    साठी(j=0; j<pIdx->nSample; j++){
       IndexSample *p = &pIdx->aSample[j];
       sqlite3DbFree(db, p->p);
     }
     sqlite3DbFree(db, pIdx->aSample);
   }
-  if( db->pnBytesFreed==0 ){
+  जर( db->pnBytesFreed==0 ){
     pIdx->nSample = 0;
     pIdx->aSample = 0;
   }
-#else
+#अन्यथा
   UNUSED_PARAMETER(db);
   UNUSED_PARAMETER(pIdx);
 #endif /* SQLITE_ENABLE_STAT4 */
@@ -1680,13 +1680,13 @@ void sqlite3DeleteIndexSamples(sqlite3 *db, Index *pIdx){
 ** Populate the pIdx->aAvgEq[] array based on the samples currently
 ** stored in pIdx->aSample[]. 
 */
-static void initAvgEq(Index *pIdx){
-  if( pIdx ){
+स्थिर शून्य initAvgEq(Index *pIdx){
+  जर( pIdx ){
     IndexSample *aSample = pIdx->aSample;
     IndexSample *pFinal = &aSample[pIdx->nSample-1];
-    int iCol;
-    int nCol = 1;
-    if( pIdx->nSampleCol>1 ){
+    पूर्णांक iCol;
+    पूर्णांक nCol = 1;
+    जर( pIdx->nSampleCol>1 ){
       /* If this is stat4 data, then calculate aAvgEq[] values for all
       ** sample columns except the last. The last is always set to 1, as
       ** once the trailing PK fields are considered all index keys are
@@ -1694,20 +1694,20 @@ static void initAvgEq(Index *pIdx){
       nCol = pIdx->nSampleCol-1;
       pIdx->aAvgEq[nCol] = 1;
     }
-    for(iCol=0; iCol<nCol; iCol++){
-      int nSample = pIdx->nSample;
-      int i;                    /* Used to iterate through samples */
+    साठी(iCol=0; iCol<nCol; iCol++){
+      पूर्णांक nSample = pIdx->nSample;
+      पूर्णांक i;                    /* Used to iterate through samples */
       tRowcnt sumEq = 0;        /* Sum of the nEq values */
       tRowcnt avgEq = 0;
       tRowcnt nRow;             /* Number of rows in index */
       i64 nSum100 = 0;          /* Number of terms contributing to sumEq */
       i64 nDist100;             /* Number of distinct values in index */
 
-      if( !pIdx->aiRowEst || iCol>=pIdx->nKeyCol || pIdx->aiRowEst[iCol+1]==0 ){
+      जर( !pIdx->aiRowEst || iCol>=pIdx->n_किल्ली_Col || pIdx->aiRowEst[iCol+1]==0 ){
         nRow = pFinal->anLt[iCol];
         nDist100 = (i64)100 * pFinal->anDLt[iCol];
         nSample--;
-      }else{
+      }अन्यथा{
         nRow = pIdx->aiRowEst[0];
         nDist100 = ((i64)100 * pIdx->aiRowEst[0]) / pIdx->aiRowEst[iCol+1];
       }
@@ -1717,8 +1717,8 @@ static void initAvgEq(Index *pIdx){
       ** occur in the stat4 table for this index. Set sumEq to the sum of 
       ** the nEq values for column iCol for the same set (adding the value 
       ** only once where there exist duplicate prefixes).  */
-      for(i=0; i<nSample; i++){
-        if( i==(pIdx->nSample-1)
+      साठी(i=0; i<nSample; i++){
+        जर( i==(pIdx->nSample-1)
          || aSample[i].anDLt[iCol]!=aSample[i+1].anDLt[iCol] 
         ){
           sumEq += aSample[i].anEq[iCol];
@@ -1726,10 +1726,10 @@ static void initAvgEq(Index *pIdx){
         }
       }
 
-      if( nDist100>nSum100 && sumEq<nRow ){
+      जर( nDist100>nSum100 && sumEq<nRow ){
         avgEq = ((i64)100 * (nRow - sumEq))/(nDist100 - nSum100);
       }
-      if( avgEq==0 ) avgEq = 1;
+      जर( avgEq==0 ) avgEq = 1;
       pIdx->aAvgEq[iCol] = avgEq;
     }
   }
@@ -1739,17 +1739,17 @@ static void initAvgEq(Index *pIdx){
 ** Look up an index by name.  Or, if the name of a WITHOUT ROWID table
 ** is supplied instead, find the PRIMARY KEY index for that table.
 */
-static Index *findIndexOrPrimaryKey(
+स्थिर Index *find_Index_Or_Primary_किल्ली(
   sqlite3 *db,
-  const char *zName,
-  const char *zDb
+  स्थिरांक अक्षर *zName,
+  स्थिरांक अक्षर *zDb
 ){
   Index *pIdx = sqlite3FindIndex(db, zName, zDb);
-  if( pIdx==0 ){
+  जर( pIdx==0 ){
     Table *pTab = sqlite3FindTable(db, zName, zDb);
-    if( pTab && !HasRowid(pTab) ) pIdx = sqlite3PrimaryKeyIndex(pTab);
+    जर( pTab && !HasRowid(pTab) ) pIdx = sqlite3_Primary_किल्ली_Index(pTab);
   }
-  return pIdx;
+  परत pIdx;
 }
 
 /*
@@ -1764,52 +1764,52 @@ static Index *findIndexOrPrimaryKey(
 **
 ** where %Q is replaced with the database name before the SQL is executed.
 */
-static int loadStatTbl(
+स्थिर पूर्णांक loadStatTbl(
   sqlite3 *db,                  /* Database handle */
-  const char *zSql1,            /* SQL statement 1 (see above) */
-  const char *zSql2,            /* SQL statement 2 (see above) */
-  const char *zDb               /* Database name (e.g. "main") */
+  स्थिरांक अक्षर *zSql1,            /* SQL statement 1 (see above) */
+  स्थिरांक अक्षर *zSql2,            /* SQL statement 2 (see above) */
+  स्थिरांक अक्षर *zDb               /* Database name (e.g. "main") */
 ){
-  int rc;                       /* Result codes from subroutines */
+  पूर्णांक rc;                       /* Result codes from subroutines */
   sqlite3_stmt *pStmt = 0;      /* An SQL statement being run */
-  char *zSql;                   /* Text of the SQL statement */
+  अक्षर *zSql;                   /* Text of the SQL statement */
   Index *pPrevIdx = 0;          /* Previous index in the loop */
   IndexSample *pSample;         /* A slot in pIdx->aSample[] */
 
-  assert( db->lookaside.bDisable );
+  प्रतिज्ञा( db->lookaside.bDisable );
   zSql = sqlite3MPrintf(db, zSql1, zDb);
-  if( !zSql ){
-    return SQLITE_NOMEM_BKPT;
+  जर( !zSql ){
+    परत SQLITE_NOMEM_BKPT;
   }
   rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
   sqlite3DbFree(db, zSql);
-  if( rc ) return rc;
+  जर( rc ) परत rc;
 
-  while( sqlite3_step(pStmt)==SQLITE_ROW ){
-    int nIdxCol = 1;              /* Number of columns in stat4 records */
+  पर्यंत( sqlite3_step(pStmt)==SQLITE_ROW ){
+    पूर्णांक nIdxCol = 1;              /* Number of columns in stat4 records */
 
-    char *zIndex;    /* Index name */
+    अक्षर *zIndex;    /* Index name */
     Index *pIdx;     /* Pointer to the index object */
-    int nSample;     /* Number of samples */
+    पूर्णांक nSample;     /* Number of samples */
     i64 nByte;       /* Bytes of space required */
     i64 i;           /* Bytes of space required */
     tRowcnt *pSpace; /* Available allocated memory space */
     u8 *pPtr;        /* Available memory as a u8 for easier manipulation */
 
-    zIndex = (char *)sqlite3_column_text(pStmt, 0);
-    if( zIndex==0 ) continue;
+    zIndex = (अक्षर *)sqlite3_column_text(pStmt, 0);
+    जर( zIndex==0 ) सुरूठेवा;
     nSample = sqlite3_column_int(pStmt, 1);
-    pIdx = findIndexOrPrimaryKey(db, zIndex, zDb);
-    assert( pIdx==0 || pIdx->nSample==0 );
-    if( pIdx==0 ) continue;
-    if( pIdx->aSample!=0 ){
+    pIdx = find_Index_Or_Primary_किल्ली(db, zIndex, zDb);
+    प्रतिज्ञा( pIdx==0 || pIdx->nSample==0 );
+    जर( pIdx==0 ) सुरूठेवा;
+    जर( pIdx->aSample!=0 ){
       /* The same index appears in sqlite_stat4 under multiple names */
-      continue;
+      सुरूठेवा;
     }
-    assert( !HasRowid(pIdx->pTable) || pIdx->nColumn==pIdx->nKeyCol+1 );
-    if( !HasRowid(pIdx->pTable) && IsPrimaryKeyIndex(pIdx) ){
-      nIdxCol = pIdx->nKeyCol;
-    }else{
+    प्रतिज्ञा( !HasRowid(pIdx->pTable) || pIdx->nColumn==pIdx->n_किल्ली_Col+1 );
+    जर( !HasRowid(pIdx->pTable) && Is_Primary_किल्ली_Index(pIdx) ){
+      nIdxCol = pIdx->n_किल्ली_Col;
+    }अन्यथा{
       nIdxCol = pIdx->nColumn;
     }
     pIdx->nSampleCol = nIdxCol;
@@ -1819,59 +1819,59 @@ static int loadStatTbl(
     nByte += nIdxCol * sizeof64(tRowcnt);   /* Space for Index.aAvgEq[] */
 
     pIdx->aSample = sqlite3DbMallocZero(db, nByte);
-    if( pIdx->aSample==0 ){
+    जर( pIdx->aSample==0 ){
       sqlite3_finalize(pStmt);
-      return SQLITE_NOMEM_BKPT;
+      परत SQLITE_NOMEM_BKPT;
     }
     pPtr = (u8*)pIdx->aSample;
     pPtr += ROUND8(nSample*sizeof64(pIdx->aSample[0]));
     pSpace = (tRowcnt*)pPtr;
-    assert( EIGHT_BYTE_ALIGNMENT( pSpace ) );
+    प्रतिज्ञा( EIGHT_BYTE_ALIGNMENT( pSpace ) );
     pIdx->aAvgEq = pSpace; pSpace += nIdxCol;
     pIdx->pTable->tabFlags |= TF_HasStat4;
-    for(i=0; i<nSample; i++){
+    साठी(i=0; i<nSample; i++){
       pIdx->aSample[i].anEq = pSpace; pSpace += nIdxCol;
       pIdx->aSample[i].anLt = pSpace; pSpace += nIdxCol;
       pIdx->aSample[i].anDLt = pSpace; pSpace += nIdxCol;
     }
-    assert( ((u8*)pSpace)-nByte==(u8*)(pIdx->aSample) );
+    प्रतिज्ञा( ((u8*)pSpace)-nByte==(u8*)(pIdx->aSample) );
   }
   rc = sqlite3_finalize(pStmt);
-  if( rc ) return rc;
+  जर( rc ) परत rc;
 
   zSql = sqlite3MPrintf(db, zSql2, zDb);
-  if( !zSql ){
-    return SQLITE_NOMEM_BKPT;
+  जर( !zSql ){
+    परत SQLITE_NOMEM_BKPT;
   }
   rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
   sqlite3DbFree(db, zSql);
-  if( rc ) return rc;
+  जर( rc ) परत rc;
 
-  while( sqlite3_step(pStmt)==SQLITE_ROW ){
-    char *zIndex;                 /* Index name */
+  पर्यंत( sqlite3_step(pStmt)==SQLITE_ROW ){
+    अक्षर *zIndex;                 /* Index name */
     Index *pIdx;                  /* Pointer to the index object */
-    int nCol = 1;                 /* Number of columns in index */
+    पूर्णांक nCol = 1;                 /* Number of columns in index */
 
-    zIndex = (char *)sqlite3_column_text(pStmt, 0);
-    if( zIndex==0 ) continue;
-    pIdx = findIndexOrPrimaryKey(db, zIndex, zDb);
-    if( pIdx==0 ) continue;
-    if( pIdx->nSample>=pIdx->mxSample ){
+    zIndex = (अक्षर *)sqlite3_column_text(pStmt, 0);
+    जर( zIndex==0 ) सुरूठेवा;
+    pIdx = find_Index_Or_Primary_किल्ली(db, zIndex, zDb);
+    जर( pIdx==0 ) सुरूठेवा;
+    जर( pIdx->nSample>=pIdx->mxSample ){
       /* Too many slots used because the same index appears in
       ** sqlite_stat4 using multiple names */
-      continue;
+      सुरूठेवा;
     }
     /* This next condition is true if data has already been loaded from 
     ** the sqlite_stat4 table. */
     nCol = pIdx->nSampleCol;
-    if( pIdx!=pPrevIdx ){
+    जर( pIdx!=pPrevIdx ){
       initAvgEq(pPrevIdx);
       pPrevIdx = pIdx;
     }
     pSample = &pIdx->aSample[pIdx->nSample];
-    decodeIntArray((char*)sqlite3_column_text(pStmt,1),nCol,pSample->anEq,0,0);
-    decodeIntArray((char*)sqlite3_column_text(pStmt,2),nCol,pSample->anLt,0,0);
-    decodeIntArray((char*)sqlite3_column_text(pStmt,3),nCol,pSample->anDLt,0,0);
+    decodeIntArray((अक्षर*)sqlite3_column_text(pStmt,1),nCol,pSample->anEq,0,0);
+    decodeIntArray((अक्षर*)sqlite3_column_text(pStmt,2),nCol,pSample->anLt,0,0);
+    decodeIntArray((अक्षर*)sqlite3_column_text(pStmt,3),nCol,pSample->anDLt,0,0);
 
     /* Take a copy of the sample. Add 8 extra 0x00 bytes the end of the buffer.
     ** This is in case the sample record is corrupted. In that case, the
@@ -1882,30 +1882,30 @@ static int loadStatTbl(
     ** a buffer overread.  */
     pSample->n = sqlite3_column_bytes(pStmt, 4);
     pSample->p = sqlite3DbMallocZero(db, pSample->n + 8);
-    if( pSample->p==0 ){
+    जर( pSample->p==0 ){
       sqlite3_finalize(pStmt);
-      return SQLITE_NOMEM_BKPT;
+      परत SQLITE_NOMEM_BKPT;
     }
-    if( pSample->n ){
-      memcpy(pSample->p, sqlite3_column_blob(pStmt, 4), pSample->n);
+    जर( pSample->n ){
+      स_नकल(pSample->p, sqlite3_column_blob(pStmt, 4), pSample->n);
     }
     pIdx->nSample++;
   }
   rc = sqlite3_finalize(pStmt);
-  if( rc==SQLITE_OK ) initAvgEq(pPrevIdx);
-  return rc;
+  जर( rc==SQLITE_OK ) initAvgEq(pPrevIdx);
+  परत rc;
 }
 
 /*
 ** Load content from the sqlite_stat4 table into 
 ** the Index.aSample[] arrays of all indices.
 */
-static int loadStat4(sqlite3 *db, const char *zDb){
-  int rc = SQLITE_OK;             /* Result codes from subroutines */
-  const Table *pStat4;
+स्थिर पूर्णांक loadStat4(sqlite3 *db, स्थिरांक अक्षर *zDb){
+  पूर्णांक rc = SQLITE_OK;             /* Result codes from subroutines */
+  स्थिरांक Table *pStat4;
 
-  assert( db->lookaside.bDisable );
-  if( OptimizationEnabled(db, SQLITE_Stat4)
+  प्रतिज्ञा( db->lookaside.bDisable );
+  जर( OptimizationEnabled(db, SQLITE_Stat4)
    && (pStat4 = sqlite3FindTable(db, "sqlite_stat4", zDb))!=0
    && IsOrdinaryTable(pStat4)
   ){
@@ -1915,7 +1915,7 @@ static int loadStat4(sqlite3 *db, const char *zDb){
       zDb
     );
   }
-  return rc;
+  परत rc;
 }
 #endif /* SQLITE_ENABLE_STAT4 */
 
@@ -1939,24 +1939,24 @@ static int loadStat4(sqlite3 *db, const char *zDb){
 ** This means if the caller does not care about other errors, the return
 ** code may be ignored.
 */
-int sqlite3AnalysisLoad(sqlite3 *db, int iDb){
+पूर्णांक sqlite3AnalysisLoad(sqlite3 *db, पूर्णांक iDb){
   analysisInfo sInfo;
   HashElem *i;
-  char *zSql;
-  int rc = SQLITE_OK;
+  अक्षर *zSql;
+  पूर्णांक rc = SQLITE_OK;
   Schema *pSchema = db->aDb[iDb].pSchema;
-  const Table *pStat1;
+  स्थिरांक Table *pStat1;
 
-  assert( iDb>=0 && iDb<db->nDb );
-  assert( db->aDb[iDb].pBt!=0 );
+  प्रतिज्ञा( iDb>=0 && iDb<db->nDb );
+  प्रतिज्ञा( db->aDb[iDb].pBt!=0 );
 
   /* Clear any prior statistics */
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-  for(i=sqliteHashFirst(&pSchema->tblHash); i; i=sqliteHashNext(i)){
+  प्रतिज्ञा( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  साठी(i=sqliteHashFirst(&pSchema->tblHash); i; i=sqliteHashNext(i)){
     Table *pTab = sqliteHashData(i);
     pTab->tabFlags &= ~TF_HasStat1;
   }
-  for(i=sqliteHashFirst(&pSchema->idxHash); i; i=sqliteHashNext(i)){
+  साठी(i=sqliteHashFirst(&pSchema->idxHash); i; i=sqliteHashNext(i)){
     Index *pIdx = sqliteHashData(i);
     pIdx->hasStat1 = 0;
 #ifdef SQLITE_ENABLE_STAT4
@@ -1968,44 +1968,44 @@ int sqlite3AnalysisLoad(sqlite3 *db, int iDb){
   /* Load new statistics out of the sqlite_stat1 table */
   sInfo.db = db;
   sInfo.zDatabase = db->aDb[iDb].zDbSName;
-  if( (pStat1 = sqlite3FindTable(db, "sqlite_stat1", sInfo.zDatabase))
+  जर( (pStat1 = sqlite3FindTable(db, "sqlite_stat1", sInfo.zDatabase))
    && IsOrdinaryTable(pStat1)
   ){
     zSql = sqlite3MPrintf(db, 
         "SELECT tbl,idx,stat FROM %Q.sqlite_stat1", sInfo.zDatabase);
-    if( zSql==0 ){
+    जर( zSql==0 ){
       rc = SQLITE_NOMEM_BKPT;
-    }else{
+    }अन्यथा{
       rc = sqlite3_exec(db, zSql, analysisLoader, &sInfo, 0);
       sqlite3DbFree(db, zSql);
     }
   }
 
   /* Set appropriate defaults on all indexes not in the sqlite_stat1 table */
-  assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-  for(i=sqliteHashFirst(&pSchema->idxHash); i; i=sqliteHashNext(i)){
+  प्रतिज्ञा( sqlite3SchemaMutexHeld(db, iDb, 0) );
+  साठी(i=sqliteHashFirst(&pSchema->idxHash); i; i=sqliteHashNext(i)){
     Index *pIdx = sqliteHashData(i);
-    if( !pIdx->hasStat1 ) sqlite3DefaultRowEst(pIdx);
+    जर( !pIdx->hasStat1 ) sqlite3DefaultRowEst(pIdx);
   }
 
   /* Load the statistics from the sqlite_stat4 table. */
 #ifdef SQLITE_ENABLE_STAT4
-  if( rc==SQLITE_OK ){
+  जर( rc==SQLITE_OK ){
     DisableLookaside;
     rc = loadStat4(db, sInfo.zDatabase);
     EnableLookaside;
   }
-  for(i=sqliteHashFirst(&pSchema->idxHash); i; i=sqliteHashNext(i)){
+  साठी(i=sqliteHashFirst(&pSchema->idxHash); i; i=sqliteHashNext(i)){
     Index *pIdx = sqliteHashData(i);
     sqlite3_free(pIdx->aiRowEst);
     pIdx->aiRowEst = 0;
   }
 #endif
 
-  if( rc==SQLITE_NOMEM ){
+  जर( rc==SQLITE_NOMEM ){
     sqlite3OomFault(db);
   }
-  return rc;
+  परत rc;
 }
 
 
