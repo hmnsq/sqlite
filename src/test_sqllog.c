@@ -74,20 +74,20 @@
 */
 
 #ifndef _SQLITE3_H_
-#include "sqlite3.h"
+#अन्तर्भाव "sqlite3.h"
 #endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <stdlib.h>
+#अन्तर्भाव <string.h>
+#अन्तर्भाव <assert.h>
 
-#include <sys/types.h>
-#include <unistd.h>
-static int getProcessId(void){
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <unistd.h>
+स्थिर पूर्णाङ्क getProcessId(शून्य){
 #ifdef _WIN32
-  return (int)_getpid();
-#else
-  return (int)getpid();
+  प्रत्यागम (पूर्णाङ्क)_getpid();
+#अन्यथा
+  प्रत्यागम (पूर्णाङ्क)getpid();
 #endif
 }
 
@@ -108,37 +108,37 @@ static int getProcessId(void){
 /* There is one instance of this object for each SQLite database connection
 ** that is being logged.
 */
-struct SLConn {
-  int isErr;                      /* True if an error has occurred */
+संरचना SLConn {
+  पूर्णाङ्क isErr;                      /* True if an error has occurred */
   sqlite3 *db;                    /* Connection handle */
-  int iLog;                       /* First integer value used in file names */
+  पूर्णाङ्क iLog;                       /* First integer value used in file names */
   FILE *fd;                       /* File descriptor for log file */
 };
 
 /* This object is a singleton that keeps track of all data loggers.
 */
-static struct SLGlobal {
+स्थिर संरचना SLGlobal {
   /* Protected by MUTEX_STATIC_MAIN */
   sqlite3_mutex *mutex;           /* Recursive mutex */
-  int nConn;                      /* Size of aConn[] array */
+  पूर्णाङ्क nConn;                      /* Size of aConn[] array */
 
   /* Protected by SLGlobal.mutex */
-  int bConditional;               /* Only trace if *-sqllog file is present */
-  int bReuse;                     /* True to avoid extra copies of db files */
-  char zPrefix[SQLLOG_NAMESZ];    /* Prefix for all created files */
-  char zIdx[SQLLOG_NAMESZ];       /* Full path to *.idx file */
-  int iNextLog;                   /* Used to allocate file names */
-  int iNextDb;                    /* Used to allocate database file names */
-  int bRec;                       /* True if testSqllog() is called rec. */
-  int iClock;                     /* Clock value */
-  struct SLConn aConn[MAX_CONNECTIONS];
+  पूर्णाङ्क bConditional;               /* Only trace if *-sqllog file is present */
+  पूर्णाङ्क bReuse;                     /* True to avoid extra copies of db files */
+  वर्ण zPrefix[SQLLOG_NAMESZ];    /* Prefix for all created files */
+  वर्ण zIdx[SQLLOG_NAMESZ];       /* Full path to *.idx file */
+  पूर्णाङ्क iNextLog;                   /* Used to allocate file names */
+  पूर्णाङ्क iNextDb;                    /* Used to allocate database file names */
+  पूर्णाङ्क bRec;                       /* True if testSqllog() is called rec. */
+  पूर्णाङ्क iClock;                     /* Clock value */
+  संरचना SLConn aConn[MAX_CONNECTIONS];
 } sqllogglobal;
 
 /*
 ** Return true if c is an ASCII whitespace character.
 */
-static int sqllog_isspace(char c){
-  return (c==' ' || c=='\t' || c=='\n' || c=='\v' || c=='\f' || c=='\r');
+स्थिर पूर्णाङ्क sqllog_isspace(वर्ण c){
+  प्रत्यागम (c==' ' || c=='\t' || c=='\n' || c=='\v' || c=='\f' || c=='\r');
 }
 
 /*
@@ -148,19 +148,19 @@ static int sqllog_isspace(char c){
 ** the token. This is used to check if the SQL command is an "ATTACH" or 
 ** not.
 */
-static void sqllogTokenize(const char *z, const char **pz, int *pn){
-  const char *p = z;
-  int n;
+स्थिर शून्य sqllogTokenize(ध्रुव वर्ण *z, ध्रुव वर्ण **pz, पूर्णाङ्क *pn){
+  ध्रुव वर्ण *p = z;
+  पूर्णाङ्क n;
 
   /* Skip past any whitespace */
-  while( sqllog_isspace(*p) ){
+  यावत्( sqllog_isspace(*p) ){
     p++;
   }
 
   /* Figure out how long the first token is */
   *pz = p;
   n = 0;
-  while( (p[n]>='a' && p[n]<='z') || (p[n]>='A' && p[n]<='Z') ) n++;
+  यावत्( (p[n]>='a' && p[n]<='z') || (p[n]>='A' && p[n]<='Z') ) n++;
   *pn = n;
 }
 
@@ -172,100 +172,100 @@ static void sqllogTokenize(const char *z, const char **pz, int *pn){
 ** If a non-NULL value is returned, then the caller must arrange to 
 ** eventually free it using sqlite3_free().
 */
-static char *sqllogFindFile(const char *zFile){
-  char *zRet = 0;
+स्थिर वर्ण *sqllogFindFile(ध्रुव वर्ण *zFile){
+  वर्ण *zRet = 0;
   FILE *fd = 0;
 
   /* Open the index file for reading */
   fd = fopen(sqllogglobal.zIdx, "r");
-  if( fd==0 ){
+  यदि( fd==0 ){
     sqlite3_log(SQLITE_IOERR, "sqllogFindFile(): error in fopen()");
-    return 0;
+    प्रत्यागम 0;
   }
 
   /* Loop through each entry in the index file. If zFile is not NULL and the
   ** entry is a match, then set zRet to point to the filename of the existing
   ** copy and break out of the loop.  */
-  while( feof(fd)==0 ){
-    char zLine[SQLLOG_NAMESZ*2+5];
-    if( fgets(zLine, sizeof(zLine), fd) ){
-      int n;
-      char *z;
+  यावत्( feof(fd)==0 ){
+    वर्ण z_पंक्ति[SQLLOG_NAMESZ*2+5];
+    यदि( fgets(z_पंक्ति, परिमाण(z_पंक्ति), fd) ){
+      पूर्णाङ्क n;
+      वर्ण *z;
 
-      zLine[sizeof(zLine)-1] = '\0';
-      z = zLine;
-      while( *z>='0' && *z<='9' ) z++;
-      while( *z==' ' ) z++;
+      z_पंक्ति[परिमाण(z_पंक्ति)-1] = '\0';
+      z = z_पंक्ति;
+      यावत्( *z>='0' && *z<='9' ) z++;
+      यावत्( *z==' ' ) z++;
 
       n = strlen(z);
-      while( n>0 && sqllog_isspace(z[n-1]) ) n--;
+      यावत्( n>0 && sqllog_isspace(z[n-1]) ) n--;
 
-      if( n==strlen(zFile) && 0==memcmp(zFile, z, n) ){
-        char zBuf[16];
-        memset(zBuf, 0, sizeof(zBuf));
-        z = zLine;
-        while( *z>='0' && *z<='9' ){
-          zBuf[z-zLine] = *z;
+      यदि( n==strlen(zFile) && 0==memcmp(zFile, z, n) ){
+        वर्ण zBuf[16];
+        memset(zBuf, 0, परिमाण(zBuf));
+        z = z_पंक्ति;
+        यावत्( *z>='0' && *z<='9' ){
+          zBuf[z-z_पंक्ति] = *z;
           z++;
         }
         zRet = sqlite3_mprintf("%s_%s.db", sqllogglobal.zPrefix, zBuf);
-        break;
+        भङ्ग;
       }
     }
   }
 
-  if( ferror(fd) ){
+  यदि( ferror(fd) ){
     sqlite3_log(SQLITE_IOERR, "sqllogFindFile(): error reading index file");
   }
 
   fclose(fd);
-  return zRet;
+  प्रत्यागम zRet;
 }
 
-static int sqllogFindAttached(
+स्थिर पूर्णाङ्क sqllogFindAttached(
   sqlite3 *db,                    /* Database connection */
-  const char *zSearch,            /* Name to search for (or NULL) */
-  char *zName,                    /* OUT: Name of attached database */
-  char *zFile                     /* OUT: Name of attached file */
+  ध्रुव वर्ण *z_खोज,            /* Name to search for (or NULL) */
+  वर्ण *zName,                    /* OUT: Name of attached database */
+  वर्ण *zFile                     /* OUT: Name of attached file */
 ){
   sqlite3_stmt *pStmt;
-  int rc;
+  पूर्णाङ्क rc;
 
   /* The "PRAGMA database_list" command returns a list of databases in the
   ** order that they were attached. So a newly attached database is 
   ** described by the last row returned.  */
-  assert( sqllogglobal.bRec==0 );
+  प्रतिज्ञा( sqllogglobal.bRec==0 );
   sqllogglobal.bRec = 1;
   rc = sqlite3_prepare_v2(db, "PRAGMA database_list", -1, &pStmt, 0);
-  if( rc==SQLITE_OK ){
-    while( SQLITE_ROW==sqlite3_step(pStmt) ){
-      const char *zVal1; int nVal1;
-      const char *zVal2; int nVal2;
+  यदि( rc==SQLITE_OK ){
+    यावत्( SQLITE_ROW==sqlite3_step(pStmt) ){
+      ध्रुव वर्ण *zVal1; पूर्णाङ्क nVal1;
+      ध्रुव वर्ण *zVal2; पूर्णाङ्क nVal2;
 
-      zVal1 = (const char*)sqlite3_column_text(pStmt, 1);
+      zVal1 = (ध्रुव वर्ण*)sqlite3_column_text(pStmt, 1);
       nVal1 = sqlite3_column_bytes(pStmt, 1);
-      if( zName ){
+      यदि( zName ){
         memcpy(zName, zVal1, nVal1+1);
       }
 
-      zVal2 = (const char*)sqlite3_column_text(pStmt, 2);
+      zVal2 = (ध्रुव वर्ण*)sqlite3_column_text(pStmt, 2);
       nVal2 = sqlite3_column_bytes(pStmt, 2);
       memcpy(zFile, zVal2, nVal2+1);
 
-      if( zSearch && strlen(zSearch)==nVal1 
-       && 0==sqlite3_strnicmp(zSearch, zVal1, nVal1)
+      यदि( z_खोज && strlen(z_खोज)==nVal1 
+       && 0==sqlite3_strnicmp(z_खोज, zVal1, nVal1)
       ){
-        break;
+        भङ्ग;
       }
     }
     rc = sqlite3_finalize(pStmt);
   }
   sqllogglobal.bRec = 0;
 
-  if( rc!=SQLITE_OK ){
+  यदि( rc!=SQLITE_OK ){
     sqlite3_log(rc, "sqllogFindAttached(): error in \"PRAGMA database_list\"");
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 
@@ -288,69 +288,69 @@ static int sqllogFindAttached(
 **
 ** The SLGlobal.mutex mutex is always held when this function is called.
 */
-static void sqllogCopydb(struct SLConn *p, const char *zSearch, int bLog){
-  char zName[SQLLOG_NAMESZ];      /* Attached database name */
-  char zFile[SQLLOG_NAMESZ];      /* Database file name */
-  char *zFree;
-  char *zInit = 0;
-  int rc;
+स्थिर शून्य sqllogCopydb(संरचना SLConn *p, ध्रुव वर्ण *z_खोज, पूर्णाङ्क bLog){
+  वर्ण zName[SQLLOG_NAMESZ];      /* Attached database name */
+  वर्ण zFile[SQLLOG_NAMESZ];      /* Database file name */
+  वर्ण *zFree;
+  वर्ण *zInit = 0;
+  पूर्णाङ्क rc;
 
-  rc = sqllogFindAttached(p->db, zSearch, zName, zFile);
-  if( rc!=SQLITE_OK ) return;
+  rc = sqllogFindAttached(p->db, z_खोज, zName, zFile);
+  यदि( rc!=SQLITE_OK ) प्रत्यागम;
 
-  if( zFile[0]=='\0' ){
+  यदि( zFile[0]=='\0' ){
     zInit = sqlite3_mprintf("");
-  }else{
-    if( sqllogglobal.bReuse ){
+  }अन्यथा{
+    यदि( sqllogglobal.bReuse ){
       zInit = sqllogFindFile(zFile);
-    }else{
+    }अन्यथा{
       zInit = 0;
     }
-    if( zInit==0 ){
-      int rc;
+    यदि( zInit==0 ){
+      पूर्णाङ्क rc;
       sqlite3 *copy = 0;
-      int iDb;
+      पूर्णाङ्क iDb;
 
       /* Generate a file-name to use for the copy of this database */
       iDb = sqllogglobal.iNextDb++;
       zInit = sqlite3_mprintf("%s_%02d.db", sqllogglobal.zPrefix, iDb);
 
       /* Create the backup */
-      assert( sqllogglobal.bRec==0 );
+      प्रतिज्ञा( sqllogglobal.bRec==0 );
       sqllogglobal.bRec = 1;
       rc = sqlite3_open(zInit, &copy);
-      if( rc==SQLITE_OK ){
+      यदि( rc==SQLITE_OK ){
         sqlite3_backup *pBak;
         sqlite3_exec(copy, "PRAGMA synchronous = 0", 0, 0, 0);
         pBak = sqlite3_backup_init(copy, "main", p->db, zName);
-        if( pBak ){
+        यदि( pBak ){
           sqlite3_backup_step(pBak, -1);
           rc = sqlite3_backup_finish(pBak);
-        }else{
+        }अन्यथा{
           rc = sqlite3_errcode(copy);
         }
         sqlite3_close(copy);
       }
       sqllogglobal.bRec = 0;
 
-      if( rc==SQLITE_OK ){
+      यदि( rc==SQLITE_OK ){
         /* Write an entry into the database index file */
         FILE *fd = fopen(sqllogglobal.zIdx, "a");
-        if( fd ){
+        यदि( fd ){
           fprintf(fd, "%d %s\n", iDb, zFile);
           fclose(fd);
         }
-      }else{
+      }अन्यथा{
         sqlite3_log(rc, "sqllogCopydb(): error backing up database");
       }
     }
   }
 
-  if( bLog ){
+  यदि( bLog ){
     zFree = sqlite3_mprintf("ATTACH '%q' AS '%q'; -- clock=%d\n", 
         zInit, zName, sqllogglobal.iClock++
     );
-  }else{
+  }अन्यथा{
     zFree = sqlite3_mprintf("-- Main database is '%q'\n", zInit);
   }
   fprintf(p->fd, "%s", zFree);
@@ -364,33 +364,33 @@ static void sqllogCopydb(struct SLConn *p, const char *zSearch, int bLog){
 **
 ** The SLGlobal.mutex mutex is always held when this function is called.
 */
-static void sqllogOpenlog(struct SLConn *p){
+स्थिर शून्य sqllogOpenlog(संरचना SLConn *p){
   /* If the log file has not yet been opened, open it now. */
-  if( p->fd==0 ){
-    char *zLog;
+  यदि( p->fd==0 ){
+    वर्ण *zLog;
 
     /* If it is still NULL, have global.zPrefix point to a copy of 
     ** environment variable $ENVIRONMENT_VARIABLE1_NAME.  */
-    if( sqllogglobal.zPrefix[0]==0 ){
+    यदि( sqllogglobal.zPrefix[0]==0 ){
       FILE *fd;
-      char *zVar = getenv(ENVIRONMENT_VARIABLE1_NAME);
-      if( zVar==0 || strlen(zVar)+10>=(sizeof(sqllogglobal.zPrefix)) ) return;
-      sqlite3_snprintf(sizeof(sqllogglobal.zPrefix), sqllogglobal.zPrefix,
+      वर्ण *zVar = getenv(ENVIRONMENT_VARIABLE1_NAME);
+      यदि( zVar==0 || strlen(zVar)+10>=(परिमाण(sqllogglobal.zPrefix)) ) प्रत्यागम;
+      sqlite3_snprintf(परिमाण(sqllogglobal.zPrefix), sqllogglobal.zPrefix,
                         "%s/sqllog_%05d", zVar, getProcessId());
-      sqlite3_snprintf(sizeof(sqllogglobal.zIdx), sqllogglobal.zIdx,
+      sqlite3_snprintf(परिमाण(sqllogglobal.zIdx), sqllogglobal.zIdx,
                         "%s.idx", sqllogglobal.zPrefix);
-      if( getenv(ENVIRONMENT_VARIABLE2_NAME) ){
+      यदि( getenv(ENVIRONMENT_VARIABLE2_NAME) ){
         sqllogglobal.bReuse = atoi(getenv(ENVIRONMENT_VARIABLE2_NAME));
       }
       fd = fopen(sqllogglobal.zIdx, "w");
-      if( fd ) fclose(fd);
+      यदि( fd ) fclose(fd);
     }
 
     /* Open the log file */
     zLog = sqlite3_mprintf("%s_%05d.sql", sqllogglobal.zPrefix, p->iLog);
     p->fd = fopen(zLog, "w");
     sqlite3_free(zLog);
-    if( p->fd==0 ){
+    यदि( p->fd==0 ){
       sqlite3_log(SQLITE_IOERR, "sqllogOpenlog(): Failed to open log file");
     }
   }
@@ -401,15 +401,15 @@ static void sqllogOpenlog(struct SLConn *p){
 ** execution of an SQL statement. Parameter p is the connection the statement
 ** was executed by and parameter zSql is the text of the statement itself.
 */
-static void testSqllogStmt(struct SLConn *p, const char *zSql){
-  const char *zFirst;             /* Pointer to first token in zSql */
-  int nFirst;                     /* Size of token zFirst in bytes */
+स्थिर शून्य testSqllogStmt(संरचना SLConn *p, ध्रुव वर्ण *zSql){
+  ध्रुव वर्ण *zFirst;             /* Pointer to first token in zSql */
+  पूर्णाङ्क nFirst;                     /* Size of token zFirst in bytes */
 
   sqllogTokenize(zSql, &zFirst, &nFirst);
-  if( nFirst!=6 || 0!=sqlite3_strnicmp("ATTACH", zFirst, 6) ){
+  यदि( nFirst!=6 || 0!=sqlite3_strnicmp("ATTACH", zFirst, 6) ){
     /* Not an ATTACH statement. Write this directly to the log. */
     fprintf(p->fd, "%s; -- clock=%d\n", zSql, sqllogglobal.iClock++);
-  }else{
+  }अन्यथा{
     /* This is an ATTACH statement. Copy the database. */
     sqllogCopydb(p, 0, 1);
   }
@@ -423,25 +423,25 @@ static void testSqllogStmt(struct SLConn *p, const char *zSql){
 ** If an error occurs, sqlite3_log() is invoked to report it to the user
 ** and zero returned.
 */
-static int sqllogTraceDb(sqlite3 *db){
-  int bRet = 1;
-  if( sqllogglobal.bConditional ){
-    char zFile[SQLLOG_NAMESZ];      /* Attached database name */
-    int rc = sqllogFindAttached(db, "main", 0, zFile);
-    if( rc==SQLITE_OK ){
-      int nFile = strlen(zFile);
-      if( (SQLLOG_NAMESZ-nFile)<8 ){
+स्थिर पूर्णाङ्क sqllogTraceDb(sqlite3 *db){
+  पूर्णाङ्क bRet = 1;
+  यदि( sqllogglobal.bConditional ){
+    वर्ण zFile[SQLLOG_NAMESZ];      /* Attached database name */
+    पूर्णाङ्क rc = sqllogFindAttached(db, "main", 0, zFile);
+    यदि( rc==SQLITE_OK ){
+      पूर्णाङ्क nFile = strlen(zFile);
+      यदि( (SQLLOG_NAMESZ-nFile)<8 ){
         sqlite3_log(SQLITE_IOERR, 
             "sqllogTraceDb(): database name too long (%d bytes)", nFile
         );
         bRet = 0;
-      }else{
+      }अन्यथा{
         memcpy(&zFile[nFile], "-sqllog", 8);
         bRet = !access(zFile, F_OK);
       }
     }
   }
-  return bRet;
+  प्रत्यागम bRet;
 }
 
 /*
@@ -465,23 +465,23 @@ static int sqllogTraceDb(sqlite3 *db){
 ** particular implementation, pCtx is always a pointer to the 
 ** sqllogglobal global variable define above.
 */
-static void testSqllog(void *pCtx, sqlite3 *db, const char *zSql, int eType){
-  struct SLConn *p = 0;
+स्थिर शून्य testSqllog(शून्य *pCtx, sqlite3 *db, ध्रुव वर्ण *zSql, पूर्णाङ्क eType){
+  संरचना SLConn *p = 0;
   sqlite3_mutex *mainmtx = sqlite3_mutex_alloc(SQLITE_MUTEX_STATIC_MAIN);
 
-  assert( eType==0 || eType==1 || eType==2 );
-  assert( (eType==2)==(zSql==0) );
+  प्रतिज्ञा( eType==0 || eType==1 || eType==2 );
+  प्रतिज्ञा( (eType==2)==(zSql==0) );
 
   /* This is a database open command. */
-  if( eType==0 ){
+  यदि( eType==0 ){
     sqlite3_mutex_enter(mainmtx);
-    if( sqllogglobal.mutex==0 ){
+    यदि( sqllogglobal.mutex==0 ){
       sqllogglobal.mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_RECURSIVE);
     }
     sqlite3_mutex_leave(mainmtx);
 
     sqlite3_mutex_enter(sqllogglobal.mutex);
-    if( sqllogglobal.bRec==0 && sqllogTraceDb(db) ){
+    यदि( sqllogglobal.bRec==0 && sqllogTraceDb(db) ){
 
       sqlite3_mutex_enter(mainmtx);
       p = &sqllogglobal.aConn[sqllogglobal.nConn++];
@@ -492,44 +492,44 @@ static void testSqllog(void *pCtx, sqlite3 *db, const char *zSql, int eType){
 
       /* Open the log and take a copy of the main database file */
       sqllogOpenlog(p);
-      if( p->fd ) sqllogCopydb(p, "main", 0);
+      यदि( p->fd ) sqllogCopydb(p, "main", 0);
     }
     sqlite3_mutex_leave(sqllogglobal.mutex);
   }
 
-  else{
+  अन्यथा{
 
-    int i;
-    for(i=0; i<sqllogglobal.nConn; i++){
+    पूर्णाङ्क i;
+    प्रति(i=0; i<sqllogglobal.nConn; i++){
       p = &sqllogglobal.aConn[i];
-      if( p->db==db ) break;
+      यदि( p->db==db ) भङ्ग;
     }
 
     /* A database handle close command */
-    if( eType==2 ){
+    यदि( eType==2 ){
       sqlite3_mutex_enter(mainmtx);
-      if( i<sqllogglobal.nConn ){
-        if( p->fd ) fclose(p->fd);
+      यदि( i<sqllogglobal.nConn ){
+        यदि( p->fd ) fclose(p->fd);
         p->db = 0;
         p->fd = 0;
         sqllogglobal.nConn--;
       }
 
-      if( sqllogglobal.nConn==0 ){
+      यदि( sqllogglobal.nConn==0 ){
         sqlite3_mutex_free(sqllogglobal.mutex);
         sqllogglobal.mutex = 0;
-      }else if( i<sqllogglobal.nConn ){
-        int nShift = &sqllogglobal.aConn[sqllogglobal.nConn] - p;
-        if( nShift>0 ){
-          memmove(p, &p[1], nShift*sizeof(struct SLConn));
+      }अन्यथा यदि( i<sqllogglobal.nConn ){
+        पूर्णाङ्क nShift = &sqllogglobal.aConn[sqllogglobal.nConn] - p;
+        यदि( nShift>0 ){
+          memmove(p, &p[1], nShift*परिमाण(संरचना SLConn));
         }
       }
       sqlite3_mutex_leave(mainmtx);
 
     /* An ordinary SQL command. */
-    }else if( i<sqllogglobal.nConn && p->fd ){
+    }अन्यथा यदि( i<sqllogglobal.nConn && p->fd ){
       sqlite3_mutex_enter(sqllogglobal.mutex);
-      if( sqllogglobal.bRec==0 ){
+      यदि( sqllogglobal.bRec==0 ){
         testSqllogStmt(p, zSql);
       }
       sqlite3_mutex_leave(sqllogglobal.mutex);
@@ -543,12 +543,12 @@ static void testSqllog(void *pCtx, sqlite3 *db, const char *zSql, int eType){
 ** registers an SQLITE_CONFIG_SQLLOG callback to record the applications
 ** database activity.
 */
-void sqlite3_init_sqllog(void){
-  if( getenv(ENVIRONMENT_VARIABLE1_NAME) ){
-    if( SQLITE_OK==sqlite3_config(SQLITE_CONFIG_SQLLOG, testSqllog, 0) ){
-      memset(&sqllogglobal, 0, sizeof(sqllogglobal));
+शून्य sqlite3_init_sqllog(शून्य){
+  यदि( getenv(ENVIRONMENT_VARIABLE1_NAME) ){
+    यदि( SQLITE_OK==sqlite3_config(SQLITE_CONFIG_SQLLOG, testSqllog, 0) ){
+      memset(&sqllogglobal, 0, परिमाण(sqllogglobal));
       sqllogglobal.bReuse = 1;
-      if( getenv(ENVIRONMENT_VARIABLE3_NAME) ){
+      यदि( getenv(ENVIRONMENT_VARIABLE3_NAME) ){
         sqllogglobal.bConditional = 1;
       }
     }
