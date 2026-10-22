@@ -12,19 +12,19 @@
 ** This file contains C code routines that are called by the parser
 ** to handle SELECT statements in SQLite.
 */
-#include "sqliteInt.h"
+#அந்தர்பாவ "sqliteInt.h"
 
 /*
 ** An instance of the following object is used to record information about
 ** how to process the DISTINCT keyword, to simplify passing that information
 ** into the selectInnerLoop() routine.
 */
-typedef struct DistinctCtx DistinctCtx;
-struct DistinctCtx {
+வகைவரை கட்டமைப்பு DistinctCtx DistinctCtx;
+கட்டமைப்பு DistinctCtx {
   u8 isTnct;      /* 0: Not distinct. 1: DISTINCT  2: DISTINCT and ORDER BY */
   u8 eTnctType;   /* One of the WHERE_DISTINCT_* operators */
-  int tabTnct;    /* Ephemeral table used for DISTINCT processing */
-  int addrTnct;   /* Address of OP_OpenEphemeral opcode for tabTnct */
+  முழு tabTnct;    /* Ephemeral table used for DISTINCT processing */
+  முழு addrTnct;   /* Address of OP_OpenEphemeral opcode for tabTnct */
 };
 
 /*
@@ -45,29 +45,29 @@ struct DistinctCtx {
 ** aDefer[] array for each database table that may be read as values are
 ** extracted from the sorter.
 */
-typedef struct SortCtx SortCtx;
-struct SortCtx {
-  ExprList *pOrderBy;   /* The ORDER BY (or GROUP BY clause) */
-  int nOBSat;           /* Number of ORDER BY terms satisfied by indices */
-  int iECursor;         /* Cursor number for the sorter */
-  int regReturn;        /* Register holding block-output return address */
-  int labelBkOut;       /* Start label for the block-output subroutine */
-  int addrSortIndex;    /* Address of the OP_SorterOpen or OP_OpenEphemeral */
-  int labelDone;        /* Jump here when done, ex: LIMIT reached */
-  int labelOBLopt;      /* Jump here when sorter is full */
+வகைவரை கட்டமைப்பு SortCtx SortCtx;
+கட்டமைப்பு SortCtx {
+  கோவை_List *pOrderBy;   /* The ORDER BY (or GROUP BY clause) */
+  முழு nOBSat;           /* Number of ORDER BY terms satisfied by indices */
+  முழு iECursor;         /* Cursor number for the sorter */
+  முழு regReturn;        /* Register holding block-output return address */
+  முழு labelBkOut;       /* Start label for the block-output subroutine */
+  முழு addrSortIndex;    /* Address of the OP_SorterOpen or OP_OpenEphemeral */
+  முழு labelDone;        /* Jump here when done, ex: LIMIT reached */
+  முழு labelOBLopt;      /* Jump here when sorter is full */
   u8 sortFlags;         /* Zero or more SORTFLAG_* bits */
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
   u8 nDefer;            /* Number of valid entries in aDefer[] */
-  struct DeferredCsr {
+  கட்டமைப்பு DeferredCsr {
     Table *pTab;        /* Table definition */
-    int iCsr;           /* Cursor number for table */
-    int nKey;           /* Number of PK columns for table pTab (>=1) */
+    முழு iCsr;           /* Cursor number for table */
+    முழு n_சாவி;           /* Number of PK columns for table pTab (>=1) */
   } aDefer[4];
 #endif
-  struct RowLoadInfo *pDeferredRowLoad;  /* Deferred row loading info or NULL */
+  கட்டமைப்பு RowLoadInfo *pDeferredRowLoad;  /* Deferred row loading info or NULL */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrPush;         /* First instruction to push data into sorter */
-  int addrPushEnd;      /* Last instruction that pushes data into sorter */
+  முழு addr_தள்ளு;         /* First instruction to push data into sorter */
+  முழு addr_தள்ளு_End;      /* Last instruction that pushes data into sorter */
 #endif
 };
 #define SORTFLAG_UseSorter  0x01   /* Use SorterOpen instead of OpenEphemeral */
@@ -79,28 +79,28 @@ struct SortCtx {
 ** If bFree==1, call sqlite3DbFree() on the p object.
 ** If bFree==0, Leave the first Select object unfreed
 */
-static void clearSelect(sqlite3 *db, Select *p, int bFree){
-  assert( db!=0 );
-  while( p ){
+நிலையான வெறுமை clearSelect(sqlite3 *db, Select *p, முழு bFree){
+  ப்ரதிஜ்ஞா( db!=0 );
+  போது( p ){
     Select *pPrior = p->pPrior;
-    sqlite3ExprListDelete(db, p->pEList);
+    sqlite3_கோவை_List_Delete(db, p->pEList);
     sqlite3SrcListDelete(db, p->pSrc);
-    sqlite3ExprDelete(db, p->pWhere);
-    sqlite3ExprListDelete(db, p->pGroupBy);
-    sqlite3ExprDelete(db, p->pHaving);
-    sqlite3ExprListDelete(db, p->pOrderBy);
-    sqlite3ExprDelete(db, p->pLimit);
-    if( OK_IF_ALWAYS_TRUE(p->pWith) ) sqlite3WithDelete(db, p->pWith);
+    sqlite3_கோவை_Delete(db, p->pWhere);
+    sqlite3_கோவை_List_Delete(db, p->pGroupBy);
+    sqlite3_கோவை_Delete(db, p->pHaving);
+    sqlite3_கோவை_List_Delete(db, p->pOrderBy);
+    sqlite3_கோவை_Delete(db, p->pLimit);
+    எனில்( OK_IF_ALWAYS_TRUE(p->pWith) ) sqlite3WithDelete(db, p->pWith);
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( OK_IF_ALWAYS_TRUE(p->pWinDefn) ){
+    எனில்( OK_IF_ALWAYS_TRUE(p->pWinDefn) ){
       sqlite3WindowListDelete(db, p->pWinDefn);
     }
-    while( p->pWin ){
-      assert( p->pWin->ppThis==&p->pWin );
+    போது( p->pWin ){
+      ப்ரதிஜ்ஞா( p->pWin->ppThis==&p->pWin );
       sqlite3WindowUnlinkFromSelect(p->pWin);
     }
 #endif
-    if( bFree ) sqlite3DbNNFreeNN(db, p);
+    எனில்( bFree ) sqlite3DbNNFreeNN(db, p);
     p = pPrior;
     bFree = 1;
   }
@@ -109,7 +109,7 @@ static void clearSelect(sqlite3 *db, Select *p, int bFree){
 /*
 ** Initialize a SelectDest structure.
 */
-void sqlite3SelectDestInit(SelectDest *pDest, int eDest, int iParm){
+வெறுமை sqlite3SelectDestInit(SelectDest *pDest, முழு eDest, முழு iParm){
   pDest->eDest = (u8)eDest;
   pDest->iSDParm = iParm;
   pDest->iSDParm2 = 0;
@@ -125,25 +125,25 @@ void sqlite3SelectDestInit(SelectDest *pDest, int eDest, int iParm){
 */
 Select *sqlite3SelectNew(
   Parse *pParse,        /* Parsing context */
-  ExprList *pEList,     /* which columns to include in the result */
+  கோவை_List *pEList,     /* which columns to include in the result */
   SrcList *pSrc,        /* the FROM clause -- which tables to scan */
-  Expr *pWhere,         /* the WHERE clause */
-  ExprList *pGroupBy,   /* the GROUP BY clause */
-  Expr *pHaving,        /* the HAVING clause */
-  ExprList *pOrderBy,   /* the ORDER BY clause */
+  கோவை *pWhere,         /* the WHERE clause */
+  கோவை_List *pGroupBy,   /* the GROUP BY clause */
+  கோவை *pHaving,        /* the HAVING clause */
+  கோவை_List *pOrderBy,   /* the ORDER BY clause */
   u32 selFlags,         /* Flag parameters, such as SF_Distinct */
-  Expr *pLimit          /* LIMIT value.  NULL means not used */
+  கோவை *pLimit          /* LIMIT value.  NULL means not used */
 ){
   Select *pNew, *pAllocated;
   Select standin;
-  pAllocated = pNew = sqlite3DbMallocRawNN(pParse->db, sizeof(*pNew) );
-  if( pNew==0 ){
-    assert( pParse->db->mallocFailed );
+  pAllocated = pNew = sqlite3DbMallocRawNN(pParse->db, அளவு(*pNew) );
+  எனில்( pNew==0 ){
+    ப்ரதிஜ்ஞா( pParse->db->mallocFailed );
     pNew = &standin;
   }
-  if( pEList==0 ){
-    pEList = sqlite3ExprListAppend(pParse, 0,
-                                   sqlite3Expr(pParse->db,TK_ASTERISK,0));
+  எனில்( pEList==0 ){
+    pEList = sqlite3_கோவை_List_Append(pParse, 0,
+                                   sqlite3_கோவை(pParse->db,TK_ASTERISK,0));
   }
   pNew->pEList = pEList;
   pNew->op = TK_SELECT;
@@ -152,7 +152,7 @@ Select *sqlite3SelectNew(
   pNew->iOffset = 0;
   pNew->selId = ++pParse->nSelect;
   pNew->nSelectRow = 0;
-  if( pSrc==0 ) pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
+  எனில்( pSrc==0 ) pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
   pNew->pSrc = pSrc;
   pNew->pWhere = pWhere;
   pNew->pGroupBy = pGroupBy;
@@ -166,32 +166,32 @@ Select *sqlite3SelectNew(
   pNew->pWin = 0;
   pNew->pWinDefn = 0;
 #endif
-  if( pParse->db->mallocFailed ) {
+  எனில்( pParse->db->mallocFailed ) {
     clearSelect(pParse->db, pNew, pNew!=&standin);
     pAllocated = 0;
-  }else{
-    assert( pNew->pSrc!=0 || pParse->nErr>0 );
+  }இல்லையெனில்{
+    ப்ரதிஜ்ஞா( pNew->pSrc!=0 || pParse->nErr>0 );
   }
-  return pAllocated;
+  திரும்பு pAllocated;
 }
 
 
 /*
 ** Delete the given Select structure and all of its substructures.
 */
-void sqlite3SelectDelete(sqlite3 *db, Select *p){
-  if( OK_IF_ALWAYS_TRUE(p) ) clearSelect(db, p, 1);
+வெறுமை sqlite3SelectDelete(sqlite3 *db, Select *p){
+  எனில்( OK_IF_ALWAYS_TRUE(p) ) clearSelect(db, p, 1);
 }
-void sqlite3SelectDeleteGeneric(sqlite3 *db, void *p){
-  if( ALWAYS(p) ) clearSelect(db, (Select*)p, 1);
+வெறுமை sqlite3SelectDeleteGeneric(sqlite3 *db, வெறுமை *p){
+  எனில்( ALWAYS(p) ) clearSelect(db, (Select*)p, 1);
 }
 
 /*
 ** Return a pointer to the right-most SELECT statement in a compound.
 */
-static Select *findRightmost(Select *p){
-  while( p->pNext ) p = p->pNext;
-  return p;
+நிலையான Select *findRightmost(Select *p){
+  போது( p->pNext ) p = p->pNext;
+  திரும்பு p;
 }
 
 /*
@@ -257,111 +257,111 @@ static Select *findRightmost(Select *p){
 **    *   If "OUTER" is present then there must also be one of
 **        "LEFT", "RIGHT", or "FULL"
 */
-int sqlite3JoinType(Parse *pParse, Token *pA, Token *pB, Token *pC){
-  int jointype = 0;
+முழு sqlite3JoinType(Parse *pParse, Token *pA, Token *pB, Token *pC){
+  முழு jointype = 0;
   Token *apAll[3];
   Token *p;
                              /*   0123456789 123456789 123456789 123 */
-  static const char zKeyText[] = "naturaleftouterightfullinnercross";
-  static const struct {
+  நிலையான மாறிலி எழுத்து z_சாவி_Text[] = "naturaleftouterightfullinnercross";
+  நிலையான மாறிலி கட்டமைப்பு {
     u8 i;        /* Beginning of keyword text in zKeyText[] */
     u8 nChar;    /* Length of the keyword in characters */
     u8 code;     /* Join type mask */
   } aKeyword[] = {
     /* (0) natural */ { 0,  7, JT_NATURAL                },
-    /* (1) left    */ { 6,  4, JT_LEFT|JT_OUTER          },
+    /* (1) left    */ { 6,  4, JT_இடது|JT_OUTER          },
     /* (2) outer   */ { 10, 5, JT_OUTER                  },
-    /* (3) right   */ { 14, 5, JT_RIGHT|JT_OUTER         },
-    /* (4) full    */ { 19, 4, JT_LEFT|JT_RIGHT|JT_OUTER },
+    /* (3) right   */ { 14, 5, JT_வலது|JT_OUTER         },
+    /* (4) full    */ { 19, 4, JT_இடது|JT_வலது|JT_OUTER },
     /* (5) inner   */ { 23, 5, JT_INNER                  },
     /* (6) cross   */ { 28, 5, JT_INNER|JT_CROSS         },
   };
-  int i, j;
+  முழு i, j;
   apAll[0] = pA;
   apAll[1] = pB;
   apAll[2] = pC;
-  for(i=0; i<3 && apAll[i]; i++){
+  க்கு(i=0; i<3 && apAll[i]; i++){
     p = apAll[i];
-    for(j=0; j<ArraySize(aKeyword); j++){
-      if( p->n==aKeyword[j].nChar
-          && sqlite3StrNICmp((char*)p->z, &zKeyText[aKeyword[j].i], p->n)==0 ){
+    க்கு(j=0; j<ArraySize(aKeyword); j++){
+      எனில்( p->n==aKeyword[j].nChar
+          && sqlite3StrNICmp((எழுத்து*)p->z, &z_சாவி_Text[aKeyword[j].i], p->n)==0 ){
         jointype |= aKeyword[j].code;
-        break;
+        நிறுத்து;
       }
     }
     testcase( j==0 || j==1 || j==2 || j==3 || j==4 || j==5 || j==6 );
-    if( j>=ArraySize(aKeyword) ){
+    எனில்( j>=ArraySize(aKeyword) ){
       jointype |= JT_ERROR;
-      break;
+      நிறுத்து;
     }
   }
-  if(
+  எனில்(
      (jointype & (JT_INNER|JT_OUTER))==(JT_INNER|JT_OUTER) ||
      (jointype & JT_ERROR)!=0 ||
-     (jointype & (JT_OUTER|JT_LEFT|JT_RIGHT))==JT_OUTER
+     (jointype & (JT_OUTER|JT_இடது|JT_வலது))==JT_OUTER
   ){
-    const char *zSp1 = " ";
-    const char *zSp2 = " ";
-    if( pB==0 ){ zSp1++; }
-    if( pC==0 ){ zSp2++; }
-    sqlite3ErrorMsg(pParse, "unknown join type: "
+    மாறிலி எழுத்து *zSp1 = " ";
+    மாறிலி எழுத்து *zSp2 = " ";
+    எனில்( pB==0 ){ zSp1++; }
+    எனில்( pC==0 ){ zSp2++; }
+    sqlite3_Error_செய்தி(pParse, "unknown join type: "
        "%T%s%T%s%T", pA, zSp1, pB, zSp2, pC);
     jointype = JT_INNER;
   }
-  return jointype;
+  திரும்பு jointype;
 }
 
 /*
 ** Return the index of a column in a table.  Return -1 if the column
 ** is not contained in the table.
 */
-int sqlite3ColumnIndex(Table *pTab, const char *zCol){
-  int i;
+முழு sqlite3ColumnIndex(Table *pTab, மாறிலி எழுத்து *zCol){
+  முழு i;
   u8 h;
-  const Column *aCol;
-  int nCol;
+  மாறிலி Column *aCol;
+  முழு nCol;
 
   h = sqlite3StrIHash(zCol);
   aCol = pTab->aCol;
   nCol = pTab->nCol;
 
   /* See if the aHx gives us a lucky match */
-  i = pTab->aHx[h % sizeof(pTab->aHx)];
-  assert( i<nCol );
-  if( aCol[i].hName==h
+  i = pTab->aHx[h % அளவு(pTab->aHx)];
+  ப்ரதிஜ்ஞா( i<nCol );
+  எனில்( aCol[i].hName==h
    && sqlite3StrICmp(aCol[i].zCnName, zCol)==0
   ){
-    return i;
+    திரும்பு i;
   }
 
   /* No lucky match from the hash table.  Do a full search. */
   i = 0;
-  while( 1 /*exit-by-break*/ ){
-    if( aCol[i].hName==h
+  போது( 1 /*exit-by-break*/ ){
+    எனில்( aCol[i].hName==h
      && sqlite3StrICmp(aCol[i].zCnName, zCol)==0
     ){
-      return i;
+      திரும்பு i;
     }
     i++;
-    if( i>=nCol ) break;
+    எனில்( i>=nCol ) நிறுத்து;
   }
-  return -1;
+  திரும்பு -1;
 }
 
 /*
 ** Mark a subquery result column as having been used.
 */
-void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol){
-  assert( pItem!=0 );
-  assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
-  if( pItem->fg.isNestedFrom ){
-    ExprList *pResults;
-    assert( pItem->fg.isSubquery );
-    assert( pItem->u4.pSubq!=0 );
-    assert( pItem->u4.pSubq->pSelect!=0 );
+வெறுமை sqlite3SrcItemColumnUsed(SrcItem *pItem, முழு iCol){
+  ப்ரதிஜ்ஞா( pItem!=0 );
+  ப்ரதிஜ்ஞா( (முழு)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
+  எனில்( pItem->fg.isNestedFrom ){
+    கோவை_List *pResults;
+    ப்ரதிஜ்ஞா( pItem->fg.isSubquery );
+    ப்ரதிஜ்ஞா( pItem->u4.pSubq!=0 );
+    ப்ரதிஜ்ஞா( pItem->u4.pSubq->pSelect!=0 );
     pResults = pItem->u4.pSubq->pSelect->pEList;
-    assert( pResults!=0 );
-    assert( iCol>=0 && iCol<pResults->nExpr );
+    ப்ரதிஜ்ஞா( pResults!=0 );
+    ப்ரதிஜ்ஞா( iCol>=0 && iCol<pResults->n_கோவை );
     pResults->a[iCol].fg.bUsed = 1;
   }
 }
@@ -376,36 +376,36 @@ void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol){
 **
 ** If not found, return FALSE.
 */
-static int tableAndColumnIndex(
+நிலையான முழு tableAndColumnIndex(
   SrcList *pSrc,       /* Array of tables to search */
-  int iStart,          /* First member of pSrc->a[] to check */
-  int iEnd,            /* Last member of pSrc->a[] to check */
-  const char *zCol,    /* Name of the column we are looking for */
-  int *piTab,          /* Write index of pSrc->a[] here */
-  int *piCol,          /* Write index of pSrc->a[*piTab].pSTab->aCol[] here */
-  int bIgnoreHidden    /* Ignore hidden columns */
+  முழு iStart,          /* First member of pSrc->a[] to check */
+  முழு iEnd,            /* Last member of pSrc->a[] to check */
+  மாறிலி எழுத்து *zCol,    /* Name of the column we are looking for */
+  முழு *piTab,          /* Write index of pSrc->a[] here */
+  முழு *piCol,          /* Write index of pSrc->a[*piTab].pSTab->aCol[] here */
+  முழு bIgnoreHidden    /* Ignore hidden columns */
 ){
-  int i;               /* For looping over tables in pSrc */
-  int iCol;            /* Index of column matching zCol */
+  முழு i;               /* For looping over tables in pSrc */
+  முழு iCol;            /* Index of column matching zCol */
 
-  assert( iEnd<pSrc->nSrc );
-  assert( iStart>=0 );
-  assert( (piTab==0)==(piCol==0) );  /* Both or neither are NULL */
+  ப்ரதிஜ்ஞா( iEnd<pSrc->nSrc );
+  ப்ரதிஜ்ஞா( iStart>=0 );
+  ப்ரதிஜ்ஞா( (piTab==0)==(piCol==0) );  /* Both or neither are NULL */
 
-  for(i=iStart; i<=iEnd; i++){
+  க்கு(i=iStart; i<=iEnd; i++){
     iCol = sqlite3ColumnIndex(pSrc->a[i].pSTab, zCol);
-    if( iCol>=0
+    எனில்( iCol>=0
      && (bIgnoreHidden==0 || IsHiddenColumn(&pSrc->a[i].pSTab->aCol[iCol])==0)
     ){
-      if( piTab ){
+      எனில்( piTab ){
         sqlite3SrcItemColumnUsed(&pSrc->a[i], iCol);
         *piTab = i;
         *piCol = iCol;
       }
-      return 1;
+      திரும்பு 1;
     }
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /*
@@ -434,23 +434,23 @@ static int tableAndColumnIndex(
 ** after the t1 loop and rows with t1.x!=5 will never appear in
 ** the output, which is incorrect.
 */
-void sqlite3SetJoinExpr(Expr *p, int iTable, u32 joinFlag){
-  assert( joinFlag==EP_OuterON || joinFlag==EP_InnerON );
-  while( p ){
-    ExprSetProperty(p, joinFlag);
-    assert( !ExprHasProperty(p, EP_TokenOnly|EP_Reduced) );
-    ExprSetVVAProperty(p, EP_NoReduce);
+வெறுமை sqlite3_Set_Join_கோவை(கோவை *p, முழு iTable, u32 joinFlag){
+  ப்ரதிஜ்ஞா( joinFlag==EP_OuterON || joinFlag==EP_InnerON );
+  போது( p ){
+    கோவை_Set_Property(p, joinFlag);
+    ப்ரதிஜ்ஞா( !கோவை_Has_Property(p, EP_TokenOnly|EP_Reduced) );
+    கோவை_Set_VVAProperty(p, EP_NoReduce);
     p->w.iJoin = iTable;
-    if( ExprUseXList(p) ){
-      if( p->x.pList ){
-        int i;
-        for(i=0; i<p->x.pList->nExpr; i++){
-          sqlite3SetJoinExpr(p->x.pList->a[i].pExpr, iTable, joinFlag);
+    எனில்( கோவை_Use_XList(p) ){
+      எனில்( p->x.pList ){
+        முழு i;
+        க்கு(i=0; i<p->x.pList->n_கோவை; i++){
+          sqlite3_Set_Join_கோவை(p->x.pList->a[i].p_கோவை, iTable, joinFlag);
         }
       }
     }
-    sqlite3SetJoinExpr(p->pLeft, iTable, joinFlag);
-    p = p->pRight;
+    sqlite3_Set_Join_கோவை(p->p_இடது, iTable, joinFlag);
+    p = p->p_வலது;
   }
 }
 
@@ -468,27 +468,27 @@ void sqlite3SetJoinExpr(Expr *p, int iTable, u32 joinFlag){
 ** If nullable is true, then take care to not remove the EP_CanBeNull bit.
 ** See forum thread https://sqlite.org/forum/forumpost/b40696f50145d21c
 */
-static void unsetJoinExpr(Expr *p, int iTable, int nullable){
-  while( p ){
-    if( iTable<0 || (ExprHasProperty(p, EP_OuterON) && p->w.iJoin==iTable) ){
-      ExprClearProperty(p, EP_OuterON|EP_InnerON);
-      if( iTable>=0 ) ExprSetProperty(p, EP_InnerON);
+நிலையான வெறுமை unset_Join_கோவை(கோவை *p, முழு iTable, முழு nullable){
+  போது( p ){
+    எனில்( iTable<0 || (கோவை_Has_Property(p, EP_OuterON) && p->w.iJoin==iTable) ){
+      கோவை_Clear_Property(p, EP_OuterON|EP_InnerON);
+      எனில்( iTable>=0 ) கோவை_Set_Property(p, EP_InnerON);
     }
-    if( p->op==TK_COLUMN && p->iTable==iTable && !nullable ){
-      ExprClearProperty(p, EP_CanBeNull);
+    எனில்( p->op==TK_COLUMN && p->iTable==iTable && !nullable ){
+      கோவை_Clear_Property(p, EP_CanBeNull);
     }
-    if( p->op==TK_FUNCTION ){
-      assert( ExprUseXList(p) );
-      assert( p->pLeft==0 );
-      if( p->x.pList ){
-        int i;
-        for(i=0; i<p->x.pList->nExpr; i++){
-          unsetJoinExpr(p->x.pList->a[i].pExpr, iTable, nullable);
+    எனில்( p->op==TK_FUNCTION ){
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(p) );
+      ப்ரதிஜ்ஞா( p->p_இடது==0 );
+      எனில்( p->x.pList ){
+        முழு i;
+        க்கு(i=0; i<p->x.pList->n_கோவை; i++){
+          unset_Join_கோவை(p->x.pList->a[i].p_கோவை, iTable, nullable);
         }
       }
     }
-    unsetJoinExpr(p->pLeft, iTable, nullable);
-    p = p->pRight;
+    unset_Join_கோவை(p->p_இடது, iTable, nullable);
+    p = p->p_வலது;
   }
 }
 
@@ -513,53 +513,53 @@ static void unsetJoinExpr(Expr *p, int iTable, int nullable){
 **
 ** This routine returns the number of errors encountered.
 */
-static int sqlite3ProcessJoin(Parse *pParse, Select *p){
+நிலையான முழு sqlite3ProcessJoin(Parse *pParse, Select *p){
   SrcList *pSrc;                  /* All tables in the FROM clause */
-  int i, j;                       /* Loop counters */
-  SrcItem *pLeft;                 /* Left table being joined */
-  SrcItem *pRight;                /* Right table being joined */
-  int bSeenTFunc = 0;             /* True if have seen table-valued function */
+  முழு i, j;                       /* Loop counters */
+  SrcItem *p_இடது;                 /* Left table being joined */
+  SrcItem *p_வலது;                /* Right table being joined */
+  முழு bSeenTFunc = 0;             /* True if have seen table-valued function */
 
   pSrc = p->pSrc;
-  pLeft = &pSrc->a[0];
-  pRight = &pLeft[1];
-  for(i=0; i<pSrc->nSrc-1; i++, pRight++, pLeft++){
-    Table *pRightTab = pRight->pSTab;
+  p_இடது = &pSrc->a[0];
+  p_வலது = &p_இடது[1];
+  க்கு(i=0; i<pSrc->nSrc-1; i++, p_வலது++, p_இடது++){
+    Table *p_வலது_Tab = p_வலது->pSTab;
     u32 joinType;
 
-    if( NEVER(pLeft->pSTab==0 || pRightTab==0) ) continue;
-    joinType = (pRight->fg.jointype & JT_OUTER)!=0 ? EP_OuterON : EP_InnerON;
+    எனில்( NEVER(p_இடது->pSTab==0 || p_வலது_Tab==0) ) தொடர்;
+    joinType = (p_வலது->fg.jointype & JT_OUTER)!=0 ? EP_OuterON : EP_InnerON;
 
     /* If this is a NATURAL join, synthesize an appropriate USING clause
     ** to specify which columns should be joined.
     */
-    if( pRight->fg.jointype & JT_NATURAL ){
+    எனில்( p_வலது->fg.jointype & JT_NATURAL ){
       IdList *pUsing = 0;
-      if( pRight->fg.isUsing || pRight->u3.pOn ){
-        sqlite3ErrorMsg(pParse, "a NATURAL join may not have "
+      எனில்( p_வலது->fg.isUsing || p_வலது->u3.pOn ){
+        sqlite3_Error_செய்தி(pParse, "a NATURAL join may not have "
            "an ON or USING clause", 0);
-        return 1;
+        திரும்பு 1;
       }
-      for(j=0; j<pRightTab->nCol; j++){
-        char *zName;   /* Name of column in the right table */
+      க்கு(j=0; j<p_வலது_Tab->nCol; j++){
+        எழுத்து *zName;   /* Name of column in the right table */
 
-        if( IsHiddenColumn(&pRightTab->aCol[j]) ) continue;
-        zName = pRightTab->aCol[j].zCnName;
-        if( tableAndColumnIndex(pSrc, 0, i, zName, 0, 0, 1) ){
+        எனில்( IsHiddenColumn(&p_வலது_Tab->aCol[j]) ) தொடர்;
+        zName = p_வலது_Tab->aCol[j].zCnName;
+        எனில்( tableAndColumnIndex(pSrc, 0, i, zName, 0, 0, 1) ){
           pUsing = sqlite3IdListAppend(pParse, pUsing, 0);
-          if( pUsing ){
-            assert( pUsing->nId>0 );
-            assert( pUsing->a[pUsing->nId-1].zName==0 );
+          எனில்( pUsing ){
+            ப்ரதிஜ்ஞா( pUsing->nId>0 );
+            ப்ரதிஜ்ஞா( pUsing->a[pUsing->nId-1].zName==0 );
             pUsing->a[pUsing->nId-1].zName = sqlite3DbStrDup(pParse->db, zName);
           }
         }
       }
-      if( pUsing ){
-        pRight->fg.isUsing = 1;
-        pRight->fg.isSynthUsing = 1;
-        pRight->u3.pUsing = pUsing;
+      எனில்( pUsing ){
+        p_வலது->fg.isUsing = 1;
+        p_வலது->fg.isSynthUsing = 1;
+        p_வலது->u3.pUsing = pUsing;
       }
-      if( pParse->nErr ) return 1;
+      எனில்( pParse->nErr ) திரும்பு 1;
     }
 
     /* Create extra terms on the WHERE clause for each column named
@@ -569,32 +569,32 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     ** Report an error if any column mentioned in the USING clause is
     ** not contained in both tables to be joined.
     */
-    if( pRight->fg.isUsing ){
-      IdList *pList = pRight->u3.pUsing;
+    எனில்( p_வலது->fg.isUsing ){
+      IdList *pList = p_வலது->u3.pUsing;
       sqlite3 *db = pParse->db;
-      assert( pList!=0 );
-      for(j=0; j<pList->nId; j++){
-        char *zName;     /* Name of the term in the USING clause */
-        int iLeft;       /* Table on the left with matching column name */
-        int iLeftCol;    /* Column number of matching column on the left */
-        int iRightCol;   /* Column number of matching column on the right */
-        Expr *pE1;       /* Reference to the column on the LEFT of the join */
-        Expr *pE2;       /* Reference to the column on the RIGHT of the join */
-        Expr *pEq;       /* Equality constraint.  pE1 == pE2 */
+      ப்ரதிஜ்ஞா( pList!=0 );
+      க்கு(j=0; j<pList->nId; j++){
+        எழுத்து *zName;     /* Name of the term in the USING clause */
+        முழு i_இடது;       /* Table on the left with matching column name */
+        முழு i_இடது_Col;    /* Column number of matching column on the left */
+        முழு i_வலது_Col;   /* Column number of matching column on the right */
+        கோவை *pE1;       /* Reference to the column on the LEFT of the join */
+        கோவை *pE2;       /* Reference to the column on the RIGHT of the join */
+        கோவை *pEq;       /* Equality constraint.  pE1 == pE2 */
 
         zName = pList->a[j].zName;
-        iRightCol = sqlite3ColumnIndex(pRightTab, zName);
-        if( iRightCol<0
-         || tableAndColumnIndex(pSrc, 0, i, zName, &iLeft, &iLeftCol,
-                                pRight->fg.isSynthUsing)==0
+        i_வலது_Col = sqlite3ColumnIndex(p_வலது_Tab, zName);
+        எனில்( i_வலது_Col<0
+         || tableAndColumnIndex(pSrc, 0, i, zName, &i_இடது, &i_இடது_Col,
+                                p_வலது->fg.isSynthUsing)==0
         ){
-          sqlite3ErrorMsg(pParse, "cannot join using column %s - column "
+          sqlite3_Error_செய்தி(pParse, "cannot join using column %s - column "
             "not present in both tables", zName);
-          return 1;
+          திரும்பு 1;
         }
-        pE1 = sqlite3CreateColumnExpr(db, pSrc, iLeft, iLeftCol);
-        sqlite3SrcItemColumnUsed(&pSrc->a[iLeft], iLeftCol);
-        if( (pSrc->a[0].fg.jointype & JT_LTORJ)!=0 && pParse->nErr==0 ){
+        pE1 = sqlite3_Create_Column_கோவை(db, pSrc, i_இடது, i_இடது_Col);
+        sqlite3SrcItemColumnUsed(&pSrc->a[i_இடது], i_இடது_Col);
+        எனில்( (pSrc->a[0].fg.jointype & JT_LTORJ)!=0 && pParse->nErr==0 ){
           /* This branch runs if the query contains one or more RIGHT or FULL
           ** JOINs.  If only a single table on the left side of this join
           ** contains the zName column, then this branch is a no-op.
@@ -608,61 +608,61 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
           ** JOIN.  But older versions of SQLite do not do that, so we avoid
           ** adding a new error so as to not break legacy applications.
           */
-          ExprList *pFuncArgs = 0;   /* Arguments to the coalesce() */
-          static const Token tkCoalesce = { "coalesce", 8 };
-          assert( pE1!=0 );
-          ExprSetProperty(pE1, EP_CanBeNull);
-          while( tableAndColumnIndex(pSrc, iLeft+1, i, zName, &iLeft, &iLeftCol,
-                                     pRight->fg.isSynthUsing)!=0 ){
-            if( pSrc->a[iLeft].fg.isUsing==0
-             || sqlite3IdListIndex(pSrc->a[iLeft].u3.pUsing, zName)<0
+          கோவை_List *pFuncArgs = 0;   /* Arguments to the coalesce() */
+          நிலையான மாறிலி Token tkCoalesce = { "coalesce", 8 };
+          ப்ரதிஜ்ஞா( pE1!=0 );
+          கோவை_Set_Property(pE1, EP_CanBeNull);
+          போது( tableAndColumnIndex(pSrc, i_இடது+1, i, zName, &i_இடது, &i_இடது_Col,
+                                     p_வலது->fg.isSynthUsing)!=0 ){
+            எனில்( pSrc->a[i_இடது].fg.isUsing==0
+             || sqlite3IdListIndex(pSrc->a[i_இடது].u3.pUsing, zName)<0
             ){
-              sqlite3ErrorMsg(pParse, "ambiguous reference to %s in USING()",
+              sqlite3_Error_செய்தி(pParse, "ambiguous reference to %s in USING()",
                               zName);
-              break;
+              நிறுத்து;
             }
-            pFuncArgs = sqlite3ExprListAppend(pParse, pFuncArgs, pE1);
-            pE1 = sqlite3CreateColumnExpr(db, pSrc, iLeft, iLeftCol);
-            sqlite3SrcItemColumnUsed(&pSrc->a[iLeft], iLeftCol);
+            pFuncArgs = sqlite3_கோவை_List_Append(pParse, pFuncArgs, pE1);
+            pE1 = sqlite3_Create_Column_கோவை(db, pSrc, i_இடது, i_இடது_Col);
+            sqlite3SrcItemColumnUsed(&pSrc->a[i_இடது], i_இடது_Col);
           }
-          if( pFuncArgs ){
-            pFuncArgs = sqlite3ExprListAppend(pParse, pFuncArgs, pE1);
-            pE1 = sqlite3ExprFunction(pParse, pFuncArgs, &tkCoalesce, 0);
-            if( pE1 ){
-              pE1->affExpr = SQLITE_AFF_DEFER;
+          எனில்( pFuncArgs ){
+            pFuncArgs = sqlite3_கோவை_List_Append(pParse, pFuncArgs, pE1);
+            pE1 = sqlite3_கோவை_Function(pParse, pFuncArgs, &tkCoalesce, 0);
+            எனில்( pE1 ){
+              pE1->aff_கோவை = SQLITE_AFF_DEFER;
             }
           }
-        }else if( (pSrc->a[i+1].fg.jointype & JT_LEFT)!=0 && pParse->nErr==0 ){
-          assert( pE1!=0 );
-          ExprSetProperty(pE1, EP_CanBeNull);
+        }இல்லையெனில் எனில்( (pSrc->a[i+1].fg.jointype & JT_இடது)!=0 && pParse->nErr==0 ){
+          ப்ரதிஜ்ஞா( pE1!=0 );
+          கோவை_Set_Property(pE1, EP_CanBeNull);
         }
-        pE2 = sqlite3CreateColumnExpr(db, pSrc, i+1, iRightCol);
-        sqlite3SrcItemColumnUsed(pRight, iRightCol);
+        pE2 = sqlite3_Create_Column_கோவை(db, pSrc, i+1, i_வலது_Col);
+        sqlite3SrcItemColumnUsed(p_வலது, i_வலது_Col);
         pEq = sqlite3PExpr(pParse, TK_EQ, pE1, pE2);
-        assert( pE2!=0 || pEq==0 );
-        if( pEq ){
-          ExprSetProperty(pEq, joinType);
-          assert( !ExprHasProperty(pEq, EP_TokenOnly|EP_Reduced) );
-          ExprSetVVAProperty(pEq, EP_NoReduce);
+        ப்ரதிஜ்ஞா( pE2!=0 || pEq==0 );
+        எனில்( pEq ){
+          கோவை_Set_Property(pEq, joinType);
+          ப்ரதிஜ்ஞா( !கோவை_Has_Property(pEq, EP_TokenOnly|EP_Reduced) );
+          கோவை_Set_VVAProperty(pEq, EP_NoReduce);
           pEq->w.iJoin = pE2->iTable;
         }
-        p->pWhere = sqlite3ExprAnd(pParse, p->pWhere, pEq);
+        p->pWhere = sqlite3_கோவை_And(pParse, p->pWhere, pEq);
       }
     }
 
     /* Add the ON clause to the end of the WHERE clause, connected by
     ** an AND operator.
     */
-    else if( pRight->u3.pOn ){
-      sqlite3SetJoinExpr(pRight->u3.pOn, pRight->iCursor, joinType);
-      p->pWhere = sqlite3ExprAnd(pParse, p->pWhere, pRight->u3.pOn);
-      pRight->u3.pOn = 0;
-      pRight->fg.isOn = 1;
+    இல்லையெனில் எனில்( p_வலது->u3.pOn ){
+      sqlite3_Set_Join_கோவை(p_வலது->u3.pOn, p_வலது->iCursor, joinType);
+      p->pWhere = sqlite3_கோவை_And(pParse, p->pWhere, p_வலது->u3.pOn);
+      p_வலது->u3.pOn = 0;
+      p_வலது->fg.isOn = 1;
       p->selFlags |= SF_OnToWhere;
     }
 
-    if( bSeenTFunc==0 ){
-      bSeenTFunc = (pLeft->fg.isTabFunc && pLeft->u1.pFuncArg);
+    எனில்( bSeenTFunc==0 ){
+      bSeenTFunc = (p_இடது->fg.isTabFunc && p_இடது->u1.pFuncArg);
     }
 
     /* We also need to call sqlite3SelectCheckOnClauses() to verify that
@@ -670,26 +670,26 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     ** their right. This test is required if either (a) there is a RIGHT JOIN
     ** in the SrcList, or (b) there is a LEFT JOIN to the right of a 
     ** table-valued function.  */
-    if( (pRight->fg.isTabFunc && joinType==EP_OuterON && pRight->u1.pFuncArg)
+    எனில்( (p_வலது->fg.isTabFunc && joinType==EP_OuterON && p_வலது->u1.pFuncArg)
      || (bSeenTFunc && joinType==EP_OuterON)
     ){
       p->selFlags |= SF_OnToWhere;
     }
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /*
 ** An instance of this object holds information (beyond pParse and pSelect)
 ** needed to load the next result row that is to be added to the sorter.
 */
-typedef struct RowLoadInfo RowLoadInfo;
-struct RowLoadInfo {
-  int regResult;               /* Store results in array of registers here */
+வகைவரை கட்டமைப்பு RowLoadInfo RowLoadInfo;
+கட்டமைப்பு RowLoadInfo {
+  முழு regResult;               /* Store results in array of registers here */
   u8 ecelFlags;                /* Flag argument to ExprCodeExprList() */
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  ExprList *pExtra;            /* Extra columns needed by sorter refs */
-  int regExtraResult;          /* Where to load the extra columns */
+  கோவை_List *pExtra;            /* Extra columns needed by sorter refs */
+  முழு regExtraResult;          /* Where to load the extra columns */
 #endif
 };
 
@@ -697,17 +697,17 @@ struct RowLoadInfo {
 ** This routine does the work of loading query data into an array of
 ** registers so that it can be added to the sorter.
 */
-static void innerLoopLoadRow(
+நிலையான வெறுமை innerLoopLoadRow(
   Parse *pParse,             /* Statement under construction */
   Select *pSelect,           /* The query being coded */
   RowLoadInfo *pInfo         /* Info needed to complete the row load */
 ){
-  sqlite3ExprCodeExprList(pParse, pSelect->pEList, pInfo->regResult,
+  sqlite3_கோவை_Code_கோவை_List(pParse, pSelect->pEList, pInfo->regResult,
                           0, pInfo->ecelFlags);
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  if( pInfo->pExtra ){
-    sqlite3ExprCodeExprList(pParse, pInfo->pExtra, pInfo->regExtraResult, 0, 0);
-    sqlite3ExprListDelete(pParse->db, pInfo->pExtra);
+  எனில்( pInfo->pExtra ){
+    sqlite3_கோவை_Code_கோவை_List(pParse, pInfo->pExtra, pInfo->regExtraResult, 0, 0);
+    sqlite3_கோவை_List_Delete(pParse->db, pInfo->pExtra);
   }
 #endif
 }
@@ -718,48 +718,48 @@ static void innerLoopLoadRow(
 **
 ** Return the register in which the result is stored.
 */
-static int makeSorterRecord(
+நிலையான முழு makeSorterRecord(
   Parse *pParse,
   SortCtx *pSort,
   Select *pSelect,
-  int regBase,
-  int nBase
+  முழு regBase,
+  முழு nBase
 ){
-  int nOBSat = pSort->nOBSat;
+  முழு nOBSat = pSort->nOBSat;
   Vdbe *v = pParse->pVdbe;
-  int regOut = ++pParse->nMem;
-  if( pSort->pDeferredRowLoad ){
+  முழு regOut = ++pParse->nMem;
+  எனில்( pSort->pDeferredRowLoad ){
     innerLoopLoadRow(pParse, pSelect, pSort->pDeferredRowLoad);
   }
   sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase+nOBSat, nBase-nOBSat, regOut);
-  return regOut;
+  திரும்பு regOut;
 }
 
 /*
 ** Generate code that will push the record in registers regData
 ** through regData+nData-1 onto the sorter.
 */
-static void pushOntoSorter(
+நிலையான வெறுமை தள்ளு_Onto_Sorter(
   Parse *pParse,         /* Parser context */
   SortCtx *pSort,        /* Information about the ORDER BY clause */
   Select *pSelect,       /* The whole SELECT statement */
-  int regData,           /* First register holding data to be sorted */
-  int regOrigData,       /* First register holding data before packing */
-  int nData,             /* Number of elements in the regData data array */
-  int nPrefixReg         /* No. of reg prior to regData available for use */
+  முழு regData,           /* First register holding data to be sorted */
+  முழு regOrigData,       /* First register holding data before packing */
+  முழு nData,             /* Number of elements in the regData data array */
+  முழு nPrefixReg         /* No. of reg prior to regData available for use */
 ){
   Vdbe *v = pParse->pVdbe;                         /* Stmt under construction */
-  int bSeq = ((pSort->sortFlags & SORTFLAG_UseSorter)==0);
-  int nExpr = pSort->pOrderBy->nExpr;              /* No. of ORDER BY terms */
-  int nBase = nExpr + bSeq + nData;                /* Fields in sorter record */
-  int regBase;                                     /* Regs for sorter record */
-  int regRecord = 0;                               /* Assembled sorter record */
-  int nOBSat = pSort->nOBSat;                      /* ORDER BY terms to skip */
-  int op;                            /* Opcode to add sorter record to sorter */
-  int iLimit;                        /* LIMIT counter */
-  int iSkip = 0;                     /* End of the sorter insert loop */
+  முழு bSeq = ((pSort->sortFlags & SORTFLAG_UseSorter)==0);
+  முழு n_கோவை = pSort->pOrderBy->n_கோவை;              /* No. of ORDER BY terms */
+  முழு nBase = n_கோவை + bSeq + nData;                /* Fields in sorter record */
+  முழு regBase;                                     /* Regs for sorter record */
+  முழு regRecord = 0;                               /* Assembled sorter record */
+  முழு nOBSat = pSort->nOBSat;                      /* ORDER BY terms to skip */
+  முழு op;                            /* Opcode to add sorter record to sorter */
+  முழு iLimit;                        /* LIMIT counter */
+  முழு iSkip = 0;                     /* End of the sorter insert loop */
 
-  assert( bSeq==0 || bSeq==1 );
+  ப்ரதிஜ்ஞா( bSeq==0 || bSeq==1 );
 
   /* Three cases:
   **   (1) The data to be sorted has already been packed into a Record
@@ -774,58 +774,58 @@ static void pushOntoSorter(
   **       regOrigData is 0 to prevent this routine from trying to copy
   **       values that might not yet exist.
   */
-  assert( nData==1 || regData==regOrigData || regOrigData==0 );
+  ப்ரதிஜ்ஞா( nData==1 || regData==regOrigData || regOrigData==0 );
 
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  pSort->addrPush = sqlite3VdbeCurrentAddr(v);
+  pSort->addr_தள்ளு = sqlite3VdbeCurrentAddr(v);
 #endif
 
-  if( nPrefixReg ){
-    assert( nPrefixReg==nExpr+bSeq );
+  எனில்( nPrefixReg ){
+    ப்ரதிஜ்ஞா( nPrefixReg==n_கோவை+bSeq );
     regBase = regData - nPrefixReg;
-  }else{
+  }இல்லையெனில்{
     regBase = pParse->nMem + 1;
     pParse->nMem += nBase;
   }
-  assert( pSelect->iOffset==0 || pSelect->iLimit!=0 );
+  ப்ரதிஜ்ஞா( pSelect->iOffset==0 || pSelect->iLimit!=0 );
   iLimit = pSelect->iOffset ? pSelect->iOffset+1 : pSelect->iLimit;
   pSort->labelDone = sqlite3VdbeMakeLabel(pParse);
-  sqlite3ExprCodeExprList(pParse, pSort->pOrderBy, regBase, regOrigData,
+  sqlite3_கோவை_Code_கோவை_List(pParse, pSort->pOrderBy, regBase, regOrigData,
                           SQLITE_ECEL_DUP | (regOrigData? SQLITE_ECEL_REF : 0));
-  if( bSeq ){
-    sqlite3VdbeAddOp2(v, OP_Sequence, pSort->iECursor, regBase+nExpr);
+  எனில்( bSeq ){
+    sqlite3VdbeAddOp2(v, OP_Sequence, pSort->iECursor, regBase+n_கோவை);
   }
-  if( nPrefixReg==0 && nData>0 ){
-    sqlite3ExprCodeMove(pParse, regData, regBase+nExpr+bSeq, nData);
+  எனில்( nPrefixReg==0 && nData>0 ){
+    sqlite3_கோவை_Code_Move(pParse, regData, regBase+n_கோவை+bSeq, nData);
   }
-  if( nOBSat>0 ){
-    int regPrevKey;   /* The first nOBSat columns of the previous row */
-    int addrFirst;    /* Address of the OP_IfNot opcode */
-    int addrJmp;      /* Address of the OP_Jump opcode */
+  எனில்( nOBSat>0 ){
+    முழு reg_Prev_சாவி;   /* The first nOBSat columns of the previous row */
+    முழு addrFirst;    /* Address of the OP_IfNot opcode */
+    முழு addrJmp;      /* Address of the OP_Jump opcode */
     VdbeOp *pOp;      /* Opcode that opens the sorter */
-    int nKey;         /* Number of sorting key columns, including OP_Sequence */
-    KeyInfo *pKI;     /* Original KeyInfo on the sorter table */
+    முழு n_சாவி;         /* Number of sorting key columns, including OP_Sequence */
+    சாவி_Info *pKI;     /* Original KeyInfo on the sorter table */
 
     regRecord = makeSorterRecord(pParse, pSort, pSelect, regBase, nBase);
-    regPrevKey = pParse->nMem+1;
+    reg_Prev_சாவி = pParse->nMem+1;
     pParse->nMem += pSort->nOBSat;
-    nKey = nExpr - pSort->nOBSat + bSeq;
-    if( bSeq ){
-      addrFirst = sqlite3VdbeAddOp1(v, OP_IfNot, regBase+nExpr);
-    }else{
+    n_சாவி = n_கோவை - pSort->nOBSat + bSeq;
+    எனில்( bSeq ){
+      addrFirst = sqlite3VdbeAddOp1(v, OP_IfNot, regBase+n_கோவை);
+    }இல்லையெனில்{
       addrFirst = sqlite3VdbeAddOp1(v, OP_SequenceTest, pSort->iECursor);
     }
     VdbeCoverage(v);
-    sqlite3VdbeAddOp3(v, OP_Compare, regPrevKey, regBase, pSort->nOBSat);
+    sqlite3VdbeAddOp3(v, OP_Compare, reg_Prev_சாவி, regBase, pSort->nOBSat);
     pOp = sqlite3VdbeGetOp(v, pSort->addrSortIndex);
-    if( pParse->db->mallocFailed ) return;
-    pOp->p2 = nKey + nData;
-    pKI = pOp->p4.pKeyInfo;
-    memset(pKI->aSortFlags, 0, pKI->nKeyField); /* Makes OP_Jump testable */
-    sqlite3VdbeChangeP4(v, -1, (char*)pKI, P4_KEYINFO);
-    testcase( pKI->nAllField > pKI->nKeyField+2 );
-    pOp->p4.pKeyInfo = sqlite3KeyInfoFromExprList(pParse,pSort->pOrderBy,nOBSat,
-                                           pKI->nAllField-pKI->nKeyField-1);
+    எனில்( pParse->db->mallocFailed ) திரும்பு;
+    pOp->p2 = n_சாவி + nData;
+    pKI = pOp->p4.p_சாவி_Info;
+    memset(pKI->aSortFlags, 0, pKI->n_சாவி_Field); /* Makes OP_Jump testable */
+    sqlite3VdbeChangeP4(v, -1, (எழுத்து*)pKI, P4_KEYINFO);
+    testcase( pKI->nAllField > pKI->n_சாவி_Field+2 );
+    pOp->p4.p_சாவி_Info = sqlite3_சாவி_Info_From_கோவை_List(pParse,pSort->pOrderBy,nOBSat,
+                                           pKI->nAllField-pKI->n_சாவி_Field-1);
     pOp = 0; /* Ensure pOp not used after sqlite3VdbeAddOp3() */
     addrJmp = sqlite3VdbeCurrentAddr(v);
     sqlite3VdbeAddOp3(v, OP_Jump, addrJmp+1, 0, addrJmp+1); VdbeCoverage(v);
@@ -833,15 +833,15 @@ static void pushOntoSorter(
     pSort->regReturn = ++pParse->nMem;
     sqlite3VdbeAddOp2(v, OP_Gosub, pSort->regReturn, pSort->labelBkOut);
     sqlite3VdbeAddOp1(v, OP_ResetSorter, pSort->iECursor);
-    if( iLimit ){
+    எனில்( iLimit ){
       sqlite3VdbeAddOp2(v, OP_IfNot, iLimit, pSort->labelDone);
       VdbeCoverage(v);
     }
     sqlite3VdbeJumpHere(v, addrFirst);
-    sqlite3ExprCodeMove(pParse, regBase, regPrevKey, pSort->nOBSat);
+    sqlite3_கோவை_Code_Move(pParse, regBase, reg_Prev_சாவி, pSort->nOBSat);
     sqlite3VdbeJumpHere(v, addrJmp);
   }
-  if( iLimit ){
+  எனில்( iLimit ){
     /* At this point the values for the new sorter entry are stored
     ** in an array of registers. They need to be composed into a record
     ** and inserted into the sorter if either (a) there are currently
@@ -857,43 +857,43 @@ static void pushOntoSorter(
     ** just bypass the row insert logic.  See the header comment on the
     ** sqlite3WhereOrderByLimitOptLabel() function for additional info.
     */
-    int iCsr = pSort->iECursor;
+    முழு iCsr = pSort->iECursor;
     sqlite3VdbeAddOp2(v, OP_IfNotZero, iLimit, sqlite3VdbeCurrentAddr(v)+4);
     VdbeCoverage(v);
     sqlite3VdbeAddOp2(v, OP_Last, iCsr, 0);
     iSkip = sqlite3VdbeAddOp4Int(v, OP_IdxLE,
-                                 iCsr, 0, regBase+nOBSat, nExpr-nOBSat);
+                                 iCsr, 0, regBase+nOBSat, n_கோவை-nOBSat);
     VdbeCoverage(v);
     sqlite3VdbeAddOp1(v, OP_Delete, iCsr);
   }
-  if( regRecord==0 ){
+  எனில்( regRecord==0 ){
     regRecord = makeSorterRecord(pParse, pSort, pSelect, regBase, nBase);
   }
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
-    op = OP_SorterInsert;
-  }else{
-    op = OP_IdxInsert;
+  எனில்( pSort->sortFlags & SORTFLAG_UseSorter ){
+    op = OP_Sorter_செருகு;
+  }இல்லையெனில்{
+    op = OP_Idx_செருகு;
   }
   sqlite3VdbeAddOp4Int(v, op, pSort->iECursor, regRecord,
                        regBase+nOBSat, nBase-nOBSat);
-  if( iSkip ){
+  எனில்( iSkip ){
     sqlite3VdbeChangeP2(v, iSkip,
          pSort->labelOBLopt ? pSort->labelOBLopt : sqlite3VdbeCurrentAddr(v));
   }
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  pSort->addrPushEnd = sqlite3VdbeCurrentAddr(v)-1;
+  pSort->addr_தள்ளு_End = sqlite3VdbeCurrentAddr(v)-1;
 #endif
 }
 
 /*
 ** Add code to implement the OFFSET
 */
-static void codeOffset(
+நிலையான வெறுமை codeOffset(
   Vdbe *v,          /* Generate code into this VM */
-  int iOffset,      /* Register holding the offset counter */
-  int iContinue     /* Jump here to skip the current record */
+  முழு iOffset,      /* Register holding the offset counter */
+  முழு iContinue     /* Jump here to skip the current record */
 ){
-  if( iOffset>0 ){
+  எனில்( iOffset>0 ){
     sqlite3VdbeAddOp3(v, OP_IfPos, iOffset, iContinue, 1); VdbeCoverage(v);
     VdbeComment((v, "OFFSET"));
   }
@@ -942,65 +942,65 @@ static void codeOffset(
 ** collation sequences that should be used for the comparisons if
 ** eTnctType is WHERE_DISTINCT_ORDERED.
 */
-static int codeDistinct(
+நிலையான முழு codeDistinct(
   Parse *pParse,     /* Parsing and code generating context */
-  int eTnctType,     /* WHERE_DISTINCT_* value */
-  int iTab,          /* A sorting index used to test for distinctness */
-  int addrRepeat,    /* Jump to here if not distinct */
-  ExprList *pEList,  /* Expression for each element */
-  int regElem        /* First element */
+  முழு eTnctType,     /* WHERE_DISTINCT_* value */
+  முழு iTab,          /* A sorting index used to test for distinctness */
+  முழு addrRepeat,    /* Jump to here if not distinct */
+  கோவை_List *pEList,  /* Expression for each element */
+  முழு regElem        /* First element */
 ){
-  int iRet = 0;
-  int nResultCol = pEList->nExpr;
+  முழு iRet = 0;
+  முழு nResultCol = pEList->n_கோவை;
   Vdbe *v = pParse->pVdbe;
 
-  switch( eTnctType ){
-    case WHERE_DISTINCT_ORDERED: {
-      int i;
-      int iJump;              /* Jump destination */
-      int regPrev;            /* Previous row content */
+  தேர்வு( eTnctType ){
+    நிலை WHERE_DISTINCT_ORDERED: {
+      முழு i;
+      முழு iJump;              /* Jump destination */
+      முழு regPrev;            /* Previous row content */
 
       /* Allocate space for the previous row */
       iRet = regPrev = pParse->nMem+1;
       pParse->nMem += nResultCol;
 
       iJump = sqlite3VdbeCurrentAddr(v) + nResultCol;
-      for(i=0; i<nResultCol; i++){
-        CollSeq *pColl = sqlite3ExprCollSeq(pParse, pEList->a[i].pExpr);
-        if( i<nResultCol-1 ){
+      க்கு(i=0; i<nResultCol; i++){
+        CollSeq *pColl = sqlite3_கோவை_Coll_Seq(pParse, pEList->a[i].p_கோவை);
+        எனில்( i<nResultCol-1 ){
           sqlite3VdbeAddOp3(v, OP_Ne, regElem+i, iJump, regPrev+i);
           VdbeCoverage(v);
-        }else{
+        }இல்லையெனில்{
           sqlite3VdbeAddOp3(v, OP_Eq, regElem+i, addrRepeat, regPrev+i);
           VdbeCoverage(v);
          }
-        sqlite3VdbeChangeP4(v, -1, (const char *)pColl, P4_COLLSEQ);
+        sqlite3VdbeChangeP4(v, -1, (மாறிலி எழுத்து *)pColl, P4_COLLSEQ);
         sqlite3VdbeChangeP5(v, SQLITE_NULLEQ);
       }
-      assert( sqlite3VdbeCurrentAddr(v)==iJump || pParse->db->mallocFailed );
+      ப்ரதிஜ்ஞா( sqlite3VdbeCurrentAddr(v)==iJump || pParse->db->mallocFailed );
       sqlite3VdbeAddOp3(v, OP_Copy, regElem, regPrev, nResultCol-1);
-      break;
+      நிறுத்து;
     }
 
-    case WHERE_DISTINCT_UNIQUE: {
+    நிலை WHERE_DISTINCT_UNIQUE: {
       /* nothing to do */
-      break;
+      நிறுத்து;
     }
 
-    default: {
-      int r1 = sqlite3GetTempReg(pParse);
+    இயல்பு: {
+      முழு r1 = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp4Int(v, OP_Found, iTab, addrRepeat, regElem, nResultCol);
       VdbeCoverage(v);
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regElem, nResultCol, r1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iTab, r1, regElem, nResultCol);
+      sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iTab, r1, regElem, nResultCol);
       sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
       sqlite3ReleaseTempReg(pParse, r1);
       iRet = iTab;
-      break;
+      நிறுத்து;
     }
   }
 
-  return iRet;
+  திரும்பு iRet;
 }
 
 /*
@@ -1026,21 +1026,21 @@ static int codeDistinct(
 **     iVal to be initialized to NULL.  So change the OP_OpenEphemeral
 **     into an OP_Null on the iVal register.
 */
-static void fixDistinctOpenEph(
+நிலையான வெறுமை fixDistinctOpenEph(
   Parse *pParse,     /* Parsing and code generating context */
-  int eTnctType,     /* WHERE_DISTINCT_* value */
-  int iVal,          /* Value returned by codeDistinct() */
-  int iOpenEphAddr   /* Address of OP_OpenEphemeral instruction for iTab */
+  முழு eTnctType,     /* WHERE_DISTINCT_* value */
+  முழு iVal,          /* Value returned by codeDistinct() */
+  முழு iOpenEphAddr   /* Address of OP_OpenEphemeral instruction for iTab */
 ){
-  if( pParse->nErr==0
+  எனில்( pParse->nErr==0
    && (eTnctType==WHERE_DISTINCT_UNIQUE || eTnctType==WHERE_DISTINCT_ORDERED)
   ){
     Vdbe *v = pParse->pVdbe;
     sqlite3VdbeChangeToNoop(v, iOpenEphAddr);
-    if( sqlite3VdbeGetOp(v, iOpenEphAddr+1)->opcode==OP_Explain ){
+    எனில்( sqlite3VdbeGetOp(v, iOpenEphAddr+1)->opcode==OP_Explain ){
       sqlite3VdbeChangeToNoop(v, iOpenEphAddr+1);
     }
-    if( eTnctType==WHERE_DISTINCT_ORDERED ){
+    எனில்( eTnctType==WHERE_DISTINCT_ORDERED ){
       /* Change the OP_OpenEphemeral to an OP_Null that sets the MEM_Cleared
       ** bit on the first register of the previous value.  This will cause the
       ** OP_Ne added in codeDistinct() to always fail on the first iteration of
@@ -1078,55 +1078,55 @@ static void fixDistinctOpenEph(
 ** expressions for all extra PK values that should be stored in the
 ** sorter records.
 */
-static void selectExprDefer(
+நிலையான வெறுமை select_கோவை_Defer(
   Parse *pParse,                  /* Leave any error here */
   SortCtx *pSort,                 /* Sorter context */
-  ExprList *pEList,               /* Expressions destined for sorter */
-  ExprList **ppExtra              /* Expressions to append to sorter record */
+  கோவை_List *pEList,               /* Expressions destined for sorter */
+  கோவை_List **ppExtra              /* Expressions to append to sorter record */
 ){
-  int i;
-  int nDefer = 0;
-  ExprList *pExtra = 0;
-  for(i=0; i<pEList->nExpr; i++){
-    struct ExprList_item *pItem = &pEList->a[i];
-    if( pItem->u.x.iOrderByCol==0 ){
-      Expr *pExpr = pItem->pExpr;
+  முழு i;
+  முழு nDefer = 0;
+  கோவை_List *pExtra = 0;
+  க்கு(i=0; i<pEList->n_கோவை; i++){
+    கட்டமைப்பு கோவை_List_item *pItem = &pEList->a[i];
+    எனில்( pItem->u.x.iOrderByCol==0 ){
+      கோவை *p_கோவை = pItem->p_கோவை;
       Table *pTab;
-      if( pExpr->op==TK_COLUMN
-       && pExpr->iColumn>=0
-       && ALWAYS( ExprUseYTab(pExpr) )
-       && (pTab = pExpr->y.pTab)!=0
+      எனில்( p_கோவை->op==TK_COLUMN
+       && p_கோவை->iColumn>=0
+       && ALWAYS( கோவை_Use_YTab(p_கோவை) )
+       && (pTab = p_கோவை->y.pTab)!=0
        && IsOrdinaryTable(pTab)
-       && (pTab->aCol[pExpr->iColumn].colFlags & COLFLAG_SORTERREF)!=0
+       && (pTab->aCol[p_கோவை->iColumn].colFlags & COLFLAG_SORTERREF)!=0
       ){
-        int j;
-        for(j=0; j<nDefer; j++){
-          if( pSort->aDefer[j].iCsr==pExpr->iTable ) break;
+        முழு j;
+        க்கு(j=0; j<nDefer; j++){
+          எனில்( pSort->aDefer[j].iCsr==p_கோவை->iTable ) நிறுத்து;
         }
-        if( j==nDefer ){
-          if( nDefer==ArraySize(pSort->aDefer) ){
-            continue;
-          }else{
-            int nKey = 1;
-            int k;
+        எனில்( j==nDefer ){
+          எனில்( nDefer==ArraySize(pSort->aDefer) ){
+            தொடர்;
+          }இல்லையெனில்{
+            முழு n_சாவி = 1;
+            முழு k;
             Index *pPk = 0;
-            if( !HasRowid(pTab) ){
-              pPk = sqlite3PrimaryKeyIndex(pTab);
-              nKey = pPk->nKeyCol;
+            எனில்( !HasRowid(pTab) ){
+              pPk = sqlite3_Primary_சாவி_Index(pTab);
+              n_சாவி = pPk->n_சாவி_Col;
             }
-            for(k=0; k<nKey; k++){
-              Expr *pNew = sqlite3PExpr(pParse, TK_COLUMN, 0, 0);
-              if( pNew ){
-                pNew->iTable = pExpr->iTable;
-                assert( ExprUseYTab(pNew) );
-                pNew->y.pTab = pExpr->y.pTab;
+            க்கு(k=0; k<n_சாவி; k++){
+              கோவை *pNew = sqlite3PExpr(pParse, TK_COLUMN, 0, 0);
+              எனில்( pNew ){
+                pNew->iTable = p_கோவை->iTable;
+                ப்ரதிஜ்ஞா( கோவை_Use_YTab(pNew) );
+                pNew->y.pTab = p_கோவை->y.pTab;
                 pNew->iColumn = pPk ? pPk->aiColumn[k] : -1;
-                pExtra = sqlite3ExprListAppend(pParse, pExtra, pNew);
+                pExtra = sqlite3_கோவை_List_Append(pParse, pExtra, pNew);
               }
             }
-            pSort->aDefer[nDefer].pTab = pExpr->y.pTab;
-            pSort->aDefer[nDefer].iCsr = pExpr->iTable;
-            pSort->aDefer[nDefer].nKey = nKey;
+            pSort->aDefer[nDefer].pTab = p_கோவை->y.pTab;
+            pSort->aDefer[nDefer].iCsr = p_கோவை->iTable;
+            pSort->aDefer[nDefer].n_சாவி = n_சாவி;
             nDefer++;
           }
         }
@@ -1153,30 +1153,30 @@ static void selectExprDefer(
 **
 ** tag-202607231411
 */
-static int sqlite3CursorBloomable(Parse *pParse, int iCur, int nCol){
-  int i,k;
+நிலையான முழு sqlite3CursorBloomable(Parse *pParse, முழு iCur, முழு nCol){
+  முழு i,k;
   Vdbe *v = pParse->pVdbe;
-  if( pParse->nErr ) return 1;
-  assert( v );
-  for(k=sqlite3VdbeCurrentAddr(v)-1; k>0; k--){
-    const VdbeOp *pOp = sqlite3VdbeGetOp(v, k);
-    const KeyInfo *pKeyInfo;
-    if( pOp->p1!=iCur ) continue;
-    if( pOp->opcode!=OP_OpenRead
+  எனில்( pParse->nErr ) திரும்பு 1;
+  ப்ரதிஜ்ஞா( v );
+  க்கு(k=sqlite3VdbeCurrentAddr(v)-1; k>0; k--){
+    மாறிலி VdbeOp *pOp = sqlite3VdbeGetOp(v, k);
+    மாறிலி சாவி_Info *p_சாவி_Info;
+    எனில்( pOp->p1!=iCur ) தொடர்;
+    எனில்( pOp->opcode!=OP_OpenRead
      && pOp->opcode!=OP_OpenWrite
      && pOp->opcode!=OP_OpenEphemeral
     ){
-      continue;
+      தொடர்;
     }
-    assert( pOp->p4type==P4_KEYINFO );
-    pKeyInfo = (const KeyInfo*)pOp->p4.pKeyInfo;
-    assert( pKeyInfo!=0 );
-    for(i=0; i<nCol; i++){
-      assert( sqlite3IsBinary(pKeyInfo->aColl[i]) );
+    ப்ரதிஜ்ஞா( pOp->p4type==P4_KEYINFO );
+    p_சாவி_Info = (மாறிலி சாவி_Info*)pOp->p4.p_சாவி_Info;
+    ப்ரதிஜ்ஞா( p_சாவி_Info!=0 );
+    க்கு(i=0; i<nCol; i++){
+      ப்ரதிஜ்ஞா( sqlite3_Is_இருமம்(p_சாவி_Info->aColl[i]) );
     }
-    return 1;
+    திரும்பு 1;
   }
-  return 0;
+  திரும்பு 0;
 }
 #endif /* SQLITE_DEBUG */
 
@@ -1190,23 +1190,23 @@ static int sqlite3CursorBloomable(Parse *pParse, int iCur, int nCol){
 ** zero or more, then data is pulled from srcTab and p->pEList is used only
 ** to get the number of columns and the collation sequence for each column.
 */
-static void selectInnerLoop(
+நிலையான வெறுமை selectInnerLoop(
   Parse *pParse,          /* The parser context */
   Select *p,              /* The complete select statement being coded */
-  int srcTab,             /* Pull data from this table if non-negative */
+  முழு srcTab,             /* Pull data from this table if non-negative */
   SortCtx *pSort,         /* If not NULL, info on how to process ORDER BY */
   DistinctCtx *pDistinct, /* If not NULL, info on how to process DISTINCT */
   SelectDest *pDest,      /* How to dispose of the results */
-  int iContinue,          /* Jump here to continue with next row */
-  int iBreak              /* Jump here to break out of the inner loop */
+  முழு iContinue,          /* Jump here to continue with next row */
+  முழு iBreak              /* Jump here to break out of the inner loop */
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  int hasDistinct;            /* True if the DISTINCT keyword is present */
-  int eDest = pDest->eDest;   /* How to dispose of results */
-  int iParm = pDest->iSDParm; /* First argument to disposal method */
-  int nResultCol;             /* Number of result columns */
-  int nPrefixReg = 0;         /* Number of extra registers before regResult */
+  முழு i;
+  முழு hasDistinct;            /* True if the DISTINCT keyword is present */
+  முழு eDest = pDest->eDest;   /* How to dispose of results */
+  முழு iParm = pDest->iSDParm; /* First argument to disposal method */
+  முழு nResultCol;             /* Number of result columns */
+  முழு nPrefixReg = 0;         /* Number of extra registers before regResult */
   RowLoadInfo sRowLoadInfo;   /* Info for deferred row loading */
 
   /* Usually, regResult is the first cell in an array of memory cells
@@ -1214,31 +1214,31 @@ static void selectInnerLoop(
   ** same value. However, if the results are being sent to the sorter, the
   ** values for any expressions that are also part of the sort-key are omitted
   ** from this array. In this case regOrig is set to zero.  */
-  int regResult;              /* Start of memory holding current results */
-  int regOrig;                /* Start of memory holding full result (or 0) */
+  முழு regResult;              /* Start of memory holding current results */
+  முழு regOrig;                /* Start of memory holding full result (or 0) */
 
-  assert( v );
-  assert( p->pEList!=0 );
+  ப்ரதிஜ்ஞா( v );
+  ப்ரதிஜ்ஞா( p->pEList!=0 );
   hasDistinct = pDistinct ? pDistinct->eTnctType : WHERE_DISTINCT_NOOP;
-  if( pSort && pSort->pOrderBy==0 ) pSort = 0;
-  if( pSort==0 && !hasDistinct ){
-    assert( iContinue!=0 );
+  எனில்( pSort && pSort->pOrderBy==0 ) pSort = 0;
+  எனில்( pSort==0 && !hasDistinct ){
+    ப்ரதிஜ்ஞா( iContinue!=0 );
     codeOffset(v, p->iOffset, iContinue);
   }
 
   /* Pull the requested columns.
   */
-  nResultCol = p->pEList->nExpr;
+  nResultCol = p->pEList->n_கோவை;
 
-  if( pDest->iSdst==0 ){
-    if( pSort ){
-      nPrefixReg = pSort->pOrderBy->nExpr;
-      if( !(pSort->sortFlags & SORTFLAG_UseSorter) ) nPrefixReg++;
+  எனில்( pDest->iSdst==0 ){
+    எனில்( pSort ){
+      nPrefixReg = pSort->pOrderBy->n_கோவை;
+      எனில்( !(pSort->sortFlags & SORTFLAG_UseSorter) ) nPrefixReg++;
       pParse->nMem += nPrefixReg;
     }
     pDest->iSdst = pParse->nMem+1;
     pParse->nMem += nResultCol;
-  }else if( pDest->iSdst+nResultCol > pParse->nMem ){
+  }இல்லையெனில் எனில்( pDest->iSdst+nResultCol > pParse->nMem ){
     /* This is an error condition that can result, for example, when a SELECT
     ** on the right-hand side of an INSERT contains more result columns than
     ** there are columns in the table on the left.  The error will be caught
@@ -1248,26 +1248,26 @@ static void selectInnerLoop(
   }
   pDest->nSdst = nResultCol;
   regOrig = regResult = pDest->iSdst;
-  if( srcTab>=0 ){
-    for(i=0; i<nResultCol; i++){
+  எனில்( srcTab>=0 ){
+    க்கு(i=0; i<nResultCol; i++){
       sqlite3VdbeAddOp3(v, OP_Column, srcTab, i, regResult+i);
       VdbeComment((v, "%s", p->pEList->a[i].zEName));
     }
-  }else if( eDest!=SRT_Exists ){
+  }இல்லையெனில் எனில்( eDest!=SRT_Exists ){
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    ExprList *pExtra = 0;
+    கோவை_List *pExtra = 0;
 #endif
     /* If the destination is an EXISTS(...) expression, the actual
     ** values returned by the SELECT are not required.
     */
     u8 ecelFlags;    /* "ecel" is an abbreviation of "ExprCodeExprList" */
-    ExprList *pEList;
-    if( eDest==SRT_Mem || eDest==SRT_Output || eDest==SRT_Coroutine ){
+    கோவை_List *pEList;
+    எனில்( eDest==SRT_Mem || eDest==SRT_Output || eDest==SRT_Coroutine ){
       ecelFlags = SQLITE_ECEL_DUP;
-    }else{
+    }இல்லையெனில்{
       ecelFlags = 0;
     }
-    if( pSort && hasDistinct==0 && eDest!=SRT_EphemTab && eDest!=SRT_Table ){
+    எனில்( pSort && hasDistinct==0 && eDest!=SRT_EphemTab && eDest!=SRT_Table ){
       /* For each expression in p->pEList that is a copy of an expression in
       ** the ORDER BY clause (pSort->pOrderBy), set the associated
       ** iOrderByCol value to one more than the index of the ORDER BY
@@ -1276,32 +1276,32 @@ static void selectInnerLoop(
       ** saving space and CPU cycles.  */
       ecelFlags |= (SQLITE_ECEL_OMITREF|SQLITE_ECEL_REF);
 
-      for(i=pSort->nOBSat; i<pSort->pOrderBy->nExpr; i++){
-        int j;
-        if( (j = pSort->pOrderBy->a[i].u.x.iOrderByCol)>0 ){
+      க்கு(i=pSort->nOBSat; i<pSort->pOrderBy->n_கோவை; i++){
+        முழு j;
+        எனில்( (j = pSort->pOrderBy->a[i].u.x.iOrderByCol)>0 ){
           p->pEList->a[j-1].u.x.iOrderByCol = i+1-pSort->nOBSat;
         }
       }
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-      selectExprDefer(pParse, pSort, p->pEList, &pExtra);
-      if( pExtra && pParse->db->mallocFailed==0 ){
+      select_கோவை_Defer(pParse, pSort, p->pEList, &pExtra);
+      எனில்( pExtra && pParse->db->mallocFailed==0 ){
         /* If there are any extra PK columns to add to the sorter records,
         ** allocate extra memory cells and adjust the OpenEphemeral
         ** instruction to account for the larger records. This is only
         ** required if there are one or more WITHOUT ROWID tables with
         ** composite primary keys in the SortCtx.aDefer[] array.  */
         VdbeOp *pOp = sqlite3VdbeGetOp(v, pSort->addrSortIndex);
-        pOp->p2 += (pExtra->nExpr - pSort->nDefer);
-        pOp->p4.pKeyInfo->nAllField += (pExtra->nExpr - pSort->nDefer);
-        pParse->nMem += pExtra->nExpr;
+        pOp->p2 += (pExtra->n_கோவை - pSort->nDefer);
+        pOp->p4.p_சாவி_Info->nAllField += (pExtra->n_கோவை - pSort->nDefer);
+        pParse->nMem += pExtra->n_கோவை;
       }
 #endif
 
       /* Adjust nResultCol to account for columns that are omitted
       ** from the sorter by the optimizations in this branch */
       pEList = p->pEList;
-      for(i=0; i<pEList->nExpr; i++){
-        if( pEList->a[i].u.x.iOrderByCol>0
+      க்கு(i=0; i<pEList->n_கோவை; i++){
+        எனில்( pEList->a[i].u.x.iOrderByCol>0
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
          || pEList->a[i].fg.bSorterRef
 #endif
@@ -1316,7 +1316,7 @@ static void selectInnerLoop(
       testcase( eDest==SRT_Mem );
       testcase( eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
-      assert( eDest==SRT_Set || eDest==SRT_Mem
+      ப்ரதிஜ்ஞா( eDest==SRT_Set || eDest==SRT_Mem
            || eDest==SRT_Coroutine || eDest==SRT_Output
            || eDest==SRT_Upfrom );
     }
@@ -1325,17 +1325,17 @@ static void selectInnerLoop(
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
     sRowLoadInfo.pExtra = pExtra;
     sRowLoadInfo.regExtraResult = regResult + nResultCol;
-    if( pExtra ) nResultCol += pExtra->nExpr;
+    எனில்( pExtra ) nResultCol += pExtra->n_கோவை;
 #endif
-    if( p->iLimit
+    எனில்( p->iLimit
      && (ecelFlags & SQLITE_ECEL_OMITREF)!=0
      && nPrefixReg>0
     ){
-      assert( pSort!=0 );
-      assert( hasDistinct==0 );
+      ப்ரதிஜ்ஞா( pSort!=0 );
+      ப்ரதிஜ்ஞா( hasDistinct==0 );
       pSort->pDeferredRowLoad = &sRowLoadInfo;
       regOrig = 0;
-    }else{
+    }இல்லையெனில்{
       innerLoopLoadRow(pParse, p, &sRowLoadInfo);
     }
   }
@@ -1344,75 +1344,75 @@ static void selectInnerLoop(
   ** and this row has been seen before, then do not make this row
   ** part of the result.
   */
-  if( hasDistinct ){
-    int eType = pDistinct->eTnctType;
-    int iTab = pDistinct->tabTnct;
-    assert( nResultCol==p->pEList->nExpr );
+  எனில்( hasDistinct ){
+    முழு eType = pDistinct->eTnctType;
+    முழு iTab = pDistinct->tabTnct;
+    ப்ரதிஜ்ஞா( nResultCol==p->pEList->n_கோவை );
     iTab = codeDistinct(pParse, eType, iTab, iContinue, p->pEList, regResult);
     fixDistinctOpenEph(pParse, eType, iTab, pDistinct->addrTnct);
-    if( pSort==0 ){
+    எனில்( pSort==0 ){
       codeOffset(v, p->iOffset, iContinue);
     }
   }
 
-  switch( eDest ){
+  தேர்வு( eDest ){
     /* Store the result as data using a unique key.
     */
-    case SRT_Fifo:
-    case SRT_DistFifo:
-    case SRT_Table:
-    case SRT_EphemTab: {
-      int r1 = sqlite3GetTempRange(pParse, nPrefixReg+1);
+    நிலை SRT_Fifo:
+    நிலை SRT_DistFifo:
+    நிலை SRT_Table:
+    நிலை SRT_EphemTab: {
+      முழு r1 = sqlite3GetTempRange(pParse, nPrefixReg+1);
       testcase( eDest==SRT_Table );
       testcase( eDest==SRT_EphemTab );
       testcase( eDest==SRT_Fifo );
       testcase( eDest==SRT_DistFifo );
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regResult, nResultCol, r1+nPrefixReg);
-#if !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
+#எனில் !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
       /* A destination of SRT_Table and a non-zero iSDParm2 parameter means
       ** that this is an "UPDATE ... FROM" on a virtual table or view. In this
       ** case set the p5 parameter of the OP_MakeRecord to OPFLAG_NOCHNG_MAGIC.
       ** This does not affect operation in any way - it just allows MakeRecord
       ** to process OPFLAG_NOCHANGE values without an assert() failing. */
-      if( eDest==SRT_Table && pDest->iSDParm2 ){
+      எனில்( eDest==SRT_Table && pDest->iSDParm2 ){
         sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG_MAGIC);
       }
 #endif
 #ifndef SQLITE_OMIT_CTE
-      if( eDest==SRT_DistFifo ){
+      எனில்( eDest==SRT_DistFifo ){
         /* If the destination is DistFifo, then cursor (iParm+1) is open
         ** on an ephemeral index. If the current row is already present
         ** in the index, do not write it to the output. If not, add the
         ** current row to the index and proceed with writing it to the
         ** output table as well.  */
-        int addr = sqlite3VdbeCurrentAddr(v) + 4;
+        முழு addr = sqlite3VdbeCurrentAddr(v) + 4;
         sqlite3VdbeAddOp4Int(v, OP_Found, iParm+1, addr, r1, 0);
         VdbeCoverage(v);
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm+1, r1,regResult,nResultCol);
-        assert( pSort==0 );
+        sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm+1, r1,regResult,nResultCol);
+        ப்ரதிஜ்ஞா( pSort==0 );
       }
 #endif
-      if( pSort ){
-        assert( regResult==regOrig );
-        pushOntoSorter(pParse, pSort, p, r1+nPrefixReg, regOrig, 1, nPrefixReg);
-      }else{
-        int r2 = sqlite3GetTempReg(pParse);
+      எனில்( pSort ){
+        ப்ரதிஜ்ஞா( regResult==regOrig );
+        தள்ளு_Onto_Sorter(pParse, pSort, p, r1+nPrefixReg, regOrig, 1, nPrefixReg);
+      }இல்லையெனில்{
+        முழு r2 = sqlite3GetTempReg(pParse);
         sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, r2);
-        sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, r2);
+        sqlite3VdbeAddOp3(v, OP_செருகு, iParm, r1, r2);
         sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
         sqlite3ReleaseTempReg(pParse, r2);
       }
       sqlite3ReleaseTempRange(pParse, r1, nPrefixReg+1);
-      break;
+      நிறுத்து;
     }
 
-    case SRT_Upfrom: {
-      if( pSort ){
-        pushOntoSorter(
+    நிலை SRT_Upfrom: {
+      எனில்( pSort ){
+        தள்ளு_Onto_Sorter(
             pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
-      }else{
-        int i2 = pDest->iSDParm2;
-        int r1 = sqlite3GetTempReg(pParse);
+      }இல்லையெனில்{
+        முழு i2 = pDest->iSDParm2;
+        முழு r1 = sqlite3GetTempReg(pParse);
 
         /* If the UPDATE FROM join is an aggregate that matches no rows, it
         ** might still be trying to return one row, because that is what
@@ -1421,13 +1421,13 @@ static void selectInnerLoop(
 
         sqlite3VdbeAddOp3(v, OP_MakeRecord,
                           regResult+(i2<0), nResultCol-(i2<0), r1);
-        if( i2<0 ){
-          sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, regResult);
-        }else{
-          sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regResult, i2);
+        எனில்( i2<0 ){
+          sqlite3VdbeAddOp3(v, OP_செருகு, iParm, r1, regResult);
+        }இல்லையெனில்{
+          sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm, r1, regResult, i2);
         }
       }
-      break;
+      நிறுத்து;
     }
 
 #ifndef SQLITE_OMIT_SUBQUERY
@@ -1435,77 +1435,77 @@ static void selectInnerLoop(
     ** then there should be a single item on the stack.  Write this
     ** item into the set table with bogus data.
     */
-    case SRT_Set: {
-      if( pSort ){
+    நிலை SRT_Set: {
+      எனில்( pSort ){
         /* At first glance you would think we could optimize out the
         ** ORDER BY in this case since the order of entries in the set
         ** does not matter.  But there might be a LIMIT clause, in which
         ** case the order does matter */
-        pushOntoSorter(
+        தள்ளு_Onto_Sorter(
             pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
         pDest->iSDParm2 = 0; /* Signal that any Bloom filter is unpopulated */
-      }else{
-        int r1 = sqlite3GetTempReg(pParse);
-        assert( sqlite3Strlen30(pDest->zAffSdst)==nResultCol );
+      }இல்லையெனில்{
+        முழு r1 = sqlite3GetTempReg(pParse);
+        ப்ரதிஜ்ஞா( sqlite3Strlen30(pDest->zAffSdst)==nResultCol );
         sqlite3VdbeAddOp4(v, OP_MakeRecord, regResult, nResultCol,
             r1, pDest->zAffSdst, nResultCol);
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regResult, nResultCol);
-        if( pDest->iSDParm2 ){
-          assert( sqlite3CursorBloomable(pParse,iParm,nResultCol) );
+        sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm, r1, regResult, nResultCol);
+        எனில்( pDest->iSDParm2 ){
+          ப்ரதிஜ்ஞா( sqlite3CursorBloomable(pParse,iParm,nResultCol) );
           sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pDest->iSDParm2, 0,
                                regResult, nResultCol);
           ExplainQueryPlan((pParse, 0, "CREATE BLOOM FILTER"));
         }
         sqlite3ReleaseTempReg(pParse, r1);
       }
-      break;
+      நிறுத்து;
     }
 
 
     /* If any row exist in the result set, record that fact and abort.
     */
-    case SRT_Exists: {
+    நிலை SRT_Exists: {
       sqlite3VdbeAddOp2(v, OP_Integer, 1, iParm);
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      நிறுத்து;
     }
 
     /* If this is a scalar select that is part of an expression, then
     ** store the results in the appropriate memory cell or array of
     ** memory cells and break out of the scan loop.
     */
-    case SRT_Mem: {
-      if( pSort ){
-        assert( nResultCol<=pDest->nSdst );
-        pushOntoSorter(
+    நிலை SRT_Mem: {
+      எனில்( pSort ){
+        ப்ரதிஜ்ஞா( nResultCol<=pDest->nSdst );
+        தள்ளு_Onto_Sorter(
             pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
         pDest->iSDParm = regResult;
-      }else{
-        assert( nResultCol==pDest->nSdst );
-        if( regResult!=iParm ){
+      }இல்லையெனில்{
+        ப்ரதிஜ்ஞா( nResultCol==pDest->nSdst );
+        எனில்( regResult!=iParm ){
           /* This occurs in cases where the SELECT had both a DISTINCT and
           ** an OFFSET clause.  */
           sqlite3VdbeAddOp3(v, OP_Copy, regResult, iParm, nResultCol-1);
         }
         /* The LIMIT clause will jump out of the loop for us */
       }
-      break;
+      நிறுத்து;
     }
 #endif /* #ifndef SQLITE_OMIT_SUBQUERY */
 
-    case SRT_Coroutine:       /* Send data to a co-routine */
-    case SRT_Output: {        /* Return the results */
+    நிலை SRT_Coroutine:       /* Send data to a co-routine */
+    நிலை SRT_Output: {        /* Return the results */
       testcase( eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
-      if( pSort ){
-        pushOntoSorter(pParse, pSort, p, regResult, regOrig, nResultCol,
+      எனில்( pSort ){
+        தள்ளு_Onto_Sorter(pParse, pSort, p, regResult, regOrig, nResultCol,
                        nPrefixReg);
-      }else if( eDest==SRT_Coroutine ){
+      }இல்லையெனில் எனில்( eDest==SRT_Coroutine ){
         sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
-      }else{
+      }இல்லையெனில்{
         sqlite3VdbeAddOp2(v, OP_ResultRow, regResult, nResultCol);
       }
-      break;
+      நிறுத்து;
     }
 
 #ifndef SQLITE_OMIT_CTE
@@ -1515,19 +1515,19 @@ static void selectInnerLoop(
     ** pSO->nExpr columns, then make sure all keys are unique by adding a
     ** final OP_Sequence column.  The last column is the record as a blob.
     */
-    case SRT_DistQueue:
-    case SRT_Queue: {
-      int nKey;
-      int r1, r2, r3;
-      int addrTest = 0;
-      ExprList *pSO;
+    நிலை SRT_DistQueue:
+    நிலை SRT_Queue: {
+      முழு n_சாவி;
+      முழு r1, r2, r3;
+      முழு addrTest = 0;
+      கோவை_List *pSO;
       pSO = pDest->pOrderBy;
-      assert( pSO );
-      nKey = pSO->nExpr;
+      ப்ரதிஜ்ஞா( pSO );
+      n_சாவி = pSO->n_கோவை;
       r1 = sqlite3GetTempReg(pParse);
-      r2 = sqlite3GetTempRange(pParse, nKey+2);
-      r3 = r2+nKey+1;
-      if( eDest==SRT_DistQueue ){
+      r2 = sqlite3GetTempRange(pParse, n_சாவி+2);
+      r3 = r2+n_சாவி+1;
+      எனில்( eDest==SRT_DistQueue ){
         /* If the destination is DistQueue, then cursor (iParm+1) is open
         ** on a second ephemeral index that holds all values every previously
         ** added to the queue. */
@@ -1536,36 +1536,36 @@ static void selectInnerLoop(
         VdbeCoverage(v);
       }
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regResult, nResultCol, r3);
-      if( eDest==SRT_DistQueue ){
-        sqlite3VdbeAddOp2(v, OP_IdxInsert, iParm+1, r3);
+      எனில்( eDest==SRT_DistQueue ){
+        sqlite3VdbeAddOp2(v, OP_Idx_செருகு, iParm+1, r3);
         sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
       }
-      for(i=0; i<nKey; i++){
+      க்கு(i=0; i<n_சாவி; i++){
         sqlite3VdbeAddOp2(v, OP_SCopy,
                           regResult + pSO->a[i].u.x.iOrderByCol - 1,
                           r2+i);
       }
-      sqlite3VdbeAddOp2(v, OP_Sequence, iParm, r2+nKey);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, r2, nKey+2, r1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, r2, nKey+2);
-      if( addrTest ) sqlite3VdbeJumpHere(v, addrTest);
+      sqlite3VdbeAddOp2(v, OP_Sequence, iParm, r2+n_சாவி);
+      sqlite3VdbeAddOp3(v, OP_MakeRecord, r2, n_சாவி+2, r1);
+      sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm, r1, r2, n_சாவி+2);
+      எனில்( addrTest ) sqlite3VdbeJumpHere(v, addrTest);
       sqlite3ReleaseTempReg(pParse, r1);
-      sqlite3ReleaseTempRange(pParse, r2, nKey+2);
-      break;
+      sqlite3ReleaseTempRange(pParse, r2, n_சாவி+2);
+      நிறுத்து;
     }
 #endif /* SQLITE_OMIT_CTE */
 
 
 
-#if !defined(SQLITE_OMIT_TRIGGER)
+#எனில் !defined(SQLITE_OMIT_TRIGGER)
     /* Discard the results.  This is used for SELECT statements inside
     ** the body of a TRIGGER.  The purpose of such selects is to call
     ** user-defined functions that have side effects.  We do not care
     ** about the actual results of the select.
     */
-    default: {
-      assert( eDest==SRT_Discard );
-      break;
+    இயல்பு: {
+      ப்ரதிஜ்ஞா( eDest==SRT_Discard );
+      நிறுத்து;
     }
 #endif
   }
@@ -1574,7 +1574,7 @@ static void selectInnerLoop(
   ** there is a sorter, in which case the sorter has already limited
   ** the output for us.
   */
-  if( pSort==0 && p->iLimit ){
+  எனில்( pSort==0 && p->iLimit ){
     sqlite3VdbeAddOp2(v, OP_DecrJumpZero, p->iLimit, iBreak); VdbeCoverage(v);
   }
 }
@@ -1583,47 +1583,47 @@ static void selectInnerLoop(
 ** Allocate a KeyInfo object sufficient for an index of N key columns and
 ** X extra columns.
 */
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3 *db, int N, int X){
-  int nExtra = (N+X)*(sizeof(CollSeq*)+1);
-  KeyInfo *p;
-  assert( X>=0 );
-  if( NEVER(N+X>0xffff) ) return (KeyInfo*)sqlite3OomFault(db);
+சாவி_Info *sqlite3_சாவி_Info_Alloc(sqlite3 *db, முழு N, முழு X){
+  முழு nExtra = (N+X)*(அளவு(CollSeq*)+1);
+  சாவி_Info *p;
+  ப்ரதிஜ்ஞா( X>=0 );
+  எனில்( NEVER(N+X>0xffff) ) திரும்பு (சாவி_Info*)sqlite3OomFault(db);
   p = sqlite3DbMallocRawNN(db, SZ_KEYINFO(0) + nExtra);
-  if( p ){
+  எனில்( p ){
     p->aSortFlags = (u8*)&p->aColl[N+X];
-    p->nKeyField = (u16)N;
+    p->n_சாவி_Field = (u16)N;
     p->nAllField = (u16)(N+X);
     p->enc = ENC(db);
     p->db = db;
     p->nRef = 1;
     memset(p->aColl, 0, nExtra);
-  }else{
-    return (KeyInfo*)sqlite3OomFault(db);
+  }இல்லையெனில்{
+    திரும்பு (சாவி_Info*)sqlite3OomFault(db);
   }
-  return p;
+  திரும்பு p;
 }
 
 /*
 ** Deallocate a KeyInfo object
 */
-void sqlite3KeyInfoUnref(KeyInfo *p){
-  if( p ){
-    assert( p->db!=0 );
-    assert( p->nRef>0 );
+வெறுமை sqlite3_சாவி_Info_Unref(சாவி_Info *p){
+  எனில்( p ){
+    ப்ரதிஜ்ஞா( p->db!=0 );
+    ப்ரதிஜ்ஞா( p->nRef>0 );
     p->nRef--;
-    if( p->nRef==0 ) sqlite3DbNNFreeNN(p->db, p);
+    எனில்( p->nRef==0 ) sqlite3DbNNFreeNN(p->db, p);
   }
 }
 
 /*
 ** Make a new pointer to a KeyInfo object
 */
-KeyInfo *sqlite3KeyInfoRef(KeyInfo *p){
-  if( p ){
-    assert( p->nRef>0 );
+சாவி_Info *sqlite3_சாவி_Info_Ref(சாவி_Info *p){
+  எனில்( p ){
+    ப்ரதிஜ்ஞா( p->nRef>0 );
     p->nRef++;
   }
-  return p;
+  திரும்பு p;
 }
 
 #ifdef SQLITE_DEBUG
@@ -1633,7 +1633,7 @@ KeyInfo *sqlite3KeyInfoRef(KeyInfo *p){
 **
 ** This routine is used only inside of assert() statements.
 */
-int sqlite3KeyInfoIsWriteable(KeyInfo *p){ return p->nRef==1; }
+முழு sqlite3_சாவி_Info_Is_Writeable(சாவி_Info *p){ திரும்பு p->nRef==1; }
 #endif /* SQLITE_DEBUG */
 
 /*
@@ -1650,42 +1650,42 @@ int sqlite3KeyInfoIsWriteable(KeyInfo *p){ return p->nRef==1; }
 ** function is responsible for seeing that this structure is eventually
 ** freed.
 */
-KeyInfo *sqlite3KeyInfoFromExprList(
+சாவி_Info *sqlite3_சாவி_Info_From_கோவை_List(
   Parse *pParse,       /* Parsing context */
-  ExprList *pList,     /* Form the KeyInfo object from this ExprList */
-  int iStart,          /* Begin with this column of pList */
-  int nExtra           /* Add this many extra columns to the end */
+  கோவை_List *pList,     /* Form the KeyInfo object from this ExprList */
+  முழு iStart,          /* Begin with this column of pList */
+  முழு nExtra           /* Add this many extra columns to the end */
 ){
-  int nExpr;
-  KeyInfo *pInfo;
-  struct ExprList_item *pItem;
+  முழு n_கோவை;
+  சாவி_Info *pInfo;
+  கட்டமைப்பு கோவை_List_item *pItem;
   sqlite3 *db = pParse->db;
-  int i;
+  முழு i;
 
-  nExpr = pList->nExpr;
-  pInfo = sqlite3KeyInfoAlloc(db, nExpr-iStart, nExtra+1);
-  if( pInfo ){
-    assert( sqlite3KeyInfoIsWriteable(pInfo) );
-    for(i=iStart, pItem=pList->a+iStart; i<nExpr; i++, pItem++){
-      pInfo->aColl[i-iStart] = sqlite3ExprNNCollSeq(pParse, pItem->pExpr);
+  n_கோவை = pList->n_கோவை;
+  pInfo = sqlite3_சாவி_Info_Alloc(db, n_கோவை-iStart, nExtra+1);
+  எனில்( pInfo ){
+    ப்ரதிஜ்ஞா( sqlite3_சாவி_Info_Is_Writeable(pInfo) );
+    க்கு(i=iStart, pItem=pList->a+iStart; i<n_கோவை; i++, pItem++){
+      pInfo->aColl[i-iStart] = sqlite3_கோவை_NNColl_Seq(pParse, pItem->p_கோவை);
       pInfo->aSortFlags[i-iStart] = pItem->fg.sortFlags;
     }
   }
-  return pInfo;
+  திரும்பு pInfo;
 }
 
 /*
 ** Name of the connection operator, used for error messages.
 */
-const char *sqlite3SelectOpName(int id){
-  char *z;
-  switch( id ){
-    case TK_ALL:       z = "UNION ALL";   break;
-    case TK_INTERSECT: z = "INTERSECT";   break;
-    case TK_EXCEPT:    z = "EXCEPT";      break;
-    default:           z = "UNION";       break;
+மாறிலி எழுத்து *sqlite3SelectOpName(முழு id){
+  எழுத்து *z;
+  தேர்வு( id ){
+    நிலை TK_ALL:       z = "UNION ALL";   நிறுத்து;
+    நிலை TK_INTERSECT: z = "INTERSECT";   நிறுத்து;
+    நிலை TK_EXCEPT:    z = "EXCEPT";      நிறுத்து;
+    இயல்பு:           z = "UNION";       நிறுத்து;
   }
-  return z;
+  திரும்பு z;
 }
 
 #ifndef SQLITE_OMIT_EXPLAIN
@@ -1699,7 +1699,7 @@ const char *sqlite3SelectOpName(int id){
 ** where xxx is one of "DISTINCT", "ORDER BY" or "GROUP BY". Exactly which
 ** is determined by the zUsage argument.
 */
-static void explainTempTable(Parse *pParse, const char *zUsage){
+நிலையான வெறுமை explainTempTable(Parse *pParse, மாறிலி எழுத்து *zUsage){
   ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s", zUsage));
 }
 
@@ -1712,7 +1712,7 @@ static void explainTempTable(Parse *pParse, const char *zUsage){
 */
 # define explainSetInteger(a, b) a = b
 
-#else
+#இல்லையெனில்
 /* No-op versions of the explainXXX() functions and macros. */
 # define explainTempTable(y,z)
 # define explainSetInteger(y,z)
@@ -1725,51 +1725,51 @@ static void explainTempTable(Parse *pParse, const char *zUsage){
 ** we need to run the sorter and output the results.  The following
 ** routine generates the code needed to do that.
 */
-static void generateSortTail(
+நிலையான வெறுமை generateSortTail(
   Parse *pParse,    /* Parsing context */
   Select *p,        /* The SELECT statement */
   SortCtx *pSort,   /* Information on the ORDER BY clause */
-  int nColumn,      /* Number of columns of data */
+  முழு nColumn,      /* Number of columns of data */
   SelectDest *pDest /* Write the sorted results here */
 ){
   Vdbe *v = pParse->pVdbe;                     /* The prepared statement */
-  int addrBreak = pSort->labelDone;            /* Jump here to exit loop */
-  int addrContinue = sqlite3VdbeMakeLabel(pParse);/* Jump here for next cycle */
-  int addr;                       /* Top of output loop. Jump for Next. */
-  int addrOnce = 0;
-  int iTab;
-  ExprList *pOrderBy = pSort->pOrderBy;
-  int eDest = pDest->eDest;
-  int iParm = pDest->iSDParm;
-  int regRow;
-  int regRowid;
-  int iCol;
-  int nKey;                       /* Number of key columns in sorter record */
-  int iSortTab;                   /* Sorter cursor to read from */
-  int i;
-  int bSeq;                       /* True if sorter record includes seq. no. */
-  int nRefKey = 0;
-  struct ExprList_item *aOutEx = p->pEList->a;
+  முழு addrBreak = pSort->labelDone;            /* Jump here to exit loop */
+  முழு addrContinue = sqlite3VdbeMakeLabel(pParse);/* Jump here for next cycle */
+  முழு addr;                       /* Top of output loop. Jump for Next. */
+  முழு addrOnce = 0;
+  முழு iTab;
+  கோவை_List *pOrderBy = pSort->pOrderBy;
+  முழு eDest = pDest->eDest;
+  முழு iParm = pDest->iSDParm;
+  முழு regRow;
+  முழு regRowid;
+  முழு iCol;
+  முழு n_சாவி;                       /* Number of key columns in sorter record */
+  முழு iSortTab;                   /* Sorter cursor to read from */
+  முழு i;
+  முழு bSeq;                       /* True if sorter record includes seq. no. */
+  முழு n_Ref_சாவி = 0;
+  கட்டமைப்பு கோவை_List_item *aOutEx = p->pEList->a;
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrExplain;                /* Address of OP_Explain instruction */
+  முழு addrExplain;                /* Address of OP_Explain instruction */
 #endif
 
-  nKey = pOrderBy->nExpr - pSort->nOBSat;
-  if( pSort->nOBSat==0 || nKey==1 ){
+  n_சாவி = pOrderBy->n_கோவை - pSort->nOBSat;
+  எனில்( pSort->nOBSat==0 || n_சாவி==1 ){
     ExplainQueryPlan2(addrExplain, (pParse, 0,
       "USE TEMP B-TREE FOR %sORDER BY", pSort->nOBSat?"LAST TERM OF ":""
     ));
-  }else{
+  }இல்லையெனில்{
     ExplainQueryPlan2(addrExplain, (pParse, 0,
-      "USE TEMP B-TREE FOR LAST %d TERMS OF ORDER BY", nKey
+      "USE TEMP B-TREE FOR LAST %d TERMS OF ORDER BY", n_சாவி
     ));
   }
-  sqlite3VdbeScanStatusRange(v, addrExplain,pSort->addrPush,pSort->addrPushEnd);
-  sqlite3VdbeScanStatusCounters(v, addrExplain, addrExplain, pSort->addrPush);
+  sqlite3VdbeScanStatusRange(v, addrExplain,pSort->addr_தள்ளு,pSort->addr_தள்ளு_End);
+  sqlite3VdbeScanStatusCounters(v, addrExplain, addrExplain, pSort->addr_தள்ளு);
 
 
-  assert( addrBreak<0 );
-  if( pSort->labelBkOut ){
+  ப்ரதிஜ்ஞா( addrBreak<0 );
+  எனில்( pSort->labelBkOut ){
     sqlite3VdbeAddOp2(v, OP_Gosub, pSort->regReturn, pSort->labelBkOut);
     sqlite3VdbeGoto(v, addrBreak);
     sqlite3VdbeResolveLabel(v, pSort->labelBkOut);
@@ -1777,104 +1777,104 @@ static void generateSortTail(
 
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
   /* Open any cursors needed for sorter-reference expressions */
-  for(i=0; i<pSort->nDefer; i++){
+  க்கு(i=0; i<pSort->nDefer; i++){
     Table *pTab = pSort->aDefer[i].pTab;
-    int iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+    முழு iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
     sqlite3OpenTable(pParse, pSort->aDefer[i].iCsr, iDb, pTab, OP_OpenRead);
     sqlite3VdbeAddOp2(v, OP_Rewind, pSort->aDefer[i].iCsr,
                       sqlite3VdbeCurrentAddr(v)+1);
     VdbeCoverage(v);
-    nRefKey = MAX(nRefKey, pSort->aDefer[i].nKey);
+    n_Ref_சாவி = MAX(n_Ref_சாவி, pSort->aDefer[i].n_சாவி);
   }
 #endif
 
   iTab = pSort->iECursor;
-  if( eDest==SRT_Output || eDest==SRT_Coroutine || eDest==SRT_Mem ){
-    if( eDest==SRT_Mem && p->iOffset ){
+  எனில்( eDest==SRT_Output || eDest==SRT_Coroutine || eDest==SRT_Mem ){
+    எனில்( eDest==SRT_Mem && p->iOffset ){
       sqlite3VdbeAddOp2(v, OP_Null, 0, pDest->iSdst);
     }
     regRowid = 0;
     regRow = pDest->iSdst;
-  }else{
+  }இல்லையெனில்{
     regRowid = sqlite3GetTempReg(pParse);
-    if( eDest==SRT_EphemTab || eDest==SRT_Table ){
+    எனில்( eDest==SRT_EphemTab || eDest==SRT_Table ){
       regRow = sqlite3GetTempReg(pParse);
       nColumn = 0;
-    }else{
+    }இல்லையெனில்{
       regRow = sqlite3GetTempRange(pParse, nColumn);
     }
   }
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
-    int regSortOut = ++pParse->nMem;
+  எனில்( pSort->sortFlags & SORTFLAG_UseSorter ){
+    முழு regSortOut = ++pParse->nMem;
     iSortTab = pParse->nTab++;
-    if( pSort->labelBkOut ){
+    எனில்( pSort->labelBkOut ){
       addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
     }
     sqlite3VdbeAddOp3(v, OP_OpenPseudo, iSortTab, regSortOut,
-        nKey+1+nColumn+nRefKey);
-    if( addrOnce ) sqlite3VdbeJumpHere(v, addrOnce);
+        n_சாவி+1+nColumn+n_Ref_சாவி);
+    எனில்( addrOnce ) sqlite3VdbeJumpHere(v, addrOnce);
     addr = 1 + sqlite3VdbeAddOp2(v, OP_SorterSort, iTab, addrBreak);
     VdbeCoverage(v);
-    assert( p->iLimit==0 && p->iOffset==0 );
+    ப்ரதிஜ்ஞா( p->iLimit==0 && p->iOffset==0 );
     sqlite3VdbeAddOp3(v, OP_SorterData, iTab, regSortOut, iSortTab);
     bSeq = 0;
-  }else{
+  }இல்லையெனில்{
     addr = 1 + sqlite3VdbeAddOp2(v, OP_Sort, iTab, addrBreak); VdbeCoverage(v);
     codeOffset(v, p->iOffset, addrContinue);
     iSortTab = iTab;
     bSeq = 1;
-    if( p->iOffset>0 ){
+    எனில்( p->iOffset>0 ){
       sqlite3VdbeAddOp2(v, OP_AddImm, p->iLimit, -1);
     }
   }
-  for(i=0, iCol=nKey+bSeq-1; i<nColumn; i++){
+  க்கு(i=0, iCol=n_சாவி+bSeq-1; i<nColumn; i++){
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( aOutEx[i].fg.bSorterRef ) continue;
+    எனில்( aOutEx[i].fg.bSorterRef ) தொடர்;
 #endif
-    if( aOutEx[i].u.x.iOrderByCol==0 ) iCol++;
+    எனில்( aOutEx[i].u.x.iOrderByCol==0 ) iCol++;
   }
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  if( pSort->nDefer ){
-    int iKey = iCol+1;
-    int regKey = sqlite3GetTempRange(pParse, nRefKey);
+  எனில்( pSort->nDefer ){
+    முழு i_சாவி = iCol+1;
+    முழு reg_சாவி = sqlite3GetTempRange(pParse, n_Ref_சாவி);
 
-    for(i=0; i<pSort->nDefer; i++){
-      int iCsr = pSort->aDefer[i].iCsr;
+    க்கு(i=0; i<pSort->nDefer; i++){
+      முழு iCsr = pSort->aDefer[i].iCsr;
       Table *pTab = pSort->aDefer[i].pTab;
-      int nKey = pSort->aDefer[i].nKey;
+      முழு n_சாவி = pSort->aDefer[i].n_சாவி;
 
       sqlite3VdbeAddOp1(v, OP_NullRow, iCsr);
-      if( HasRowid(pTab) ){
-        sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iKey++, regKey);
+      எனில்( HasRowid(pTab) ){
+        sqlite3VdbeAddOp3(v, OP_Column, iSortTab, i_சாவி++, reg_சாவி);
         sqlite3VdbeAddOp3(v, OP_SeekRowid, iCsr,
-            sqlite3VdbeCurrentAddr(v)+1, regKey);
-      }else{
-        int k;
-        int iJmp;
-        assert( sqlite3PrimaryKeyIndex(pTab)->nKeyCol==nKey );
-        for(k=0; k<nKey; k++){
-          sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iKey++, regKey+k);
+            sqlite3VdbeCurrentAddr(v)+1, reg_சாவி);
+      }இல்லையெனில்{
+        முழு k;
+        முழு iJmp;
+        ப்ரதிஜ்ஞா( sqlite3_Primary_சாவி_Index(pTab)->n_சாவி_Col==n_சாவி );
+        க்கு(k=0; k<n_சாவி; k++){
+          sqlite3VdbeAddOp3(v, OP_Column, iSortTab, i_சாவி++, reg_சாவி+k);
         }
         iJmp = sqlite3VdbeCurrentAddr(v);
-        sqlite3VdbeAddOp4Int(v, OP_SeekGE, iCsr, iJmp+2, regKey, nKey);
-        sqlite3VdbeAddOp4Int(v, OP_IdxLE, iCsr, iJmp+3, regKey, nKey);
+        sqlite3VdbeAddOp4Int(v, OP_SeekGE, iCsr, iJmp+2, reg_சாவி, n_சாவி);
+        sqlite3VdbeAddOp4Int(v, OP_IdxLE, iCsr, iJmp+3, reg_சாவி, n_சாவி);
         sqlite3VdbeAddOp1(v, OP_NullRow, iCsr);
       }
     }
-    sqlite3ReleaseTempRange(pParse, regKey, nRefKey);
+    sqlite3ReleaseTempRange(pParse, reg_சாவி, n_Ref_சாவி);
   }
 #endif
-  for(i=nColumn-1; i>=0; i--){
+  க்கு(i=nColumn-1; i>=0; i--){
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( aOutEx[i].fg.bSorterRef ){
-      sqlite3ExprCode(pParse, aOutEx[i].pExpr, regRow+i);
-    }else
+    எனில்( aOutEx[i].fg.bSorterRef ){
+      sqlite3_கோவை_Code(pParse, aOutEx[i].p_கோவை, regRow+i);
+    }இல்லையெனில்
 #endif
     {
-      int iRead;
-      if( aOutEx[i].u.x.iOrderByCol ){
+      முழு iRead;
+      எனில்( aOutEx[i].u.x.iOrderByCol ){
         iRead = aOutEx[i].u.x.iOrderByCol-1;
-      }else{
+      }இல்லையெனில்{
         iRead = iCol--;
       }
       sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iRead, regRow+i);
@@ -1882,55 +1882,55 @@ static void generateSortTail(
     }
   }
   sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
-  switch( eDest ){
-    case SRT_Table:
-    case SRT_EphemTab: {
-      sqlite3VdbeAddOp3(v, OP_Column, iSortTab, nKey+bSeq, regRow);
+  தேர்வு( eDest ){
+    நிலை SRT_Table:
+    நிலை SRT_EphemTab: {
+      sqlite3VdbeAddOp3(v, OP_Column, iSortTab, n_சாவி+bSeq, regRow);
       sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, regRowid);
-      sqlite3VdbeAddOp3(v, OP_Insert, iParm, regRow, regRowid);
+      sqlite3VdbeAddOp3(v, OP_செருகு, iParm, regRow, regRowid);
       sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
-      break;
+      நிறுத்து;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case SRT_Set: {
-      assert( nColumn==sqlite3Strlen30(pDest->zAffSdst) );
+    நிலை SRT_Set: {
+      ப்ரதிஜ்ஞா( nColumn==sqlite3Strlen30(pDest->zAffSdst) );
       sqlite3VdbeAddOp4(v, OP_MakeRecord, regRow, nColumn, regRowid,
                         pDest->zAffSdst, nColumn);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, regRowid, regRow, nColumn);
-      break;
+      sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm, regRowid, regRow, nColumn);
+      நிறுத்து;
     }
-    case SRT_Mem: {
+    நிலை SRT_Mem: {
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      நிறுத்து;
     }
 #endif
-    case SRT_Upfrom: {
-      int i2 = pDest->iSDParm2;
-      int r1 = sqlite3GetTempReg(pParse);
+    நிலை SRT_Upfrom: {
+      முழு i2 = pDest->iSDParm2;
+      முழு r1 = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp3(v, OP_MakeRecord,regRow+(i2<0),nColumn-(i2<0),r1);
-      if( i2<0 ){
-        sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, regRow);
-      }else{
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regRow, i2);
+      எனில்( i2<0 ){
+        sqlite3VdbeAddOp3(v, OP_செருகு, iParm, r1, regRow);
+      }இல்லையெனில்{
+        sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm, r1, regRow, i2);
       }
-      break;
+      நிறுத்து;
     }
-    default: {
-      assert( eDest==SRT_Output || eDest==SRT_Coroutine );
+    இயல்பு: {
+      ப்ரதிஜ்ஞா( eDest==SRT_Output || eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
       testcase( eDest==SRT_Coroutine );
-      if( eDest==SRT_Output ){
+      எனில்( eDest==SRT_Output ){
         sqlite3VdbeAddOp2(v, OP_ResultRow, pDest->iSdst, nColumn);
-      }else{
+      }இல்லையெனில்{
         sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
       }
-      break;
+      நிறுத்து;
     }
   }
-  if( regRowid ){
-    if( eDest==SRT_Set ){
+  எனில்( regRowid ){
+    எனில்( eDest==SRT_Set ){
       sqlite3ReleaseTempRange(pParse, regRow, nColumn);
-    }else{
+    }இல்லையெனில்{
       sqlite3ReleaseTempReg(pParse, regRow);
     }
     sqlite3ReleaseTempReg(pParse, regRowid);
@@ -1938,13 +1938,13 @@ static void generateSortTail(
   /* The bottom of the loop
   */
   sqlite3VdbeResolveLabel(v, addrContinue);
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
+  எனில்( pSort->sortFlags & SORTFLAG_UseSorter ){
     sqlite3VdbeAddOp2(v, OP_SorterNext, iTab, addr); VdbeCoverage(v);
-  }else{
+  }இல்லையெனில்{
     sqlite3VdbeAddOp2(v, OP_Next, iTab, addr); VdbeCoverage(v);
   }
   sqlite3VdbeScanStatusRange(v, addrExplain, sqlite3VdbeCurrentAddr(v)-1, -1);
-  if( pSort->regReturn ) sqlite3VdbeAddOp1(v, OP_Return, pSort->regReturn);
+  எனில்( pSort->regReturn ) sqlite3VdbeAddOp1(v, OP_Return, pSort->regReturn);
   sqlite3VdbeResolveLabel(v, addrBreak);
 }
 
@@ -1971,55 +1971,55 @@ static void generateSortTail(
 */
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
 # define columnType(A,B,C,D,E) columnTypeImpl(A,B,C,D,E)
-#else /* if !defined(SQLITE_ENABLE_COLUMN_METADATA) */
+#இல்லையெனில் /* if !defined(SQLITE_ENABLE_COLUMN_METADATA) */
 # define columnType(A,B,C,D,E) columnTypeImpl(A,B)
 #endif
-static const char *columnTypeImpl(
+நிலையான மாறிலி எழுத்து *columnTypeImpl(
   NameContext *pNC,
 #ifndef SQLITE_ENABLE_COLUMN_METADATA
-  Expr *pExpr
-#else
-  Expr *pExpr,
-  const char **pzOrigDb,
-  const char **pzOrigTab,
-  const char **pzOrigCol
+  கோவை *p_கோவை
+#இல்லையெனில்
+  கோவை *p_கோவை,
+  மாறிலி எழுத்து **pzOrigDb,
+  மாறிலி எழுத்து **pzOrigTab,
+  மாறிலி எழுத்து **pzOrigCol
 #endif
 ){
-  char const *zType = 0;
-  int j;
+  எழுத்து மாறிலி *zType = 0;
+  முழு j;
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
-  char const *zOrigDb = 0;
-  char const *zOrigTab = 0;
-  char const *zOrigCol = 0;
+  எழுத்து மாறிலி *zOrigDb = 0;
+  எழுத்து மாறிலி *zOrigTab = 0;
+  எழுத்து மாறிலி *zOrigCol = 0;
 #endif
 
-  assert( pExpr!=0 );
-  assert( pNC->pSrcList!=0 );
-  switch( pExpr->op ){
-    case TK_COLUMN: {
+  ப்ரதிஜ்ஞா( p_கோவை!=0 );
+  ப்ரதிஜ்ஞா( pNC->pSrcList!=0 );
+  தேர்வு( p_கோவை->op ){
+    நிலை TK_COLUMN: {
       /* The expression is a column. Locate the table the column is being
       ** extracted from in NameContext.pSrcList. This table may be real
       ** database table or a subquery.
       */
       Table *pTab = 0;            /* Table structure column is extracted from */
       Select *pS = 0;             /* Select the column is extracted from */
-      int iCol = pExpr->iColumn;  /* Index of column in pTab */
-      while( pNC && !pTab ){
+      முழு iCol = p_கோவை->iColumn;  /* Index of column in pTab */
+      போது( pNC && !pTab ){
         SrcList *pTabList = pNC->pSrcList;
-        for(j=0;j<pTabList->nSrc && pTabList->a[j].iCursor!=pExpr->iTable;j++);
-        if( j<pTabList->nSrc ){
+        க்கு(j=0;j<pTabList->nSrc && pTabList->a[j].iCursor!=p_கோவை->iTable;j++);
+        எனில்( j<pTabList->nSrc ){
           pTab = pTabList->a[j].pSTab;
-          if( pTabList->a[j].fg.isSubquery ){
+          எனில்( pTabList->a[j].fg.isSubquery ){
             pS = pTabList->a[j].u4.pSubq->pSelect;
-          }else{
+          }இல்லையெனில்{
             pS = 0;
           }
-        }else{
+        }இல்லையெனில்{
           pNC = pNC->pNext;
         }
       }
 
-      if( pTab==0 ){
+      எனில்( pTab==0 ){
         /* At one time, code such as "SELECT new.x" within a trigger would
         ** cause this condition to run.  Since then, we have restructured how
         ** trigger code is generated and so this condition is no longer
@@ -2037,16 +2037,16 @@ static const char *columnTypeImpl(
         ** used. When columnType() is called on the expression
         ** "(SELECT t1.col)", the correct type is returned (see the TK_SELECT
         ** branch below.  */
-        break;
+        நிறுத்து;
       }
 
-      assert( pTab && ExprUseYTab(pExpr) && pExpr->y.pTab==pTab );
-      if( pS ){
+      ப்ரதிஜ்ஞா( pTab && கோவை_Use_YTab(p_கோவை) && p_கோவை->y.pTab==pTab );
+      எனில்( pS ){
         /* The "table" is actually a sub-select or a view in the FROM clause
         ** of the SELECT statement. Return the declaration type and origin
         ** data for the result-set column of the sub-select.
         */
-        if( iCol<pS->pEList->nExpr
+        எனில்( iCol<pS->pEList->n_கோவை
          && (!ViewCanHaveRowid || iCol>=0)
         ){
           /* If iCol is less than zero, then the expression requests the
@@ -2054,96 +2054,96 @@ static const char *columnTypeImpl(
           ** test case misc2.2.2) - it always evaluates to NULL.
           */
           NameContext sNC;
-          Expr *p = pS->pEList->a[iCol].pExpr;
+          கோவை *p = pS->pEList->a[iCol].p_கோவை;
           sNC.pSrcList = pS->pSrc;
           sNC.pNext = pNC;
           sNC.pParse = pNC->pParse;
           zType = columnType(&sNC, p,&zOrigDb,&zOrigTab,&zOrigCol);
         }
-      }else{
+      }இல்லையெனில்{
         /* A real table or a CTE table */
-        assert( !pS );
+        ப்ரதிஜ்ஞா( !pS );
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
-        if( iCol<0 ) iCol = pTab->iPKey;
-        assert( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
-        if( iCol<0 ){
+        எனில்( iCol<0 ) iCol = pTab->iPKey;
+        ப்ரதிஜ்ஞா( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
+        எனில்( iCol<0 ){
           zType = "INTEGER";
           zOrigCol = "rowid";
-        }else{
+        }இல்லையெனில்{
           zOrigCol = pTab->aCol[iCol].zCnName;
           zType = sqlite3ColumnType(&pTab->aCol[iCol],0);
         }
         zOrigTab = pTab->zName;
-        if( pNC->pParse && pTab->pSchema ){
-          int iDb = sqlite3SchemaToIndex(pNC->pParse->db, pTab->pSchema);
+        எனில்( pNC->pParse && pTab->pSchema ){
+          முழு iDb = sqlite3SchemaToIndex(pNC->pParse->db, pTab->pSchema);
           zOrigDb = pNC->pParse->db->aDb[iDb].zDbSName;
         }
-#else
-        assert( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
-        if( iCol<0 ){
+#இல்லையெனில்
+        ப்ரதிஜ்ஞா( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
+        எனில்( iCol<0 ){
           zType = "INTEGER";
-        }else{
+        }இல்லையெனில்{
           zType = sqlite3ColumnType(&pTab->aCol[iCol],0);
         }
 #endif
       }
-      break;
+      நிறுத்து;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_SELECT: {
+    நிலை TK_SELECT: {
       /* The expression is a sub-select. Return the declaration type and
       ** origin info for the single column in the result set of the SELECT
       ** statement.
       */
       NameContext sNC;
       Select *pS;
-      Expr *p;
-      assert( ExprUseXSelect(pExpr) );
-      pS = pExpr->x.pSelect;
-      p = pS->pEList->a[0].pExpr;
+      கோவை *p;
+      ப்ரதிஜ்ஞா( கோவை_Use_XSelect(p_கோவை) );
+      pS = p_கோவை->x.pSelect;
+      p = pS->pEList->a[0].p_கோவை;
       sNC.pSrcList = pS->pSrc;
       sNC.pNext = pNC;
       sNC.pParse = pNC->pParse;
       zType = columnType(&sNC, p, &zOrigDb, &zOrigTab, &zOrigCol);
-      break;
+      நிறுத்து;
     }
 #endif
   }
 
 #ifdef SQLITE_ENABLE_COLUMN_METADATA 
-  if( pzOrigDb ){
-    assert( pzOrigTab && pzOrigCol );
+  எனில்( pzOrigDb ){
+    ப்ரதிஜ்ஞா( pzOrigTab && pzOrigCol );
     *pzOrigDb = zOrigDb;
     *pzOrigTab = zOrigTab;
     *pzOrigCol = zOrigCol;
   }
 #endif
-  return zType;
+  திரும்பு zType;
 }
 
 /*
 ** Generate code that will tell the VDBE the declaration types of columns
 ** in the result set.
 */
-static void generateColumnTypes(
+நிலையான வெறுமை generateColumnTypes(
   Parse *pParse,      /* Parser context */
   SrcList *pTabList,  /* List of tables */
-  ExprList *pEList    /* Expressions defining the result set */
+  கோவை_List *pEList    /* Expressions defining the result set */
 ){
 #ifndef SQLITE_OMIT_DECLTYPE
   Vdbe *v = pParse->pVdbe;
-  int i;
+  முழு i;
   NameContext sNC;
   sNC.pSrcList = pTabList;
   sNC.pParse = pParse;
   sNC.pNext = 0;
-  for(i=0; i<pEList->nExpr; i++){
-    Expr *p = pEList->a[i].pExpr;
-    const char *zType;
+  க்கு(i=0; i<pEList->n_கோவை; i++){
+    கோவை *p = pEList->a[i].p_கோவை;
+    மாறிலி எழுத்து *zType;
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
-    const char *zOrigDb = 0;
-    const char *zOrigTab = 0;
-    const char *zOrigCol = 0;
+    மாறிலி எழுத்து *zOrigDb = 0;
+    மாறிலி எழுத்து *zOrigTab = 0;
+    மாறிலி எழுத்து *zOrigCol = 0;
     zType = columnType(&sNC, p, &zOrigDb, &zOrigTab, &zOrigCol);
 
     /* The vdbe must make its own copy of the column-type and other
@@ -2153,12 +2153,12 @@ static void generateColumnTypes(
     sqlite3VdbeSetColName(v, i, COLNAME_DATABASE, zOrigDb, SQLITE_TRANSIENT);
     sqlite3VdbeSetColName(v, i, COLNAME_TABLE, zOrigTab, SQLITE_TRANSIENT);
     sqlite3VdbeSetColName(v, i, COLNAME_COLUMN, zOrigCol, SQLITE_TRANSIENT);
-#else
+#இல்லையெனில்
     zType = columnType(&sNC, p, 0, 0, 0);
 #endif
     sqlite3VdbeSetColName(v, i, COLNAME_DECLTYPE, zType, SQLITE_TRANSIENT);
   }
-#else
+#இல்லையெனில்
   UNUSED_PARAMETER(pParse);
   UNUSED_PARAMETER(pTabList);
   UNUSED_PARAMETER(pEList);
@@ -2196,63 +2196,63 @@ static void generateColumnTypes(
 **                              then the result column name with the table name
 **                              prefix, ex: TABLE.COLUMN.  Otherwise use zSpan.
 */
-void sqlite3GenerateColumnNames(
+வெறுமை sqlite3GenerateColumnNames(
   Parse *pParse,      /* Parser context */
   Select *pSelect     /* Generate column names for this SELECT statement */
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
+  முழு i;
   Table *pTab;
   SrcList *pTabList;
-  ExprList *pEList;
+  கோவை_List *pEList;
   sqlite3 *db = pParse->db;
-  int fullName;    /* TABLE.COLUMN if no AS clause and is a direct table ref */
-  int srcName;     /* COLUMN or TABLE.COLUMN if no AS clause and is direct */
+  முழு fullName;    /* TABLE.COLUMN if no AS clause and is a direct table ref */
+  முழு srcName;     /* COLUMN or TABLE.COLUMN if no AS clause and is direct */
 
-  if( pParse->colNamesSet ) return;
+  எனில்( pParse->colNamesSet ) திரும்பு;
   /* Column names are determined by the left-most term of a compound select */
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  போது( pSelect->pPrior ) pSelect = pSelect->pPrior;
   TREETRACE(0x80,pParse,pSelect,("generating column names\n"));
   pTabList = pSelect->pSrc;
   pEList = pSelect->pEList;
-  assert( v!=0 );
-  assert( pTabList!=0 );
+  ப்ரதிஜ்ஞா( v!=0 );
+  ப்ரதிஜ்ஞா( pTabList!=0 );
   pParse->colNamesSet = 1;
   fullName = (db->flags & SQLITE_FullColNames)!=0;
   srcName = (db->flags & SQLITE_ShortColNames)!=0 || fullName;
-  sqlite3VdbeSetNumCols(v, pEList->nExpr);
-  for(i=0; i<pEList->nExpr; i++){
-    Expr *p = pEList->a[i].pExpr;
+  sqlite3_Vdbe_Set_இலக்கம்_Cols(v, pEList->n_கோவை);
+  க்கு(i=0; i<pEList->n_கோவை; i++){
+    கோவை *p = pEList->a[i].p_கோவை;
 
-    assert( p!=0 );
-    assert( p->op!=TK_AGG_COLUMN );  /* Agg processing has not run yet */
-    assert( p->op!=TK_COLUMN
-        || (ExprUseYTab(p) && p->y.pTab!=0) ); /* Covering idx not yet coded */
-    if( pEList->a[i].zEName && pEList->a[i].fg.eEName==ENAME_NAME ){
+    ப்ரதிஜ்ஞா( p!=0 );
+    ப்ரதிஜ்ஞா( p->op!=TK_AGG_COLUMN );  /* Agg processing has not run yet */
+    ப்ரதிஜ்ஞா( p->op!=TK_COLUMN
+        || (கோவை_Use_YTab(p) && p->y.pTab!=0) ); /* Covering idx not yet coded */
+    எனில்( pEList->a[i].zEName && pEList->a[i].fg.eEName==ENAME_NAME ){
       /* An AS clause always takes first priority */
-      char *zName = pEList->a[i].zEName;
+      எழுத்து *zName = pEList->a[i].zEName;
       sqlite3VdbeSetColName(v, i, COLNAME_NAME, zName, SQLITE_TRANSIENT);
-    }else if( srcName && p->op==TK_COLUMN ){
-      char *zCol;
-      int iCol = p->iColumn;
+    }இல்லையெனில் எனில்( srcName && p->op==TK_COLUMN ){
+      எழுத்து *zCol;
+      முழு iCol = p->iColumn;
       pTab = p->y.pTab;
-      assert( pTab!=0 );
-      if( iCol<0 ) iCol = pTab->iPKey;
-      assert( iCol==-1 || (iCol>=0 && iCol<pTab->nCol) );
-      if( iCol<0 ){
+      ப்ரதிஜ்ஞா( pTab!=0 );
+      எனில்( iCol<0 ) iCol = pTab->iPKey;
+      ப்ரதிஜ்ஞா( iCol==-1 || (iCol>=0 && iCol<pTab->nCol) );
+      எனில்( iCol<0 ){
         zCol = "rowid";
-      }else{
+      }இல்லையெனில்{
         zCol = pTab->aCol[iCol].zCnName;
       }
-      if( fullName ){
-        char *zName = 0;
+      எனில்( fullName ){
+        எழுத்து *zName = 0;
         zName = sqlite3MPrintf(db, "%s.%s", pTab->zName, zCol);
         sqlite3VdbeSetColName(v, i, COLNAME_NAME, zName, SQLITE_DYNAMIC);
-      }else{
+      }இல்லையெனில்{
         sqlite3VdbeSetColName(v, i, COLNAME_NAME, zCol, SQLITE_TRANSIENT);
       }
-    }else{
-      const char *z = pEList->a[i].zEName;
+    }இல்லையெனில்{
+      மாறிலி எழுத்து *z = pEList->a[i].zEName;
       z = z==0 ? sqlite3MPrintf(db, "column%d", i+1) : sqlite3DbStrDup(db, z);
       sqlite3VdbeSetColName(v, i, COLNAME_NAME, z, SQLITE_DYNAMIC);
     }
@@ -2282,69 +2282,69 @@ void sqlite3GenerateColumnNames(
 **
 ** See Also: sqlite3GenerateColumnNames()
 */
-int sqlite3ColumnsFromExprList(
+முழு sqlite3_Columns_From_கோவை_List(
   Parse *pParse,          /* Parsing context */
-  ExprList *pEList,       /* Expr list from which to derive column names */
+  கோவை_List *pEList,       /* Expr list from which to derive column names */
   i16 *pnCol,             /* Write the number of columns here */
   Column **paCol          /* Write the new column list here */
 ){
   sqlite3 *db = pParse->db;   /* Database connection */
-  int i, j;                   /* Loop counters */
+  முழு i, j;                   /* Loop counters */
   u32 cnt;                    /* Index added to make the name unique */
   Column *aCol, *pCol;        /* For looping over result columns */
-  int nCol;                   /* Number of columns in the result set */
-  char *zName;                /* Column name */
-  int nName;                  /* Size of name in zName[] */
+  முழு nCol;                   /* Number of columns in the result set */
+  எழுத்து *zName;                /* Column name */
+  முழு nName;                  /* Size of name in zName[] */
   Hash ht;                    /* Hash table of column names */
   Table *pTab;
 
   sqlite3HashInit(&ht);
-  if( pEList ){
-    nCol = pEList->nExpr;
-    aCol = sqlite3DbMallocZero(db, sizeof(aCol[0])*nCol);
+  எனில்( pEList ){
+    nCol = pEList->n_கோவை;
+    aCol = sqlite3DbMallocZero(db, அளவு(aCol[0])*nCol);
     testcase( aCol==0 );
-    if( nCol>32767 ) nCol = 32767;
-  }else{
+    எனில்( nCol>32767 ) nCol = 32767;
+  }இல்லையெனில்{
     nCol = 0;
     aCol = 0;
   }
-  assert( nCol==(i16)nCol );
+  ப்ரதிஜ்ஞா( nCol==(i16)nCol );
   *pnCol = nCol;
   *paCol = aCol;
 
-  for(i=0, pCol=aCol; i<nCol && !pParse->nErr; i++, pCol++){
-    struct ExprList_item *pX = &pEList->a[i];
-    struct ExprList_item *pCollide;
+  க்கு(i=0, pCol=aCol; i<nCol && !pParse->nErr; i++, pCol++){
+    கட்டமைப்பு கோவை_List_item *pX = &pEList->a[i];
+    கட்டமைப்பு கோவை_List_item *pCollide;
     /* Get an appropriate name for the column
     */
-    if( (zName = pX->zEName)!=0 && pX->fg.eEName==ENAME_NAME ){
+    எனில்( (zName = pX->zEName)!=0 && pX->fg.eEName==ENAME_NAME ){
       /* If the column contains an "AS <name>" phrase, use <name> as the name */
-    }else{
-      Expr *pColExpr = sqlite3ExprSkipCollateAndLikely(pX->pExpr);
-      while( ALWAYS(pColExpr!=0) && pColExpr->op==TK_DOT ){
-        pColExpr = pColExpr->pRight;
-        assert( pColExpr!=0 );
+    }இல்லையெனில்{
+      கோவை *p_Col_கோவை = sqlite3_கோவை_Skip_Collate_And_Likely(pX->p_கோவை);
+      போது( ALWAYS(p_Col_கோவை!=0) && p_Col_கோவை->op==TK_DOT ){
+        p_Col_கோவை = p_Col_கோவை->p_வலது;
+        ப்ரதிஜ்ஞா( p_Col_கோவை!=0 );
       }
-      if( pColExpr->op==TK_COLUMN
-       && ALWAYS( ExprUseYTab(pColExpr) )
-       && ALWAYS( pColExpr->y.pTab!=0 )
+      எனில்( p_Col_கோவை->op==TK_COLUMN
+       && ALWAYS( கோவை_Use_YTab(p_Col_கோவை) )
+       && ALWAYS( p_Col_கோவை->y.pTab!=0 )
       ){
         /* For columns use the column name name */
-        int iCol = pColExpr->iColumn;
-        pTab = pColExpr->y.pTab;
-        if( iCol<0 ) iCol = pTab->iPKey;
+        முழு iCol = p_Col_கோவை->iColumn;
+        pTab = p_Col_கோவை->y.pTab;
+        எனில்( iCol<0 ) iCol = pTab->iPKey;
         zName = iCol>=0 ? pTab->aCol[iCol].zCnName : "rowid";
-      }else if( pColExpr->op==TK_ID ){
-        assert( !ExprHasProperty(pColExpr, EP_IntValue) );
-        zName = pColExpr->u.zToken;
-      }else{
+      }இல்லையெனில் எனில்( p_Col_கோவை->op==TK_ID ){
+        ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_Col_கோவை, EP_Int_மதிப்பு) );
+        zName = p_Col_கோவை->u.zToken;
+      }இல்லையெனில்{
         /* Use the original text of the column expression as its name */
-        assert( zName==pX->zEName );  /* pointer comparison intended */
+        ப்ரதிஜ்ஞா( zName==pX->zEName );  /* pointer comparison intended */
       }
     }
-    if( zName && !sqlite3IsTrueOrFalse(zName) ){
+    எனில்( zName && !sqlite3IsTrueOrFalse(zName) ){
       zName = sqlite3DbStrDup(db, zName);
-    }else{
+    }இல்லையெனில்{
       zName = sqlite3MPrintf(db,"column%d",i+1);
     }
 
@@ -2352,42 +2352,42 @@ int sqlite3ColumnsFromExprList(
     ** append an integer to the name so that it becomes unique.
     */
     cnt = 0;
-    while( zName && (pCollide = sqlite3HashFind(&ht, zName))!=0 ){
-      if( pCollide->fg.bUsingTerm ){
+    போது( zName && (pCollide = sqlite3HashFind(&ht, zName))!=0 ){
+      எனில்( pCollide->fg.bUsingTerm ){
         pCol->colFlags |= COLFLAG_NOEXPAND;
       }
       nName = sqlite3Strlen30(zName);
-      if( nName>0 ){
-        for(j=nName-1; j>0 && sqlite3Isdigit(zName[j]); j--){}
-        if( zName[j]==':' ) nName = j;
+      எனில்( nName>0 ){
+        க்கு(j=nName-1; j>0 && sqlite3Isdigit(zName[j]); j--){}
+        எனில்( zName[j]==':' ) nName = j;
       }
       zName = sqlite3MPrintf(db, "%.*z:%u", nName, zName, ++cnt);
       sqlite3ProgressCheck(pParse);
-      if( cnt>3 ){
-        sqlite3_randomness(sizeof(cnt), &cnt);
+      எனில்( cnt>3 ){
+        sqlite3_randomness(அளவு(cnt), &cnt);
       }
     }
     pCol->zCnName = zName;
     pCol->hName = sqlite3StrIHash(zName);
-    if( pX->fg.bNoExpand ){
+    எனில்( pX->fg.bNoExpand ){
       pCol->colFlags |= COLFLAG_NOEXPAND;
     }
     sqlite3ColumnPropertiesFromName(0, pCol);
-    if( zName && sqlite3HashInsert(&ht, zName, pX)==pX ){
+    எனில்( zName && sqlite3_Hash_செருகு(&ht, zName, pX)==pX ){
       sqlite3OomFault(db);
     }
   }
   sqlite3HashClear(&ht);
-  if( pParse->nErr ){
-    for(j=0; j<i; j++){
+  எனில்( pParse->nErr ){
+    க்கு(j=0; j<i; j++){
       sqlite3DbFree(db, aCol[j].zCnName);
     }
     sqlite3DbFree(db, aCol);
     *paCol = 0;
     *pnCol = 0;
-    return pParse->rc;
+    திரும்பு pParse->rc;
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
@@ -2401,89 +2401,89 @@ int sqlite3ColumnsFromExprList(
 **    *   Which collating sequence to use for the column
 **    *   The affinity of the column
 */
-void sqlite3SubqueryColumnTypes(
+வெறுமை sqlite3SubqueryColumnTypes(
   Parse *pParse,      /* Parsing contexts */
   Table *pTab,        /* Add column type information to this table */
   Select *pSelect,    /* SELECT used to determine types and collations */
-  char aff            /* Default affinity. */
+  எழுத்து aff            /* Default affinity. */
 ){
   sqlite3 *db = pParse->db;
   Column *pCol;
   CollSeq *pColl;
-  int i,j;
-  Expr *p;
-  struct ExprList_item *a;
+  முழு i,j;
+  கோவை *p;
+  கட்டமைப்பு கோவை_List_item *a;
   NameContext sNC;
 
-  assert( pSelect!=0 );
-  assert( (pSelect->selFlags & SF_Resolved)!=0 );
-  assert( pTab->nCol==pSelect->pEList->nExpr || pParse->nErr>0 );
-  assert( aff==SQLITE_AFF_NONE || aff==SQLITE_AFF_BLOB );
-  if( db->mallocFailed || IN_RENAME_OBJECT ) return;
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  ப்ரதிஜ்ஞா( pSelect!=0 );
+  ப்ரதிஜ்ஞா( (pSelect->selFlags & SF_Resolved)!=0 );
+  ப்ரதிஜ்ஞா( pTab->nCol==pSelect->pEList->n_கோவை || pParse->nErr>0 );
+  ப்ரதிஜ்ஞா( aff==SQLITE_AFF_NONE || aff==SQLITE_AFF_BLOB );
+  எனில்( db->mallocFailed || IN_RENAME_OBJECT ) திரும்பு;
+  போது( pSelect->pPrior ) pSelect = pSelect->pPrior;
   a = pSelect->pEList->a;
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, அளவு(sNC));
   sNC.pSrcList = pSelect->pSrc;
-  for(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
-    const char *zType;
+  க்கு(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
+    மாறிலி எழுத்து *zType;
     i64 n;
-    int m = 0;
+    முழு m = 0;
     Select *pS2 = pSelect;
     pTab->tabFlags |= (pCol->colFlags & COLFLAG_NOINSERT);
-    p = a[i].pExpr;
+    p = a[i].p_கோவை;
     /* pCol->szEst = ... // Column size est for SELECT tables never used */
-    pCol->affinity = sqlite3ExprAffinity(p);
-    while( pCol->affinity<=SQLITE_AFF_NONE && pS2->pNext!=0 ){
-      m |= sqlite3ExprDataType(pS2->pEList->a[i].pExpr);
+    pCol->affinity = sqlite3_கோவை_Affinity(p);
+    போது( pCol->affinity<=SQLITE_AFF_NONE && pS2->pNext!=0 ){
+      m |= sqlite3_கோவை_Data_Type(pS2->pEList->a[i].p_கோவை);
       pS2 = pS2->pNext;
-      pCol->affinity = sqlite3ExprAffinity(pS2->pEList->a[i].pExpr);
+      pCol->affinity = sqlite3_கோவை_Affinity(pS2->pEList->a[i].p_கோவை);
     }
-    if( pCol->affinity<=SQLITE_AFF_NONE ){
+    எனில்( pCol->affinity<=SQLITE_AFF_NONE ){
       pCol->affinity = aff;
     }
-    if( pCol->affinity>=SQLITE_AFF_TEXT && (pS2->pNext || pS2!=pSelect) ){
-      for(pS2=pS2->pNext; pS2; pS2=pS2->pNext){
-        m |= sqlite3ExprDataType(pS2->pEList->a[i].pExpr);
+    எனில்( pCol->affinity>=SQLITE_AFF_TEXT && (pS2->pNext || pS2!=pSelect) ){
+      க்கு(pS2=pS2->pNext; pS2; pS2=pS2->pNext){
+        m |= sqlite3_கோவை_Data_Type(pS2->pEList->a[i].p_கோவை);
       }
-      if( pCol->affinity==SQLITE_AFF_TEXT && (m&0x01)!=0 ){
+      எனில்( pCol->affinity==SQLITE_AFF_TEXT && (m&0x01)!=0 ){
         pCol->affinity = SQLITE_AFF_BLOB;
-      }else
-      if( pCol->affinity>=SQLITE_AFF_NUMERIC && (m&0x02)!=0 ){
+      }இல்லையெனில்
+      எனில்( pCol->affinity>=SQLITE_AFF_NUMERIC && (m&0x02)!=0 ){
         pCol->affinity = SQLITE_AFF_BLOB;
       }
-      if( pCol->affinity>=SQLITE_AFF_NUMERIC && p->op==TK_CAST ){
+      எனில்( pCol->affinity>=SQLITE_AFF_NUMERIC && p->op==TK_CAST ){
         pCol->affinity = SQLITE_AFF_FLEXNUM;
       }
     }
     zType = columnType(&sNC, p, 0, 0, 0);
-    if( zType==0 || pCol->affinity!=sqlite3AffinityType(zType, 0) ){
-      if( pCol->affinity==SQLITE_AFF_NUMERIC
+    எனில்( zType==0 || pCol->affinity!=sqlite3AffinityType(zType, 0) ){
+      எனில்( pCol->affinity==SQLITE_AFF_NUMERIC
        || pCol->affinity==SQLITE_AFF_FLEXNUM
       ){
         zType = "NUM";
-      }else{
+      }இல்லையெனில்{
         zType = 0;
-        for(j=1; j<SQLITE_N_STDTYPE; j++){
-          if( sqlite3StdTypeAffinity[j]==pCol->affinity ){
+        க்கு(j=1; j<SQLITE_N_STDTYPE; j++){
+          எனில்( sqlite3StdTypeAffinity[j]==pCol->affinity ){
             zType = sqlite3StdType[j];
-            break;
+            நிறுத்து;
           }
         }
       }
     }
-    if( zType ){
-      const i64 k = strlen(zType);
+    எனில்( zType ){
+      மாறிலி i64 k = strlen(zType);
       n = strlen(pCol->zCnName);
       pCol->zCnName = sqlite3DbReallocOrFree(db, pCol->zCnName, n+k+2);
       pCol->colFlags &= ~(COLFLAG_HASTYPE|COLFLAG_HASCOLL);
-      if( pCol->zCnName ){
+      எனில்( pCol->zCnName ){
         memcpy(&pCol->zCnName[n+1], zType, k+1);
         pCol->colFlags |= COLFLAG_HASTYPE;
       }
     }
-    pColl = sqlite3ExprCollSeq(pParse, p);
-    if( pColl ){
-      assert( pTab->pIndex==0 );
+    pColl = sqlite3_கோவை_Coll_Seq(pParse, p);
+    எனில்( pColl ){
+      ப்ரதிஜ்ஞா( pTab->pIndex==0 );
       sqlite3ColumnSetColl(db, pCol, pColl->zName);
     }
   }
@@ -2494,51 +2494,51 @@ void sqlite3SubqueryColumnTypes(
 ** Check the current subquery nesting depth.  Return true and set an
 ** error if it has gone too deep.
 */
-static int checkSubqueryNestingDepth(Parse *pParse){
-#if SQLITE_MAX_EXPR_DEPTH>0
-  if( pParse->nNestSel >= pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH] ){
-    sqlite3ErrorMsg(pParse, "VIEWs and/or subqueries nested too deep");
-    return 1;
+நிலையான முழு checkSubqueryNestingDepth(Parse *pParse){
+#எனில் SQLITE_MAX_கோவை_DEPTH>0
+  எனில்( pParse->nNestSel >= pParse->db->aLimit[SQLITE_LIMIT_கோவை_DEPTH] ){
+    sqlite3_Error_செய்தி(pParse, "VIEWs and/or subqueries nested too deep");
+    திரும்பு 1;
   }
 #endif
-  return 0;
+  திரும்பு 0;
 }
 
 /*
 ** Given a SELECT statement, generate a Table structure that describes
 ** the result set of that SELECT.
 */
-Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, char aff){
+Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, எழுத்து aff){
   Table *pTab;
   sqlite3 *db = pParse->db;
   u64 savedFlags;
 
   pParse->nNestSel++;
-  if( checkSubqueryNestingDepth(pParse) ) return 0;
+  எனில்( checkSubqueryNestingDepth(pParse) ) திரும்பு 0;
   savedFlags = db->flags;
   db->flags &= ~(u64)SQLITE_FullColNames;
   db->flags |= SQLITE_ShortColNames;
   sqlite3SelectPrep(pParse, pSelect, 0);
   db->flags = savedFlags;
-  if( pParse->nErr ) return 0;
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
-  pTab = sqlite3DbMallocZero(db, sizeof(Table) );
-  if( pTab==0 ){
-    return 0;
+  எனில்( pParse->nErr ) திரும்பு 0;
+  போது( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  pTab = sqlite3DbMallocZero(db, அளவு(Table) );
+  எனில்( pTab==0 ){
+    திரும்பு 0;
   }
   pTab->nTabRef = 1;
   pTab->zName = 0;
-  pTab->nRowLogEst = 200; assert( 200==sqlite3LogEst(1048576) );
-  sqlite3ColumnsFromExprList(pParse, pSelect->pEList, &pTab->nCol, &pTab->aCol);
+  pTab->nRowLogEst = 200; ப்ரதிஜ்ஞா( 200==sqlite3LogEst(1048576) );
+  sqlite3_Columns_From_கோவை_List(pParse, pSelect->pEList, &pTab->nCol, &pTab->aCol);
   sqlite3SubqueryColumnTypes(pParse, pTab, pSelect, aff);
   pTab->iPKey = -1;
-  if( db->mallocFailed ){
+  எனில்( db->mallocFailed ){
     sqlite3DeleteTable(db, pTab);
-    return 0;
+    திரும்பு 0;
   }
   pParse->nNestSel--;
-  assert( pParse->nNestSel>=0 );
-  return pTab;
+  ப்ரதிஜ்ஞா( pParse->nNestSel>=0 );
+  திரும்பு pTab;
 }
 
 /*
@@ -2546,13 +2546,13 @@ Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, char aff){
 ** If an error occurs, return NULL and leave a message in pParse.
 */
 Vdbe *sqlite3GetVdbe(Parse *pParse){
-  if( pParse->pVdbe ){
-    return pParse->pVdbe;
+  எனில்( pParse->pVdbe ){
+    திரும்பு pParse->pVdbe;
   }
-  if( pParse->pToplevel==0 ){
+  எனில்( pParse->pToplevel==0 ){
     pParse->okConstFactor = 1;
   }
-  return sqlite3VdbeCreate(pParse);
+  திரும்பு sqlite3VdbeCreate(pParse);
 }
 
 
@@ -2579,14 +2579,14 @@ Vdbe *sqlite3GetVdbe(Parse *pParse){
 ** the reuse of the same limit and offset registers across multiple
 ** SELECT statements.
 */
-static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
+நிலையான வெறுமை computeLimitRegisters(Parse *pParse, Select *p, முழு iBreak){
   Vdbe *v = 0;
-  int iLimit = 0;
-  int iOffset;
-  int n;
-  Expr *pLimit = p->pLimit;
+  முழு iLimit = 0;
+  முழு iOffset;
+  முழு n;
+  கோவை *pLimit = p->pLimit;
 
-  if( p->iLimit ) return;
+  எனில்( p->iLimit ) திரும்பு;
 
   /*
   ** "LIMIT -1" always shows all rows.  There is some
@@ -2594,32 +2594,32 @@ static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
   ** The current implementation interprets "LIMIT 0" to mean
   ** no rows.
   */
-  if( pLimit ){
-    assert( pLimit->op==TK_LIMIT );
-    assert( pLimit->pLeft!=0 );
+  எனில்( pLimit ){
+    ப்ரதிஜ்ஞா( pLimit->op==TK_LIMIT );
+    ப்ரதிஜ்ஞா( pLimit->p_இடது!=0 );
     p->iLimit = iLimit = ++pParse->nMem;
     v = sqlite3GetVdbe(pParse);
-    assert( v!=0 );
-    if( sqlite3ExprIsInteger(pLimit->pLeft, &n, pParse, 0) ){
+    ப்ரதிஜ்ஞா( v!=0 );
+    எனில்( sqlite3_கோவை_Is_Integer(pLimit->p_இடது, &n, pParse, 0) ){
       sqlite3VdbeAddOp2(v, OP_Integer, n, iLimit);
       VdbeComment((v, "LIMIT counter"));
-      if( n==0 ){
+      எனில்( n==0 ){
         sqlite3VdbeGoto(v, iBreak);
-      }else if( n>=0 && p->nSelectRow>sqlite3LogEst((u64)n) ){
+      }இல்லையெனில் எனில்( n>=0 && p->nSelectRow>sqlite3LogEst((u64)n) ){
         p->nSelectRow = sqlite3LogEst((u64)n);
         p->selFlags |= SF_FixedLimit;
       }
-    }else{
-      sqlite3ExprCode(pParse, pLimit->pLeft, iLimit);
+    }இல்லையெனில்{
+      sqlite3_கோவை_Code(pParse, pLimit->p_இடது, iLimit);
       sqlite3VdbeAddOp1(v, OP_MustBeInt, iLimit); VdbeCoverage(v);
       VdbeComment((v, "LIMIT counter"));
       sqlite3MayAbort(pParse);
       sqlite3VdbeAddOp2(v, OP_IfNot, iLimit, iBreak); VdbeCoverage(v);
     }
-    if( pLimit->pRight ){
+    எனில்( pLimit->p_வலது ){
       p->iOffset = iOffset = ++pParse->nMem;
       pParse->nMem++;   /* Allocate an extra register for limit+offset */
-      sqlite3ExprCode(pParse, pLimit->pRight, iOffset);
+      sqlite3_கோவை_Code(pParse, pLimit->p_வலது, iOffset);
       sqlite3VdbeAddOp1(v, OP_MustBeInt, iOffset); VdbeCoverage(v);
       sqlite3MayAbort(pParse);
       VdbeComment((v, "OFFSET counter"));
@@ -2638,21 +2638,21 @@ static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
 ** The collating sequence for the compound select is taken from the
 ** left-most term of the select that has a collating sequence.
 */
-static CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, int iCol){
+நிலையான CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, முழு iCol){
   CollSeq *pRet;
-  if( p->pPrior ){
+  எனில்( p->pPrior ){
     pRet = multiSelectCollSeq(pParse, p->pPrior, iCol);
-  }else{
+  }இல்லையெனில்{
     pRet = 0;
   }
-  assert( iCol>=0 );
+  ப்ரதிஜ்ஞா( iCol>=0 );
   /* iCol must be less than p->pEList->nExpr.  Otherwise an error would
   ** have been thrown during name resolution and we would not have gotten
   ** this far */
-  if( pRet==0 && ALWAYS(iCol<p->pEList->nExpr) ){
-    pRet = sqlite3ExprCollSeq(pParse, p->pEList->a[iCol].pExpr);
+  எனில்( pRet==0 && ALWAYS(iCol<p->pEList->n_கோவை) ){
+    pRet = sqlite3_கோவை_Coll_Seq(pParse, p->pEList->a[iCol].p_கோவை);
   }
-  return pRet;
+  திரும்பு pRet;
 }
 
 /*
@@ -2664,33 +2664,33 @@ static CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, int iCol){
 ** function is responsible for ensuring that this structure is eventually
 ** freed.
 */
-static KeyInfo *multiSelectByMergeKeyInfo(Parse *pParse, Select *p, int nExtra){
-  ExprList *pOrderBy = p->pOrderBy;
-  int nOrderBy = (pOrderBy!=0) ? pOrderBy->nExpr : 0;
+நிலையான சாவி_Info *multi_Select_By_Merge_சாவி_Info(Parse *pParse, Select *p, முழு nExtra){
+  கோவை_List *pOrderBy = p->pOrderBy;
+  முழு nOrderBy = (pOrderBy!=0) ? pOrderBy->n_கோவை : 0;
   sqlite3 *db = pParse->db;
-  KeyInfo *pRet = sqlite3KeyInfoAlloc(db, nOrderBy+nExtra, 1);
-  if( pRet ){
-    int i;
-    for(i=0; i<nOrderBy; i++){
-      struct ExprList_item *pItem = &pOrderBy->a[i];
-      Expr *pTerm = pItem->pExpr;
+  சாவி_Info *pRet = sqlite3_சாவி_Info_Alloc(db, nOrderBy+nExtra, 1);
+  எனில்( pRet ){
+    முழு i;
+    க்கு(i=0; i<nOrderBy; i++){
+      கட்டமைப்பு கோவை_List_item *pItem = &pOrderBy->a[i];
+      கோவை *pTerm = pItem->p_கோவை;
       CollSeq *pColl;
 
-      if( pTerm->flags & EP_Collate ){
-        pColl = sqlite3ExprCollSeq(pParse, pTerm);
-      }else{
+      எனில்( pTerm->flags & EP_Collate ){
+        pColl = sqlite3_கோவை_Coll_Seq(pParse, pTerm);
+      }இல்லையெனில்{
         pColl = multiSelectCollSeq(pParse, p, pItem->u.x.iOrderByCol-1);
-        if( pColl==0 ) pColl = db->pDfltColl;
-        pOrderBy->a[i].pExpr =
-          sqlite3ExprAddCollateString(pParse, pTerm, pColl->zName);
+        எனில்( pColl==0 ) pColl = db->pDfltColl;
+        pOrderBy->a[i].p_கோவை =
+          sqlite3_கோவை_Add_Collate_String(pParse, pTerm, pColl->zName);
       }
-      assert( sqlite3KeyInfoIsWriteable(pRet) );
+      ப்ரதிஜ்ஞா( sqlite3_சாவி_Info_Is_Writeable(pRet) );
       pRet->aColl[i] = pColl;
       pRet->aSortFlags[i] = pOrderBy->a[i].fg.sortFlags;
     }
   }
 
-  return pRet;
+  திரும்பு pRet;
 }
 
 #ifndef SQLITE_OMIT_CTE
@@ -2730,39 +2730,39 @@ static KeyInfo *multiSelectByMergeKeyInfo(Parse *pParse, Select *p, int nExtra){
 ** than being sent to pDest.  The LIMIT count does not begin until after OFFSET
 ** rows have been skipped.
 */
-static void generateWithRecursiveQuery(
+நிலையான வெறுமை generateWithRecursiveQuery(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The recursive SELECT to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
   SrcList *pSrc = p->pSrc;      /* The FROM clause of the recursive query */
-  int nCol = p->pEList->nExpr;  /* Number of columns in the recursive table */
+  முழு nCol = p->pEList->n_கோவை;  /* Number of columns in the recursive table */
   Vdbe *v = pParse->pVdbe;      /* The prepared statement under construction */
   Select *pSetup;               /* The setup query */
   Select *pFirstRec;            /* Left-most recursive term */
-  int addrTop;                  /* Top of the loop */
-  int addrCont, addrBreak;      /* CONTINUE and BREAK addresses */
-  int iCurrent = 0;             /* The Current table */
-  int regCurrent;               /* Register holding Current table */
-  int iQueue;                   /* The Queue table */
-  int iDistinct = 0;            /* To ensure unique results if UNION */
-  int eDest = SRT_Fifo;         /* How to write to Queue */
+  முழு addr_உச்சி;                  /* Top of the loop */
+  முழு addrCont, addrBreak;      /* CONTINUE and BREAK addresses */
+  முழு iCurrent = 0;             /* The Current table */
+  முழு regCurrent;               /* Register holding Current table */
+  முழு iQueue;                   /* The Queue table */
+  முழு iDistinct = 0;            /* To ensure unique results if UNION */
+  முழு eDest = SRT_Fifo;         /* How to write to Queue */
   SelectDest destQueue;         /* SelectDest targeting the Queue table */
-  int i;                        /* Loop counter */
-  int rc;                       /* Result code */
-  ExprList *pOrderBy;           /* The ORDER BY clause */
-  Expr *pLimit;                 /* Saved LIMIT and OFFSET */
-  int regLimit, regOffset;      /* Registers used by LIMIT and OFFSET */
+  முழு i;                        /* Loop counter */
+  முழு rc;                       /* Result code */
+  கோவை_List *pOrderBy;           /* The ORDER BY clause */
+  கோவை *pLimit;                 /* Saved LIMIT and OFFSET */
+  முழு regLimit, regOffset;      /* Registers used by LIMIT and OFFSET */
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( p->pWin ){
-    sqlite3ErrorMsg(pParse, "cannot use window functions in recursive queries");
-    return;
+  எனில்( p->pWin ){
+    sqlite3_Error_செய்தி(pParse, "cannot use window functions in recursive queries");
+    திரும்பு;
   }
 #endif
 
   /* Obtain authorization to do a recursive query */
-  if( sqlite3AuthCheck(pParse, SQLITE_RECURSIVE, 0, 0, 0) ) return;
+  எனில்( sqlite3AuthCheck(pParse, SQLITE_RECURSIVE, 0, 0, 0) ) திரும்பு;
 
   /* Process the LIMIT and OFFSET clauses, if they exist */
   addrBreak = sqlite3VdbeMakeLabel(pParse);
@@ -2776,10 +2776,10 @@ static void generateWithRecursiveQuery(
   pOrderBy = p->pOrderBy;
 
   /* Locate the cursor number of the Current table */
-  for(i=0; ALWAYS(i<pSrc->nSrc); i++){
-    if( pSrc->a[i].fg.isRecursive ){
+  க்கு(i=0; ALWAYS(i<pSrc->nSrc); i++){
+    எனில்( pSrc->a[i].fg.isRecursive ){
       iCurrent = pSrc->a[i].iCursor;
-      break;
+      நிறுத்து;
     }
   }
 
@@ -2787,10 +2787,10 @@ static void generateWithRecursiveQuery(
   ** the Distinct table must be exactly one greater than Queue in order
   ** for the SRT_DistFifo and SRT_DistQueue destinations to work. */
   iQueue = pParse->nTab++;
-  if( p->op==TK_UNION ){
+  எனில்( p->op==TK_UNION ){
     eDest = pOrderBy ? SRT_DistQueue : SRT_DistFifo;
     iDistinct = pParse->nTab++;
-  }else{
+  }இல்லையெனில்{
     eDest = pOrderBy ? SRT_Queue : SRT_Fifo;
   }
   sqlite3SelectDestInit(&destQueue, eDest, iQueue);
@@ -2798,37 +2798,37 @@ static void generateWithRecursiveQuery(
   /* Allocate cursors for Current, Queue, and Distinct. */
   regCurrent = ++pParse->nMem;
   sqlite3VdbeAddOp3(v, OP_OpenPseudo, iCurrent, regCurrent, nCol);
-  if( pOrderBy ){
-    KeyInfo *pKeyInfo = multiSelectByMergeKeyInfo(pParse, p, 1);
-    sqlite3VdbeAddOp4(v, OP_OpenEphemeral, iQueue, pOrderBy->nExpr+2, 0,
-                      (char*)pKeyInfo, P4_KEYINFO);
+  எனில்( pOrderBy ){
+    சாவி_Info *p_சாவி_Info = multi_Select_By_Merge_சாவி_Info(pParse, p, 1);
+    sqlite3VdbeAddOp4(v, OP_OpenEphemeral, iQueue, pOrderBy->n_கோவை+2, 0,
+                      (எழுத்து*)p_சாவி_Info, P4_KEYINFO);
     destQueue.pOrderBy = pOrderBy;
-  }else{
+  }இல்லையெனில்{
     sqlite3VdbeAddOp2(v, OP_OpenEphemeral, iQueue, nCol);
   }
   VdbeComment((v, "Queue table"));
-  if( iDistinct ){
+  எனில்( iDistinct ){
     /* Generate an ephemeral table used to enforce distinctness on the
     ** output of the recursive part of the CTE.
     */
-    KeyInfo *pKeyInfo;            /* Collating sequence for the result set */
+    சாவி_Info *p_சாவி_Info;            /* Collating sequence for the result set */
     CollSeq **apColl;             /* For looping through pKeyInfo->aColl[] */
 
-    assert( p->pNext==0 );
-    assert( p->pEList!=0 );
-    nCol = p->pEList->nExpr;
-    pKeyInfo = sqlite3KeyInfoAlloc(pParse->db, nCol, 1);
-    if( pKeyInfo ){
-      for(i=0, apColl=pKeyInfo->aColl; i<nCol; i++, apColl++){
+    ப்ரதிஜ்ஞா( p->pNext==0 );
+    ப்ரதிஜ்ஞா( p->pEList!=0 );
+    nCol = p->pEList->n_கோவை;
+    p_சாவி_Info = sqlite3_சாவி_Info_Alloc(pParse->db, nCol, 1);
+    எனில்( p_சாவி_Info ){
+      க்கு(i=0, apColl=p_சாவி_Info->aColl; i<nCol; i++, apColl++){
         *apColl = multiSelectCollSeq(pParse, p, i);
-        if( 0==*apColl ){
+        எனில்( 0==*apColl ){
           *apColl = pParse->db->pDfltColl;
         }
       }
       sqlite3VdbeAddOp4(v, OP_OpenEphemeral, iDistinct, nCol, 0,
-                           (void*)pKeyInfo, P4_KEYINFO);
-    }else{
-      assert( pParse->nErr>0 );
+                           (வெறுமை*)p_சாவி_Info, P4_KEYINFO);
+    }இல்லையெனில்{
+      ப்ரதிஜ்ஞா( pParse->nErr>0 );
     }
   }
 
@@ -2842,13 +2842,13 @@ static void generateWithRecursiveQuery(
   ** iDistinct table.  pFirstRec is left pointing to the left-most
   ** recursive term of the CTE.
   */
-  for(pFirstRec=p; ALWAYS(pFirstRec!=0); pFirstRec=pFirstRec->pPrior){
-    if( pFirstRec->selFlags & SF_Aggregate ){
-      sqlite3ErrorMsg(pParse, "recursive aggregate queries not supported");
-      goto end_of_recursive_query;
+  க்கு(pFirstRec=p; ALWAYS(pFirstRec!=0); pFirstRec=pFirstRec->pPrior){
+    எனில்( pFirstRec->selFlags & SF_Aggregate ){
+      sqlite3_Error_செய்தி(pParse, "recursive aggregate queries not supported");
+      செல் end_of_recursive_query;
     }
     pFirstRec->op = TK_ALL;
-    if( (pFirstRec->pPrior->selFlags & SF_Recursive)==0 ) break;
+    எனில்( (pFirstRec->pPrior->selFlags & SF_Recursive)==0 ) நிறுத்து;
   }
 
   /* Store the results of the setup-query in Queue. */
@@ -2857,16 +2857,16 @@ static void generateWithRecursiveQuery(
   ExplainQueryPlan((pParse, 1, "SETUP"));
   rc = sqlite3Select(pParse, pSetup, &destQueue);
   pSetup->pNext = p;
-  if( rc ) goto end_of_recursive_query;
+  எனில்( rc ) செல் end_of_recursive_query;
 
   /* Find the next row in the Queue and output that row */
-  addrTop = sqlite3VdbeAddOp2(v, OP_Rewind, iQueue, addrBreak); VdbeCoverage(v);
+  addr_உச்சி = sqlite3VdbeAddOp2(v, OP_Rewind, iQueue, addrBreak); VdbeCoverage(v);
 
   /* Transfer the next row in Queue over to Current */
   sqlite3VdbeAddOp1(v, OP_NullRow, iCurrent); /* To reset column cache */
-  if( pOrderBy ){
-    sqlite3VdbeAddOp3(v, OP_Column, iQueue, pOrderBy->nExpr+1, regCurrent);
-  }else{
+  எனில்( pOrderBy ){
+    sqlite3VdbeAddOp3(v, OP_Column, iQueue, pOrderBy->n_கோவை+1, regCurrent);
+  }இல்லையெனில்{
     sqlite3VdbeAddOp2(v, OP_RowData, iQueue, regCurrent);
   }
   sqlite3VdbeAddOp1(v, OP_Delete, iQueue);
@@ -2876,7 +2876,7 @@ static void generateWithRecursiveQuery(
   codeOffset(v, regOffset, addrCont);
   selectInnerLoop(pParse, p, iCurrent,
       0, 0, pDest, addrCont, addrBreak);
-  if( regLimit ){
+  எனில்( regLimit ){
     sqlite3VdbeAddOp2(v, OP_DecrJumpZero, regLimit, addrBreak);
     VdbeCoverage(v);
   }
@@ -2888,23 +2888,23 @@ static void generateWithRecursiveQuery(
   pFirstRec->pPrior = 0;
   ExplainQueryPlan((pParse, 1, "RECURSIVE STEP"));
   sqlite3Select(pParse, p, &destQueue);
-  assert( pFirstRec->pPrior==0 );
+  ப்ரதிஜ்ஞா( pFirstRec->pPrior==0 );
   pFirstRec->pPrior = pSetup;
 
   /* Keep running the loop until the Queue is empty */
-  sqlite3VdbeGoto(v, addrTop);
+  sqlite3VdbeGoto(v, addr_உச்சி);
   sqlite3VdbeResolveLabel(v, addrBreak);
 
 end_of_recursive_query:
-  sqlite3ExprListDelete(pParse->db, p->pOrderBy);
+  sqlite3_கோவை_List_Delete(pParse->db, p->pOrderBy);
   p->pOrderBy = pOrderBy;
   p->pLimit = pLimit;
-  return;
+  திரும்பு;
 }
 #endif /* SQLITE_OMIT_CTE */
 
 /* Forward references */
-static int multiSelectByMerge(
+நிலையான முழு multiSelectByMerge(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
@@ -2926,36 +2926,36 @@ static int multiSelectByMerge(
 ** The sqlite3CodeSubselect will have added the LIMIT 1 clause in tht case.
 ** Since the limit is exactly 1, we only need to evaluate the left-most VALUES.
 */
-static int multiSelectValues(
+நிலையான முழு multi_Select_மதிப்புகள்(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int nRow = 1;
-  int rc = 0;
-  int bShowAll = p->pLimit==0;
-  assert( p->selFlags & SF_MultiValue );
-  do{
-    assert( p->selFlags & SF_Values );
-    assert( p->op==TK_ALL || (p->op==TK_SELECT && p->pPrior==0) );
-    assert( p->pNext==0 || p->pEList->nExpr==p->pNext->pEList->nExpr );
+  முழு nRow = 1;
+  முழு rc = 0;
+  முழு bShowAll = p->pLimit==0;
+  ப்ரதிஜ்ஞா( p->selFlags & SF_Multi_மதிப்பு );
+  செய்{
+    ப்ரதிஜ்ஞா( p->selFlags & SF_மதிப்புகள் );
+    ப்ரதிஜ்ஞா( p->op==TK_ALL || (p->op==TK_SELECT && p->pPrior==0) );
+    ப்ரதிஜ்ஞா( p->pNext==0 || p->pEList->n_கோவை==p->pNext->pEList->n_கோவை );
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ) return -1;
+    எனில்( p->pWin ) திரும்பு -1;
 #endif
-    if( p->pPrior==0 ) break;
-    assert( p->pPrior->pNext==p );
+    எனில்( p->pPrior==0 ) நிறுத்து;
+    ப்ரதிஜ்ஞா( p->pPrior->pNext==p );
     p = p->pPrior;
     nRow += bShowAll;
-  }while(1);
+  }போது(1);
   ExplainQueryPlan((pParse, 0, "SCAN %d CONSTANT ROW%s", nRow,
                     nRow==1 ? "" : "S"));
-  while( p ){
+  போது( p ){
     selectInnerLoop(pParse, p, -1, 0, 0, pDest, 1, 1);
-    if( !bShowAll ) break;
+    எனில்( !bShowAll ) நிறுத்து;
     p->nSelectRow = nRow;
     p = p->pNext;
   }
-  return rc;
+  திரும்பு rc;
 }
 
 /*
@@ -2963,9 +2963,9 @@ static int multiSelectValues(
 ** part of a recursive CTE still has its anchor terms attached.  If the
 ** anchor terms have already been removed, then return false.
 */
-static int hasAnchor(Select *p){
-  while( p && (p->selFlags & SF_Recursive)!=0 ){ p = p->pPrior; }
-  return p!=0;
+நிலையான முழு hasAnchor(Select *p){
+  போது( p && (p->selFlags & SF_Recursive)!=0 ){ p = p->pPrior; }
+  திரும்பு p!=0;
 }
 
 /*
@@ -2977,17 +2977,17 @@ static int hasAnchor(Select *p){
 ** false negatives for testing purposes, disable the SQLITE_UnionLimit
 ** optimization.
 */
-static int unionWithLimitOne(sqlite3 *db, Select *p){
-  int v;
-  if( p->op!=TK_UNION ) return 0;
-  if( p->pLimit==0 ) return 0;
-  if( p->pLimit->pRight ) return 0;  /* No OFFSET */
+நிலையான முழு unionWithLimitOne(sqlite3 *db, Select *p){
+  முழு v;
+  எனில்( p->op!=TK_UNION ) திரும்பு 0;
+  எனில்( p->pLimit==0 ) திரும்பு 0;
+  எனில்( p->pLimit->p_வலது ) திரும்பு 0;  /* No OFFSET */
   v = 0;
-  assert( p->pLimit->pLeft!=0 );
-  if( sqlite3ExprIsInteger(p->pLimit->pLeft, &v, 0, 0)==0 ) return 0;
-  if( v!=1 ) return 0;
-  if( OptimizationDisabled(db, SQLITE_UnionLimit) ) return 0;
-  return 1;
+  ப்ரதிஜ்ஞா( p->pLimit->p_இடது!=0 );
+  எனில்( sqlite3_கோவை_Is_Integer(p->pLimit->p_இடது, &v, 0, 0)==0 ) திரும்பு 0;
+  எனில்( v!=1 ) திரும்பு 0;
+  எனில்( OptimizationDisabled(db, SQLITE_UnionLimit) ) திரும்பு 0;
+  திரும்பு 1;
 }
 
 /*
@@ -3021,12 +3021,12 @@ static int unionWithLimitOne(sqlite3 *db, Select *p){
 ** Notice that because of the way SQLite parses compound SELECTs, the
 ** individual selects always group from left to right.
 */
-static int multiSelect(
+நிலையான முழு multiSelect(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int rc = SQLITE_OK;   /* Success code from a subroutine */
+  முழு rc = SQLITE_OK;   /* Success code from a subroutine */
   Select *pPrior;       /* Another SELECT immediately to our left */
   Vdbe *v;              /* Generate code to this VDBE */
   SelectDest dest;      /* Alternative data destination */
@@ -3036,91 +3036,91 @@ static int multiSelect(
   /* Make sure there is no ORDER BY or LIMIT clause on prior SELECTs.  Only
   ** the last (right-most) SELECT in the series may have an ORDER BY or LIMIT.
   */
-  assert( p && p->pPrior );  /* Calling function guarantees this much */
-  assert( (p->selFlags & SF_Recursive)==0 || p->op==TK_ALL || p->op==TK_UNION );
-  assert( p->selFlags & SF_Compound );
+  ப்ரதிஜ்ஞா( p && p->pPrior );  /* Calling function guarantees this much */
+  ப்ரதிஜ்ஞா( (p->selFlags & SF_Recursive)==0 || p->op==TK_ALL || p->op==TK_UNION );
+  ப்ரதிஜ்ஞா( p->selFlags & SF_Compound );
   db = pParse->db;
   pPrior = p->pPrior;
   dest = *pDest;
-  assert( pPrior->pOrderBy==0 );
-  assert( pPrior->pLimit==0 );
+  ப்ரதிஜ்ஞா( pPrior->pOrderBy==0 );
+  ப்ரதிஜ்ஞா( pPrior->pLimit==0 );
 
   v = sqlite3GetVdbe(pParse);
-  assert( v!=0 );  /* The VDBE already created by calling function */
+  ப்ரதிஜ்ஞா( v!=0 );  /* The VDBE already created by calling function */
 
   /* Create the destination temporary table if necessary
   */
-  if( dest.eDest==SRT_EphemTab ){
-    assert( p->pEList );
-    sqlite3VdbeAddOp2(v, OP_OpenEphemeral, dest.iSDParm, p->pEList->nExpr);
+  எனில்( dest.eDest==SRT_EphemTab ){
+    ப்ரதிஜ்ஞா( p->pEList );
+    sqlite3VdbeAddOp2(v, OP_OpenEphemeral, dest.iSDParm, p->pEList->n_கோவை);
     dest.eDest = SRT_Table;
   }
 
   /* Special handling for a compound-select that originates as a VALUES clause.
   */
-  if( p->selFlags & SF_MultiValue ){
-    rc = multiSelectValues(pParse, p, &dest);
-    if( rc>=0 ) goto multi_select_end;
+  எனில்( p->selFlags & SF_Multi_மதிப்பு ){
+    rc = multi_Select_மதிப்புகள்(pParse, p, &dest);
+    எனில்( rc>=0 ) செல் multi_select_end;
     rc = SQLITE_OK;
   }
 
   /* Make sure all SELECTs in the statement have the same number of elements
   ** in their result sets.
   */
-  assert( p->pEList && pPrior->pEList );
-  assert( p->pEList->nExpr==pPrior->pEList->nExpr );
+  ப்ரதிஜ்ஞா( p->pEList && pPrior->pEList );
+  ப்ரதிஜ்ஞா( p->pEList->n_கோவை==pPrior->pEList->n_கோவை );
 
 #ifndef SQLITE_OMIT_CTE
-  if( (p->selFlags & SF_Recursive)!=0 && hasAnchor(p) ){
+  எனில்( (p->selFlags & SF_Recursive)!=0 && hasAnchor(p) ){
     generateWithRecursiveQuery(pParse, p, &dest);
-  }else
+  }இல்லையெனில்
 #endif
-  if( p->pOrderBy ){
+  எனில்( p->pOrderBy ){
     /* If the compound has an ORDER BY clause, then always use the merge
     ** algorithm. */
-    return multiSelectByMerge(pParse, p, pDest);
-  }else if( p->op!=TK_ALL && !unionWithLimitOne(db,p) ){
+    திரும்பு multiSelectByMerge(pParse, p, pDest);
+  }இல்லையெனில் எனில்( p->op!=TK_ALL && !unionWithLimitOne(db,p) ){
     /* If the compound is EXCEPT, INTERSECT, or UNION (anything other than
     ** UNION ALL) then also always use the merge algorithm.  However, the
     ** multiSelectByMerge() routine requires that the compound have an
     ** ORDER BY clause, and it doesn't right now.  So invent one first. */
-    Expr *pOne = sqlite3ExprInt32(db, 1);
-    p->pOrderBy = sqlite3ExprListAppend(pParse, 0, pOne);
-    if( pParse->nErr ) goto multi_select_end;
-    assert( p->pOrderBy!=0 );
+    கோவை *pOne = sqlite3_கோவை_Int32(db, 1);
+    p->pOrderBy = sqlite3_கோவை_List_Append(pParse, 0, pOne);
+    எனில்( pParse->nErr ) செல் multi_select_end;
+    ப்ரதிஜ்ஞா( p->pOrderBy!=0 );
     p->pOrderBy->a[0].u.x.iOrderByCol = 1;
-    return multiSelectByMerge(pParse, p, pDest);
-  }else{
+    திரும்பு multiSelectByMerge(pParse, p, pDest);
+  }இல்லையெனில்{
     /* For a UNION ALL compound without ORDER BY, or for a UNION with a 
     ** LIMIT of exactly 1 and no OFFSET and no ORDER BY, simply run the left
     ** query, then run the right query */
-    int addr = 0;
-    int nLimit = 0;  /* Initialize to suppress harmless compiler warning */
+    முழு addr = 0;
+    முழு nLimit = 0;  /* Initialize to suppress harmless compiler warning */
 
 #ifndef SQLITE_OMIT_EXPLAIN
-    if( pPrior->pPrior==0 ){
+    எனில்( pPrior->pPrior==0 ){
       ExplainQueryPlan((pParse, 1, "COMPOUND QUERY"));
       ExplainQueryPlan((pParse, 1, "LEFT-MOST SUBQUERY"));
     }
 #endif
-    assert( !pPrior->pLimit );
+    ப்ரதிஜ்ஞா( !pPrior->pLimit );
     pPrior->iLimit = p->iLimit;
     pPrior->iOffset = p->iOffset;
-    pPrior->pLimit = sqlite3ExprDup(db, p->pLimit, 0);
+    pPrior->pLimit = sqlite3_கோவை_Dup(db, p->pLimit, 0);
     TREETRACE(0x200, pParse, p, ("multiSelect UNION ALL left...\n"));
     rc = sqlite3Select(pParse, pPrior, &dest);
-    sqlite3ExprDelete(db, pPrior->pLimit);
+    sqlite3_கோவை_Delete(db, pPrior->pLimit);
     pPrior->pLimit = 0;
-    if( rc ){
-      goto multi_select_end;
+    எனில்( rc ){
+      செல் multi_select_end;
     }
     p->pPrior = 0;
     p->iLimit = pPrior->iLimit;
     p->iOffset = pPrior->iOffset;
-    if( p->iLimit ){
+    எனில்( p->iLimit ){
       addr = sqlite3VdbeAddOp1(v, OP_IfNot, p->iLimit); VdbeCoverage(v);
       VdbeComment((v, "Jump ahead if LIMIT reached"));
-      if( p->iOffset ){
+      எனில்( p->iOffset ){
         sqlite3VdbeAddOp3(v, OP_OffsetLimit,
                           p->iLimit, p->iOffset+1, p->iOffset);
       }
@@ -3132,18 +3132,18 @@ static int multiSelect(
     pDelete = p->pPrior;
     p->pPrior = pPrior;
     p->nSelectRow = sqlite3LogEstAdd(p->nSelectRow, pPrior->nSelectRow);
-    if( p->pLimit
-     && sqlite3ExprIsInteger(p->pLimit->pLeft, &nLimit, pParse, 0)
+    எனில்( p->pLimit
+     && sqlite3_கோவை_Is_Integer(p->pLimit->p_இடது, &nLimit, pParse, 0)
      && nLimit>0 && p->nSelectRow > sqlite3LogEst((u64)nLimit)
     ){
       p->nSelectRow = sqlite3LogEst((u64)nLimit);
     }
-    if( addr ){
+    எனில்( addr ){
       sqlite3VdbeJumpHere(v, addr);
     }
 #ifndef SQLITE_OMIT_EXPLAIN
-    if( p->pNext==0 ){
-      ExplainQueryPlanPop(pParse);
+    எனில்( p->pNext==0 ){
+      Explain_Query_Plan_எடு(pParse);
     }
 #endif
   }
@@ -3152,10 +3152,10 @@ multi_select_end:
   pDest->iSdst = dest.iSdst;
   pDest->nSdst = dest.nSdst;
   pDest->iSDParm2 = dest.iSDParm2;
-  if( pDelete ){
+  எனில்( pDelete ){
     sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pDelete);
   }
-  return rc;
+  திரும்பு rc;
 }
 #endif /* SQLITE_OMIT_COMPOUND_SELECT */
 
@@ -3163,11 +3163,11 @@ multi_select_end:
 ** Error message for when two or more terms of a compound select have different
 ** size result sets.
 */
-void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p){
-  if( p->selFlags & SF_Values ){
-    sqlite3ErrorMsg(pParse, "all VALUES must have the same number of terms");
-  }else{
-    sqlite3ErrorMsg(pParse, "SELECTs to the left and right of %s"
+வெறுமை sqlite3_Select_Wrong_இலக்கம்_Terms_Error(Parse *pParse, Select *p){
+  எனில்( p->selFlags & SF_மதிப்புகள் ){
+    sqlite3_Error_செய்தி(pParse, "all VALUES must have the same number of terms");
+  }இல்லையெனில்{
+    sqlite3_Error_செய்தி(pParse, "SELECTs to the left and right of %s"
       " do not have the same number of result columns",
       sqlite3SelectOpName(p->op));
   }
@@ -3193,70 +3193,70 @@ void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p){
 ** If the LIMIT found in p->iLimit is reached, jump immediately to
 ** iBreak.
 */
-static int generateOutputSubroutine(
+நிலையான முழு generateOutputSubroutine(
   Parse *pParse,          /* Parsing context */
   Select *p,              /* The SELECT statement */
   SelectDest *pIn,        /* Coroutine supplying data */
   SelectDest *pDest,      /* Where to send the data */
-  int regReturn,          /* The return address register */
-  int regPrev,            /* Previous result register.  No uniqueness if 0 */
-  KeyInfo *pKeyInfo,      /* For comparing with previous entry */
-  int iBreak              /* Jump here if we hit the LIMIT */
+  முழு regReturn,          /* The return address register */
+  முழு regPrev,            /* Previous result register.  No uniqueness if 0 */
+  சாவி_Info *p_சாவி_Info,      /* For comparing with previous entry */
+  முழு iBreak              /* Jump here if we hit the LIMIT */
 ){
   Vdbe *v = pParse->pVdbe;
-  int iContinue;
-  int addr;
+  முழு iContinue;
+  முழு addr;
 
-  assert( pIn->eDest==SRT_Coroutine );
+  ப்ரதிஜ்ஞா( pIn->eDest==SRT_Coroutine );
 
   addr = sqlite3VdbeCurrentAddr(v);
   iContinue = sqlite3VdbeMakeLabel(pParse);
 
   /* Suppress duplicates for UNION, EXCEPT, and INTERSECT
   */
-  if( regPrev ){
-    int addr1, addr2;
+  எனில்( regPrev ){
+    முழு addr1, addr2;
     addr1 = sqlite3VdbeAddOp1(v, OP_IfNot, regPrev); VdbeCoverage(v);
     addr2 = sqlite3VdbeAddOp4(v, OP_Compare, pIn->iSdst, regPrev+1, pIn->nSdst,
-                              (char*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
+                              (எழுத்து*)sqlite3_சாவி_Info_Ref(p_சாவி_Info), P4_KEYINFO);
     sqlite3VdbeAddOp3(v, OP_Jump, addr2+2, iContinue, addr2+2); VdbeCoverage(v);
     sqlite3VdbeJumpHere(v, addr1);
     sqlite3VdbeAddOp3(v, OP_Copy, pIn->iSdst, regPrev+1, pIn->nSdst-1);
     sqlite3VdbeAddOp2(v, OP_Integer, 1, regPrev);
   }
-  if( pParse->db->mallocFailed ) return 0;
+  எனில்( pParse->db->mallocFailed ) திரும்பு 0;
 
   /* Suppress the first OFFSET entries if there is an OFFSET clause
   */
   codeOffset(v, p->iOffset, iContinue);
 
-  switch( pDest->eDest ){
+  தேர்வு( pDest->eDest ){
     /* Store the result as data using a unique key.
     */
-    case SRT_Fifo:
-    case SRT_DistFifo:
-    case SRT_Table:
-    case SRT_EphemTab: {
-      int r1 = sqlite3GetTempReg(pParse);
-      int r2 = sqlite3GetTempReg(pParse);
-      int iParm = pDest->iSDParm;
+    நிலை SRT_Fifo:
+    நிலை SRT_DistFifo:
+    நிலை SRT_Table:
+    நிலை SRT_EphemTab: {
+      முழு r1 = sqlite3GetTempReg(pParse);
+      முழு r2 = sqlite3GetTempReg(pParse);
+      முழு iParm = pDest->iSDParm;
       testcase( pDest->eDest==SRT_Table );
       testcase( pDest->eDest==SRT_EphemTab );
       testcase( pDest->eDest==SRT_Fifo );
       testcase( pDest->eDest==SRT_DistFifo );
       sqlite3VdbeAddOp3(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst, r1);
-#if !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
+#எனில் !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
       /* A destination of SRT_Table and a non-zero iSDParm2 parameter means
       ** that this is an "UPDATE ... FROM" on a virtual table or view. In this
       ** case set the p5 parameter of the OP_MakeRecord to OPFLAG_NOCHNG_MAGIC.
       ** This does not affect operation in any way - it just allows MakeRecord
       ** to process OPFLAG_NOCHANGE values without an assert() failing. */
-      if( pDest->eDest==SRT_Table && pDest->iSDParm2 ){
+      எனில்( pDest->eDest==SRT_Table && pDest->iSDParm2 ){
         sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG_MAGIC);
       }
 #endif
 #ifndef SQLITE_OMIT_CTE
-      if( pDest->eDest==SRT_DistFifo ){
+      எனில்( pDest->eDest==SRT_DistFifo ){
         /* If the destination is DistFifo, then cursor (iParm+1) is open
         ** on an ephemeral index that is used to enforce uniqueness on the
         ** total result.  At this point, we are processing the setup portion
@@ -3264,45 +3264,45 @@ static int generateOutputSubroutine(
         ** guaranteed to be unique anyhow.  But we still need to populate the
         ** (iParm+1) cursor for use by the subsequent recursive phase.
         */
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm+1, r1,
+        sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm+1, r1,
                              pIn->iSdst, pIn->nSdst);
       }
 #endif
       sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, r2);
-      sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, r2);
+      sqlite3VdbeAddOp3(v, OP_செருகு, iParm, r1, r2);
       sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
       sqlite3ReleaseTempReg(pParse, r2);
       sqlite3ReleaseTempReg(pParse, r1);
-      break;
+      நிறுத்து;
     }
 
     /* If any row exist in the result set, record that fact and abort.
     */
-    case SRT_Exists: {
+    நிலை SRT_Exists: {
       sqlite3VdbeAddOp2(v, OP_Integer, 1, pDest->iSDParm);
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      நிறுத்து;
     }
 
 #ifndef SQLITE_OMIT_SUBQUERY
     /* If we are creating a set for an "expr IN (SELECT ...)".
     */
-    case SRT_Set: {
-      int r1;
+    நிலை SRT_Set: {
+      முழு r1;
       testcase( pIn->nSdst>1 );
       r1 = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp4(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst,
           r1, pDest->zAffSdst, pIn->nSdst);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pDest->iSDParm, r1,
+      sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, pDest->iSDParm, r1,
                            pIn->iSdst, pIn->nSdst);
-      if( pDest->iSDParm2>0 ){
-        assert( sqlite3CursorBloomable(pParse, pDest->iSDParm, pIn->nSdst) );
+      எனில்( pDest->iSDParm2>0 ){
+        ப்ரதிஜ்ஞா( sqlite3CursorBloomable(pParse, pDest->iSDParm, pIn->nSdst) );
         sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pDest->iSDParm2, 0,
                              pIn->iSdst, pIn->nSdst);
         ExplainQueryPlan((pParse, 0, "CREATE BLOOM FILTER"));
       }
       sqlite3ReleaseTempReg(pParse, r1);
-      break;
+      நிறுத்து;
     }
 
     /* If this is a scalar select that is part of an expression, then
@@ -3310,25 +3310,25 @@ static int generateOutputSubroutine(
     ** of the scan loop.  Note that the select might return multiple columns
     ** if it is the RHS of a row-value IN operator.
     */
-    case SRT_Mem: {
+    நிலை SRT_Mem: {
       testcase( pIn->nSdst>1 );
-      sqlite3ExprCodeMove(pParse, pIn->iSdst, pDest->iSDParm, pIn->nSdst);
+      sqlite3_கோவை_Code_Move(pParse, pIn->iSdst, pDest->iSDParm, pIn->nSdst);
       /* The LIMIT clause will jump out of the loop for us */
-      break;
+      நிறுத்து;
     }
 #endif /* #ifndef SQLITE_OMIT_SUBQUERY */
 
     /* The results are stored in a sequence of registers
     ** starting at pDest->iSdst.  Then the co-routine yields.
     */
-    case SRT_Coroutine: {
-      if( pDest->iSdst==0 ){
+    நிலை SRT_Coroutine: {
+      எனில்( pDest->iSdst==0 ){
         pDest->iSdst = sqlite3GetTempRange(pParse, pIn->nSdst);
         pDest->nSdst = pIn->nSdst;
       }
-      sqlite3ExprCodeMove(pParse, pIn->iSdst, pDest->iSdst, pIn->nSdst);
+      sqlite3_கோவை_Code_Move(pParse, pIn->iSdst, pDest->iSdst, pIn->nSdst);
       sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
-      break;
+      நிறுத்து;
     }
 
 #ifndef SQLITE_OMIT_CTE
@@ -3338,40 +3338,40 @@ static int generateOutputSubroutine(
     ** pSO->nExpr columns, then make sure all keys are unique by adding a
     ** final OP_Sequence column.  The last column is the record as a blob.
     */
-    case SRT_DistQueue:
-    case SRT_Queue: {
-      int nKey;
-      int r1, r2, r3, ii;
-      ExprList *pSO;
-      int iParm = pDest->iSDParm;
+    நிலை SRT_DistQueue:
+    நிலை SRT_Queue: {
+      முழு n_சாவி;
+      முழு r1, r2, r3, ii;
+      கோவை_List *pSO;
+      முழு iParm = pDest->iSDParm;
       pSO = pDest->pOrderBy;
-      assert( pSO );
-      nKey = pSO->nExpr;
+      ப்ரதிஜ்ஞா( pSO );
+      n_சாவி = pSO->n_கோவை;
       r1 = sqlite3GetTempReg(pParse);
-      r2 = sqlite3GetTempRange(pParse, nKey+2);
-      r3 = r2+nKey+1;
+      r2 = sqlite3GetTempRange(pParse, n_சாவி+2);
+      r3 = r2+n_சாவி+1;
 
       sqlite3VdbeAddOp3(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst, r3);
-      if( pDest->eDest==SRT_DistQueue ){
-        sqlite3VdbeAddOp2(v, OP_IdxInsert, iParm+1, r3);
+      எனில்( pDest->eDest==SRT_DistQueue ){
+        sqlite3VdbeAddOp2(v, OP_Idx_செருகு, iParm+1, r3);
       }
-      for(ii=0; ii<nKey; ii++){
+      க்கு(ii=0; ii<n_சாவி; ii++){
         sqlite3VdbeAddOp2(v, OP_SCopy,
                           pIn->iSdst + pSO->a[ii].u.x.iOrderByCol - 1,
                           r2+ii);
       }
-      sqlite3VdbeAddOp2(v, OP_Sequence, iParm, r2+nKey);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, r2, nKey+2, r1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, r2, nKey+2);
+      sqlite3VdbeAddOp2(v, OP_Sequence, iParm, r2+n_சாவி);
+      sqlite3VdbeAddOp3(v, OP_MakeRecord, r2, n_சாவி+2, r1);
+      sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, iParm, r1, r2, n_சாவி+2);
       sqlite3ReleaseTempReg(pParse, r1);
-      sqlite3ReleaseTempRange(pParse, r2, nKey+2);
-      break;
+      sqlite3ReleaseTempRange(pParse, r2, n_சாவி+2);
+      நிறுத்து;
     }
 #endif /* SQLITE_OMIT_CTE */
 
     /* Ignore the output */
-    case SRT_Discard: {
-      break;
+    நிலை SRT_Discard: {
+      நிறுத்து;
     }
 
     /* If none of the above, then the result destination must be
@@ -3381,16 +3381,16 @@ static int generateOutputSubroutine(
     ** Then the OP_ResultRow opcode is used to cause sqlite3_step() to
     ** return the next row of result.
     */
-    default: {
-      assert( pDest->eDest==SRT_Output );
+    இயல்பு: {
+      ப்ரதிஜ்ஞா( pDest->eDest==SRT_Output );
       sqlite3VdbeAddOp2(v, OP_ResultRow, pIn->iSdst, pIn->nSdst);
-      break;
+      நிறுத்து;
     }
   }
 
   /* Jump to the end of the loop if the LIMIT is reached.
   */
-  if( p->iLimit ){
+  எனில்( p->iLimit ){
     sqlite3VdbeAddOp2(v, OP_DecrJumpZero, p->iLimit, iBreak); VdbeCoverage(v);
   }
 
@@ -3399,7 +3399,7 @@ static int generateOutputSubroutine(
   sqlite3VdbeResolveLabel(v, iContinue);
   sqlite3VdbeAddOp1(v, OP_Return, regReturn);
 
-  return addr;
+  திரும்பு addr;
 }
 
 /*
@@ -3487,53 +3487,53 @@ static int generateOutputSubroutine(
 ** and AgtB jump to either Cmpr or to one of EofA or EofB.
 */
 #ifndef SQLITE_OMIT_COMPOUND_SELECT
-static int multiSelectByMerge(
+நிலையான முழு multiSelectByMerge(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int i, j;             /* Loop counters */
+  முழு i, j;             /* Loop counters */
   Select *pPrior;       /* Another SELECT immediately to our left */
   Select *pSplit;       /* Left-most SELECT in the right-hand group */
-  int nSelect;          /* Number of SELECT statements in the compound */
+  முழு nSelect;          /* Number of SELECT statements in the compound */
   Vdbe *v;              /* Generate code to this VDBE */
   SelectDest destA;     /* Destination for coroutine A */
   SelectDest destB;     /* Destination for coroutine B */
-  int regAddrA;         /* Address register for select-A coroutine */
-  int regAddrB;         /* Address register for select-B coroutine */
-  int addrSelectA;      /* Address of the select-A coroutine */
-  int addrSelectB;      /* Address of the select-B coroutine */
-  int regOutA;          /* Address register for the output-A subroutine */
-  int regOutB;          /* Address register for the output-B subroutine */
-  int addrOutA;         /* Address of the output-A subroutine */
-  int addrOutB = 0;     /* Address of the output-B subroutine */
-  int addrEofA;         /* Address of the select-A-exhausted subroutine */
-  int addrEofA_noB;     /* Alternate addrEofA if B is uninitialized */
-  int addrEofB;         /* Address of the select-B-exhausted subroutine */
-  int addrAltB;         /* Address of the A<B subroutine */
-  int addrAeqB;         /* Address of the A==B subroutine */
-  int addrAgtB;         /* Address of the A>B subroutine */
-  int regLimitA;        /* Limit register for select-A */
-  int regLimitB;        /* Limit register for select-A */
-  int regPrev;          /* A range of registers to hold previous output */
-  int savedLimit;       /* Saved value of p->iLimit */
-  int savedOffset;      /* Saved value of p->iOffset */
-  int labelCmpr;        /* Label for the start of the merge algorithm */
-  int labelEnd;         /* Label for the end of the overall SELECT stmt */
-  int addr1;            /* Jump instructions that get retargeted */
-  int op;               /* One of TK_ALL, TK_UNION, TK_EXCEPT, TK_INTERSECT */
-  KeyInfo *pKeyDup = 0; /* Comparison information for duplicate removal */
-  KeyInfo *pKeyMerge;   /* Comparison information for merging rows */
+  முழு regAddrA;         /* Address register for select-A coroutine */
+  முழு regAddrB;         /* Address register for select-B coroutine */
+  முழு addrSelectA;      /* Address of the select-A coroutine */
+  முழு addrSelectB;      /* Address of the select-B coroutine */
+  முழு regOutA;          /* Address register for the output-A subroutine */
+  முழு regOutB;          /* Address register for the output-B subroutine */
+  முழு addrOutA;         /* Address of the output-A subroutine */
+  முழு addrOutB = 0;     /* Address of the output-B subroutine */
+  முழு addrEofA;         /* Address of the select-A-exhausted subroutine */
+  முழு addrEofA_noB;     /* Alternate addrEofA if B is uninitialized */
+  முழு addrEofB;         /* Address of the select-B-exhausted subroutine */
+  முழு addrAltB;         /* Address of the A<B subroutine */
+  முழு addrAeqB;         /* Address of the A==B subroutine */
+  முழு addrAgtB;         /* Address of the A>B subroutine */
+  முழு regLimitA;        /* Limit register for select-A */
+  முழு regLimitB;        /* Limit register for select-A */
+  முழு regPrev;          /* A range of registers to hold previous output */
+  முழு savedLimit;       /* Saved value of p->iLimit */
+  முழு savedOffset;      /* Saved value of p->iOffset */
+  முழு labelCmpr;        /* Label for the start of the merge algorithm */
+  முழு labelEnd;         /* Label for the end of the overall SELECT stmt */
+  முழு addr1;            /* Jump instructions that get retargeted */
+  முழு op;               /* One of TK_ALL, TK_UNION, TK_EXCEPT, TK_INTERSECT */
+  சாவி_Info *p_சாவி_Dup = 0; /* Comparison information for duplicate removal */
+  சாவி_Info *p_சாவி_Merge;   /* Comparison information for merging rows */
   sqlite3 *db;          /* Database connection */
-  ExprList *pOrderBy;   /* The ORDER BY clause */
-  int nOrderBy;         /* Number of terms in the ORDER BY clause */
+  கோவை_List *pOrderBy;   /* The ORDER BY clause */
+  முழு nOrderBy;         /* Number of terms in the ORDER BY clause */
   u32 *aPermute;        /* Mapping from ORDER BY terms to result set columns */
 
-  assert( p->pOrderBy!=0 );
-  assert( pKeyDup==0 ); /* "Managed" code needs this.  Ticket #3382. */
+  ப்ரதிஜ்ஞா( p->pOrderBy!=0 );
+  ப்ரதிஜ்ஞா( p_சாவி_Dup==0 ); /* "Managed" code needs this.  Ticket #3382. */
   db = pParse->db;
   v = pParse->pVdbe;
-  assert( v!=0 );       /* Already thrown the error if VDBE alloc failed */
+  ப்ரதிஜ்ஞா( v!=0 );       /* Already thrown the error if VDBE alloc failed */
   labelEnd = sqlite3VdbeMakeLabel(pParse);
   labelCmpr = sqlite3VdbeMakeLabel(pParse);
 
@@ -3541,10 +3541,10 @@ static int multiSelectByMerge(
   /* Patch up the ORDER BY clause
   */
   op = p->op; 
-  assert( p->pPrior->pOrderBy==0 );
+  ப்ரதிஜ்ஞா( p->pPrior->pOrderBy==0 );
   pOrderBy = p->pOrderBy;
-  assert( pOrderBy );
-  nOrderBy = pOrderBy->nExpr;
+  ப்ரதிஜ்ஞா( pOrderBy );
+  nOrderBy = pOrderBy->n_கோவை;
 
   /* For operators other than UNION ALL we have to make sure that
   ** the ORDER BY clause covers every term of the result set.  Add
@@ -3552,20 +3552,20 @@ static int multiSelectByMerge(
   ** if any operator to the left is not UNION ALL, so that the ORDER BY
   ** carries the collation of every column into that sub-compound.
   */
-  for(pPrior=p; pPrior && pPrior->op==TK_ALL; pPrior=pPrior->pPrior){}
-  if( pPrior && pPrior->pPrior ){
-    for(i=1; db->mallocFailed==0 && i<=p->pEList->nExpr; i++){
-      struct ExprList_item *pItem;
-      for(j=0, pItem=pOrderBy->a; j<nOrderBy; j++, pItem++){
-        assert( pItem!=0 );
-        assert( pItem->u.x.iOrderByCol>0 );
-        if( pItem->u.x.iOrderByCol==i ) break;
+  க்கு(pPrior=p; pPrior && pPrior->op==TK_ALL; pPrior=pPrior->pPrior){}
+  எனில்( pPrior && pPrior->pPrior ){
+    க்கு(i=1; db->mallocFailed==0 && i<=p->pEList->n_கோவை; i++){
+      கட்டமைப்பு கோவை_List_item *pItem;
+      க்கு(j=0, pItem=pOrderBy->a; j<nOrderBy; j++, pItem++){
+        ப்ரதிஜ்ஞா( pItem!=0 );
+        ப்ரதிஜ்ஞா( pItem->u.x.iOrderByCol>0 );
+        எனில்( pItem->u.x.iOrderByCol==i ) நிறுத்து;
       }
-      if( j==nOrderBy ){
-        Expr *pNew = sqlite3ExprInt32(db, i);
-        if( pNew==0 ) return SQLITE_NOMEM_BKPT;
-        p->pOrderBy = pOrderBy = sqlite3ExprListAppend(pParse, pOrderBy, pNew);
-        if( pOrderBy ) pOrderBy->a[nOrderBy++].u.x.iOrderByCol = (u16)i;
+      எனில்( j==nOrderBy ){
+        கோவை *pNew = sqlite3_கோவை_Int32(db, i);
+        எனில்( pNew==0 ) திரும்பு SQLITE_NOMEM_BKPT;
+        p->pOrderBy = pOrderBy = sqlite3_கோவை_List_Append(pParse, pOrderBy, pNew);
+        எனில்( pOrderBy ) pOrderBy->a[nOrderBy++].u.x.iOrderByCol = (u16)i;
       }
     }
   }
@@ -3576,45 +3576,45 @@ static int multiSelectByMerge(
   ** ORDER BY clause terms so that when selectA and selectB are
   ** evaluated, they use the correct collation.
   */
-  aPermute = sqlite3DbMallocRawNN(db, sizeof(u32)*(nOrderBy + 1));
-  if( aPermute ){
-    struct ExprList_item *pItem;
-    int bKeep = 0;
+  aPermute = sqlite3DbMallocRawNN(db, அளவு(u32)*(nOrderBy + 1));
+  எனில்( aPermute ){
+    கட்டமைப்பு கோவை_List_item *pItem;
+    முழு bKeep = 0;
     aPermute[0] = nOrderBy;
-    for(i=1, pItem=pOrderBy->a; i<=nOrderBy; i++, pItem++){
-      assert( pItem!=0 );
-      assert( pItem->u.x.iOrderByCol>0 );
-      assert( pItem->u.x.iOrderByCol<=p->pEList->nExpr );
+    க்கு(i=1, pItem=pOrderBy->a; i<=nOrderBy; i++, pItem++){
+      ப்ரதிஜ்ஞா( pItem!=0 );
+      ப்ரதிஜ்ஞா( pItem->u.x.iOrderByCol>0 );
+      ப்ரதிஜ்ஞா( pItem->u.x.iOrderByCol<=p->pEList->n_கோவை );
       aPermute[i] = pItem->u.x.iOrderByCol - 1;
-      if( aPermute[i]!=(u32)i-1 ) bKeep = 1;
+      எனில்( aPermute[i]!=(u32)i-1 ) bKeep = 1;
     }
-     if( bKeep==0 ){
+     எனில்( bKeep==0 ){
       sqlite3DbFreeNN(db, aPermute);
       aPermute = 0;
     }
   }
-  pKeyMerge = multiSelectByMergeKeyInfo(pParse, p, 1);
+  p_சாவி_Merge = multi_Select_By_Merge_சாவி_Info(pParse, p, 1);
 
   /* Allocate a range of temporary registers and the KeyInfo needed
   ** for the logic that removes duplicate result rows when the
   ** operator is UNION, EXCEPT, or INTERSECT (but not UNION ALL).
   */
-  if( op==TK_ALL ){
+  எனில்( op==TK_ALL ){
     regPrev = 0;
-  }else{
-    int nExpr = p->pEList->nExpr;
-    assert( nOrderBy>=nExpr || db->mallocFailed );
+  }இல்லையெனில்{
+    முழு n_கோவை = p->pEList->n_கோவை;
+    ப்ரதிஜ்ஞா( nOrderBy>=n_கோவை || db->mallocFailed );
     regPrev = pParse->nMem+1;
-    pParse->nMem += nExpr+1;
+    pParse->nMem += n_கோவை+1;
     sqlite3VdbeAddOp2(v, OP_Integer, 0, regPrev);
-    pKeyDup = sqlite3KeyInfoAlloc(db, nExpr, 1);
-    if( pKeyDup ){
-      assert( sqlite3KeyInfoIsWriteable(pKeyDup) );
+    p_சாவி_Dup = sqlite3_சாவி_Info_Alloc(db, n_கோவை, 1);
+    எனில்( p_சாவி_Dup ){
+      ப்ரதிஜ்ஞா( sqlite3_சாவி_Info_Is_Writeable(p_சாவி_Dup) );
       /* Use the ORDER BY collations, not multiSelectCollSeq(p), because
       ** p might be just one part of a larger compound, in which case
       ** the ORDER BY carries the COLLATE of the larger compound. */
-      for(i=0; ALWAYS(pKeyMerge) && i<nOrderBy; i++){
-        pKeyDup->aColl[pOrderBy->a[i].u.x.iOrderByCol-1] = pKeyMerge->aColl[i];
+      க்கு(i=0; ALWAYS(p_சாவி_Merge) && i<nOrderBy; i++){
+        p_சாவி_Dup->aColl[pOrderBy->a[i].u.x.iOrderByCol-1] = p_சாவி_Merge->aColl[i];
       }
     }
   }
@@ -3622,42 +3622,42 @@ static int multiSelectByMerge(
   /* Separate the left and the right query from one another
   */
   nSelect = 1;
-  if( (op==TK_ALL || op==TK_UNION)
+  எனில்( (op==TK_ALL || op==TK_UNION)
    && OptimizationEnabled(db, SQLITE_BalancedMerge)
   ){
-    for(pSplit=p; pSplit->pPrior!=0 && pSplit->op==op; pSplit=pSplit->pPrior){
+    க்கு(pSplit=p; pSplit->pPrior!=0 && pSplit->op==op; pSplit=pSplit->pPrior){
       nSelect++;
-      assert( pSplit->pPrior->pNext==pSplit );
+      ப்ரதிஜ்ஞா( pSplit->pPrior->pNext==pSplit );
     }
   }
-  if( nSelect<=3 ){
+  எனில்( nSelect<=3 ){
     pSplit = p;
-  }else{
+  }இல்லையெனில்{
     pSplit = p;
-    for(i=2; i<nSelect; i+=2){ pSplit = pSplit->pPrior; }
+    க்கு(i=2; i<nSelect; i+=2){ pSplit = pSplit->pPrior; }
   }
   pPrior = pSplit->pPrior;
-  assert( pPrior!=0 );
+  ப்ரதிஜ்ஞா( pPrior!=0 );
   pSplit->pPrior = 0;
   pPrior->pNext = 0;
-  assert( p->pOrderBy == pOrderBy );
-  assert( pOrderBy!=0 || db->mallocFailed );
-  pPrior->pOrderBy = sqlite3ExprListDup(pParse->db, pOrderBy, 0);
+  ப்ரதிஜ்ஞா( p->pOrderBy == pOrderBy );
+  ப்ரதிஜ்ஞா( pOrderBy!=0 || db->mallocFailed );
+  pPrior->pOrderBy = sqlite3_கோவை_List_Dup(pParse->db, pOrderBy, 0);
   sqlite3ResolveOrderGroupBy(pParse, p, p->pOrderBy, "ORDER");
   sqlite3ResolveOrderGroupBy(pParse, pPrior, pPrior->pOrderBy, "ORDER");
 
   /* Compute the limit registers */
   computeLimitRegisters(pParse, p, labelEnd);
-  if( p->iLimit && (op==TK_ALL || unionWithLimitOne(db,p)) ){
+  எனில்( p->iLimit && (op==TK_ALL || unionWithLimitOne(db,p)) ){
     regLimitA = ++pParse->nMem;
     regLimitB = ++pParse->nMem;
     sqlite3VdbeAddOp2(v, OP_Copy, p->iOffset ? p->iOffset+1 : p->iLimit,
                                   regLimitA);
     sqlite3VdbeAddOp2(v, OP_Copy, regLimitA, regLimitB);
-  }else{
+  }இல்லையெனில்{
     regLimitA = regLimitB = 0;
   }
-  sqlite3ExprDelete(db, p->pLimit);
+  sqlite3_கோவை_Delete(db, p->pLimit);
   p->pLimit = 0;
 
   regAddrA = ++pParse->nMem;
@@ -3703,25 +3703,25 @@ static int multiSelectByMerge(
   VdbeNoopComment((v, "SUBR: out-A"));
   addrOutA = generateOutputSubroutine(pParse,
                  p, &destA, pDest, regOutA,
-                 regPrev, pKeyDup, labelEnd);
+                 regPrev, p_சாவி_Dup, labelEnd);
  
   /* Generate a subroutine that outputs the current row of the B
   ** select as the next output row of the compound select.
   */
-  if( op==TK_ALL || op==TK_UNION ){
+  எனில்( op==TK_ALL || op==TK_UNION ){
     VdbeNoopComment((v, "SUBR: out-B"));
     addrOutB = generateOutputSubroutine(pParse,
                  p, &destB, pDest, regOutB,
-                 regPrev, pKeyDup, labelEnd);
+                 regPrev, p_சாவி_Dup, labelEnd);
   }
-  sqlite3KeyInfoUnref(pKeyDup);
+  sqlite3_சாவி_Info_Unref(p_சாவி_Dup);
 
   /* Generate a subroutine to run when the results from select A
   ** are exhausted and only data in select B remains.
   */
-  if( op==TK_EXCEPT || op==TK_INTERSECT ){
+  எனில்( op==TK_EXCEPT || op==TK_INTERSECT ){
     addrEofA_noB = addrEofA = labelEnd;
-  }else{ 
+  }இல்லையெனில்{ 
     VdbeNoopComment((v, "SUBR: eof-A"));
     addrEofA = sqlite3VdbeAddOp2(v, OP_Gosub, regOutB, addrOutB);
     VdbeComment((v, "out-B"));
@@ -3735,10 +3735,10 @@ static int multiSelectByMerge(
   /* Generate a subroutine to run when the results from select B
   ** are exhausted and only data in select A remains.
   */
-  if( op==TK_INTERSECT ){
+  எனில்( op==TK_INTERSECT ){
     addrEofB = addrEofA;
-    if( p->nSelectRow > pPrior->nSelectRow ) p->nSelectRow = pPrior->nSelectRow;
-  }else{ 
+    எனில்( p->nSelectRow > pPrior->nSelectRow ) p->nSelectRow = pPrior->nSelectRow;
+  }இல்லையெனில்{ 
     VdbeNoopComment((v, "SUBR: eof-B"));
     addrEofB = sqlite3VdbeAddOp2(v, OP_Gosub, regOutA, addrOutA);
     VdbeComment((v, "out-A"));
@@ -3757,25 +3757,25 @@ static int multiSelectByMerge(
 
   /* Generate code to handle the case of A==B
   */
-  if( op==TK_ALL ){
+  எனில்( op==TK_ALL ){
     addrAeqB = addrAltB;
-  }else if( op==TK_INTERSECT ){
+  }இல்லையெனில் எனில்( op==TK_INTERSECT ){
     addrAeqB = addrAltB;
     addrAltB++;
-  }else{
+  }இல்லையெனில்{
     addrAeqB = addrAltB + 1;
   }
 
   /* Generate code to handle the case of A>B
   */
   addrAgtB = sqlite3VdbeCurrentAddr(v);
-  if( op==TK_ALL || op==TK_UNION ){
+  எனில்( op==TK_ALL || op==TK_UNION ){
     sqlite3VdbeAddOp2(v, OP_Gosub, regOutB, addrOutB);
     VdbeComment((v, "out-B"));
     sqlite3VdbeAddOp2(v, OP_Yield, regAddrB, addrEofB); VdbeCoverage(v);
     VdbeComment((v, "next-B"));
     sqlite3VdbeGoto(v, labelCmpr);
-  }else{
+  }இல்லையெனில்{
     addrAgtB++; /* Just do next-B.  Might as well use the next-B call
                 ** in the next code block */
   }
@@ -3791,13 +3791,13 @@ static int multiSelectByMerge(
 
   /* Implement the main merge loop
   */
-  if( aPermute!=0 ){
-    sqlite3VdbeAddOp4(v, OP_Permutation, 0, 0, 0, (char*)aPermute, P4_INTARRAY);
+  எனில்( aPermute!=0 ){
+    sqlite3VdbeAddOp4(v, OP_Permutation, 0, 0, 0, (எழுத்து*)aPermute, P4_INTARRAY);
   }
   sqlite3VdbeResolveLabel(v, labelCmpr);
   sqlite3VdbeAddOp4(v, OP_Compare, destA.iSdst, destB.iSdst, nOrderBy,
-                         (char*)pKeyMerge, P4_KEYINFO);
-  if( aPermute!=0 ){
+                         (எழுத்து*)p_சாவி_Merge, P4_KEYINFO);
+  எனில்( aPermute!=0 ){
     sqlite3VdbeChangeP5(v, OPFLAG_PERMUTE);
   }
   sqlite3VdbeAddOp3(v, OP_Jump, addrAltB, addrAeqB, addrAgtB);
@@ -3812,22 +3812,22 @@ static int multiSelectByMerge(
 
   /* Make arrangements to free the 2nd and subsequent arms of the compound
   ** after the parse has finished */
-  if( pSplit->pPrior ){
+  எனில்( pSplit->pPrior ){
     sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pSplit->pPrior);
   }
   pSplit->pPrior = pPrior;
   pPrior->pNext = pSplit;
-  sqlite3ExprListDelete(db, pPrior->pOrderBy);
+  sqlite3_கோவை_List_Delete(db, pPrior->pOrderBy);
   pPrior->pOrderBy = 0;
 
   /*** TBD:  Insert subroutine calls to close cursors on incomplete
   **** subqueries ****/
-  ExplainQueryPlanPop(pParse);
-  return pParse->nErr!=0;
+  Explain_Query_Plan_எடு(pParse);
+  திரும்பு pParse->nErr!=0;
 }
 #endif
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 
 /* An instance of the SubstContext object describes an substitution edit
 ** to be performed on a parse tree.
@@ -3863,19 +3863,19 @@ static int multiSelectByMerge(
 ** "m" value of the subquery so that a NULL will be loaded instead of 59
 ** when processing a non-matched row of the left.
 */
-typedef struct SubstContext {
+வகைவரை கட்டமைப்பு SubstContext {
   Parse *pParse;            /* The parsing context */
-  int iTable;               /* Replace references to this table */
-  int iNewTable;            /* New table number */
-  int isOuterJoin;          /* Add TK_IF_NULL_ROW opcodes on each replacement */
-  int nSelDepth;            /* Depth of sub-query recursion.  Top==1 */
-  ExprList *pEList;         /* Replacement expressions */
-  ExprList *pCList;         /* Collation sequences for replacement expr */
+  முழு iTable;               /* Replace references to this table */
+  முழு iNewTable;            /* New table number */
+  முழு isOuterJoin;          /* Add TK_IF_NULL_ROW opcodes on each replacement */
+  முழு nSelDepth;            /* Depth of sub-query recursion.  Top==1 */
+  கோவை_List *pEList;         /* Replacement expressions */
+  கோவை_List *pCList;         /* Collation sequences for replacement expr */
 } SubstContext;
 
 /* Forward Declarations */
-static void substExprList(SubstContext*, ExprList*);
-static void substSelect(SubstContext*, Select*, int);
+நிலையான வெறுமை subst_கோவை_List(SubstContext*, கோவை_List*);
+நிலையான வெறுமை substSelect(SubstContext*, Select*, முழு);
 
 /*
 ** Scan through the expression pExpr.  Replace every reference to
@@ -3890,155 +3890,155 @@ static void substSelect(SubstContext*, Select*, int);
 ** changes to pExpr so that it refers directly to the source table
 ** of the subquery rather the result set of the subquery.
 */
-static Expr *substExpr(
+நிலையான கோவை *subst_கோவை(
   SubstContext *pSubst,  /* Description of the substitution */
-  Expr *pExpr            /* Expr in which substitution occurs */
+  கோவை *p_கோவை            /* Expr in which substitution occurs */
 ){
-  if( pExpr==0 ) return 0;
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)
-   && pExpr->w.iJoin==pSubst->iTable
+  எனில்( p_கோவை==0 ) திரும்பு 0;
+  எனில்( கோவை_Has_Property(p_கோவை, EP_OuterON|EP_InnerON)
+   && p_கோவை->w.iJoin==pSubst->iTable
   ){
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    pExpr->w.iJoin = pSubst->iNewTable;
+    testcase( கோவை_Has_Property(p_கோவை, EP_InnerON) );
+    p_கோவை->w.iJoin = pSubst->iNewTable;
   }
-  if( pExpr->op==TK_COLUMN
-   && pExpr->iTable==pSubst->iTable
-   && !ExprHasProperty(pExpr, EP_FixedCol)
+  எனில்( p_கோவை->op==TK_COLUMN
+   && p_கோவை->iTable==pSubst->iTable
+   && !கோவை_Has_Property(p_கோவை, EP_FixedCol)
   ){
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-    if( pExpr->iColumn<0 ){
-      pExpr->op = TK_NULL;
-    }else
+    எனில்( p_கோவை->iColumn<0 ){
+      p_கோவை->op = TK_NULL;
+    }இல்லையெனில்
 #endif
     {
-      Expr *pNew;
-      int iColumn;
-      Expr *pCopy;
-      Expr ifNullRow;
-      iColumn = pExpr->iColumn;
-      assert( iColumn>=0 );
-      assert( pSubst->pEList!=0 && iColumn<pSubst->pEList->nExpr );
-      assert( pExpr->pRight==0 );
-      pCopy = pSubst->pEList->a[iColumn].pExpr;
-      if( sqlite3ExprIsVector(pCopy) ){
-        sqlite3VectorErrorMsg(pSubst->pParse, pCopy);
-      }else{
+      கோவை *pNew;
+      முழு iColumn;
+      கோவை *pCopy;
+      கோவை ifNullRow;
+      iColumn = p_கோவை->iColumn;
+      ப்ரதிஜ்ஞா( iColumn>=0 );
+      ப்ரதிஜ்ஞா( pSubst->pEList!=0 && iColumn<pSubst->pEList->n_கோவை );
+      ப்ரதிஜ்ஞா( p_கோவை->p_வலது==0 );
+      pCopy = pSubst->pEList->a[iColumn].p_கோவை;
+      எனில்( sqlite3_கோவை_Is_Vector(pCopy) ){
+        sqlite3_Vector_Error_செய்தி(pSubst->pParse, pCopy);
+      }இல்லையெனில்{
         sqlite3 *db = pSubst->pParse->db;
-        if( pSubst->isOuterJoin
+        எனில்( pSubst->isOuterJoin
          && (pCopy->op!=TK_COLUMN || pCopy->iTable!=pSubst->iNewTable)
         ){
-          memset(&ifNullRow, 0, sizeof(ifNullRow));
+          memset(&ifNullRow, 0, அளவு(ifNullRow));
           ifNullRow.op = TK_IF_NULL_ROW;
-          ifNullRow.pLeft = pCopy;
+          ifNullRow.p_இடது = pCopy;
           ifNullRow.iTable = pSubst->iNewTable;
           ifNullRow.iColumn = -99;
           ifNullRow.flags = EP_IfNullRow;
           pCopy = &ifNullRow;
         }
-        testcase( ExprHasProperty(pCopy, EP_Subquery) );
-        pNew = sqlite3ExprDup(db, pCopy, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pNew);
-          return pExpr;
+        testcase( கோவை_Has_Property(pCopy, EP_Subquery) );
+        pNew = sqlite3_கோவை_Dup(db, pCopy, 0);
+        எனில்( db->mallocFailed ){
+          sqlite3_கோவை_Delete(db, pNew);
+          திரும்பு p_கோவை;
         }
-        if( pSubst->isOuterJoin ){
-          ExprSetProperty(pNew, EP_CanBeNull);
+        எனில்( pSubst->isOuterJoin ){
+          கோவை_Set_Property(pNew, EP_CanBeNull);
         }
-        if( pNew->op==TK_TRUEFALSE ){
-          pNew->u.iValue = sqlite3ExprTruthValue(pNew);
+        எனில்( pNew->op==TK_TRUEFALSE ){
+          pNew->u.i_மதிப்பு = sqlite3_கோவை_Truth_மதிப்பு(pNew);
           pNew->op = TK_INTEGER;
-          ExprSetProperty(pNew, EP_IntValue);
+          கோவை_Set_Property(pNew, EP_Int_மதிப்பு);
         }
 
         /* Ensure that the expression now has an implicit collation sequence,
         ** just as it did when it was a column of a view or sub-query. */
         {
-          CollSeq *pNat = sqlite3ExprCollSeq(pSubst->pParse, pNew);
-          CollSeq *pColl = sqlite3ExprCollSeq(pSubst->pParse,
-                pSubst->pCList->a[iColumn].pExpr
+          CollSeq *pNat = sqlite3_கோவை_Coll_Seq(pSubst->pParse, pNew);
+          CollSeq *pColl = sqlite3_கோவை_Coll_Seq(pSubst->pParse,
+                pSubst->pCList->a[iColumn].p_கோவை
           );
-          if( pNat!=pColl || (pNew->op!=TK_COLUMN && pNew->op!=TK_COLLATE) ){
-            pNew = sqlite3ExprAddCollateString(pSubst->pParse, pNew,
+          எனில்( pNat!=pColl || (pNew->op!=TK_COLUMN && pNew->op!=TK_COLLATE) ){
+            pNew = sqlite3_கோவை_Add_Collate_String(pSubst->pParse, pNew,
                 (pColl ? pColl->zName : "BINARY")
             );
           }
         }
-        ExprClearProperty(pNew, EP_Collate);
-        if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) ){
-          sqlite3SetJoinExpr(pNew, pExpr->w.iJoin,
-                             pExpr->flags & (EP_OuterON|EP_InnerON));
+        கோவை_Clear_Property(pNew, EP_Collate);
+        எனில்( கோவை_Has_Property(p_கோவை,EP_OuterON|EP_InnerON) ){
+          sqlite3_Set_Join_கோவை(pNew, p_கோவை->w.iJoin,
+                             p_கோவை->flags & (EP_OuterON|EP_InnerON));
         }
-        sqlite3ExprDelete(db, pExpr);
-        pExpr = pNew;
+        sqlite3_கோவை_Delete(db, p_கோவை);
+        p_கோவை = pNew;
       }
     }
-  }else{
-    if( pExpr->op==TK_IF_NULL_ROW && pExpr->iTable==pSubst->iTable ){
-      pExpr->iTable = pSubst->iNewTable;
+  }இல்லையெனில்{
+    எனில்( p_கோவை->op==TK_IF_NULL_ROW && p_கோவை->iTable==pSubst->iTable ){
+      p_கோவை->iTable = pSubst->iNewTable;
     }
-    if( pExpr->op==TK_AGG_FUNCTION && pExpr->op2>=pSubst->nSelDepth ){
-      pExpr->op2--;
+    எனில்( p_கோவை->op==TK_AGG_FUNCTION && p_கோவை->op2>=pSubst->nSelDepth ){
+      p_கோவை->op2--;
     }
-    pExpr->pLeft = substExpr(pSubst, pExpr->pLeft);
-    pExpr->pRight = substExpr(pSubst, pExpr->pRight);
-    if( ExprUseXSelect(pExpr) ){
-      substSelect(pSubst, pExpr->x.pSelect, 1);
-    }else{
-      substExprList(pSubst, pExpr->x.pList);
+    p_கோவை->p_இடது = subst_கோவை(pSubst, p_கோவை->p_இடது);
+    p_கோவை->p_வலது = subst_கோவை(pSubst, p_கோவை->p_வலது);
+    எனில்( கோவை_Use_XSelect(p_கோவை) ){
+      substSelect(pSubst, p_கோவை->x.pSelect, 1);
+    }இல்லையெனில்{
+      subst_கோவை_List(pSubst, p_கோவை->x.pList);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
-      Window *pWin = pExpr->y.pWin;
-      pWin->pFilter = substExpr(pSubst, pWin->pFilter);
-      substExprList(pSubst, pWin->pPartition);
-      substExprList(pSubst, pWin->pOrderBy);
+    எனில்( கோவை_Has_Property(p_கோவை, EP_WinFunc) ){
+      Window *pWin = p_கோவை->y.pWin;
+      pWin->pFilter = subst_கோவை(pSubst, pWin->pFilter);
+      subst_கோவை_List(pSubst, pWin->pPartition);
+      subst_கோவை_List(pSubst, pWin->pOrderBy);
     }
 #endif
   }
-  return pExpr;
+  திரும்பு p_கோவை;
 }
-static void substExprList(
+நிலையான வெறுமை subst_கோவை_List(
   SubstContext *pSubst, /* Description of the substitution */
-  ExprList *pList       /* List to scan and in which to make substitutes */
+  கோவை_List *pList       /* List to scan and in which to make substitutes */
 ){
-  int i;
-  if( pList==0 ) return;
-  for(i=0; i<pList->nExpr; i++){
-    pList->a[i].pExpr = substExpr(pSubst, pList->a[i].pExpr);
+  முழு i;
+  எனில்( pList==0 ) திரும்பு;
+  க்கு(i=0; i<pList->n_கோவை; i++){
+    pList->a[i].p_கோவை = subst_கோவை(pSubst, pList->a[i].p_கோவை);
   }
 }
-static void substSelect(
+நிலையான வெறுமை substSelect(
   SubstContext *pSubst, /* Description of the substitution */
   Select *p,            /* SELECT statement in which to make substitutions */
-  int doPrior           /* Do substitutes on p->pPrior too */
+  முழு doPrior           /* Do substitutes on p->pPrior too */
 ){
   SrcList *pSrc;
   SrcItem *pItem;
-  int i;
-  if( !p ) return;
+  முழு i;
+  எனில்( !p ) திரும்பு;
   pSubst->nSelDepth++;
-  do{
-    substExprList(pSubst, p->pEList);
-    substExprList(pSubst, p->pGroupBy);
-    substExprList(pSubst, p->pOrderBy);
-    p->pHaving = substExpr(pSubst, p->pHaving);
-    p->pWhere = substExpr(pSubst, p->pWhere);
+  செய்{
+    subst_கோவை_List(pSubst, p->pEList);
+    subst_கோவை_List(pSubst, p->pGroupBy);
+    subst_கோவை_List(pSubst, p->pOrderBy);
+    p->pHaving = subst_கோவை(pSubst, p->pHaving);
+    p->pWhere = subst_கோவை(pSubst, p->pWhere);
     pSrc = p->pSrc;
-    assert( pSrc!=0 );
-    for(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
-      if( pItem->fg.isSubquery ){
+    ப்ரதிஜ்ஞா( pSrc!=0 );
+    க்கு(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
+      எனில்( pItem->fg.isSubquery ){
         substSelect(pSubst, pItem->u4.pSubq->pSelect, 1);
       }
-      if( pItem->fg.isTabFunc ){
-        substExprList(pSubst, pItem->u1.pFuncArg);
+      எனில்( pItem->fg.isTabFunc ){
+        subst_கோவை_List(pSubst, pItem->u1.pFuncArg);
       }
     }
-  }while( doPrior && (p = p->pPrior)!=0 );
+  }போது( doPrior && (p = p->pPrior)!=0 );
   pSubst->nSelDepth--;
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** pSelect is a SELECT statement and pSrcItem is one item in the FROM
 ** clause of that SELECT.
@@ -4046,23 +4046,23 @@ static void substSelect(
 ** This routine scans the entire SELECT statement and recomputes the
 ** pSrcItem->colUsed mask.
 */
-static int recomputeColumnsUsedExpr(Walker *pWalker, Expr *pExpr){
+நிலையான முழு recompute_Columns_Used_கோவை(Walker *pWalker, கோவை *p_கோவை){
   SrcItem *pItem;
-  if( pExpr->op!=TK_COLUMN ) return WRC_Continue;
+  எனில்( p_கோவை->op!=TK_COLUMN ) திரும்பு WRC_Continue;
   pItem = pWalker->u.pSrcItem;
-  if( pItem->iCursor!=pExpr->iTable ) return WRC_Continue;
-  if( pExpr->iColumn<0 ) return WRC_Continue;
-  pItem->colUsed |= sqlite3ExprColUsed(pExpr);
-  return WRC_Continue;
+  எனில்( pItem->iCursor!=p_கோவை->iTable ) திரும்பு WRC_Continue;
+  எனில்( p_கோவை->iColumn<0 ) திரும்பு WRC_Continue;
+  pItem->colUsed |= sqlite3_கோவை_Col_Used(p_கோவை);
+  திரும்பு WRC_Continue;
 }
-static void recomputeColumnsUsed(
+நிலையான வெறுமை recomputeColumnsUsed(
   Select *pSelect,                 /* The complete SELECT statement */
   SrcItem *pSrcItem                /* Which FROM clause item to recompute */
 ){
   Walker w;
-  if( NEVER(pSrcItem->pSTab==0) ) return;
-  memset(&w, 0, sizeof(w));
-  w.xExprCallback = recomputeColumnsUsedExpr;
+  எனில்( NEVER(pSrcItem->pSTab==0) ) திரும்பு;
+  memset(&w, 0, அளவு(w));
+  w.x_கோவை_Callback = recompute_Columns_Used_கோவை;
   w.xSelectCallback = sqlite3SelectWalkNoop;
   w.u.pSrcItem = pSrcItem;
   pSrcItem->colUsed = 0;
@@ -4070,7 +4070,7 @@ static void recomputeColumnsUsed(
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** Assign new cursor numbers to each of the items in pSrc. For each
 ** new cursor number assigned, set an entry in the aCsrMap[] array
@@ -4084,24 +4084,24 @@ static void recomputeColumnsUsed(
 ** If pSrc contains any sub-selects, call this routine recursively
 ** on the FROM clause of each such sub-select, with iExcept set to -1.
 */
-static void srclistRenumberCursors(
+நிலையான வெறுமை srclistRenumberCursors(
   Parse *pParse,                  /* Parse context */
-  int *aCsrMap,                   /* Array to store cursor mappings in */
+  முழு *aCsrMap,                   /* Array to store cursor mappings in */
   SrcList *pSrc,                  /* FROM clause to renumber */
-  int iExcept                     /* FROM clause item to skip */
+  முழு iExcept                     /* FROM clause item to skip */
 ){
-  int i;
+  முழு i;
   SrcItem *pItem;
-  for(i=0, pItem=pSrc->a; i<pSrc->nSrc; i++, pItem++){
-    if( i!=iExcept ){
+  க்கு(i=0, pItem=pSrc->a; i<pSrc->nSrc; i++, pItem++){
+    எனில்( i!=iExcept ){
       Select *p;
-      assert( pItem->iCursor < aCsrMap[0] );
-      if( !pItem->fg.isRecursive || aCsrMap[pItem->iCursor+1]==0 ){
+      ப்ரதிஜ்ஞா( pItem->iCursor < aCsrMap[0] );
+      எனில்( !pItem->fg.isRecursive || aCsrMap[pItem->iCursor+1]==0 ){
         aCsrMap[pItem->iCursor+1] = pParse->nTab++;
       }
       pItem->iCursor = aCsrMap[pItem->iCursor+1];
-      if( pItem->fg.isSubquery ){
-        for(p=pItem->u4.pSubq->pSelect; p; p=p->pPrior){
+      எனில்( pItem->fg.isSubquery ){
+        க்கு(p=pItem->u4.pSubq->pSelect; p; p=p->pPrior){
           srclistRenumberCursors(pParse, aCsrMap, p->pSrc, -1);
         }
       }
@@ -4112,10 +4112,10 @@ static void srclistRenumberCursors(
 /*
 ** *piCursor is a cursor number.  Change it if it needs to be mapped.
 */
-static void renumberCursorDoMapping(Walker *pWalker, int *piCursor){
-  int *aCsrMap = pWalker->u.aiCol;
-  int iCsr = *piCursor;
-  if( iCsr < aCsrMap[0] && aCsrMap[iCsr+1]>0 ){
+நிலையான வெறுமை renumberCursorDoMapping(Walker *pWalker, முழு *piCursor){
+  முழு *aCsrMap = pWalker->u.aiCol;
+  முழு iCsr = *piCursor;
+  எனில்( iCsr < aCsrMap[0] && aCsrMap[iCsr+1]>0 ){
     *piCursor = aCsrMap[iCsr+1];
   }
 }
@@ -4124,17 +4124,17 @@ static void renumberCursorDoMapping(Walker *pWalker, int *piCursor){
 ** Expression walker callback used by renumberCursors() to update
 ** Expr objects to match newly assigned cursor numbers.
 */
-static int renumberCursorsCb(Walker *pWalker, Expr *pExpr){
-  int op = pExpr->op;
-  if( op==TK_COLUMN || op==TK_IF_NULL_ROW ){
-    renumberCursorDoMapping(pWalker, &pExpr->iTable);
+நிலையான முழு renumberCursorsCb(Walker *pWalker, கோவை *p_கோவை){
+  முழு op = p_கோவை->op;
+  எனில்( op==TK_COLUMN || op==TK_IF_NULL_ROW ){
+    renumberCursorDoMapping(pWalker, &p_கோவை->iTable);
   }
-  if( ExprHasProperty(pExpr, (EP_OuterON|EP_InnerON)) ){
-    testcase( ExprHasProperty(pExpr, EP_OuterON) );
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    renumberCursorDoMapping(pWalker, &pExpr->w.iJoin);
+  எனில்( கோவை_Has_Property(p_கோவை, (EP_OuterON|EP_InnerON)) ){
+    testcase( கோவை_Has_Property(p_கோவை, EP_OuterON) );
+    testcase( கோவை_Has_Property(p_கோவை, EP_InnerON) );
+    renumberCursorDoMapping(pWalker, &p_கோவை->w.iJoin);
   }
-  return WRC_Continue;
+  திரும்பு WRC_Continue;
 }
 
 /*
@@ -4155,17 +4155,17 @@ static int renumberCursorsCb(Walker *pWalker, Expr *pExpr){
 **     FROM clauses of the select statement as described above are
 **     initialized to zero.
 */
-static void renumberCursors(
+நிலையான வெறுமை renumberCursors(
   Parse *pParse,                  /* Parse context */
   Select *p,                      /* Select to renumber cursors within */
-  int iExcept,                    /* FROM clause item to skip */
-  int *aCsrMap                    /* Working space */
+  முழு iExcept,                    /* FROM clause item to skip */
+  முழு *aCsrMap                    /* Working space */
 ){
   Walker w;
   srclistRenumberCursors(pParse, aCsrMap, p->pSrc, iExcept);
-  memset(&w, 0, sizeof(w));
+  memset(&w, 0, அளவு(w));
   w.u.aiCol = aCsrMap;
-  w.xExprCallback = renumberCursorsCb;
+  w.x_கோவை_Callback = renumberCursorsCb;
   w.xSelectCallback = sqlite3SelectWalkNoop;
   sqlite3WalkSelect(&w, p);
 }
@@ -4176,42 +4176,42 @@ static void renumberCursors(
 ** expression list. Otherwise, return a pointer to the expression list
 ** of the leftmost SELECT in the compound.
 */
-static ExprList *findLeftmostExprlist(Select *pSel){
-  while( pSel->pPrior ){
+நிலையான கோவை_List *findLeftmostExprlist(Select *pSel){
+  போது( pSel->pPrior ){
     pSel = pSel->pPrior;
   }
-  return pSel->pEList;
+  திரும்பு pSel->pEList;
 }
 
 /*
 ** Return true if any of the result-set columns in the compound query
 ** have incompatible affinities on one or more arms of the compound.
 */
-static int compoundHasDifferentAffinities(Select *p){
-  int ii;
-  ExprList *pList;
-  assert( p!=0 );
-  assert( p->pEList!=0 );
-  assert( p->pPrior!=0 );
+நிலையான முழு compoundHasDifferentAffinities(Select *p){
+  முழு ii;
+  கோவை_List *pList;
+  ப்ரதிஜ்ஞா( p!=0 );
+  ப்ரதிஜ்ஞா( p->pEList!=0 );
+  ப்ரதிஜ்ஞா( p->pPrior!=0 );
   pList = p->pEList;
-  for(ii=0; ii<pList->nExpr; ii++){
-    char aff;
+  க்கு(ii=0; ii<pList->n_கோவை; ii++){
+    எழுத்து aff;
     Select *pSub1;
-    assert( pList->a[ii].pExpr!=0 );
-    aff = sqlite3ExprAffinity(pList->a[ii].pExpr);
-    for(pSub1=p->pPrior; pSub1; pSub1=pSub1->pPrior){
-      assert( pSub1->pEList!=0 );
-      assert( pSub1->pEList->nExpr>ii );
-      assert( pSub1->pEList->a[ii].pExpr!=0 );
-      if( sqlite3ExprAffinity(pSub1->pEList->a[ii].pExpr)!=aff ){
-        return 1;
+    ப்ரதிஜ்ஞா( pList->a[ii].p_கோவை!=0 );
+    aff = sqlite3_கோவை_Affinity(pList->a[ii].p_கோவை);
+    க்கு(pSub1=p->pPrior; pSub1; pSub1=pSub1->pPrior){
+      ப்ரதிஜ்ஞா( pSub1->pEList!=0 );
+      ப்ரதிஜ்ஞா( pSub1->pEList->n_கோவை>ii );
+      ப்ரதிஜ்ஞா( pSub1->pEList->a[ii].p_கோவை!=0 );
+      எனில்( sqlite3_கோவை_Affinity(pSub1->pEList->a[ii].p_கோவை)!=aff ){
+        திரும்பு 1;
       }
     }
   }
-  return 0;
+  திரும்பு 0;
 }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** This routine attempts to flatten subqueries as a performance optimization.
 ** This routine returns 1 if it makes changes and 0 if no flattening occurs.
@@ -4385,72 +4385,72 @@ static int compoundHasDifferentAffinities(Select *p){
 ** All of the expression analysis must occur on both the outer query and
 ** the subquery before this routine runs.
 */
-static int flattenSubquery(
+நிலையான முழு flattenSubquery(
   Parse *pParse,       /* Parsing context */
   Select *p,           /* The parent or outer SELECT statement */
-  int iFrom,           /* Index in p->pSrc->a[] of the inner subquery */
-  int isAgg            /* True if outer SELECT uses aggregate functions */
+  முழு iFrom,           /* Index in p->pSrc->a[] of the inner subquery */
+  முழு isAgg            /* True if outer SELECT uses aggregate functions */
 ){
-  const char *zSavedAuthContext = pParse->zAuthContext;
+  மாறிலி எழுத்து *zSavedAuthContext = pParse->zAuthContext;
   Select *pParent;    /* Current UNION ALL term of the other query */
   Select *pSub;       /* The inner query or "subquery" */
   Select *pSub1;      /* Pointer to the rightmost select in sub-query */
   SrcList *pSrc;      /* The FROM clause of the outer query */
   SrcList *pSubSrc;   /* The FROM clause of the subquery */
-  int iParent;        /* VDBE cursor number of the pSub result set temp table */
-  int iNewParent = -1;/* Replacement table for iParent */
-  int isOuterJoin = 0; /* True if pSub is the right side of a LEFT JOIN */   
-  int i;              /* Loop counter */
-  Expr *pWhere;                    /* The WHERE clause */
+  முழு iParent;        /* VDBE cursor number of the pSub result set temp table */
+  முழு iNewParent = -1;/* Replacement table for iParent */
+  முழு isOuterJoin = 0; /* True if pSub is the right side of a LEFT JOIN */   
+  முழு i;              /* Loop counter */
+  கோவை *pWhere;                    /* The WHERE clause */
   SrcItem *pSubitem;               /* The subquery */
   sqlite3 *db = pParse->db;
   Walker w;                        /* Walker to persist agginfo data */
-  int *aCsrMap = 0;
+  முழு *aCsrMap = 0;
 
   /* Check to see if flattening is permitted.  Return 0 if not.
   */
-  assert( p!=0 );
-  assert( p->pPrior==0 );
-  if( OptimizationDisabled(db, SQLITE_QueryFlattener) ) return 0;
+  ப்ரதிஜ்ஞா( p!=0 );
+  ப்ரதிஜ்ஞா( p->pPrior==0 );
+  எனில்( OptimizationDisabled(db, SQLITE_QueryFlattener) ) திரும்பு 0;
   pSrc = p->pSrc;
-  assert( pSrc && iFrom>=0 && iFrom<pSrc->nSrc );
+  ப்ரதிஜ்ஞா( pSrc && iFrom>=0 && iFrom<pSrc->nSrc );
   pSubitem = &pSrc->a[iFrom];
   iParent = pSubitem->iCursor;
-  assert( pSubitem->fg.isSubquery );
+  ப்ரதிஜ்ஞா( pSubitem->fg.isSubquery );
   pSub = pSubitem->u4.pSubq->pSelect;
-  assert( pSub!=0 );
+  ப்ரதிஜ்ஞா( pSub!=0 );
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( p->pWin || pSub->pWin ) return 0;                  /* Restriction (25) */
+  எனில்( p->pWin || pSub->pWin ) திரும்பு 0;                  /* Restriction (25) */
 #endif
 
   pSubSrc = pSub->pSrc;
-  assert( pSubSrc );
+  ப்ரதிஜ்ஞா( pSubSrc );
   /* Prior to version 3.1.2, when LIMIT and OFFSET had to be simple constants,
   ** not arbitrary expressions, we allowed some combining of LIMIT and OFFSET
   ** because they could be computed at compile-time.  But when LIMIT and OFFSET
   ** became arbitrary expressions, we were forced to add restrictions (13)
   ** and (14). */
-  if( pSub->pLimit && p->pLimit ) return 0;              /* Restriction (13) */
-  if( pSub->pLimit && pSub->pLimit->pRight ) return 0;   /* Restriction (14) */
-  if( (p->selFlags & SF_Compound)!=0 && pSub->pLimit ){
-    return 0;                                            /* Restriction (15) */
+  எனில்( pSub->pLimit && p->pLimit ) திரும்பு 0;              /* Restriction (13) */
+  எனில்( pSub->pLimit && pSub->pLimit->p_வலது ) திரும்பு 0;   /* Restriction (14) */
+  எனில்( (p->selFlags & SF_Compound)!=0 && pSub->pLimit ){
+    திரும்பு 0;                                            /* Restriction (15) */
   }
-  if( pSubSrc->nSrc==0 ) return 0;                       /* Restriction (7)  */
-  if( pSub->selFlags & SF_Distinct ) return 0;           /* Restriction (4)  */
-  if( pSub->pLimit && (pSrc->nSrc>1 || isAgg) ){
-     return 0;         /* Restrictions (8)(9) */
+  எனில்( pSubSrc->nSrc==0 ) திரும்பு 0;                       /* Restriction (7)  */
+  எனில்( pSub->selFlags & SF_Distinct ) திரும்பு 0;           /* Restriction (4)  */
+  எனில்( pSub->pLimit && (pSrc->nSrc>1 || isAgg) ){
+     திரும்பு 0;         /* Restrictions (8)(9) */
   }
-  if( p->pOrderBy && pSub->pOrderBy ){
-     return 0;                                           /* Restriction (11) */
+  எனில்( p->pOrderBy && pSub->pOrderBy ){
+     திரும்பு 0;                                           /* Restriction (11) */
   }
-  if( isAgg && pSub->pOrderBy ) return 0;                /* Restriction (16) */
-  if( pSub->pLimit && p->pWhere ) return 0;              /* Restriction (19) */
-  if( pSub->pLimit && (p->selFlags & SF_Distinct)!=0 ){
-     return 0;         /* Restriction (21) */
+  எனில்( isAgg && pSub->pOrderBy ) திரும்பு 0;                /* Restriction (16) */
+  எனில்( pSub->pLimit && p->pWhere ) திரும்பு 0;              /* Restriction (19) */
+  எனில்( pSub->pLimit && (p->selFlags & SF_Distinct)!=0 ){
+     திரும்பு 0;         /* Restriction (21) */
   }
-  if( pSub->selFlags & (SF_Recursive) ){
-    return 0; /* Restrictions (22) */
+  எனில்( pSub->selFlags & (SF_Recursive) ){
+    திரும்பு 0; /* Restrictions (22) */
   }
 
   /*
@@ -4468,80 +4468,80 @@ static int flattenSubquery(
   **
   ** See also tickets #306, #350, and #3300.
   */
-  if( (pSubitem->fg.jointype & (JT_OUTER|JT_LTORJ))!=0 ){
-    if( pSubSrc->nSrc>1                        /* (3a) */
+  எனில்( (pSubitem->fg.jointype & (JT_OUTER|JT_LTORJ))!=0 ){
+    எனில்( pSubSrc->nSrc>1                        /* (3a) */
      /**** || IsVirtual(pSubSrc->a[0].pSTab)      (3b)-omitted */
      || (p->selFlags & SF_Distinct)!=0         /* (3d) */
-     || (pSubitem->fg.jointype & JT_RIGHT)!=0  /* (26) */
+     || (pSubitem->fg.jointype & JT_வலது)!=0  /* (26) */
     ){
-      return 0;
+      திரும்பு 0;
     }
     isOuterJoin = 1;
   }
 
-  assert( pSubSrc->nSrc>0 );  /* True by restriction (7) */
-  if( iFrom>0 && (pSubSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
-    return 0;   /* Restriction (27a) */
+  ப்ரதிஜ்ஞா( pSubSrc->nSrc>0 );  /* True by restriction (7) */
+  எனில்( iFrom>0 && (pSubSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
+    திரும்பு 0;   /* Restriction (27a) */
   }
 
   /* Condition (28) is blocked by the caller */
-  assert( !pSubitem->fg.isCte || pSubitem->u2.pCteUse->eM10d!=M10d_Yes );
+  ப்ரதிஜ்ஞா( !pSubitem->fg.isCte || pSubitem->u2.pCteUse->eM10d!=M10d_Yes );
 
   /* Restriction (17): If the sub-query is a compound SELECT, then it must
   ** use only the UNION ALL operator. And none of the simple select queries
   ** that make up the compound SELECT are allowed to be aggregate or distinct
   ** queries.
   */
-  if( pSub->pPrior ){
-    int ii;
-    if( pSub->pOrderBy ){
-      return 0;  /* Restriction (20) */
+  எனில்( pSub->pPrior ){
+    முழு ii;
+    எனில்( pSub->pOrderBy ){
+      திரும்பு 0;  /* Restriction (20) */
     }
-    if( isAgg || (p->selFlags & SF_Distinct)!=0 || isOuterJoin>0 ){
-      return 0; /* (17d1), (17d2), or (17f) */
+    எனில்( isAgg || (p->selFlags & SF_Distinct)!=0 || isOuterJoin>0 ){
+      திரும்பு 0; /* (17d1), (17d2), or (17f) */
     }
-    for(pSub1=pSub; pSub1; pSub1=pSub1->pPrior){
+    க்கு(pSub1=pSub; pSub1; pSub1=pSub1->pPrior){
       testcase( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct );
       testcase( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))==SF_Aggregate );
-      assert( pSub->pSrc!=0 );
-      assert( (pSub->selFlags & SF_Recursive)==0 );
-      assert( pSub->pEList->nExpr==pSub1->pEList->nExpr );
-      if( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))!=0    /* (17b) */
+      ப்ரதிஜ்ஞா( pSub->pSrc!=0 );
+      ப்ரதிஜ்ஞா( (pSub->selFlags & SF_Recursive)==0 );
+      ப்ரதிஜ்ஞா( pSub->pEList->n_கோவை==pSub1->pEList->n_கோவை );
+      எனில்( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))!=0    /* (17b) */
        || (pSub1->pPrior && pSub1->op!=TK_ALL)                 /* (17a) */
        || pSub1->pSrc->nSrc<1                                  /* (17c) */
 #ifndef SQLITE_OMIT_WINDOWFUNC
        || pSub1->pWin                                          /* (17e) */
 #endif
       ){
-        return 0;
+        திரும்பு 0;
       }
-      if( iFrom>0 && (pSub1->pSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
+      எனில்( iFrom>0 && (pSub1->pSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
         /* Without this restriction, the JT_LTORJ flag would end up being
         ** omitted on left-hand tables of the right join that is being
         ** flattened. */
-        return 0;   /* Restrictions (17g), (27b) */
+        திரும்பு 0;   /* Restrictions (17g), (27b) */
       }
       testcase( pSub1->pSrc->nSrc>1 );
     }
 
     /* Restriction (18). */
-    if( p->pOrderBy ){
-      for(ii=0; ii<p->pOrderBy->nExpr; ii++){
-        if( p->pOrderBy->a[ii].u.x.iOrderByCol==0 ) return 0;
+    எனில்( p->pOrderBy ){
+      க்கு(ii=0; ii<p->pOrderBy->n_கோவை; ii++){
+        எனில்( p->pOrderBy->a[ii].u.x.iOrderByCol==0 ) திரும்பு 0;
       }
     }
 
     /* Restriction (23) */
-    if( (p->selFlags & SF_Recursive) ) return 0;
+    எனில்( (p->selFlags & SF_Recursive) ) திரும்பு 0;
 
     /* Restriction (17h) */
-    if( compoundHasDifferentAffinities(pSub) ) return 0;
+    எனில்( compoundHasDifferentAffinities(pSub) ) திரும்பு 0;
 
-    if( pSrc->nSrc>1 ){
-      if( pParse->nSelect>500 ) return 0;
-      if( OptimizationDisabled(db, SQLITE_FlttnUnionAll) ) return 0;
-      aCsrMap = sqlite3DbMallocZero(db, ((i64)pParse->nTab+1)*sizeof(int));
-      if( aCsrMap ) aCsrMap[0] = pParse->nTab;
+    எனில்( pSrc->nSrc>1 ){
+      எனில்( pParse->nSelect>500 ) திரும்பு 0;
+      எனில்( OptimizationDisabled(db, SQLITE_FlttnUnionAll) ) திரும்பு 0;
+      aCsrMap = sqlite3DbMallocZero(db, ((i64)pParse->nTab+1)*அளவு(முழு));
+      எனில்( aCsrMap ) aCsrMap[0] = pParse->nTab;
     }
   }
 
@@ -4557,18 +4557,18 @@ static int flattenSubquery(
 
   /* Delete the transient structures associated with the subquery */
   
-  if( ALWAYS(pSubitem->fg.isSubquery) ){
+  எனில்( ALWAYS(pSubitem->fg.isSubquery) ){
     pSub1 = sqlite3SubqueryDetach(db, pSubitem);
-  }else{
+  }இல்லையெனில்{
     pSub1 = 0;
   }
-  assert( pSubitem->fg.isSubquery==0 );
-  assert( pSubitem->fg.fixedSchema==0 );
+  ப்ரதிஜ்ஞா( pSubitem->fg.isSubquery==0 );
+  ப்ரதிஜ்ஞா( pSubitem->fg.fixedSchema==0 );
   sqlite3DbFree(db, pSubitem->zName);
   sqlite3DbFree(db, pSubitem->zAlias);
   pSubitem->zName = 0;
   pSubitem->zAlias = 0;
-  assert( pSubitem->fg.isUsing!=0 || pSubitem->u3.pOn==0 );
+  ப்ரதிஜ்ஞா( pSubitem->fg.isUsing!=0 || pSubitem->u3.pOn==0 );
 
   /* If the sub-query is a compound SELECT statement, then (by restrictions
   ** 17 and 18 above) it must be a UNION ALL and the parent query must
@@ -4603,10 +4603,10 @@ static int flattenSubquery(
   **
   ** We call this the "compound-subquery flattening".
   */
-  for(pSub=pSub->pPrior; pSub; pSub=pSub->pPrior){
+  க்கு(pSub=pSub->pPrior; pSub; pSub=pSub->pPrior){
     Select *pNew;
-    ExprList *pOrderBy = p->pOrderBy;
-    Expr *pLimit = p->pLimit;
+    கோவை_List *pOrderBy = p->pOrderBy;
+    கோவை *pLimit = p->pLimit;
     Select *pPrior = p->pPrior;
     Table *pItemTab = pSubitem->pSTab;
     pSubitem->pSTab = 0;
@@ -4618,29 +4618,29 @@ static int flattenSubquery(
     p->pOrderBy = pOrderBy;
     p->op = TK_ALL;
     pSubitem->pSTab = pItemTab;
-    if( pNew==0 ){
+    எனில்( pNew==0 ){
       p->pPrior = pPrior;
-    }else{
+    }இல்லையெனில்{
       pNew->selId = ++pParse->nSelect;
-      if( aCsrMap && ALWAYS(db->mallocFailed==0) ){
+      எனில்( aCsrMap && ALWAYS(db->mallocFailed==0) ){
         renumberCursors(pParse, pNew, iFrom, aCsrMap);
       }
       pNew->pPrior = pPrior;
-      if( pPrior ) pPrior->pNext = pNew;
+      எனில்( pPrior ) pPrior->pNext = pNew;
       pNew->pNext = p;
       p->pPrior = pNew;
       TREETRACE(0x4,pParse,p,("compound-subquery flattener"
                               " creates %u as peer\n",pNew->selId));
     }
-    assert( pSubitem->fg.isSubquery==0 );
+    ப்ரதிஜ்ஞா( pSubitem->fg.isSubquery==0 );
   }
   sqlite3DbFree(db, aCsrMap);
-  if( db->mallocFailed ){
-    assert( pSubitem->fg.fixedSchema==0 );
-    assert( pSubitem->fg.isSubquery==0 );
-    assert( pSubitem->u4.zDatabase==0 );
+  எனில்( db->mallocFailed ){
+    ப்ரதிஜ்ஞா( pSubitem->fg.fixedSchema==0 );
+    ப்ரதிஜ்ஞா( pSubitem->fg.isSubquery==0 );
+    ப்ரதிஜ்ஞா( pSubitem->u4.zDatabase==0 );
     sqlite3SrcItemAttachSubquery(pParse, pSubitem, pSub1, 0);
-    return 1;
+    திரும்பு 1;
   }
 
   /* Defer deleting the Table object associated with the
@@ -4650,13 +4650,13 @@ static int flattenSubquery(
   **
   ** pSubitem->pSTab is always non-NULL by test restrictions and tests above.
   */
-  if( ALWAYS(pSubitem->pSTab!=0) ){
+  எனில்( ALWAYS(pSubitem->pSTab!=0) ){
     Table *pTabToDel = pSubitem->pSTab;
-    if( pTabToDel->nTabRef==1 ){
+    எனில்( pTabToDel->nTabRef==1 ){
       Parse *pToplevel = sqlite3ParseToplevel(pParse);
       sqlite3ParserAddCleanup(pToplevel, sqlite3DeleteTableGeneric, pTabToDel);
       testcase( pToplevel->earlyCleanup );
-    }else{
+    }இல்லையெனில்{
       pTabToDel->nTabRef--;
     }
     pSubitem->pSTab = 0;
@@ -4676,10 +4676,10 @@ static int flattenSubquery(
   ** elements we are now copying in.
   */
   pSub = pSub1;
-  for(pParent=p; pParent; pParent=pParent->pPrior, pSub=pSub->pPrior){
-    int nSubSrc;
+  க்கு(pParent=p; pParent; pParent=pParent->pPrior, pSub=pSub->pPrior){
+    முழு nSubSrc;
     u8 jointype = pParent->pSrc->a[iFrom].fg.jointype;
-    assert( pSub!=0 );
+    ப்ரதிஜ்ஞா( pSub!=0 );
     pSubSrc = pSub->pSrc;     /* FROM clause of subquery */
     nSubSrc = pSubSrc->nSrc;  /* Number of terms in subquery FROM clause */
     pSrc = pParent->pSrc;     /* FROM clause of the outer query */
@@ -4699,9 +4699,9 @@ static int flattenSubquery(
     ** The middle slot is expanded to two slots in order to make space
     ** for the two elements in the FROM clause of the subquery.
     */
-    if( nSubSrc>1 ){
+    எனில்( nSubSrc>1 ){
       pSrc = sqlite3SrcListEnlarge(pParse, pSrc, nSubSrc-1,iFrom+1);
-      if( pSrc==0 ) break;
+      எனில்( pSrc==0 ) நிறுத்து;
       pParent->pSrc = pSrc;
     }
 
@@ -4709,16 +4709,16 @@ static int flattenSubquery(
     ** outer query.
     */
     iNewParent = pSubSrc->a[0].iCursor;
-    for(i=0; i<nSubSrc; i++){
+    க்கு(i=0; i<nSubSrc; i++){
       SrcItem *pItem = &pSrc->a[i+iFrom];
-      assert( pItem->fg.isTabFunc==0 );
-      assert( pItem->fg.isSubquery
+      ப்ரதிஜ்ஞா( pItem->fg.isTabFunc==0 );
+      ப்ரதிஜ்ஞா( pItem->fg.isSubquery
            || pItem->fg.fixedSchema
            || pItem->u4.zDatabase==0 );
-      if( pItem->fg.isUsing ) sqlite3IdListDelete(db, pItem->u3.pUsing);
+      எனில்( pItem->fg.isUsing ) sqlite3IdListDelete(db, pItem->u3.pUsing);
       *pItem = pSubSrc->a[i];
       pItem->fg.jointype |= (jointype & JT_LTORJ);
-      memset(&pSubSrc->a[i], 0, sizeof(pSubSrc->a[i]));
+      memset(&pSubSrc->a[i], 0, அளவு(pSubSrc->a[i]));
     }
     pSrc->a[iFrom].fg.jointype |= jointype;
  
@@ -4734,7 +4734,7 @@ static int flattenSubquery(
     ** We look at every expression in the outer query and every place we see
     ** "a" we substitute "x*3" and every place we see "b" we substitute "y+10".
     */
-    if( pSub->pOrderBy ){
+    எனில்( pSub->pOrderBy ){
       /* At this point, any non-zero iOrderByCol values indicate that the
       ** ORDER BY column expression is identical to the iOrderByCol'th
       ** expression returned by SELECT statement pSub. Since these values
@@ -4745,28 +4745,28 @@ static int flattenSubquery(
       ** function attempts to flatten a compound sub-query into pParent.
       ** See ticket [d11a6e908f].
       */
-      ExprList *pOrderBy = pSub->pOrderBy;
-      for(i=0; i<pOrderBy->nExpr; i++){
+      கோவை_List *pOrderBy = pSub->pOrderBy;
+      க்கு(i=0; i<pOrderBy->n_கோவை; i++){
         pOrderBy->a[i].u.x.iOrderByCol = 0;
       }
-      assert( pParent->pOrderBy==0 );
+      ப்ரதிஜ்ஞா( pParent->pOrderBy==0 );
       pParent->pOrderBy = pOrderBy;
       pSub->pOrderBy = 0;
     }
     pWhere = pSub->pWhere;
     pSub->pWhere = 0;
-    if( isOuterJoin>0 ){
-      assert( pSubSrc->nSrc==1 );
-      sqlite3SetJoinExpr(pWhere, iNewParent, EP_OuterON);
+    எனில்( isOuterJoin>0 ){
+      ப்ரதிஜ்ஞா( pSubSrc->nSrc==1 );
+      sqlite3_Set_Join_கோவை(pWhere, iNewParent, EP_OuterON);
     }
-    if( pWhere ){
-      if( pParent->pWhere ){
+    எனில்( pWhere ){
+      எனில்( pParent->pWhere ){
         pParent->pWhere = sqlite3PExpr(pParse, TK_AND, pWhere, pParent->pWhere);
-      }else{
+      }இல்லையெனில்{
         pParent->pWhere = pWhere;
       }
     }
-    if( db->mallocFailed==0 ){
+    எனில்( db->mallocFailed==0 ){
       SubstContext x;
       x.pParse = pParse;
       x.iTable = iParent;
@@ -4781,7 +4781,7 @@ static int flattenSubquery(
     /* The flattened query is a compound if either the inner or the
     ** outer query is a compound. */
     pParent->selFlags |= pSub->selFlags & SF_Compound;
-    assert( (pSub->selFlags & SF_Distinct)==0 ); /* restriction (17b) */
+    ப்ரதிஜ்ஞா( (pSub->selFlags & SF_Distinct)==0 ); /* restriction (17b) */
  
     /*
     ** SELECT ... FROM (SELECT ... LIMIT a OFFSET b) LIMIT x OFFSET y;
@@ -4789,14 +4789,14 @@ static int flattenSubquery(
     ** One is tempted to try to add a and b to combine the limits.  But this
     ** does not work if either limit is negative.
     */
-    if( pSub->pLimit ){
+    எனில்( pSub->pLimit ){
       pParent->pLimit = pSub->pLimit;
       pSub->pLimit = 0;
     }
 
     /* Recompute the SrcItem.colUsed masks for the flattened
     ** tables. */
-    for(i=0; i<nSubSrc; i++){
+    க்கு(i=0; i<nSubSrc; i++){
       recomputeColumnsUsed(pParent, &pSrc->a[i+iFrom]);
     }
   }
@@ -4807,14 +4807,14 @@ static int flattenSubquery(
   sqlite3WalkSelect(&w,pSub1);
   sqlite3SelectDelete(db, pSub1);
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x4 ){
+#எனில் TREETRACE_ENABLED
+  எனில்( sqlite3_மரம்_Trace & 0x4 ){
     TREETRACE(0x4,pParse,p,("After flattening:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
 
-  return 1;
+  திரும்பு 1;
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
@@ -4822,16 +4822,16 @@ static int flattenSubquery(
 ** A structure to keep track of all of the column values that are fixed to
 ** a known value due to WHERE clause constraints of the form COLUMN=VALUE.
 */
-typedef struct WhereConst WhereConst;
-struct WhereConst {
+வகைவரை கட்டமைப்பு WhereConst WhereConst;
+கட்டமைப்பு WhereConst {
   Parse *pParse;   /* Parsing context */
   u8 *pOomFault;   /* Pointer to pParse->db->mallocFailed */
-  int nConst;      /* Number for COLUMN=CONSTANT terms */
-  int nChng;       /* Number of times a constant is propagated */
-  int bHasAffBlob; /* At least one column in apExpr[] as affinity BLOB */
+  முழு nConst;      /* Number for COLUMN=CONSTANT terms */
+  முழு nChng;       /* Number of times a constant is propagated */
+  முழு bHasAffBlob; /* At least one column in apExpr[] as affinity BLOB */
   u32 mExcludeOn;  /* Which ON expressions to exclude from considertion.
                    ** Either EP_OuterON or EP_InnerON|EP_OuterON */
-  Expr **apExpr;   /* [i*2] is COLUMN and [i*2+1] is VALUE */
+  கோவை **ap_கோவை;   /* [i*2] is COLUMN and [i*2+1] is VALUE */
 };
 
 /*
@@ -4851,46 +4851,46 @@ struct WhereConst {
 **
 ** The caller guarantees the pColumn is a column.
 */
-static void constInsert(
+நிலையான வெறுமை const_செருகு(
   WhereConst *pConst,  /* The WhereConst into which we are inserting */
-  Expr *pColumn,       /* The COLUMN part of the constraint */
-  Expr *pValue,        /* The VALUE part of the constraint */
-  Expr *pExpr          /* Overall expression: COLUMN=VALUE or VALUE=COLUMN */
+  கோவை *pColumn,       /* The COLUMN part of the constraint */
+  கோவை *p_மதிப்பு,        /* The VALUE part of the constraint */
+  கோவை *p_கோவை          /* Overall expression: COLUMN=VALUE or VALUE=COLUMN */
 ){
-  int i;
-  assert( pColumn->op==TK_COLUMN );
-  assert( sqlite3ExprIsConstant(pConst->pParse, pValue) );
-  if( ExprHasProperty(pColumn, EP_FixedCol) ) return;
-  if( sqlite3ExprAffinity(pValue)!=0 ) return;
-  if( !sqlite3IsBinary(sqlite3ExprCompareCollSeq(pConst->pParse,pExpr)) ){
-    return;
+  முழு i;
+  ப்ரதிஜ்ஞா( pColumn->op==TK_COLUMN );
+  ப்ரதிஜ்ஞா( sqlite3_கோவை_Is_Constant(pConst->pParse, p_மதிப்பு) );
+  எனில்( கோவை_Has_Property(pColumn, EP_FixedCol) ) திரும்பு;
+  எனில்( sqlite3_கோவை_Affinity(p_மதிப்பு)!=0 ) திரும்பு;
+  எனில்( !sqlite3_Is_இருமம்(sqlite3_கோவை_Compare_Coll_Seq(pConst->pParse,p_கோவை)) ){
+    திரும்பு;
   }
-  if( sqlite3ExprCanReturnSubtype(pConst->pParse, pValue) ) return;
+  எனில்( sqlite3_கோவை_Can_Return_Subtype(pConst->pParse, p_மதிப்பு) ) திரும்பு;
 
   /* 2018-10-25 ticket [cf5ed20f]
   ** Make sure the same pColumn is not inserted more than once */
-  for(i=0; i<pConst->nConst; i++){
-    const Expr *pE2 = pConst->apExpr[i*2];
-    assert( pE2->op==TK_COLUMN );
-    if( pE2->iTable==pColumn->iTable
+  க்கு(i=0; i<pConst->nConst; i++){
+    மாறிலி கோவை *pE2 = pConst->ap_கோவை[i*2];
+    ப்ரதிஜ்ஞா( pE2->op==TK_COLUMN );
+    எனில்( pE2->iTable==pColumn->iTable
      && pE2->iColumn==pColumn->iColumn
     ){
-      return;  /* Already present.  Return without doing anything. */
+      திரும்பு;  /* Already present.  Return without doing anything. */
     }
   }
-  assert( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
-  if( sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
+  ப்ரதிஜ்ஞா( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
+  எனில்( sqlite3_கோவை_Affinity(pColumn)<=SQLITE_AFF_BLOB ){
     pConst->bHasAffBlob = 1;
   }
 
   pConst->nConst++;
-  pConst->apExpr = sqlite3DbReallocOrFree(pConst->pParse->db, pConst->apExpr,
-                         pConst->nConst*2*sizeof(Expr*));
-  if( pConst->apExpr==0 ){
+  pConst->ap_கோவை = sqlite3DbReallocOrFree(pConst->pParse->db, pConst->ap_கோவை,
+                         pConst->nConst*2*அளவு(கோவை*));
+  எனில்( pConst->ap_கோவை==0 ){
     pConst->nConst = 0;
-  }else{
-    pConst->apExpr[pConst->nConst*2-2] = pColumn;
-    pConst->apExpr[pConst->nConst*2-1] = pValue;
+  }இல்லையெனில்{
+    pConst->ap_கோவை[pConst->nConst*2-2] = pColumn;
+    pConst->ap_கோவை[pConst->nConst*2-1] = p_மதிப்பு;
   }
 }
 
@@ -4900,29 +4900,29 @@ static void constInsert(
 ** is part of the AND-connected terms of the expression.  For each term
 ** found, add it to the pConst structure.
 */
-static void findConstInWhere(WhereConst *pConst, Expr *pExpr){
-  Expr *pRight, *pLeft;
-  if( NEVER(pExpr==0) ) return;
-  if( ExprHasProperty(pExpr, pConst->mExcludeOn) ){
-    testcase( ExprHasProperty(pExpr, EP_OuterON) );
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    return;
+நிலையான வெறுமை findConstInWhere(WhereConst *pConst, கோவை *p_கோவை){
+  கோவை *p_வலது, *p_இடது;
+  எனில்( NEVER(p_கோவை==0) ) திரும்பு;
+  எனில்( கோவை_Has_Property(p_கோவை, pConst->mExcludeOn) ){
+    testcase( கோவை_Has_Property(p_கோவை, EP_OuterON) );
+    testcase( கோவை_Has_Property(p_கோவை, EP_InnerON) );
+    திரும்பு;
   }
-  if( pExpr->op==TK_AND ){
-    findConstInWhere(pConst, pExpr->pRight);
-    findConstInWhere(pConst, pExpr->pLeft);
-    return;
+  எனில்( p_கோவை->op==TK_AND ){
+    findConstInWhere(pConst, p_கோவை->p_வலது);
+    findConstInWhere(pConst, p_கோவை->p_இடது);
+    திரும்பு;
   }
-  if( pExpr->op!=TK_EQ ) return;
-  pRight = pExpr->pRight;
-  pLeft = pExpr->pLeft;
-  assert( pRight!=0 );
-  assert( pLeft!=0 );
-  if( pRight->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pLeft) ){
-    constInsert(pConst,pRight,pLeft,pExpr);
+  எனில்( p_கோவை->op!=TK_EQ ) திரும்பு;
+  p_வலது = p_கோவை->p_வலது;
+  p_இடது = p_கோவை->p_இடது;
+  ப்ரதிஜ்ஞா( p_வலது!=0 );
+  ப்ரதிஜ்ஞா( p_இடது!=0 );
+  எனில்( p_வலது->op==TK_COLUMN && sqlite3_கோவை_Is_Constant(pConst->pParse, p_இடது) ){
+    const_செருகு(pConst,p_வலது,p_இடது,p_கோவை);
   }
-  if( pLeft->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pRight) ){
-    constInsert(pConst,pLeft,pRight,pExpr);
+  எனில்( p_இடது->op==TK_COLUMN && sqlite3_கோவை_Is_Constant(pConst->pParse, p_வலது) ){
+    const_செருகு(pConst,p_இடது,p_வலது,p_கோவை);
   }
 }
 
@@ -4935,39 +4935,39 @@ static void findConstInWhere(WhereConst *pConst, Expr *pExpr){
 ** if argument bIgnoreAffBlob is non-zero and the affinity of pExpr
 ** is SQLITE_AFF_BLOB.
 */
-static int propagateConstantExprRewriteOne(
+நிலையான முழு propagate_Constant_கோவை_Rewrite_One(
   WhereConst *pConst,
-  Expr *pExpr,
-  int bIgnoreAffBlob
+  கோவை *p_கோவை,
+  முழு bIgnoreAffBlob
 ){
-  int i;
-  if( pConst->pOomFault[0] ) return WRC_Prune;
-  if( pExpr->op!=TK_COLUMN ) return WRC_Continue;
-  if( ExprHasProperty(pExpr, EP_FixedCol|pConst->mExcludeOn) ){
-    testcase( ExprHasProperty(pExpr, EP_FixedCol) );
-    testcase( ExprHasProperty(pExpr, EP_OuterON) );
-    testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    return WRC_Continue;
+  முழு i;
+  எனில்( pConst->pOomFault[0] ) திரும்பு WRC_Prune;
+  எனில்( p_கோவை->op!=TK_COLUMN ) திரும்பு WRC_Continue;
+  எனில்( கோவை_Has_Property(p_கோவை, EP_FixedCol|pConst->mExcludeOn) ){
+    testcase( கோவை_Has_Property(p_கோவை, EP_FixedCol) );
+    testcase( கோவை_Has_Property(p_கோவை, EP_OuterON) );
+    testcase( கோவை_Has_Property(p_கோவை, EP_InnerON) );
+    திரும்பு WRC_Continue;
   }
-  for(i=0; i<pConst->nConst; i++){
-    Expr *pColumn = pConst->apExpr[i*2];
-    if( pColumn==pExpr ) continue;
-    if( pColumn->iTable!=pExpr->iTable ) continue;
-    if( pColumn->iColumn!=pExpr->iColumn ) continue;
-    assert( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
-    if( bIgnoreAffBlob && sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
-      break;
+  க்கு(i=0; i<pConst->nConst; i++){
+    கோவை *pColumn = pConst->ap_கோவை[i*2];
+    எனில்( pColumn==p_கோவை ) தொடர்;
+    எனில்( pColumn->iTable!=p_கோவை->iTable ) தொடர்;
+    எனில்( pColumn->iColumn!=p_கோவை->iColumn ) தொடர்;
+    ப்ரதிஜ்ஞா( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
+    எனில்( bIgnoreAffBlob && sqlite3_கோவை_Affinity(pColumn)<=SQLITE_AFF_BLOB ){
+      நிறுத்து;
     }
     /* A match is found.  Add the EP_FixedCol property */
     pConst->nChng++;
-    ExprClearProperty(pExpr, EP_Leaf);
-    ExprSetProperty(pExpr, EP_FixedCol);
-    assert( pExpr->pLeft==0 );
-    pExpr->pLeft = sqlite3ExprDup(pConst->pParse->db, pConst->apExpr[i*2+1], 0);
-    if( pConst->pParse->db->mallocFailed ) return WRC_Prune;
-    break;
+    கோவை_Clear_Property(p_கோவை, EP_Leaf);
+    கோவை_Set_Property(p_கோவை, EP_FixedCol);
+    ப்ரதிஜ்ஞா( p_கோவை->p_இடது==0 );
+    p_கோவை->p_இடது = sqlite3_கோவை_Dup(pConst->pParse->db, pConst->ap_கோவை[i*2+1], 0);
+    எனில்( pConst->pParse->db->mallocFailed ) திரும்பு WRC_Prune;
+    நிறுத்து;
   }
-  return WRC_Prune;
+  திரும்பு WRC_Prune;
 }
 
 /*
@@ -4986,24 +4986,24 @@ static int propagateConstantExprRewriteOne(
 **     children is a column that matches one of the columns in
 **     pWalker->u.pConst.
 */
-static int propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr){
+நிலையான முழு propagate_Constant_கோவை_Rewrite(Walker *pWalker, கோவை *p_கோவை){
   WhereConst *pConst = pWalker->u.pConst;
-  assert( TK_GT==TK_EQ+1 );
-  assert( TK_LE==TK_EQ+2 );
-  assert( TK_LT==TK_EQ+3 );
-  assert( TK_GE==TK_EQ+4 );
-  if( pConst->bHasAffBlob ){
-    if( (pExpr->op>=TK_EQ && pExpr->op<=TK_GE)
-     || pExpr->op==TK_IS
+  ப்ரதிஜ்ஞா( TK_GT==TK_EQ+1 );
+  ப்ரதிஜ்ஞா( TK_LE==TK_EQ+2 );
+  ப்ரதிஜ்ஞா( TK_LT==TK_EQ+3 );
+  ப்ரதிஜ்ஞா( TK_GE==TK_EQ+4 );
+  எனில்( pConst->bHasAffBlob ){
+    எனில்( (p_கோவை->op>=TK_EQ && p_கோவை->op<=TK_GE)
+     || p_கோவை->op==TK_IS
     ){
-      propagateConstantExprRewriteOne(pConst, pExpr->pLeft, 0);
-      if( pConst->pOomFault[0] ) return WRC_Prune;
-      if( sqlite3ExprAffinity(pExpr->pLeft)!=SQLITE_AFF_TEXT ){
-        propagateConstantExprRewriteOne(pConst, pExpr->pRight, 0);
+      propagate_Constant_கோவை_Rewrite_One(pConst, p_கோவை->p_இடது, 0);
+      எனில்( pConst->pOomFault[0] ) திரும்பு WRC_Prune;
+      எனில்( sqlite3_கோவை_Affinity(p_கோவை->p_இடது)!=SQLITE_AFF_TEXT ){
+        propagate_Constant_கோவை_Rewrite_One(pConst, p_கோவை->p_வலது, 0);
       }
     }
   }
-  return propagateConstantExprRewriteOne(pConst, pExpr, pConst->bHasAffBlob);
+  திரும்பு propagate_Constant_கோவை_Rewrite_One(pConst, p_கோவை, pConst->bHasAffBlob);
 }
 
 /*
@@ -5057,50 +5057,50 @@ static int propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr){
 ** type conversions to occur.  See logic associated with the bHasAffBlob flag
 ** for details.
 */
-static int propagateConstants(
+நிலையான முழு propagateConstants(
   Parse *pParse,   /* The parsing context */
   Select *p        /* The query in which to propagate constants */
 ){
   WhereConst x;
   Walker w;
-  int nChng = 0;
+  முழு nChng = 0;
   x.pParse = pParse;
   x.pOomFault = &pParse->db->mallocFailed;
-  do{
+  செய்{
     x.nConst = 0;
     x.nChng = 0;
-    x.apExpr = 0;
+    x.ap_கோவை = 0;
     x.bHasAffBlob = 0;
-    if( ALWAYS(p->pSrc!=0)
+    எனில்( ALWAYS(p->pSrc!=0)
      && p->pSrc->nSrc>0
      && (p->pSrc->a[0].fg.jointype & JT_LTORJ)!=0
     ){
       /* Do not propagate constants on any ON clause if there is a
       ** RIGHT JOIN anywhere in the query */
       x.mExcludeOn = EP_InnerON | EP_OuterON;
-    }else{
+    }இல்லையெனில்{
       /* Do not propagate constants through the ON clause of a LEFT JOIN */
       x.mExcludeOn = EP_OuterON;
     }
     findConstInWhere(&x, p->pWhere);
-    if( x.nConst ){
-      memset(&w, 0, sizeof(w));
+    எனில்( x.nConst ){
+      memset(&w, 0, அளவு(w));
       w.pParse = pParse;
-      w.xExprCallback = propagateConstantExprRewrite;
+      w.x_கோவை_Callback = propagate_Constant_கோவை_Rewrite;
       w.xSelectCallback = sqlite3SelectWalkNoop;
       w.xSelectCallback2 = 0;
       w.walkerDepth = 0;
       w.u.pConst = &x;
-      sqlite3WalkExpr(&w, p->pWhere);
-      sqlite3DbFree(x.pParse->db, x.apExpr);
+      sqlite3_Walk_கோவை(&w, p->pWhere);
+      sqlite3DbFree(x.pParse->db, x.ap_கோவை);
       nChng += x.nChng;
     }
-  }while( x.nChng ); 
-  return nChng;
+  }போது( x.nChng ); 
+  திரும்பு nChng;
 }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-# if !defined(SQLITE_OMIT_WINDOWFUNC)
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+# எனில் !defined(SQLITE_OMIT_WINDOWFUNC)
 /*
 ** This function is called to determine whether or not it is safe to
 ** push WHERE clause expression pExpr down to FROM clause sub-query
@@ -5119,16 +5119,16 @@ static int propagateConstants(
 **   * the sub-query uses only one distinct window frame, and
 **   * that the window frame has a PARTITION BY clause.
 */
-static int pushDownWindowCheck(Parse *pParse, Select *pSubq, Expr *pExpr){
-  assert( pSubq->pWin->pPartition );
-  assert( (pSubq->selFlags & SF_MultiPart)==0 );
-  assert( pSubq->pPrior==0 );
-  return sqlite3ExprIsConstantOrGroupBy(pParse, pExpr, pSubq->pWin->pPartition);
+நிலையான முழு தள்ளு_Down_Window_Check(Parse *pParse, Select *pSubq, கோவை *p_கோவை){
+  ப்ரதிஜ்ஞா( pSubq->pWin->pPartition );
+  ப்ரதிஜ்ஞா( (pSubq->selFlags & SF_MultiPart)==0 );
+  ப்ரதிஜ்ஞா( pSubq->pPrior==0 );
+  திரும்பு sqlite3_கோவை_Is_Constant_Or_Group_By(pParse, p_கோவை, pSubq->pWin->pPartition);
 }
 # endif /* SQLITE_OMIT_WINDOWFUNC */
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** Make copies of relevant WHERE clause terms of the outer query into
 ** the WHERE clause of subquery.  Example:
@@ -5237,58 +5237,58 @@ static int pushDownWindowCheck(Parse *pParse, Select *pSubq, Expr *pExpr){
 ** Return 0 if no changes are made and non-zero if one or more WHERE clause
 ** terms are duplicated into the subquery.
 */
-static int pushDownWhereTerms(
+நிலையான முழு தள்ளு_Down_Where_Terms(
   Parse *pParse,        /* Parse context (for malloc() and error reporting) */
   Select *pSubq,        /* The subquery whose WHERE clause is to be augmented */
-  Expr *pWhere,         /* The WHERE clause of the outer query */
+  கோவை *pWhere,         /* The WHERE clause of the outer query */
   SrcList *pSrcList,    /* The complete from clause of the outer query */
-  int iSrc              /* Which FROM clause term to try to push into  */
+  முழு iSrc              /* Which FROM clause term to try to push into  */
 ){
-  Expr *pNew;
+  கோவை *pNew;
   SrcItem *pSrc;        /* The subquery FROM term into which WHERE is pushed */
-  int nChng = 0;
+  முழு nChng = 0;
   pSrc = &pSrcList->a[iSrc];
-  if( pWhere==0 ) return 0;
-  if( pSubq->selFlags & (SF_Recursive|SF_MultiPart) ){
-    return 0;           /* restrictions (2) and (11) */
+  எனில்( pWhere==0 ) திரும்பு 0;
+  எனில்( pSubq->selFlags & (SF_Recursive|SF_MultiPart) ){
+    திரும்பு 0;           /* restrictions (2) and (11) */
   }
-  if( pSrc->fg.jointype & (JT_LTORJ|JT_RIGHT) ){
-    return 0;           /* restrictions (10) */
+  எனில்( pSrc->fg.jointype & (JT_LTORJ|JT_வலது) ){
+    திரும்பு 0;           /* restrictions (10) */
   }
 
-  if( pSubq->pPrior ){
+  எனில்( pSubq->pPrior ){
     Select *pSel;
-    int notUnionAll = 0;
-    for(pSel=pSubq; pSel; pSel=pSel->pPrior){
+    முழு notUnionAll = 0;
+    க்கு(pSel=pSubq; pSel; pSel=pSel->pPrior){
       u8 op = pSel->op;
-      assert( op==TK_ALL || op==TK_SELECT
+      ப்ரதிஜ்ஞா( op==TK_ALL || op==TK_SELECT
            || op==TK_UNION || op==TK_INTERSECT || op==TK_EXCEPT );
-      if( op!=TK_ALL && op!=TK_SELECT ){
+      எனில்( op!=TK_ALL && op!=TK_SELECT ){
         notUnionAll = 1;
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pSel->pWin ) return 0;    /* restriction (6b) */
+      எனில்( pSel->pWin ) திரும்பு 0;    /* restriction (6b) */
 #endif
     }
-    if( notUnionAll ){
+    எனில்( notUnionAll ){
       /* If any of the compound arms are connected using UNION, INTERSECT,
       ** or EXCEPT, then we must ensure that none of the columns use a
       ** non-BINARY collating sequence. */
-      for(pSel=pSubq; pSel; pSel=pSel->pPrior){
-        int ii;
-        const ExprList *pList = pSel->pEList;
-        assert( pList!=0 );
-        for(ii=0; ii<pList->nExpr; ii++){
-          CollSeq *pColl = sqlite3ExprCollSeq(pParse, pList->a[ii].pExpr);
-          if( !sqlite3IsBinary(pColl) ){
-            return 0;  /* Restriction (8) */
+      க்கு(pSel=pSubq; pSel; pSel=pSel->pPrior){
+        முழு ii;
+        மாறிலி கோவை_List *pList = pSel->pEList;
+        ப்ரதிஜ்ஞா( pList!=0 );
+        க்கு(ii=0; ii<pList->n_கோவை; ii++){
+          CollSeq *pColl = sqlite3_கோவை_Coll_Seq(pParse, pList->a[ii].p_கோவை);
+          எனில்( !sqlite3_Is_இருமம்(pColl) ){
+            திரும்பு 0;  /* Restriction (8) */
           }
         }
       }
     }
-  }else{
+  }இல்லையெனில்{
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pSubq->pWin && pSubq->pWin->pPartition==0 ) return 0;
+    எனில்( pSubq->pWin && pSubq->pWin->pPartition==0 ) திரும்பு 0;
 #endif
   }
 
@@ -5299,70 +5299,70 @@ static int pushDownWhereTerms(
   */
   {
     Select *pX; 
-    for(pX=pSubq; pX; pX=pX->pPrior){
-      assert( (pX->selFlags & (SF_Recursive))==0 );
+    க்கு(pX=pSubq; pX; pX=pX->pPrior){
+      ப்ரதிஜ்ஞா( (pX->selFlags & (SF_Recursive))==0 );
     }
   }
 #endif
 
-  if( pSubq->pLimit!=0 ){
-    return 0; /* restriction (3) */
+  எனில்( pSubq->pLimit!=0 ){
+    திரும்பு 0; /* restriction (3) */
   }
-  while( pWhere->op==TK_AND ){
-    nChng += pushDownWhereTerms(pParse, pSubq, pWhere->pRight, pSrcList, iSrc);
-    pWhere = pWhere->pLeft;
+  போது( pWhere->op==TK_AND ){
+    nChng += தள்ளு_Down_Where_Terms(pParse, pSubq, pWhere->p_வலது, pSrcList, iSrc);
+    pWhere = pWhere->p_இடது;
   }
 
-#if 0 /* These checks now done by sqlite3ExprIsSingleTableConstraint() */
-  if( ExprHasProperty(pWhere, EP_OuterON|EP_InnerON) /* (9a) */
+#எனில் 0 /* These checks now done by sqlite3ExprIsSingleTableConstraint() */
+  எனில்( கோவை_Has_Property(pWhere, EP_OuterON|EP_InnerON) /* (9a) */
    && (pSrcList->a[0].fg.jointype & JT_LTORJ)!=0     /* Fast pre-test of (9c) */
   ){
-    int jj;
-    for(jj=0; jj<iSrc; jj++){
-      if( pWhere->w.iJoin==pSrcList->a[jj].iCursor ){
+    முழு jj;
+    க்கு(jj=0; jj<iSrc; jj++){
+      எனில்( pWhere->w.iJoin==pSrcList->a[jj].iCursor ){
         /* If we reach this point, both (9a) and (9b) are satisfied.
         ** The following loop checks (9c):
         */
-        for(jj++; jj<iSrc; jj++){
-          if( (pSrcList->a[jj].fg.jointype & JT_RIGHT)!=0 ){
-            return 0;  /* restriction (9) */
+        க்கு(jj++; jj<iSrc; jj++){
+          எனில்( (pSrcList->a[jj].fg.jointype & JT_வலது)!=0 ){
+            திரும்பு 0;  /* restriction (9) */
           }
         }
       }
     }
   }
-  if( isLeftJoin
-   && (ExprHasProperty(pWhere,EP_OuterON)==0
+  எனில்( is_இடது_Join
+   && (கோவை_Has_Property(pWhere,EP_OuterON)==0
          || pWhere->w.iJoin!=iCursor)
   ){
-    return 0; /* restriction (4) */
+    திரும்பு 0; /* restriction (4) */
   }
-  if( ExprHasProperty(pWhere,EP_OuterON)
+  எனில்( கோவை_Has_Property(pWhere,EP_OuterON)
    && pWhere->w.iJoin!=iCursor
   ){
-    return 0; /* restriction (5) */
+    திரும்பு 0; /* restriction (5) */
   }
 #endif
 
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-  if( ViewCanHaveRowid && (pWhere->op==TK_ISNULL || pWhere->op==TK_NOTNULL) ){
-    Expr *pLeft = pWhere->pLeft;
-    if( ALWAYS(pLeft) 
-     && pLeft->op==TK_COLUMN
-     && pLeft->iColumn < 0
+  எனில்( ViewCanHaveRowid && (pWhere->op==TK_ISNULL || pWhere->op==TK_NOTNULL) ){
+    கோவை *p_இடது = pWhere->p_இடது;
+    எனில்( ALWAYS(p_இடது) 
+     && p_இடது->op==TK_COLUMN
+     && p_இடது->iColumn < 0
     ){
-      return 0;  /* Restriction (12) */
+      திரும்பு 0;  /* Restriction (12) */
     }
   }
 #endif
 
-  if( sqlite3ExprIsSingleTableConstraint(pWhere, pSrcList, iSrc, 1) ){
+  எனில்( sqlite3_கோவை_Is_Single_Table_Constraint(pWhere, pSrcList, iSrc, 1) ){
     nChng++;
-    pSubq->selFlags |= SF_PushDown;
-    while( pSubq ){
+    pSubq->selFlags |= SF_தள்ளு_Down;
+    போது( pSubq ){
       SubstContext x;
-      pNew = sqlite3ExprDup(pParse->db, pWhere, 0);
-      unsetJoinExpr(pNew, -1, 1);
+      pNew = sqlite3_கோவை_Dup(pParse->db, pWhere, 0);
+      unset_Join_கோவை(pNew, -1, 1);
       x.pParse = pParse;
       x.iTable = pSrc->iCursor;
       x.iNewTable = pSrc->iCursor;
@@ -5370,34 +5370,34 @@ static int pushDownWhereTerms(
       x.nSelDepth = 0;
       x.pEList = pSubq->pEList;
       x.pCList = findLeftmostExprlist(pSubq);
-      pNew = substExpr(&x, pNew);
-      assert( pNew!=0 || pParse->nErr!=0 );
-      if( pParse->nErr==0 && pNew->op==TK_IN && ExprUseXSelect(pNew) ){
-        assert( pNew->x.pSelect!=0 );
+      pNew = subst_கோவை(&x, pNew);
+      ப்ரதிஜ்ஞா( pNew!=0 || pParse->nErr!=0 );
+      எனில்( pParse->nErr==0 && pNew->op==TK_IN && கோவை_Use_XSelect(pNew) ){
+        ப்ரதிஜ்ஞா( pNew->x.pSelect!=0 );
         pNew->x.pSelect->selFlags |= SF_ClonedRhsIn;
-        assert( pWhere!=0 );
-        assert( pWhere->op==TK_IN );
-        assert( ExprUseXSelect(pWhere) );
-        assert( pWhere->x.pSelect!=0 );
+        ப்ரதிஜ்ஞா( pWhere!=0 );
+        ப்ரதிஜ்ஞா( pWhere->op==TK_IN );
+        ப்ரதிஜ்ஞா( கோவை_Use_XSelect(pWhere) );
+        ப்ரதிஜ்ஞா( pWhere->x.pSelect!=0 );
         pWhere->x.pSelect->selFlags |= SF_ClonedRhsIn;
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pSubq->pWin && 0==pushDownWindowCheck(pParse, pSubq, pNew) ){
+      எனில்( pSubq->pWin && 0==தள்ளு_Down_Window_Check(pParse, pSubq, pNew) ){
         /* Restriction 6c has prevented push-down in this case */
-        sqlite3ExprDelete(pParse->db, pNew);
+        sqlite3_கோவை_Delete(pParse->db, pNew);
         nChng--;
-        break;
+        நிறுத்து;
       }
 #endif
-      if( pSubq->selFlags & SF_Aggregate ){
-        pSubq->pHaving = sqlite3ExprAnd(pParse, pSubq->pHaving, pNew);
-      }else{
-        pSubq->pWhere = sqlite3ExprAnd(pParse, pSubq->pWhere, pNew);
+      எனில்( pSubq->selFlags & SF_Aggregate ){
+        pSubq->pHaving = sqlite3_கோவை_And(pParse, pSubq->pHaving, pNew);
+      }இல்லையெனில்{
+        pSubq->pWhere = sqlite3_கோவை_And(pParse, pSubq->pWhere, pNew);
       }
       pSubq = pSubq->pPrior;
     }
   }
-  return nChng;
+  திரும்பு nChng;
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
@@ -5408,68 +5408,68 @@ static int pushDownWhereTerms(
 **
 ** Return the number of column that were changed to NULL.
 */
-static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
-  int nCol;
+நிலையான முழு disableUnusedSubqueryResultColumns(SrcItem *pItem){
+  முழு nCol;
   Select *pSub;      /* The subquery to be simplified */
   Select *pX;        /* For looping over compound elements of pSub */
   Table *pTab;       /* The table that describes the subquery */
-  int j;             /* Column number */
-  int nChng = 0;     /* Number of columns converted to NULL */
+  முழு j;             /* Column number */
+  முழு nChng = 0;     /* Number of columns converted to NULL */
   Bitmask colUsed;   /* Columns that may not be NULLed out */
 
-  assert( pItem!=0 );
-  if( pItem->fg.isCorrelated || pItem->fg.isCte ){
-    return 0;
+  ப்ரதிஜ்ஞா( pItem!=0 );
+  எனில்( pItem->fg.isCorrelated || pItem->fg.isCte ){
+    திரும்பு 0;
   }
-  assert( pItem->pSTab!=0 );
+  ப்ரதிஜ்ஞா( pItem->pSTab!=0 );
   pTab = pItem->pSTab;
-  assert( pItem->fg.isSubquery );
+  ப்ரதிஜ்ஞா( pItem->fg.isSubquery );
   pSub = pItem->u4.pSubq->pSelect;
-  assert( pSub->pEList->nExpr==pTab->nCol );
-  for(pX=pSub; pX; pX=pX->pPrior){
-    if( (pX->selFlags & (SF_Distinct|SF_Aggregate))!=0 ){
+  ப்ரதிஜ்ஞா( pSub->pEList->n_கோவை==pTab->nCol );
+  க்கு(pX=pSub; pX; pX=pX->pPrior){
+    எனில்( (pX->selFlags & (SF_Distinct|SF_Aggregate))!=0 ){
       testcase( pX->selFlags & SF_Distinct );
       testcase( pX->selFlags & SF_Aggregate );
-      return 0;
+      திரும்பு 0;
     }
-    if( pX->pPrior && pX->op!=TK_ALL ){
+    எனில்( pX->pPrior && pX->op!=TK_ALL ){
       /* This optimization does not work for compound subqueries that
       ** use UNION, INTERSECT, or EXCEPT.  Only UNION ALL is allowed. */
-      return 0;
+      திரும்பு 0;
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pX->pWin ){
+    எனில்( pX->pWin ){
       /* This optimization does not work for subqueries that use window
       ** functions. */
-      return 0;
+      திரும்பு 0;
     }
 #endif
   }
   colUsed = pItem->colUsed;
-  if( pSub->pOrderBy ){
-    ExprList *pList = pSub->pOrderBy;
-    for(j=0; j<pList->nExpr; j++){
+  எனில்( pSub->pOrderBy ){
+    கோவை_List *pList = pSub->pOrderBy;
+    க்கு(j=0; j<pList->n_கோவை; j++){
       u16 iCol = pList->a[j].u.x.iOrderByCol;
-      if( iCol>0 ){
+      எனில்( iCol>0 ){
         iCol--;
         colUsed |= ((Bitmask)1)<<(iCol>=BMS ? BMS-1 : iCol);
       }
     }
   }
   nCol = pTab->nCol;
-  for(j=0; j<nCol; j++){
+  க்கு(j=0; j<nCol; j++){
     Bitmask m = j<BMS-1 ? MASKBIT(j) : TOPBIT;
-    if( (m & colUsed)!=0 ) continue;
-    for(pX=pSub; pX; pX=pX->pPrior) {
-      Expr *pY = pX->pEList->a[j].pExpr;
-      if( pY->op==TK_NULL ) continue;
+    எனில்( (m & colUsed)!=0 ) தொடர்;
+    க்கு(pX=pSub; pX; pX=pX->pPrior) {
+      கோவை *pY = pX->pEList->a[j].p_கோவை;
+      எனில்( pY->op==TK_NULL ) தொடர்;
       pY->op = TK_NULL;
-      ExprClearProperty(pY, EP_Skip|EP_Unlikely);
-      pX->selFlags |= SF_PushDown;
+      கோவை_Clear_Property(pY, EP_Skip|EP_Unlikely);
+      pX->selFlags |= SF_தள்ளு_Down;
       nChng++;
     }
   }
-  return nChng;
+  திரும்பு nChng;
 }
 
 
@@ -5489,42 +5489,42 @@ static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
 ** located but before their arguments have been subjected to aggregate
 ** analysis.
 */
-static u8 minMaxQuery(sqlite3 *db, Expr *pFunc, ExprList **ppMinMax){
-  int eRet = WHERE_ORDERBY_NORMAL;      /* Return value */
-  ExprList *pEList;                     /* Arguments to agg function */
-  const char *zFunc;                    /* Name of aggregate function pFunc */
-  ExprList *pOrderBy;
+நிலையான u8 minMaxQuery(sqlite3 *db, கோவை *pFunc, கோவை_List **ppMinMax){
+  முழு eRet = WHERE_ORDERBY_NORMAL;      /* Return value */
+  கோவை_List *pEList;                     /* Arguments to agg function */
+  மாறிலி எழுத்து *zFunc;                    /* Name of aggregate function pFunc */
+  கோவை_List *pOrderBy;
   u8 sortFlags = 0;
 
-  assert( *ppMinMax==0 );
-  assert( pFunc->op==TK_AGG_FUNCTION );
-  assert( !IsWindowFunc(pFunc) );
-  assert( ExprUseXList(pFunc) );
+  ப்ரதிஜ்ஞா( *ppMinMax==0 );
+  ப்ரதிஜ்ஞா( pFunc->op==TK_AGG_FUNCTION );
+  ப்ரதிஜ்ஞா( !IsWindowFunc(pFunc) );
+  ப்ரதிஜ்ஞா( கோவை_Use_XList(pFunc) );
   pEList = pFunc->x.pList;
-  if( pEList==0
-   || pEList->nExpr!=1
-   || ExprHasProperty(pFunc, EP_WinFunc)
+  எனில்( pEList==0
+   || pEList->n_கோவை!=1
+   || கோவை_Has_Property(pFunc, EP_WinFunc)
    || OptimizationDisabled(db, SQLITE_MinMaxOpt)
   ){
-    return eRet;
+    திரும்பு eRet;
   }
-  assert( !ExprHasProperty(pFunc, EP_IntValue) );
+  ப்ரதிஜ்ஞா( !கோவை_Has_Property(pFunc, EP_Int_மதிப்பு) );
   zFunc = pFunc->u.zToken;
-  if( sqlite3StrICmp(zFunc, "min")==0 ){
+  எனில்( sqlite3StrICmp(zFunc, "min")==0 ){
     eRet = WHERE_ORDERBY_MIN;
-    if( sqlite3ExprCanBeNull(pEList->a[0].pExpr) ){
+    எனில்( sqlite3_கோவை_Can_Be_Null(pEList->a[0].p_கோவை) ){
       sortFlags = KEYINFO_ORDER_BIGNULL;
     }
-  }else if( sqlite3StrICmp(zFunc, "max")==0 ){
+  }இல்லையெனில் எனில்( sqlite3StrICmp(zFunc, "max")==0 ){
     eRet = WHERE_ORDERBY_MAX;
     sortFlags = KEYINFO_ORDER_DESC;
-  }else{
-    return eRet;
+  }இல்லையெனில்{
+    திரும்பு eRet;
   }
-  *ppMinMax = pOrderBy = sqlite3ExprListDup(db, pEList, 0);
-  assert( pOrderBy!=0 || db->mallocFailed );
-  if( pOrderBy ) pOrderBy->a[0].fg.sortFlags = sortFlags;
-  return eRet;
+  *ppMinMax = pOrderBy = sqlite3_கோவை_List_Dup(db, pEList, 0);
+  ப்ரதிஜ்ஞா( pOrderBy!=0 || db->mallocFailed );
+  எனில்( pOrderBy ) pOrderBy->a[0].fg.sortFlags = sortFlags;
+  திரும்பு eRet;
 }
 
 /*
@@ -5544,36 +5544,36 @@ static u8 minMaxQuery(sqlite3 *db, Expr *pFunc, ExprList **ppMinMax){
 ** But returning the pointer when NULL should have been returned can
 ** result in incorrect answers and/or crashes.  So, when in doubt, return NULL.
 */
-static Table *isSimpleCount(Select *p, AggInfo *pAggInfo){
+நிலையான Table *is_Simple_மொத்தம்(Select *p, AggInfo *pAggInfo){
   Table *pTab;
-  Expr *pExpr;
+  கோவை *p_கோவை;
 
-  assert( !p->pGroupBy );
+  ப்ரதிஜ்ஞா( !p->pGroupBy );
 
-  if( p->pWhere
-   || p->pEList->nExpr!=1
+  எனில்( p->pWhere
+   || p->pEList->n_கோவை!=1
    || p->pSrc->nSrc!=1
    || p->pSrc->a[0].fg.isSubquery
    || pAggInfo->nFunc!=1
    || p->pHaving
   ){
-    return 0;
+    திரும்பு 0;
   }
   pTab = p->pSrc->a[0].pSTab;
-  assert( pTab!=0 );
-  assert( !IsView(pTab) );
-  if( !IsOrdinaryTable(pTab) ) return 0;
-  pExpr = p->pEList->a[0].pExpr;
-  assert( pExpr!=0 );
-  if( pExpr->op!=TK_AGG_FUNCTION ) return 0;
-  if( pExpr->pAggInfo!=pAggInfo ) return 0;
-  if( (pAggInfo->aFunc[0].pFunc->funcFlags&SQLITE_FUNC_COUNT)==0 ) return 0;
-  assert( pAggInfo->aFunc[0].pFExpr==pExpr );
-  testcase( ExprHasProperty(pExpr, EP_Distinct) );
-  testcase( ExprHasProperty(pExpr, EP_WinFunc) );
-  if( ExprHasProperty(pExpr, EP_Distinct|EP_WinFunc) ) return 0;
+  ப்ரதிஜ்ஞா( pTab!=0 );
+  ப்ரதிஜ்ஞா( !IsView(pTab) );
+  எனில்( !IsOrdinaryTable(pTab) ) திரும்பு 0;
+  p_கோவை = p->pEList->a[0].p_கோவை;
+  ப்ரதிஜ்ஞா( p_கோவை!=0 );
+  எனில்( p_கோவை->op!=TK_AGG_FUNCTION ) திரும்பு 0;
+  எனில்( p_கோவை->pAggInfo!=pAggInfo ) திரும்பு 0;
+  எனில்( (pAggInfo->aFunc[0].pFunc->funcFlags&SQLITE_FUNC_மொத்தம்)==0 ) திரும்பு 0;
+  ப்ரதிஜ்ஞா( pAggInfo->aFunc[0].pFExpr==p_கோவை );
+  testcase( கோவை_Has_Property(p_கோவை, EP_Distinct) );
+  testcase( கோவை_Has_Property(p_கோவை, EP_WinFunc) );
+  எனில்( கோவை_Has_Property(p_கோவை, EP_Distinct|EP_WinFunc) ) திரும்பு 0;
 
-  return pTab;
+  திரும்பு pTab;
 }
 
 /*
@@ -5583,25 +5583,25 @@ static Table *isSimpleCount(Select *p, AggInfo *pAggInfo){
 ** SQLITE_ERROR and leave an error in pParse. Otherwise, populate
 ** pFrom->pIndex and return SQLITE_OK.
 */
-int sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
+முழு sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
   Table *pTab = pFrom->pSTab;
-  char *zIndexedBy = pFrom->u1.zIndexedBy;
+  எழுத்து *zIndexedBy = pFrom->u1.zIndexedBy;
   Index *pIdx;
-  assert( pTab!=0 );
-  assert( pFrom->fg.isIndexedBy!=0 );
+  ப்ரதிஜ்ஞா( pTab!=0 );
+  ப்ரதிஜ்ஞா( pFrom->fg.isIndexedBy!=0 );
 
-  for(pIdx=pTab->pIndex;
+  க்கு(pIdx=pTab->pIndex;
       pIdx && sqlite3StrICmp(pIdx->zName, zIndexedBy);
       pIdx=pIdx->pNext
   );
-  if( !pIdx ){
-    sqlite3ErrorMsg(pParse, "no such index: %s", zIndexedBy, 0);
+  எனில்( !pIdx ){
+    sqlite3_Error_செய்தி(pParse, "no such index: %s", zIndexedBy, 0);
     pParse->checkSchema = 1;
-    return SQLITE_ERROR;
+    திரும்பு SQLITE_ERROR;
   }
-  assert( pFrom->fg.isCte==0 );
+  ப்ரதிஜ்ஞா( pFrom->fg.isCte==0 );
   pFrom->u2.pIBIndex = pIdx;
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
@@ -5625,20 +5625,20 @@ int sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
 ** The UNION ALL operator works fine with multiSelectByMerge() even when
 ** there are COLLATE terms in the ORDER BY.
 */
-static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
-  int i;
+நிலையான முழு convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
+  முழு i;
   Select *pNew;
   Select *pX;
   sqlite3 *db;
-  struct ExprList_item *a;
+  கட்டமைப்பு கோவை_List_item *a;
   SrcList *pNewSrc;
   Parse *pParse;
   Token dummy;
 
-  if( p->pPrior==0 ) return WRC_Continue;
-  if( p->pOrderBy==0 ) return WRC_Continue;
-  for(pX=p; pX && (pX->op==TK_ALL || pX->op==TK_SELECT); pX=pX->pPrior){}
-  if( pX==0 ) return WRC_Continue;
+  எனில்( p->pPrior==0 ) திரும்பு WRC_Continue;
+  எனில்( p->pOrderBy==0 ) திரும்பு WRC_Continue;
+  க்கு(pX=p; pX && (pX->op==TK_ALL || pX->op==TK_SELECT); pX=pX->pPrior){}
+  எனில்( pX==0 ) திரும்பு WRC_Continue;
   a = p->pOrderBy->a;
 #ifndef SQLITE_OMIT_WINDOWFUNC
   /* If iOrderByCol is already non-zero, then it has already been matched
@@ -5646,29 +5646,29 @@ static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
   ** SELECT is rewritten for window-functions processing and then passed
   ** to sqlite3SelectPrep() and similar a second time. The rewriting done
   ** by this function is not required in this case. */
-  if( a[0].u.x.iOrderByCol ) return WRC_Continue;
+  எனில்( a[0].u.x.iOrderByCol ) திரும்பு WRC_Continue;
 #endif
-  for(i=p->pOrderBy->nExpr-1; i>=0; i--){
-    if( a[i].pExpr->flags & EP_Collate ) break;
+  க்கு(i=p->pOrderBy->n_கோவை-1; i>=0; i--){
+    எனில்( a[i].p_கோவை->flags & EP_Collate ) நிறுத்து;
   }
-  if( i<0 ) return WRC_Continue;
+  எனில்( i<0 ) திரும்பு WRC_Continue;
 
   /* If we reach this point, that means the transformation is required. */
 
   pParse = pWalker->pParse;
   db = pParse->db;
-  pNew = sqlite3DbMallocZero(db, sizeof(*pNew) );
-  if( pNew==0 ) return WRC_Abort;
-  memset(&dummy, 0, sizeof(dummy));
+  pNew = sqlite3DbMallocZero(db, அளவு(*pNew) );
+  எனில்( pNew==0 ) திரும்பு WRC_Abort;
+  memset(&dummy, 0, அளவு(dummy));
   pNewSrc = sqlite3SrcListAppendFromTerm(pParse,0,0,0,&dummy,pNew,0);
-  assert( pNewSrc!=0 || pParse->nErr );
-  if( pParse->nErr ){
+  ப்ரதிஜ்ஞா( pNewSrc!=0 || pParse->nErr );
+  எனில்( pParse->nErr ){
     sqlite3SrcListDelete(db, pNewSrc);
-    return WRC_Abort;
+    திரும்பு WRC_Abort;
   }
   *pNew = *p;
   p->pSrc = pNewSrc;
-  p->pEList = sqlite3ExprListAppend(pParse, 0, sqlite3Expr(db, TK_ASTERISK, 0));
+  p->pEList = sqlite3_கோவை_List_Append(pParse, 0, sqlite3_கோவை(db, TK_ASTERISK, 0));
   p->op = TK_SELECT;
   p->pWhere = 0;
   p->pGroupBy = 0;
@@ -5681,12 +5681,12 @@ static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
   p->pWinDefn = 0;
 #endif
   p->selFlags &= ~(u32)(SF_Compound|SF_Distinct);
-  assert( (p->selFlags & SF_Converted)==0 );
+  ப்ரதிஜ்ஞா( (p->selFlags & SF_Converted)==0 );
   p->selFlags |= SF_Converted;
-  assert( pNew->pPrior!=0 );
+  ப்ரதிஜ்ஞா( pNew->pPrior!=0 );
   pNew->pPrior->pNext = pNew;
   pNew->pLimit = 0;
-  return WRC_Continue;
+  திரும்பு WRC_Continue;
 }
 
 /*
@@ -5694,12 +5694,12 @@ static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
 ** arguments.  If it does, leave an error message in pParse and return
 ** non-zero, since pFrom is not allowed to be a table-valued function.
 */
-static int cannotBeFunction(Parse *pParse, SrcItem *pFrom){
-  if( pFrom->fg.isTabFunc ){
-    sqlite3ErrorMsg(pParse, "'%s' is not a function", pFrom->zName);
-    return 1;
+நிலையான முழு cannotBeFunction(Parse *pParse, SrcItem *pFrom){
+  எனில்( pFrom->fg.isTabFunc ){
+    sqlite3_Error_செய்தி(pParse, "'%s' is not a function", pFrom->zName);
+    திரும்பு 1;
   }
-  return 0;
+  திரும்பு 0;
 }
 
 #ifndef SQLITE_OMIT_CTE
@@ -5713,26 +5713,26 @@ static int cannotBeFunction(Parse *pParse, SrcItem *pFrom){
 ** If a non-NULL value is returned, set *ppContext to point to the With
 ** object that the returned CTE belongs to.
 */
-static struct Cte *searchWith(
+நிலையான கட்டமைப்பு Cte *தேடல்_With(
   With *pWith,                    /* Current innermost WITH clause */
   SrcItem *pItem,                 /* FROM clause element to resolve */
   With **ppContext                /* OUT: WITH clause return value belongs to */
 ){
-  const char *zName = pItem->zName;
+  மாறிலி எழுத்து *zName = pItem->zName;
   With *p;
-  assert( pItem->fg.fixedSchema || pItem->u4.zDatabase==0 );
-  assert( zName!=0 );
-  for(p=pWith; p; p=p->pOuter){
-    int i;
-    for(i=0; i<p->nCte; i++){
-      if( sqlite3StrICmp(zName, p->a[i].zName)==0 ){
+  ப்ரதிஜ்ஞா( pItem->fg.fixedSchema || pItem->u4.zDatabase==0 );
+  ப்ரதிஜ்ஞா( zName!=0 );
+  க்கு(p=pWith; p; p=p->pOuter){
+    முழு i;
+    க்கு(i=0; i<p->nCte; i++){
+      எனில்( sqlite3StrICmp(zName, p->a[i].zName)==0 ){
         *ppContext = p;
-        return &p->a[i];
+        திரும்பு &p->a[i];
       }
     }
-    if( p->bView ) break;
+    எனில்( p->bView ) நிறுத்து;
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /* The code generator maintains a stack of active WITH clauses
@@ -5752,23 +5752,23 @@ static struct Cte *searchWith(
 ** If bFree is true, do not continue to use the pWith pointer after
 ** calling this routine,  Instead, use only the return value.
 */
-With *sqlite3WithPush(Parse *pParse, With *pWith, u8 bFree){
-  if( pWith ){
-    if( bFree ){
+With *sqlite3_With_தள்ளு(Parse *pParse, With *pWith, u8 bFree){
+  எனில்( pWith ){
+    எனில்( bFree ){
       pWith = (With*)sqlite3ParserAddCleanup(pParse, sqlite3WithDeleteGeneric,
                       pWith);
-      if( pWith==0 ) return 0;
+      எனில்( pWith==0 ) திரும்பு 0;
     }
-    if( pParse->nErr==0 ){
-      assert( pParse->pWith!=pWith );
+    எனில்( pParse->nErr==0 ){
+      ப்ரதிஜ்ஞா( pParse->pWith!=pWith );
       pWith->pOuter = pParse->pWith;
       pParse->pWith = pWith;
     }
   }
-  return pWith;
+  திரும்பு pWith;
 }
 
-static int selectExpanderWalk(Walker*, Select*);
+நிலையான முழு selectExpanderWalk(Walker*, Select*);
 
 /*
 ** This function checks to see if argument pFrom refers to a CTE declared by
@@ -5783,7 +5783,7 @@ static int selectExpanderWalk(Walker*, Select*);
 ** Return 1 if a match is found.
 ** Return 2 if an error condition is detected.
 */
-static int resolveFromTermToCte(
+நிலையான முழு resolveFromTermToCte(
   Parse *pParse,                  /* The parsing context */
   Walker *pWalker,                /* Current tree walker */
   SrcItem *pFrom                  /* The FROM clause term to check */
@@ -5791,64 +5791,64 @@ static int resolveFromTermToCte(
   Cte *pCte;               /* Matched CTE (or NULL if no match) */
   With *pWith;             /* The matching WITH */
 
-  assert( pFrom->pSTab==0 );
-  if( pParse->pWith==0 ){
+  ப்ரதிஜ்ஞா( pFrom->pSTab==0 );
+  எனில்( pParse->pWith==0 ){
     /* There are no WITH clauses in the stack.  No match is possible */
-    return 0;
+    திரும்பு 0;
   }
-  if( pParse->nErr ){
+  எனில்( pParse->nErr ){
     /* Prior errors might have left pParse->pWith in a goofy state, so
     ** go no further. */
-    return 0;
+    திரும்பு 0;
   }
-  assert( pFrom->fg.hadSchema==0 || pFrom->fg.notCte!=0 );
-  if( pFrom->fg.fixedSchema==0 && pFrom->u4.zDatabase!=0 ){
+  ப்ரதிஜ்ஞா( pFrom->fg.hadSchema==0 || pFrom->fg.notCte!=0 );
+  எனில்( pFrom->fg.fixedSchema==0 && pFrom->u4.zDatabase!=0 ){
     /* The FROM term contains a schema qualifier (ex: main.t1) and so
     ** it cannot possibly be a CTE reference. */
-    return 0;
+    திரும்பு 0;
   }
-  if( pFrom->fg.notCte ){
+  எனில்( pFrom->fg.notCte ){
     /* The FROM term is specifically excluded from matching a CTE.
     **   (1)  It is part of a trigger that used to have zDatabase but had
     **        zDatabase removed by sqlite3FixTriggerStep().
     **   (2)  This is the first term in the FROM clause of an UPDATE.
     */
-    return 0;
+    திரும்பு 0;
   }
-  pCte = searchWith(pParse->pWith, pFrom, &pWith);
-  if( pCte ){
+  pCte = தேடல்_With(pParse->pWith, pFrom, &pWith);
+  எனில்( pCte ){
     sqlite3 *db = pParse->db;
     Table *pTab;
-    ExprList *pEList;
+    கோவை_List *pEList;
     Select *pSel;
-    Select *pLeft;                /* Left-most SELECT statement */
+    Select *p_இடது;                /* Left-most SELECT statement */
     Select *pRecTerm;             /* Left-most recursive term */
-    int bMayRecursive;            /* True if compound joined by UNION [ALL] */
+    முழு bMayRecursive;            /* True if compound joined by UNION [ALL] */
     With *pSavedWith;             /* Initial value of pParse->pWith */
-    int iRecTab = -1;             /* Cursor for recursive table */
+    முழு iRecTab = -1;             /* Cursor for recursive table */
     CteUse *pCteUse;
 
     /* If pCte->zCteErr is non-NULL at this point, then this is an illegal
     ** recursive reference to CTE pCte. Leave an error in pParse and return
     ** early. If pCte->zCteErr is NULL, then this is not a recursive reference.
     ** In this case, proceed.  */
-    if( pCte->zCteErr ){
-      sqlite3ErrorMsg(pParse, pCte->zCteErr, pCte->zName);
-      return 2;
+    எனில்( pCte->zCteErr ){
+      sqlite3_Error_செய்தி(pParse, pCte->zCteErr, pCte->zName);
+      திரும்பு 2;
     }
-    if( cannotBeFunction(pParse, pFrom) ) return 2;
+    எனில்( cannotBeFunction(pParse, pFrom) ) திரும்பு 2;
 
-    assert( pFrom->pSTab==0 );
-    pTab = sqlite3DbMallocZero(db, sizeof(Table));
-    if( pTab==0 ) return 2;
+    ப்ரதிஜ்ஞா( pFrom->pSTab==0 );
+    pTab = sqlite3DbMallocZero(db, அளவு(Table));
+    எனில்( pTab==0 ) திரும்பு 2;
     pCteUse = pCte->pUse;
-    if( pCteUse==0 ){
-      pCte->pUse = pCteUse = sqlite3DbMallocZero(db, sizeof(pCteUse[0]));
-      if( pCteUse==0
+    எனில்( pCteUse==0 ){
+      pCte->pUse = pCteUse = sqlite3DbMallocZero(db, அளவு(pCteUse[0]));
+      எனில்( pCteUse==0
        || sqlite3ParserAddCleanup(pParse,sqlite3DbFree,pCteUse)==0
       ){
         sqlite3DbFree(db, pTab);
-        return 2;
+        திரும்பு 2;
       }
       pCteUse->eM10d = pCte->eM10d;
     }
@@ -5856,19 +5856,19 @@ static int resolveFromTermToCte(
     pTab->nTabRef = 1;
     pTab->zName = sqlite3DbStrDup(db, pCte->zName);
     pTab->iPKey = -1;
-    pTab->nRowLogEst = 200; assert( 200==sqlite3LogEst(1048576) );
+    pTab->nRowLogEst = 200; ப்ரதிஜ்ஞா( 200==sqlite3LogEst(1048576) );
     pTab->tabFlags |= TF_Ephemeral | TF_NoVisibleRowid;
     sqlite3SrcItemAttachSubquery(pParse, pFrom, pCte->pSelect, 1);
-    if( db->mallocFailed ) return 2;
-    assert( pFrom->fg.isSubquery && pFrom->u4.pSubq );
+    எனில்( db->mallocFailed ) திரும்பு 2;
+    ப்ரதிஜ்ஞா( pFrom->fg.isSubquery && pFrom->u4.pSubq );
     pSel = pFrom->u4.pSubq->pSelect;
-    assert( pSel!=0 );
+    ப்ரதிஜ்ஞா( pSel!=0 );
     pSel->selFlags |= SF_CopyCte;
-    if( pFrom->fg.isIndexedBy ){
-      sqlite3ErrorMsg(pParse, "no such index: \"%s\"", pFrom->u1.zIndexedBy);
-      return 2;
+    எனில்( pFrom->fg.isIndexedBy ){
+      sqlite3_Error_செய்தி(pParse, "no such index: \"%s\"", pFrom->u1.zIndexedBy);
+      திரும்பு 2;
     }
-    assert( !pFrom->fg.isIndexedBy );
+    ப்ரதிஜ்ஞா( !pFrom->fg.isIndexedBy );
     pFrom->fg.isCte = 1;
     pFrom->u2.pCteUse = pCteUse;
     pCteUse->nUse++;
@@ -5876,13 +5876,13 @@ static int resolveFromTermToCte(
     /* Check if this is a recursive CTE. */
     pRecTerm = pSel;
     bMayRecursive = ( pSel->op==TK_ALL || pSel->op==TK_UNION );
-    while( bMayRecursive && pRecTerm->op==pSel->op ){
-      int i;
+    போது( bMayRecursive && pRecTerm->op==pSel->op ){
+      முழு i;
       SrcList *pSrc = pRecTerm->pSrc;
-      assert( pRecTerm->pPrior!=0 );
-      for(i=0; i<pSrc->nSrc; i++){
+      ப்ரதிஜ்ஞா( pRecTerm->pPrior!=0 );
+      க்கு(i=0; i<pSrc->nSrc; i++){
         SrcItem *pItem = &pSrc->a[i];
-        if( pItem->zName!=0
+        எனில்( pItem->zName!=0
          && !pItem->fg.hadSchema
          && ALWAYS( !pItem->fg.isSubquery )
          && (pItem->fg.fixedSchema || pItem->u4.zDatabase==0)
@@ -5891,87 +5891,87 @@ static int resolveFromTermToCte(
           pItem->pSTab = pTab;
           pTab->nTabRef++;
           pItem->fg.isRecursive = 1;
-          if( pRecTerm->selFlags & SF_Recursive ){
-            sqlite3ErrorMsg(pParse,
+          எனில்( pRecTerm->selFlags & SF_Recursive ){
+            sqlite3_Error_செய்தி(pParse,
                "multiple references to recursive table: %s", pCte->zName
             );
-            return 2;
+            திரும்பு 2;
           }
           pRecTerm->selFlags |= SF_Recursive;
-          if( iRecTab<0 ) iRecTab = pParse->nTab++;
+          எனில்( iRecTab<0 ) iRecTab = pParse->nTab++;
           pItem->iCursor = iRecTab;
         }
       }
-      if( (pRecTerm->selFlags & SF_Recursive)==0 ) break;
+      எனில்( (pRecTerm->selFlags & SF_Recursive)==0 ) நிறுத்து;
       pRecTerm = pRecTerm->pPrior;
     }
 
-    if( pParse->nTab >= db->aLimit[SQLITE_LIMIT_CTES]
+    எனில்( pParse->nTab >= db->aLimit[SQLITE_LIMIT_CTES]
      && db->aLimit[SQLITE_LIMIT_CTES]>0
     ){
-      sqlite3ErrorMsg(pParse, "too many CTEs");
-      return 2;
+      sqlite3_Error_செய்தி(pParse, "too many CTEs");
+      திரும்பு 2;
     }
-#if SQLITE_MAX_EXPR_DEPTH>0
+#எனில் SQLITE_MAX_கோவை_DEPTH>0
     pParse->nNestSel++;
-    if( checkSubqueryNestingDepth(pParse) ) return 2;
+    எனில்( checkSubqueryNestingDepth(pParse) ) திரும்பு 2;
 #endif
     pCte->zCteErr = "circular reference: %s";
     pSavedWith = pParse->pWith;
     pParse->pWith = pWith;
-    if( pSel->selFlags & SF_Recursive ){
-      int rc;
-      assert( pRecTerm!=0 );
-      assert( (pRecTerm->selFlags & SF_Recursive)==0 );
-      assert( pRecTerm->pNext!=0 );
-      assert( (pRecTerm->pNext->selFlags & SF_Recursive)!=0 );
-      assert( pRecTerm->pWith==0 );
+    எனில்( pSel->selFlags & SF_Recursive ){
+      முழு rc;
+      ப்ரதிஜ்ஞா( pRecTerm!=0 );
+      ப்ரதிஜ்ஞா( (pRecTerm->selFlags & SF_Recursive)==0 );
+      ப்ரதிஜ்ஞா( pRecTerm->pNext!=0 );
+      ப்ரதிஜ்ஞா( (pRecTerm->pNext->selFlags & SF_Recursive)!=0 );
+      ப்ரதிஜ்ஞா( pRecTerm->pWith==0 );
       pRecTerm->pWith = pSel->pWith;
       rc = sqlite3WalkSelect(pWalker, pRecTerm);
       pRecTerm->pWith = 0;
-      if( rc ){
+      எனில்( rc ){
         pParse->pWith = pSavedWith;
-        return 2;
+        திரும்பு 2;
       }
-    }else{
-      if( selectExpanderWalk(pWalker, pSel) ){
+    }இல்லையெனில்{
+      எனில்( selectExpanderWalk(pWalker, pSel) ){
         pParse->pWith = pSavedWith;
-        return 2;
+        திரும்பு 2;
       }
     }
     pParse->pWith = pWith;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#எனில் SQLITE_MAX_கோவை_DEPTH>0
     pParse->nNestSel--;
-    assert( pParse->nNestSel>=0 );
+    ப்ரதிஜ்ஞா( pParse->nNestSel>=0 );
 #endif
 
-    for(pLeft=pSel; pLeft->pPrior; pLeft=pLeft->pPrior);
-    pEList = pLeft->pEList;
-    if( pCte->pCols ){
-      if( pEList && pEList->nExpr!=pCte->pCols->nExpr ){
-        sqlite3ErrorMsg(pParse, "table %s has %d values for %d columns",
-            pCte->zName, pEList->nExpr, pCte->pCols->nExpr
+    க்கு(p_இடது=pSel; p_இடது->pPrior; p_இடது=p_இடது->pPrior);
+    pEList = p_இடது->pEList;
+    எனில்( pCte->pCols ){
+      எனில்( pEList && pEList->n_கோவை!=pCte->pCols->n_கோவை ){
+        sqlite3_Error_செய்தி(pParse, "table %s has %d values for %d columns",
+            pCte->zName, pEList->n_கோவை, pCte->pCols->n_கோவை
         );
         pParse->pWith = pSavedWith;
-        return 2;
+        திரும்பு 2;
       }
       pEList = pCte->pCols;
     }
 
-    sqlite3ColumnsFromExprList(pParse, pEList, &pTab->nCol, &pTab->aCol);
-    if( bMayRecursive ){
-      if( pSel->selFlags & SF_Recursive ){
+    sqlite3_Columns_From_கோவை_List(pParse, pEList, &pTab->nCol, &pTab->aCol);
+    எனில்( bMayRecursive ){
+      எனில்( pSel->selFlags & SF_Recursive ){
         pCte->zCteErr = "multiple recursive references: %s";
-      }else{
+      }இல்லையெனில்{
         pCte->zCteErr = "recursive reference in a subquery: %s";
       }
       sqlite3WalkSelect(pWalker, pSel);
     }
     pCte->zCteErr = 0;
     pParse->pWith = pSavedWith;
-    return 1;  /* Success */
+    திரும்பு 1;  /* Success */
   }
-  return 0;  /* No match */
+  திரும்பு 0;  /* No match */
 }
 #endif
 
@@ -5984,12 +5984,12 @@ static int resolveFromTermToCte(
 ** sqlite3SelectExpand() when walking a SELECT tree to resolve table
 ** names and other FROM clause elements.
 */
-void sqlite3SelectPopWith(Walker *pWalker, Select *p){
+வெறுமை sqlite3_Select_எடு_With(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  if( OK_IF_ALWAYS_TRUE(pParse->pWith) && p->pPrior==0 ){
+  எனில்( OK_IF_ALWAYS_TRUE(pParse->pWith) && p->pPrior==0 ){
     With *pWith = findRightmost(p)->pWith;
-    if( pWith!=0 ){
-      assert( pParse->pWith==pWith || pParse->nErr );
+    எனில்( pWith!=0 ){
+      ப்ரதிஜ்ஞா( pParse->pWith==pWith || pParse->nErr );
       pParse->pWith = pWith->pOuter;
     }
   }
@@ -6003,35 +6003,35 @@ void sqlite3SelectPopWith(Walker *pWalker, Select *p){
 ** SQLITE_OK is returned. Otherwise, if an OOM error is encountered,
 ** SQLITE_NOMEM.
 */
-int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
+முழு sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
   Select *pSel;
   Table *pTab;
 
-  assert( pFrom->fg.isSubquery );
-  assert( pFrom->u4.pSubq!=0 );
+  ப்ரதிஜ்ஞா( pFrom->fg.isSubquery );
+  ப்ரதிஜ்ஞா( pFrom->u4.pSubq!=0 );
   pSel = pFrom->u4.pSubq->pSelect;
-  assert( pSel );
-  pFrom->pSTab = pTab = sqlite3DbMallocZero(pParse->db, sizeof(Table));
-  if( pTab==0 ) return SQLITE_NOMEM;
+  ப்ரதிஜ்ஞா( pSel );
+  pFrom->pSTab = pTab = sqlite3DbMallocZero(pParse->db, அளவு(Table));
+  எனில்( pTab==0 ) திரும்பு SQLITE_NOMEM;
   pTab->nTabRef = 1;
-  if( pFrom->zAlias ){
+  எனில்( pFrom->zAlias ){
     pTab->zName = sqlite3DbStrDup(pParse->db, pFrom->zAlias);
-  }else{
+  }இல்லையெனில்{
     pTab->zName = sqlite3MPrintf(pParse->db, "%!S", pFrom);
   }
-  while( pSel->pPrior ){ pSel = pSel->pPrior; }
-  sqlite3ColumnsFromExprList(pParse, pSel->pEList,&pTab->nCol,&pTab->aCol);
+  போது( pSel->pPrior ){ pSel = pSel->pPrior; }
+  sqlite3_Columns_From_கோவை_List(pParse, pSel->pEList,&pTab->nCol,&pTab->aCol);
   pTab->iPKey = -1;
   pTab->eTabType = TABTYP_VIEW;
-  pTab->nRowLogEst = 200; assert( 200==sqlite3LogEst(1048576) );
+  pTab->nRowLogEst = 200; ப்ரதிஜ்ஞா( 200==sqlite3LogEst(1048576) );
 #ifndef SQLITE_ALLOW_ROWID_IN_VIEW
   /* The usual case - do not allow ROWID on a subquery */
   pTab->tabFlags |= TF_Ephemeral | TF_NoVisibleRowid;
-#else
+#இல்லையெனில்
   /* Legacy compatibility mode */
   pTab->tabFlags |= TF_Ephemeral | sqlite3Config.mNoVisibleRowid;
 #endif
-  return pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
+  திரும்பு pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 
@@ -6044,19 +6044,19 @@ int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
 ** contains a USING clause, or if none of the USING clauses contain zName,
 ** then return false.
 */
-static int inAnyUsingClause(
-  const char *zName, /* Name we are looking for */
+நிலையான முழு inAnyUsingClause(
+  மாறிலி எழுத்து *zName, /* Name we are looking for */
   SrcItem *pBase,    /* The base SrcItem.  Looking at pBase[1] and following */
-  int N              /* How many SrcItems to check */
+  முழு N              /* How many SrcItems to check */
 ){
-  while( N>0 ){
+  போது( N>0 ){
     N--;
     pBase++;
-    if( pBase->fg.isUsing==0 ) continue;
-    if( NEVER(pBase->u3.pUsing==0) ) continue;
-    if( sqlite3IdListIndex(pBase->u3.pUsing, zName)>=0 ) return 1;
+    எனில்( pBase->fg.isUsing==0 ) தொடர்;
+    எனில்( NEVER(pBase->u3.pUsing==0) ) தொடர்;
+    எனில்( sqlite3IdListIndex(pBase->u3.pUsing, zName)>=0 ) திரும்பு 1;
   }
-  return 0;
+  திரும்பு 0;
 }
 
 
@@ -6084,41 +6084,41 @@ static int inAnyUsingClause(
 **         and TABLE.* to be every column in TABLE.
 **
 */
-static int selectExpander(Walker *pWalker, Select *p){
+நிலையான முழு selectExpander(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  int i, j, k, rc;
+  முழு i, j, k, rc;
   SrcList *pTabList;
-  ExprList *pEList;
+  கோவை_List *pEList;
   SrcItem *pFrom;
   sqlite3 *db = pParse->db;
-  Expr *pE, *pRight, *pExpr;
+  கோவை *pE, *p_வலது, *p_கோவை;
   u16 selFlags = p->selFlags;
   u32 elistFlags = 0;
 
   p->selFlags |= SF_Expanded;
-  if( db->mallocFailed  ){
-    return WRC_Abort;
+  எனில்( db->mallocFailed  ){
+    திரும்பு WRC_Abort;
   }
-  assert( p->pSrc!=0 );
-  if( (selFlags & SF_Expanded)!=0 ){
-    return WRC_Prune;
+  ப்ரதிஜ்ஞா( p->pSrc!=0 );
+  எனில்( (selFlags & SF_Expanded)!=0 ){
+    திரும்பு WRC_Prune;
   }
-  if( pWalker->eCode ){
+  எனில்( pWalker->eCode ){
     /* Renumber selId because it has been copied from a view */
     p->selId = ++pParse->nSelect;
   }
   pTabList = p->pSrc;
   pEList = p->pEList;
-  if( pParse->pWith && (p->selFlags & SF_View) ){
-    if( p->pWith==0 ){
+  எனில்( pParse->pWith && (p->selFlags & SF_View) ){
+    எனில்( p->pWith==0 ){
       p->pWith = (With*)sqlite3DbMallocZero(db, SZ_WITH(1) );
-      if( p->pWith==0 ){
-        return WRC_Abort;
+      எனில்( p->pWith==0 ){
+        திரும்பு WRC_Abort;
       }
     }
     p->pWith->bView = 1;
   }
-  sqlite3WithPush(pParse, p->pWith, 0);
+  sqlite3_With_தள்ளு(pParse, p->pWith, 0);
 
   /* Make sure cursor numbers have been assigned to all entries in
   ** the FROM clause of the SELECT statement.
@@ -6129,73 +6129,73 @@ static int selectExpander(Walker *pWalker, Select *p){
   ** an entry of the FROM clause is a subquery instead of a table or view,
   ** then create a transient table structure to describe the subquery.
   */
-  for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
+  க்கு(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
     Table *pTab;
-    assert( pFrom->fg.isRecursive==0 || pFrom->pSTab!=0 );
-    if( pFrom->pSTab ) continue;
-    assert( pFrom->fg.isRecursive==0 );
-    if( pFrom->zName==0 ){
+    ப்ரதிஜ்ஞா( pFrom->fg.isRecursive==0 || pFrom->pSTab!=0 );
+    எனில்( pFrom->pSTab ) தொடர்;
+    ப்ரதிஜ்ஞா( pFrom->fg.isRecursive==0 );
+    எனில்( pFrom->zName==0 ){
 #ifndef SQLITE_OMIT_SUBQUERY
       Select *pSel;
-      assert( pFrom->fg.isSubquery && pFrom->u4.pSubq!=0 );
+      ப்ரதிஜ்ஞா( pFrom->fg.isSubquery && pFrom->u4.pSubq!=0 );
       pSel = pFrom->u4.pSubq->pSelect;
       /* A sub-query in the FROM clause of a SELECT */
-      assert( pSel!=0 );
-      assert( pFrom->pSTab==0 );
-      if( sqlite3WalkSelect(pWalker, pSel) ) return WRC_Abort;
-      if( sqlite3ExpandSubquery(pParse, pFrom) ) return WRC_Abort;
+      ப்ரதிஜ்ஞா( pSel!=0 );
+      ப்ரதிஜ்ஞா( pFrom->pSTab==0 );
+      எனில்( sqlite3WalkSelect(pWalker, pSel) ) திரும்பு WRC_Abort;
+      எனில்( sqlite3ExpandSubquery(pParse, pFrom) ) திரும்பு WRC_Abort;
 #endif
 #ifndef SQLITE_OMIT_CTE
-    }else if( (rc = resolveFromTermToCte(pParse, pWalker, pFrom))!=0 ){
-      if( rc>1 ) return WRC_Abort;
+    }இல்லையெனில் எனில்( (rc = resolveFromTermToCte(pParse, pWalker, pFrom))!=0 ){
+      எனில்( rc>1 ) திரும்பு WRC_Abort;
       pTab = pFrom->pSTab;
-      assert( pTab!=0 );
+      ப்ரதிஜ்ஞா( pTab!=0 );
 #endif
-    }else{
+    }இல்லையெனில்{
       /* An ordinary table or view name in the FROM clause */
-      assert( pFrom->pSTab==0 );
+      ப்ரதிஜ்ஞா( pFrom->pSTab==0 );
       pFrom->pSTab = pTab = sqlite3LocateTableItem(pParse, 0, pFrom);
-      if( pTab==0 ) return WRC_Abort;
-      if( pTab->nTabRef>=0xffff ){
-        sqlite3ErrorMsg(pParse, "too many references to \"%s\": max 65535",
+      எனில்( pTab==0 ) திரும்பு WRC_Abort;
+      எனில்( pTab->nTabRef>=0xffff ){
+        sqlite3_Error_செய்தி(pParse, "too many references to \"%s\": max 65535",
            pTab->zName);
         pFrom->pSTab = 0;
-        return WRC_Abort;
+        திரும்பு WRC_Abort;
       }
       pTab->nTabRef++;
-      if( !IsVirtual(pTab) && cannotBeFunction(pParse, pFrom) ){
-        return WRC_Abort;
+      எனில்( !IsVirtual(pTab) && cannotBeFunction(pParse, pFrom) ){
+        திரும்பு WRC_Abort;
       }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-      if( !IsOrdinaryTable(pTab) ){
+#எனில் !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+      எனில்( !IsOrdinaryTable(pTab) ){
         i16 nCol;
         u8 eCodeOrig = pWalker->eCode;
-        if( sqlite3ViewGetColumnNames(pParse, pTab) ) return WRC_Abort;
-        assert( pFrom->fg.isSubquery==0 );
-        if( IsView(pTab) ){
-          if( (db->flags & SQLITE_EnableView)==0
+        எனில்( sqlite3ViewGetColumnNames(pParse, pTab) ) திரும்பு WRC_Abort;
+        ப்ரதிஜ்ஞா( pFrom->fg.isSubquery==0 );
+        எனில்( IsView(pTab) ){
+          எனில்( (db->flags & SQLITE_EnableView)==0
            && pTab->pSchema!=db->aDb[1].pSchema
           ){
-            sqlite3ErrorMsg(pParse, "access to view \"%s\" prohibited",
+            sqlite3_Error_செய்தி(pParse, "access to view \"%s\" prohibited",
               pTab->zName);
           }
           sqlite3SrcItemAttachSubquery(pParse, pFrom, pTab->u.view.pSelect, 1);
         }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-        else if( ALWAYS(IsVirtual(pTab))
+        இல்லையெனில் எனில்( ALWAYS(IsVirtual(pTab))
          && (pFrom->fg.fromDDL || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
          && ALWAYS(pTab->u.vtab.p!=0)
          && pTab->u.vtab.p->eVtabRisk > ((db->flags & SQLITE_TrustedSchema)!=0)
         ){
-          sqlite3ErrorMsg(pParse, "unsafe use of virtual table \"%s\"",
+          sqlite3_Error_செய்தி(pParse, "unsafe use of virtual table \"%s\"",
                                   pTab->zName);
         }
-        assert( SQLITE_VTABRISK_Normal==1 && SQLITE_VTABRISK_High==2 );
+        ப்ரதிஜ்ஞா( SQLITE_VTABRISK_Normal==1 && SQLITE_VTABRISK_உயர்வு==2 );
 #endif
         nCol = pTab->nCol;
         pTab->nCol = -1;
         pWalker->eCode = 1;  /* Turn on Select.selId renumbering */
-        if( pFrom->fg.isSubquery ){
+        எனில்( pFrom->fg.isSubquery ){
           bft hasCompound = pParse->hasCompound;
           pParse->hasCompound = 1;
           selectExpanderWalk(pWalker, pFrom->u4.pSubq->pSelect);
@@ -6208,16 +6208,16 @@ static int selectExpander(Walker *pWalker, Select *p){
     }
 
     /* Locate the index named by the INDEXED BY clause, if any. */
-    if( pFrom->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pFrom) ){
-      return WRC_Abort;
+    எனில்( pFrom->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pFrom) ){
+      திரும்பு WRC_Abort;
     }
   }
 
   /* Process NATURAL keywords, and ON and USING clauses of joins.
   */
-  assert( db->mallocFailed==0 || pParse->nErr!=0 );
-  if( pParse->nErr || sqlite3ProcessJoin(pParse, p) ){
-    return WRC_Abort;
+  ப்ரதிஜ்ஞா( db->mallocFailed==0 || pParse->nErr!=0 );
+  எனில்( pParse->nErr || sqlite3ProcessJoin(pParse, p) ){
+    திரும்பு WRC_Abort;
   }
 
   /* For every "*" that occurs in the column list, insert the names of
@@ -6231,168 +6231,168 @@ static int selectExpander(Walker *pWalker, Select *p){
   ** The first loop just checks to see if there are any "*" operators
   ** that need expanding.
   */
-  for(k=0; k<pEList->nExpr; k++){
-    pE = pEList->a[k].pExpr;
-    if( pE->op==TK_ASTERISK ) break;
-    assert( pE->op!=TK_DOT || pE->pRight!=0 );
-    assert( pE->op!=TK_DOT || (pE->pLeft!=0 && pE->pLeft->op==TK_ID) );
-    if( pE->op==TK_DOT && pE->pRight->op==TK_ASTERISK ) break;
+  க்கு(k=0; k<pEList->n_கோவை; k++){
+    pE = pEList->a[k].p_கோவை;
+    எனில்( pE->op==TK_ASTERISK ) நிறுத்து;
+    ப்ரதிஜ்ஞா( pE->op!=TK_DOT || pE->p_வலது!=0 );
+    ப்ரதிஜ்ஞா( pE->op!=TK_DOT || (pE->p_இடது!=0 && pE->p_இடது->op==TK_ID) );
+    எனில்( pE->op==TK_DOT && pE->p_வலது->op==TK_ASTERISK ) நிறுத்து;
     elistFlags |= pE->flags;
   }
-  if( k<pEList->nExpr ){
+  எனில்( k<pEList->n_கோவை ){
     /*
     ** If we get here it means the result set contains one or more "*"
     ** operators that need to be expanded.  Loop through each expression
     ** in the result set and expand them one by one.
     */
-    struct ExprList_item *a = pEList->a;
-    ExprList *pNew = 0;
-    int flags = pParse->db->flags;
-    int longNames = (flags & SQLITE_FullColNames)!=0
+    கட்டமைப்பு கோவை_List_item *a = pEList->a;
+    கோவை_List *pNew = 0;
+    முழு flags = pParse->db->flags;
+    முழு longNames = (flags & SQLITE_FullColNames)!=0
                       && (flags & SQLITE_ShortColNames)==0;
 
-    for(k=0; k<pEList->nExpr; k++){
-      pE = a[k].pExpr;
+    க்கு(k=0; k<pEList->n_கோவை; k++){
+      pE = a[k].p_கோவை;
       elistFlags |= pE->flags;
-      pRight = pE->pRight;
-      assert( pE->op!=TK_DOT || pRight!=0 );
-      if( pE->op!=TK_ASTERISK
-       && (pE->op!=TK_DOT || pRight->op!=TK_ASTERISK)
+      p_வலது = pE->p_வலது;
+      ப்ரதிஜ்ஞா( pE->op!=TK_DOT || p_வலது!=0 );
+      எனில்( pE->op!=TK_ASTERISK
+       && (pE->op!=TK_DOT || p_வலது->op!=TK_ASTERISK)
       ){
         /* This particular expression does not need to be expanded.
         */
-        pNew = sqlite3ExprListAppend(pParse, pNew, a[k].pExpr);
-        if( pNew ){
-          pNew->a[pNew->nExpr-1].zEName = a[k].zEName;
-          pNew->a[pNew->nExpr-1].fg.eEName = a[k].fg.eEName;
+        pNew = sqlite3_கோவை_List_Append(pParse, pNew, a[k].p_கோவை);
+        எனில்( pNew ){
+          pNew->a[pNew->n_கோவை-1].zEName = a[k].zEName;
+          pNew->a[pNew->n_கோவை-1].fg.eEName = a[k].fg.eEName;
           a[k].zEName = 0;
         }
-        a[k].pExpr = 0;
-      }else{
+        a[k].p_கோவை = 0;
+      }இல்லையெனில்{
         /* This expression is a "*" or a "TABLE.*" and needs to be
         ** expanded. */
-        int tableSeen = 0;      /* Set to 1 when TABLE matches */
-        char *zTName = 0;       /* text of name of TABLE */
-        int iErrOfst;
-        if( pE->op==TK_DOT ){
-          assert( (selFlags & SF_NestedFrom)==0 );
-          assert( pE->pLeft!=0 );
-          assert( !ExprHasProperty(pE->pLeft, EP_IntValue) );
-          zTName = pE->pLeft->u.zToken;
-          assert( ExprUseWOfst(pE->pLeft) );
-          iErrOfst = pE->pRight->w.iOfst;
-        }else{
-          assert( pE->pLeft==0 );
-          assert( ExprUseWOfst(pE) );
+        முழு tableSeen = 0;      /* Set to 1 when TABLE matches */
+        எழுத்து *zTName = 0;       /* text of name of TABLE */
+        முழு iErrOfst;
+        எனில்( pE->op==TK_DOT ){
+          ப்ரதிஜ்ஞா( (selFlags & SF_NestedFrom)==0 );
+          ப்ரதிஜ்ஞா( pE->p_இடது!=0 );
+          ப்ரதிஜ்ஞா( !கோவை_Has_Property(pE->p_இடது, EP_Int_மதிப்பு) );
+          zTName = pE->p_இடது->u.zToken;
+          ப்ரதிஜ்ஞா( கோவை_Use_WOfst(pE->p_இடது) );
+          iErrOfst = pE->p_வலது->w.iOfst;
+        }இல்லையெனில்{
+          ப்ரதிஜ்ஞா( pE->p_இடது==0 );
+          ப்ரதிஜ்ஞா( கோவை_Use_WOfst(pE) );
           iErrOfst = pE->w.iOfst;
         }
-        for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
-          int nAdd;                    /* Number of cols including rowid */
+        க்கு(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
+          முழு nAdd;                    /* Number of cols including rowid */
           Table *pTab = pFrom->pSTab;  /* Table for this data source */
-          ExprList *pNestedFrom;       /* Result-set of a nested FROM clause */
-          char *zTabName;              /* AS name for this data source */
-          const char *zSchemaName = 0; /* Schema name for this data source */
-          int iDb;                     /* Schema index for this data src */
+          கோவை_List *pNestedFrom;       /* Result-set of a nested FROM clause */
+          எழுத்து *zTabName;              /* AS name for this data source */
+          மாறிலி எழுத்து *zSchemaName = 0; /* Schema name for this data source */
+          முழு iDb;                     /* Schema index for this data src */
           IdList *pUsing;              /* USING clause for pFrom[1] */
 
-          if( (zTabName = pFrom->zAlias)==0 ){
+          எனில்( (zTabName = pFrom->zAlias)==0 ){
             zTabName = pTab->zName;
           }
-          if( db->mallocFailed ) break;
-          assert( (int)pFrom->fg.isNestedFrom == IsNestedFrom(pFrom) );
-          if( pFrom->fg.isNestedFrom ){
-            assert( pFrom->fg.isSubquery && pFrom->u4.pSubq );
-            assert( pFrom->u4.pSubq->pSelect!=0 );
+          எனில்( db->mallocFailed ) நிறுத்து;
+          ப்ரதிஜ்ஞா( (முழு)pFrom->fg.isNestedFrom == IsNestedFrom(pFrom) );
+          எனில்( pFrom->fg.isNestedFrom ){
+            ப்ரதிஜ்ஞா( pFrom->fg.isSubquery && pFrom->u4.pSubq );
+            ப்ரதிஜ்ஞா( pFrom->u4.pSubq->pSelect!=0 );
             pNestedFrom = pFrom->u4.pSubq->pSelect->pEList;
-            assert( pNestedFrom!=0 );
-            assert( pNestedFrom->nExpr==pTab->nCol );
-            assert( VisibleRowid(pTab)==0 || ViewCanHaveRowid );
-          }else{
-            if( zTName && sqlite3StrICmp(zTName, zTabName)!=0 ){
-              continue;
+            ப்ரதிஜ்ஞா( pNestedFrom!=0 );
+            ப்ரதிஜ்ஞா( pNestedFrom->n_கோவை==pTab->nCol );
+            ப்ரதிஜ்ஞா( VisibleRowid(pTab)==0 || ViewCanHaveRowid );
+          }இல்லையெனில்{
+            எனில்( zTName && sqlite3StrICmp(zTName, zTabName)!=0 ){
+              தொடர்;
             }
             pNestedFrom = 0;
             iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
             zSchemaName = iDb>=0 ? db->aDb[iDb].zDbSName : "*";
           }
-          if( i+1<pTabList->nSrc
+          எனில்( i+1<pTabList->nSrc
            && pFrom[1].fg.isUsing
            && (selFlags & SF_NestedFrom)!=0
           ){
-            int ii;
+            முழு ii;
             pUsing = pFrom[1].u3.pUsing;
-            for(ii=0; ii<pUsing->nId; ii++){
-              const char *zUName = pUsing->a[ii].zName;
-              pRight = sqlite3Expr(db, TK_ID, zUName);
-              sqlite3ExprSetErrorOffset(pRight, iErrOfst);
-              pNew = sqlite3ExprListAppend(pParse, pNew, pRight);
-              if( pNew ){
-                struct ExprList_item *pX = &pNew->a[pNew->nExpr-1];
-                assert( pX->zEName==0 );
+            க்கு(ii=0; ii<pUsing->nId; ii++){
+              மாறிலி எழுத்து *zUName = pUsing->a[ii].zName;
+              p_வலது = sqlite3_கோவை(db, TK_ID, zUName);
+              sqlite3_கோவை_Set_Error_Offset(p_வலது, iErrOfst);
+              pNew = sqlite3_கோவை_List_Append(pParse, pNew, p_வலது);
+              எனில்( pNew ){
+                கட்டமைப்பு கோவை_List_item *pX = &pNew->a[pNew->n_கோவை-1];
+                ப்ரதிஜ்ஞா( pX->zEName==0 );
                 pX->zEName = sqlite3MPrintf(db,"..%s", zUName);
                 pX->fg.eEName = ENAME_TAB;
                 pX->fg.bUsingTerm = 1;
               }
             }
-          }else{
+          }இல்லையெனில்{
             pUsing = 0;
           }
 
           nAdd = pTab->nCol;
-          if( VisibleRowid(pTab) && (selFlags & SF_NestedFrom)!=0 ) nAdd++;
-          for(j=0; j<nAdd; j++){
-            const char *zName; 
-            struct ExprList_item *pX; /* Newly added ExprList term */
+          எனில்( VisibleRowid(pTab) && (selFlags & SF_NestedFrom)!=0 ) nAdd++;
+          க்கு(j=0; j<nAdd; j++){
+            மாறிலி எழுத்து *zName; 
+            கட்டமைப்பு கோவை_List_item *pX; /* Newly added ExprList term */
 
-            if( j==pTab->nCol ){
+            எனில்( j==pTab->nCol ){
               zName = sqlite3RowidAlias(pTab);
-              if( zName==0 ) continue;
-            }else{
+              எனில்( zName==0 ) தொடர்;
+            }இல்லையெனில்{
               zName = pTab->aCol[j].zCnName;
 
               /* If pTab is actually an SF_NestedFrom sub-select, do not
               ** expand any ENAME_ROWID columns.  */
-              if( pNestedFrom && pNestedFrom->a[j].fg.eEName==ENAME_ROWID ){
-                continue;
+              எனில்( pNestedFrom && pNestedFrom->a[j].fg.eEName==ENAME_ROWID ){
+                தொடர்;
               }
 
-              if( zTName
+              எனில்( zTName
                && pNestedFrom
                && sqlite3MatchEName(&pNestedFrom->a[j], 0, zTName, 0, 0)==0
               ){
-                continue;
+                தொடர்;
               }
 
               /* If a column is marked as 'hidden', omit it from the expanded
               ** result-set list unless the SELECT has the SF_IncludeHidden
               ** bit set.
               */
-              if( (p->selFlags & SF_IncludeHidden)==0
+              எனில்( (p->selFlags & SF_IncludeHidden)==0
                 && IsHiddenColumn(&pTab->aCol[j])
               ){
-                continue;
+                தொடர்;
               }
-              if( (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND)!=0
+              எனில்( (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND)!=0
                && zTName==0
                && (selFlags & (SF_NestedFrom))==0
               ){
-                continue;
+                தொடர்;
               }
             }
-            assert( zName );
+            ப்ரதிஜ்ஞா( zName );
             tableSeen = 1;
 
-            if( i>0 && zTName==0 && (selFlags & SF_NestedFrom)==0 ){
-              if( pFrom->fg.isUsing
+            எனில்( i>0 && zTName==0 && (selFlags & SF_NestedFrom)==0 ){
+              எனில்( pFrom->fg.isUsing
                && sqlite3IdListIndex(pFrom->u3.pUsing, zName)>=0
               ){
                 /* In a join with a USING clause, omit columns in the
                 ** using clause from the table on the right. */
-                continue;
+                தொடர்;
               }
             }
-            pRight = sqlite3Expr(db, TK_ID, zName);
-            if( (pTabList->nSrc>1
+            p_வலது = sqlite3_கோவை(db, TK_ID, zName);
+            எனில்( (pTabList->nSrc>1
                  && (  (pFrom->fg.jointype & JT_LTORJ)==0
                      || zTName!=0
                      || (selFlags & SF_NestedFrom)!=0
@@ -6401,92 +6401,92 @@ static int selectExpander(Walker *pWalker, Select *p){
                 )
              || IN_RENAME_OBJECT
             ){
-              Expr *pLeft;
-              pLeft = sqlite3Expr(db, TK_ID, zTabName);
-              pExpr = sqlite3PExpr(pParse, TK_DOT, pLeft, pRight);
-              if( IN_RENAME_OBJECT && pE->pLeft ){
-                assert( pE->op==TK_DOT && pE->pRight->op==TK_ASTERISK );
-                sqlite3RenameTokenRemap(pParse, pLeft, pE->pLeft);
+              கோவை *p_இடது;
+              p_இடது = sqlite3_கோவை(db, TK_ID, zTabName);
+              p_கோவை = sqlite3PExpr(pParse, TK_DOT, p_இடது, p_வலது);
+              எனில்( IN_RENAME_OBJECT && pE->p_இடது ){
+                ப்ரதிஜ்ஞா( pE->op==TK_DOT && pE->p_வலது->op==TK_ASTERISK );
+                sqlite3RenameTokenRemap(pParse, p_இடது, pE->p_இடது);
               }
-              if( zSchemaName ){
-                pLeft = sqlite3Expr(db, TK_ID, zSchemaName);
-                pExpr = sqlite3PExpr(pParse, TK_DOT, pLeft, pExpr);
+              எனில்( zSchemaName ){
+                p_இடது = sqlite3_கோவை(db, TK_ID, zSchemaName);
+                p_கோவை = sqlite3PExpr(pParse, TK_DOT, p_இடது, p_கோவை);
               }
-            }else{
-              pExpr = pRight;
+            }இல்லையெனில்{
+              p_கோவை = p_வலது;
             }
-            sqlite3ExprSetErrorOffset(pExpr, iErrOfst);
-            pNew = sqlite3ExprListAppend(pParse, pNew, pExpr);
-            if( pNew==0 ){
-              break;  /* OOM */
+            sqlite3_கோவை_Set_Error_Offset(p_கோவை, iErrOfst);
+            pNew = sqlite3_கோவை_List_Append(pParse, pNew, p_கோவை);
+            எனில்( pNew==0 ){
+              நிறுத்து;  /* OOM */
             }
-            pX = &pNew->a[pNew->nExpr-1];
-            assert( pX->zEName==0 );
-            if( (selFlags & SF_NestedFrom)!=0 && !IN_RENAME_OBJECT ){
-              if( pNestedFrom && (!ViewCanHaveRowid || j<pNestedFrom->nExpr) ){
-                assert( j<pNestedFrom->nExpr );
+            pX = &pNew->a[pNew->n_கோவை-1];
+            ப்ரதிஜ்ஞா( pX->zEName==0 );
+            எனில்( (selFlags & SF_NestedFrom)!=0 && !IN_RENAME_OBJECT ){
+              எனில்( pNestedFrom && (!ViewCanHaveRowid || j<pNestedFrom->n_கோவை) ){
+                ப்ரதிஜ்ஞா( j<pNestedFrom->n_கோவை );
                 pX->zEName = sqlite3DbStrDup(db, pNestedFrom->a[j].zEName);
                 testcase( pX->zEName==0 );
-              }else{
+              }இல்லையெனில்{
                 pX->zEName = sqlite3MPrintf(db, "%s.%s.%s",
                                            zSchemaName, zTabName, zName);
                 testcase( pX->zEName==0 );
               }
               pX->fg.eEName = (j==pTab->nCol ? ENAME_ROWID : ENAME_TAB);
-              if( (pFrom->fg.isUsing
+              எனில்( (pFrom->fg.isUsing
                    && sqlite3IdListIndex(pFrom->u3.pUsing, zName)>=0)
                || (pUsing && sqlite3IdListIndex(pUsing, zName)>=0)
                || (j<pTab->nCol && (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND))
               ){
                 pX->fg.bNoExpand = 1;
               }
-            }else if( longNames ){
+            }இல்லையெனில் எனில்( longNames ){
               pX->zEName = sqlite3MPrintf(db, "%s.%s", zTabName, zName);
               pX->fg.eEName = ENAME_NAME;
-            }else{
+            }இல்லையெனில்{
               pX->zEName = sqlite3DbStrDup(db, zName);
               pX->fg.eEName = ENAME_NAME;
             }
           }
         }
-        if( !tableSeen ){
-          if( zTName ){
-            sqlite3ErrorMsg(pParse, "no such table: %s", zTName);
-          }else{
-            sqlite3ErrorMsg(pParse, "no tables specified");
+        எனில்( !tableSeen ){
+          எனில்( zTName ){
+            sqlite3_Error_செய்தி(pParse, "no such table: %s", zTName);
+          }இல்லையெனில்{
+            sqlite3_Error_செய்தி(pParse, "no tables specified");
           }
         }
       }
     }
-    sqlite3ExprListDelete(db, pEList);
+    sqlite3_கோவை_List_Delete(db, pEList);
     p->pEList = pNew;
   }
-  if( p->pEList ){
-    if( p->pEList->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
-      sqlite3ErrorMsg(pParse, "too many columns in result set");
-      return WRC_Abort;
+  எனில்( p->pEList ){
+    எனில்( p->pEList->n_கோவை>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+      sqlite3_Error_செய்தி(pParse, "too many columns in result set");
+      திரும்பு WRC_Abort;
     }
-    if( (elistFlags & (EP_HasFunc|EP_Subquery))!=0 ){
+    எனில்( (elistFlags & (EP_HasFunc|EP_Subquery))!=0 ){
       p->selFlags |= SF_ComplexResult;
     }
   }
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x8 ){
+#எனில் TREETRACE_ENABLED
+  எனில்( sqlite3_மரம்_Trace & 0x8 ){
     TREETRACE(0x8,pParse,p,("After result-set wildcard expansion:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
-  return WRC_Continue;
+  திரும்பு WRC_Continue;
 }
 
-#if SQLITE_DEBUG
+#எனில் SQLITE_DEBUG
 /*
 ** Always assert.  This xSelectCallback2 implementation proves that the
 ** xSelectCallback2 is never invoked.
 */
-void sqlite3SelectWalkAssert2(Walker *NotUsed, Select *NotUsed2){
+வெறுமை sqlite3SelectWalkAssert2(Walker *NotUsed, Select *NotUsed2){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  assert( 0 );
+  ப்ரதிஜ்ஞா( 0 );
 }
 #endif
 
@@ -6497,17 +6497,17 @@ void sqlite3SelectWalkAssert2(Walker *NotUsed, Select *NotUsed2){
 ** SELECT statements that have COLLATE clauses on ORDER BY expressions
 ** to sub-queries. Return the return value of sqlite3WalkSelect().
 */
-static int selectExpanderWalk(Walker *pWalker, Select *pSelect){
-  assert( pWalker->xExprCallback==sqlite3ExprWalkNoop );
-  assert( pWalker->pParse!=0 );
-  if( OK_IF_ALWAYS_TRUE(pWalker->pParse->hasCompound) ){
+நிலையான முழு selectExpanderWalk(Walker *pWalker, Select *pSelect){
+  ப்ரதிஜ்ஞா( pWalker->x_கோவை_Callback==sqlite3_கோவை_Walk_Noop );
+  ப்ரதிஜ்ஞா( pWalker->pParse!=0 );
+  எனில்( OK_IF_ALWAYS_TRUE(pWalker->pParse->hasCompound) ){
     pWalker->xSelectCallback = convertCompoundSelectToSubquery;
     pWalker->xSelectCallback2 = 0;
     sqlite3WalkSelect(pWalker, pSelect);
   }
   pWalker->xSelectCallback = selectExpander;
-  pWalker->xSelectCallback2 = sqlite3SelectPopWith;
-  return sqlite3WalkSelect(pWalker, pSelect);
+  pWalker->xSelectCallback2 = sqlite3_Select_எடு_With;
+  திரும்பு sqlite3WalkSelect(pWalker, pSelect);
 }
 
 /*
@@ -6523,9 +6523,9 @@ static int selectExpanderWalk(Walker *pWalker, Select *pSelect){
 ** The calling function can detect the problem by looking at pParse->nErr
 ** and/or pParse->db->mallocFailed.
 */
-static void sqlite3SelectExpand(Parse *pParse, Select *pSelect){
+நிலையான வெறுமை sqlite3SelectExpand(Parse *pParse, Select *pSelect){
   Walker w;
-  w.xExprCallback = sqlite3ExprWalkNoop;
+  w.x_கோவை_Callback = sqlite3_கோவை_Walk_Noop;
   w.pParse = pParse;
   w.eCode = 0;
   selectExpanderWalk(&w, pSelect);
@@ -6546,21 +6546,21 @@ static void sqlite3SelectExpand(Parse *pParse, Select *pSelect){
 ** was omitted at that point because identifiers had not yet been resolved.
 ** This routine is called after identifier resolution.
 */
-static void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){
+நிலையான வெறுமை selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){
   Parse *pParse;
-  int i;
+  முழு i;
   SrcList *pTabList;
   SrcItem *pFrom;
 
-  if( p->selFlags & SF_HasTypeInfo ) return;
+  எனில்( p->selFlags & SF_HasTypeInfo ) திரும்பு;
   p->selFlags |= SF_HasTypeInfo;
   pParse = pWalker->pParse;
-  assert( (p->selFlags & SF_Resolved) );
+  ப்ரதிஜ்ஞா( (p->selFlags & SF_Resolved) );
   pTabList = p->pSrc;
-  for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
+  க்கு(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
     Table *pTab = pFrom->pSTab;
-    assert( pTab!=0 );
-    if( (pTab->tabFlags & TF_Ephemeral)!=0 && pFrom->fg.isSubquery ){
+    ப்ரதிஜ்ஞா( pTab!=0 );
+    எனில்( (pTab->tabFlags & TF_Ephemeral)!=0 && pFrom->fg.isSubquery ){
       /* A sub-query in the FROM clause of a SELECT */
       Select *pSel = pFrom->u4.pSubq->pSelect;
       sqlite3SubqueryColumnTypes(pParse, pTab, pSel, SQLITE_AFF_NONE);
@@ -6577,12 +6577,12 @@ static void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){
 **
 ** Use this routine after name resolution.
 */
-static void sqlite3SelectAddTypeInfo(Parse *pParse, Select *pSelect){
+நிலையான வெறுமை sqlite3SelectAddTypeInfo(Parse *pParse, Select *pSelect){
 #ifndef SQLITE_OMIT_SUBQUERY
   Walker w;
   w.xSelectCallback = sqlite3SelectWalkNoop;
   w.xSelectCallback2 = selectAddSubqueryTypeInfo;
-  w.xExprCallback = sqlite3ExprWalkNoop;
+  w.x_கோவை_Callback = sqlite3_கோவை_Walk_Noop;
   w.pParse = pParse;
   sqlite3WalkSelect(&w, pSelect);
 #endif
@@ -6601,32 +6601,32 @@ static void sqlite3SelectAddTypeInfo(Parse *pParse, Select *pSelect){
 **
 ** This routine acts recursively on all subqueries within the SELECT.
 */
-void sqlite3SelectPrep(
+வெறுமை sqlite3SelectPrep(
   Parse *pParse,         /* The parser context */
   Select *p,             /* The SELECT statement being coded. */
   NameContext *pOuterNC  /* Name context for container */
 ){
-  assert( p!=0 || pParse->db->mallocFailed );
-  assert( pParse->db->pParse==pParse );
-  if( pParse->db->mallocFailed ) return;
-  if( p->selFlags & SF_HasTypeInfo ) return;
+  ப்ரதிஜ்ஞா( p!=0 || pParse->db->mallocFailed );
+  ப்ரதிஜ்ஞா( pParse->db->pParse==pParse );
+  எனில்( pParse->db->mallocFailed ) திரும்பு;
+  எனில்( p->selFlags & SF_HasTypeInfo ) திரும்பு;
   sqlite3SelectExpand(pParse, p);
-  if( pParse->nErr ) return;
+  எனில்( pParse->nErr ) திரும்பு;
   sqlite3ResolveSelectNames(pParse, p, pOuterNC);
-  if( pParse->nErr ) return;
+  எனில்( pParse->nErr ) திரும்பு;
   sqlite3SelectAddTypeInfo(pParse, p);
 }
 
-#if TREETRACE_ENABLED
+#எனில் TREETRACE_ENABLED
 /*
 ** Display all information about an AggInfo object
 */
-static void printAggInfo(AggInfo *pAggInfo){
-  int ii;
+நிலையான வெறுமை printAggInfo(AggInfo *pAggInfo){
+  முழு ii;
   sqlite3DebugPrintf("AggInfo %d/%p:\n",
      pAggInfo->selId, pAggInfo);
-  for(ii=0; ii<pAggInfo->nColumn; ii++){
-    struct AggInfo_col *pCol = &pAggInfo->aCol[ii];
+  க்கு(ii=0; ii<pAggInfo->nColumn; ii++){
+    கட்டமைப்பு AggInfo_col *pCol = &pAggInfo->aCol[ii];
     sqlite3DebugPrintf(
        "agg-column[%d] pTab=%s iTable=%d iColumn=%d iMem=%d"
        " iSorterColumn=%d %s\n",
@@ -6634,12 +6634,12 @@ static void printAggInfo(AggInfo *pAggInfo){
        pCol->iTable, pCol->iColumn, pAggInfo->iFirstReg+ii,
        pCol->iSorterColumn,
        ii>=pAggInfo->nAccumulator ? "" : " Accumulator");
-    sqlite3TreeViewExpr(0, pAggInfo->aCol[ii].pCExpr, 0);
+    sqlite3_மரம்_View_கோவை(0, pAggInfo->aCol[ii].pCExpr, 0);
   }
-  for(ii=0; ii<pAggInfo->nFunc; ii++){
+  க்கு(ii=0; ii<pAggInfo->nFunc; ii++){
     sqlite3DebugPrintf("agg-func[%d]: iMem=%d\n",
         ii, pAggInfo->iFirstReg+pAggInfo->nColumn+ii);
-    sqlite3TreeViewExpr(0, pAggInfo->aFunc[ii].pFExpr, 0);
+    sqlite3_மரம்_View_கோவை(0, pAggInfo->aFunc[ii].pFExpr, 0);
   }
 }
 #endif /* TREETRACE_ENABLED */
@@ -6661,28 +6661,28 @@ static void printAggInfo(AggInfo *pAggInfo){
 ** aggregate functions.  This routine is responsible for computing
 ** (or recomputing) those aCol[] entries.
 */
-static void analyzeAggFuncArgs(
+நிலையான வெறுமை analyzeAggFuncArgs(
   AggInfo *pAggInfo,
   NameContext *pNC
 ){
-  int i;
-  assert( pAggInfo!=0 );
-  assert( pAggInfo->iFirstReg==0 );
+  முழு i;
+  ப்ரதிஜ்ஞா( pAggInfo!=0 );
+  ப்ரதிஜ்ஞா( pAggInfo->iFirstReg==0 );
   pNC->ncFlags |= NC_InAggFunc;
-  for(i=0; i<pAggInfo->nFunc; i++){
-    Expr *pExpr = pAggInfo->aFunc[i].pFExpr;
-    assert( pExpr->op==TK_FUNCTION || pExpr->op==TK_AGG_FUNCTION );
-    assert( ExprUseXList(pExpr) );
-    sqlite3ExprAnalyzeAggList(pNC, pExpr->x.pList);
-    if( pExpr->pLeft ){
-      assert( pExpr->pLeft->op==TK_ORDER );
-      assert( ExprUseXList(pExpr->pLeft) );
-      sqlite3ExprAnalyzeAggList(pNC, pExpr->pLeft->x.pList);
+  க்கு(i=0; i<pAggInfo->nFunc; i++){
+    கோவை *p_கோவை = pAggInfo->aFunc[i].pFExpr;
+    ப்ரதிஜ்ஞா( p_கோவை->op==TK_FUNCTION || p_கோவை->op==TK_AGG_FUNCTION );
+    ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை) );
+    sqlite3_கோவை_Analyze_Agg_List(pNC, p_கோவை->x.pList);
+    எனில்( p_கோவை->p_இடது ){
+      ப்ரதிஜ்ஞா( p_கோவை->p_இடது->op==TK_ORDER );
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை->p_இடது) );
+      sqlite3_கோவை_Analyze_Agg_List(pNC, p_கோவை->p_இடது->x.pList);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    assert( !IsWindowFunc(pExpr) );
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
-      sqlite3ExprAnalyzeAggregates(pNC, pExpr->y.pWin->pFilter);
+    ப்ரதிஜ்ஞா( !IsWindowFunc(p_கோவை) );
+    எனில்( கோவை_Has_Property(p_கோவை, EP_WinFunc) ){
+      sqlite3_கோவை_Analyze_Aggregates(pNC, p_கோவை->y.pWin->pFilter);
     }
 #endif
   }
@@ -6696,40 +6696,40 @@ static void analyzeAggFuncArgs(
 ** perhaps use the index as a covering index.
 **
 */
-static void optimizeAggregateUseOfIndexedExpr(
+நிலையான வெறுமை optimize_Aggregate_Use_Of_Indexed_கோவை(
   Parse *pParse,          /* Parsing context */
   Select *pSelect,        /* The SELECT statement being processed */
   AggInfo *pAggInfo,      /* The aggregate info */
   NameContext *pNC        /* Name context used to resolve agg-func args */
 ){
-  assert( pAggInfo->iFirstReg==0 );
-  assert( pSelect!=0 );
-  assert( pSelect->pGroupBy!=0 );
+  ப்ரதிஜ்ஞா( pAggInfo->iFirstReg==0 );
+  ப்ரதிஜ்ஞா( pSelect!=0 );
+  ப்ரதிஜ்ஞா( pSelect->pGroupBy!=0 );
   pAggInfo->nColumn = pAggInfo->nAccumulator;
-  if( ALWAYS(pAggInfo->nSortingColumn>0) ){
-    int mx = pSelect->pGroupBy->nExpr - 1;
-    int j, k;
-    for(j=0; j<pAggInfo->nColumn; j++){
+  எனில்( ALWAYS(pAggInfo->nSortingColumn>0) ){
+    முழு mx = pSelect->pGroupBy->n_கோவை - 1;
+    முழு j, k;
+    க்கு(j=0; j<pAggInfo->nColumn; j++){
       k = pAggInfo->aCol[j].iSorterColumn;
-      if( k>mx ) mx = k;
+      எனில்( k>mx ) mx = k;
     }
     pAggInfo->nSortingColumn = mx+1;
   }
   analyzeAggFuncArgs(pAggInfo, pNC);
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x20 ){
-    IndexedExpr *pIEpr;
+#எனில் TREETRACE_ENABLED
+  எனில்( sqlite3_மரம்_Trace & 0x20 ){
+    Indexed_கோவை *pIEpr;
     TREETRACE(0x20, pParse, pSelect,
         ("AggInfo (possibly) adjusted for Indexed Exprs\n"));
-    sqlite3TreeViewSelect(0, pSelect, 0);
-    for(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
+    sqlite3_மரம்_View_Select(0, pSelect, 0);
+    க்கு(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
       printf("data-cursor=%d index={%d,%d}\n",
           pIEpr->iDataCur, pIEpr->iIdxCur, pIEpr->iIdxCol);
-      sqlite3TreeViewExpr(0, pIEpr->pExpr, 0);
+      sqlite3_மரம்_View_கோவை(0, pIEpr->p_கோவை, 0);
     }
     printAggInfo(pAggInfo);
   }
-#else
+#இல்லையெனில்
   UNUSED_PARAMETER(pSelect);
   UNUSED_PARAMETER(pParse);
 #endif
@@ -6738,23 +6738,23 @@ static void optimizeAggregateUseOfIndexedExpr(
 /*
 ** Walker callback for aggregateConvertIndexedExprRefToColumn().
 */
-static int aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr){
+நிலையான முழு aggregateIdxEprRefToColCallback(Walker *pWalker, கோவை *p_கோவை){
   AggInfo *pAggInfo;
-  struct AggInfo_col *pCol;
+  கட்டமைப்பு AggInfo_col *pCol;
   UNUSED_PARAMETER(pWalker);
-  if( pExpr->pAggInfo==0 ) return WRC_Continue;
-  if( pExpr->op==TK_AGG_COLUMN ) return WRC_Continue;
-  if( pExpr->op==TK_AGG_FUNCTION ) return WRC_Continue;
-  if( pExpr->op==TK_IF_NULL_ROW ) return WRC_Continue;
-  pAggInfo = pExpr->pAggInfo;
-  if( NEVER(pExpr->iAgg>=pAggInfo->nColumn) ) return WRC_Continue;
-  assert( pExpr->iAgg>=0 );
-  pCol = &pAggInfo->aCol[pExpr->iAgg];
-  pExpr->op = TK_AGG_COLUMN;
-  pExpr->iTable = pCol->iTable;
-  pExpr->iColumn = pCol->iColumn;
-  ExprClearProperty(pExpr, EP_Skip|EP_Collate|EP_Unlikely);
-  return WRC_Prune;
+  எனில்( p_கோவை->pAggInfo==0 ) திரும்பு WRC_Continue;
+  எனில்( p_கோவை->op==TK_AGG_COLUMN ) திரும்பு WRC_Continue;
+  எனில்( p_கோவை->op==TK_AGG_FUNCTION ) திரும்பு WRC_Continue;
+  எனில்( p_கோவை->op==TK_IF_NULL_ROW ) திரும்பு WRC_Continue;
+  pAggInfo = p_கோவை->pAggInfo;
+  எனில்( NEVER(p_கோவை->iAgg>=pAggInfo->nColumn) ) திரும்பு WRC_Continue;
+  ப்ரதிஜ்ஞா( p_கோவை->iAgg>=0 );
+  pCol = &pAggInfo->aCol[p_கோவை->iAgg];
+  p_கோவை->op = TK_AGG_COLUMN;
+  p_கோவை->iTable = pCol->iTable;
+  p_கோவை->iColumn = pCol->iColumn;
+  கோவை_Clear_Property(p_கோவை, EP_Skip|EP_Collate|EP_Unlikely);
+  திரும்பு WRC_Prune;
 }
 
 /*
@@ -6762,13 +6762,13 @@ static int aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr){
 ** those expressions that has pAppInfo set is changed into a TK_AGG_COLUMN
 ** opcode.
 */
-static void aggregateConvertIndexedExprRefToColumn(AggInfo *pAggInfo){
-  int i;
+நிலையான வெறுமை aggregate_Convert_Indexed_கோவை_Ref_To_Column(AggInfo *pAggInfo){
+  முழு i;
   Walker w;
-  memset(&w, 0, sizeof(w));
-  w.xExprCallback = aggregateIdxEprRefToColCallback;
-  for(i=0; i<pAggInfo->nFunc; i++){
-    sqlite3WalkExpr(&w, pAggInfo->aFunc[i].pFExpr);
+  memset(&w, 0, அளவு(w));
+  w.x_கோவை_Callback = aggregateIdxEprRefToColCallback;
+  க்கு(i=0; i<pAggInfo->nFunc; i++){
+    sqlite3_Walk_கோவை(&w, pAggInfo->aFunc[i].pFExpr);
   }
 }
 
@@ -6790,9 +6790,9 @@ static void aggregateConvertIndexedExprRefToColumn(AggInfo *pAggInfo){
 **     *  The AggInfoColumnReg() and AggInfoFuncReg() macros may be used
 **
 */
-static void assignAggregateRegisters(Parse *pParse, AggInfo *pAggInfo){
-  assert( pAggInfo!=0 );
-  assert( pAggInfo->iFirstReg==0 );
+நிலையான வெறுமை assignAggregateRegisters(Parse *pParse, AggInfo *pAggInfo){
+  ப்ரதிஜ்ஞா( pAggInfo!=0 );
+  ப்ரதிஜ்ஞா( pAggInfo->iFirstReg==0 );
   pAggInfo->iFirstReg = pParse->nMem + 1;
   pParse->nMem += pAggInfo->nColumn + pAggInfo->nFunc;
 }
@@ -6805,62 +6805,62 @@ static void assignAggregateRegisters(Parse *pParse, AggInfo *pAggInfo){
 ** routine generates code that stores NULLs in all of those memory
 ** cells.
 */
-static void resetAccumulator(Parse *pParse, AggInfo *pAggInfo){
+நிலையான வெறுமை resetAccumulator(Parse *pParse, AggInfo *pAggInfo){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  struct AggInfo_func *pFunc;
-  int nReg = pAggInfo->nFunc + pAggInfo->nColumn;
-  assert( pAggInfo->iFirstReg>0 );
-  assert( pParse->db->pParse==pParse );
-  assert( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
-  if( nReg==0 ) return;
-  if( pParse->nErr ) return;
+  முழு i;
+  கட்டமைப்பு AggInfo_func *pFunc;
+  முழு nReg = pAggInfo->nFunc + pAggInfo->nColumn;
+  ப்ரதிஜ்ஞா( pAggInfo->iFirstReg>0 );
+  ப்ரதிஜ்ஞா( pParse->db->pParse==pParse );
+  ப்ரதிஜ்ஞா( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
+  எனில்( nReg==0 ) திரும்பு;
+  எனில்( pParse->nErr ) திரும்பு;
   sqlite3VdbeAddOp3(v, OP_Null, 0, pAggInfo->iFirstReg,
                     pAggInfo->iFirstReg+nReg-1);
-  for(pFunc=pAggInfo->aFunc, i=0; i<pAggInfo->nFunc; i++, pFunc++){
-    if( pFunc->iDistinct>=0 ){
-      Expr *pE = pFunc->pFExpr;
-      assert( ExprUseXList(pE) );
-      if( pE->x.pList==0 || pE->x.pList->nExpr!=1 ){
-        sqlite3ErrorMsg(pParse, "DISTINCT aggregates must have exactly one "
+  க்கு(pFunc=pAggInfo->aFunc, i=0; i<pAggInfo->nFunc; i++, pFunc++){
+    எனில்( pFunc->iDistinct>=0 ){
+      கோவை *pE = pFunc->pFExpr;
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(pE) );
+      எனில்( pE->x.pList==0 || pE->x.pList->n_கோவை!=1 ){
+        sqlite3_Error_செய்தி(pParse, "DISTINCT aggregates must have exactly one "
            "argument");
         pFunc->iDistinct = -1;
-      }else{
-        KeyInfo *pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pE->x.pList,0,0);
+      }இல்லையெனில்{
+        சாவி_Info *p_சாவி_Info = sqlite3_சாவி_Info_From_கோவை_List(pParse, pE->x.pList,0,0);
         pFunc->iDistAddr = sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
-            pFunc->iDistinct, 0, 0, (char*)pKeyInfo, P4_KEYINFO);
+            pFunc->iDistinct, 0, 0, (எழுத்து*)p_சாவி_Info, P4_KEYINFO);
         ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s(DISTINCT)",
                           pFunc->pFunc->zName));
       }
     }
-    if( pFunc->iOBTab>=0 ){
-      ExprList *pOBList;
-      KeyInfo *pKeyInfo;
-      int nExtra = 0;
-      assert( pFunc->pFExpr->pLeft!=0 );
-      assert( pFunc->pFExpr->pLeft->op==TK_ORDER );
-      assert( ExprUseXList(pFunc->pFExpr->pLeft) );
-      assert( pFunc->pFunc!=0 );
-      pOBList = pFunc->pFExpr->pLeft->x.pList;
-      if( !pFunc->bOBUnique ){
+    எனில்( pFunc->iOBTab>=0 ){
+      கோவை_List *pOBList;
+      சாவி_Info *p_சாவி_Info;
+      முழு nExtra = 0;
+      ப்ரதிஜ்ஞா( pFunc->pFExpr->p_இடது!=0 );
+      ப்ரதிஜ்ஞா( pFunc->pFExpr->p_இடது->op==TK_ORDER );
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(pFunc->pFExpr->p_இடது) );
+      ப்ரதிஜ்ஞா( pFunc->pFunc!=0 );
+      pOBList = pFunc->pFExpr->p_இடது->x.pList;
+      எனில்( !pFunc->bOBUnique ){
         nExtra++;  /* One extra column for the OP_Sequence */
       }
-      if( pFunc->bOBPayload ){
+      எனில்( pFunc->bOBPayload ){
         /* extra columns for the function arguments */
-        assert( ExprUseXList(pFunc->pFExpr) );
-        assert( pFunc->pFExpr->x.pList!=0 );
-        nExtra += pFunc->pFExpr->x.pList->nExpr;
+        ப்ரதிஜ்ஞா( கோவை_Use_XList(pFunc->pFExpr) );
+        ப்ரதிஜ்ஞா( pFunc->pFExpr->x.pList!=0 );
+        nExtra += pFunc->pFExpr->x.pList->n_கோவை;
       }
-      if( pFunc->bUseSubtype ){
-        nExtra += pFunc->pFExpr->x.pList->nExpr;
+      எனில்( pFunc->bUseSubtype ){
+        nExtra += pFunc->pFExpr->x.pList->n_கோவை;
       }
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pOBList, 0, nExtra);
-      if( !pFunc->bOBUnique && pParse->nErr==0 ){
-        pKeyInfo->nKeyField++;
+      p_சாவி_Info = sqlite3_சாவி_Info_From_கோவை_List(pParse, pOBList, 0, nExtra);
+      எனில்( !pFunc->bOBUnique && pParse->nErr==0 ){
+        p_சாவி_Info->n_சாவி_Field++;
       }
       sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
-            pFunc->iOBTab, pOBList->nExpr+nExtra, 0,
-            (char*)pKeyInfo, P4_KEYINFO);
+            pFunc->iOBTab, pOBList->n_கோவை+nExtra, 0,
+            (எழுத்து*)p_சாவி_Info, P4_KEYINFO);
       ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s(ORDER BY)",
                           pFunc->pFunc->zName));
     }
@@ -6871,47 +6871,47 @@ static void resetAccumulator(Parse *pParse, AggInfo *pAggInfo){
 ** Invoke the OP_AggFinalize opcode for every aggregate function
 ** in the AggInfo structure.
 */
-static void finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
+நிலையான வெறுமை finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  struct AggInfo_func *pF;
-  for(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
-    ExprList *pList;
-    assert( ExprUseXList(pF->pFExpr) );
-    if( pParse->nErr ) return;
+  முழு i;
+  கட்டமைப்பு AggInfo_func *pF;
+  க்கு(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
+    கோவை_List *pList;
+    ப்ரதிஜ்ஞா( கோவை_Use_XList(pF->pFExpr) );
+    எனில்( pParse->nErr ) திரும்பு;
     pList = pF->pFExpr->x.pList;
-    if( pF->iOBTab>=0 ){
+    எனில்( pF->iOBTab>=0 ){
       /* For an ORDER BY aggregate, calls to OP_AggStep were deferred.  Inputs
       ** were stored in emphermal table pF->iOBTab.  Here, we extract those
       ** inputs (in ORDER BY order) and make all calls to OP_AggStep
       ** before doing the OP_AggFinal call. */
-      int iTop;        /* Start of loop for extracting columns */
-      int nArg;        /* Number of columns to extract */
-      int nKey;        /* Key columns to be skipped */
-      int regAgg;      /* Extract into this array */
-      int j;           /* Loop counter */
+      முழு i_உச்சி;        /* Start of loop for extracting columns */
+      முழு nArg;        /* Number of columns to extract */
+      முழு n_சாவி;        /* Key columns to be skipped */
+      முழு regAgg;      /* Extract into this array */
+      முழு j;           /* Loop counter */
      
-      assert( pF->pFunc!=0 );
-      nArg = pList->nExpr;
+      ப்ரதிஜ்ஞா( pF->pFunc!=0 );
+      nArg = pList->n_கோவை;
       regAgg = sqlite3GetTempRange(pParse, nArg);
 
-      if( pF->bOBPayload==0 ){
-        nKey = 0;
-      }else{
-        assert( pF->pFExpr->pLeft!=0 );
-        assert( ExprUseXList(pF->pFExpr->pLeft) );
-        assert( pF->pFExpr->pLeft->x.pList!=0 );
-        nKey = pF->pFExpr->pLeft->x.pList->nExpr;
-        if( ALWAYS(!pF->bOBUnique) ) nKey++;
+      எனில்( pF->bOBPayload==0 ){
+        n_சாவி = 0;
+      }இல்லையெனில்{
+        ப்ரதிஜ்ஞா( pF->pFExpr->p_இடது!=0 );
+        ப்ரதிஜ்ஞா( கோவை_Use_XList(pF->pFExpr->p_இடது) );
+        ப்ரதிஜ்ஞா( pF->pFExpr->p_இடது->x.pList!=0 );
+        n_சாவி = pF->pFExpr->p_இடது->x.pList->n_கோவை;
+        எனில்( ALWAYS(!pF->bOBUnique) ) n_சாவி++;
       }
-      iTop = sqlite3VdbeAddOp1(v, OP_Rewind, pF->iOBTab); VdbeCoverage(v);
-      for(j=nArg-1; j>=0; j--){
-        sqlite3VdbeAddOp3(v, OP_Column, pF->iOBTab, nKey+j, regAgg+j);
+      i_உச்சி = sqlite3VdbeAddOp1(v, OP_Rewind, pF->iOBTab); VdbeCoverage(v);
+      க்கு(j=nArg-1; j>=0; j--){
+        sqlite3VdbeAddOp3(v, OP_Column, pF->iOBTab, n_சாவி+j, regAgg+j);
       }
-      if( pF->bUseSubtype ){
-        int regSubtype = sqlite3GetTempReg(pParse);
-        int iBaseCol = nKey + nArg + (pF->bOBPayload==0 && pF->bOBUnique==0);
-        for(j=nArg-1; j>=0; j--){
+      எனில்( pF->bUseSubtype ){
+        முழு regSubtype = sqlite3GetTempReg(pParse);
+        முழு iBaseCol = n_சாவி + nArg + (pF->bOBPayload==0 && pF->bOBUnique==0);
+        க்கு(j=nArg-1; j>=0; j--){
           sqlite3VdbeAddOp3(v, OP_Column, pF->iOBTab, iBaseCol+j, regSubtype);
           sqlite3VdbeAddOp2(v, OP_SetSubtype, regSubtype, regAgg+j);
         }
@@ -6920,12 +6920,12 @@ static void finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
       sqlite3VdbeAddOp3(v, OP_AggStep, 0, regAgg, AggInfoFuncReg(pAggInfo,i));
       sqlite3VdbeAppendP4(v, pF->pFunc, P4_FUNCDEF);
       sqlite3VdbeChangeP5(v, (u16)nArg);
-      sqlite3VdbeAddOp2(v, OP_Next, pF->iOBTab, iTop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, iTop);
+      sqlite3VdbeAddOp2(v, OP_Next, pF->iOBTab, i_உச்சி+1); VdbeCoverage(v);
+      sqlite3VdbeJumpHere(v, i_உச்சி);
       sqlite3ReleaseTempRange(pParse, regAgg, nArg);
     }
     sqlite3VdbeAddOp2(v, OP_AggFinal, AggInfoFuncReg(pAggInfo,i),
-                      pList ? pList->nExpr : 0);
+                      pList ? pList->n_கோவை : 0);
     sqlite3VdbeAppendP4(v, pF->pFunc, P4_FUNCDEF);
   }
 }
@@ -6946,43 +6946,43 @@ static void finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
 ** have been passed into OP_AggStep into the sorting ephemeral table
 ** (along with the appropriate sort key).
 */
-static void updateAccumulator(
+நிலையான வெறுமை updateAccumulator(
   Parse *pParse,
-  int regAcc,
+  முழு regAcc,
   AggInfo *pAggInfo,
-  int eDistinctType
+  முழு eDistinctType
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  int regHit = 0;
-  int addrHitTest = 0;
-  struct AggInfo_func *pF;
-  struct AggInfo_col *pC;
+  முழு i;
+  முழு regHit = 0;
+  முழு addrHitTest = 0;
+  கட்டமைப்பு AggInfo_func *pF;
+  கட்டமைப்பு AggInfo_col *pC;
 
-  assert( pAggInfo->iFirstReg>0 );
-  if( pParse->nErr ) return;
+  ப்ரதிஜ்ஞா( pAggInfo->iFirstReg>0 );
+  எனில்( pParse->nErr ) திரும்பு;
   pAggInfo->directMode = 1;
-  for(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
-    int nArg;
-    int addrNext = 0;
-    int regAgg;
-    int regAggSz = 0;
-    int regDistinct = 0;
-    ExprList *pList;
-    assert( ExprUseXList(pF->pFExpr) );
-    assert( !IsWindowFunc(pF->pFExpr) );
-    assert( pF->pFunc!=0 );
+  க்கு(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
+    முழு nArg;
+    முழு addrNext = 0;
+    முழு regAgg;
+    முழு regAggSz = 0;
+    முழு regDistinct = 0;
+    கோவை_List *pList;
+    ப்ரதிஜ்ஞா( கோவை_Use_XList(pF->pFExpr) );
+    ப்ரதிஜ்ஞா( !IsWindowFunc(pF->pFExpr) );
+    ப்ரதிஜ்ஞா( pF->pFunc!=0 );
     pList = pF->pFExpr->x.pList;
-    if( ExprHasProperty(pF->pFExpr, EP_WinFunc) ){
-      Expr *pFilter = pF->pFExpr->y.pWin->pFilter;
-      if( pAggInfo->nAccumulator
+    எனில்( கோவை_Has_Property(pF->pFExpr, EP_WinFunc) ){
+      கோவை *pFilter = pF->pFExpr->y.pWin->pFilter;
+      எனில்( pAggInfo->nAccumulator
        && (pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL)
        && regAcc
       ){
         /* If regAcc==0, there there exists some min() or max() function
         ** without a FILTER clause that will ensure the magnet registers
         ** are populated. */
-        if( regHit==0 ) regHit = ++pParse->nMem;
+        எனில்( regHit==0 ) regHit = ++pParse->nMem;
         /* If this is the first row of the group (regAcc contains 0), clear the
         ** "magnet" register regHit so that the accumulator registers
         ** are populated if the FILTER clause jumps over the the
@@ -6993,117 +6993,117 @@ static void updateAccumulator(
         sqlite3VdbeAddOp2(v, OP_Copy, regAcc, regHit);
       }
       addrNext = sqlite3VdbeMakeLabel(pParse);
-      sqlite3ExprIfFalse(pParse, pFilter, addrNext, SQLITE_JUMPIFNULL);
+      sqlite3_கோவை_If_False(pParse, pFilter, addrNext, SQLITE_JUMPIFNULL);
     }
-    if( pF->iOBTab>=0 ){
+    எனில்( pF->iOBTab>=0 ){
       /* Instead of invoking AggStep, we must push the arguments that would
       ** have been passed to AggStep onto the sorting table. */
-      int jj;                /* Registered used so far in building the record */
-      ExprList *pOBList;     /* The ORDER BY clause */
-      assert( pList!=0 );
-      nArg = pList->nExpr;
-      assert( nArg>0 );
-      assert( pF->pFExpr->pLeft!=0 );
-      assert( pF->pFExpr->pLeft->op==TK_ORDER );
-      assert( ExprUseXList(pF->pFExpr->pLeft) );
-      pOBList = pF->pFExpr->pLeft->x.pList;
-      assert( pOBList!=0 );
-      assert( pOBList->nExpr>0 );
-      regAggSz = pOBList->nExpr;
-      if( !pF->bOBUnique ){
+      முழு jj;                /* Registered used so far in building the record */
+      கோவை_List *pOBList;     /* The ORDER BY clause */
+      ப்ரதிஜ்ஞா( pList!=0 );
+      nArg = pList->n_கோவை;
+      ப்ரதிஜ்ஞா( nArg>0 );
+      ப்ரதிஜ்ஞா( pF->pFExpr->p_இடது!=0 );
+      ப்ரதிஜ்ஞா( pF->pFExpr->p_இடது->op==TK_ORDER );
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(pF->pFExpr->p_இடது) );
+      pOBList = pF->pFExpr->p_இடது->x.pList;
+      ப்ரதிஜ்ஞா( pOBList!=0 );
+      ப்ரதிஜ்ஞா( pOBList->n_கோவை>0 );
+      regAggSz = pOBList->n_கோவை;
+      எனில்( !pF->bOBUnique ){
         regAggSz++;   /* One register for OP_Sequence */
       }
-      if( pF->bOBPayload ){
+      எனில்( pF->bOBPayload ){
         regAggSz += nArg;
       }
-      if( pF->bUseSubtype ){
+      எனில்( pF->bUseSubtype ){
         regAggSz += nArg;
       }
       regAggSz++;  /* One extra register to hold result of MakeRecord */
       regAgg = sqlite3GetTempRange(pParse, regAggSz);
       regDistinct = regAgg;
-      sqlite3ExprCodeExprList(pParse, pOBList, regAgg, 0, SQLITE_ECEL_DUP);
-      jj = pOBList->nExpr;
-      if( !pF->bOBUnique ){
+      sqlite3_கோவை_Code_கோவை_List(pParse, pOBList, regAgg, 0, SQLITE_ECEL_DUP);
+      jj = pOBList->n_கோவை;
+      எனில்( !pF->bOBUnique ){
         sqlite3VdbeAddOp2(v, OP_Sequence, pF->iOBTab, regAgg+jj);
         jj++;
       }
-      if( pF->bOBPayload ){
+      எனில்( pF->bOBPayload ){
         regDistinct = regAgg+jj;
-        sqlite3ExprCodeExprList(pParse, pList, regDistinct, 0, SQLITE_ECEL_DUP);
+        sqlite3_கோவை_Code_கோவை_List(pParse, pList, regDistinct, 0, SQLITE_ECEL_DUP);
         jj += nArg;
       }
-      if( pF->bUseSubtype ){
-        int kk;
-        int regBase = pF->bOBPayload ? regDistinct : regAgg;
-        for(kk=0; kk<nArg; kk++, jj++){
+      எனில்( pF->bUseSubtype ){
+        முழு kk;
+        முழு regBase = pF->bOBPayload ? regDistinct : regAgg;
+        க்கு(kk=0; kk<nArg; kk++, jj++){
           sqlite3VdbeAddOp2(v, OP_GetSubtype, regBase+kk, regAgg+jj);
         }
       }
-    }else if( pList ){
-      nArg = pList->nExpr;
+    }இல்லையெனில் எனில்( pList ){
+      nArg = pList->n_கோவை;
       regAgg = sqlite3GetTempRange(pParse, nArg);
       regDistinct = regAgg;
-      sqlite3ExprCodeExprList(pParse, pList, regAgg, 0, SQLITE_ECEL_DUP);
-    }else{
+      sqlite3_கோவை_Code_கோவை_List(pParse, pList, regAgg, 0, SQLITE_ECEL_DUP);
+    }இல்லையெனில்{
       nArg = 0;
       regAgg = 0;
     }
-    if( pF->iDistinct>=0 && pList ){
-      if( addrNext==0 ){
+    எனில்( pF->iDistinct>=0 && pList ){
+      எனில்( addrNext==0 ){
         addrNext = sqlite3VdbeMakeLabel(pParse);
       }
       pF->iDistinct = codeDistinct(pParse, eDistinctType,
           pF->iDistinct, addrNext, pList, regDistinct);
     }
-    if( pF->iOBTab>=0 ){
+    எனில்( pF->iOBTab>=0 ){
       /* Insert a new record into the ORDER BY table */
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regAgg, regAggSz-1,
                         regAgg+regAggSz-1);
-      sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pF->iOBTab, regAgg+regAggSz-1,
+      sqlite3VdbeAddOp4Int(v, OP_Idx_செருகு, pF->iOBTab, regAgg+regAggSz-1,
                            regAgg, regAggSz-1);
       sqlite3ReleaseTempRange(pParse, regAgg, regAggSz);
-    }else{
+    }இல்லையெனில்{
       /* Invoke the AggStep function */
-      if( pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
+      எனில்( pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
         CollSeq *pColl = 0;
-        struct ExprList_item *pItem;
-        int j;
-        assert( pList!=0 );  /* pList!=0 if pF->pFunc has NEEDCOLL */
-        for(j=0, pItem=pList->a; !pColl && j<nArg; j++, pItem++){
-          pColl = sqlite3ExprCollSeq(pParse, pItem->pExpr);
+        கட்டமைப்பு கோவை_List_item *pItem;
+        முழு j;
+        ப்ரதிஜ்ஞா( pList!=0 );  /* pList!=0 if pF->pFunc has NEEDCOLL */
+        க்கு(j=0, pItem=pList->a; !pColl && j<nArg; j++, pItem++){
+          pColl = sqlite3_கோவை_Coll_Seq(pParse, pItem->p_கோவை);
         }
-        if( !pColl ){
+        எனில்( !pColl ){
           pColl = pParse->db->pDfltColl;
         }
-        if( regHit==0 && pAggInfo->nAccumulator ) regHit = ++pParse->nMem;
+        எனில்( regHit==0 && pAggInfo->nAccumulator ) regHit = ++pParse->nMem;
         sqlite3VdbeAddOp4(v, OP_CollSeq, regHit, 0, 0,
-                         (char *)pColl, P4_COLLSEQ);
+                         (எழுத்து *)pColl, P4_COLLSEQ);
       }
       sqlite3VdbeAddOp3(v, OP_AggStep, 0, regAgg, AggInfoFuncReg(pAggInfo,i));
       sqlite3VdbeAppendP4(v, pF->pFunc, P4_FUNCDEF);
       sqlite3VdbeChangeP5(v, (u16)nArg);
       sqlite3ReleaseTempRange(pParse, regAgg, nArg);
     }
-    if( addrNext ){
+    எனில்( addrNext ){
       sqlite3VdbeResolveLabel(v, addrNext);
     }
-    if( pParse->nErr ) return;
+    எனில்( pParse->nErr ) திரும்பு;
   }
-  if( regHit==0 && pAggInfo->nAccumulator ){
+  எனில்( regHit==0 && pAggInfo->nAccumulator ){
     regHit = regAcc;
   }
-  if( regHit ){
+  எனில்( regHit ){
     addrHitTest = sqlite3VdbeAddOp1(v, OP_If, regHit); VdbeCoverage(v);
   }
-  for(i=0, pC=pAggInfo->aCol; i<pAggInfo->nAccumulator; i++, pC++){
-    sqlite3ExprCode(pParse, pC->pCExpr, AggInfoColumnReg(pAggInfo,i));
-    if( pParse->nErr ) return;
+  க்கு(i=0, pC=pAggInfo->aCol; i<pAggInfo->nAccumulator; i++, pC++){
+    sqlite3_கோவை_Code(pParse, pC->pCExpr, AggInfoColumnReg(pAggInfo,i));
+    எனில்( pParse->nErr ) திரும்பு;
   }
 
   pAggInfo->directMode = 0;
-  if( addrHitTest ){
-    sqlite3VdbeJumpHereOrPopInst(v, addrHitTest);
+  எனில்( addrHitTest ){
+    sqlite3_Vdbe_Jump_Here_Or_எடு_Inst(v, addrHitTest);
   }
 }
 
@@ -7112,13 +7112,13 @@ static void updateAccumulator(
 ** count(*) query ("SELECT count(*) FROM pTab").
 */
 #ifndef SQLITE_OMIT_EXPLAIN
-static void explainSimpleCount(
+நிலையான வெறுமை explain_Simple_மொத்தம்(
   Parse *pParse,                  /* Parse context */
   Table *pTab,                    /* Table being queried */
   Index *pIdx                     /* Index used to optimize scan, or NULL */
 ){
-  if( pParse->explain==2 ){
-    int bCover = (pIdx!=0 && (HasRowid(pTab) || !IsPrimaryKeyIndex(pIdx)));
+  எனில்( pParse->explain==2 ){
+    முழு bCover = (pIdx!=0 && (HasRowid(pTab) || !Is_Primary_சாவி_Index(pIdx)));
     sqlite3VdbeExplain(pParse, 0, "SCAN %s%s%s",
         pTab->zName,
         bCover ? " USING COVERING INDEX " : "",
@@ -7126,8 +7126,8 @@ static void explainSimpleCount(
     );
   }
 }
-#else
-# define explainSimpleCount(a,b,c)
+#இல்லையெனில்
+# define explain_Simple_மொத்தம்(a,b,c)
 #endif
 
 /*
@@ -7141,8 +7141,8 @@ static void explainSimpleCount(
 ** clause. If so, add it to the WHERE clause and replace the sub-expression
 ** within the HAVING expression with a constant "1".
 */
-static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op!=TK_AND ){
+நிலையான முழு having_To_Where_கோவை_Cb(Walker *pWalker, கோவை *p_கோவை){
+  எனில்( p_கோவை->op!=TK_AND ){
     Select *pS = pWalker->u.pSelect;
     /* This routine is called before the HAVING clause of the current
     ** SELECT is analyzed for aggregates. So if pExpr->pAggInfo is set
@@ -7151,23 +7151,23 @@ static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
     ** belongs to an outer query. Do not move the expression to the WHERE
     ** clause in this obscure case, as doing so may corrupt the outer Select
     ** statements AggInfo structure.  */
-    if( sqlite3ExprIsConstantOrGroupBy(pWalker->pParse, pExpr, pS->pGroupBy)
-     && ExprAlwaysFalse(pExpr)==0
-     && pExpr->pAggInfo==0
+    எனில்( sqlite3_கோவை_Is_Constant_Or_Group_By(pWalker->pParse, p_கோவை, pS->pGroupBy)
+     && கோவை_Always_False(p_கோவை)==0
+     && p_கோவை->pAggInfo==0
     ){
       sqlite3 *db = pWalker->pParse->db;
-      Expr *pNew = sqlite3ExprInt32(db, 1);
-      if( pNew ){
-        Expr *pWhere = pS->pWhere;
-        SWAP(Expr, *pNew, *pExpr);
-        pNew = sqlite3ExprAnd(pWalker->pParse, pWhere, pNew);
+      கோவை *pNew = sqlite3_கோவை_Int32(db, 1);
+      எனில்( pNew ){
+        கோவை *pWhere = pS->pWhere;
+        SWAP(கோவை, *pNew, *p_கோவை);
+        pNew = sqlite3_கோவை_And(pWalker->pParse, pWhere, pNew);
         pS->pWhere = pNew;
         pWalker->eCode = 1;
       }
     }
-    return WRC_Prune;
+    திரும்பு WRC_Prune;
   }
-  return WRC_Continue;
+  திரும்பு WRC_Continue;
 }
 
 /*
@@ -7185,17 +7185,17 @@ static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
 ** entirely of constants and expressions that are also GROUP BY terms that
 ** use the "BINARY" collation sequence.
 */
-static void havingToWhere(Parse *pParse, Select *p){
+நிலையான வெறுமை havingToWhere(Parse *pParse, Select *p){
   Walker sWalker;
-  memset(&sWalker, 0, sizeof(sWalker));
+  memset(&sWalker, 0, அளவு(sWalker));
   sWalker.pParse = pParse;
-  sWalker.xExprCallback = havingToWhereExprCb;
+  sWalker.x_கோவை_Callback = having_To_Where_கோவை_Cb;
   sWalker.u.pSelect = p;
-  sqlite3WalkExpr(&sWalker, p->pHaving);
-#if TREETRACE_ENABLED
-  if( sWalker.eCode && (sqlite3TreeTrace & 0x100)!=0 ){
+  sqlite3_Walk_கோவை(&sWalker, p->pHaving);
+#எனில் TREETRACE_ENABLED
+  எனில்( sWalker.eCode && (sqlite3_மரம்_Trace & 0x100)!=0 ){
     TREETRACE(0x100,pParse,p,("Move HAVING terms into WHERE:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
 }
@@ -7208,47 +7208,47 @@ static void havingToWhere(Parse *pParse, Select *p){
 ** If pThis is a self-join, then return the SrcItem for the first other
 ** instance of that view found.  If pThis is not a self-join then return 0.
 */
-static SrcItem *isSelfJoinView(
+நிலையான SrcItem *isSelfJoinView(
   SrcList *pTabList,           /* Search for self-joins in this FROM clause */
   SrcItem *pThis,              /* Search for prior reference to this subquery */
-  int iFirst, int iEnd        /* Range of FROM-clause entries to search. */
+  முழு iFirst, முழு iEnd        /* Range of FROM-clause entries to search. */
 ){
   SrcItem *pItem;
   Select *pSel;
-  assert( pThis->fg.isSubquery );
+  ப்ரதிஜ்ஞா( pThis->fg.isSubquery );
   pSel = pThis->u4.pSubq->pSelect;
-  assert( pSel!=0 );
-  if( pSel->selFlags & SF_PushDown ) return 0;
-  while( iFirst<iEnd ){
+  ப்ரதிஜ்ஞா( pSel!=0 );
+  எனில்( pSel->selFlags & SF_தள்ளு_Down ) திரும்பு 0;
+  போது( iFirst<iEnd ){
     Select *pS1;
     pItem = &pTabList->a[iFirst++];
-    if( !pItem->fg.isSubquery ) continue;
-    if( pItem->fg.viaCoroutine ) continue;
-    if( pItem->zName==0 ) continue;
-    assert( pItem->pSTab!=0 );
-    assert( pThis->pSTab!=0 );
-    if( pItem->pSTab->pSchema!=pThis->pSTab->pSchema ) continue;
-    if( sqlite3_stricmp(pItem->zName, pThis->zName)!=0 ) continue;
+    எனில்( !pItem->fg.isSubquery ) தொடர்;
+    எனில்( pItem->fg.viaCoroutine ) தொடர்;
+    எனில்( pItem->zName==0 ) தொடர்;
+    ப்ரதிஜ்ஞா( pItem->pSTab!=0 );
+    ப்ரதிஜ்ஞா( pThis->pSTab!=0 );
+    எனில்( pItem->pSTab->pSchema!=pThis->pSTab->pSchema ) தொடர்;
+    எனில்( sqlite3_stricmp(pItem->zName, pThis->zName)!=0 ) தொடர்;
     pS1 = pItem->u4.pSubq->pSelect;
-    if( pItem->pSTab->pSchema==0 && pSel->selId!=pS1->selId ){
+    எனில்( pItem->pSTab->pSchema==0 && pSel->selId!=pS1->selId ){
       /* The query flattener left two different CTE tables with identical
       ** names in the same FROM clause. */
-      continue;
+      தொடர்;
     }
-    if( pS1->selFlags & SF_PushDown ){
+    எனில்( pS1->selFlags & SF_தள்ளு_Down ){
       /* The view was modified by some other optimization such as
       ** pushDownWhereTerms() */
-      continue;
+      தொடர்;
     }
-    return pItem;
+    திரும்பு pItem;
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /*
 ** Deallocate a single AggInfo object
 */
-static void agginfoFree(sqlite3 *db, void *pArg){
+நிலையான வெறுமை agginfoFree(sqlite3 *db, வெறுமை *pArg){
   AggInfo *p = (AggInfo*)pArg;
   sqlite3DbFree(db, p->aCol);
   sqlite3DbFree(db, p->aFunc);
@@ -7275,87 +7275,87 @@ static void agginfoFree(sqlite3 *db, void *pArg){
 **
 ** Return TRUE if the optimization is undertaken.
 */
-static int countOfViewOptimization(Parse *pParse, Select *p){
+நிலையான முழு மொத்தம்_Of_View_Optimization(Parse *pParse, Select *p){
   Select *pSub, *pPrior;
-  Expr *pExpr;
-  Expr *pCount;
+  கோவை *p_கோவை;
+  கோவை *p_மொத்தம்;
   sqlite3 *db;
   SrcItem *pFrom;
-  if( (p->selFlags & SF_Aggregate)==0 ) return 0;   /* This is an aggregate */
-  if( p->pEList->nExpr!=1 ) return 0;               /* Single result column */
-  if( p->pWhere ) return 0;
-  if( p->pHaving ) return 0;
-  if( p->pGroupBy ) return 0;
-  if( p->pOrderBy ) return 0;
-  pExpr = p->pEList->a[0].pExpr;
-  if( pExpr->op!=TK_AGG_FUNCTION ) return 0;        /* Result is an aggregate */
-  assert( ExprUseUToken(pExpr) );
-  if( sqlite3_stricmp(pExpr->u.zToken,"count") ) return 0;  /* Is count() */
-  assert( ExprUseXList(pExpr) );
-  if( pExpr->x.pList!=0 ) return 0;                 /* Must be count(*) */
-  if( p->pSrc->nSrc!=1 ) return 0;                  /* One table in FROM  */
-  if( ExprHasProperty(pExpr, EP_WinFunc) ) return 0;/* Not a window function */
+  எனில்( (p->selFlags & SF_Aggregate)==0 ) திரும்பு 0;   /* This is an aggregate */
+  எனில்( p->pEList->n_கோவை!=1 ) திரும்பு 0;               /* Single result column */
+  எனில்( p->pWhere ) திரும்பு 0;
+  எனில்( p->pHaving ) திரும்பு 0;
+  எனில்( p->pGroupBy ) திரும்பு 0;
+  எனில்( p->pOrderBy ) திரும்பு 0;
+  p_கோவை = p->pEList->a[0].p_கோவை;
+  எனில்( p_கோவை->op!=TK_AGG_FUNCTION ) திரும்பு 0;        /* Result is an aggregate */
+  ப்ரதிஜ்ஞா( கோவை_Use_UToken(p_கோவை) );
+  எனில்( sqlite3_stricmp(p_கோவை->u.zToken,"count") ) திரும்பு 0;  /* Is count() */
+  ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை) );
+  எனில்( p_கோவை->x.pList!=0 ) திரும்பு 0;                 /* Must be count(*) */
+  எனில்( p->pSrc->nSrc!=1 ) திரும்பு 0;                  /* One table in FROM  */
+  எனில்( கோவை_Has_Property(p_கோவை, EP_WinFunc) ) திரும்பு 0;/* Not a window function */
   pFrom = p->pSrc->a;
-  if( pFrom->fg.isSubquery==0 ) return 0;           /* FROM is a subquery */
-  if( (p->selFlags & SF_Correlated)!=0 ) return 0;  /* Not a correlated subq */
+  எனில்( pFrom->fg.isSubquery==0 ) திரும்பு 0;           /* FROM is a subquery */
+  எனில்( (p->selFlags & SF_Correlated)!=0 ) திரும்பு 0;  /* Not a correlated subq */
   pSub = pFrom->u4.pSubq->pSelect;
-  if( pSub->pPrior==0 ) return 0;                   /* Must be a compound */
-  if( pSub->selFlags & SF_CopyCte ) return 0;       /* Not a CTE */
-  do{
-    if( pSub->op!=TK_ALL && pSub->pPrior ) return 0;  /* Must be UNION ALL */
-    if( pSub->pWhere ) return 0;                      /* No WHERE clause */
-    if( pSub->pLimit ) return 0;                      /* No LIMIT clause */
-    if( pSub->selFlags & (SF_Aggregate|SF_Distinct) ){
+  எனில்( pSub->pPrior==0 ) திரும்பு 0;                   /* Must be a compound */
+  எனில்( pSub->selFlags & SF_CopyCte ) திரும்பு 0;       /* Not a CTE */
+  செய்{
+    எனில்( pSub->op!=TK_ALL && pSub->pPrior ) திரும்பு 0;  /* Must be UNION ALL */
+    எனில்( pSub->pWhere ) திரும்பு 0;                      /* No WHERE clause */
+    எனில்( pSub->pLimit ) திரும்பு 0;                      /* No LIMIT clause */
+    எனில்( pSub->selFlags & (SF_Aggregate|SF_Distinct) ){
        testcase( pSub->selFlags & SF_Aggregate );
        testcase( pSub->selFlags & SF_Distinct );
-       return 0;     /* Not an aggregate nor DISTINCT */
+       திரும்பு 0;     /* Not an aggregate nor DISTINCT */
     }
-    assert( pSub->pHaving==0 );  /* Due to the previous */
+    ப்ரதிஜ்ஞா( pSub->pHaving==0 );  /* Due to the previous */
     pSub = pSub->pPrior;                              /* Repeat over compound */
-  }while( pSub );
+  }போது( pSub );
 
   /* If we reach this point then it is OK to perform the transformation */
 
   db = pParse->db;
-  pCount = pExpr;
-  pExpr = 0;
+  p_மொத்தம் = p_கோவை;
+  p_கோவை = 0;
   pSub = sqlite3SubqueryDetach(db, pFrom);
   sqlite3SrcListDelete(db, p->pSrc);
   p->pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
-  while( pSub ){
-    Expr *pTerm;
+  போது( pSub ){
+    கோவை *pTerm;
     pPrior = pSub->pPrior;
     pSub->pPrior = 0;
     pSub->pNext = 0;
     pSub->selFlags |= SF_Aggregate;
     pSub->selFlags &= ~(u32)SF_Compound;
     pSub->nSelectRow = 0;
-    sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric, pSub->pEList);
-    pTerm = pPrior ? sqlite3ExprDup(db, pCount, 0) : pCount;
-    pSub->pEList = sqlite3ExprListAppend(pParse, 0, pTerm);
+    sqlite3ParserAddCleanup(pParse, sqlite3_கோவை_List_Delete_Generic, pSub->pEList);
+    pTerm = pPrior ? sqlite3_கோவை_Dup(db, p_மொத்தம், 0) : p_மொத்தம்;
+    pSub->pEList = sqlite3_கோவை_List_Append(pParse, 0, pTerm);
     pTerm = sqlite3PExpr(pParse, TK_SELECT, 0, 0);
     sqlite3PExprAddSelect(pParse, pTerm, pSub);
-    if( pExpr==0 ){
-      pExpr = pTerm;
-    }else{
-      pExpr = sqlite3PExpr(pParse, TK_PLUS, pTerm, pExpr);
+    எனில்( p_கோவை==0 ){
+      p_கோவை = pTerm;
+    }இல்லையெனில்{
+      p_கோவை = sqlite3PExpr(pParse, TK_PLUS, pTerm, p_கோவை);
     }
-    if( pParse->nErr ){
-      sqlite3ExprDelete(db, pExpr);
-      pExpr = 0;
+    எனில்( pParse->nErr ){
+      sqlite3_கோவை_Delete(db, p_கோவை);
+      p_கோவை = 0;
     }
     pSub = pPrior;
   }
-  p->pEList->a[0].pExpr = pExpr;
+  p->pEList->a[0].p_கோவை = p_கோவை;
   p->selFlags &= ~(u32)SF_Aggregate;
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x200 ){
+#எனில் TREETRACE_ENABLED
+  எனில்( sqlite3_மரம்_Trace & 0x200 ){
     TREETRACE(0x200,pParse,p,("After count-of-view optimization:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
-  return 1;
+  திரும்பு 1;
 }
 
 /*
@@ -7363,22 +7363,22 @@ static int countOfViewOptimization(Parse *pParse, Select *p){
 ** as pSrcItem but has the same alias as p0, then return true.
 ** Otherwise return false.
 */
-static int sameSrcAlias(SrcItem *p0, SrcList *pSrc){
-  int i;
-  for(i=0; i<pSrc->nSrc; i++){
+நிலையான முழு sameSrcAlias(SrcItem *p0, SrcList *pSrc){
+  முழு i;
+  க்கு(i=0; i<pSrc->nSrc; i++){
     SrcItem *p1 = &pSrc->a[i];
-    if( p1==p0 ) continue;
-    if( p0->pSTab==p1->pSTab && 0==sqlite3_stricmp(p0->zAlias, p1->zAlias) ){
-      return 1;
+    எனில்( p1==p0 ) தொடர்;
+    எனில்( p0->pSTab==p1->pSTab && 0==sqlite3_stricmp(p0->zAlias, p1->zAlias) ){
+      திரும்பு 1;
     }
-    if( p1->fg.isSubquery
+    எனில்( p1->fg.isSubquery
      && (p1->u4.pSubq->pSelect->selFlags & SF_NestedFrom)!=0
      && sameSrcAlias(p0, p1->u4.pSubq->pSelect->pSrc)
     ){
-      return 1;
+      திரும்பு 1;
     }
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /*
@@ -7409,38 +7409,38 @@ static int sameSrcAlias(SrcItem *p0, SrcList *pSrc){
 **    (4)  The SQLITE_Coroutine optimization disable flag is not set
 **    (5)  The subquery is not self-joined
 */
-static int fromClauseTermCanBeCoroutine(
+நிலையான முழு fromClauseTermCanBeCoroutine(
   Parse *pParse,          /* Parsing context */
   SrcList *pTabList,      /* FROM clause */
-  int i,                  /* Which term of the FROM clause holds the subquery */
-  int selFlags            /* Flags on the SELECT statement */
+  முழு i,                  /* Which term of the FROM clause holds the subquery */
+  முழு selFlags            /* Flags on the SELECT statement */
 ){
   SrcItem *pItem = &pTabList->a[i];
-  if( pItem->fg.isCte ){
-    const CteUse *pCteUse = pItem->u2.pCteUse;
-    if( pCteUse->eM10d==M10d_Yes ) return 0;                          /* (2a) */
-    if( pCteUse->nUse>=2 && pCteUse->eM10d!=M10d_No ) return 0;       /* (2b) */
+  எனில்( pItem->fg.isCte ){
+    மாறிலி CteUse *pCteUse = pItem->u2.pCteUse;
+    எனில்( pCteUse->eM10d==M10d_Yes ) திரும்பு 0;                          /* (2a) */
+    எனில்( pCteUse->nUse>=2 && pCteUse->eM10d!=M10d_No ) திரும்பு 0;       /* (2b) */
   }
-  if( pTabList->a[0].fg.jointype & JT_LTORJ ) return 0;               /* (3)  */
-  if( OptimizationDisabled(pParse->db, SQLITE_Coroutines) ) return 0; /* (4)  */
-  if( isSelfJoinView(pTabList, pItem, i+1, pTabList->nSrc)!=0 ){
-    return 0;                                                          /* (5) */
+  எனில்( pTabList->a[0].fg.jointype & JT_LTORJ ) திரும்பு 0;               /* (3)  */
+  எனில்( OptimizationDisabled(pParse->db, SQLITE_Coroutines) ) திரும்பு 0; /* (4)  */
+  எனில்( isSelfJoinView(pTabList, pItem, i+1, pTabList->nSrc)!=0 ){
+    திரும்பு 0;                                                          /* (5) */
   }
-  if( i==0 ){
-    if( pTabList->nSrc==1 ) return 1;                             /* (1a) */
-    if( pTabList->a[1].fg.jointype & JT_CROSS ) return 1;         /* (1b) */
-    if( selFlags & SF_UpdateFrom )              return 0;         /* (1c-iii) */
-    return 1;
+  எனில்( i==0 ){
+    எனில்( pTabList->nSrc==1 ) திரும்பு 1;                             /* (1a) */
+    எனில்( pTabList->a[1].fg.jointype & JT_CROSS ) திரும்பு 1;         /* (1b) */
+    எனில்( selFlags & SF_UpdateFrom )              திரும்பு 0;         /* (1c-iii) */
+    திரும்பு 1;
   }
-  if( selFlags & SF_UpdateFrom ) return 0;                        /* (1c-iii) */
-  while( 1 /*exit-by-break*/ ){
-    if( pItem->fg.jointype & (JT_OUTER|JT_CROSS)  ) return 0;     /* (1c-ii) */
-    if( i==0 ) break;
+  எனில்( selFlags & SF_UpdateFrom ) திரும்பு 0;                        /* (1c-iii) */
+  போது( 1 /*exit-by-break*/ ){
+    எனில்( pItem->fg.jointype & (JT_OUTER|JT_CROSS)  ) திரும்பு 0;     /* (1c-ii) */
+    எனில்( i==0 ) நிறுத்து;
     i--;
     pItem--;
-    if( pItem->fg.isSubquery ) return 0;                          /* (1c-i) */
+    எனில்( pItem->fg.isSubquery ) திரும்பு 0;                          /* (1c-i) */
   }
-  return 1;
+  திரும்பு 1;
 }
 
 /*
@@ -7469,27 +7469,27 @@ static int fromClauseTermCanBeCoroutine(
 ** the where.c file to exit the corresponding loop after the first successful
 ** match (if any).
 */
-static SQLITE_NOINLINE void existsToJoin(
+நிலையான SQLITE_NOINLINE வெறுமை existsToJoin(
   Parse *pParse,  /* Parsing context */
   Select *p,      /* The SELECT statement being optimized */
-  Expr *pWhere    /* part of the WHERE clause currently being examined */
+  கோவை *pWhere    /* part of the WHERE clause currently being examined */
 ){
-  if( pParse->nErr==0
+  எனில்( pParse->nErr==0
    && pWhere!=0
-   && !ExprHasProperty(pWhere, EP_OuterON|EP_InnerON) 
+   && !கோவை_Has_Property(pWhere, EP_OuterON|EP_InnerON) 
    && ALWAYS(p->pSrc!=0)
    && p->pSrc->nSrc<BMS
-   && (p->pLimit==0 || p->pLimit->pRight==0)
+   && (p->pLimit==0 || p->pLimit->p_வலது==0)
   ){
-    if( pWhere->op==TK_AND ){
-      Expr *pRight = pWhere->pRight;
-      existsToJoin(pParse, p, pWhere->pLeft);
-      existsToJoin(pParse, p, pRight);
+    எனில்( pWhere->op==TK_AND ){
+      கோவை *p_வலது = pWhere->p_வலது;
+      existsToJoin(pParse, p, pWhere->p_இடது);
+      existsToJoin(pParse, p, p_வலது);
     }
-    else if( pWhere->op==TK_EXISTS ){
+    இல்லையெனில் எனில்( pWhere->op==TK_EXISTS ){
       Select *pSub = pWhere->x.pSelect;
-      Expr *pSubWhere = pSub->pWhere;
-      if( pSub->pSrc->nSrc==1
+      கோவை *pSubWhere = pSub->pWhere;
+      எனில்( pSub->pSrc->nSrc==1
        && (pSub->selFlags & SF_Aggregate)==0
        && !pSub->pSrc->a[0].fg.isSubquery
        && pSub->pLimit==0
@@ -7501,31 +7501,31 @@ static SQLITE_NOINLINE void existsToJoin(
         ** else in the tree, and in this case it is important that it use
         ** a unique cursor number.  */
         sqlite3 *db = pParse->db;
-        int *aCsrMap = sqlite3DbMallocZero(db, (pParse->nTab+2)*sizeof(int));
-        if( aCsrMap==0 ) return;
+        முழு *aCsrMap = sqlite3DbMallocZero(db, (pParse->nTab+2)*அளவு(முழு));
+        எனில்( aCsrMap==0 ) திரும்பு;
         aCsrMap[0] = (pParse->nTab+1);
         renumberCursors(pParse, pSub, -1, aCsrMap);
         sqlite3DbFree(db, aCsrMap);
 
-        memset(pWhere, 0, sizeof(*pWhere));
+        memset(pWhere, 0, அளவு(*pWhere));
         pWhere->op = TK_INTEGER;
-        pWhere->u.iValue = 1;
-        ExprSetProperty(pWhere, EP_IntValue);
-        assert( p->pWhere!=0 );
+        pWhere->u.i_மதிப்பு = 1;
+        கோவை_Set_Property(pWhere, EP_Int_மதிப்பு);
+        ப்ரதிஜ்ஞா( p->pWhere!=0 );
         pSub->pSrc->a[0].fg.fromExists = 1;
         p->pSrc = sqlite3SrcListAppendList(pParse, p->pSrc, pSub->pSrc);
-        if( pSubWhere ){
+        எனில்( pSubWhere ){
           p->pWhere = sqlite3PExpr(pParse, TK_AND, p->pWhere, pSubWhere);
           pSub->pWhere = 0;
         }
         pSub->pSrc = 0;
         sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pSub);
         recomputeColumnsUsed(p, &p->pSrc->a[p->pSrc->nSrc-1]);
-#if TREETRACE_ENABLED
-        if( sqlite3TreeTrace & 0x100000 ){
+#எனில் TREETRACE_ENABLED
+        எனில்( sqlite3_மரம்_Trace & 0x100000 ){
           TREETRACE(0x100000,pParse,p,
                     ("After EXISTS-to-JOIN optimization:\n"));
-          sqlite3TreeViewSelect(0, p, 0);
+          sqlite3_மரம்_View_Select(0, p, 0);
         }
 #endif
       }
@@ -7536,11 +7536,11 @@ static SQLITE_NOINLINE void existsToJoin(
 /*
 ** Type used for Walker callbacks by selectCheckOnClauses().
 */
-typedef struct CheckOnCtx CheckOnCtx;
-struct CheckOnCtx {
+வகைவரை கட்டமைப்பு CheckOnCtx CheckOnCtx;
+கட்டமைப்பு CheckOnCtx {
   SrcList *pSrc;       /* SrcList for this context */
-  int iJoin;           /* Cursors must be left of this one, if not negative */
-  int bFuncArg;        /* True for table-function arg */
+  முழு iJoin;           /* Cursors must be left of this one, if not negative */
+  முழு bFuncArg;        /* True for table-function arg */
   CheckOnCtx *pParent; /* Parent context */
 };
 
@@ -7548,12 +7548,12 @@ struct CheckOnCtx {
 ** True if the SrcList passed as the only argument contains at least
 ** one RIGHT or FULL JOIN. False otherwise.  
 */
-#define hasRightJoin(pSrc) (((pSrc)->a[0].fg.jointype & JT_LTORJ)!=0)
+#define has_வலது_Join(pSrc) (((pSrc)->a[0].fg.jointype & JT_LTORJ)!=0)
 
 /*
 ** The xExpr callback for the search of invalid ON clause terms.
 */
-static int selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
+நிலையான முழு select_Check_On_Clauses_கோவை(Walker *pWalker, கோவை *p_கோவை){
   CheckOnCtx *pCtx = pWalker->u.pCheckOnCtx;
 
   /* Check if pExpr is root or near-root of an ON clause constraint that needs
@@ -7564,66 +7564,66 @@ static int selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
   **   + an ON clause on an INNER join within a FROM that features at
   **     least one RIGHT or FULL join.
   */
-  if( (ExprHasProperty(pExpr, EP_OuterON))
-   || (ExprHasProperty(pExpr, EP_InnerON) && hasRightJoin(pCtx->pSrc))
+  எனில்( (கோவை_Has_Property(p_கோவை, EP_OuterON))
+   || (கோவை_Has_Property(p_கோவை, EP_InnerON) && has_வலது_Join(pCtx->pSrc))
   ){
     /* If CheckOnCtx.iJoin is already set, then fall through and process
     ** this expression node as normal. Or, if CheckOnCtx.iJoin is still 0,
     ** set it to the cursor number of the RHS of the join to which this
     ** ON expression was attached and then iterate through the entire 
     ** expression.  */
-    assert( pCtx->iJoin<0 || pCtx->iJoin==pExpr->w.iJoin );
-    if( pCtx->iJoin<0 ){
-      pCtx->iJoin = pExpr->w.iJoin;
-      sqlite3WalkExprNN(pWalker, pExpr);
+    ப்ரதிஜ்ஞா( pCtx->iJoin<0 || pCtx->iJoin==p_கோவை->w.iJoin );
+    எனில்( pCtx->iJoin<0 ){
+      pCtx->iJoin = p_கோவை->w.iJoin;
+      sqlite3_Walk_கோவை_NN(pWalker, p_கோவை);
       pCtx->iJoin = -1;
-      return WRC_Prune;
+      திரும்பு WRC_Prune;
     }
   }
 
-  if( pExpr->op==TK_COLUMN ){
+  எனில்( p_கோவை->op==TK_COLUMN ){
     /* A column expression. Find the SrcList (if any) to which it refers.
     ** Then, if CheckOnCtx.iJoin indicates that this expression is part of an
     ** ON clause from that SrcList (i.e. if iJoin is non-zero), check that it
     ** does not refer to a table to the right of CheckOnCtx.iJoin. */
-    int iTab = pExpr->iTable;
-    do {
+    முழு iTab = p_கோவை->iTable;
+    செய் {
       SrcList *pSrc = pCtx->pSrc;
-      int nSrc = pSrc->nSrc;
-      int ii;
-      for(ii=0; ii<nSrc && pSrc->a[ii].iCursor!=iTab; ii++){}
-      if( ii<nSrc ){
+      முழு nSrc = pSrc->nSrc;
+      முழு ii;
+      க்கு(ii=0; ii<nSrc && pSrc->a[ii].iCursor!=iTab; ii++){}
+      எனில்( ii<nSrc ){
         /* pSrc is the FROM clause that contains iTab */
-        if( pCtx->iJoin>=0 ){
-          for(ii--; ii>=0 && pSrc->a[ii].iCursor!=pCtx->iJoin; ii--){}
-          if( ii>=0 ){
+        எனில்( pCtx->iJoin>=0 ){
+          க்கு(ii--; ii>=0 && pSrc->a[ii].iCursor!=pCtx->iJoin; ii--){}
+          எனில்( ii>=0 ){
             /* Table iJoin appears to the left of table iTab in the SrcList.
             ** Therefore the expression refers to a table to its right. */
-            sqlite3ErrorMsg(pWalker->pParse, 
+            sqlite3_Error_செய்தி(pWalker->pParse, 
                 "%s references tables to its right",
                 (pCtx->bFuncArg ? "table-function argument" : "ON clause")
             );
-            return WRC_Abort;
+            திரும்பு WRC_Abort;
           }
         }
-        break;
+        நிறுத்து;
       }
       pCtx = pCtx->pParent;
-    }while( pCtx );
+    }போது( pCtx );
   }
-  return WRC_Continue;
+  திரும்பு WRC_Continue;
 }
 
 /*
 ** The xSelect callback for the search of invalid ON clause terms.
 */
-static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
+நிலையான முழு selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
   CheckOnCtx *pCtx = pWalker->u.pCheckOnCtx;
-  if( pSelect->pSrc==pCtx->pSrc || pSelect->pSrc->nSrc==0 ){
-    return WRC_Continue;
-  }else{
+  எனில்( pSelect->pSrc==pCtx->pSrc || pSelect->pSrc->nSrc==0 ){
+    திரும்பு WRC_Continue;
+  }இல்லையெனில்{
     CheckOnCtx sCtx;
-    memset(&sCtx, 0, sizeof(sCtx));
+    memset(&sCtx, 0, அளவு(sCtx));
     sCtx.pSrc = pSelect->pSrc;
     sCtx.pParent = pCtx;
     sCtx.iJoin = -1;
@@ -7631,7 +7631,7 @@ static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
     sqlite3WalkSelect(pWalker, pSelect);
     pWalker->u.pCheckOnCtx = pCtx;
     pSelect->selFlags &= ~SF_OnToWhere;
-    return WRC_Prune;
+    திரும்பு WRC_Prune;
   }
 }
 
@@ -7639,21 +7639,21 @@ static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
 ** Check all ON clauses in pSelect to verify that they do not reference
 ** columns to the right.
 */
-void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
+வெறுமை sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
   Walker w;
   CheckOnCtx sCtx;
-  int ii;
-  assert( pSelect->selFlags & SF_OnToWhere );
-  assert( pSelect->pSrc!=0 && pSelect->pSrc->nSrc>=2 );
-  memset(&w, 0, sizeof(w));
+  முழு ii;
+  ப்ரதிஜ்ஞா( pSelect->selFlags & SF_OnToWhere );
+  ப்ரதிஜ்ஞா( pSelect->pSrc!=0 && pSelect->pSrc->nSrc>=2 );
+  memset(&w, 0, அளவு(w));
   w.pParse = pParse;
-  w.xExprCallback = selectCheckOnClausesExpr;
+  w.x_கோவை_Callback = select_Check_On_Clauses_கோவை;
   w.xSelectCallback = selectCheckOnClausesSelect;
   w.u.pCheckOnCtx = &sCtx;
-  memset(&sCtx, 0, sizeof(sCtx));
+  memset(&sCtx, 0, அளவு(sCtx));
   sCtx.pSrc = pSelect->pSrc;
   sCtx.iJoin = -1;
-  sqlite3WalkExpr(&w, pSelect->pWhere);
+  sqlite3_Walk_கோவை(&w, pSelect->pWhere);
   pSelect->selFlags &= ~SF_OnToWhere;
 
   /* Check for any table-function args that are attached to virtual tables 
@@ -7668,24 +7668,24 @@ void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
   **   may not refer to any table that occurs to the right of the LEFT JOIN.
   */
   sCtx.bFuncArg = 1;
-  for(ii=0; ii<pSelect->pSrc->nSrc; ii++){
+  க்கு(ii=0; ii<pSelect->pSrc->nSrc; ii++){
     SrcItem *pItem = &pSelect->pSrc->a[ii];
-    if( pItem->fg.isTabFunc ){
+    எனில்( pItem->fg.isTabFunc ){
       sCtx.iJoin = -1;
-      if( (pItem->fg.jointype & (JT_LTORJ|JT_RIGHT)) ){
+      எனில்( (pItem->fg.jointype & (JT_LTORJ|JT_வலது)) ){
         sCtx.iJoin = pItem->iCursor;
-      }else{
-        int jj;
-        for(jj=ii+1; jj<pSelect->pSrc->nSrc; jj++){
+      }இல்லையெனில்{
+        முழு jj;
+        க்கு(jj=ii+1; jj<pSelect->pSrc->nSrc; jj++){
           SrcItem *pItem2 = &pSelect->pSrc->a[jj];
-          if( pItem2->fg.jointype & JT_OUTER ){
+          எனில்( pItem2->fg.jointype & JT_OUTER ){
             sCtx.iJoin = pItem2[-1].iCursor;
-            break;
+            நிறுத்து;
           }
         }
       }
-      if( sCtx.iJoin>=0 ){
-        sqlite3WalkExprList(&w, pItem->u1.pFuncArg);
+      எனில்( sCtx.iJoin>=0 ){
+        sqlite3_Walk_கோவை_List(&w, pItem->u1.pFuncArg);
       }
     }
   }
@@ -7700,18 +7700,18 @@ void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
 **
 ** p1 must be non-NULL.
 */
-static int sqlite3CopySortOrder(ExprList *p1, ExprList *p2){
-  assert( p1 );
-  if( p2 && p1->nExpr==p2->nExpr ){
-    int ii;
-    for(ii=0; ii<p1->nExpr; ii++){
+நிலையான முழு sqlite3CopySortOrder(கோவை_List *p1, கோவை_List *p2){
+  ப்ரதிஜ்ஞா( p1 );
+  எனில்( p2 && p1->n_கோவை==p2->n_கோவை ){
+    முழு ii;
+    க்கு(ii=0; ii<p1->n_கோவை; ii++){
       u8 sortFlags;
       sortFlags = p2->a[ii].fg.sortFlags & KEYINFO_ORDER_DESC;
       p1->a[ii].fg.sortFlags = sortFlags;
     }
-    return 1;
-  }else{
-    return 0;
+    திரும்பு 1;
+  }இல்லையெனில்{
+    திரும்பு 0;
   }
 }
 
@@ -7762,42 +7762,42 @@ static int sqlite3CopySortOrder(ExprList *p1, ExprList *p2){
 **  *  Sort results, as needed                              tag-select-0900
 **  *  Internal self-checks                                 tag-select-1000
 */
-int sqlite3Select(
+முழு sqlite3Select(
   Parse *pParse,         /* The parser context */
   Select *p,             /* The SELECT statement being coded. */
   SelectDest *pDest      /* What to do with the query results */
 ){
-  int i, j;              /* Loop counters */
+  முழு i, j;              /* Loop counters */
   WhereInfo *pWInfo;     /* Return from sqlite3WhereBegin() */
   Vdbe *v;               /* The virtual machine under construction */
-  int isAgg;             /* True for select lists like "count(*)" */
-  ExprList *pEList = 0;  /* List of columns to extract. */
+  முழு isAgg;             /* True for select lists like "count(*)" */
+  கோவை_List *pEList = 0;  /* List of columns to extract. */
   SrcList *pTabList;     /* List of tables to select from */
-  Expr *pWhere;          /* The WHERE clause.  May be NULL */
-  ExprList *pGroupBy;    /* The GROUP BY clause.  May be NULL */
-  Expr *pHaving;         /* The HAVING clause.  May be NULL */
+  கோவை *pWhere;          /* The WHERE clause.  May be NULL */
+  கோவை_List *pGroupBy;    /* The GROUP BY clause.  May be NULL */
+  கோவை *pHaving;         /* The HAVING clause.  May be NULL */
   AggInfo *pAggInfo = 0; /* Aggregate information */
-  int rc = 1;            /* Value to return from this function */
+  முழு rc = 1;            /* Value to return from this function */
   DistinctCtx sDistinct; /* Info on how to code the DISTINCT keyword */
   SortCtx sSort;         /* Info on how to code the ORDER BY clause */
-  int iEnd;              /* Address of the end of the query */
+  முழு iEnd;              /* Address of the end of the query */
   sqlite3 *db;           /* The database connection */
-  ExprList *pMinMaxOrderBy = 0;  /* Added ORDER BY for min/max queries */
+  கோவை_List *pMinMaxOrderBy = 0;  /* Added ORDER BY for min/max queries */
   u8 minMaxFlag;                 /* Flag for min/max queries */
 
   db = pParse->db;
-  assert( pParse==db->pParse );
+  ப்ரதிஜ்ஞா( pParse==db->pParse );
   v = sqlite3GetVdbe(pParse);
-  if( p==0 || pParse->nErr ){
-    return 1;
+  எனில்( p==0 || pParse->nErr ){
+    திரும்பு 1;
   }
-  assert( db->mallocFailed==0 );
-  if( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) return 1;
-#if TREETRACE_ENABLED
+  ப்ரதிஜ்ஞா( db->mallocFailed==0 );
+  எனில்( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) திரும்பு 1;
+#எனில் TREETRACE_ENABLED
   TREETRACE(0x1,pParse,p, ("begin processing:\n", pParse->addrExplain));
-  if( sqlite3TreeTrace & 0x10000 ){
-    if( (sqlite3TreeTrace & 0x10001)==0x10000 ){
-      sqlite3TreeViewLine(0, "In sqlite3Select() at %s:%d",
+  எனில்( sqlite3_மரம்_Trace & 0x10000 ){
+    எனில்( (sqlite3_மரம்_Trace & 0x10001)==0x10000 ){
+      sqlite3_மரம்_View_வரி(0, "In sqlite3Select() at %s:%d",
                            __FILE__, __LINE__);
     }
     sqlite3ShowSelect(p);
@@ -7805,22 +7805,22 @@ int sqlite3Select(
 #endif
 
   /* tag-select-0100 */
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_DistFifo );
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_Fifo );
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_DistQueue );
-  assert( p->pOrderBy==0 || pDest->eDest!=SRT_Queue );
-  if( IgnorableDistinct(pDest) ){
-    assert(pDest->eDest==SRT_Exists     || pDest->eDest==SRT_Discard ||
+  ப்ரதிஜ்ஞா( p->pOrderBy==0 || pDest->eDest!=SRT_DistFifo );
+  ப்ரதிஜ்ஞா( p->pOrderBy==0 || pDest->eDest!=SRT_Fifo );
+  ப்ரதிஜ்ஞா( p->pOrderBy==0 || pDest->eDest!=SRT_DistQueue );
+  ப்ரதிஜ்ஞா( p->pOrderBy==0 || pDest->eDest!=SRT_Queue );
+  எனில்( IgnorableDistinct(pDest) ){
+    ப்ரதிஜ்ஞா(pDest->eDest==SRT_Exists     || pDest->eDest==SRT_Discard ||
            pDest->eDest==SRT_DistQueue  || pDest->eDest==SRT_DistFifo );
     /* All of these destinations are also able to ignore the ORDER BY clause */
-    if( p->pOrderBy ){
-#if TREETRACE_ENABLED
+    எனில்( p->pOrderBy ){
+#எனில் TREETRACE_ENABLED
       TREETRACE(0x800,pParse,p, ("dropping superfluous ORDER BY:\n"));
-      if( sqlite3TreeTrace & 0x800 ){
-        sqlite3TreeViewExprList(0, p->pOrderBy, 0, "ORDERBY");
+      எனில்( sqlite3_மரம்_Trace & 0x800 ){
+        sqlite3_மரம்_View_கோவை_List(0, p->pOrderBy, 0, "ORDERBY");
       }
 #endif   
-      sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric,
+      sqlite3ParserAddCleanup(pParse, sqlite3_கோவை_List_Delete_Generic,
                               p->pOrderBy);
       testcase( pParse->earlyCleanup );
       p->pOrderBy = 0;
@@ -7828,15 +7828,15 @@ int sqlite3Select(
     p->selFlags &= ~(u32)SF_Distinct;
   }
   sqlite3SelectPrep(pParse, p, 0);
-  if( pParse->nErr ){
-    goto select_end;
+  எனில்( pParse->nErr ){
+    செல் select_end;
   }
-  assert( db->mallocFailed==0 );
-  assert( p->pEList!=0 );
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10 ){
+  ப்ரதிஜ்ஞா( db->mallocFailed==0 );
+  ப்ரதிஜ்ஞா( p->pEList!=0 );
+#எனில் TREETRACE_ENABLED
+  எனில்( sqlite3_மரம்_Trace & 0x10 ){
     TREETRACE(0x10,pParse,p, ("after name resolution:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
 
@@ -7849,14 +7849,14 @@ int sqlite3Select(
   ** systems handle this case differently, and not all the same way,
   ** which is just confusing. To avoid this, we follow PG's lead and
   ** disallow it altogether.  */
-  if( p->selFlags & SF_UFSrcCheck ){
+  எனில்( p->selFlags & SF_UFSrcCheck ){
     SrcItem *p0 = &p->pSrc->a[0];
-    if( sameSrcAlias(p0, p->pSrc) ){
-      sqlite3ErrorMsg(pParse,
+    எனில்( sameSrcAlias(p0, p->pSrc) ){
+      sqlite3_Error_செய்தி(pParse,
           "target object/alias may not appear in FROM clause: %s",
           p0->zAlias ? p0->zAlias : p0->pSTab->zName
       );
-      goto select_end;
+      செல் select_end;
     }
 
     /* Clear the SF_UFSrcCheck flag. The check has already been performed,
@@ -7866,33 +7866,33 @@ int sqlite3Select(
     p->selFlags &= ~(u32)SF_UFSrcCheck;
   }
 
-  if( pDest->eDest==SRT_Output ){
+  எனில்( pDest->eDest==SRT_Output ){
     sqlite3GenerateColumnNames(pParse, p);
   }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( sqlite3WindowRewrite(pParse, p) ){
-    assert( pParse->nErr );
-    goto select_end;
+  எனில்( sqlite3WindowRewrite(pParse, p) ){
+    ப்ரதிஜ்ஞா( pParse->nErr );
+    செல் select_end;
   }
-#if TREETRACE_ENABLED
-  if( p->pWin && (sqlite3TreeTrace & 0x40)!=0 ){
+#எனில் TREETRACE_ENABLED
+  எனில்( p->pWin && (sqlite3_மரம்_Trace & 0x40)!=0 ){
     TREETRACE(0x40,pParse,p, ("after window rewrite:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
 #endif /* SQLITE_OMIT_WINDOWFUNC */
   pTabList = p->pSrc;
   isAgg = (p->selFlags & SF_Aggregate)!=0;
-  memset(&sSort, 0, sizeof(sSort));
+  memset(&sSort, 0, அளவு(sSort));
   sSort.pOrderBy = p->pOrderBy;
 
   /* Try to do various optimizations (flattening subqueries, and strength
   ** reduction of join operators) in the FROM clause up into the main query
   ** tag-select-0200
   */
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-  for(i=0; !p->pPrior && i<pTabList->nSrc; i++){
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+  க்கு(i=0; !p->pPrior && i<pTabList->nSrc; i++){
     SrcItem *pItem = &pTabList->a[i];
     Select *pSub = pItem->fg.isSubquery ? pItem->u4.pSubq->pSelect : 0;
     Table *pTab = pItem->pSTab;
@@ -7900,7 +7900,7 @@ int sqlite3Select(
     /* The expander should have already created transient Table objects
     ** even for FROM clause elements such as subqueries that do not correspond
     ** to a real table */
-    assert( pTab!=0 );
+    ப்ரதிஜ்ஞா( pTab!=0 );
 
     /* Try to simplify joins:
     **
@@ -7914,63 +7914,63 @@ int sqlite3Select(
     ** "OUTER JOIN strength reduction" in the SQLite documentation.
     ** tag-select-0220
     */
-    if( (pItem->fg.jointype & (JT_LEFT|JT_LTORJ))!=0
-     && sqlite3ExprImpliesNonNullRow(p->pWhere, pItem->iCursor,
+    எனில்( (pItem->fg.jointype & (JT_இடது|JT_LTORJ))!=0
+     && sqlite3_கோவை_Implies_Non_Null_Row(p->pWhere, pItem->iCursor,
                                      pItem->fg.jointype & JT_LTORJ)
      && OptimizationEnabled(db, SQLITE_SimplifyJoin)
     ){
-      if( pItem->fg.jointype & JT_LEFT ){
-        if( pItem->fg.jointype & JT_RIGHT ){
+      எனில்( pItem->fg.jointype & JT_இடது ){
+        எனில்( pItem->fg.jointype & JT_வலது ){
           TREETRACE(0x1000,pParse,p,
                     ("FULL-JOIN simplifies to RIGHT-JOIN on term %d\n",i));
-          pItem->fg.jointype &= ~JT_LEFT;
-        }else{
+          pItem->fg.jointype &= ~JT_இடது;
+        }இல்லையெனில்{
           TREETRACE(0x1000,pParse,p,
                     ("LEFT-JOIN simplifies to JOIN on term %d\n",i));
-          pItem->fg.jointype &= ~(JT_LEFT|JT_OUTER);
-          unsetJoinExpr(p->pWhere, pItem->iCursor, 0);
+          pItem->fg.jointype &= ~(JT_இடது|JT_OUTER);
+          unset_Join_கோவை(p->pWhere, pItem->iCursor, 0);
         }
       }
-      if( pItem->fg.jointype & JT_LTORJ ){
-        for(j=i+1; j<pTabList->nSrc; j++){
+      எனில்( pItem->fg.jointype & JT_LTORJ ){
+        க்கு(j=i+1; j<pTabList->nSrc; j++){
           SrcItem *pI2 = &pTabList->a[j];
-          if( pI2->fg.jointype & JT_RIGHT ){
-            if( pI2->fg.jointype & JT_LEFT ){
+          எனில்( pI2->fg.jointype & JT_வலது ){
+            எனில்( pI2->fg.jointype & JT_இடது ){
               TREETRACE(0x1000,pParse,p,
                         ("FULL-JOIN simplifies to LEFT-JOIN on term %d\n",j));
-              pI2->fg.jointype &= ~JT_RIGHT;
-            }else{
+              pI2->fg.jointype &= ~JT_வலது;
+            }இல்லையெனில்{
               TREETRACE(0x1000,pParse,p,
                         ("RIGHT-JOIN simplifies to JOIN on term %d\n",j));
-              pI2->fg.jointype &= ~(JT_RIGHT|JT_OUTER);
-              unsetJoinExpr(p->pWhere, pI2->iCursor, 1);
+              pI2->fg.jointype &= ~(JT_வலது|JT_OUTER);
+              unset_Join_கோவை(p->pWhere, pI2->iCursor, 1);
             }
           }
         }
-        for(j=pTabList->nSrc-1; j>=0; j--){
+        க்கு(j=pTabList->nSrc-1; j>=0; j--){
           pTabList->a[j].fg.jointype &= ~JT_LTORJ;
-          if( pTabList->a[j].fg.jointype & JT_RIGHT ) break;
+          எனில்( pTabList->a[j].fg.jointype & JT_வலது ) நிறுத்து;
         }
       }
     }
 
     /* No further action if this term of the FROM clause is not a subquery */
-    if( pSub==0 ) continue;
+    எனில்( pSub==0 ) தொடர்;
 
     /* Catch mismatch in the declared columns of a view and the number of
     ** columns in the SELECT on the RHS */
-    if( pTab->nCol!=pSub->pEList->nExpr ){
-      sqlite3ErrorMsg(pParse, "expected %d columns for '%s' but got %d",
-                      pTab->nCol, pTab->zName, pSub->pEList->nExpr);
-      goto select_end;
+    எனில்( pTab->nCol!=pSub->pEList->n_கோவை ){
+      sqlite3_Error_செய்தி(pParse, "expected %d columns for '%s' but got %d",
+                      pTab->nCol, pTab->zName, pSub->pEList->n_கோவை);
+      செல் select_end;
     }
 
     /* Do not attempt the usual optimizations (flattening and ORDER BY
     ** elimination) on a MATERIALIZED common table expression because
     ** a MATERIALIZED common table expression is an optimization fence.
     */
-    if( pItem->fg.isCte && pItem->u2.pCteUse->eM10d==M10d_Yes ){
-      continue;
+    எனில்( pItem->fg.isCte && pItem->u2.pCteUse->eM10d==M10d_Yes ){
+      தொடர்;
     }
 
     /* Do not try to flatten an aggregate subquery.
@@ -7980,8 +7980,8 @@ int sqlite3Select(
     ** will be implemented as a co-routine and there is no advantage to
     ** flattening in that case.
     */
-    if( (pSub->selFlags & SF_Aggregate)!=0 ) continue;
-    assert( pSub->pGroupBy==0 );
+    எனில்( (pSub->selFlags & SF_Aggregate)!=0 ) தொடர்;
+    ப்ரதிஜ்ஞா( pSub->pGroupBy==0 );
 
     /* tag-select-0230:
     ** If a FROM-clause subquery has an ORDER BY clause that is not
@@ -8009,7 +8009,7 @@ int sqlite3Select(
     **
     ** Also retain the ORDER BY if the OmitOrderBy optimization is disabled.
     */
-    if( pSub->pOrderBy!=0
+    எனில்( pSub->pOrderBy!=0
      && (p->pOrderBy!=0 || pTabList->nSrc>1)      /* Condition (5) */
      && pSub->pLimit==0                           /* Condition (1) */
      && (pSub->selFlags & (SF_OrderByReqd|SF_Recursive))==0  /* (2) and (6) */
@@ -8018,7 +8018,7 @@ int sqlite3Select(
     ){
       TREETRACE(0x800,pParse,p,
                 ("omit superfluous ORDER BY on %r FROM-clause subquery\n",i+1));
-      sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric,
+      sqlite3ParserAddCleanup(pParse, sqlite3_கோவை_List_Delete_Generic,
                               pSub->pOrderBy);
       pSub->pOrderBy = 0;
     }
@@ -8041,24 +8041,24 @@ int sqlite3Select(
     **
     **  SELECT x FROM (SELECT x FROM tab ORDER BY y LIMIT 10);
     */
-    if( pSub->pOrderBy!=0
+    எனில்( pSub->pOrderBy!=0
      && i==0
      && (p->selFlags & SF_ComplexResult)!=0
      && (pTabList->nSrc==1
          || (pTabList->a[1].fg.jointype&(JT_OUTER|JT_CROSS))!=0)
     ){
-      continue;
+      தொடர்;
     }
 
     /* tag-select-0240 */
-    if( flattenSubquery(pParse, p, i, isAgg) ){
-      if( pParse->nErr ) goto select_end;
+    எனில்( flattenSubquery(pParse, p, i, isAgg) ){
+      எனில்( pParse->nErr ) செல் select_end;
       /* This subquery can be absorbed into its parent. */
       i = -1;
     }
     pTabList = p->pSrc;
-    if( db->mallocFailed ) goto select_end;
-    if( !IgnorableOrderby(pDest) ){
+    எனில்( db->mallocFailed ) செல் select_end;
+    எனில்( !IgnorableOrderby(pDest) ){
       sSort.pOrderBy = p->pOrderBy;
     }
   }
@@ -8068,22 +8068,22 @@ int sqlite3Select(
   /* Handle compound SELECT statements using the separate multiSelect()
   ** procedure.  tag-select-0300
   */
-  if( p->pPrior ){
+  எனில்( p->pPrior ){
     rc = multiSelect(pParse, p, pDest);
-#if TREETRACE_ENABLED
+#எனில் TREETRACE_ENABLED
     TREETRACE(0x400,pParse,p,("end compound-select processing\n"));
-    if( (sqlite3TreeTrace & 0x400)!=0 && ExplainQueryPlanParent(pParse)==0 ){
-      sqlite3TreeViewSelect(0, p, 0);
+    எனில்( (sqlite3_மரம்_Trace & 0x400)!=0 && ExplainQueryPlanParent(pParse)==0 ){
+      sqlite3_மரம்_View_Select(0, p, 0);
     }
 #endif
-    if( p->pNext==0 ) ExplainQueryPlanPop(pParse);
-    return rc;
+    எனில்( p->pNext==0 ) Explain_Query_Plan_எடு(pParse);
+    திரும்பு rc;
   }
 #endif
 
   /* If there may be an "EXISTS (SELECT ...)" in the WHERE clause, attempt
   ** to change it into a join.  */
-  if( pParse->bHasExists && OptimizationEnabled(db,SQLITE_ExistsToJoin) ){
+  எனில்( pParse->bHasExists && OptimizationEnabled(db,SQLITE_ExistsToJoin) ){
     existsToJoin(pParse, p, p->pWhere);
     pTabList = p->pSrc;
   }
@@ -8093,26 +8093,26 @@ int sqlite3Select(
   ** as the equivalent optimization will be handled by query planner in
   ** sqlite3WhereBegin().  tag-select-0330
   */
-  if( p->pWhere!=0
+  எனில்( p->pWhere!=0
    && p->pWhere->op==TK_AND
    && OptimizationEnabled(db, SQLITE_PropagateConst)
    && propagateConstants(pParse, p)
   ){
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x2000 ){
+#எனில் TREETRACE_ENABLED
+    எனில்( sqlite3_மரம்_Trace & 0x2000 ){
       TREETRACE(0x2000,pParse,p,("After constant propagation:\n"));
-      sqlite3TreeViewSelect(0, p, 0);
+      sqlite3_மரம்_View_Select(0, p, 0);
     }
 #endif
-  }else{
+  }இல்லையெனில்{
     TREETRACE(0x2000,pParse,p,("Constant propagation not helpful\n"));
   }
 
   /* tag-select-0350 */
-  if( OptimizationEnabled(db, SQLITE_QueryFlattener|SQLITE_CountOfView)
-   && countOfViewOptimization(pParse, p)
+  எனில்( OptimizationEnabled(db, SQLITE_QueryFlattener|SQLITE_மொத்தம்_Of_View)
+   && மொத்தம்_Of_View_Optimization(pParse, p)
   ){
-    if( db->mallocFailed ) goto select_end;
+    எனில்( db->mallocFailed ) செல் select_end;
     pTabList = p->pSrc;
   }
 
@@ -8123,14 +8123,14 @@ int sqlite3Select(
   **
   ** tag-select-0400
   */
-  for(i=0; i<pTabList->nSrc; i++){
+  க்கு(i=0; i<pTabList->nSrc; i++){
     SrcItem *pItem = &pTabList->a[i];
     SrcItem *pPrior;
     SelectDest dest;
     Subquery *pSubq;
     Select *pSub;
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-    const char *zSavedAuthContext;
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+    மாறிலி எழுத்து *zSavedAuthContext;
 #endif
 
     /* Authorized unreferenced tables.  tag-select-0410
@@ -8151,29 +8151,29 @@ int sqlite3Select(
     ** assume the column name is non-NULL and segfault.  The use of an empty
     ** string for the fake column name seems safer.
     */
-    if( pItem->colUsed==0 && pItem->zName!=0 ){
-      const char *zDb;
-      if( pItem->fg.fixedSchema ){
-        int iDb = sqlite3SchemaToIndex(pParse->db, pItem->u4.pSchema);
+    எனில்( pItem->colUsed==0 && pItem->zName!=0 ){
+      மாறிலி எழுத்து *zDb;
+      எனில்( pItem->fg.fixedSchema ){
+        முழு iDb = sqlite3SchemaToIndex(pParse->db, pItem->u4.pSchema);
         zDb = db->aDb[iDb].zDbSName;
-      }else if( pItem->fg.isSubquery ){
+      }இல்லையெனில் எனில்( pItem->fg.isSubquery ){
         zDb = 0;
-      }else{
+      }இல்லையெனில்{
         zDb = pItem->u4.zDatabase;
       }
       sqlite3AuthCheck(pParse, SQLITE_READ, pItem->zName, "", zDb);
     }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#எனில் !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
     /* Generate code for all sub-queries in the FROM clause
     */
-    if( pItem->fg.isSubquery==0 ) continue;
+    எனில்( pItem->fg.isSubquery==0 ) தொடர்;
     pSubq = pItem->u4.pSubq;
-    assert( pSubq!=0 );
+    ப்ரதிஜ்ஞா( pSubq!=0 );
     pSub = pSubq->pSelect;
 
     /* The code for a subquery should only be generated once. */
-    if( pSubq->addrFillSub!=0 ) continue;
+    எனில்( pSubq->addrFillSub!=0 ) தொடர்;
 
     /* Increment Parse.nHeight by the height of the largest expression
     ** tree referred to by this, the parent select. The child select
@@ -8182,26 +8182,26 @@ int sqlite3Select(
     ** more conservative than necessary, but much easier than enforcing
     ** an exact limit.
     */
-    pParse->nHeight += sqlite3SelectExprHeight(p);
+    pParse->nHeight += sqlite3_Select_கோவை_Height(p);
 
     /* Make copies of constant WHERE-clause terms in the outer query down
     ** inside the subquery.  This can help the subquery to run more efficiently.
     ** This is the "predicate push-down optimization".  tag-select-0420
     */
-    if( OptimizationEnabled(db, SQLITE_PushDown)
+    எனில்( OptimizationEnabled(db, SQLITE_தள்ளு_Down)
      && (pItem->fg.isCte==0
          || (pItem->u2.pCteUse->eM10d!=M10d_Yes && pItem->u2.pCteUse->nUse<2))
-     && pushDownWhereTerms(pParse, pSub, p->pWhere, pTabList, i)
+     && தள்ளு_Down_Where_Terms(pParse, pSub, p->pWhere, pTabList, i)
     ){
-#if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x4000 ){
+#எனில் TREETRACE_ENABLED
+      எனில்( sqlite3_மரம்_Trace & 0x4000 ){
         TREETRACE(0x4000,pParse,p,
             ("After WHERE-clause push-down into subquery %d:\n", pSub->selId));
-        sqlite3TreeViewSelect(0, p, 0);
+        sqlite3_மரம்_View_Select(0, p, 0);
       }
 #endif
-      assert( pSubq->pSelect && (pSub->selFlags & SF_PushDown)!=0 );
-    }else{
+      ப்ரதிஜ்ஞா( pSubq->pSelect && (pSub->selFlags & SF_தள்ளு_Down)!=0 );
+    }இல்லையெனில்{
       TREETRACE(0x4000,pParse,p,("WHERE-clause push-down not possible\n"));
     }
 
@@ -8209,15 +8209,15 @@ int sqlite3Select(
     ** expressions, to avoid unneeded searching and computation.
     ** tag-select-0440
     */
-    if( OptimizationEnabled(db, SQLITE_NullUnusedCols)
+    எனில்( OptimizationEnabled(db, SQLITE_NullUnusedCols)
      && disableUnusedSubqueryResultColumns(pItem)
     ){
-#if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x4000 ){
+#எனில் TREETRACE_ENABLED
+      எனில்( sqlite3_மரம்_Trace & 0x4000 ){
         TREETRACE(0x4000,pParse,p,
             ("Change unused result columns to NULL for subquery %d:\n",
              pSub->selId));
-        sqlite3TreeViewSelect(0, p, 0);
+        sqlite3_மரம்_View_Select(0, p, 0);
       }
 #endif
     }
@@ -8227,16 +8227,16 @@ int sqlite3Select(
 
     /* Generate byte-code to implement the subquery  tag-select-0480
     */
-    if( fromClauseTermCanBeCoroutine(pParse, pTabList, i, p->selFlags) ){
+    எனில்( fromClauseTermCanBeCoroutine(pParse, pTabList, i, p->selFlags) ){
       /* Implement a co-routine that will return a single row of the result
       ** set on each invocation.  tag-select-0482
       */
-      int addrTop = sqlite3VdbeCurrentAddr(v)+1;
+      முழு addr_உச்சி = sqlite3VdbeCurrentAddr(v)+1;
     
       pSubq->regReturn = ++pParse->nMem;
-      sqlite3VdbeAddOp3(v, OP_InitCoroutine, pSubq->regReturn, 0, addrTop);
+      sqlite3VdbeAddOp3(v, OP_InitCoroutine, pSubq->regReturn, 0, addr_உச்சி);
       VdbeComment((v, "%!S", pItem));
-      pSubq->addrFillSub = addrTop;
+      pSubq->addrFillSub = addr_உச்சி;
       sqlite3SelectDestInit(&dest, SRT_Coroutine, pSubq->regReturn);
       ExplainQueryPlan((pParse, 1, "CO-ROUTINE %!S", pItem));
       sqlite3Select(pParse, pSub, &dest);
@@ -8245,54 +8245,54 @@ int sqlite3Select(
       pSubq->regResult = dest.iSdst;
       sqlite3VdbeEndCoroutine(v, pSubq->regReturn);
       VdbeComment((v, "end %!S", pItem));
-      sqlite3VdbeJumpHere(v, addrTop-1);
+      sqlite3VdbeJumpHere(v, addr_உச்சி-1);
       sqlite3ClearTempRegCache(pParse);
-    }else if( pItem->fg.isCte && pItem->u2.pCteUse->addrM9e>0 ){
+    }இல்லையெனில் எனில்( pItem->fg.isCte && pItem->u2.pCteUse->addrM9e>0 ){
       /* This is a CTE for which materialization code has already been
       ** generated.  Invoke the subroutine to compute the materialization,
       ** then make the pItem->iCursor be a copy of the ephemeral table that
       ** holds the result of the materialization. tag-select-0484 */
       CteUse *pCteUse = pItem->u2.pCteUse;
       sqlite3VdbeAddOp2(v, OP_Gosub, pCteUse->regRtn, pCteUse->addrM9e);
-      if( pItem->iCursor!=pCteUse->iCur ){
+      எனில்( pItem->iCursor!=pCteUse->iCur ){
         sqlite3VdbeAddOp2(v, OP_OpenDup, pItem->iCursor, pCteUse->iCur);
         VdbeComment((v, "%!S", pItem));
       }
       pSub->nSelectRow = pCteUse->nRowEst;
-    }else if( (pPrior = isSelfJoinView(pTabList, pItem, 0, i))!=0 ){
+    }இல்லையெனில் எனில்( (pPrior = isSelfJoinView(pTabList, pItem, 0, i))!=0 ){
       /* This view has already been materialized by a prior entry in
       ** this same FROM clause.  Reuse it.  tag-select-0486 */
       Subquery *pPriorSubq;
-      assert( pPrior->fg.isSubquery );
+      ப்ரதிஜ்ஞா( pPrior->fg.isSubquery );
       pPriorSubq = pPrior->u4.pSubq;
-      assert( pPriorSubq!=0 );
-      if( pPriorSubq->addrFillSub ){
+      ப்ரதிஜ்ஞா( pPriorSubq!=0 );
+      எனில்( pPriorSubq->addrFillSub ){
         sqlite3VdbeAddOp2(v, OP_Gosub, pPriorSubq->regReturn,
                                        pPriorSubq->addrFillSub);
       }
       sqlite3VdbeAddOp2(v, OP_OpenDup, pItem->iCursor, pPrior->iCursor);
       pSub->nSelectRow = pPriorSubq->pSelect->nSelectRow;
-    }else{
+    }இல்லையெனில்{
       /* Materialize the view.  If the view is not correlated, generate a
       ** subroutine to do the materialization so that subsequent uses of
       ** the same view can reuse the materialization.  tag-select-0488 */
-      int topAddr;
-      int onceAddr = 0;
+      முழு உச்சி_Addr;
+      முழு onceAddr = 0;
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-      int addrExplain;
+      முழு addrExplain;
 #endif
 
       pSubq->regReturn = ++pParse->nMem;
-      topAddr = sqlite3VdbeAddOp0(v, OP_Goto);
-      pSubq->addrFillSub = topAddr+1;
+      உச்சி_Addr = sqlite3VdbeAddOp0(v, OP_Goto);
+      pSubq->addrFillSub = உச்சி_Addr+1;
       pItem->fg.isMaterialized = 1;
-      if( pItem->fg.isCorrelated==0 ){
+      எனில்( pItem->fg.isCorrelated==0 ){
         /* If the subquery is not correlated and if we are not inside of
         ** a trigger, then we only need to compute the value of the subquery
         ** once. */
         onceAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
         VdbeComment((v, "materialize %!S", pItem));
-      }else{
+      }இல்லையெனில்{
         VdbeNoopComment((v, "materialize %!S", pItem));
       }
       sqlite3SelectDestInit(&dest, SRT_EphemTab, pItem->iCursor);
@@ -8300,13 +8300,13 @@ int sqlite3Select(
       ExplainQueryPlan2(addrExplain, (pParse, 1, "MATERIALIZE %!S", pItem));
       sqlite3Select(pParse, pSub, &dest);
       pItem->pSTab->nRowLogEst = pSub->nSelectRow;
-      if( onceAddr ) sqlite3VdbeJumpHere(v, onceAddr);
-      sqlite3VdbeAddOp2(v, OP_Return, pSubq->regReturn, topAddr+1);
+      எனில்( onceAddr ) sqlite3VdbeJumpHere(v, onceAddr);
+      sqlite3VdbeAddOp2(v, OP_Return, pSubq->regReturn, உச்சி_Addr+1);
       VdbeComment((v, "end %!S", pItem));
       sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
-      sqlite3VdbeJumpHere(v, topAddr);
+      sqlite3VdbeJumpHere(v, உச்சி_Addr);
       sqlite3ClearTempRegCache(pParse);
-      if( pItem->fg.isCte && pItem->fg.isCorrelated==0 ){
+      எனில்( pItem->fg.isCte && pItem->fg.isCorrelated==0 ){
         CteUse *pCteUse = pItem->u2.pCteUse;
         pCteUse->addrM9e = pSubq->addrFillSub;
         pCteUse->regRtn = pSubq->regReturn;
@@ -8314,8 +8314,8 @@ int sqlite3Select(
         pCteUse->nRowEst = pSub->nSelectRow;
       }
     }
-    if( db->mallocFailed ) goto select_end;
-    pParse->nHeight -= sqlite3SelectExprHeight(p);
+    எனில்( db->mallocFailed ) செல் select_end;
+    pParse->nHeight -= sqlite3_Select_கோவை_Height(p);
     pParse->zAuthContext = zSavedAuthContext;
 #endif
   }
@@ -8328,10 +8328,10 @@ int sqlite3Select(
   pHaving = p->pHaving;
   sDistinct.isTnct = (p->selFlags & SF_Distinct)!=0;
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x8000 ){
+#எனில் TREETRACE_ENABLED
+  எனில்( sqlite3_மரம்_Trace & 0x8000 ){
     TREETRACE(0x8000,pParse,p,("After all FROM-clause analysis:\n"));
-    sqlite3TreeViewSelect(0, p, 0);
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
 
@@ -8352,18 +8352,18 @@ int sqlite3Select(
   ** written the query must use a temp-table for at least one of the ORDER
   ** BY and DISTINCT, and an index or separate temp-table for the other.
   */
-  if( (p->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct
+  எனில்( (p->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct
    && sqlite3CopySortOrder(pEList, sSort.pOrderBy)
-   && sqlite3ExprListCompare(pEList, sSort.pOrderBy, -1)==0
+   && sqlite3_கோவை_List_Compare(pEList, sSort.pOrderBy, -1)==0
    && OptimizationEnabled(db, SQLITE_GroupByOrder)
 #ifndef SQLITE_OMIT_WINDOWFUNC
    && p->pWin==0
 #endif
   ){
     p->selFlags &= ~(u32)SF_Distinct;
-    pGroupBy = p->pGroupBy = sqlite3ExprListDup(db, pEList, 0);
-    if( pGroupBy ){
-      for(i=0; i<pGroupBy->nExpr; i++){
+    pGroupBy = p->pGroupBy = sqlite3_கோவை_List_Dup(db, pEList, 0);
+    எனில்( pGroupBy ){
+      க்கு(i=0; i<pGroupBy->n_கோவை; i++){
         pGroupBy->a[i].u.x.iOrderByCol = i+1;
       }
     }
@@ -8371,13 +8371,13 @@ int sqlite3Select(
     /* Notice that even thought SF_Distinct has been cleared from p->selFlags,
     ** the sDistinct.isTnct is still set.  Hence, isTnct represents the
     ** original setting of the SF_Distinct flag, not the current setting */
-    assert( sDistinct.isTnct );
+    ப்ரதிஜ்ஞா( sDistinct.isTnct );
     sDistinct.isTnct = 2;
 
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20000 ){
+#எனில் TREETRACE_ENABLED
+    எனில்( sqlite3_மரம்_Trace & 0x20000 ){
       TREETRACE(0x20000,pParse,p,("Transform DISTINCT into GROUP BY:\n"));
-      sqlite3TreeViewSelect(0, p, 0);
+      sqlite3_மரம்_View_Select(0, p, 0);
     }
 #endif
   }
@@ -8390,35 +8390,35 @@ int sqlite3Select(
   ** not needed.  The sSort.addrSortIndex variable is used to facilitate
   ** that change.  tag-select-0600
   */
-  if( sSort.pOrderBy ){
-    KeyInfo *pKeyInfo;
-    pKeyInfo = sqlite3KeyInfoFromExprList(
-        pParse, sSort.pOrderBy, 0, pEList->nExpr);
+  எனில்( sSort.pOrderBy ){
+    சாவி_Info *p_சாவி_Info;
+    p_சாவி_Info = sqlite3_சாவி_Info_From_கோவை_List(
+        pParse, sSort.pOrderBy, 0, pEList->n_கோவை);
     sSort.iECursor = pParse->nTab++;
     sSort.addrSortIndex =
       sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
-          sSort.iECursor, sSort.pOrderBy->nExpr+1+pEList->nExpr, 0,
-          (char*)pKeyInfo, P4_KEYINFO
+          sSort.iECursor, sSort.pOrderBy->n_கோவை+1+pEList->n_கோவை, 0,
+          (எழுத்து*)p_சாவி_Info, P4_KEYINFO
       );
-  }else{
+  }இல்லையெனில்{
     sSort.addrSortIndex = -1;
   }
 
   /* If the output is destined for a temporary table, open that table.
   ** tag-select-0630
   */
-  if( pDest->eDest==SRT_EphemTab ){
-    sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pDest->iSDParm, pEList->nExpr);
-    if( p->selFlags & SF_NestedFrom ){
+  எனில்( pDest->eDest==SRT_EphemTab ){
+    sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pDest->iSDParm, pEList->n_கோவை);
+    எனில்( p->selFlags & SF_NestedFrom ){
       /* Delete or NULL-out result columns that will never be used */
-      int ii;
-      for(ii=pEList->nExpr-1; ii>0 && pEList->a[ii].fg.bUsed==0; ii--){
-        sqlite3ExprDelete(db, pEList->a[ii].pExpr);
+      முழு ii;
+      க்கு(ii=pEList->n_கோவை-1; ii>0 && pEList->a[ii].fg.bUsed==0; ii--){
+        sqlite3_கோவை_Delete(db, pEList->a[ii].p_கோவை);
         sqlite3DbFree(db, pEList->a[ii].zEName);
-        pEList->nExpr--;
+        pEList->n_கோவை--;
       }
-      for(ii=0; ii<pEList->nExpr; ii++){
-        if( pEList->a[ii].fg.bUsed==0 ) pEList->a[ii].pExpr->op = TK_NULL;
+      க்கு(ii=0; ii<pEList->n_கோவை; ii++){
+        எனில்( pEList->a[ii].fg.bUsed==0 ) pEList->a[ii].p_கோவை->op = TK_NULL;
       }
     }
   }
@@ -8426,63 +8426,63 @@ int sqlite3Select(
   /* Set the limiter.  tag-select-0650
   */
   iEnd = sqlite3VdbeMakeLabel(pParse);
-  if( (p->selFlags & SF_FixedLimit)==0 ){
+  எனில்( (p->selFlags & SF_FixedLimit)==0 ){
     p->nSelectRow = 320;  /* 4 billion rows */
   }
-  if( p->pLimit ) computeLimitRegisters(pParse, p, iEnd);
-  if( p->iLimit==0 && sSort.addrSortIndex>=0 ){
+  எனில்( p->pLimit ) computeLimitRegisters(pParse, p, iEnd);
+  எனில்( p->iLimit==0 && sSort.addrSortIndex>=0 ){
     sqlite3VdbeChangeOpcode(v, sSort.addrSortIndex, OP_SorterOpen);
     sSort.sortFlags |= SORTFLAG_UseSorter;
   }
 
   /* Open an ephemeral index to use for the distinct set. tag-select-0680
   */
-  if( p->selFlags & SF_Distinct ){
+  எனில்( p->selFlags & SF_Distinct ){
     sDistinct.tabTnct = pParse->nTab++;
     sDistinct.addrTnct = sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
                        sDistinct.tabTnct, 0, 0,
-                       (char*)sqlite3KeyInfoFromExprList(pParse, p->pEList,0,0),
+                       (எழுத்து*)sqlite3_சாவி_Info_From_கோவை_List(pParse, p->pEList,0,0),
                        P4_KEYINFO);
     sqlite3VdbeChangeP5(v, BTREE_UNORDERED);
     sDistinct.eTnctType = WHERE_DISTINCT_UNORDERED;
-  }else{
+  }இல்லையெனில்{
     sDistinct.eTnctType = WHERE_DISTINCT_NOOP;
   }
 
-  if( !isAgg && pGroupBy==0 ){
+  எனில்( !isAgg && pGroupBy==0 ){
     /* No aggregate functions and no GROUP BY clause.  tag-select-0700 */
     u16 wctrlFlags = (sDistinct.isTnct ? WHERE_WANT_DISTINCT : 0)
                    | (p->selFlags & SF_FixedLimit);
 #ifndef SQLITE_OMIT_WINDOWFUNC
     Window *pWin = p->pWin;      /* Main window object (or NULL) */
-    if( pWin ){
+    எனில்( pWin ){
       sqlite3WindowCodeInit(pParse, p);
     }
 #endif
-    assert( WHERE_USE_LIMIT==SF_FixedLimit );
+    ப்ரதிஜ்ஞா( WHERE_USE_LIMIT==SF_FixedLimit );
 
 
     /* Begin the database scan. */
     TREETRACE(0x2,pParse,p,("WhereBegin\n"));
     pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, sSort.pOrderBy,
                                p->pEList, p, wctrlFlags, p->nSelectRow);
-    if( pWInfo==0 ) goto select_end;
-    if( sqlite3WhereOutputRowCount(pWInfo) < p->nSelectRow ){
-      p->nSelectRow = sqlite3WhereOutputRowCount(pWInfo);
-      if( pDest->eDest<=SRT_DistQueue && pDest->eDest>=SRT_DistFifo ){
+    எனில்( pWInfo==0 ) செல் select_end;
+    எனில்( sqlite3_Where_Output_Row_மொத்தம்(pWInfo) < p->nSelectRow ){
+      p->nSelectRow = sqlite3_Where_Output_Row_மொத்தம்(pWInfo);
+      எனில்( pDest->eDest<=SRT_DistQueue && pDest->eDest>=SRT_DistFifo ){
         /* TUNING: For a UNION CTE, because UNION is implies DISTINCT,
         ** reduce the estimated output row count by 8 (LogEst 30). 
         ** Search for tag-20250414a to see other cases */
         p->nSelectRow -= 30;
       }
     }
-    if( sDistinct.isTnct && sqlite3WhereIsDistinct(pWInfo) ){
+    எனில்( sDistinct.isTnct && sqlite3WhereIsDistinct(pWInfo) ){
       sDistinct.eTnctType = sqlite3WhereIsDistinct(pWInfo);
     }
-    if( sSort.pOrderBy ){
+    எனில்( sSort.pOrderBy ){
       sSort.nOBSat = sqlite3WhereIsOrdered(pWInfo);
       sSort.labelOBLopt = sqlite3WhereOrderByLimitOptLabel(pWInfo);
-      if( sSort.nOBSat==sSort.pOrderBy->nExpr ){
+      எனில்( sSort.nOBSat==sSort.pOrderBy->n_கோவை ){
         sSort.pOrderBy = 0;
       }
     }
@@ -8492,17 +8492,17 @@ int sqlite3Select(
     ** instruction ended up not being needed, then change the OP_OpenEphemeral
     ** into an OP_Noop.
     */
-    if( sSort.addrSortIndex>=0 && sSort.pOrderBy==0 ){
+    எனில்( sSort.addrSortIndex>=0 && sSort.pOrderBy==0 ){
       sqlite3VdbeChangeToNoop(v, sSort.addrSortIndex);
     }
 
-    assert( p->pEList==pEList );
+    ப்ரதிஜ்ஞா( p->pEList==pEList );
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pWin ){
-      int addrGosub = sqlite3VdbeMakeLabel(pParse);
-      int iCont = sqlite3VdbeMakeLabel(pParse);
-      int iBreak = sqlite3VdbeMakeLabel(pParse);
-      int regGosub = ++pParse->nMem;
+    எனில்( pWin ){
+      முழு addrGosub = sqlite3VdbeMakeLabel(pParse);
+      முழு iCont = sqlite3VdbeMakeLabel(pParse);
+      முழு iBreak = sqlite3VdbeMakeLabel(pParse);
+      முழு regGosub = ++pParse->nMem;
 
       sqlite3WindowCodeStep(pParse, p, pWInfo, regGosub, addrGosub);
 
@@ -8515,7 +8515,7 @@ int sqlite3Select(
       sqlite3VdbeAddOp1(v, OP_Return, regGosub);
       VdbeComment((v, "end inner-loop subroutine"));
       sqlite3VdbeResolveLabel(v, iBreak);
-    }else
+    }இல்லையெனில்
 #endif /* SQLITE_OMIT_WINDOWFUNC */
     {
       /* Use the standard inner loop. */
@@ -8528,37 +8528,37 @@ int sqlite3Select(
       TREETRACE(0x2,pParse,p,("WhereEnd\n"));
       sqlite3WhereEnd(pWInfo);
     }
-  }else{
+  }இல்லையெனில்{
     /* This case is for when there exist aggregate functions or a GROUP BY
     ** clause or both.  tag-select-0800 */
     NameContext sNC;    /* Name context for processing aggregate information */
-    int iAMem;          /* First Mem address for storing current GROUP BY */
-    int iBMem;          /* First Mem address for previous GROUP BY */
-    int iUseFlag;       /* Mem address holding flag indicating that at least
+    முழு iAMem;          /* First Mem address for storing current GROUP BY */
+    முழு iBMem;          /* First Mem address for previous GROUP BY */
+    முழு iUseFlag;       /* Mem address holding flag indicating that at least
                         ** one row of the input to the aggregator has been
                         ** processed */
-    int iAbortFlag;     /* Mem address which causes query abort if positive */
-    int groupBySort;    /* Rows come from source in GROUP BY order */
-    int addrEnd;        /* End of processing for this SELECT */
-    int sortPTab = 0;   /* Pseudotable used to decode sorting results */
-    int sortOut = 0;    /* Output register from the sorter */
-    int orderByGrp = 0; /* True if the GROUP BY and ORDER BY are the same */
+    முழு iAbortFlag;     /* Mem address which causes query abort if positive */
+    முழு groupBySort;    /* Rows come from source in GROUP BY order */
+    முழு addrEnd;        /* End of processing for this SELECT */
+    முழு sortPTab = 0;   /* Pseudotable used to decode sorting results */
+    முழு sortOut = 0;    /* Output register from the sorter */
+    முழு orderByGrp = 0; /* True if the GROUP BY and ORDER BY are the same */
 
     /* Remove any and all aliases between the result set and the
     ** GROUP BY clause.
     */
-    if( pGroupBy ){
-      int k;                        /* Loop counter */
-      struct ExprList_item *pItem;  /* For looping over expression in a list */
+    எனில்( pGroupBy ){
+      முழு k;                        /* Loop counter */
+      கட்டமைப்பு கோவை_List_item *pItem;  /* For looping over expression in a list */
 
-      for(k=p->pEList->nExpr, pItem=p->pEList->a; k>0; k--, pItem++){
+      க்கு(k=p->pEList->n_கோவை, pItem=p->pEList->a; k>0; k--, pItem++){
         pItem->u.x.iAlias = 0;
       }
-      for(k=pGroupBy->nExpr, pItem=pGroupBy->a; k>0; k--, pItem++){
+      க்கு(k=pGroupBy->n_கோவை, pItem=pGroupBy->a; k>0; k--, pItem++){
         pItem->u.x.iAlias = 0;
       }
-      assert( 66==sqlite3LogEst(100) );
-      if( p->nSelectRow>66 ) p->nSelectRow = 66;
+      ப்ரதிஜ்ஞா( 66==sqlite3LogEst(100) );
+      எனில்( p->nSelectRow>66 ) p->nSelectRow = 66;
 
       /* If there is both a GROUP BY and an ORDER BY clause and they are
       ** identical, then it may be possible to disable the ORDER BY clause
@@ -8568,13 +8568,13 @@ int sqlite3Select(
       ** but not actually sorted. Either way, record the fact that the
       ** ORDER BY and GROUP BY clauses are the same by setting the orderByGrp
       ** variable.  */
-      if( sqlite3CopySortOrder(pGroupBy, sSort.pOrderBy)
-       && sqlite3ExprListCompare(pGroupBy, sSort.pOrderBy, -1)==0
+      எனில்( sqlite3CopySortOrder(pGroupBy, sSort.pOrderBy)
+       && sqlite3_கோவை_List_Compare(pGroupBy, sSort.pOrderBy, -1)==0
       ){
         orderByGrp = 1;
       }
-    }else{
-      assert( 0==sqlite3LogEst(1) );
+    }இல்லையெனில்{
+      ப்ரதிஜ்ஞா( 0==sqlite3LogEst(1) );
       p->nSelectRow = 0;
     }
 
@@ -8585,52 +8585,52 @@ int sqlite3Select(
     ** sAggInfo for all TK_AGG_FUNCTION nodes in expressions of the
     ** SELECT statement.
     */
-    pAggInfo = sqlite3DbMallocZero(db, sizeof(*pAggInfo) );
-    if( pAggInfo ){
+    pAggInfo = sqlite3DbMallocZero(db, அளவு(*pAggInfo) );
+    எனில்( pAggInfo ){
       sqlite3ParserAddCleanup(pParse, agginfoFree, pAggInfo);
       testcase( pParse->earlyCleanup );
     }
-    if( db->mallocFailed ){
-      goto select_end;
+    எனில்( db->mallocFailed ){
+      செல் select_end;
     }
     pAggInfo->selId = p->selId;
 #ifdef SQLITE_DEBUG
     pAggInfo->pSelect = p;
 #endif
-    memset(&sNC, 0, sizeof(sNC));
+    memset(&sNC, 0, அளவு(sNC));
     sNC.pParse = pParse;
     sNC.pSrcList = pTabList;
     sNC.uNC.pAggInfo = pAggInfo;
     VVA_ONLY( sNC.ncFlags = NC_UAggInfo; )
-    pAggInfo->nSortingColumn = pGroupBy ? pGroupBy->nExpr : 0;
+    pAggInfo->nSortingColumn = pGroupBy ? pGroupBy->n_கோவை : 0;
     pAggInfo->pGroupBy = pGroupBy;
-    sqlite3ExprAnalyzeAggList(&sNC, pEList);
-    sqlite3ExprAnalyzeAggList(&sNC, sSort.pOrderBy);
-    if( pHaving ){
-      if( pGroupBy ){
-        assert( pWhere==p->pWhere );
-        assert( pHaving==p->pHaving );
-        assert( pGroupBy==p->pGroupBy );
+    sqlite3_கோவை_Analyze_Agg_List(&sNC, pEList);
+    sqlite3_கோவை_Analyze_Agg_List(&sNC, sSort.pOrderBy);
+    எனில்( pHaving ){
+      எனில்( pGroupBy ){
+        ப்ரதிஜ்ஞா( pWhere==p->pWhere );
+        ப்ரதிஜ்ஞா( pHaving==p->pHaving );
+        ப்ரதிஜ்ஞா( pGroupBy==p->pGroupBy );
         havingToWhere(pParse, p);
         pWhere = p->pWhere;
       }
-      sqlite3ExprAnalyzeAggregates(&sNC, pHaving);
+      sqlite3_கோவை_Analyze_Aggregates(&sNC, pHaving);
     }
     pAggInfo->nAccumulator = pAggInfo->nColumn;
-    if( p->pGroupBy==0 && p->pHaving==0 && pAggInfo->nFunc==1 ){
+    எனில்( p->pGroupBy==0 && p->pHaving==0 && pAggInfo->nFunc==1 ){
       minMaxFlag = minMaxQuery(db, pAggInfo->aFunc[0].pFExpr, &pMinMaxOrderBy);
-    }else{
+    }இல்லையெனில்{
       minMaxFlag = WHERE_ORDERBY_NORMAL;
     }
     analyzeAggFuncArgs(pAggInfo, &sNC);
-    if( db->mallocFailed ) goto select_end;
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20 ){
+    எனில்( db->mallocFailed ) செல் select_end;
+#எனில் TREETRACE_ENABLED
+    எனில்( sqlite3_மரம்_Trace & 0x20 ){
       TREETRACE(0x20,pParse,p,("After aggregate analysis %p:\n", pAggInfo));
-      sqlite3TreeViewSelect(0, p, 0);
-      if( minMaxFlag ){
+      sqlite3_மரம்_View_Select(0, p, 0);
+      எனில்( minMaxFlag ){
         sqlite3DebugPrintf("MIN/MAX Optimization (0x%02x) adds:\n", minMaxFlag);
-        sqlite3TreeViewExprList(0, pMinMaxOrderBy, 0, "ORDERBY");
+        sqlite3_மரம்_View_கோவை_List(0, pMinMaxOrderBy, 0, "ORDERBY");
       }
       printAggInfo(pAggInfo);
     }
@@ -8640,30 +8640,30 @@ int sqlite3Select(
     /* Processing for aggregates with GROUP BY is very different and
     ** much more complex than aggregates without a GROUP BY.  tag-select-0810
     */
-    if( pGroupBy ){
-      KeyInfo *pKeyInfo;  /* Keying information for the group by clause */
-      int addr1;          /* A-vs-B comparison jump */
-      int addrOutputRow;  /* Start of subroutine that outputs a result row */
-      int regOutputRow;   /* Return address register for output subroutine */
-      int addrSetAbort;   /* Set the abort flag and return */
-      int addrTopOfLoop;  /* Top of the input loop */
-      int addrSortingIdx; /* The OP_OpenEphemeral for the sorting index */
-      int addrReset;      /* Subroutine for resetting the accumulator */
-      int regReset;       /* Return address register for reset subroutine */
-      ExprList *pDistinct = 0;
+    எனில்( pGroupBy ){
+      சாவி_Info *p_சாவி_Info;  /* Keying information for the group by clause */
+      முழு addr1;          /* A-vs-B comparison jump */
+      முழு addrOutputRow;  /* Start of subroutine that outputs a result row */
+      முழு regOutputRow;   /* Return address register for output subroutine */
+      முழு addrSetAbort;   /* Set the abort flag and return */
+      முழு addr_உச்சி_Of_Loop;  /* Top of the input loop */
+      முழு addrSortingIdx; /* The OP_OpenEphemeral for the sorting index */
+      முழு addrReset;      /* Subroutine for resetting the accumulator */
+      முழு regReset;       /* Return address register for reset subroutine */
+      கோவை_List *pDistinct = 0;
       u16 distFlag = 0;
-      int eDist = WHERE_DISTINCT_NOOP;
+      முழு eDist = WHERE_DISTINCT_NOOP;
 
-      if( pAggInfo->nFunc==1
+      எனில்( pAggInfo->nFunc==1
        && pAggInfo->aFunc[0].iDistinct>=0
        && ALWAYS(pAggInfo->aFunc[0].pFExpr!=0)
-       && ALWAYS(ExprUseXList(pAggInfo->aFunc[0].pFExpr))
+       && ALWAYS(கோவை_Use_XList(pAggInfo->aFunc[0].pFExpr))
        && pAggInfo->aFunc[0].pFExpr->x.pList!=0
       ){
-        Expr *pExpr = pAggInfo->aFunc[0].pFExpr->x.pList->a[0].pExpr;
-        pExpr = sqlite3ExprDup(db, pExpr, 0);
-        pDistinct = sqlite3ExprListDup(db, pGroupBy, 0);
-        pDistinct = sqlite3ExprListAppend(pParse, pDistinct, pExpr);
+        கோவை *p_கோவை = pAggInfo->aFunc[0].pFExpr->x.pList->a[0].p_கோவை;
+        p_கோவை = sqlite3_கோவை_Dup(db, p_கோவை, 0);
+        pDistinct = sqlite3_கோவை_List_Dup(db, pGroupBy, 0);
+        pDistinct = sqlite3_கோவை_List_Append(pParse, pDistinct, p_கோவை);
         distFlag = pDistinct ? (WHERE_WANT_DISTINCT|WHERE_AGG_DISTINCT) : 0;
       }
 
@@ -8673,11 +8673,11 @@ int sqlite3Select(
       ** will be converted into a Noop. 
       */
       pAggInfo->sortingIdx = pParse->nTab++;
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pGroupBy,
+      p_சாவி_Info = sqlite3_சாவி_Info_From_கோவை_List(pParse, pGroupBy,
                                             0, pAggInfo->nColumn);
       addrSortingIdx = sqlite3VdbeAddOp4(v, OP_SorterOpen,
           pAggInfo->sortingIdx, pAggInfo->nSortingColumn,
-          0, (char*)pKeyInfo, P4_KEYINFO);
+          0, (எழுத்து*)p_சாவி_Info, P4_KEYINFO);
 
       /* Initialize memory locations used by GROUP BY aggregate processing
       */
@@ -8688,13 +8688,13 @@ int sqlite3Select(
       regReset = ++pParse->nMem;
       addrReset = sqlite3VdbeMakeLabel(pParse);
       iAMem = pParse->nMem + 1;
-      pParse->nMem += pGroupBy->nExpr;
+      pParse->nMem += pGroupBy->n_கோவை;
       iBMem = pParse->nMem + 1;
-      pParse->nMem += pGroupBy->nExpr;
+      pParse->nMem += pGroupBy->n_கோவை;
       sqlite3VdbeAddOp2(v, OP_Integer, 0, iAbortFlag);
       VdbeComment((v, "clear abort flag"));
-      sqlite3VdbeAddOp3(v, OP_Null, 0, iAMem, iAMem+pGroupBy->nExpr-1);
-      sqlite3ExprNullRegisterRange(pParse, iAMem, pGroupBy->nExpr);
+      sqlite3VdbeAddOp3(v, OP_Null, 0, iAMem, iAMem+pGroupBy->n_கோவை-1);
+      sqlite3_கோவை_Null_Register_Range(pParse, iAMem, pGroupBy->n_கோவை);
 
       /* Begin a loop that will extract all source rows in GROUP BY order.
       ** This might involve two separate loops with an OP_Sort in between, or
@@ -8707,35 +8707,35 @@ int sqlite3Select(
           p, (sDistinct.isTnct==2 ? WHERE_DISTINCTBY : WHERE_GROUPBY)
           |  (orderByGrp ? WHERE_SORTBYGROUP : 0) | distFlag, 0
       );
-      if( pWInfo==0 ){
-        sqlite3ExprListDelete(db, pDistinct);
-        goto select_end;
+      எனில்( pWInfo==0 ){
+        sqlite3_கோவை_List_Delete(db, pDistinct);
+        செல் select_end;
       }
-      if( pParse->pIdxEpr ){
-        optimizeAggregateUseOfIndexedExpr(pParse, p, pAggInfo, &sNC);
+      எனில்( pParse->pIdxEpr ){
+        optimize_Aggregate_Use_Of_Indexed_கோவை(pParse, p, pAggInfo, &sNC);
       }
       assignAggregateRegisters(pParse, pAggInfo);
       eDist = sqlite3WhereIsDistinct(pWInfo);
       TREETRACE(0x2,pParse,p,("WhereBegin returns\n"));
-      if( sqlite3WhereIsOrdered(pWInfo)==pGroupBy->nExpr ){
+      எனில்( sqlite3WhereIsOrdered(pWInfo)==pGroupBy->n_கோவை ){
         /* The optimizer is able to deliver rows in group by order so
         ** we do not have to sort.  The OP_OpenEphemeral table will be
         ** cancelled later because we still need to use the pKeyInfo
         */
         groupBySort = 0;
-      }else{
+      }இல்லையெனில்{
         /* Rows are coming out in undetermined order.  We have to push
         ** each row into a sorting index, terminate the first loop,
         ** then loop over the sorting index in order to get the output
         ** in sorted order
         */
-        int regBase;
-        int regRecord;
-        int nCol;
-        int nGroupBy;
+        முழு regBase;
+        முழு regRecord;
+        முழு nCol;
+        முழு nGroupBy;
 
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-        int addrExp;              /* Address of OP_Explain instruction */
+        முழு addrExp;              /* Address of OP_Explain instruction */
 #endif
         ExplainQueryPlan2(addrExp, (pParse, 0, "USE TEMP B-TREE FOR %s",
             (sDistinct.isTnct && (p->selFlags&SF_Distinct)==0) ?
@@ -8743,23 +8743,23 @@ int sqlite3Select(
         ));
 
         groupBySort = 1;
-        nGroupBy = pGroupBy->nExpr;
+        nGroupBy = pGroupBy->n_கோவை;
         nCol = nGroupBy;
         j = nGroupBy;
-        for(i=0; i<pAggInfo->nColumn; i++){
-          if( pAggInfo->aCol[i].iSorterColumn>=j ){
+        க்கு(i=0; i<pAggInfo->nColumn; i++){
+          எனில்( pAggInfo->aCol[i].iSorterColumn>=j ){
             nCol++;
             j++;
           }
         }
         regBase = sqlite3GetTempRange(pParse, nCol);
-        sqlite3ExprCodeExprList(pParse, pGroupBy, regBase, 0, 0);
+        sqlite3_கோவை_Code_கோவை_List(pParse, pGroupBy, regBase, 0, 0);
         j = nGroupBy;
         pAggInfo->directMode = 1;
-        for(i=0; i<pAggInfo->nColumn; i++){
-          struct AggInfo_col *pCol = &pAggInfo->aCol[i];
-          if( pCol->iSorterColumn>=j ){
-            sqlite3ExprCode(pParse, pCol->pCExpr, j + regBase);
+        க்கு(i=0; i<pAggInfo->nColumn; i++){
+          கட்டமைப்பு AggInfo_col *pCol = &pAggInfo->aCol[i];
+          எனில்( pCol->iSorterColumn>=j ){
+            sqlite3_கோவை_Code(pParse, pCol->pCExpr, j + regBase);
             j++;
           }
         }
@@ -8767,7 +8767,7 @@ int sqlite3Select(
         regRecord = sqlite3GetTempReg(pParse);
         sqlite3VdbeScanStatusCounters(v, addrExp, 0, sqlite3VdbeCurrentAddr(v));
         sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase, nCol, regRecord);
-        sqlite3VdbeAddOp2(v, OP_SorterInsert, pAggInfo->sortingIdx, regRecord);
+        sqlite3VdbeAddOp2(v, OP_Sorter_செருகு, pAggInfo->sortingIdx, regRecord);
         sqlite3VdbeScanStatusRange(v, addrExp, sqlite3VdbeCurrentAddr(v)-2, -1);
         sqlite3ReleaseTempReg(pParse, regRecord);
         sqlite3ReleaseTempRange(pParse, regBase, nCol);
@@ -8789,13 +8789,13 @@ int sqlite3Select(
       ** in optimizeAggregateUseOfIndexedExpr()) then those subexpressions
       ** must now be converted into a TK_AGG_COLUMN node so that the value
       ** is correctly pulled from the index rather than being recomputed. */
-      if( pParse->pIdxEpr ){
-        aggregateConvertIndexedExprRefToColumn(pAggInfo);
-#if TREETRACE_ENABLED
-        if( sqlite3TreeTrace & 0x20 ){
+      எனில்( pParse->pIdxEpr ){
+        aggregate_Convert_Indexed_கோவை_Ref_To_Column(pAggInfo);
+#எனில் TREETRACE_ENABLED
+        எனில்( sqlite3_மரம்_Trace & 0x20 ){
           TREETRACE(0x20, pParse, p,
              ("AggInfo function expressions converted to reference index\n"));
-          sqlite3TreeViewSelect(0, p, 0);
+          sqlite3_மரம்_View_Select(0, p, 0);
           printAggInfo(pAggInfo);
         }
 #endif
@@ -8808,7 +8808,7 @@ int sqlite3Select(
       ** This is an optimization - the correct answer should result regardless.
       ** Use the SQLITE_GroupByOrder flag with SQLITE_TESTCTRL_OPTIMIZER to
       ** disable this optimization for testing purposes.  */
-      if( orderByGrp && OptimizationEnabled(db, SQLITE_GroupByOrder)
+      எனில்( orderByGrp && OptimizationEnabled(db, SQLITE_GroupByOrder)
        && (groupBySort || sqlite3WhereIsSorted(pWInfo))
       ){
         sSort.pOrderBy = 0;
@@ -8820,38 +8820,38 @@ int sqlite3Select(
       ** Then compare the current GROUP BY terms against the GROUP BY terms
       ** from the previous row currently stored in a0, a1, a2...
       */
-      addrTopOfLoop = sqlite3VdbeCurrentAddr(v);
-      if( groupBySort ){
+      addr_உச்சி_Of_Loop = sqlite3VdbeCurrentAddr(v);
+      எனில்( groupBySort ){
         sqlite3VdbeAddOp3(v, OP_SorterData, pAggInfo->sortingIdx,
                           sortOut, sortPTab);
       }
-      for(j=0; j<pGroupBy->nExpr; j++){
-        int iOrderByCol = pGroupBy->a[j].u.x.iOrderByCol;
+      க்கு(j=0; j<pGroupBy->n_கோவை; j++){
+        முழு iOrderByCol = pGroupBy->a[j].u.x.iOrderByCol;
         
-        if( groupBySort ){
+        எனில்( groupBySort ){
           sqlite3VdbeAddOp3(v, OP_Column, sortPTab, j, iBMem+j);
-        }else{
+        }இல்லையெனில்{
           pAggInfo->directMode = 1;
-          sqlite3ExprCode(pParse, pGroupBy->a[j].pExpr, iBMem+j);
+          sqlite3_கோவை_Code(pParse, pGroupBy->a[j].p_கோவை, iBMem+j);
         }
 
-        if( iOrderByCol ){
-          Expr *pX = p->pEList->a[iOrderByCol-1].pExpr;
-          Expr *pBase = sqlite3ExprSkipCollateAndLikely(pX);
-          while( ALWAYS(pBase!=0) && pBase->op==TK_IF_NULL_ROW ){
-            pX = pBase->pLeft;
-            pBase = sqlite3ExprSkipCollateAndLikely(pX);
+        எனில்( iOrderByCol ){
+          கோவை *pX = p->pEList->a[iOrderByCol-1].p_கோவை;
+          கோவை *pBase = sqlite3_கோவை_Skip_Collate_And_Likely(pX);
+          போது( ALWAYS(pBase!=0) && pBase->op==TK_IF_NULL_ROW ){
+            pX = pBase->p_இடது;
+            pBase = sqlite3_கோவை_Skip_Collate_And_Likely(pX);
           }
-          if( ALWAYS(pBase!=0)
+          எனில்( ALWAYS(pBase!=0)
            && pBase->op!=TK_AGG_COLUMN
            && pBase->op!=TK_REGISTER
           ){
-            sqlite3ExprToRegister(pX, iAMem+j);
+            sqlite3_கோவை_To_Register(pX, iAMem+j);
           }
         }
       }
-      sqlite3VdbeAddOp4(v, OP_Compare, iAMem, iBMem, pGroupBy->nExpr,
-                          (char*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
+      sqlite3VdbeAddOp4(v, OP_Compare, iAMem, iBMem, pGroupBy->n_கோவை,
+                          (எழுத்து*)sqlite3_சாவி_Info_Ref(p_சாவி_Info), P4_KEYINFO);
       addr1 = sqlite3VdbeCurrentAddr(v);
       sqlite3VdbeAddOp3(v, OP_Jump, addr1+1, 0, addr1+1); VdbeCoverage(v);
 
@@ -8866,7 +8866,7 @@ int sqlite3Select(
       */
       sqlite3VdbeAddOp2(v, OP_Gosub, regOutputRow, addrOutputRow);
       VdbeComment((v, "output one row of %d", p->selId));
-      sqlite3ExprCodeMove(pParse, iBMem, iAMem, pGroupBy->nExpr);
+      sqlite3_கோவை_Code_Move(pParse, iBMem, iAMem, pGroupBy->n_கோவை);
       sqlite3VdbeAddOp2(v, OP_IfPos, iAbortFlag, addrEnd); VdbeCoverage(v);
       VdbeComment((v, "check abort flag"));
       sqlite3VdbeAddOp2(v, OP_Gosub, regReset, addrReset);
@@ -8882,15 +8882,15 @@ int sqlite3Select(
 
       /* End of the loop
       */
-      if( groupBySort ){
-        sqlite3VdbeAddOp2(v, OP_SorterNext, pAggInfo->sortingIdx,addrTopOfLoop);
+      எனில்( groupBySort ){
+        sqlite3VdbeAddOp2(v, OP_SorterNext, pAggInfo->sortingIdx,addr_உச்சி_Of_Loop);
         VdbeCoverage(v);
-      }else{
+      }இல்லையெனில்{
         TREETRACE(0x2,pParse,p,("WhereEnd\n"));
         sqlite3WhereEnd(pWInfo);
         sqlite3VdbeChangeToNoop(v, addrSortingIdx);
       }
-      sqlite3ExprListDelete(db, pDistinct);
+      sqlite3_கோவை_List_Delete(db, pDistinct);
 
       /* Output the final row of result
       */
@@ -8919,7 +8919,7 @@ int sqlite3Select(
       VdbeComment((v, "Groupby result generator entry point %d", p->selId));
       sqlite3VdbeAddOp1(v, OP_Return, regOutputRow);
       finalizeAggFunctions(pParse, pAggInfo);
-      sqlite3ExprIfFalse(pParse, pHaving, addrOutputRow+1, SQLITE_JUMPIFNULL);
+      sqlite3_கோவை_If_False(pParse, pHaving, addrOutputRow+1, SQLITE_JUMPIFNULL);
       selectInnerLoop(pParse, p, -1, &sSort,
                       &sDistinct, pDest,
                       addrOutputRow+1, addrSetAbort);
@@ -8934,15 +8934,15 @@ int sqlite3Select(
       VdbeComment((v, "indicate accumulator %d empty", p->selId));
       sqlite3VdbeAddOp1(v, OP_Return, regReset);
 
-      if( distFlag!=0 && eDist!=WHERE_DISTINCT_NOOP ){
-        struct AggInfo_func *pF = &pAggInfo->aFunc[0];
+      எனில்( distFlag!=0 && eDist!=WHERE_DISTINCT_NOOP ){
+        கட்டமைப்பு AggInfo_func *pF = &pAggInfo->aFunc[0];
         fixDistinctOpenEph(pParse, eDist, pF->iDistinct, pF->iDistAddr);
       }
     } /* endif pGroupBy.  Begin aggregate queries without GROUP BY: */
-    else {
+    இல்லையெனில் {
       /* Aggregate functions without GROUP BY. tag-select-0820 */
       Table *pTab;
-      if( (pTab = isSimpleCount(p, pAggInfo))!=0 ){
+      எனில்( (pTab = is_Simple_மொத்தம்(p, pAggInfo))!=0 ){
         /* tag-select-0821
         **
         ** If isSimpleCount() returns a pointer to a Table structure, then
@@ -8958,12 +8958,12 @@ int sqlite3Select(
         ** is better to execute the op on an index, as indexes are almost
         ** always spread across less pages than their corresponding tables.
         */
-        const int iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
-        const int iCsr = pParse->nTab++;     /* Cursor to scan b-tree */
+        மாறிலி முழு iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+        மாறிலி முழு iCsr = pParse->nTab++;     /* Cursor to scan b-tree */
         Index *pIdx;                         /* Iterator variable */
-        KeyInfo *pKeyInfo = 0;               /* Keyinfo for scanned index */
+        சாவி_Info *p_சாவி_Info = 0;               /* Keyinfo for scanned index */
         Index *pBest = 0;                    /* Best index found so far */
-        Pgno iRoot = pTab->tnum;             /* Root page of scanned b-tree */
+        Pgno i_வேர் = pTab->tnum;             /* Root page of scanned b-tree */
 
         sqlite3CodeVerifySchema(pParse, iDb);
         sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
@@ -8977,10 +8977,10 @@ int sqlite3Select(
         ** In practice the KeyInfo structure will not be used. It is only
         ** passed to keep OP_OpenRead happy.
         */
-        if( !HasRowid(pTab) ) pBest = sqlite3PrimaryKeyIndex(pTab);
-        if( !p->pSrc->a[0].fg.notIndexed ){
-          for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-            if( pIdx->bUnordered==0
+        எனில்( !HasRowid(pTab) ) pBest = sqlite3_Primary_சாவி_Index(pTab);
+        எனில்( !p->pSrc->a[0].fg.notIndexed ){
+          க்கு(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+            எனில்( pIdx->bUnordered==0
              && pIdx->szIdxRow<pTab->szTabRow
              && pIdx->pPartIdxWhere==0
              && (!pBest || pIdx->szIdxRow<pBest->szIdxRow)
@@ -8989,27 +8989,27 @@ int sqlite3Select(
             }
           }
         }
-        if( pBest ){
-          iRoot = pBest->tnum;
-          pKeyInfo = sqlite3KeyInfoOfIndex(pParse, pBest);
+        எனில்( pBest ){
+          i_வேர் = pBest->tnum;
+          p_சாவி_Info = sqlite3_சாவி_Info_Of_Index(pParse, pBest);
         }
 
         /* Open a read-only cursor, execute the OP_Count, close the cursor. */
-        sqlite3VdbeAddOp4Int(v, OP_OpenRead, iCsr, (int)iRoot, iDb, 1);
-        if( pKeyInfo ){
-          sqlite3VdbeChangeP4(v, -1, (char *)pKeyInfo, P4_KEYINFO);
+        sqlite3VdbeAddOp4Int(v, OP_OpenRead, iCsr, (முழு)i_வேர், iDb, 1);
+        எனில்( p_சாவி_Info ){
+          sqlite3VdbeChangeP4(v, -1, (எழுத்து *)p_சாவி_Info, P4_KEYINFO);
         }
         assignAggregateRegisters(pParse, pAggInfo);
-        sqlite3VdbeAddOp2(v, OP_Count, iCsr, AggInfoFuncReg(pAggInfo,0));
+        sqlite3VdbeAddOp2(v, OP_மொத்தம், iCsr, AggInfoFuncReg(pAggInfo,0));
         sqlite3VdbeAddOp1(v, OP_Close, iCsr);
-        explainSimpleCount(pParse, pTab, pBest);
-      }else{
+        explain_Simple_மொத்தம்(pParse, pTab, pBest);
+      }இல்லையெனில்{
         /* The general case of an aggregate query without GROUP BY
         ** tag-select-0822 */
-        int regAcc = 0;           /* "populate accumulators" flag */
-        ExprList *pDistinct = 0;
+        முழு regAcc = 0;           /* "populate accumulators" flag */
+        கோவை_List *pDistinct = 0;
         u16 distFlag = 0;
-        int eDist;
+        முழு eDist;
 
         /* If there are accumulator registers but no min() or max() functions
         ** without FILTER clauses, allocate register regAcc. Register regAcc
@@ -9020,21 +9020,21 @@ int sqlite3Select(
         ** first row visited by the aggregate, so that they are updated at
         ** least once even if the FILTER clause means the min() or max()
         ** function visits zero rows.  */
-        if( pAggInfo->nAccumulator ){
-          for(i=0; i<pAggInfo->nFunc; i++){
-            if( ExprHasProperty(pAggInfo->aFunc[i].pFExpr, EP_WinFunc) ){
-              continue;
+        எனில்( pAggInfo->nAccumulator ){
+          க்கு(i=0; i<pAggInfo->nFunc; i++){
+            எனில்( கோவை_Has_Property(pAggInfo->aFunc[i].pFExpr, EP_WinFunc) ){
+              தொடர்;
             }
-            if( pAggInfo->aFunc[i].pFunc->funcFlags&SQLITE_FUNC_NEEDCOLL ){
-              break;
+            எனில்( pAggInfo->aFunc[i].pFunc->funcFlags&SQLITE_FUNC_NEEDCOLL ){
+              நிறுத்து;
             }
           }
-          if( i==pAggInfo->nFunc ){
+          எனில்( i==pAggInfo->nFunc ){
             regAcc = ++pParse->nMem;
             sqlite3VdbeAddOp2(v, OP_Integer, 0, regAcc);
           }
-        }else if( pAggInfo->nFunc==1 && pAggInfo->aFunc[0].iDistinct>=0 ){
-          assert( ExprUseXList(pAggInfo->aFunc[0].pFExpr) );
+        }இல்லையெனில் எனில்( pAggInfo->nFunc==1 && pAggInfo->aFunc[0].iDistinct>=0 ){
+          ப்ரதிஜ்ஞா( கோவை_Use_XList(pAggInfo->aFunc[0].pFExpr) );
           pDistinct = pAggInfo->aFunc[0].pFExpr->x.pList;
           distFlag = pDistinct ? (WHERE_WANT_DISTINCT|WHERE_AGG_DISTINCT) : 0;
         }
@@ -9044,7 +9044,7 @@ int sqlite3Select(
         ** processing is much simpler since there is only a single row
         ** of output.
         */
-        assert( p->pGroupBy==0 );
+        ப்ரதிஜ்ஞா( p->pGroupBy==0 );
         resetAccumulator(pParse, pAggInfo);
 
         /* If this query is a candidate for the min/max optimization, then
@@ -9052,27 +9052,27 @@ int sqlite3Select(
         ** WHERE_ORDERBY_MIN or WHERE_ORDERBY_MAX and pMinMaxOrderBy will
         ** be an appropriate ORDER BY expression for the optimization.
         */
-        assert( minMaxFlag==WHERE_ORDERBY_NORMAL || pMinMaxOrderBy!=0 );
-        assert( pMinMaxOrderBy==0 || pMinMaxOrderBy->nExpr==1 );
+        ப்ரதிஜ்ஞா( minMaxFlag==WHERE_ORDERBY_NORMAL || pMinMaxOrderBy!=0 );
+        ப்ரதிஜ்ஞா( pMinMaxOrderBy==0 || pMinMaxOrderBy->n_கோவை==1 );
 
         TREETRACE(0x2,pParse,p,("WhereBegin\n"));
         pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, pMinMaxOrderBy,
                                    pDistinct, p, minMaxFlag|distFlag, 0);
-        if( pWInfo==0 ){
-          goto select_end;
+        எனில்( pWInfo==0 ){
+          செல் select_end;
         }
         TREETRACE(0x2,pParse,p,("WhereBegin returns\n"));
         eDist = sqlite3WhereIsDistinct(pWInfo);
         updateAccumulator(pParse, regAcc, pAggInfo, eDist);
-        if( eDist!=WHERE_DISTINCT_NOOP ){
-          struct AggInfo_func *pF = pAggInfo->aFunc;
-          if( pF ){
+        எனில்( eDist!=WHERE_DISTINCT_NOOP ){
+          கட்டமைப்பு AggInfo_func *pF = pAggInfo->aFunc;
+          எனில்( pF ){
             fixDistinctOpenEph(pParse, eDist, pF->iDistinct, pF->iDistAddr);
           }
         }
 
-        if( regAcc ) sqlite3VdbeAddOp2(v, OP_Integer, 1, regAcc);
-        if( minMaxFlag ){
+        எனில்( regAcc ) sqlite3VdbeAddOp2(v, OP_Integer, 1, regAcc);
+        எனில்( minMaxFlag ){
           sqlite3WhereMinMaxOptEarlyOut(v, pWInfo);
         }
         TREETRACE(0x2,pParse,p,("WhereEnd\n"));
@@ -9081,7 +9081,7 @@ int sqlite3Select(
       }
 
       sSort.pOrderBy = 0;
-      sqlite3ExprIfFalse(pParse, pHaving, addrEnd, SQLITE_JUMPIFNULL);
+      sqlite3_கோவை_If_False(pParse, pHaving, addrEnd, SQLITE_JUMPIFNULL);
       selectInnerLoop(pParse, p, -1, 0, 0,
                       pDest, addrEnd, addrEnd);
     }
@@ -9089,16 +9089,16 @@ int sqlite3Select(
 
   } /* endif aggregate query */
 
-  if( sDistinct.eTnctType==WHERE_DISTINCT_UNORDERED ){
+  எனில்( sDistinct.eTnctType==WHERE_DISTINCT_UNORDERED ){
     explainTempTable(pParse, "DISTINCT");
   }
 
   /* If there is an ORDER BY clause, then we need to sort the results
   ** and send them to the callback one by one.  tag-select-0900
   */
-  if( sSort.pOrderBy ){
-    assert( p->pEList==pEList );
-    generateSortTail(pParse, p, &sSort, pEList->nExpr, pDest);
+  எனில்( sSort.pOrderBy ){
+    ப்ரதிஜ்ஞா( p->pEList==pEList );
+    generateSortTail(pParse, p, &sSort, pEList->n_கோவை, pDest);
   }
 
   /* Jump here to skip this query
@@ -9113,39 +9113,39 @@ int sqlite3Select(
   ** successful coding of the SELECT.
   */
 select_end:
-  assert( db->mallocFailed==0 || db->mallocFailed==1 );
-  assert( db->mallocFailed==0 || pParse->nErr!=0 );
-  sqlite3ExprListDelete(db, pMinMaxOrderBy);
+  ப்ரதிஜ்ஞா( db->mallocFailed==0 || db->mallocFailed==1 );
+  ப்ரதிஜ்ஞா( db->mallocFailed==0 || pParse->nErr!=0 );
+  sqlite3_கோவை_List_Delete(db, pMinMaxOrderBy);
 #ifdef SQLITE_DEBUG
   /* Internal self-checks.  tag-select-1000 */
-  if( pAggInfo && !db->mallocFailed ){
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20 ){
+  எனில்( pAggInfo && !db->mallocFailed ){
+#எனில் TREETRACE_ENABLED
+    எனில்( sqlite3_மரம்_Trace & 0x20 ){
       TREETRACE(0x20,pParse,p,("Finished with AggInfo\n"));
       printAggInfo(pAggInfo);
     }
 #endif
-    for(i=0; i<pAggInfo->nColumn; i++){
-      Expr *pExpr = pAggInfo->aCol[i].pCExpr;
-      if( pExpr==0 ) continue;
-      assert( pExpr->pAggInfo==pAggInfo );
-      assert( pExpr->iAgg==i );
+    க்கு(i=0; i<pAggInfo->nColumn; i++){
+      கோவை *p_கோவை = pAggInfo->aCol[i].pCExpr;
+      எனில்( p_கோவை==0 ) தொடர்;
+      ப்ரதிஜ்ஞா( p_கோவை->pAggInfo==pAggInfo );
+      ப்ரதிஜ்ஞா( p_கோவை->iAgg==i );
     }
-    for(i=0; i<pAggInfo->nFunc; i++){
-      Expr *pExpr = pAggInfo->aFunc[i].pFExpr;
-      assert( pExpr!=0 );
-      assert( pExpr->pAggInfo==pAggInfo );
-      assert( pExpr->iAgg==i );
+    க்கு(i=0; i<pAggInfo->nFunc; i++){
+      கோவை *p_கோவை = pAggInfo->aFunc[i].pFExpr;
+      ப்ரதிஜ்ஞா( p_கோவை!=0 );
+      ப்ரதிஜ்ஞா( p_கோவை->pAggInfo==pAggInfo );
+      ப்ரதிஜ்ஞா( p_கோவை->iAgg==i );
     }
   }
 #endif
 
-#if TREETRACE_ENABLED
+#எனில் TREETRACE_ENABLED
   TREETRACE(0x1,pParse,p,("end processing\n"));
-  if( (sqlite3TreeTrace & 0x40000)!=0 && ExplainQueryPlanParent(pParse)==0 ){
-    sqlite3TreeViewSelect(0, p, 0);
+  எனில்( (sqlite3_மரம்_Trace & 0x40000)!=0 && ExplainQueryPlanParent(pParse)==0 ){
+    sqlite3_மரம்_View_Select(0, p, 0);
   }
 #endif
-  ExplainQueryPlanPop(pParse);
-  return rc;
+  Explain_Query_Plan_எடு(pParse);
+  திரும்பு rc;
 }

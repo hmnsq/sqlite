@@ -17,34 +17,34 @@
 ** The interfaces in this file is only available when compiling
 ** with SQLITE_DEBUG.
 */
-#include "sqliteInt.h"
+#அந்தர்பாவ "sqliteInt.h"
 #ifdef SQLITE_DEBUG
 
 /*
 ** Add a new subitem to the tree.  The moreToFollow flag indicates that this
 ** is not the last item in the tree.
 */
-static void sqlite3TreeViewPush(TreeView **pp, u8 moreToFollow){
-  TreeView *p = *pp;
-  if( p==0 ){
-    *pp = p = sqlite3_malloc64( sizeof(*p) );
-    if( p==0 ) return;
-    memset(p, 0, sizeof(*p));
-  }else{
+நிலையான வெறுமை sqlite3_மரம்_View_தள்ளு(மரம்_View **pp, u8 moreToFollow){
+  மரம்_View *p = *pp;
+  எனில்( p==0 ){
+    *pp = p = sqlite3_malloc64( அளவு(*p) );
+    எனில்( p==0 ) திரும்பு;
+    memset(p, 0, அளவு(*p));
+  }இல்லையெனில்{
     p->iLevel++;
   }
-  assert( moreToFollow==0 || moreToFollow==1 );
-  if( p->iLevel<(int)sizeof(p->bLine) ) p->bLine[p->iLevel] = moreToFollow;
+  ப்ரதிஜ்ஞா( moreToFollow==0 || moreToFollow==1 );
+  எனில்( p->iLevel<(முழு)அளவு(p->b_வரி) ) p->b_வரி[p->iLevel] = moreToFollow;
 }
 
 /*
 ** Finished with one layer of the tree
 */
-static void sqlite3TreeViewPop(TreeView **pp){
-  TreeView *p = *pp;
-  if( p==0 ) return;
+நிலையான வெறுமை sqlite3_மரம்_View_எடு(மரம்_View **pp){
+  மரம்_View *p = *pp;
+  எனில்( p==0 ) திரும்பு;
   p->iLevel--;
-  if( p->iLevel<0 ){
+  எனில்( p->iLevel<0 ){
     sqlite3_free(p);
     *pp = 0;
   }
@@ -54,23 +54,23 @@ static void sqlite3TreeViewPop(TreeView **pp){
 ** Generate a single line of output for the tree, with a prefix that contains
 ** all the appropriate tree lines
 */
-void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
+வெறுமை sqlite3_மரம்_View_வரி(மரம்_View *p, மாறிலி எழுத்து *zFormat, ...){
   va_list ap;
-  int i;
+  முழு i;
   StrAccum acc;
-  char zBuf[1000];
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
-  if( p ){
-    for(i=0; i<p->iLevel && i<(int)sizeof(p->bLine)-1; i++){
-      sqlite3_str_append(&acc, p->bLine[i] ? "|   " : "    ", 4);
+  எழுத்து zBuf[1000];
+  sqlite3StrAccumInit(&acc, 0, zBuf, அளவு(zBuf), 0);
+  எனில்( p ){
+    க்கு(i=0; i<p->iLevel && i<(முழு)அளவு(p->b_வரி)-1; i++){
+      sqlite3_str_append(&acc, p->b_வரி[i] ? "|   " : "    ", 4);
     }
-    sqlite3_str_append(&acc, p->bLine[i] ? "|-- " : "'-- ", 4);
+    sqlite3_str_append(&acc, p->b_வரி[i] ? "|-- " : "'-- ", 4);
   }
-  if( zFormat!=0 ){
+  எனில்( zFormat!=0 ){
     va_start(ap, zFormat);
     sqlite3_str_vappendf(&acc, zFormat, ap);
     va_end(ap);
-    assert( acc.nChar>0 || acc.accError );
+    ப்ரதிஜ்ஞா( acc.nChar>0 || acc.accError );
     sqlite3_str_append(&acc, "\n", 1);
   }
   sqlite3StrAccumFinish(&acc);
@@ -81,334 +81,334 @@ void sqlite3TreeViewLine(TreeView *p, const char *zFormat, ...){
 /*
 ** Shorthand for starting a new tree item that consists of a single label
 */
-static void sqlite3TreeViewItem(TreeView *p, const char *zLabel,u8 moreFollows){
-  sqlite3TreeViewPush(&p, moreFollows);
-  sqlite3TreeViewLine(p, "%s", zLabel);
+நிலையான வெறுமை sqlite3_மரம்_View_Item(மரம்_View *p, மாறிலி எழுத்து *zLabel,u8 moreFollows){
+  sqlite3_மரம்_View_தள்ளு(&p, moreFollows);
+  sqlite3_மரம்_View_வரி(p, "%s", zLabel);
 }
 
 /*
 ** Show a list of Column objects in tree format.
 */
-void sqlite3TreeViewColumnList(
-  TreeView *pView,
-  const Column *aCol,
-  int nCol,
+வெறுமை sqlite3_மரம்_View_Column_List(
+  மரம்_View *pView,
+  மாறிலி Column *aCol,
+  முழு nCol,
   u8 moreToFollow
 ){
-  int i;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewLine(pView, "COLUMNS");
-  for(i=0; i<nCol; i++){
+  முழு i;
+  sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+  sqlite3_மரம்_View_வரி(pView, "COLUMNS");
+  க்கு(i=0; i<nCol; i++){
     u16 flg = aCol[i].colFlags;
-    int colMoreToFollow = i<(nCol - 1);
-    sqlite3TreeViewPush(&pView, colMoreToFollow);
-    sqlite3TreeViewLine(pView, 0);
+    முழு colMoreToFollow = i<(nCol - 1);
+    sqlite3_மரம்_View_தள்ளு(&pView, colMoreToFollow);
+    sqlite3_மரம்_View_வரி(pView, 0);
     printf(" %s", aCol[i].zCnName);
-    switch( aCol[i].eCType ){
-      case COLTYPE_ANY:      printf(" ANY");        break;
-      case COLTYPE_BLOB:     printf(" BLOB");       break;
-      case COLTYPE_INT:      printf(" INT");        break;
-      case COLTYPE_INTEGER:  printf(" INTEGER");    break;
-      case COLTYPE_REAL:     printf(" REAL");       break;
-      case COLTYPE_TEXT:     printf(" TEXT");       break;
-      case COLTYPE_CUSTOM: {
-        if( flg & COLFLAG_HASTYPE ){
-          const char *z = aCol[i].zCnName;
+    தேர்வு( aCol[i].eCType ){
+      நிலை COLTYPE_ANY:      printf(" ANY");        நிறுத்து;
+      நிலை COLTYPE_BLOB:     printf(" BLOB");       நிறுத்து;
+      நிலை COLTYPE_INT:      printf(" INT");        நிறுத்து;
+      நிலை COLTYPE_INTEGER:  printf(" INTEGER");    நிறுத்து;
+      நிலை COLTYPE_REAL:     printf(" REAL");       நிறுத்து;
+      நிலை COLTYPE_TEXT:     printf(" TEXT");       நிறுத்து;
+      நிலை COLTYPE_CUSTOM: {
+        எனில்( flg & COLFLAG_HASTYPE ){
+          மாறிலி எழுத்து *z = aCol[i].zCnName;
           z += strlen(z)+1;
           printf(" X-%s", z);
-          break;
+          நிறுத்து;
         }
       }
     }
-    if( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
-    if( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
+    எனில்( flg & COLFLAG_PRIMKEY ) printf(" PRIMARY KEY");
+    எனில்( flg & COLFLAG_HIDDEN ) printf(" HIDDEN");
 #ifdef COLFLAG_NOEXPAND
-    if( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
+    எனில்( flg & COLFLAG_NOEXPAND ) printf(" NO-EXPAND");
 #endif
-    if( flg ) printf(" flags=%04x", flg);
+    எனில்( flg ) printf(" flags=%04x", flg);
     printf("\n");      
     fflush(stdout);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 
 /*
 ** Generate a human-readable description of a WITH clause.
 */
-void sqlite3TreeViewWith(TreeView *pView, const With *pWith, u8 moreToFollow){
-  int i;
-  if( pWith==0 ) return;
-  if( pWith->nCte==0 ) return;
-  if( pWith->pOuter ){
-    sqlite3TreeViewLine(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
-  }else{
-    sqlite3TreeViewLine(pView, "WITH (0x%p)", pWith);
+வெறுமை sqlite3_மரம்_View_With(மரம்_View *pView, மாறிலி With *pWith, u8 moreToFollow){
+  முழு i;
+  எனில்( pWith==0 ) திரும்பு;
+  எனில்( pWith->nCte==0 ) திரும்பு;
+  எனில்( pWith->pOuter ){
+    sqlite3_மரம்_View_வரி(pView, "WITH (0x%p, pOuter=0x%p)",pWith,pWith->pOuter);
+  }இல்லையெனில்{
+    sqlite3_மரம்_View_வரி(pView, "WITH (0x%p)", pWith);
   }
-  if( pWith->nCte>0 ){
-    sqlite3TreeViewPush(&pView, moreToFollow);
-    for(i=0; i<pWith->nCte; i++){
+  எனில்( pWith->nCte>0 ){
+    sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+    க்கு(i=0; i<pWith->nCte; i++){
       StrAccum x;
-      char zLine[1000];
-      const struct Cte *pCte = &pWith->a[i];
-      sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
+      எழுத்து z_வரி[1000];
+      மாறிலி கட்டமைப்பு Cte *pCte = &pWith->a[i];
+      sqlite3StrAccumInit(&x, 0, z_வரி, அளவு(z_வரி), 0);
       sqlite3_str_appendf(&x, "%s", pCte->zName);
-      if( pCte->pCols && pCte->pCols->nExpr>0 ){
-        char cSep = '(';
-        int j;
-        for(j=0; j<pCte->pCols->nExpr; j++){
+      எனில்( pCte->pCols && pCte->pCols->n_கோவை>0 ){
+        எழுத்து cSep = '(';
+        முழு j;
+        க்கு(j=0; j<pCte->pCols->n_கோவை; j++){
           sqlite3_str_appendf(&x, "%c%s", cSep, pCte->pCols->a[j].zEName);
           cSep = ',';
         }
         sqlite3_str_appendf(&x, ")");
       }
-      if( pCte->eM10d!=M10d_Any ){
+      எனில்( pCte->eM10d!=M10d_Any ){
         sqlite3_str_appendf(&x, " %sMATERIALIZED", 
            pCte->eM10d==M10d_No ? "NOT " : "");
       }
-      if( pCte->pUse ){
+      எனில்( pCte->pUse ){
         sqlite3_str_appendf(&x, " (pUse=0x%p, nUse=%d)", pCte->pUse,
                  pCte->pUse->nUse);
       }
       sqlite3StrAccumFinish(&x);
-      sqlite3TreeViewItem(pView, zLine, i<pWith->nCte-1);
-      sqlite3TreeViewSelect(pView, pCte->pSelect, 0);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_மரம்_View_Item(pView, z_வரி, i<pWith->nCte-1);
+      sqlite3_மரம்_View_Select(pView, pCte->pSelect, 0);
+      sqlite3_மரம்_View_எடு(&pView);
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_எடு(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a SrcList object.
 */
-void sqlite3TreeViewSrcList(TreeView *pView, const SrcList *pSrc){
-  int i;
-  if( pSrc==0 ) return;
-  for(i=0; i<pSrc->nSrc; i++){
-    const SrcItem *pItem = &pSrc->a[i];
+வெறுமை sqlite3_மரம்_View_Src_List(மரம்_View *pView, மாறிலி SrcList *pSrc){
+  முழு i;
+  எனில்( pSrc==0 ) திரும்பு;
+  க்கு(i=0; i<pSrc->nSrc; i++){
+    மாறிலி SrcItem *pItem = &pSrc->a[i];
     StrAccum x;
-    int n = 0;
-    char zLine[1000];
-    sqlite3StrAccumInit(&x, 0, zLine, sizeof(zLine), 0);
+    முழு n = 0;
+    எழுத்து z_வரி[1000];
+    sqlite3StrAccumInit(&x, 0, z_வரி, அளவு(z_வரி), 0);
     x.printfFlags |= SQLITE_PRINTF_INTERNAL;
     sqlite3_str_appendf(&x, "{%d:*} %!S", pItem->iCursor, pItem);
-    if( pItem->pSTab ){
+    எனில்( pItem->pSTab ){
       sqlite3_str_appendf(&x, " tab=%Q nCol=%d ptr=%p used=%llx%s",
            pItem->pSTab->zName, pItem->pSTab->nCol, pItem->pSTab, 
            pItem->colUsed,
            pItem->fg.rowidUsed ? "+rowid" : "");
     }
-    if( (pItem->fg.jointype & (JT_LEFT|JT_RIGHT))==(JT_LEFT|JT_RIGHT) ){
+    எனில்( (pItem->fg.jointype & (JT_இடது|JT_வலது))==(JT_இடது|JT_வலது) ){
       sqlite3_str_appendf(&x, " FULL-OUTER-JOIN");
-    }else if( pItem->fg.jointype & JT_LEFT ){
+    }இல்லையெனில் எனில்( pItem->fg.jointype & JT_இடது ){
       sqlite3_str_appendf(&x, " LEFT-JOIN");
-    }else if( pItem->fg.jointype & JT_RIGHT ){
+    }இல்லையெனில் எனில்( pItem->fg.jointype & JT_வலது ){
       sqlite3_str_appendf(&x, " RIGHT-JOIN");
-    }else if( pItem->fg.jointype & JT_CROSS ){
+    }இல்லையெனில் எனில்( pItem->fg.jointype & JT_CROSS ){
       sqlite3_str_appendf(&x, " CROSS-JOIN");
     }
-    if( pItem->fg.jointype & JT_LTORJ ){
+    எனில்( pItem->fg.jointype & JT_LTORJ ){
       sqlite3_str_appendf(&x, " LTORJ");
     }
-    if( pItem->fg.fromDDL ){
+    எனில்( pItem->fg.fromDDL ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( pItem->fg.isCte ){
-      static const char *aMat[] = {",MAT", "", ",NO-MAT"};
+    எனில்( pItem->fg.isCte ){
+      நிலையான மாறிலி எழுத்து *aMat[] = {",MAT", "", ",NO-MAT"};
       sqlite3_str_appendf(&x, " CteUse=%d%s",
                           pItem->u2.pCteUse->nUse,
                           aMat[pItem->u2.pCteUse->eM10d]);
     }
-    if( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
+    எனில்( pItem->fg.isOn || (pItem->fg.isUsing==0 && pItem->u3.pOn!=0) ){
       sqlite3_str_appendf(&x, " isOn");
     }
-    if( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
-    if( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
-    if( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
-    if( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
-    if( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
-    if( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
-    if( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
-    if( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
-    if( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
+    எனில்( pItem->fg.isTabFunc )      sqlite3_str_appendf(&x, " isTabFunc");
+    எனில்( pItem->fg.isCorrelated )   sqlite3_str_appendf(&x, " isCorrelated");
+    எனில்( pItem->fg.isMaterialized ) sqlite3_str_appendf(&x, " isMaterialized");
+    எனில்( pItem->fg.viaCoroutine )   sqlite3_str_appendf(&x, " viaCoroutine");
+    எனில்( pItem->fg.notCte )         sqlite3_str_appendf(&x, " notCte");
+    எனில்( pItem->fg.isNestedFrom )   sqlite3_str_appendf(&x, " isNestedFrom");
+    எனில்( pItem->fg.fixedSchema )    sqlite3_str_appendf(&x, " fixedSchema");
+    எனில்( pItem->fg.hadSchema )      sqlite3_str_appendf(&x, " hadSchema");
+    எனில்( pItem->fg.isSubquery )     sqlite3_str_appendf(&x, " isSubquery");
 
     sqlite3StrAccumFinish(&x);
-    sqlite3TreeViewItem(pView, zLine, i<pSrc->nSrc-1);
+    sqlite3_மரம்_View_Item(pView, z_வரி, i<pSrc->nSrc-1);
     n = 0;
-    if( pItem->fg.isSubquery ) n++;
-    if( pItem->fg.isTabFunc ) n++;
-    if( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
-    if( pItem->fg.isUsing ){
-      sqlite3TreeViewIdList(pView, pItem->u3.pUsing, (--n)>0, "USING");
-    }else if( pItem->u3.pOn!=0 ){
-      sqlite3TreeViewItem(pView, "ON", (--n)>0);
-      sqlite3TreeViewExpr(pView, pItem->u3.pOn, 0);
-      sqlite3TreeViewPop(&pView);
+    எனில்( pItem->fg.isSubquery ) n++;
+    எனில்( pItem->fg.isTabFunc ) n++;
+    எனில்( pItem->fg.isUsing || pItem->u3.pOn!=0 ) n++;
+    எனில்( pItem->fg.isUsing ){
+      sqlite3_மரம்_View_Id_List(pView, pItem->u3.pUsing, (--n)>0, "USING");
+    }இல்லையெனில் எனில்( pItem->u3.pOn!=0 ){
+      sqlite3_மரம்_View_Item(pView, "ON", (--n)>0);
+      sqlite3_மரம்_View_கோவை(pView, pItem->u3.pOn, 0);
+      sqlite3_மரம்_View_எடு(&pView);
     }
-    if( pItem->fg.isSubquery ){
-      assert( n==1 );
-      if( pItem->pSTab ){
+    எனில்( pItem->fg.isSubquery ){
+      ப்ரதிஜ்ஞா( n==1 );
+      எனில்( pItem->pSTab ){
         Table *pTab = pItem->pSTab;
-        sqlite3TreeViewColumnList(pView, pTab->aCol, pTab->nCol, 1);
+        sqlite3_மரம்_View_Column_List(pView, pTab->aCol, pTab->nCol, 1);
       }
-      assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
-      sqlite3TreeViewSelect(pView, pItem->u4.pSubq->pSelect, 0);
+      ப்ரதிஜ்ஞா( (முழு)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
+      sqlite3_மரம்_View_Select(pView, pItem->u4.pSubq->pSelect, 0);
     }
-    if( pItem->fg.isTabFunc ){
-      sqlite3TreeViewExprList(pView, pItem->u1.pFuncArg, 0, "func-args:");
+    எனில்( pItem->fg.isTabFunc ){
+      sqlite3_மரம்_View_கோவை_List(pView, pItem->u1.pFuncArg, 0, "func-args:");
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_எடு(&pView);
   }
 }
 
 /*
 ** Generate a human-readable description of a Select object.
 */
-void sqlite3TreeViewSelect(TreeView *pView, const Select *p, u8 moreToFollow){
-  int n = 0;
-  int cnt = 0;
-  if( p==0 ){
-    sqlite3TreeViewLine(pView, "nil-SELECT");
-    return;
+வெறுமை sqlite3_மரம்_View_Select(மரம்_View *pView, மாறிலி Select *p, u8 moreToFollow){
+  முழு n = 0;
+  முழு cnt = 0;
+  எனில்( p==0 ){
+    sqlite3_மரம்_View_வரி(pView, "nil-SELECT");
+    திரும்பு;
   } 
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( p->pWith ){
-    sqlite3TreeViewWith(pView, p->pWith, 1);
+  sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+  எனில்( p->pWith ){
+    sqlite3_மரம்_View_With(pView, p->pWith, 1);
     cnt = 1;
-    sqlite3TreeViewPush(&pView, 1);
+    sqlite3_மரம்_View_தள்ளு(&pView, 1);
   }
-  do{
-    if( p->selFlags & SF_WhereBegin ){
-      sqlite3TreeViewLine(pView, "sqlite3WhereBegin()");
-    }else{
-      sqlite3TreeViewLine(pView,
+  செய்{
+    எனில்( p->selFlags & SF_WhereBegin ){
+      sqlite3_மரம்_View_வரி(pView, "sqlite3WhereBegin()");
+    }இல்லையெனில்{
+      sqlite3_மரம்_View_வரி(pView,
         "SELECT%s%s (%u/%p) selFlags=0x%x nSelectRow=%d",
         ((p->selFlags & SF_Distinct) ? " DISTINCT" : ""),
         ((p->selFlags & SF_Aggregate) ? " agg_flag" : ""),
         p->selId, p, p->selFlags,
-        (int)p->nSelectRow
+        (முழு)p->nSelectRow
       );
     }
-    if( cnt++ ) sqlite3TreeViewPop(&pView);
-    if( p->pPrior ){
+    எனில்( cnt++ ) sqlite3_மரம்_View_எடு(&pView);
+    எனில்( p->pPrior ){
       n = 1000;
-    }else{
+    }இல்லையெனில்{
       n = 0;
-      if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
-      if( p->pWhere ) n++;
-      if( p->pGroupBy ) n++;
-      if( p->pHaving ) n++;
-      if( p->pOrderBy ) n++;
-      if( p->pLimit ) n++;
+      எனில்( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ) n++;
+      எனில்( p->pWhere ) n++;
+      எனில்( p->pGroupBy ) n++;
+      எனில்( p->pHaving ) n++;
+      எனில்( p->pOrderBy ) n++;
+      எனில்( p->pLimit ) n++;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( p->pWin ) n++;
-      if( p->pWinDefn ) n++;
+      எனில்( p->pWin ) n++;
+      எனில்( p->pWinDefn ) n++;
 #endif
     }
-    if( p->pEList ){
-      sqlite3TreeViewExprList(pView, p->pEList, n>0, "result-set");
+    எனில்( p->pEList ){
+      sqlite3_மரம்_View_கோவை_List(pView, p->pEList, n>0, "result-set");
     }
     n--;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ){
+    எனில்( p->pWin ){
       Window *pX;
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "window-functions");
-      for(pX=p->pWin; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWinFunc(pView, pX, pX->pNextWin!=0);
+      sqlite3_மரம்_View_தள்ளு(&pView, (n--)>0);
+      sqlite3_மரம்_View_வரி(pView, "window-functions");
+      க்கு(pX=p->pWin; pX; pX=pX->pNextWin){
+        sqlite3_மரம்_View_Win_Func(pView, pX, pX->pNextWin!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_மரம்_View_எடு(&pView);
     }
 #endif
-    if( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
-      sqlite3TreeViewPush(&pView, (n--)>0);
-      sqlite3TreeViewLine(pView, "FROM");
-      sqlite3TreeViewSrcList(pView, p->pSrc);
-      sqlite3TreeViewPop(&pView);
+    எனில்( p->pSrc && p->pSrc->nSrc && p->pSrc->nAlloc ){
+      sqlite3_மரம்_View_தள்ளு(&pView, (n--)>0);
+      sqlite3_மரம்_View_வரி(pView, "FROM");
+      sqlite3_மரம்_View_Src_List(pView, p->pSrc);
+      sqlite3_மரம்_View_எடு(&pView);
     }
-    if( p->pWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    எனில்( p->pWhere ){
+      sqlite3_மரம்_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_மரம்_View_கோவை(pView, p->pWhere, 0);
+      sqlite3_மரம்_View_எடு(&pView);
     }
-    if( p->pGroupBy ){
-      sqlite3TreeViewExprList(pView, p->pGroupBy, (n--)>0, "GROUPBY");
+    எனில்( p->pGroupBy ){
+      sqlite3_மரம்_View_கோவை_List(pView, p->pGroupBy, (n--)>0, "GROUPBY");
     }
-    if( p->pHaving ){
-      sqlite3TreeViewItem(pView, "HAVING", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pHaving, 0);
-      sqlite3TreeViewPop(&pView);
+    எனில்( p->pHaving ){
+      sqlite3_மரம்_View_Item(pView, "HAVING", (n--)>0);
+      sqlite3_மரம்_View_கோவை(pView, p->pHaving, 0);
+      sqlite3_மரம்_View_எடு(&pView);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWinDefn ){
+    எனில்( p->pWinDefn ){
       Window *pX;
-      sqlite3TreeViewItem(pView, "WINDOW", (n--)>0);
-      for(pX=p->pWinDefn; pX; pX=pX->pNextWin){
-        sqlite3TreeViewWindow(pView, pX, pX->pNextWin!=0);
+      sqlite3_மரம்_View_Item(pView, "WINDOW", (n--)>0);
+      க்கு(pX=p->pWinDefn; pX; pX=pX->pNextWin){
+        sqlite3_மரம்_View_Window(pView, pX, pX->pNextWin!=0);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_மரம்_View_எடு(&pView);
     }
 #endif
-    if( p->pOrderBy ){
-      sqlite3TreeViewExprList(pView, p->pOrderBy, (n--)>0, "ORDERBY");
+    எனில்( p->pOrderBy ){
+      sqlite3_மரம்_View_கோவை_List(pView, p->pOrderBy, (n--)>0, "ORDERBY");
     }
-    if( p->pLimit ){
-      sqlite3TreeViewItem(pView, "LIMIT", (n--)>0);
-      sqlite3TreeViewExpr(pView, p->pLimit->pLeft, p->pLimit->pRight!=0);
-      if( p->pLimit->pRight ){
-        sqlite3TreeViewItem(pView, "OFFSET", 0);
-        sqlite3TreeViewExpr(pView, p->pLimit->pRight, 0);
-        sqlite3TreeViewPop(&pView);
+    எனில்( p->pLimit ){
+      sqlite3_மரம்_View_Item(pView, "LIMIT", (n--)>0);
+      sqlite3_மரம்_View_கோவை(pView, p->pLimit->p_இடது, p->pLimit->p_வலது!=0);
+      எனில்( p->pLimit->p_வலது ){
+        sqlite3_மரம்_View_Item(pView, "OFFSET", 0);
+        sqlite3_மரம்_View_கோவை(pView, p->pLimit->p_வலது, 0);
+        sqlite3_மரம்_View_எடு(&pView);
       }
-      sqlite3TreeViewPop(&pView);
+      sqlite3_மரம்_View_எடு(&pView);
     }
-    if( p->pPrior ){
-      const char *zOp = "UNION";
-      switch( p->op ){
-        case TK_ALL:         zOp = "UNION ALL";  break;
-        case TK_INTERSECT:   zOp = "INTERSECT";  break;
-        case TK_EXCEPT:      zOp = "EXCEPT";     break;
+    எனில்( p->pPrior ){
+      மாறிலி எழுத்து *zOp = "UNION";
+      தேர்வு( p->op ){
+        நிலை TK_ALL:         zOp = "UNION ALL";  நிறுத்து;
+        நிலை TK_INTERSECT:   zOp = "INTERSECT";  நிறுத்து;
+        நிலை TK_EXCEPT:      zOp = "EXCEPT";     நிறுத்து;
       }
-      sqlite3TreeViewItem(pView, zOp, 1);
+      sqlite3_மரம்_View_Item(pView, zOp, 1);
     }
     p = p->pPrior;
-  }while( p!=0 );
-  sqlite3TreeViewPop(&pView);
+  }போது( p!=0 );
+  sqlite3_மரம்_View_எடு(&pView);
 }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
 /*
 ** Generate a description of starting or stopping bounds
 */
-void sqlite3TreeViewBound(
-  TreeView *pView,        /* View context */
+வெறுமை sqlite3_மரம்_View_Bound(
+  மரம்_View *pView,        /* View context */
   u8 eBound,              /* UNBOUNDED, CURRENT, PRECEDING, FOLLOWING */
-  Expr *pExpr,            /* Value for PRECEDING or FOLLOWING */
+  கோவை *p_கோவை,            /* Value for PRECEDING or FOLLOWING */
   u8 moreToFollow         /* True if more to follow */
 ){
-  switch( eBound ){
-    case TK_UNBOUNDED: {
-      sqlite3TreeViewItem(pView, "UNBOUNDED", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+  தேர்வு( eBound ){
+    நிலை TK_UNBOUNDED: {
+      sqlite3_மரம்_View_Item(pView, "UNBOUNDED", moreToFollow);
+      sqlite3_மரம்_View_எடு(&pView);
+      நிறுத்து;
     }
-    case TK_CURRENT: {
-      sqlite3TreeViewItem(pView, "CURRENT", moreToFollow);
-      sqlite3TreeViewPop(&pView);
-      break;
+    நிலை TK_CURRENT: {
+      sqlite3_மரம்_View_Item(pView, "CURRENT", moreToFollow);
+      sqlite3_மரம்_View_எடு(&pView);
+      நிறுத்து;
     }
-    case TK_PRECEDING: {
-      sqlite3TreeViewItem(pView, "PRECEDING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    நிலை TK_PRECEDING: {
+      sqlite3_மரம்_View_Item(pView, "PRECEDING", moreToFollow);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை, 0);
+      sqlite3_மரம்_View_எடு(&pView);
+      நிறுத்து;
     }
-    case TK_FOLLOWING: {
-      sqlite3TreeViewItem(pView, "FOLLOWING", moreToFollow);
-      sqlite3TreeViewExpr(pView, pExpr, 0);
-      sqlite3TreeViewPop(&pView);
-      break;
+    நிலை TK_FOLLOWING: {
+      sqlite3_மரம்_View_Item(pView, "FOLLOWING", moreToFollow);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை, 0);
+      sqlite3_மரம்_View_எடு(&pView);
+      நிறுத்து;
     }
   }
 }
@@ -418,66 +418,66 @@ void sqlite3TreeViewBound(
 /*
 ** Generate a human-readable explanation for a Window object
 */
-void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
-  int nElement = 0;
-  if( pWin==0 ) return;
-  if( pWin->pFilter ){
-    sqlite3TreeViewItem(pView, "FILTER", 1);
-    sqlite3TreeViewExpr(pView, pWin->pFilter, 0);
-    sqlite3TreeViewPop(&pView);
-    if( pWin->eFrmType==TK_FILTER ) return;
+வெறுமை sqlite3_மரம்_View_Window(மரம்_View *pView, மாறிலி Window *pWin, u8 more){
+  முழு nElement = 0;
+  எனில்( pWin==0 ) திரும்பு;
+  எனில்( pWin->pFilter ){
+    sqlite3_மரம்_View_Item(pView, "FILTER", 1);
+    sqlite3_மரம்_View_கோவை(pView, pWin->pFilter, 0);
+    sqlite3_மரம்_View_எடு(&pView);
+    எனில்( pWin->eFrmType==TK_FILTER ) திரும்பு;
   }
-  sqlite3TreeViewPush(&pView, more);
-  if( pWin->zName ){
-    sqlite3TreeViewLine(pView, "OVER %s (%p)", pWin->zName, pWin);
-  }else{
-    sqlite3TreeViewLine(pView, "OVER (%p)", pWin);
+  sqlite3_மரம்_View_தள்ளு(&pView, more);
+  எனில்( pWin->zName ){
+    sqlite3_மரம்_View_வரி(pView, "OVER %s (%p)", pWin->zName, pWin);
+  }இல்லையெனில்{
+    sqlite3_மரம்_View_வரி(pView, "OVER (%p)", pWin);
   }
-  if( pWin->zBase )    nElement++;
-  if( pWin->pOrderBy ) nElement++;
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
-  if( pWin->eExclude ) nElement++;
-  if( pWin->zBase ){
-    sqlite3TreeViewPush(&pView, (--nElement)>0);
-    sqlite3TreeViewLine(pView, "window: %s", pWin->zBase);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pWin->zBase )    nElement++;
+  எனில்( pWin->pOrderBy ) nElement++;
+  எனில்( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ) nElement++;
+  எனில்( pWin->eExclude ) nElement++;
+  எனில்( pWin->zBase ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--nElement)>0);
+    sqlite3_மரம்_View_வரி(pView, "window: %s", pWin->zBase);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pWin->pPartition ){
-    sqlite3TreeViewExprList(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
+  எனில்( pWin->pPartition ){
+    sqlite3_மரம்_View_கோவை_List(pView, pWin->pPartition, nElement>0,"PARTITION-BY");
   }
-  if( pWin->pOrderBy ){
-    sqlite3TreeViewExprList(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
+  எனில்( pWin->pOrderBy ){
+    sqlite3_மரம்_View_கோவை_List(pView, pWin->pOrderBy, (--nElement)>0, "ORDER-BY");
   }
-  if( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
-    char zBuf[30];
-    const char *zFrmType = "ROWS";
-    if( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
-    if( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
-    sqlite3_snprintf(sizeof(zBuf),zBuf,"%s%s",zFrmType,
+  எனில்( pWin->eFrmType!=0 && pWin->eFrmType!=TK_FILTER ){
+    எழுத்து zBuf[30];
+    மாறிலி எழுத்து *zFrmType = "ROWS";
+    எனில்( pWin->eFrmType==TK_RANGE ) zFrmType = "RANGE";
+    எனில்( pWin->eFrmType==TK_GROUPS ) zFrmType = "GROUPS";
+    sqlite3_snprintf(அளவு(zBuf),zBuf,"%s%s",zFrmType,
         pWin->bImplicitFrame ? " (implied)" : "");
-    sqlite3TreeViewItem(pView, zBuf, (--nElement)>0);
-    sqlite3TreeViewBound(pView, pWin->eStart, pWin->pStart, 1);
-    sqlite3TreeViewBound(pView, pWin->eEnd, pWin->pEnd, 0);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_Item(pView, zBuf, (--nElement)>0);
+    sqlite3_மரம்_View_Bound(pView, pWin->eStart, pWin->pStart, 1);
+    sqlite3_மரம்_View_Bound(pView, pWin->eEnd, pWin->pEnd, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pWin->eExclude ){
-    char zBuf[30];
-    const char *zExclude;
-    switch( pWin->eExclude ){
-      case TK_NO:      zExclude = "NO OTHERS";   break;
-      case TK_CURRENT: zExclude = "CURRENT ROW"; break;
-      case TK_GROUP:   zExclude = "GROUP";       break;
-      case TK_TIES:    zExclude = "TIES";        break;
-      default:
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
+  எனில்( pWin->eExclude ){
+    எழுத்து zBuf[30];
+    மாறிலி எழுத்து *zExclude;
+    தேர்வு( pWin->eExclude ){
+      நிலை TK_NO:      zExclude = "NO OTHERS";   நிறுத்து;
+      நிலை TK_CURRENT: zExclude = "CURRENT ROW"; நிறுத்து;
+      நிலை TK_GROUP:   zExclude = "GROUP";       நிறுத்து;
+      நிலை TK_TIES:    zExclude = "TIES";        நிறுத்து;
+      இயல்பு:
+        sqlite3_snprintf(அளவு(zBuf),zBuf,"invalid(%d)", pWin->eExclude);
         zExclude = zBuf;
-        break;
+        நிறுத்து;
     }
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewLine(pView, "EXCLUDE %s", zExclude);
-    sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_தள்ளு(&pView, 0);
+    sqlite3_மரம்_View_வரி(pView, "EXCLUDE %s", zExclude);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
@@ -485,298 +485,298 @@ void sqlite3TreeViewWindow(TreeView *pView, const Window *pWin, u8 more){
 /*
 ** Generate a human-readable explanation for a Window Function object
 */
-void sqlite3TreeViewWinFunc(TreeView *pView, const Window *pWin, u8 more){
-  if( pWin==0 ) return;
-  sqlite3TreeViewPush(&pView, more);
-  sqlite3TreeViewLine(pView, "WINFUNC %s(%d)",
+வெறுமை sqlite3_மரம்_View_Win_Func(மரம்_View *pView, மாறிலி Window *pWin, u8 more){
+  எனில்( pWin==0 ) திரும்பு;
+  sqlite3_மரம்_View_தள்ளு(&pView, more);
+  sqlite3_மரம்_View_வரி(pView, "WINFUNC %s(%d)",
                        pWin->pWFunc->zName, pWin->pWFunc->nArg);
-  sqlite3TreeViewWindow(pView, pWin, 0);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_Window(pView, pWin, 0);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Generate a human-readable explanation of an expression tree.
 */
-void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
-  const char *zBinOp = 0;   /* Binary operator */
-  const char *zUniOp = 0;   /* Unary operator */
-  char zFlgs[200];
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  if( pExpr==0 ){
-    sqlite3TreeViewLine(pView, "nil");
-    sqlite3TreeViewPop(&pView);
-    return;
+வெறுமை sqlite3_மரம்_View_கோவை(மரம்_View *pView, மாறிலி கோவை *p_கோவை, u8 moreToFollow){
+  மாறிலி எழுத்து *zBinOp = 0;   /* Binary operator */
+  மாறிலி எழுத்து *zUniOp = 0;   /* Unary operator */
+  எழுத்து zFlgs[200];
+  sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+  எனில்( p_கோவை==0 ){
+    sqlite3_மரம்_View_வரி(pView, "nil");
+    sqlite3_மரம்_View_எடு(&pView);
+    திரும்பு;
   }
-  if( pExpr->flags || pExpr->affExpr || pExpr->vvaFlags || pExpr->pAggInfo ){
+  எனில்( p_கோவை->flags || p_கோவை->aff_கோவை || p_கோவை->vvaFlags || p_கோவை->pAggInfo ){
     StrAccum x;
-    sqlite3StrAccumInit(&x, 0, zFlgs, sizeof(zFlgs), 0);
+    sqlite3StrAccumInit(&x, 0, zFlgs, அளவு(zFlgs), 0);
     sqlite3_str_appendf(&x, " fg.af=%x.%c",
-      pExpr->flags, pExpr->affExpr ? pExpr->affExpr : 'n');
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
-      sqlite3_str_appendf(&x, " outer.iJoin=%d", pExpr->w.iJoin);
+      p_கோவை->flags, p_கோவை->aff_கோவை ? p_கோவை->aff_கோவை : 'n');
+    எனில்( கோவை_Has_Property(p_கோவை, EP_OuterON) ){
+      sqlite3_str_appendf(&x, " outer.iJoin=%d", p_கோவை->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_InnerON) ){
-      sqlite3_str_appendf(&x, " inner.iJoin=%d", pExpr->w.iJoin);
+    எனில்( கோவை_Has_Property(p_கோவை, EP_InnerON) ){
+      sqlite3_str_appendf(&x, " inner.iJoin=%d", p_கோவை->w.iJoin);
     }
-    if( ExprHasProperty(pExpr, EP_FromDDL) ){
+    எனில்( கோவை_Has_Property(p_கோவை, EP_FromDDL) ){
       sqlite3_str_appendf(&x, " DDL");
     }
-    if( ExprHasVVAProperty(pExpr, EP_Immutable) ){
+    எனில்( கோவை_Has_VVAProperty(p_கோவை, EP_Immutable) ){
       sqlite3_str_appendf(&x, " IMMUTABLE");
     }
-    if( pExpr->pAggInfo!=0 ){
-      sqlite3_str_appendf(&x, " agg-column[%d]", pExpr->iAgg);
+    எனில்( p_கோவை->pAggInfo!=0 ){
+      sqlite3_str_appendf(&x, " agg-column[%d]", p_கோவை->iAgg);
     }
     sqlite3StrAccumFinish(&x);
-  }else{
+  }இல்லையெனில்{
     zFlgs[0] = 0;
   }
-  switch( pExpr->op ){
-    case TK_AGG_COLUMN: {
-      sqlite3TreeViewLine(pView, "AGG{%d:%d}%s",
-            pExpr->iTable, pExpr->iColumn, zFlgs);
-      break;
+  தேர்வு( p_கோவை->op ){
+    நிலை TK_AGG_COLUMN: {
+      sqlite3_மரம்_View_வரி(pView, "AGG{%d:%d}%s",
+            p_கோவை->iTable, p_கோவை->iColumn, zFlgs);
+      நிறுத்து;
     }
-    case TK_COLUMN: {
-      if( pExpr->iTable<0 ){
+    நிலை TK_COLUMN: {
+      எனில்( p_கோவை->iTable<0 ){
         /* This only happens when coding check constraints */
-        char zOp2[16];
-        if( pExpr->op2 ){
-          sqlite3_snprintf(sizeof(zOp2),zOp2," op2=0x%02x",pExpr->op2);
-        }else{
+        எழுத்து zOp2[16];
+        எனில்( p_கோவை->op2 ){
+          sqlite3_snprintf(அளவு(zOp2),zOp2," op2=0x%02x",p_கோவை->op2);
+        }இல்லையெனில்{
           zOp2[0] = 0;
         }
-        sqlite3TreeViewLine(pView, "COLUMN(%d)%s%s",
-                                    pExpr->iColumn, zFlgs, zOp2);
-      }else{
-        assert( ExprUseYTab(pExpr) );
-        sqlite3TreeViewLine(pView, "{%d:%d} pTab=%p%s",
-                        pExpr->iTable, pExpr->iColumn,
-                        pExpr->y.pTab, zFlgs);
+        sqlite3_மரம்_View_வரி(pView, "COLUMN(%d)%s%s",
+                                    p_கோவை->iColumn, zFlgs, zOp2);
+      }இல்லையெனில்{
+        ப்ரதிஜ்ஞா( கோவை_Use_YTab(p_கோவை) );
+        sqlite3_மரம்_View_வரி(pView, "{%d:%d} pTab=%p%s",
+                        p_கோவை->iTable, p_கோவை->iColumn,
+                        p_கோவை->y.pTab, zFlgs);
       }
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
-        sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+      எனில்( கோவை_Has_Property(p_கோவை, EP_FixedCol) ){
+        sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 0);
       }
-      break;
+      நிறுத்து;
     }
-    case TK_INTEGER: {
-      if( pExpr->flags & EP_IntValue ){
-        sqlite3TreeViewLine(pView, "%d", pExpr->u.iValue);
-      }else{
-        sqlite3TreeViewLine(pView, "%s", pExpr->u.zToken);
+    நிலை TK_INTEGER: {
+      எனில்( p_கோவை->flags & EP_Int_மதிப்பு ){
+        sqlite3_மரம்_View_வரி(pView, "%d", p_கோவை->u.i_மதிப்பு);
+      }இல்லையெனில்{
+        sqlite3_மரம்_View_வரி(pView, "%s", p_கோவை->u.zToken);
       }
-      break;
+      நிறுத்து;
     }
 #ifndef SQLITE_OMIT_FLOATING_POINT
-    case TK_FLOAT: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+    நிலை TK_FLOAT: {
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView,"%s", p_கோவை->u.zToken);
+      நிறுத்து;
     }
 #endif
-    case TK_STRING: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%Q", pExpr->u.zToken);
-      break;
+    நிலை TK_STRING: {
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView,"%Q", p_கோவை->u.zToken);
+      நிறுத்து;
     }
-    case TK_NULL: {
-      sqlite3TreeViewLine(pView,"NULL");
-      break;
+    நிலை TK_NULL: {
+      sqlite3_மரம்_View_வரி(pView,"NULL");
+      நிறுத்து;
     }
-    case TK_TRUEFALSE: {
-      sqlite3TreeViewLine(pView,"%s%s",
-         sqlite3ExprTruthValue(pExpr) ? "TRUE" : "FALSE", zFlgs);
-      break;
+    நிலை TK_TRUEFALSE: {
+      sqlite3_மரம்_View_வரி(pView,"%s%s",
+         sqlite3_கோவை_Truth_மதிப்பு(p_கோவை) ? "TRUE" : "FALSE", zFlgs);
+      நிறுத்து;
     }
 #ifndef SQLITE_OMIT_BLOB_LITERAL
-    case TK_BLOB: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"%s", pExpr->u.zToken);
-      break;
+    நிலை TK_BLOB: {
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView,"%s", p_கோவை->u.zToken);
+      நிறுத்து;
     }
 #endif
-    case TK_VARIABLE: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"VARIABLE(%s,%d)",
-                          pExpr->u.zToken, pExpr->iColumn);
-      break;
+    நிலை TK_VARIABLE: {
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView,"VARIABLE(%s,%d)",
+                          p_கோவை->u.zToken, p_கோவை->iColumn);
+      நிறுத்து;
     }
-    case TK_REGISTER: {
-      sqlite3TreeViewLine(pView,"REGISTER(%d)", pExpr->iTable);
-      break;
+    நிலை TK_REGISTER: {
+      sqlite3_மரம்_View_வரி(pView,"REGISTER(%d)", p_கோவை->iTable);
+      நிறுத்து;
     }
-    case TK_ID: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"ID \"%w\"", pExpr->u.zToken);
-      break;
+    நிலை TK_ID: {
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView,"ID \"%w\"", p_கோவை->u.zToken);
+      நிறுத்து;
     }
-    case TK_ASTERISK: {
-      sqlite3TreeViewLine(pView,"ASKTERISK");
-      break;
+    நிலை TK_ASTERISK: {
+      sqlite3_மரம்_View_வரி(pView,"ASKTERISK");
+      நிறுத்து;
     }
 #ifndef SQLITE_OMIT_CAST
-    case TK_CAST: {
+    நிலை TK_CAST: {
       /* Expressions of the form:   CAST(pLeft AS token) */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView,"CAST %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView,"CAST %Q", p_கோவை->u.zToken);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 0);
+      நிறுத்து;
     }
 #endif /* SQLITE_OMIT_CAST */
-    case TK_LT:      zBinOp = "LT";     break;
-    case TK_LE:      zBinOp = "LE";     break;
-    case TK_GT:      zBinOp = "GT";     break;
-    case TK_GE:      zBinOp = "GE";     break;
-    case TK_NE:      zBinOp = "NE";     break;
-    case TK_EQ:      zBinOp = "EQ";     break;
-    case TK_IS:      zBinOp = "IS";     break;
-    case TK_ISNOT:   zBinOp = "ISNOT";  break;
-    case TK_AND:     zBinOp = "AND";    break;
-    case TK_OR:      zBinOp = "OR";     break;
-    case TK_PLUS:    zBinOp = "ADD";    break;
-    case TK_STAR:    zBinOp = "MUL";    break;
-    case TK_MINUS:   zBinOp = "SUB";    break;
-    case TK_REM:     zBinOp = "REM";    break;
-    case TK_BITAND:  zBinOp = "BITAND"; break;
-    case TK_BITOR:   zBinOp = "BITOR";  break;
-    case TK_SLASH:   zBinOp = "DIV";    break;
-    case TK_LSHIFT:  zBinOp = "LSHIFT"; break;
-    case TK_RSHIFT:  zBinOp = "RSHIFT"; break;
-    case TK_CONCAT:  zBinOp = "CONCAT"; break;
-    case TK_DOT:     zBinOp = "DOT";    break;
-    case TK_LIMIT:   zBinOp = "LIMIT";  break;
+    நிலை TK_LT:      zBinOp = "LT";     நிறுத்து;
+    நிலை TK_LE:      zBinOp = "LE";     நிறுத்து;
+    நிலை TK_GT:      zBinOp = "GT";     நிறுத்து;
+    நிலை TK_GE:      zBinOp = "GE";     நிறுத்து;
+    நிலை TK_NE:      zBinOp = "NE";     நிறுத்து;
+    நிலை TK_EQ:      zBinOp = "EQ";     நிறுத்து;
+    நிலை TK_IS:      zBinOp = "IS";     நிறுத்து;
+    நிலை TK_ISNOT:   zBinOp = "ISNOT";  நிறுத்து;
+    நிலை TK_AND:     zBinOp = "AND";    நிறுத்து;
+    நிலை TK_OR:      zBinOp = "OR";     நிறுத்து;
+    நிலை TK_PLUS:    zBinOp = "ADD";    நிறுத்து;
+    நிலை TK_STAR:    zBinOp = "MUL";    நிறுத்து;
+    நிலை TK_MINUS:   zBinOp = "SUB";    நிறுத்து;
+    நிலை TK_REM:     zBinOp = "REM";    நிறுத்து;
+    நிலை TK_BITAND:  zBinOp = "BITAND"; நிறுத்து;
+    நிலை TK_BITOR:   zBinOp = "BITOR";  நிறுத்து;
+    நிலை TK_SLASH:   zBinOp = "DIV";    நிறுத்து;
+    நிலை TK_LSHIFT:  zBinOp = "LSHIFT"; நிறுத்து;
+    நிலை TK_RSHIFT:  zBinOp = "RSHIFT"; நிறுத்து;
+    நிலை TK_CONCAT:  zBinOp = "CONCAT"; நிறுத்து;
+    நிலை TK_DOT:     zBinOp = "DOT";    நிறுத்து;
+    நிலை TK_LIMIT:   zBinOp = "LIMIT";  நிறுத்து;
 
-    case TK_UMINUS:  zUniOp = "UMINUS"; break;
-    case TK_UPLUS:   zUniOp = "UPLUS";  break;
-    case TK_BITNOT:  zUniOp = "BITNOT"; break;
-    case TK_NOT:     zUniOp = "NOT";    break;
-    case TK_ISNULL:  zUniOp = "ISNULL"; break;
-    case TK_NOTNULL: zUniOp = "NOTNULL"; break;
+    நிலை TK_UMINUS:  zUniOp = "UMINUS"; நிறுத்து;
+    நிலை TK_UPLUS:   zUniOp = "UPLUS";  நிறுத்து;
+    நிலை TK_BITNOT:  zUniOp = "BITNOT"; நிறுத்து;
+    நிலை TK_NOT:     zUniOp = "NOT";    நிறுத்து;
+    நிலை TK_ISNULL:  zUniOp = "ISNULL"; நிறுத்து;
+    நிலை TK_NOTNULL: zUniOp = "NOTNULL"; நிறுத்து;
 
-    case TK_TRUTH: {
-      int x;
-      const char *azOp[] = {
+    நிலை TK_TRUTH: {
+      முழு x;
+      மாறிலி எழுத்து *azOp[] = {
          "IS-FALSE", "IS-TRUE", "IS-NOT-FALSE", "IS-NOT-TRUE"
       };
-      assert( pExpr->op2==TK_IS || pExpr->op2==TK_ISNOT );
-      assert( pExpr->pRight );
-      assert( sqlite3ExprSkipCollateAndLikely(pExpr->pRight)->op
+      ப்ரதிஜ்ஞா( p_கோவை->op2==TK_IS || p_கோவை->op2==TK_ISNOT );
+      ப்ரதிஜ்ஞா( p_கோவை->p_வலது );
+      ப்ரதிஜ்ஞா( sqlite3_கோவை_Skip_Collate_And_Likely(p_கோவை->p_வலது)->op
                   == TK_TRUEFALSE );
-      x = (pExpr->op2==TK_ISNOT)*2 + sqlite3ExprTruthValue(pExpr->pRight);
+      x = (p_கோவை->op2==TK_ISNOT)*2 + sqlite3_கோவை_Truth_மதிப்பு(p_கோவை->p_வலது);
       zUniOp = azOp[x];
-      break;
+      நிறுத்து;
     }
 
-    case TK_SPAN: {
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "SPAN %Q", pExpr->u.zToken);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    நிலை TK_SPAN: {
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView, "SPAN %Q", p_கோவை->u.zToken);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 0);
+      நிறுத்து;
     }
 
-    case TK_COLLATE: {
+    நிலை TK_COLLATE: {
       /* COLLATE operators without the EP_Collate flag are intended to
       ** emulate collation associated with a table column.  These show
       ** up in the treeview output as "SOFT-COLLATE".  Explicit COLLATE
       ** operators that appear in the original SQL always have the
       ** EP_Collate bit set and appear in treeview output as just "COLLATE" */
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "%sCOLLATE %Q%s",
-        !ExprHasProperty(pExpr, EP_Collate) ? "SOFT-" : "",
-        pExpr->u.zToken, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView, "%sCOLLATE %Q%s",
+        !கோவை_Has_Property(p_கோவை, EP_Collate) ? "SOFT-" : "",
+        p_கோவை->u.zToken, zFlgs);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 0);
+      நிறுத்து;
     }
 
-    case TK_AGG_FUNCTION:
-    case TK_FUNCTION: {
-      ExprList *pFarg;       /* List of function arguments */
+    நிலை TK_AGG_FUNCTION:
+    நிலை TK_FUNCTION: {
+      கோவை_List *pFarg;       /* List of function arguments */
       Window *pWin;
-      if( ExprHasProperty(pExpr, EP_TokenOnly) ){
+      எனில்( கோவை_Has_Property(p_கோவை, EP_TokenOnly) ){
         pFarg = 0;
         pWin = 0;
-      }else{
-        assert( ExprUseXList(pExpr) );
-        pFarg = pExpr->x.pList;
+      }இல்லையெனில்{
+        ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை) );
+        pFarg = p_கோவை->x.pList;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        pWin = IsWindowFunc(pExpr) ? pExpr->y.pWin : 0;
-#else
+        pWin = IsWindowFunc(p_கோவை) ? p_கோவை->y.pWin : 0;
+#இல்லையெனில்
         pWin = 0;
 #endif 
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->op==TK_AGG_FUNCTION ){
-        sqlite3TreeViewLine(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
-                             pExpr->op2, pExpr->u.zToken, zFlgs,
-                             pExpr->pAggInfo ? pExpr->pAggInfo->selId : 0,
-                             pExpr->iAgg, pExpr->pAggInfo);
-      }else if( pExpr->op2!=0 ){
-        const char *zOp2;
-        char zBuf[8];
-        sqlite3_snprintf(sizeof(zBuf),zBuf,"0x%02x",pExpr->op2);
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      எனில்( p_கோவை->op==TK_AGG_FUNCTION ){
+        sqlite3_மரம்_View_வரி(pView, "AGG_FUNCTION%d %Q%s agg=%d[%d]/%p",
+                             p_கோவை->op2, p_கோவை->u.zToken, zFlgs,
+                             p_கோவை->pAggInfo ? p_கோவை->pAggInfo->selId : 0,
+                             p_கோவை->iAgg, p_கோவை->pAggInfo);
+      }இல்லையெனில் எனில்( p_கோவை->op2!=0 ){
+        மாறிலி எழுத்து *zOp2;
+        எழுத்து zBuf[8];
+        sqlite3_snprintf(அளவு(zBuf),zBuf,"0x%02x",p_கோவை->op2);
         zOp2 = zBuf;
-        if( pExpr->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
-        if( pExpr->op2==NC_IdxExpr ) zOp2 = "NC_IdxExpr";
-        if( pExpr->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
-        if( pExpr->op2==NC_GenCol ) zOp2 = "NC_GenCol";
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s op2=%s",
-                            pExpr->u.zToken, zFlgs, zOp2);
-      }else{
-        sqlite3TreeViewLine(pView, "FUNCTION %Q%s", pExpr->u.zToken, zFlgs);
+        எனில்( p_கோவை->op2==NC_IsCheck ) zOp2 = "NC_IsCheck";
+        எனில்( p_கோவை->op2==NC_Idx_கோவை ) zOp2 = "NC_IdxExpr";
+        எனில்( p_கோவை->op2==NC_PartIdx ) zOp2 = "NC_PartIdx";
+        எனில்( p_கோவை->op2==NC_GenCol ) zOp2 = "NC_GenCol";
+        sqlite3_மரம்_View_வரி(pView, "FUNCTION %Q%s op2=%s",
+                            p_கோவை->u.zToken, zFlgs, zOp2);
+      }இல்லையெனில்{
+        sqlite3_மரம்_View_வரி(pView, "FUNCTION %Q%s", p_கோவை->u.zToken, zFlgs);
       }
-      if( pFarg ){
-        sqlite3TreeViewExprList(pView, pFarg, pWin!=0 || pExpr->pLeft, 0);
-        if( pExpr->pLeft ){
-          Expr *pOB = pExpr->pLeft;
-          assert( pOB->op==TK_ORDER );
-          assert( ExprUseXList(pOB) );
-          sqlite3TreeViewExprList(pView, pOB->x.pList, pWin!=0, "ORDERBY");
+      எனில்( pFarg ){
+        sqlite3_மரம்_View_கோவை_List(pView, pFarg, pWin!=0 || p_கோவை->p_இடது, 0);
+        எனில்( p_கோவை->p_இடது ){
+          கோவை *pOB = p_கோவை->p_இடது;
+          ப்ரதிஜ்ஞா( pOB->op==TK_ORDER );
+          ப்ரதிஜ்ஞா( கோவை_Use_XList(pOB) );
+          sqlite3_மரம்_View_கோவை_List(pView, pOB->x.pList, pWin!=0, "ORDERBY");
         }
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pWin ){
-        sqlite3TreeViewWindow(pView, pWin, 0);
+      எனில்( pWin ){
+        sqlite3_மரம்_View_Window(pView, pWin, 0);
       }
 #endif
-      break;
+      நிறுத்து;
     }
-    case TK_ORDER: {
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, "ORDERBY");
-      break;
+    நிலை TK_ORDER: {
+      sqlite3_மரம்_View_கோவை_List(pView, p_கோவை->x.pList, 0, "ORDERBY");
+      நிறுத்து;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_EXISTS: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "EXISTS-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+    நிலை TK_EXISTS: {
+      ப்ரதிஜ்ஞா( கோவை_Use_XSelect(p_கோவை) );
+      sqlite3_மரம்_View_வரி(pView, "EXISTS-expr flags=0x%x", p_கோவை->flags);
+      sqlite3_மரம்_View_Select(pView, p_கோவை->x.pSelect, 0);
+      நிறுத்து;
     }
-    case TK_SELECT: {
-      assert( ExprUseXSelect(pExpr) );
-      sqlite3TreeViewLine(pView, "subquery-expr flags=0x%x", pExpr->flags);
-      sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      break;
+    நிலை TK_SELECT: {
+      ப்ரதிஜ்ஞா( கோவை_Use_XSelect(p_கோவை) );
+      sqlite3_மரம்_View_வரி(pView, "subquery-expr flags=0x%x", p_கோவை->flags);
+      sqlite3_மரம்_View_Select(pView, p_கோவை->x.pSelect, 0);
+      நிறுத்து;
     }
-    case TK_IN: {
+    நிலை TK_IN: {
       sqlite3_str *pStr = sqlite3_str_new(0);
-      char *z;
-      sqlite3_str_appendf(pStr, "IN flags=0x%x", pExpr->flags);
-      if( pExpr->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",pExpr->iTable);
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
+      எழுத்து *z;
+      sqlite3_str_appendf(pStr, "IN flags=0x%x", p_கோவை->flags);
+      எனில்( p_கோவை->iTable ) sqlite3_str_appendf(pStr, " iTable=%d",p_கோவை->iTable);
+      எனில்( கோவை_Has_Property(p_கோவை, EP_Subrtn) ){
         sqlite3_str_appendf(pStr, " subrtn(%d,%d)",
-            pExpr->y.sub.regReturn, pExpr->y.sub.iAddr);
+            p_கோவை->y.sub.regReturn, p_கோவை->y.sub.iAddr);
       }
       z = sqlite3_str_finish(pStr);
-      sqlite3TreeViewLine(pView, z);
+      sqlite3_மரம்_View_வரி(pView, z);
       sqlite3_free(z);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      if( ExprUseXSelect(pExpr) ){
-        sqlite3TreeViewSelect(pView, pExpr->x.pSelect, 0);
-      }else{
-        sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 1);
+      எனில்( கோவை_Use_XSelect(p_கோவை) ){
+        sqlite3_மரம்_View_Select(pView, p_கோவை->x.pSelect, 0);
+      }இல்லையெனில்{
+        sqlite3_மரம்_View_கோவை_List(pView, p_கோவை->x.pList, 0, 0);
       }
-      break;
+      நிறுத்து;
     }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -791,20 +791,20 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
     ** Y is stored in pExpr->pList->a[0].pExpr.
     ** Z is stored in pExpr->pList->a[1].pExpr.
     */
-    case TK_BETWEEN: {
-      const Expr *pX, *pY, *pZ;
-      pX = pExpr->pLeft;
-      assert( ExprUseXList(pExpr) );
-      assert( pExpr->x.pList->nExpr==2 );
-      pY = pExpr->x.pList->a[0].pExpr;
-      pZ = pExpr->x.pList->a[1].pExpr;
-      sqlite3TreeViewLine(pView, "BETWEEN%s", zFlgs);
-      sqlite3TreeViewExpr(pView, pX, 1);
-      sqlite3TreeViewExpr(pView, pY, 1);
-      sqlite3TreeViewExpr(pView, pZ, 0);
-      break;
+    நிலை TK_BETWEEN: {
+      மாறிலி கோவை *pX, *pY, *pZ;
+      pX = p_கோவை->p_இடது;
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை) );
+      ப்ரதிஜ்ஞா( p_கோவை->x.pList->n_கோவை==2 );
+      pY = p_கோவை->x.pList->a[0].p_கோவை;
+      pZ = p_கோவை->x.pList->a[1].p_கோவை;
+      sqlite3_மரம்_View_வரி(pView, "BETWEEN%s", zFlgs);
+      sqlite3_மரம்_View_கோவை(pView, pX, 1);
+      sqlite3_மரம்_View_கோவை(pView, pY, 1);
+      sqlite3_மரம்_View_கோவை(pView, pZ, 0);
+      நிறுத்து;
     }
-    case TK_TRIGGER: {
+    நிலை TK_TRIGGER: {
       /* If the opcode is TK_TRIGGER, then the expression is a reference
       ** to a column in the new.* or old.* pseudo-tables available to
       ** trigger programs. In this case Expr.iTable is set to 1 for the
@@ -812,426 +812,426 @@ void sqlite3TreeViewExpr(TreeView *pView, const Expr *pExpr, u8 moreToFollow){
       ** is set to the column of the pseudo-table to read, or to -1 to
       ** read the rowid field.
       */
-      sqlite3TreeViewLine(pView, "%s(%d)", 
-          pExpr->iTable ? "NEW" : "OLD", pExpr->iColumn);
-      break;
+      sqlite3_மரம்_View_வரி(pView, "%s(%d)", 
+          p_கோவை->iTable ? "NEW" : "OLD", p_கோவை->iColumn);
+      நிறுத்து;
     }
-    case TK_CASE: {
-      sqlite3TreeViewLine(pView, "CASE");
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewExprList(pView, pExpr->x.pList, 0, 0);
-      break;
+    நிலை TK_CASE: {
+      sqlite3_மரம்_View_வரி(pView, "CASE");
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 1);
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை) );
+      sqlite3_மரம்_View_கோவை_List(pView, p_கோவை->x.pList, 0, 0);
+      நிறுத்து;
     }
 #ifndef SQLITE_OMIT_TRIGGER
-    case TK_RAISE: {
-      const char *zType = "unk";
-      switch( pExpr->affExpr ){
-        case OE_Rollback:   zType = "rollback";  break;
-        case OE_Abort:      zType = "abort";     break;
-        case OE_Fail:       zType = "fail";      break;
-        case OE_Ignore:     zType = "ignore";    break;
+    நிலை TK_RAISE: {
+      மாறிலி எழுத்து *zType = "unk";
+      தேர்வு( p_கோவை->aff_கோவை ){
+        நிலை OE_Rollback:   zType = "rollback";  நிறுத்து;
+        நிலை OE_Abort:      zType = "abort";     நிறுத்து;
+        நிலை OE_Fail:       zType = "fail";      நிறுத்து;
+        நிலை OE_Ignore:     zType = "ignore";    நிறுத்து;
       }
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      sqlite3TreeViewLine(pView, "RAISE %s", zType);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+      ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+      sqlite3_மரம்_View_வரி(pView, "RAISE %s", zType);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 0);
+      நிறுத்து;
     }
 #endif
-    case TK_MATCH: {
-      sqlite3TreeViewLine(pView, "MATCH {%d:%d}%s",
-                          pExpr->iTable, pExpr->iColumn, zFlgs);
-      sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-      break;
+    நிலை TK_MATCH: {
+      sqlite3_மரம்_View_வரி(pView, "MATCH {%d:%d}%s",
+                          p_கோவை->iTable, p_கோவை->iColumn, zFlgs);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_வலது, 0);
+      நிறுத்து;
     }
-    case TK_VECTOR: {
-      char *z = sqlite3_mprintf("VECTOR%s",zFlgs);
-      assert( ExprUseXList(pExpr) );
-      sqlite3TreeViewBareExprList(pView, pExpr->x.pList, z);
+    நிலை TK_VECTOR: {
+      எழுத்து *z = sqlite3_mprintf("VECTOR%s",zFlgs);
+      ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை) );
+      sqlite3_மரம்_View_Bare_கோவை_List(pView, p_கோவை->x.pList, z);
       sqlite3_free(z);
-      break;
+      நிறுத்து;
     }
-    case TK_SELECT_COLUMN: {
-      sqlite3TreeViewLine(pView, "SELECT-COLUMN %d of [0..%d]%s",
-              pExpr->iColumn, pExpr->iTable-1,
-              pExpr->pRight==pExpr->pLeft ? " (SELECT-owner)" : "");
-      assert( ExprUseXSelect(pExpr->pLeft) );
-      sqlite3TreeViewSelect(pView, pExpr->pLeft->x.pSelect, 0);
-      break;
+    நிலை TK_SELECT_COLUMN: {
+      sqlite3_மரம்_View_வரி(pView, "SELECT-COLUMN %d of [0..%d]%s",
+              p_கோவை->iColumn, p_கோவை->iTable-1,
+              p_கோவை->p_வலது==p_கோவை->p_இடது ? " (SELECT-owner)" : "");
+      ப்ரதிஜ்ஞா( கோவை_Use_XSelect(p_கோவை->p_இடது) );
+      sqlite3_மரம்_View_Select(pView, p_கோவை->p_இடது->x.pSelect, 0);
+      நிறுத்து;
     }
-    case TK_IF_NULL_ROW: {
-      sqlite3TreeViewLine(pView, "IF-NULL-ROW %d", pExpr->iTable);
-      sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
-      break;
+    நிலை TK_IF_NULL_ROW: {
+      sqlite3_மரம்_View_வரி(pView, "IF-NULL-ROW %d", p_கோவை->iTable);
+      sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 0);
+      நிறுத்து;
     }
-    case TK_ERROR: {
-      Expr tmp;
-      sqlite3TreeViewLine(pView, "ERROR");
-      tmp = *pExpr;
-      tmp.op = pExpr->op2;
-      sqlite3TreeViewExpr(pView, &tmp, 0);
-      break;
+    நிலை TK_ERROR: {
+      கோவை tmp;
+      sqlite3_மரம்_View_வரி(pView, "ERROR");
+      tmp = *p_கோவை;
+      tmp.op = p_கோவை->op2;
+      sqlite3_மரம்_View_கோவை(pView, &tmp, 0);
+      நிறுத்து;
     }
-    case TK_ROW: {
-      if( pExpr->iColumn<=0 ){
-        sqlite3TreeViewLine(pView, "First FROM table rowid");
-      }else{
-        sqlite3TreeViewLine(pView, "First FROM table column %d",
-            pExpr->iColumn-1);
+    நிலை TK_ROW: {
+      எனில்( p_கோவை->iColumn<=0 ){
+        sqlite3_மரம்_View_வரி(pView, "First FROM table rowid");
+      }இல்லையெனில்{
+        sqlite3_மரம்_View_வரி(pView, "First FROM table column %d",
+            p_கோவை->iColumn-1);
       }
-      break;
+      நிறுத்து;
     }
-    default: {
-      sqlite3TreeViewLine(pView, "op=%d", pExpr->op);
-      break;
+    இயல்பு: {
+      sqlite3_மரம்_View_வரி(pView, "op=%d", p_கோவை->op);
+      நிறுத்து;
     }
   }
-  if( zBinOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zBinOp, zFlgs);
-    sqlite3TreeViewExpr(pView, pExpr->pLeft, 1);
-    sqlite3TreeViewExpr(pView, pExpr->pRight, 0);
-  }else if( zUniOp ){
-    sqlite3TreeViewLine(pView, "%s%s", zUniOp, zFlgs);
-   sqlite3TreeViewExpr(pView, pExpr->pLeft, 0);
+  எனில்( zBinOp ){
+    sqlite3_மரம்_View_வரி(pView, "%s%s", zBinOp, zFlgs);
+    sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 1);
+    sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_வலது, 0);
+  }இல்லையெனில் எனில்( zUniOp ){
+    sqlite3_மரம்_View_வரி(pView, "%s%s", zUniOp, zFlgs);
+   sqlite3_மரம்_View_கோவை(pView, p_கோவை->p_இடது, 0);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 
 
 /*
 ** Generate a human-readable explanation of an expression list.
 */
-void sqlite3TreeViewBareExprList(
-  TreeView *pView,
-  const ExprList *pList,
-  const char *zLabel
+வெறுமை sqlite3_மரம்_View_Bare_கோவை_List(
+  மரம்_View *pView,
+  மாறிலி கோவை_List *pList,
+  மாறிலி எழுத்து *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nExpr; i++){
-      int j = pList->a[i].u.x.iOrderByCol;
+  எனில்( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  எனில்( pList==0 ){
+    sqlite3_மரம்_View_வரி(pView, "%s (empty)", zLabel);
+  }இல்லையெனில்{
+    முழு i;
+    sqlite3_மரம்_View_வரி(pView, "%s", zLabel);
+    க்கு(i=0; i<pList->n_கோவை; i++){
+      முழு j = pList->a[i].u.x.iOrderByCol;
       u8 sortFlags = pList->a[i].fg.sortFlags;
-      char *zName = pList->a[i].zEName;
-      int moreToFollow = i<pList->nExpr - 1;
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPush(&pView, moreToFollow);
+      எழுத்து *zName = pList->a[i].zEName;
+      முழு moreToFollow = i<pList->n_கோவை - 1;
+      எனில்( j || zName || sortFlags ){
+        sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
         moreToFollow = 0;
-        sqlite3TreeViewLine(pView, 0);
-        if( zName ){
-          switch( pList->a[i].fg.eEName ){
-            default:
+        sqlite3_மரம்_View_வரி(pView, 0);
+        எனில்( zName ){
+          தேர்வு( pList->a[i].fg.eEName ){
+            இயல்பு:
               fprintf(stdout, "AS %s ", zName);
-              break;
-            case ENAME_TAB:
+              நிறுத்து;
+            நிலை ENAME_TAB:
               fprintf(stdout, "TABLE-ALIAS-NAME(\"%s\") ", zName);
-              if( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
-              if( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
-              if( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
-              break;
-            case ENAME_SPAN:
+              எனில்( pList->a[i].fg.bUsed ) fprintf(stdout, "(used) ");
+              எனில்( pList->a[i].fg.bUsingTerm ) fprintf(stdout, "(USING-term) ");
+              எனில்( pList->a[i].fg.bNoExpand ) fprintf(stdout, "(NoExpand) ");
+              நிறுத்து;
+            நிலை ENAME_SPAN:
               fprintf(stdout, "SPAN(\"%s\") ", zName);
-              break;
+              நிறுத்து;
           }
         }
-        if( j ){
+        எனில்( j ){
           fprintf(stdout, "iOrderByCol=%d ", j);
         }
-        if( sortFlags & KEYINFO_ORDER_DESC ){
+        எனில்( sortFlags & KEYINFO_ORDER_DESC ){
           fprintf(stdout, "DESC ");
-        }else if( sortFlags & KEYINFO_ORDER_BIGNULL ){
+        }இல்லையெனில் எனில்( sortFlags & KEYINFO_ORDER_BIGNULL ){
           fprintf(stdout, "NULLS-LAST");
         }
         fprintf(stdout, "\n");
         fflush(stdout);
       }
-      sqlite3TreeViewExpr(pView, pList->a[i].pExpr, moreToFollow);
-      if( j || zName || sortFlags ){
-        sqlite3TreeViewPop(&pView);
+      sqlite3_மரம்_View_கோவை(pView, pList->a[i].p_கோவை, moreToFollow);
+      எனில்( j || zName || sortFlags ){
+        sqlite3_மரம்_View_எடு(&pView);
       }
     }
   }
 }
-void sqlite3TreeViewExprList(
-  TreeView *pView,
-  const ExprList *pList,
+வெறுமை sqlite3_மரம்_View_கோவை_List(
+  மரம்_View *pView,
+  மாறிலி கோவை_List *pList,
   u8 moreToFollow,
-  const char *zLabel
+  மாறிலி எழுத்து *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareExprList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+  sqlite3_மரம்_View_Bare_கோவை_List(pView, pList, zLabel);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of an id-list.
 */
-void sqlite3TreeViewBareIdList(
-  TreeView *pView,
-  const IdList *pList,
-  const char *zLabel
+வெறுமை sqlite3_மரம்_View_Bare_Id_List(
+  மரம்_View *pView,
+  மாறிலி IdList *pList,
+  மாறிலி எழுத்து *zLabel
 ){
-  if( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
-  if( pList==0 ){
-    sqlite3TreeViewLine(pView, "%s (empty)", zLabel);
-  }else{
-    int i;
-    sqlite3TreeViewLine(pView, "%s", zLabel);
-    for(i=0; i<pList->nId; i++){
-      char *zName = pList->a[i].zName;
-      int moreToFollow = i<pList->nId - 1;
-      if( zName==0 ) zName = "(null)";
-      sqlite3TreeViewPush(&pView, moreToFollow);
-      sqlite3TreeViewLine(pView, 0);
+  எனில்( zLabel==0 || zLabel[0]==0 ) zLabel = "LIST";
+  எனில்( pList==0 ){
+    sqlite3_மரம்_View_வரி(pView, "%s (empty)", zLabel);
+  }இல்லையெனில்{
+    முழு i;
+    sqlite3_மரம்_View_வரி(pView, "%s", zLabel);
+    க்கு(i=0; i<pList->nId; i++){
+      எழுத்து *zName = pList->a[i].zName;
+      முழு moreToFollow = i<pList->nId - 1;
+      எனில்( zName==0 ) zName = "(null)";
+      sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+      sqlite3_மரம்_View_வரி(pView, 0);
       fprintf(stdout, "%s\n", zName);
-      sqlite3TreeViewPop(&pView);
+      sqlite3_மரம்_View_எடு(&pView);
     }
   }
 }
-void sqlite3TreeViewIdList(
-  TreeView *pView,
-  const IdList *pList,
+வெறுமை sqlite3_மரம்_View_Id_List(
+  மரம்_View *pView,
+  மாறிலி IdList *pList,
   u8 moreToFollow,
-  const char *zLabel
+  மாறிலி எழுத்து *zLabel
 ){
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  sqlite3TreeViewBareIdList(pView, pList, zLabel);
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+  sqlite3_மரம்_View_Bare_Id_List(pView, pList, zLabel);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 
 /*
 ** Generate a human-readable explanation of a list of Upsert objects
 */
-void sqlite3TreeViewUpsert(
-  TreeView *pView,
-  const Upsert *pUpsert,
+வெறுமை sqlite3_மரம்_View_Upsert(
+  மரம்_View *pView,
+  மாறிலி Upsert *pUpsert,
   u8 moreToFollow
 ){
-  if( pUpsert==0 ) return;
-  sqlite3TreeViewPush(&pView, moreToFollow);
-  while( pUpsert ){
-    int n;
-    sqlite3TreeViewPush(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
-    sqlite3TreeViewLine(pView, "ON CONFLICT DO %s", 
+  எனில்( pUpsert==0 ) திரும்பு;
+  sqlite3_மரம்_View_தள்ளு(&pView, moreToFollow);
+  போது( pUpsert ){
+    முழு n;
+    sqlite3_மரம்_View_தள்ளு(&pView, pUpsert->pNextUpsert!=0 || moreToFollow);
+    sqlite3_மரம்_View_வரி(pView, "ON CONFLICT DO %s", 
          pUpsert->isDoUpdate ? "UPDATE" : "NOTHING");
     n = (pUpsert->pUpsertSet!=0) + (pUpsert->pUpsertWhere!=0);
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
-    sqlite3TreeViewExprList(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
-    if( pUpsert->pUpsertWhere ){
-      sqlite3TreeViewItem(pView, "WHERE", (n--)>0);
-      sqlite3TreeViewExpr(pView, pUpsert->pUpsertWhere, 0);
-      sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_கோவை_List(pView, pUpsert->pUpsertTarget, (n--)>0, "TARGET");
+    sqlite3_மரம்_View_கோவை_List(pView, pUpsert->pUpsertSet, (n--)>0, "SET");
+    எனில்( pUpsert->pUpsertWhere ){
+      sqlite3_மரம்_View_Item(pView, "WHERE", (n--)>0);
+      sqlite3_மரம்_View_கோவை(pView, pUpsert->pUpsertWhere, 0);
+      sqlite3_மரம்_View_எடு(&pView);
     }
-    sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_எடு(&pView);
     pUpsert = pUpsert->pNextUpsert;
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 
-#if TREETRACE_ENABLED
+#எனில் TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an DELETE statement.
 */
-void sqlite3TreeViewDelete(
-  const With *pWith,
-  const SrcList *pTabList,
-  const Expr *pWhere,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Trigger *pTrigger
+வெறுமை sqlite3_மரம்_View_Delete(
+  மாறிலி With *pWith,
+  மாறிலி SrcList *pTabList,
+  மாறிலி கோவை *pWhere,
+  மாறிலி கோவை_List *pOrderBy,
+  மாறிலி கோவை *pLimit,
+  மாறிலி Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "DELETE");
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  முழு n = 0;
+  மரம்_View *pView = 0;
+  sqlite3_மரம்_View_தள்ளு(&pView, 0);
+  sqlite3_மரம்_View_வரி(pView, "DELETE");
+  எனில்( pWith ) n++;
+  எனில்( pTabList ) n++;
+  எனில்( pWhere ) n++;
+  எனில்( pOrderBy ) n++;
+  எனில்( pLimit ) n++;
+  எனில்( pTrigger ) n++;
+  எனில்( pWith ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_With(pView, pWith, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pTabList ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "FROM");
+    sqlite3_மரம்_View_Src_List(pView, pTabList);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pWhere ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "WHERE");
+    sqlite3_மரம்_View_கோவை(pView, pWhere, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  எனில்( pOrderBy ){
+    sqlite3_மரம்_View_கோவை_List(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pLimit ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "LIMIT");
+    sqlite3_மரம்_View_கோவை(pView, pLimit, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  எனில்( pTrigger ){
+    sqlite3_மரம்_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#எனில் TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an INSERT statement.
 */
-void sqlite3TreeViewInsert(
-  const With *pWith,
-  const SrcList *pTabList,
-  const IdList *pColumnList,
-  const Select *pSelect,
-  const ExprList *pExprList,
-  int onError,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+வெறுமை sqlite3_மரம்_View_செருகு(
+  மாறிலி With *pWith,
+  மாறிலி SrcList *pTabList,
+  மாறிலி IdList *pColumnList,
+  மாறிலி Select *pSelect,
+  மாறிலி கோவை_List *p_கோவை_List,
+  முழு onError,
+  மாறிலி Upsert *pUpsert,
+  மாறிலி Trigger *pTrigger
 ){
-  TreeView *pView = 0;
-  int n = 0;
-  const char *zLabel = "INSERT";
-  switch( onError ){
-    case OE_Replace:  zLabel = "REPLACE";             break;
-    case OE_Ignore:   zLabel = "INSERT OR IGNORE";    break;
-    case OE_Rollback: zLabel = "INSERT OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "INSERT OR ABORT";     break;
-    case OE_Fail:     zLabel = "INSERT OR FAIL";      break;
+  மரம்_View *pView = 0;
+  முழு n = 0;
+  மாறிலி எழுத்து *zLabel = "INSERT";
+  தேர்வு( onError ){
+    நிலை OE_Replace:  zLabel = "REPLACE";             நிறுத்து;
+    நிலை OE_Ignore:   zLabel = "INSERT OR IGNORE";    நிறுத்து;
+    நிலை OE_Rollback: zLabel = "INSERT OR ROLLBACK";  நிறுத்து;
+    நிலை OE_Abort:    zLabel = "INSERT OR ABORT";     நிறுத்து;
+    நிலை OE_Fail:     zLabel = "INSERT OR FAIL";      நிறுத்து;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pColumnList ) n++;
-  if( pSelect ) n++;
-  if( pExprList ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_தள்ளு(&pView, 0);
+  sqlite3_மரம்_View_வரி(pView, zLabel);
+  எனில்( pWith ) n++;
+  எனில்( pTabList ) n++;
+  எனில்( pColumnList ) n++;
+  எனில்( pSelect ) n++;
+  எனில்( p_கோவை_List ) n++;
+  எனில்( pUpsert ) n++;
+  எனில்( pTrigger ) n++;
+  எனில்( pWith ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_With(pView, pWith, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "INTO");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pTabList ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "INTO");
+    sqlite3_மரம்_View_Src_List(pView, pTabList);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pColumnList ){
-    sqlite3TreeViewIdList(pView, pColumnList, (--n)>0, "COLUMNS");
+  எனில்( pColumnList ){
+    sqlite3_மரம்_View_Id_List(pView, pColumnList, (--n)>0, "COLUMNS");
   }
-  if( pSelect ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "DATA-SOURCE");
-    sqlite3TreeViewSelect(pView, pSelect, 0);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pSelect ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "DATA-SOURCE");
+    sqlite3_மரம்_View_Select(pView, pSelect, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pExprList ){
-    sqlite3TreeViewExprList(pView, pExprList, (--n)>0, "VALUES");
+  எனில்( p_கோவை_List ){
+    sqlite3_மரம்_View_கோவை_List(pView, p_கோவை_List, (--n)>0, "VALUES");
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pUpsert ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "UPSERT");
+    sqlite3_மரம்_View_Upsert(pView, pUpsert, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  எனில்( pTrigger ){
+    sqlite3_மரம்_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
-#if TREETRACE_ENABLED
+#எனில் TREETRACE_ENABLED
 /*
 ** Generate a human-readable diagram of the data structure that go
 ** into generating an UPDATE statement.
 */
-void sqlite3TreeViewUpdate(
-  const With *pWith,
-  const SrcList *pTabList,
-  const ExprList *pChanges,
-  const Expr *pWhere,
-  int onError,
-  const ExprList *pOrderBy,
-  const Expr *pLimit,
-  const Upsert *pUpsert,
-  const Trigger *pTrigger
+வெறுமை sqlite3_மரம்_View_Update(
+  மாறிலி With *pWith,
+  மாறிலி SrcList *pTabList,
+  மாறிலி கோவை_List *pChanges,
+  மாறிலி கோவை *pWhere,
+  முழு onError,
+  மாறிலி கோவை_List *pOrderBy,
+  மாறிலி கோவை *pLimit,
+  மாறிலி Upsert *pUpsert,
+  மாறிலி Trigger *pTrigger
 ){
-  int n = 0;
-  TreeView *pView = 0;
-  const char *zLabel = "UPDATE";
-  switch( onError ){
-    case OE_Replace:  zLabel = "UPDATE OR REPLACE";   break;
-    case OE_Ignore:   zLabel = "UPDATE OR IGNORE";    break;
-    case OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  break;
-    case OE_Abort:    zLabel = "UPDATE OR ABORT";     break;
-    case OE_Fail:     zLabel = "UPDATE OR FAIL";      break;
+  முழு n = 0;
+  மரம்_View *pView = 0;
+  மாறிலி எழுத்து *zLabel = "UPDATE";
+  தேர்வு( onError ){
+    நிலை OE_Replace:  zLabel = "UPDATE OR REPLACE";   நிறுத்து;
+    நிலை OE_Ignore:   zLabel = "UPDATE OR IGNORE";    நிறுத்து;
+    நிலை OE_Rollback: zLabel = "UPDATE OR ROLLBACK";  நிறுத்து;
+    நிலை OE_Abort:    zLabel = "UPDATE OR ABORT";     நிறுத்து;
+    நிலை OE_Fail:     zLabel = "UPDATE OR FAIL";      நிறுத்து;
   }
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, zLabel);
-  if( pWith ) n++;
-  if( pTabList ) n++;
-  if( pChanges ) n++;
-  if( pWhere ) n++;
-  if( pOrderBy ) n++;
-  if( pLimit ) n++;
-  if( pUpsert ) n++;
-  if( pTrigger ) n++;
-  if( pWith ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewWith(pView, pWith, 0);
-    sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_தள்ளு(&pView, 0);
+  sqlite3_மரம்_View_வரி(pView, zLabel);
+  எனில்( pWith ) n++;
+  எனில்( pTabList ) n++;
+  எனில்( pChanges ) n++;
+  எனில்( pWhere ) n++;
+  எனில்( pOrderBy ) n++;
+  எனில்( pLimit ) n++;
+  எனில்( pUpsert ) n++;
+  எனில்( pTrigger ) n++;
+  எனில்( pWith ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_With(pView, pWith, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pTabList ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "FROM");
-    sqlite3TreeViewSrcList(pView, pTabList);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pTabList ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "FROM");
+    sqlite3_மரம்_View_Src_List(pView, pTabList);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pChanges ){
-    sqlite3TreeViewExprList(pView, pChanges, (--n)>0, "SET");
+  எனில்( pChanges ){
+    sqlite3_மரம்_View_கோவை_List(pView, pChanges, (--n)>0, "SET");
   }
-  if( pWhere ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "WHERE");
-    sqlite3TreeViewExpr(pView, pWhere, 0);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pWhere ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "WHERE");
+    sqlite3_மரம்_View_கோவை(pView, pWhere, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pOrderBy ){
-    sqlite3TreeViewExprList(pView, pOrderBy, (--n)>0, "ORDER-BY");
+  எனில்( pOrderBy ){
+    sqlite3_மரம்_View_கோவை_List(pView, pOrderBy, (--n)>0, "ORDER-BY");
   }
-  if( pLimit ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "LIMIT");
-    sqlite3TreeViewExpr(pView, pLimit, 0);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pLimit ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "LIMIT");
+    sqlite3_மரம்_View_கோவை(pView, pLimit, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pUpsert ){
-    sqlite3TreeViewPush(&pView, (--n)>0);
-    sqlite3TreeViewLine(pView, "UPSERT");
-    sqlite3TreeViewUpsert(pView, pUpsert, 0);
-    sqlite3TreeViewPop(&pView);
+  எனில்( pUpsert ){
+    sqlite3_மரம்_View_தள்ளு(&pView, (--n)>0);
+    sqlite3_மரம்_View_வரி(pView, "UPSERT");
+    sqlite3_மரம்_View_Upsert(pView, pUpsert, 0);
+    sqlite3_மரம்_View_எடு(&pView);
   }
-  if( pTrigger ){
-    sqlite3TreeViewTrigger(pView, pTrigger, (--n)>0, 1);
+  எனில்( pTrigger ){
+    sqlite3_மரம்_View_Trigger(pView, pTrigger, (--n)>0, 1);
   }
-  sqlite3TreeViewPop(&pView);
+  sqlite3_மரம்_View_எடு(&pView);
 }
 #endif /* TREETRACE_ENABLED */
 
@@ -1239,50 +1239,50 @@ void sqlite3TreeViewUpdate(
 /*
 ** Show a human-readable graph of a TriggerStep
 */
-void sqlite3TreeViewTriggerStep(
-  TreeView *pView,
-  const TriggerStep *pStep,
+வெறுமை sqlite3_மரம்_View_Trigger_Step(
+  மரம்_View *pView,
+  மாறிலி TriggerStep *pStep,
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pStep==0 ) return;
-  sqlite3TreeViewPush(&pView, 
+  முழு cnt = 0;
+  எனில்( pStep==0 ) திரும்பு;
+  sqlite3_மரம்_View_தள்ளு(&pView, 
       moreToFollow || (showFullList && pStep->pNext!=0));
-  do{
-    if( cnt++ && pStep->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  செய்{
+    எனில்( cnt++ && pStep->pNext==0 ){
+      sqlite3_மரம்_View_எடு(&pView);
+      sqlite3_மரம்_View_தள்ளு(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
-  }while( showFullList && (pStep = pStep->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_வரி(pView, "%s", pStep->zSpan ? pStep->zSpan : "RETURNING");
+  }போது( showFullList && (pStep = pStep->pNext)!=0 );
+  sqlite3_மரம்_View_எடு(&pView);
 }
   
 /*
 ** Show a human-readable graph of a Trigger
 */
-void sqlite3TreeViewTrigger(
-  TreeView *pView,
-  const Trigger *pTrigger,
+வெறுமை sqlite3_மரம்_View_Trigger(
+  மரம்_View *pView,
+  மாறிலி Trigger *pTrigger,
   u8 moreToFollow,
   u8 showFullList
 ){
-  int cnt = 0;
-  if( pTrigger==0 ) return;
-  sqlite3TreeViewPush(&pView,
+  முழு cnt = 0;
+  எனில்( pTrigger==0 ) திரும்பு;
+  sqlite3_மரம்_View_தள்ளு(&pView,
      moreToFollow || (showFullList && pTrigger->pNext!=0));
-  do{
-    if( cnt++ && pTrigger->pNext==0 ){
-      sqlite3TreeViewPop(&pView);
-      sqlite3TreeViewPush(&pView, 0);
+  செய்{
+    எனில்( cnt++ && pTrigger->pNext==0 ){
+      sqlite3_மரம்_View_எடு(&pView);
+      sqlite3_மரம்_View_தள்ளு(&pView, 0);
     }
-    sqlite3TreeViewLine(pView, "TRIGGER %s", pTrigger->zName);
-    sqlite3TreeViewPush(&pView, 0);
-    sqlite3TreeViewTriggerStep(pView, pTrigger->step_list, 0, 1);
-    sqlite3TreeViewPop(&pView);
-  }while( showFullList && (pTrigger = pTrigger->pNext)!=0 );
-  sqlite3TreeViewPop(&pView);
+    sqlite3_மரம்_View_வரி(pView, "TRIGGER %s", pTrigger->zName);
+    sqlite3_மரம்_View_தள்ளு(&pView, 0);
+    sqlite3_மரம்_View_Trigger_Step(pView, pTrigger->step_list, 0, 1);
+    sqlite3_மரம்_View_எடு(&pView);
+  }போது( showFullList && (pTrigger = pTrigger->pNext)!=0 );
+  sqlite3_மரம்_View_எடு(&pView);
 }
 #endif /* SQLITE_OMIT_TRIGGER */
   
@@ -1301,32 +1301,32 @@ void sqlite3TreeViewTrigger(
 **
 **     sqlite3ShowWhereTerm() in where.c
 */
-void sqlite3ShowExpr(const Expr *p){ sqlite3TreeViewExpr(0,p,0); }
-void sqlite3ShowExprList(const ExprList *p){ sqlite3TreeViewExprList(0,p,0,0);}
-void sqlite3ShowIdList(const IdList *p){ sqlite3TreeViewIdList(0,p,0,0); }
-void sqlite3ShowSrcList(const SrcList *p){
-  TreeView *pView = 0;
-  sqlite3TreeViewPush(&pView, 0);
-  sqlite3TreeViewLine(pView, "SRCLIST");
-  sqlite3TreeViewSrcList(pView,p);
-  sqlite3TreeViewPop(&pView);
+வெறுமை sqlite3_Show_கோவை(மாறிலி கோவை *p){ sqlite3_மரம்_View_கோவை(0,p,0); }
+வெறுமை sqlite3_Show_கோவை_List(மாறிலி கோவை_List *p){ sqlite3_மரம்_View_கோவை_List(0,p,0,0);}
+வெறுமை sqlite3ShowIdList(மாறிலி IdList *p){ sqlite3_மரம்_View_Id_List(0,p,0,0); }
+வெறுமை sqlite3ShowSrcList(மாறிலி SrcList *p){
+  மரம்_View *pView = 0;
+  sqlite3_மரம்_View_தள்ளு(&pView, 0);
+  sqlite3_மரம்_View_வரி(pView, "SRCLIST");
+  sqlite3_மரம்_View_Src_List(pView,p);
+  sqlite3_மரம்_View_எடு(&pView);
 }
-void sqlite3ShowSelect(const Select *p){ sqlite3TreeViewSelect(0,p,0); }
-void sqlite3ShowWith(const With *p){ sqlite3TreeViewWith(0,p,0); }
-void sqlite3ShowUpsert(const Upsert *p){ sqlite3TreeViewUpsert(0,p,0); }
+வெறுமை sqlite3ShowSelect(மாறிலி Select *p){ sqlite3_மரம்_View_Select(0,p,0); }
+வெறுமை sqlite3ShowWith(மாறிலி With *p){ sqlite3_மரம்_View_With(0,p,0); }
+வெறுமை sqlite3ShowUpsert(மாறிலி Upsert *p){ sqlite3_மரம்_View_Upsert(0,p,0); }
 #ifndef SQLITE_OMIT_TRIGGER
-void sqlite3ShowTriggerStep(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,0);
+வெறுமை sqlite3ShowTriggerStep(மாறிலி TriggerStep *p){
+  sqlite3_மரம்_View_Trigger_Step(0,p,0,0);
 }
-void sqlite3ShowTriggerStepList(const TriggerStep *p){
-  sqlite3TreeViewTriggerStep(0,p,0,1);
+வெறுமை sqlite3ShowTriggerStepList(மாறிலி TriggerStep *p){
+  sqlite3_மரம்_View_Trigger_Step(0,p,0,1);
 }
-void sqlite3ShowTrigger(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,0); }
-void sqlite3ShowTriggerList(const Trigger *p){ sqlite3TreeViewTrigger(0,p,0,1);}
+வெறுமை sqlite3ShowTrigger(மாறிலி Trigger *p){ sqlite3_மரம்_View_Trigger(0,p,0,0); }
+வெறுமை sqlite3ShowTriggerList(மாறிலி Trigger *p){ sqlite3_மரம்_View_Trigger(0,p,0,1);}
 #endif
 #ifndef SQLITE_OMIT_WINDOWFUNC
-void sqlite3ShowWindow(const Window *p){ sqlite3TreeViewWindow(0,p,0); }
-void sqlite3ShowWinFunc(const Window *p){ sqlite3TreeViewWinFunc(0,p,0); }
+வெறுமை sqlite3ShowWindow(மாறிலி Window *p){ sqlite3_மரம்_View_Window(0,p,0); }
+வெறுமை sqlite3ShowWinFunc(மாறிலி Window *p){ sqlite3_மரம்_View_Win_Func(0,p,0); }
 #endif
 
 #endif /* SQLITE_DEBUG */

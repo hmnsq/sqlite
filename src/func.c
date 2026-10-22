@@ -13,32 +13,32 @@
 ** functions of SQLite.  (Some function, and in particular the date and
 ** time functions, are implemented separately.)
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <assert.h>
+#அந்தர்பாவ "sqliteInt.h"
+#அந்தர்பாவ <stdlib.h>
+#அந்தர்பாவ <assert.h>
 #ifndef SQLITE_OMIT_FLOATING_POINT
-#include <math.h>
+#அந்தர்பாவ <math.h>
 #endif
-#include "vdbeInt.h"
+#அந்தர்பாவ "vdbeInt.h"
 
 /*
 ** Return the collating function associated with a function.
 */
-static CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
+நிலையான CollSeq *sqlite3GetFuncCollSeq(sqlite3_context *context){
   VdbeOp *pOp;
-  assert( context->pVdbe!=0 );
+  ப்ரதிஜ்ஞா( context->pVdbe!=0 );
   pOp = &context->pVdbe->aOp[context->iOp-1];
-  assert( pOp->opcode==OP_CollSeq );
-  assert( pOp->p4type==P4_COLLSEQ );
-  return pOp->p4.pColl;
+  ப்ரதிஜ்ஞா( pOp->opcode==OP_CollSeq );
+  ப்ரதிஜ்ஞா( pOp->p4type==P4_COLLSEQ );
+  திரும்பு pOp->p4.pColl;
 }
 
 /*
 ** Indicate that the accumulator load should be skipped on this
 ** iteration of the aggregate loop.
 */
-static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
-  assert( context->isError<=0 );
+நிலையான வெறுமை sqlite3SkipAccumulatorLoad(sqlite3_context *context){
+  ப்ரதிஜ்ஞா( context->isError<=0 );
   context->isError = -1;
   context->skipFlag = 1;
 }
@@ -46,50 +46,50 @@ static void sqlite3SkipAccumulatorLoad(sqlite3_context *context){
 /*
 ** Implementation of the non-aggregate min() and max() functions
 */
-static void minmaxFunc(
+நிலையான வெறுமை minmaxFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  int i;
-  int mask;    /* 0 for min() or 0xffffffff for max() */
-  int iBest;
+  முழு i;
+  முழு mask;    /* 0 for min() or 0xffffffff for max() */
+  முழு iBest;
   CollSeq *pColl;
 
-  assert( argc>1 );
+  ப்ரதிஜ்ஞா( argc>1 );
   mask = sqlite3_user_data(context)==0 ? 0 : -1;
   pColl = sqlite3GetFuncCollSeq(context);
-  assert( pColl );
-  assert( mask==-1 || mask==0 );
+  ப்ரதிஜ்ஞா( pColl );
+  ப்ரதிஜ்ஞா( mask==-1 || mask==0 );
   iBest = 0;
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  for(i=1; i<argc; i++){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) return;
-    if( (sqlite3MemCompare(argv[iBest], argv[i], pColl)^mask)>=0 ){
+  எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_NULL ) திரும்பு;
+  க்கு(i=1; i<argc; i++){
+    எனில்( sqlite3_மதிப்பு_type(argv[i])==SQLITE_NULL ) திரும்பு;
+    எனில்( (sqlite3MemCompare(argv[iBest], argv[i], pColl)^mask)>=0 ){
       testcase( mask==0 );
       iBest = i;
     }
   }
-  sqlite3_result_value(context, argv[iBest]);
+  sqlite3_result_மதிப்பு(context, argv[iBest]);
 }
 
 /*
 ** Return the type of the argument.
 */
-static void typeofFunc(
+நிலையான வெறுமை typeofFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  முழு NotUsed,
+  sqlite3_மதிப்பு **argv
 ){
-  static const char *azType[] = { "integer", "real", "text", "blob", "null" };
-  int i = sqlite3_value_type(argv[0]) - 1;
+  நிலையான மாறிலி எழுத்து *azType[] = { "integer", "real", "text", "blob", "null" };
+  முழு i = sqlite3_மதிப்பு_type(argv[0]) - 1;
   UNUSED_PARAMETER(NotUsed);
-  assert( i>=0 && i<ArraySize(azType) );
-  assert( SQLITE_INTEGER==1 );
-  assert( SQLITE_FLOAT==2 );
-  assert( SQLITE_TEXT==3 );
-  assert( SQLITE_BLOB==4 );
-  assert( SQLITE_NULL==5 );
+  ப்ரதிஜ்ஞா( i>=0 && i<ArraySize(azType) );
+  ப்ரதிஜ்ஞா( SQLITE_INTEGER==1 );
+  ப்ரதிஜ்ஞா( SQLITE_FLOAT==2 );
+  ப்ரதிஜ்ஞா( SQLITE_TEXT==3 );
+  ப்ரதிஜ்ஞா( SQLITE_BLOB==4 );
+  ப்ரதிஜ்ஞா( SQLITE_NULL==5 );
   /* EVIDENCE-OF: R-01470-60482 The sqlite3_value_type(V) interface returns
   ** the datatype code for the initial datatype of the sqlite3_value object
   ** V. The returned value is one of SQLITE_INTEGER, SQLITE_FLOAT,
@@ -101,54 +101,54 @@ static void typeofFunc(
 **
 ** Return the subtype of X
 */
-static void subtypeFunc(
+நிலையான வெறுமை subtypeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   UNUSED_PARAMETER(argc);
-  sqlite3_result_int(context, sqlite3_value_subtype(argv[0]));
+  sqlite3_result_int(context, sqlite3_மதிப்பு_subtype(argv[0]));
 }
 
 /*
 ** Implementation of the length() function
 */
-static void lengthFunc(
+நிலையான வெறுமை lengthFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  assert( argc==1 );
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_BLOB:
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT: {
-      sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      break;
+  தேர்வு( sqlite3_மதிப்பு_type(argv[0]) ){
+    நிலை SQLITE_BLOB:
+    நிலை SQLITE_INTEGER:
+    நிலை SQLITE_FLOAT: {
+      sqlite3_result_int(context, sqlite3_மதிப்பு_bytes(argv[0]));
+      நிறுத்து;
     }
-    case SQLITE_TEXT: {
-      const unsigned char *z = sqlite3_value_text(argv[0]);
-      const unsigned char *z0;
-      if( z==0 ) return;
+    நிலை SQLITE_TEXT: {
+      மாறிலி unsigned எழுத்து *z = sqlite3_மதிப்பு_text(argv[0]);
+      மாறிலி unsigned எழுத்து *z0;
+      எனில்( z==0 ) திரும்பு;
       z0 = z;
-      while( 1 /*exit-by-break*/ ){
+      போது( 1 /*exit-by-break*/ ){
                       /*  vvvvvv----  See tag-20260418-01 */
-        if( (u8)(z[0]-1)<(0x80-1) ){
+        எனில்( (u8)(z[0]-1)<(0x80-1) ){
           z++;
-        }else if( z[0]==0 ){
-          break;
-        }else{
+        }இல்லையெனில் எனில்( z[0]==0 ){
+          நிறுத்து;
+        }இல்லையெனில்{
           z++;
-          while( (z[0]&0xc0)==0x80 ){ z++; z0++; }
+          போது( (z[0]&0xc0)==0x80 ){ z++; z0++; }
         }
       }
-      sqlite3_result_int(context, (int)(z-z0));
-      break;
+      sqlite3_result_int(context, (முழு)(z-z0));
+      நிறுத்து;
     }
-    default: {
+    இயல்பு: {
       sqlite3_result_null(context);
-      break;
+      நிறுத்து;
     }
   }
 }
@@ -156,35 +156,35 @@ static void lengthFunc(
 /*
 ** Implementation of the octet_length() function
 */
-static void bytelengthFunc(
+நிலையான வெறுமை bytelengthFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  assert( argc==1 );
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_BLOB: {
-      sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      break;
+  தேர்வு( sqlite3_மதிப்பு_type(argv[0]) ){
+    நிலை SQLITE_BLOB: {
+      sqlite3_result_int(context, sqlite3_மதிப்பு_bytes(argv[0]));
+      நிறுத்து;
     }
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT: {
+    நிலை SQLITE_INTEGER:
+    நிலை SQLITE_FLOAT: {
       i64 m = sqlite3_context_db_handle(context)->enc<=SQLITE_UTF8 ? 1 : 2;
-      sqlite3_result_int64(context, sqlite3_value_bytes(argv[0])*m);
-      break;
+      sqlite3_result_int64(context, sqlite3_மதிப்பு_bytes(argv[0])*m);
+      நிறுத்து;
     }
-    case SQLITE_TEXT: {
-      if( sqlite3_value_encoding(argv[0])<=SQLITE_UTF8 ){
-        sqlite3_result_int(context, sqlite3_value_bytes(argv[0]));
-      }else{
-        sqlite3_result_int(context, sqlite3_value_bytes16(argv[0]));
+    நிலை SQLITE_TEXT: {
+      எனில்( sqlite3_மதிப்பு_encoding(argv[0])<=SQLITE_UTF8 ){
+        sqlite3_result_int(context, sqlite3_மதிப்பு_bytes(argv[0]));
+      }இல்லையெனில்{
+        sqlite3_result_int(context, sqlite3_மதிப்பு_bytes16(argv[0]));
       }
-      break;
+      நிறுத்து;
     }
-    default: {
+    இயல்பு: {
       sqlite3_result_null(context);
-      break;
+      நிறுத்து;
     }
   }
 }
@@ -195,40 +195,40 @@ static void bytelengthFunc(
 ** IMP: R-23979-26855 The abs(X) function returns the absolute value of
 ** the numeric argument X.
 */
-static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  assert( argc==1 );
+நிலையான வெறுமை absFunc(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_INTEGER: {
-      i64 iVal = sqlite3_value_int64(argv[0]);
-      if( iVal<0 ){
-        if( iVal==SMALLEST_INT64 ){
+  தேர்வு( sqlite3_மதிப்பு_type(argv[0]) ){
+    நிலை SQLITE_INTEGER: {
+      i64 iVal = sqlite3_மதிப்பு_int64(argv[0]);
+      எனில்( iVal<0 ){
+        எனில்( iVal==SMALLEST_INT64 ){
           /* IMP: R-31676-45509 If X is the integer -9223372036854775808
           ** then abs(X) throws an integer overflow error since there is no
           ** equivalent positive 64-bit two complement value. */
           sqlite3_result_error(context, "integer overflow", -1);
-          return;
+          திரும்பு;
         }
         iVal = -iVal;
       }
       sqlite3_result_int64(context, iVal);
-      break;
+      நிறுத்து;
     }
-    case SQLITE_NULL: {
+    நிலை SQLITE_NULL: {
       /* IMP: R-37434-19929 Abs(X) returns NULL if X is NULL. */
       sqlite3_result_null(context);
-      break;
+      நிறுத்து;
     }
-    default: {
+    இயல்பு: {
       /* Because sqlite3_value_double() returns 0.0 if the argument is not
       ** something that can be converted into a number, we have:
       ** IMP: R-01992-00519 Abs(X) returns 0.0 if X is a string or blob
       ** that cannot be converted to a numeric value.
       */
-      double rVal = sqlite3_value_double(argv[0]);
-      if( rVal<0 ) rVal = -rVal;
+      இரட்டை rVal = sqlite3_மதிப்பு_double(argv[0]);
+      எனில்( rVal<0 ) rVal = -rVal;
       sqlite3_result_double(context, rVal);
-      break;
+      நிறுத்து;
     }
   }
 }
@@ -244,85 +244,85 @@ static void absFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** the number of bytes in haystack prior to the first occurrence of needle,
 ** or 0 if needle never occurs in haystack.
 */
-static void instrFunc(
+நிலையான வெறுமை instrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const unsigned char *zHaystack;
-  const unsigned char *zNeedle;
-  int nHaystack;
-  int nNeedle;
-  int typeHaystack, typeNeedle;
-  int N = 1;
-  int isText;
-  unsigned char firstChar;
-  sqlite3_value *pC1 = 0;
-  sqlite3_value *pC2 = 0;
+  மாறிலி unsigned எழுத்து *zHaystack;
+  மாறிலி unsigned எழுத்து *zNeedle;
+  முழு nHaystack;
+  முழு nNeedle;
+  முழு typeHaystack, typeNeedle;
+  முழு N = 1;
+  முழு isText;
+  unsigned எழுத்து firstChar;
+  sqlite3_மதிப்பு *pC1 = 0;
+  sqlite3_மதிப்பு *pC2 = 0;
 
   UNUSED_PARAMETER(argc);
-  typeHaystack = sqlite3_value_type(argv[0]);
-  typeNeedle = sqlite3_value_type(argv[1]);
-  if( typeHaystack==SQLITE_NULL || typeNeedle==SQLITE_NULL ) return;
-  nHaystack = sqlite3_value_bytes(argv[0]);
-  nNeedle = sqlite3_value_bytes(argv[1]);
-  if( nNeedle>0 ){
-    if( typeHaystack==SQLITE_BLOB && typeNeedle==SQLITE_BLOB ){
-      zHaystack = sqlite3_value_blob(argv[0]);
-      zNeedle = sqlite3_value_blob(argv[1]);
+  typeHaystack = sqlite3_மதிப்பு_type(argv[0]);
+  typeNeedle = sqlite3_மதிப்பு_type(argv[1]);
+  எனில்( typeHaystack==SQLITE_NULL || typeNeedle==SQLITE_NULL ) திரும்பு;
+  nHaystack = sqlite3_மதிப்பு_bytes(argv[0]);
+  nNeedle = sqlite3_மதிப்பு_bytes(argv[1]);
+  எனில்( nNeedle>0 ){
+    எனில்( typeHaystack==SQLITE_BLOB && typeNeedle==SQLITE_BLOB ){
+      zHaystack = sqlite3_மதிப்பு_blob(argv[0]);
+      zNeedle = sqlite3_மதிப்பு_blob(argv[1]);
       isText = 0;
-    }else if( typeHaystack!=SQLITE_BLOB && typeNeedle!=SQLITE_BLOB ){
-      zHaystack = sqlite3_value_text(argv[0]);
-      zNeedle = sqlite3_value_text(argv[1]);
+    }இல்லையெனில் எனில்( typeHaystack!=SQLITE_BLOB && typeNeedle!=SQLITE_BLOB ){
+      zHaystack = sqlite3_மதிப்பு_text(argv[0]);
+      zNeedle = sqlite3_மதிப்பு_text(argv[1]);
       isText = 1;
-    }else{
-      pC1 = sqlite3_value_dup(argv[0]);
-      zHaystack = sqlite3_value_text(pC1);
-      if( zHaystack==0 ) goto endInstrOOM;
-      nHaystack = sqlite3_value_bytes(pC1);
-      pC2 = sqlite3_value_dup(argv[1]);
-      zNeedle = sqlite3_value_text(pC2);
-      if( zNeedle==0 ) goto endInstrOOM;
-      nNeedle = sqlite3_value_bytes(pC2);
+    }இல்லையெனில்{
+      pC1 = sqlite3_மதிப்பு_dup(argv[0]);
+      zHaystack = sqlite3_மதிப்பு_text(pC1);
+      எனில்( zHaystack==0 ) செல் endInstrOOM;
+      nHaystack = sqlite3_மதிப்பு_bytes(pC1);
+      pC2 = sqlite3_மதிப்பு_dup(argv[1]);
+      zNeedle = sqlite3_மதிப்பு_text(pC2);
+      எனில்( zNeedle==0 ) செல் endInstrOOM;
+      nNeedle = sqlite3_மதிப்பு_bytes(pC2);
       isText = 1;
     }
-    if( zNeedle==0 || (nHaystack && zHaystack==0) ) goto endInstrOOM;
+    எனில்( zNeedle==0 || (nHaystack && zHaystack==0) ) செல் endInstrOOM;
     firstChar = zNeedle[0];
-    while( nNeedle<=nHaystack
+    போது( nNeedle<=nHaystack
        && (zHaystack[0]!=firstChar || memcmp(zHaystack, zNeedle, nNeedle)!=0)
     ){
       N++;
-      do{
+      செய்{
         nHaystack--;
         zHaystack++;
-      }while( isText && (zHaystack[0]&0xc0)==0x80 );
+      }போது( isText && (zHaystack[0]&0xc0)==0x80 );
     }
-    if( nNeedle>nHaystack ) N = 0;
+    எனில்( nNeedle>nHaystack ) N = 0;
   }
   sqlite3_result_int(context, N);
 endInstr:
-  sqlite3_value_free(pC1);
-  sqlite3_value_free(pC2);
-  return;
+  sqlite3_மதிப்பு_free(pC1);
+  sqlite3_மதிப்பு_free(pC2);
+  திரும்பு;
 endInstrOOM:
   sqlite3_result_error_nomem(context);
-  goto endInstr;
+  செல் endInstr;
 }
 
 /*
 ** Implementation of the printf() (a.k.a. format()) SQL function.
 */
-static void printfFunc(
+நிலையான வெறுமை printfFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   PrintfArguments x;
   StrAccum str;
-  const char *zFormat;
+  மாறிலி எழுத்து *zFormat;
   sqlite3 *db = sqlite3_context_db_handle(context);
 
-  if( argc>=1 && (zFormat = (const char*)sqlite3_value_text(argv[0]))!=0 ){
+  எனில்( argc>=1 && (zFormat = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]))!=0 ){
     x.nArg = argc-1;
     x.nUsed = 0;
     x.apArg = argv+1;
@@ -334,11 +334,11 @@ static void printfFunc(
 }
 
 /* Return true if any of the eight bytes in word is NUL or non-ASCII. */
-static SQLITE_INLINE int containsNulOrNonAscii(u64 word){
-  const u64 byteOnes = UINT64_C(0x0101010101010101);
-  const u64 byteHighBits = UINT64_C(0x8080808080808080);
+நிலையான SQLITE_INLINE முழு containsNulOrNonAscii(u64 word){
+  மாறிலி u64 byteOnes = UINT64_C(0x0101010101010101);
+  மாறிலி u64 byte_உயர்வு_Bits = UINT64_C(0x8080808080808080);
   /* NUL causes a borrow into a high bit; non-ASCII already has one set. */
-  return ((word | (word - byteOnes)) & byteHighBits)!=0;
+  திரும்பு ((word | (word - byteOnes)) & byte_உயர்வு_Bits)!=0;
 }
 
 /*
@@ -353,42 +353,42 @@ static SQLITE_INLINE int containsNulOrNonAscii(u64 word){
 **
 ** If p2 is negative, return the p2 characters preceding p1.
 */
-static void substrFunc(
+நிலையான வெறுமை substrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const unsigned char *z;
-  const unsigned char *z2;
-  int len;
-  int p0type;
+  மாறிலி unsigned எழுத்து *z;
+  மாறிலி unsigned எழுத்து *z2;
+  முழு len;
+  முழு p0type;
   i64 p1, p2;
 
-  assert( argc==3 || argc==2 );
-  p0type = sqlite3_value_type(argv[0]);
-  p1 = sqlite3_value_int64(argv[1]);
-  if( p0type==SQLITE_BLOB ){
-    len = sqlite3_value_bytes(argv[0]);
-    z = sqlite3_value_blob(argv[0]);
-    if( z==0 ) return;
-    assert( len==sqlite3_value_bytes(argv[0]) );
-  }else{
-    z = sqlite3_value_text(argv[0]);
-    if( z==0 ) return;
+  ப்ரதிஜ்ஞா( argc==3 || argc==2 );
+  p0type = sqlite3_மதிப்பு_type(argv[0]);
+  p1 = sqlite3_மதிப்பு_int64(argv[1]);
+  எனில்( p0type==SQLITE_BLOB ){
+    len = sqlite3_மதிப்பு_bytes(argv[0]);
+    z = sqlite3_மதிப்பு_blob(argv[0]);
+    எனில்( z==0 ) திரும்பு;
+    ப்ரதிஜ்ஞா( len==sqlite3_மதிப்பு_bytes(argv[0]) );
+  }இல்லையெனில்{
+    z = sqlite3_மதிப்பு_text(argv[0]);
+    எனில்( z==0 ) திரும்பு;
     len = 0;
-    if( p1<0 ){
-      for(z2=z; *z2; len++){
+    எனில்( p1<0 ){
+      க்கு(z2=z; *z2; len++){
         SQLITE_SKIP_UTF8(z2);
       }
     }
   }
-  if( argc==3 ){
-    p2 = sqlite3_value_int64(argv[2]);
-    if( p2==0 && sqlite3_value_type(argv[2])==SQLITE_NULL ) return;
-  }else{
+  எனில்( argc==3 ){
+    p2 = sqlite3_மதிப்பு_int64(argv[2]);
+    எனில்( p2==0 && sqlite3_மதிப்பு_type(argv[2])==SQLITE_NULL ) திரும்பு;
+  }இல்லையெனில்{
     p2 = LARGEST_INT64;
   }
-  if( p1==0 ){
+  எனில்( p1==0 ){
 #ifdef SQLITE_SUBSTR_COMPATIBILITY
     /* If SUBSTR_COMPATIBILITY is defined then substr(X,0,N) work the same as
     ** as substr(X,1,N) - it returns the first N characters of X.  This
@@ -397,77 +397,77 @@ static void substrFunc(
     ** old buggy behavior. */
     p1 = 1; /* <rdar://problem/6778339> */
 #endif
-    if( sqlite3_value_type(argv[1])==SQLITE_NULL ) return;
+    எனில்( sqlite3_மதிப்பு_type(argv[1])==SQLITE_NULL ) திரும்பு;
   }
-  if( p1<0 ){
+  எனில்( p1<0 ){
     p1 += len;
-    if( p1<0 ){
-      if( p2<0 ){
+    எனில்( p1<0 ){
+      எனில்( p2<0 ){
         p2 = 0;
-      }else{
+      }இல்லையெனில்{
         p2 += p1;
       }
       p1 = 0;
     }
-  }else if( p1>0 ){
+  }இல்லையெனில் எனில்( p1>0 ){
     p1--;
-  }else if( p2>0 ){
+  }இல்லையெனில் எனில்( p2>0 ){
     p2--;
   }
-  if( p2<0 ){
-    if( p2<-p1 ){
+  எனில்( p2<0 ){
+    எனில்( p2<-p1 ){
       p2 = p1;
-    }else{
+    }இல்லையெனில்{
       p2 = -p2;
     }
     p1 -= p2;
   }
-  assert( p1>=0 && p2>=0 );
-  if( p0type!=SQLITE_BLOB ){
-    if( p1>=8 ){
+  ப்ரதிஜ்ஞா( p1>=0 && p2>=0 );
+  எனில்( p0type!=SQLITE_BLOB ){
+    எனில்( p1>=8 ){
       /* Skip 8 characters at a time while all 8 bytes are in 0x01..0x7f */
-      const unsigned char *zEnd = z + sqlite3_value_bytes(argv[0]);
-      while( p1>=8 && zEnd-z>=8 ){
+      மாறிலி unsigned எழுத்து *zEnd = z + sqlite3_மதிப்பு_bytes(argv[0]);
+      போது( p1>=8 && zEnd-z>=8 ){
         u64 word;
-        memcpy(&word, z, sizeof(word));
+        memcpy(&word, z, அளவு(word));
         /* Handle NUL and UTF-8 with the scalar loop below. */
-        if( containsNulOrNonAscii(word) ){
-          break;
+        எனில்( containsNulOrNonAscii(word) ){
+          நிறுத்து;
         }
         z += 8;
         p1 -= 8;
       }
     }
-    for( ; p1>0; p1--){
+    க்கு( ; p1>0; p1--){
                     /*  vvvvvv----  See tag-20260418-01 */
-      if( (u8)(z[0]-1)<(0x80-1) ){
+      எனில்( (u8)(z[0]-1)<(0x80-1) ){
         z++;
-      }else if( z[0]==0 ){
-        break;
-      }else{
-        do{ z++; }while( (z[0]&0xc0)==0x80 );
+      }இல்லையெனில் எனில்( z[0]==0 ){
+        நிறுத்து;
+      }இல்லையெனில்{
+        செய்{ z++; }போது( (z[0]&0xc0)==0x80 );
       }
     }
-    for(z2=z; p2>0; p2--){
+    க்கு(z2=z; p2>0; p2--){
                      /*  vvvvvv----  See tag-20260418-01 */
-      if( (u8)(z2[0]-1)<(0x80-1) ){
+      எனில்( (u8)(z2[0]-1)<(0x80-1) ){
         z2++;
-      }else if( z2[0]==0 ){
-        break;
-      }else{
-        do{ z2++; }while( (z2[0]&0xc0)==0x80 );
+      }இல்லையெனில் எனில்( z2[0]==0 ){
+        நிறுத்து;
+      }இல்லையெனில்{
+        செய்{ z2++; }போது( (z2[0]&0xc0)==0x80 );
       }
     }
-    sqlite3_result_text64(context, (char*)z, z2-z, SQLITE_TRANSIENT,
+    sqlite3_result_text64(context, (எழுத்து*)z, z2-z, SQLITE_TRANSIENT,
                           SQLITE_UTF8);
-  }else{
-    if( p1>=len ){
+  }இல்லையெனில்{
+    எனில்( p1>=len ){
       p1 = p2 = 0;
-    }else if( p2>len-p1 ){
+    }இல்லையெனில் எனில்( p2>len-p1 ){
       p2 = len-p1;
-      assert( p2>0 );
+      ப்ரதிஜ்ஞா( p2>0 );
     }
-    sqlite3_result_blob64(context, (char*)&z[p1], (u64)p2, SQLITE_TRANSIENT);
+    sqlite3_result_blob64(context, (எழுத்து*)&z[p1], (u64)p2, SQLITE_TRANSIENT);
   }
 }
 
@@ -475,32 +475,32 @@ static void substrFunc(
 ** Implementation of the round() function
 */
 #ifndef SQLITE_OMIT_FLOATING_POINT
-static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+நிலையான வெறுமை roundFunc(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
   i64 n = 0;
-  double r;
-  char *zBuf;
-  assert( argc==1 || argc==2 );
-  if( argc==2 ){
-    if( SQLITE_NULL==sqlite3_value_type(argv[1]) ) return;
-    n = sqlite3_value_int64(argv[1]);
-    if( n>30 ) n = 30;
-    if( n<0 ) n = 0;
+  இரட்டை r;
+  எழுத்து *zBuf;
+  ப்ரதிஜ்ஞா( argc==1 || argc==2 );
+  எனில்( argc==2 ){
+    எனில்( SQLITE_NULL==sqlite3_மதிப்பு_type(argv[1]) ) திரும்பு;
+    n = sqlite3_மதிப்பு_int64(argv[1]);
+    எனில்( n>30 ) n = 30;
+    எனில்( n<0 ) n = 0;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  r = sqlite3_value_double(argv[0]);
+  எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_NULL ) திரும்பு;
+  r = sqlite3_மதிப்பு_double(argv[0]);
   /* If Y==0 and X will fit in a 64-bit int,
   ** handle the rounding directly,
   ** otherwise use printf.
   */
-  if( r<-4503599627370496.0 || r>+4503599627370496.0 ){
+  எனில்( r<-4503599627370496.0 || r>+4503599627370496.0 ){
     /* The value has no fractional part so there is nothing to round */
-  }else if( n==0 ){ 
-    r = (double)((sqlite_int64)(r+(r<0?-0.5:+0.5)));
-  }else{
-    zBuf = sqlite3_mprintf("%!.*f",(int)n,r);
-    if( zBuf==0 ){
+  }இல்லையெனில் எனில்( n==0 ){ 
+    r = (இரட்டை)((sqlite_int64)(r+(r<0?-0.5:+0.5)));
+  }இல்லையெனில்{
+    zBuf = sqlite3_mprintf("%!.*f",(முழு)n,r);
+    எனில்( zBuf==0 ){
       sqlite3_result_error_nomem(context);
-      return;
+      திரும்பு;
     }
     sqlite3AtoF(zBuf, &r);
     sqlite3_free(zBuf);
@@ -516,59 +516,59 @@ static void roundFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** If nByte is larger than the maximum string or blob length, then
 ** raise an SQLITE_TOOBIG exception and return NULL.
 */
-static void *contextMalloc(sqlite3_context *context, i64 nByte){
-  char *z;
+நிலையான வெறுமை *contextMalloc(sqlite3_context *context, i64 nByte){
+  எழுத்து *z;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  assert( nByte>0 );
+  ப்ரதிஜ்ஞா( nByte>0 );
   testcase( nByte==db->aLimit[SQLITE_LIMIT_LENGTH] );
   testcase( nByte==(i64)db->aLimit[SQLITE_LIMIT_LENGTH]+1 );
-  if( nByte>db->aLimit[SQLITE_LIMIT_LENGTH] ){
+  எனில்( nByte>db->aLimit[SQLITE_LIMIT_LENGTH] ){
     sqlite3_result_error_toobig(context);
     z = 0;
-  }else{
+  }இல்லையெனில்{
     z = sqlite3Malloc(nByte);
-    if( !z ){
+    எனில்( !z ){
       sqlite3_result_error_nomem(context);
     }
   }
-  return z;
+  திரும்பு z;
 }
 
 /*
 ** Implementation of the upper() and lower() SQL functions.
 */
-static void upperFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  char *z1;
-  const char *z2;
-  int i, n;
+நிலையான வெறுமை upperFunc(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
+  எழுத்து *z1;
+  மாறிலி எழுத்து *z2;
+  முழு i, n;
   UNUSED_PARAMETER(argc);
-  z2 = (char*)sqlite3_value_text(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
+  z2 = (எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
+  n = sqlite3_மதிப்பு_bytes(argv[0]);
   /* Verify that the call to _bytes() does not invalidate the _text() pointer */
-  assert( z2==(char*)sqlite3_value_text(argv[0]) );
-  if( z2 ){
+  ப்ரதிஜ்ஞா( z2==(எழுத்து*)sqlite3_மதிப்பு_text(argv[0]) );
+  எனில்( z2 ){
     z1 = contextMalloc(context, ((i64)n)+1);
-    if( z1 ){
-      for(i=0; i<n; i++){
-        z1[i] = (char)sqlite3Toupper(z2[i]);
+    எனில்( z1 ){
+      க்கு(i=0; i<n; i++){
+        z1[i] = (எழுத்து)sqlite3Toupper(z2[i]);
       }
       sqlite3_result_text(context, z1, n, sqlite3_free);
     }
   }
 }
-static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
-  char *z1;
-  const char *z2;
-  int i, n;
+நிலையான வெறுமை lowerFunc(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
+  எழுத்து *z1;
+  மாறிலி எழுத்து *z2;
+  முழு i, n;
   UNUSED_PARAMETER(argc);
-  z2 = (char*)sqlite3_value_text(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
+  z2 = (எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
+  n = sqlite3_மதிப்பு_bytes(argv[0]);
   /* Verify that the call to _bytes() does not invalidate the _text() pointer */
-  assert( z2==(char*)sqlite3_value_text(argv[0]) );
-  if( z2 ){
+  ப்ரதிஜ்ஞா( z2==(எழுத்து*)sqlite3_மதிப்பு_text(argv[0]) );
+  எனில்( z2 ){
     z1 = contextMalloc(context, ((i64)n)+1);
-    if( z1 ){
-      for(i=0; i<n; i++){
+    எனில்( z1 ){
+      க்கு(i=0; i<n; i++){
         z1[i] = sqlite3Tolower(z2[i]);
       }
       sqlite3_result_text(context, z1, n, sqlite3_free);
@@ -589,15 +589,15 @@ static void lowerFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 /*
 ** Implementation of random().  Return a random integer. 
 */
-static void randomFunc(
+நிலையான வெறுமை randomFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  முழு NotUsed,
+  sqlite3_மதிப்பு **NotUsed2
 ){
   sqlite_int64 r;
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
-  sqlite3_randomness(sizeof(r), &r);
-  if( r<0 ){
+  sqlite3_randomness(அளவு(r), &r);
+  எனில்( r<0 ){
     /* We need to prevent a random number of 0x8000000000000000
     ** (or -9223372036854775808) since when you do abs() of that
     ** number of you get the same value back again.  To do this
@@ -615,23 +615,23 @@ static void randomFunc(
 ** Implementation of randomblob(N).  Return a random blob
 ** that is N bytes long.
 */
-static void randomBlob(
+நிலையான வெறுமை randomBlob(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   sqlite3_int64 n;
-  unsigned char *p;
-  assert( argc==1 );
+  unsigned எழுத்து *p;
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  n = sqlite3_value_int64(argv[0]);
-  if( n<1 ){
+  n = sqlite3_மதிப்பு_int64(argv[0]);
+  எனில்( n<1 ){
     n = 1;
   }
   p = contextMalloc(context, n);
-  if( p ){
+  எனில்( p ){
     sqlite3_randomness(n, p);
-    sqlite3_result_blob(context, (char*)p, n, sqlite3_free);
+    sqlite3_result_blob(context, (எழுத்து*)p, n, sqlite3_free);
   }
 }
 
@@ -639,17 +639,17 @@ static void randomBlob(
 ** Implementation of the last_insert_rowid() SQL function.  The return
 ** value is the same as the sqlite3_last_insert_rowid() API function.
 */
-static void last_insert_rowid(
+நிலையான வெறுமை last_செருகு_rowid(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  முழு NotUsed,
+  sqlite3_மதிப்பு **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-51513-12026 The last_insert_rowid() SQL function is a
   ** wrapper around the sqlite3_last_insert_rowid() C/C++ interface
   ** function. */
-  sqlite3_result_int64(context, sqlite3_last_insert_rowid(db));
+  sqlite3_result_int64(context, sqlite3_last_செருகு_rowid(db));
 }
 
 /*
@@ -659,10 +659,10 @@ static void last_insert_rowid(
 ** around the sqlite3_changes64() C/C++ function and hence follows the
 ** same rules for counting changes.
 */
-static void changes(
+நிலையான வெறுமை changes(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  முழு NotUsed,
+  sqlite3_மதிப்பு **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
@@ -673,10 +673,10 @@ static void changes(
 ** Implementation of the total_changes() SQL function.  The return value is
 ** the same as the sqlite3_total_changes64() API function.
 */
-static void total_changes(
+நிலையான வெறுமை total_changes(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  முழு NotUsed,
+  sqlite3_மதிப்பு **NotUsed2
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
@@ -688,7 +688,7 @@ static void total_changes(
 /*
 ** A structure defining how to do GLOB-style comparisons.
 */
-struct compareInfo {
+கட்டமைப்பு compareInfo {
   u8 matchAll;          /* "*" or "%" */
   u8 matchOne;          /* "?" or "_" */
   u8 matchSet;          /* "[" or 0 */
@@ -701,20 +701,20 @@ struct compareInfo {
 ** macro for fast reading of the next character in the common case where
 ** the next character is ASCII.
 */
-#if defined(SQLITE_EBCDIC)
+#எனில் defined(SQLITE_EBCDIC)
 # define sqlite3Utf8Read(A)        (*((*A)++))
 # define Utf8Read(A)               (*(A++))
-#else
+#இல்லையெனில்
 # define Utf8Read(A)               (A[0]<0x80?*(A++):sqlite3Utf8Read(&A))
 #endif
 
-static const struct compareInfo globInfo = { '*', '?', '[', 0 };
+நிலையான மாறிலி கட்டமைப்பு compareInfo globInfo = { '*', '?', '[', 0 };
 /* The correct SQL-92 behavior is for the LIKE operator to ignore
 ** case.  Thus  'a' LIKE 'A' would be true. */
-static const struct compareInfo likeInfoNorm = { '%', '_',   0, 1 };
+நிலையான மாறிலி கட்டமைப்பு compareInfo likeInfoNorm = { '%', '_',   0, 1 };
 /* If SQLITE_CASE_SENSITIVE_LIKE is defined, then the LIKE operator
 ** is case sensitive causing 'a' LIKE 'A' to be false */
-static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
+நிலையான மாறிலி கட்டமைப்பு compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 
 /*
 ** Possible error returns from patternMatch()
@@ -761,45 +761,45 @@ static const struct compareInfo likeInfoAlt = { '%', '_',   0, 0 };
 **
 ** This routine is usually quick, but can be N**2 in the worst case.
 */
-static int patternCompare(
-  const u8 *zPattern,              /* The glob pattern */
-  const u8 *zString,               /* The string to compare against the glob */
-  const struct compareInfo *pInfo, /* Information about how to do the compare */
+நிலையான முழு patternCompare(
+  மாறிலி u8 *zPattern,              /* The glob pattern */
+  மாறிலி u8 *zString,               /* The string to compare against the glob */
+  மாறிலி கட்டமைப்பு compareInfo *pInfo, /* Information about how to do the compare */
   u32 matchOther                   /* The escape char (LIKE) or '[' (GLOB) */
 ){
   u32 c, c2;                       /* Next pattern and input string chars */
   u32 matchOne = pInfo->matchOne;  /* "?" or "_" */
   u32 matchAll = pInfo->matchAll;  /* "*" or "%" */
   u8 noCase = pInfo->noCase;       /* True if uppercase==lowercase */
-  const u8 *zEscaped = 0;          /* One past the last escaped input char */
+  மாறிலி u8 *zEscaped = 0;          /* One past the last escaped input char */
  
-  while( (c = Utf8Read(zPattern))!=0 ){
-    if( c==matchAll ){  /* Match "*" */
+  போது( (c = Utf8Read(zPattern))!=0 ){
+    எனில்( c==matchAll ){  /* Match "*" */
       /* Skip over multiple "*" characters in the pattern.  If there
       ** are also "?" characters, skip those as well, but consume a
       ** single character of the input string for each "?" skipped */
-      while( (c=Utf8Read(zPattern)) == matchAll
+      போது( (c=Utf8Read(zPattern)) == matchAll
              || (c == matchOne && matchOne!=0) ){
-        if( c==matchOne && sqlite3Utf8Read(&zString)==0 ){
-          return SQLITE_NOWILDCARDMATCH;
+        எனில்( c==matchOne && sqlite3Utf8Read(&zString)==0 ){
+          திரும்பு SQLITE_NOWILDCARDMATCH;
         }
       }
-      if( c==0 ){
-        return SQLITE_MATCH;   /* "*" at the end of the pattern matches */
-      }else if( c==matchOther ){
-        if( pInfo->matchSet==0 ){
+      எனில்( c==0 ){
+        திரும்பு SQLITE_MATCH;   /* "*" at the end of the pattern matches */
+      }இல்லையெனில் எனில்( c==matchOther ){
+        எனில்( pInfo->matchSet==0 ){
           c = sqlite3Utf8Read(&zPattern);
-          if( c==0 ) return SQLITE_NOWILDCARDMATCH;
-        }else{
+          எனில்( c==0 ) திரும்பு SQLITE_NOWILDCARDMATCH;
+        }இல்லையெனில்{
           /* "[...]" immediately follows the "*".  We have to do a slow
           ** recursive search in this case, but it is an unusual case. */
-          assert( matchOther<0x80 );  /* '[' is a single-byte character */
-          while( *zString ){
-            int bMatch = patternCompare(&zPattern[-1],zString,pInfo,matchOther);
-            if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          ப்ரதிஜ்ஞா( matchOther<0x80 );  /* '[' is a single-byte character */
+          போது( *zString ){
+            முழு bMatch = patternCompare(&zPattern[-1],zString,pInfo,matchOther);
+            எனில்( bMatch!=SQLITE_NOMATCH ) திரும்பு bMatch;
             SQLITE_SKIP_UTF8(zString);
           }
-          return SQLITE_NOWILDCARDMATCH;
+          திரும்பு SQLITE_NOWILDCARDMATCH;
         }
       }
 
@@ -812,106 +812,106 @@ static int patternCompare(
       ** c but in the other case and search the input string for either
       ** c or cx.
       */
-      if( c<0x80 ){
-        char zStop[3];
-        int bMatch;
+      எனில்( c<0x80 ){
+        எழுத்து zStop[3];
+        முழு bMatch;
         /* If the next pattern character is an ordinary ASCII character,
         ** then a candidate position can only match if the next input
         ** character is nx or ny.  Check that inline, to avoid most of the
         ** recursive calls.  nx==0 disables this check. */
         u8 nx = zPattern[0], ny = nx;
-        if( nx>=0x80 || nx==matchAll || nx==matchOne || nx==matchOther ){
+        எனில்( nx>=0x80 || nx==matchAll || nx==matchOne || nx==matchOther ){
           nx = 0;
         }
-        if( noCase ){
+        எனில்( noCase ){
           zStop[0] = sqlite3Toupper(c);
           zStop[1] = sqlite3Tolower(c);
           zStop[2] = 0;
           nx = sqlite3Toupper(nx);
           ny = sqlite3Tolower(ny);
-        }else{
+        }இல்லையெனில்{
           zStop[0] = c;
           zStop[1] = 0;
         }
-        while(1){
-          zString += strcspn((const char*)zString, zStop);
-          if( zString[0]==0 ) break;
+        போது(1){
+          zString += strcspn((மாறிலி எழுத்து*)zString, zStop);
+          எனில்( zString[0]==0 ) நிறுத்து;
           zString++;
-          if( nx && zString[0]!=nx && zString[0]!=ny ) continue;
+          எனில்( nx && zString[0]!=nx && zString[0]!=ny ) தொடர்;
           bMatch = patternCompare(zPattern,zString,pInfo,matchOther);
-          if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          எனில்( bMatch!=SQLITE_NOMATCH ) திரும்பு bMatch;
         }
-      }else{
-        int bMatch;
-        while( (c2 = Utf8Read(zString))!=0 ){
-          if( c2!=c ) continue;
+      }இல்லையெனில்{
+        முழு bMatch;
+        போது( (c2 = Utf8Read(zString))!=0 ){
+          எனில்( c2!=c ) தொடர்;
           bMatch = patternCompare(zPattern,zString,pInfo,matchOther);
-          if( bMatch!=SQLITE_NOMATCH ) return bMatch;
+          எனில்( bMatch!=SQLITE_NOMATCH ) திரும்பு bMatch;
         }
       }
-      return SQLITE_NOWILDCARDMATCH;
+      திரும்பு SQLITE_NOWILDCARDMATCH;
     }
-    if( c==matchOther ){
-      if( pInfo->matchSet==0 ){
+    எனில்( c==matchOther ){
+      எனில்( pInfo->matchSet==0 ){
         c = sqlite3Utf8Read(&zPattern);
-        if( c==0 ) return SQLITE_NOMATCH;
+        எனில்( c==0 ) திரும்பு SQLITE_NOMATCH;
         zEscaped = zPattern;
-      }else{
+      }இல்லையெனில்{
         u32 prior_c = 0;
-        int seen = 0;
-        int invert = 0;
+        முழு seen = 0;
+        முழு invert = 0;
         c = sqlite3Utf8Read(&zString);
-        if( c==0 ) return SQLITE_NOMATCH;
+        எனில்( c==0 ) திரும்பு SQLITE_NOMATCH;
         c2 = sqlite3Utf8Read(&zPattern);
-        if( c2=='^' ){
+        எனில்( c2=='^' ){
           invert = 1;
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        if( c2==']' ){
-          if( c==']' ) seen = 1;
+        எனில்( c2==']' ){
+          எனில்( c==']' ) seen = 1;
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        while( c2 && c2!=']' ){
-          if( c2=='-' && zPattern[0]!=']' && zPattern[0]!=0 && prior_c>0 ){
+        போது( c2 && c2!=']' ){
+          எனில்( c2=='-' && zPattern[0]!=']' && zPattern[0]!=0 && prior_c>0 ){
             c2 = sqlite3Utf8Read(&zPattern);
-            if( c>=prior_c && c<=c2 ) seen = 1;
+            எனில்( c>=prior_c && c<=c2 ) seen = 1;
             prior_c = 0;
-          }else{
-            if( c==c2 ){
+          }இல்லையெனில்{
+            எனில்( c==c2 ){
               seen = 1;
             }
             prior_c = c2;
           }
           c2 = sqlite3Utf8Read(&zPattern);
         }
-        if( c2==0 || (seen ^ invert)==0 ){
-          return SQLITE_NOMATCH;
+        எனில்( c2==0 || (seen ^ invert)==0 ){
+          திரும்பு SQLITE_NOMATCH;
         }
-        continue;
+        தொடர்;
       }
     }
     c2 = Utf8Read(zString);
-    if( c==c2 ) continue;
-    if( noCase  && sqlite3Tolower(c)==sqlite3Tolower(c2) && c<0x80 && c2<0x80 ){
-      continue;
+    எனில்( c==c2 ) தொடர்;
+    எனில்( noCase  && sqlite3Tolower(c)==sqlite3Tolower(c2) && c<0x80 && c2<0x80 ){
+      தொடர்;
     }
-    if( c==matchOne && zPattern!=zEscaped && c2!=0 ) continue;
-    return SQLITE_NOMATCH;
+    எனில்( c==matchOne && zPattern!=zEscaped && c2!=0 ) தொடர்;
+    திரும்பு SQLITE_NOMATCH;
   }
-  return *zString==0 ? SQLITE_MATCH : SQLITE_NOMATCH;
+  திரும்பு *zString==0 ? SQLITE_MATCH : SQLITE_NOMATCH;
 }
 
 /*
 ** The sqlite3_strglob() interface.  Return 0 on a match (like strcmp()) and
 ** non-zero if there is no match.
 */
-int sqlite3_strglob(const char *zGlobPattern, const char *zString){
-  if( zString==0 ){
-    return zGlobPattern!=0;
-  }else if( zGlobPattern==0 ){
-    return 1;
-  }else {
-    return patternCompare((u8*)zGlobPattern, (u8*)zString, &globInfo, '[');
+முழு sqlite3_strglob(மாறிலி எழுத்து *zGlobPattern, மாறிலி எழுத்து *zString){
+  எனில்( zString==0 ){
+    திரும்பு zGlobPattern!=0;
+  }இல்லையெனில் எனில்( zGlobPattern==0 ){
+    திரும்பு 1;
+  }இல்லையெனில் {
+    திரும்பு patternCompare((u8*)zGlobPattern, (u8*)zString, &globInfo, '[');
   }
 }
 
@@ -919,13 +919,13 @@ int sqlite3_strglob(const char *zGlobPattern, const char *zString){
 ** The sqlite3_strlike() interface.  Return 0 on a match and non-zero for
 ** a miss - like strcmp().
 */
-int sqlite3_strlike(const char *zPattern, const char *zStr, unsigned int esc){
-  if( zStr==0 ){
-    return zPattern!=0;
-  }else if( zPattern==0 ){
-    return 1;
-  }else{
-    return patternCompare((u8*)zPattern, (u8*)zStr, &likeInfoNorm, esc);
+முழு sqlite3_strlike(மாறிலி எழுத்து *zPattern, மாறிலி எழுத்து *zStr, unsigned முழு esc){
+  எனில்( zStr==0 ){
+    திரும்பு zPattern!=0;
+  }இல்லையெனில் எனில்( zPattern==0 ){
+    திரும்பு 1;
+  }இல்லையெனில்{
+    திரும்பு patternCompare((u8*)zPattern, (u8*)zStr, &likeInfoNorm, esc);
   }
 }
 
@@ -935,7 +935,7 @@ int sqlite3_strlike(const char *zPattern, const char *zStr, unsigned int esc){
 ** only.
 */
 #ifdef SQLITE_TEST
-int sqlite3_like_count = 0;
+முழு sqlite3_like_மொத்தம் = 0;
 #endif
 
 
@@ -951,66 +951,66 @@ int sqlite3_like_count = 0;
 ** This same function (with a different compareInfo structure) computes
 ** the GLOB operator.
 */
-static void likeFunc(
+நிலையான வெறுமை likeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const unsigned char *zA, *zB;
+  மாறிலி unsigned எழுத்து *zA, *zB;
   u32 escape;
-  int nPat;
+  முழு nPat;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  struct compareInfo *pInfo = sqlite3_user_data(context);
-  struct compareInfo backupInfo;
+  கட்டமைப்பு compareInfo *pInfo = sqlite3_user_data(context);
+  கட்டமைப்பு compareInfo backupInfo;
 
 #ifdef SQLITE_LIKE_DOESNT_MATCH_BLOBS
-  if( sqlite3_value_type(argv[0])==SQLITE_BLOB
-   || sqlite3_value_type(argv[1])==SQLITE_BLOB
+  எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_BLOB
+   || sqlite3_மதிப்பு_type(argv[1])==SQLITE_BLOB
   ){
 #ifdef SQLITE_TEST
-    sqlite3_like_count++;
+    sqlite3_like_மொத்தம்++;
 #endif
     sqlite3_result_int(context, 0);
-    return;
+    திரும்பு;
   }
 #endif
 
   /* Limit the length of the LIKE or GLOB pattern to avoid problems
   ** of deep recursion and N*N behavior in patternCompare().
   */
-  nPat = sqlite3_value_bytes(argv[0]);
+  nPat = sqlite3_மதிப்பு_bytes(argv[0]);
   testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] );
   testcase( nPat==db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH]+1 );
-  if( nPat > db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] ){
+  எனில்( nPat > db->aLimit[SQLITE_LIMIT_LIKE_PATTERN_LENGTH] ){
     sqlite3_result_error(context, "LIKE or GLOB pattern too complex", -1);
-    return;
+    திரும்பு;
   }
-  if( argc==3 ){
+  எனில்( argc==3 ){
     /* The escape character string must consist of a single UTF-8 character.
     ** Otherwise, return an error.
     */
-    const unsigned char *zEsc = sqlite3_value_text(argv[2]);
-    if( zEsc==0 ) return;
-    if( sqlite3Utf8CharLen((char*)zEsc, -1)!=1 ){
+    மாறிலி unsigned எழுத்து *zEsc = sqlite3_மதிப்பு_text(argv[2]);
+    எனில்( zEsc==0 ) திரும்பு;
+    எனில்( sqlite3Utf8CharLen((எழுத்து*)zEsc, -1)!=1 ){
       sqlite3_result_error(context,
           "ESCAPE expression must be a single character", -1);
-      return;
+      திரும்பு;
     }
     escape = sqlite3Utf8Read(&zEsc);
-    if( escape==pInfo->matchAll || escape==pInfo->matchOne ){
-      memcpy(&backupInfo, pInfo, sizeof(backupInfo));
+    எனில்( escape==pInfo->matchAll || escape==pInfo->matchOne ){
+      memcpy(&backupInfo, pInfo, அளவு(backupInfo));
       pInfo = &backupInfo;
-      if( escape==pInfo->matchAll ) pInfo->matchAll = 0;
-      if( escape==pInfo->matchOne ) pInfo->matchOne = 0;
+      எனில்( escape==pInfo->matchAll ) pInfo->matchAll = 0;
+      எனில்( escape==pInfo->matchOne ) pInfo->matchOne = 0;
     }
-  }else{
+  }இல்லையெனில்{
     escape = pInfo->matchSet;
   }
-  zB = sqlite3_value_text(argv[0]);
-  zA = sqlite3_value_text(argv[1]);
-  if( zA && zB ){
+  zB = sqlite3_மதிப்பு_text(argv[0]);
+  zA = sqlite3_மதிப்பு_text(argv[1]);
+  எனில்( zA && zB ){
 #ifdef SQLITE_TEST
-    sqlite3_like_count++;
+    sqlite3_like_மொத்தம்++;
 #endif
     sqlite3_result_int(context,
                       patternCompare(zB, zA, pInfo, escape)==SQLITE_MATCH);
@@ -1022,15 +1022,15 @@ static void likeFunc(
 ** argument if the arguments are different.  The result is NULL if the
 ** arguments are equal to each other.
 */
-static void nullifFunc(
+நிலையான வெறுமை nullifFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  முழு NotUsed,
+  sqlite3_மதிப்பு **argv
 ){
   CollSeq *pColl = sqlite3GetFuncCollSeq(context);
   UNUSED_PARAMETER(NotUsed);
-  if( sqlite3MemCompare(argv[0], argv[1], pColl)!=0 ){
-    sqlite3_result_value(context, argv[0]);
+  எனில்( sqlite3MemCompare(argv[0], argv[1], pColl)!=0 ){
+    sqlite3_result_மதிப்பு(context, argv[0]);
   }
 }
 
@@ -1038,10 +1038,10 @@ static void nullifFunc(
 ** Implementation of the sqlite_version() function.  The result is the version
 ** of the SQLite library that is running.
 */
-static void versionFunc(
+நிலையான வெறுமை versionFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  முழு NotUsed,
+  sqlite3_மதிப்பு **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-48699-48617 This function is an SQL wrapper around the
@@ -1054,10 +1054,10 @@ static void versionFunc(
 ** that identifies the particular version of the source code used to build
 ** SQLite.
 */
-static void sourceidFunc(
+நிலையான வெறுமை sourceidFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **NotUsed2
+  முழு NotUsed,
+  sqlite3_மதிப்பு **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   /* IMP: R-24470-31136 This function is an SQL wrapper around the
@@ -1070,14 +1070,14 @@ static void sourceidFunc(
 ** sqlite3_log().  The return value is NULL.  The function exists purely for
 ** its side-effects.
 */
-static void errlogFunc(
+நிலையான வெறுமை errlogFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   UNUSED_PARAMETER(argc);
   UNUSED_PARAMETER(context);
-  sqlite3_log(sqlite3_value_int(argv[0]), "%s", sqlite3_value_text(argv[1]));
+  sqlite3_log(sqlite3_மதிப்பு_int(argv[0]), "%s", sqlite3_மதிப்பு_text(argv[1]));
 }
 
 /*
@@ -1086,19 +1086,19 @@ static void errlogFunc(
 ** was used to build SQLite.
 */
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptionusedFunc(
+நிலையான வெறுமை compileoptionusedFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const char *zOptName;
-  assert( argc==1 );
+  மாறிலி எழுத்து *zOptName;
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
   /* IMP: R-39564-36305 The sqlite_compileoption_used() SQL
   ** function is a wrapper around the sqlite3_compileoption_used() C/C++
   ** function.
   */
-  if( (zOptName = (const char*)sqlite3_value_text(argv[0]))!=0 ){
+  எனில்( (zOptName = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]))!=0 ){
     sqlite3_result_int(context, sqlite3_compileoption_used(zOptName));
   }
 }
@@ -1110,31 +1110,31 @@ static void compileoptionusedFunc(
 ** used to build SQLite.
 */
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-static void compileoptiongetFunc(
+நிலையான வெறுமை compileoptiongetFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   i64 n;
-  const char *zRes;
-  assert( argc==1 );
+  மாறிலி எழுத்து *zRes;
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
   /* IMP: R-04922-24076 The sqlite_compileoption_get() SQL function
   ** is a wrapper around the sqlite3_compileoption_get() C/C++ function.
   */
-  n = sqlite3_value_int64(argv[0]);
+  n = sqlite3_மதிப்பு_int64(argv[0]);
   /* Use a negative lower bound to assist testing of the
   ** sqlite3_compileoption_get() C-language interface and its handling
   ** of negative inputs.
   **         vvvvv */
-  zRes = (n>=(-10) && n<10000) ? sqlite3_compileoption_get((int)n) : 0;
+  zRes = (n>=(-10) && n<10000) ? sqlite3_compileoption_get((முழு)n) : 0;
   sqlite3_result_text(context, zRes, -1, SQLITE_STATIC);
 }
 #endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
 /* Array for converting from half-bytes (nybbles) into ASCII hex
 ** digits. */
-static const char hexdigits[] = {
+நிலையான மாறிலி எழுத்து hexdigits[] = {
   '0', '1', '2', '3', '4', '5', '6', '7',
   '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
@@ -1143,34 +1143,34 @@ static const char hexdigits[] = {
 ** Append to pStr text that is the SQL literal representation of the
 ** value contained in pValue.
 */
-void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
+வெறுமை sqlite3_Quote_மதிப்பு(StrAccum *pStr, sqlite3_மதிப்பு *p_மதிப்பு, முழு bEscape){
   /* As currently implemented, the string must be initially empty.
   ** we might relax this requirement in the future, but that will
   ** require enhancements to the implementation. */
-  assert( pStr!=0 && pStr->nChar==0 );
+  ப்ரதிஜ்ஞா( pStr!=0 && pStr->nChar==0 );
 
-  switch( sqlite3_value_type(pValue) ){
-    case SQLITE_FLOAT: {
+  தேர்வு( sqlite3_மதிப்பு_type(p_மதிப்பு) ){
+    நிலை SQLITE_FLOAT: {
                              /*    ,---  Show infinity as 9.0e+999
                              **    |   
                              **    | ,--- 17 precision guarantees round-trip
                              **    v v                                       */
-      sqlite3_str_appendf(pStr, "%!0.17g", sqlite3_value_double(pValue));
-      break;
+      sqlite3_str_appendf(pStr, "%!0.17g", sqlite3_மதிப்பு_double(p_மதிப்பு));
+      நிறுத்து;
     }
-    case SQLITE_INTEGER: {
-      sqlite3_str_appendf(pStr, "%lld", sqlite3_value_int64(pValue));
-      break;
+    நிலை SQLITE_INTEGER: {
+      sqlite3_str_appendf(pStr, "%lld", sqlite3_மதிப்பு_int64(p_மதிப்பு));
+      நிறுத்து;
     }
-    case SQLITE_BLOB: {
-      char const *zBlob = sqlite3_value_blob(pValue);
-      i64 nBlob = sqlite3_value_bytes(pValue);
-      assert( zBlob==sqlite3_value_blob(pValue) ); /* No encoding change */
+    நிலை SQLITE_BLOB: {
+      எழுத்து மாறிலி *zBlob = sqlite3_மதிப்பு_blob(p_மதிப்பு);
+      i64 nBlob = sqlite3_மதிப்பு_bytes(p_மதிப்பு);
+      ப்ரதிஜ்ஞா( zBlob==sqlite3_மதிப்பு_blob(p_மதிப்பு) ); /* No encoding change */
       sqlite3StrAccumEnlarge(pStr, nBlob*2 + 4);
-      if( pStr->accError==0 ){
-        char *zText = pStr->zText;
-        int i;
-        for(i=0; i<nBlob; i++){
+      எனில்( pStr->accError==0 ){
+        எழுத்து *zText = pStr->zText;
+        முழு i;
+        க்கு(i=0; i<nBlob; i++){
           zText[(i*2)+2] = hexdigits[(zBlob[i]>>4)&0x0F];
           zText[(i*2)+3] = hexdigits[(zBlob[i])&0x0F];
         }
@@ -1180,17 +1180,17 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
         zText[1] = '\'';
         pStr->nChar = nBlob*2 + 3;
       }
-      break;
+      நிறுத்து;
     }
-    case SQLITE_TEXT: {
-      const unsigned char *zArg = sqlite3_value_text(pValue);
+    நிலை SQLITE_TEXT: {
+      மாறிலி unsigned எழுத்து *zArg = sqlite3_மதிப்பு_text(p_மதிப்பு);
       sqlite3_str_appendf(pStr, bEscape ? "%#Q" : "%Q", zArg);
-      break;
+      நிறுத்து;
     }
-    default: {
-      assert( sqlite3_value_type(pValue)==SQLITE_NULL );
+    இயல்பு: {
+      ப்ரதிஜ்ஞா( sqlite3_மதிப்பு_type(p_மதிப்பு)==SQLITE_NULL );
       sqlite3_str_append(pStr, "NULL", 4);
-      break;
+      நிறுத்து;
     }
   }
 }
@@ -1200,15 +1200,15 @@ void sqlite3QuoteValue(StrAccum *pStr, sqlite3_value *pValue, int bEscape){
 ** a decoding of those digits into *pVal.  Or return false if any
 ** one of the first N characters in z[] is not a hexadecimal digit.
 */
-static int isNHex(const char *z, int N, u32 *pVal){
-  int i;
+நிலையான முழு isNHex(மாறிலி எழுத்து *z, முழு N, u32 *pVal){
+  முழு i;
   u32 v = 0;
-  for(i=0; i<N; i++){
-    if( !sqlite3Isxdigit(z[i]) ) return 0;
+  க்கு(i=0; i<N; i++){
+    எனில்( !sqlite3Isxdigit(z[i]) ) திரும்பு 0;
     v = (v<<4) + sqlite3HexToInt(z[i]);
   }
   *pVal = v;
-  return 1;
+  திரும்பு 1;
 }
 
 /*
@@ -1224,73 +1224,73 @@ static int isNHex(const char *z, int N, u32 *pVal){
 **    or \UXXXXXXXX (8 hexadecimal digits). To specify a backslash,
 **    write two backslashes. All other characters are taken literally.
 */
-static void unistrFunc(
+நிலையான வெறுமை unistrFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  char *zOut;
-  const char *zIn;
-  int nIn;
-  int i, j, n;
+  எழுத்து *zOut;
+  மாறிலி எழுத்து *zIn;
+  முழு nIn;
+  முழு i, j, n;
   u32 v;
 
-  assert( argc==1 );
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER( argc );
-  zIn = (const char*)sqlite3_value_text(argv[0]);
-  if( zIn==0 ) return;
-  nIn = sqlite3_value_bytes(argv[0]);
+  zIn = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
+  எனில்( zIn==0 ) திரும்பு;
+  nIn = sqlite3_மதிப்பு_bytes(argv[0]);
   zOut = sqlite3_malloc64(nIn+1);
-  if( zOut==0 ){
+  எனில்( zOut==0 ){
     sqlite3_result_error_nomem(context);
-    return;
+    திரும்பு;
   }
   i = j = 0;
-  while( i<nIn ){
-    const char *z = strchr(&zIn[i],'\\');
-    if( z==0 ){
+  போது( i<nIn ){
+    மாறிலி எழுத்து *z = strchr(&zIn[i],'\\');
+    எனில்( z==0 ){
       n = nIn - i;
       memmove(&zOut[j], &zIn[i], n);
       j += n;
-      break;
+      நிறுத்து;
     }
     n = z - &zIn[i];
-    if( n>0 ){
+    எனில்( n>0 ){
       memmove(&zOut[j], &zIn[i], n);
       j += n;
       i += n;
     }
-    if( zIn[i+1]=='\\' ){
+    எனில்( zIn[i+1]=='\\' ){
       i += 2;
       zOut[j++] = '\\';
-    }else if( sqlite3Isxdigit(zIn[i+1]) ){
-      if( !isNHex(&zIn[i+1], 4, &v) ) goto unistr_error;
+    }இல்லையெனில் எனில்( sqlite3Isxdigit(zIn[i+1]) ){
+      எனில்( !isNHex(&zIn[i+1], 4, &v) ) செல் unistr_error;
       i += 5;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='+' ){
-      if( !isNHex(&zIn[i+2], 6, &v) ) goto unistr_error;
+    }இல்லையெனில் எனில்( zIn[i+1]=='+' ){
+      எனில்( !isNHex(&zIn[i+2], 6, &v) ) செல் unistr_error;
       i += 8;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='u' ){
-      if( !isNHex(&zIn[i+2], 4, &v) ) goto unistr_error;
+    }இல்லையெனில் எனில்( zIn[i+1]=='u' ){
+      எனில்( !isNHex(&zIn[i+2], 4, &v) ) செல் unistr_error;
       i += 6;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else if( zIn[i+1]=='U' ){
-      if( !isNHex(&zIn[i+2], 8, &v) ) goto unistr_error;
+    }இல்லையெனில் எனில்( zIn[i+1]=='U' ){
+      எனில்( !isNHex(&zIn[i+2], 8, &v) ) செல் unistr_error;
       i += 10;
       j += sqlite3AppendOneUtf8Character(&zOut[j], v);
-    }else{
-      goto unistr_error;
+    }இல்லையெனில்{
+      செல் unistr_error;
     }
   }
   zOut[j] = 0;
   sqlite3_result_text64(context, zOut, j, sqlite3_free, SQLITE_UTF8_ZT);
-  return;
+  திரும்பு;
 
 unistr_error:
   sqlite3_free(zOut);
   sqlite3_result_error(context, "invalid Unicode escape", -1);
-  return;
+  திரும்பு;
 }
 
 
@@ -1308,13 +1308,13 @@ unistr_error:
 ** implemented instead.  The difference is that UNISTR_QUOTE() uses the
 ** UNISTR() function to escape control characters.
 */
-static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+நிலையான வெறுமை quoteFunc(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
   sqlite3_str str;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  assert( argc==1 );
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
   sqlite3StrAccumInit(&str, db, 0, 0, db->aLimit[SQLITE_LIMIT_LENGTH]);
-  sqlite3QuoteValue(&str,argv[0],SQLITE_PTR_TO_INT(sqlite3_user_data(context)));
+  sqlite3_Quote_மதிப்பு(&str,argv[0],SQLITE_PTR_TO_INT(sqlite3_user_data(context)));
   sqlite3_result_str(context, &str, SQLITE_XFER);
 }
 
@@ -1322,14 +1322,14 @@ static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** The unicode() function.  Return the integer unicode code-point value
 ** for the first character of the input string.
 */
-static void unicodeFunc(
+நிலையான வெறுமை unicodeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const unsigned char *z = sqlite3_value_text(argv[0]);
-  (void)argc;
-  if( z && z[0] ) sqlite3_result_int(context, sqlite3Utf8Read(&z));
+  மாறிலி unsigned எழுத்து *z = sqlite3_மதிப்பு_text(argv[0]);
+  (வெறுமை)argc;
+  எனில்( z && z[0] ) sqlite3_result_int(context, sqlite3Utf8Read(&z));
 }
 
 /*
@@ -1337,34 +1337,34 @@ static void unicodeFunc(
 ** an integer.  It constructs a string where each character of the string
 ** is the unicode character for the corresponding integer argument.
 */
-static void charFunc(
+நிலையான வெறுமை charFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  unsigned char *z, *zOut;
-  int i;
+  unsigned எழுத்து *z, *zOut;
+  முழு i;
   zOut = z = sqlite3_malloc64( argc*4+1 );
-  if( z==0 ){
+  எனில்( z==0 ){
     sqlite3_result_error_nomem(context);
-    return;
+    திரும்பு;
   }
-  for(i=0; i<argc; i++){
+  க்கு(i=0; i<argc; i++){
     sqlite3_int64 x;
     unsigned c;
-    x = sqlite3_value_int64(argv[i]);
-    if( x<0 || x>0x10ffff ) x = 0xfffd;
+    x = sqlite3_மதிப்பு_int64(argv[i]);
+    எனில்( x<0 || x>0x10ffff ) x = 0xfffd;
     c = (unsigned)(x & 0x1fffff);
-    if( c<0x00080 ){
+    எனில்( c<0x00080 ){
       *zOut++ = (u8)(c&0xFF);
-    }else if( c<0x00800 ){
+    }இல்லையெனில் எனில்( c<0x00800 ){
       *zOut++ = 0xC0 + (u8)((c>>6)&0x1F);
       *zOut++ = 0x80 + (u8)(c & 0x3F);
-    }else if( c<0x10000 ){
+    }இல்லையெனில் எனில்( c<0x10000 ){
       *zOut++ = 0xE0 + (u8)((c>>12)&0x0F);
       *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);
       *zOut++ = 0x80 + (u8)(c & 0x3F);
-    }else{
+    }இல்லையெனில்{
       *zOut++ = 0xF0 + (u8)((c>>18) & 0x07);
       *zOut++ = 0x80 + (u8)((c>>12) & 0x3F);
       *zOut++ = 0x80 + (u8)((c>>6) & 0x3F);
@@ -1372,30 +1372,30 @@ static void charFunc(
     }                                                    \
   }
   *zOut = 0;
-  sqlite3_result_text64(context, (char*)z, zOut-z,sqlite3_free,SQLITE_UTF8_ZT);
+  sqlite3_result_text64(context, (எழுத்து*)z, zOut-z,sqlite3_free,SQLITE_UTF8_ZT);
 }
 
 /*
 ** The hex() function.  Interpret the argument as a blob.  Return
 ** a hexadecimal rendering as text.
 */
-static void hexFunc(
+நிலையான வெறுமை hexFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  int i, n;
-  const unsigned char *pBlob;
-  char *zHex, *z;
-  assert( argc==1 );
+  முழு i, n;
+  மாறிலி unsigned எழுத்து *pBlob;
+  எழுத்து *zHex, *z;
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  pBlob = sqlite3_value_blob(argv[0]);
-  n = sqlite3_value_bytes(argv[0]);
-  assert( pBlob==sqlite3_value_blob(argv[0]) );  /* No encoding change */
+  pBlob = sqlite3_மதிப்பு_blob(argv[0]);
+  n = sqlite3_மதிப்பு_bytes(argv[0]);
+  ப்ரதிஜ்ஞா( pBlob==sqlite3_மதிப்பு_blob(argv[0]) );  /* No encoding change */
   z = zHex = contextMalloc(context, ((i64)n)*2 + 1);
-  if( zHex ){
-    for(i=0; i<n; i++, pBlob++){
-      unsigned char c = *pBlob;
+  எனில்( zHex ){
+    க்கு(i=0; i<n; i++, pBlob++){
+      unsigned எழுத்து c = *pBlob;
       *(z++) = hexdigits[(c>>4)&0xf];
       *(z++) = hexdigits[c&0xf];
     }
@@ -1409,14 +1409,14 @@ static void hexFunc(
 ** Buffer zStr contains nStr bytes of utf-8 encoded text. Return 1 if zStr
 ** contains character ch, or 0 if it does not.
 */
-static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
-  const u8 *zEnd = &zStr[nStr];
-  const u8 *z = zStr;
-  while( z<zEnd ){
+நிலையான முழு strContainsChar(மாறிலி u8 *zStr, முழு nStr, u32 ch){
+  மாறிலி u8 *zEnd = &zStr[nStr];
+  மாறிலி u8 *z = zStr;
+  போது( z<zEnd ){
     u32 tst = Utf8Read(z);
-    if( tst==ch ) return 1;
+    எனில்( tst==ch ) திரும்பு 1;
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /*
@@ -1441,76 +1441,76 @@ static int strContainsChar(const u8 *zStr, int nStr, u32 ch){
 **     unhex('AB CD', ' ') IS x'ABCD'
 **     unhex('A BCD', ' ') IS NULL
 */
-static void unhexFunc(
+நிலையான வெறுமை unhexFunc(
   sqlite3_context *pCtx,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const u8 *zPass = (const u8*)"";
-  int nPass = 0;
-  const u8 *zHex = sqlite3_value_text(argv[0]);
-  int nHex = sqlite3_value_bytes(argv[0]);
+  மாறிலி u8 *zPass = (மாறிலி u8*)"";
+  முழு nPass = 0;
+  மாறிலி u8 *zHex = sqlite3_மதிப்பு_text(argv[0]);
+  முழு nHex = sqlite3_மதிப்பு_bytes(argv[0]);
 #ifdef SQLITE_DEBUG
-  const u8 *zEnd = zHex ? &zHex[nHex] : 0;
+  மாறிலி u8 *zEnd = zHex ? &zHex[nHex] : 0;
 #endif
   u8 *pBlob = 0;
   u8 *p = 0;
 
-  assert( argc==1 || argc==2 );
-  if( argc==2 ){
-    zPass = sqlite3_value_text(argv[1]);
-    nPass = sqlite3_value_bytes(argv[1]);
+  ப்ரதிஜ்ஞா( argc==1 || argc==2 );
+  எனில்( argc==2 ){
+    zPass = sqlite3_மதிப்பு_text(argv[1]);
+    nPass = sqlite3_மதிப்பு_bytes(argv[1]);
   }
-  if( !zHex || !zPass ) return;
+  எனில்( !zHex || !zPass ) திரும்பு;
 
   p = pBlob = contextMalloc(pCtx, (nHex/2)+1);
-  if( pBlob ){
+  எனில்( pBlob ){
     u8 c;                         /* Most significant digit of next byte */
     u8 d;                         /* Least significant digit of next byte */
 
-    while( (c = *zHex)!=0x00 ){
-      while( !sqlite3Isxdigit(c) ){
+    போது( (c = *zHex)!=0x00 ){
+      போது( !sqlite3Isxdigit(c) ){
         u32 ch = Utf8Read(zHex);
-        assert( zHex<=zEnd );
-        if( !strContainsChar(zPass, nPass, ch) ) goto unhex_null;
+        ப்ரதிஜ்ஞா( zHex<=zEnd );
+        எனில்( !strContainsChar(zPass, nPass, ch) ) செல் unhex_null;
         c = *zHex;
-        if( c==0x00 ) goto unhex_done;
+        எனில்( c==0x00 ) செல் unhex_done;
       }
       zHex++;
-      assert( *zEnd==0x00 );
-      assert( zHex<=zEnd );
+      ப்ரதிஜ்ஞா( *zEnd==0x00 );
+      ப்ரதிஜ்ஞா( zHex<=zEnd );
       d = *(zHex++);
-      if( !sqlite3Isxdigit(d) ) goto unhex_null;
+      எனில்( !sqlite3Isxdigit(d) ) செல் unhex_null;
       *(p++) = (sqlite3HexToInt(c)<<4) | sqlite3HexToInt(d);
     }
   }
 
  unhex_done:
   sqlite3_result_blob(pCtx, pBlob, (p - pBlob), sqlite3_free);
-  return;
+  திரும்பு;
 
  unhex_null:
   sqlite3_free(pBlob);
-  return;
+  திரும்பு;
 }
 
 
 /*
 ** The zeroblob(N) function returns a zero-filled blob of size N bytes.
 */
-static void zeroblobFunc(
+நிலையான வெறுமை zeroblobFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   i64 n;
-  int rc;
-  assert( argc==1 );
+  முழு rc;
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  n = sqlite3_value_int64(argv[0]);
-  if( n<0 ) n = 0;
+  n = sqlite3_மதிப்பு_int64(argv[0]);
+  எனில்( n<0 ) n = 0;
   rc = sqlite3_result_zeroblob64(context, n); /* IMP: R-00293-64994 */
-  if( rc ){
+  எனில்( rc ){
     sqlite3_result_error_code(context, rc);
   }
 }
@@ -1521,79 +1521,79 @@ static void zeroblobFunc(
 ** from A by replacing every occurrence of B with C.  The match
 ** must be exact.  Collating sequences are not used.
 */
-static void replaceFunc(
+நிலையான வெறுமை replaceFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const unsigned char *zStr;        /* The input string A */
-  const unsigned char *zPattern;    /* The pattern string B */
-  const unsigned char *zRep;        /* The replacement string C */
-  unsigned char *zOut;              /* The output */
-  int nStr;                /* Size of zStr */
-  int nPattern;            /* Size of zPattern */
-  int nRep;                /* Size of zRep */
+  மாறிலி unsigned எழுத்து *zStr;        /* The input string A */
+  மாறிலி unsigned எழுத்து *zPattern;    /* The pattern string B */
+  மாறிலி unsigned எழுத்து *zRep;        /* The replacement string C */
+  unsigned எழுத்து *zOut;              /* The output */
+  முழு nStr;                /* Size of zStr */
+  முழு nPattern;            /* Size of zPattern */
+  முழு nRep;                /* Size of zRep */
   i64 nOut;                /* Maximum size of zOut */
-  int loopLimit;           /* Last zStr[] that might match zPattern[] */
+  முழு loopLimit;           /* Last zStr[] that might match zPattern[] */
   i64 i, j;                /* Loop counters */
   unsigned cntExpand;      /* Number zOut expansions */
   sqlite3 *db = sqlite3_context_db_handle(context);
 
-  assert( argc==3 );
+  ப்ரதிஜ்ஞா( argc==3 );
   UNUSED_PARAMETER(argc);
-  zStr = sqlite3_value_text(argv[0]);
-  if( zStr==0 ) return;
-  nStr = sqlite3_value_bytes(argv[0]);
-  assert( zStr==sqlite3_value_text(argv[0]) );  /* No encoding change */
-  zPattern = sqlite3_value_text(argv[1]);
-  if( zPattern==0 ){
-    assert( sqlite3_value_type(argv[1])==SQLITE_NULL
+  zStr = sqlite3_மதிப்பு_text(argv[0]);
+  எனில்( zStr==0 ) திரும்பு;
+  nStr = sqlite3_மதிப்பு_bytes(argv[0]);
+  ப்ரதிஜ்ஞா( zStr==sqlite3_மதிப்பு_text(argv[0]) );  /* No encoding change */
+  zPattern = sqlite3_மதிப்பு_text(argv[1]);
+  எனில்( zPattern==0 ){
+    ப்ரதிஜ்ஞா( sqlite3_மதிப்பு_type(argv[1])==SQLITE_NULL
             || sqlite3_context_db_handle(context)->mallocFailed );
-    return;
+    திரும்பு;
   }
-  if( zPattern[0]==0 ){
-    assert( sqlite3_value_type(argv[1])!=SQLITE_NULL );
-    sqlite3_result_text(context, (const char*)zStr, nStr, SQLITE_TRANSIENT);
-    return;
+  எனில்( zPattern[0]==0 ){
+    ப்ரதிஜ்ஞா( sqlite3_மதிப்பு_type(argv[1])!=SQLITE_NULL );
+    sqlite3_result_text(context, (மாறிலி எழுத்து*)zStr, nStr, SQLITE_TRANSIENT);
+    திரும்பு;
   }
-  nPattern = sqlite3_value_bytes(argv[1]);
-  assert( zPattern==sqlite3_value_text(argv[1]) );  /* No encoding change */
-  zRep = sqlite3_value_text(argv[2]);
-  if( zRep==0 ) return;
-  nRep = sqlite3_value_bytes(argv[2]);
-  assert( zRep==sqlite3_value_text(argv[2]) );
+  nPattern = sqlite3_மதிப்பு_bytes(argv[1]);
+  ப்ரதிஜ்ஞா( zPattern==sqlite3_மதிப்பு_text(argv[1]) );  /* No encoding change */
+  zRep = sqlite3_மதிப்பு_text(argv[2]);
+  எனில்( zRep==0 ) திரும்பு;
+  nRep = sqlite3_மதிப்பு_bytes(argv[2]);
+  ப்ரதிஜ்ஞா( zRep==sqlite3_மதிப்பு_text(argv[2]) );
   nOut = nStr + 1;
-  assert( nOut<SQLITE_MAX_LENGTH );
+  ப்ரதிஜ்ஞா( nOut<SQLITE_MAX_LENGTH );
   zOut = contextMalloc(context, nOut);
-  if( zOut==0 ){
-    return;
+  எனில்( zOut==0 ){
+    திரும்பு;
   }
   loopLimit = nStr - nPattern; 
   cntExpand = 0;
-  for(i=j=0; i<=loopLimit; i++){
-    if( zStr[i]!=zPattern[0] || memcmp(&zStr[i], zPattern, nPattern) ){
+  க்கு(i=j=0; i<=loopLimit; i++){
+    எனில்( zStr[i]!=zPattern[0] || memcmp(&zStr[i], zPattern, nPattern) ){
       zOut[j++] = zStr[i];
-    }else{
-      if( nRep>nPattern ){
+    }இல்லையெனில்{
+      எனில்( nRep>nPattern ){
         nOut += nRep - nPattern;
         testcase( nOut-1==db->aLimit[SQLITE_LIMIT_LENGTH] );
         testcase( nOut-2==db->aLimit[SQLITE_LIMIT_LENGTH] );
-        if( nOut-1>db->aLimit[SQLITE_LIMIT_LENGTH] ){
+        எனில்( nOut-1>db->aLimit[SQLITE_LIMIT_LENGTH] ){
           sqlite3_result_error_toobig(context);
           sqlite3_free(zOut);
-          return;
+          திரும்பு;
         }
         cntExpand++;
-        if( (cntExpand&(cntExpand-1))==0 ){
+        எனில்( (cntExpand&(cntExpand-1))==0 ){
           /* Grow the size of the output buffer only on substitutions
           ** whose index is a power of two: 1, 2, 4, 8, 16, 32, ... */
           u8 *zOld;
           zOld = zOut;
-          zOut = sqlite3Realloc(zOut, (int)nOut + (nOut - nStr - 1));
-          if( zOut==0 ){
+          zOut = sqlite3Realloc(zOut, (முழு)nOut + (nOut - nStr - 1));
+          எனில்( zOut==0 ){
             sqlite3_result_error_nomem(context);
             sqlite3_free(zOld);
-            return;
+            திரும்பு;
           }
         }
       }
@@ -1602,97 +1602,97 @@ static void replaceFunc(
       i += nPattern-1;
     }
   }
-  assert( j+nStr-i+1<=nOut );
+  ப்ரதிஜ்ஞா( j+nStr-i+1<=nOut );
   memcpy(&zOut[j], &zStr[i], nStr-i);
   j += nStr - i;
-  assert( j<=nOut );
+  ப்ரதிஜ்ஞா( j<=nOut );
   zOut[j] = 0;
-  sqlite3_result_text(context, (char*)zOut, j, sqlite3_free);
+  sqlite3_result_text(context, (எழுத்து*)zOut, j, sqlite3_free);
 }
 
 /*
 ** Implementation of the TRIM(), LTRIM(), and RTRIM() functions.
 ** The userdata is 0x1 for left trim, 0x2 for right trim, 0x3 for both.
 */
-static void trimFunc(
+நிலையான வெறுமை trimFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const unsigned char *zIn;         /* Input string */
-  const unsigned char *zCharSet;    /* Set of characters to trim */
-  unsigned int nIn;                 /* Number of bytes in input */
-  int flags;                        /* 1: trimleft  2: trimright  3: trim */
-  int i;                            /* Loop counter */
-  unsigned int *aLen = 0;           /* Length of each character in zCharSet */
-  unsigned char **azChar = 0;       /* Individual characters in zCharSet */
-  int nChar;                        /* Number of characters in zCharSet */
+  மாறிலி unsigned எழுத்து *zIn;         /* Input string */
+  மாறிலி unsigned எழுத்து *zCharSet;    /* Set of characters to trim */
+  unsigned முழு nIn;                 /* Number of bytes in input */
+  முழு flags;                        /* 1: trimleft  2: trimright  3: trim */
+  முழு i;                            /* Loop counter */
+  unsigned முழு *aLen = 0;           /* Length of each character in zCharSet */
+  unsigned எழுத்து **azChar = 0;       /* Individual characters in zCharSet */
+  முழு nChar;                        /* Number of characters in zCharSet */
 
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
-    return;
+  எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_NULL ){
+    திரும்பு;
   }
-  zIn = sqlite3_value_text(argv[0]);
-  if( zIn==0 ) return;
-  nIn = (unsigned)sqlite3_value_bytes(argv[0]);
-  assert( zIn==sqlite3_value_text(argv[0]) );
-  if( argc==1 ){
-    static const unsigned lenOne[] = { 1 };
-    static unsigned char * const azOne[] = { (u8*)" " };
+  zIn = sqlite3_மதிப்பு_text(argv[0]);
+  எனில்( zIn==0 ) திரும்பு;
+  nIn = (unsigned)sqlite3_மதிப்பு_bytes(argv[0]);
+  ப்ரதிஜ்ஞா( zIn==sqlite3_மதிப்பு_text(argv[0]) );
+  எனில்( argc==1 ){
+    நிலையான மாறிலி unsigned lenOne[] = { 1 };
+    நிலையான unsigned எழுத்து * மாறிலி azOne[] = { (u8*)" " };
     nChar = 1;
     aLen = (unsigned*)lenOne;
-    azChar = (unsigned char **)azOne;
+    azChar = (unsigned எழுத்து **)azOne;
     zCharSet = 0;
-  }else if( (zCharSet = sqlite3_value_text(argv[1]))==0 ){
-    return;
-  }else{
-    const unsigned char *z;
-    for(z=zCharSet, nChar=0; *z; nChar++){
+  }இல்லையெனில் எனில்( (zCharSet = sqlite3_மதிப்பு_text(argv[1]))==0 ){
+    திரும்பு;
+  }இல்லையெனில்{
+    மாறிலி unsigned எழுத்து *z;
+    க்கு(z=zCharSet, nChar=0; *z; nChar++){
       SQLITE_SKIP_UTF8(z);
     }
-    if( nChar>0 ){
+    எனில்( nChar>0 ){
       azChar = contextMalloc(context,
-                     ((i64)nChar)*(sizeof(char*)+sizeof(unsigned)));
-      if( azChar==0 ){
-        return;
+                     ((i64)nChar)*(அளவு(எழுத்து*)+அளவு(unsigned)));
+      எனில்( azChar==0 ){
+        திரும்பு;
       }
       aLen = (unsigned*)&azChar[nChar];
-      for(z=zCharSet, nChar=0; *z; nChar++){
-        azChar[nChar] = (unsigned char *)z;
+      க்கு(z=zCharSet, nChar=0; *z; nChar++){
+        azChar[nChar] = (unsigned எழுத்து *)z;
         SQLITE_SKIP_UTF8(z);
         aLen[nChar] = (unsigned)(z - azChar[nChar]);
       }
     }
   }
-  if( nChar>0 ){
+  எனில்( nChar>0 ){
     flags = SQLITE_PTR_TO_INT(sqlite3_user_data(context));
-    if( flags & 1 ){
-      while( nIn>0 ){
-        unsigned int len = 0;
-        for(i=0; i<nChar; i++){
+    எனில்( flags & 1 ){
+      போது( nIn>0 ){
+        unsigned முழு len = 0;
+        க்கு(i=0; i<nChar; i++){
           len = aLen[i];
-          if( len<=nIn && memcmp(zIn, azChar[i], len)==0 ) break;
+          எனில்( len<=nIn && memcmp(zIn, azChar[i], len)==0 ) நிறுத்து;
         }
-        if( i>=nChar ) break;
+        எனில்( i>=nChar ) நிறுத்து;
         zIn += len;
         nIn -= len;
       }
     }
-    if( flags & 2 ){
-      while( nIn>0 ){
-        unsigned int len = 0;
-        for(i=0; i<nChar; i++){
+    எனில்( flags & 2 ){
+      போது( nIn>0 ){
+        unsigned முழு len = 0;
+        க்கு(i=0; i<nChar; i++){
           len = aLen[i];
-          if( len<=nIn && memcmp(&zIn[nIn-len],azChar[i],len)==0 ) break;
+          எனில்( len<=nIn && memcmp(&zIn[nIn-len],azChar[i],len)==0 ) நிறுத்து;
         }
-        if( i>=nChar ) break;
+        எனில்( i>=nChar ) நிறுத்து;
         nIn -= len;
       }
     }
-    if( zCharSet ){
+    எனில்( zCharSet ){
       sqlite3_free(azChar);
     }
   }
-  sqlite3_result_text(context, (char*)zIn, nIn, SQLITE_TRANSIENT);
+  sqlite3_result_text(context, (எழுத்து*)zIn, nIn, SQLITE_TRANSIENT);
 }
 
 /* The core implementation of the CONCAT(...) and CONCAT_WS(SEP,...)
@@ -1701,33 +1701,33 @@ static void trimFunc(
 ** Return a string value that is the concatenation of all non-null
 ** entries in argv[].  Use zSep as the separator.
 */
-static void concatFuncCore(
+நிலையான வெறுமை concatFuncCore(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv,
-  int nSep,
-  const char *zSep
+  முழு argc,
+  sqlite3_மதிப்பு **argv,
+  முழு nSep,
+  மாறிலி எழுத்து *zSep
 ){
   i64 j, n = 0;
-  int i;
-  int bNotNull = 0;   /* True after at least NOT NULL argument seen */
-  char *z;
-  for(i=0; i<argc; i++){
-    n += sqlite3_value_bytes(argv[i]);
+  முழு i;
+  முழு bNotNull = 0;   /* True after at least NOT NULL argument seen */
+  எழுத்து *z;
+  க்கு(i=0; i<argc; i++){
+    n += sqlite3_மதிப்பு_bytes(argv[i]);
   }
   n += (argc-1)*(i64)nSep;
   z = sqlite3_malloc64(n+1);
-  if( z==0 ){
+  எனில்( z==0 ){
     sqlite3_result_error_nomem(context);
-    return;
+    திரும்பு;
   }
   j = 0;
-  for(i=0; i<argc; i++){
-    if( sqlite3_value_type(argv[i])!=SQLITE_NULL ){
-      int k = sqlite3_value_bytes(argv[i]);
-      const char *v = (const char*)sqlite3_value_text(argv[i]);
-      if( v!=0 ){
-        if( bNotNull && nSep>0 ){
+  க்கு(i=0; i<argc; i++){
+    எனில்( sqlite3_மதிப்பு_type(argv[i])!=SQLITE_NULL ){
+      முழு k = sqlite3_மதிப்பு_bytes(argv[i]);
+      மாறிலி எழுத்து *v = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[i]);
+      எனில்( v!=0 ){
+        எனில்( bNotNull && nSep>0 ){
           memcpy(&z[j], zSep, nSep);
           j += nSep;
         }
@@ -1738,7 +1738,7 @@ static void concatFuncCore(
     }
   }
   z[j] = 0;
-  assert( j<=n );
+  ப்ரதிஜ்ஞா( j<=n );
   sqlite3_result_text64(context, z, j, sqlite3_free, SQLITE_UTF8_ZT);
 }
 
@@ -1746,10 +1746,10 @@ static void concatFuncCore(
 ** The CONCAT(...) function.  Generate a string result that is the
 ** concatentation of all non-null arguments.
 */
-static void concatFunc(
+நிலையான வெறுமை concatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   concatFuncCore(context, argc, argv, 0, "");
 }
@@ -1761,14 +1761,14 @@ static void concatFunc(
 ** argument.  Use the first argument (which must be non-NULL) as the
 ** separator.
 */
-static void concatwsFunc(
+நிலையான வெறுமை concatwsFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  int nSep = sqlite3_value_bytes(argv[0]);
-  const char *zSep = (const char*)sqlite3_value_text(argv[0]);
-  if( zSep==0 ) return;
+  முழு nSep = sqlite3_மதிப்பு_bytes(argv[0]);
+  மாறிலி எழுத்து *zSep = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
+  எனில்( zSep==0 ) திரும்பு;
   concatFuncCore(context, argc-1, argv+1, nSep, zSep);
 }
 
@@ -1783,15 +1783,15 @@ static void concatwsFunc(
 ** involving application-defined functions to be examined in a generic
 ** sqlite3 shell.
 */
-static void unknownFunc(
+நிலையான வெறுமை unknownFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   /* no-op */
-  (void)context;
-  (void)argc;
-  (void)argv;
+  (வெறுமை)context;
+  (வெறுமை)argc;
+  (வெறுமை)argv;
 }
 #endif /*SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION*/
 
@@ -1807,15 +1807,15 @@ static void unknownFunc(
 ** IMP: R-59782-00072 The soundex(X) function returns a string that is the
 ** soundex encoding of the string X.
 */
-static void soundexFunc(
+நிலையான வெறுமை soundexFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  char zResult[8];
-  const u8 *zIn;
-  int i, j;
-  static const unsigned char iCode[] = {
+  எழுத்து zResult[8];
+  மாறிலி u8 *zIn;
+  முழு i, j;
+  நிலையான மாறிலி unsigned எழுத்து iCode[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1825,30 +1825,30 @@ static void soundexFunc(
     0, 0, 1, 2, 3, 0, 1, 2, 0, 0, 2, 2, 4, 5, 5, 0,
     1, 2, 6, 2, 3, 0, 1, 0, 2, 0, 2, 0, 0, 0, 0, 0,
   };
-  assert( argc==1 );
-  zIn = (u8*)sqlite3_value_text(argv[0]);
-  if( zIn==0 ) zIn = (u8*)"";
-  for(i=0; zIn[i] && !sqlite3Isalpha(zIn[i]); i++){}
-  if( zIn[i] ){
+  ப்ரதிஜ்ஞா( argc==1 );
+  zIn = (u8*)sqlite3_மதிப்பு_text(argv[0]);
+  எனில்( zIn==0 ) zIn = (u8*)"";
+  க்கு(i=0; zIn[i] && !sqlite3Isalpha(zIn[i]); i++){}
+  எனில்( zIn[i] ){
     u8 prevcode = iCode[zIn[i]&0x7f];
     zResult[0] = sqlite3Toupper(zIn[i]);
-    for(j=1; j<4 && zIn[i]; i++){
-      int code = iCode[zIn[i]&0x7f];
-      if( code>0 ){
-        if( code!=prevcode ){
+    க்கு(j=1; j<4 && zIn[i]; i++){
+      முழு code = iCode[zIn[i]&0x7f];
+      எனில்( code>0 ){
+        எனில்( code!=prevcode ){
           prevcode = code;
           zResult[j++] = code + '0';
         }
-      }else{
+      }இல்லையெனில்{
         prevcode = 0;
       }
     }
-    while( j<4 ){
+    போது( j<4 ){
       zResult[j++] = '0';
     }
     zResult[j] = 0;
     sqlite3_result_text(context, zResult, 4, SQLITE_TRANSIENT);
-  }else{
+  }இல்லையெனில்{
     /* IMP: R-64894-50321 The string "?000" is returned if the argument
     ** is NULL or contains no ASCII alphabetic characters. */
     sqlite3_result_text(context, "?000", 4, SQLITE_STATIC);
@@ -1856,15 +1856,15 @@ static void soundexFunc(
 }
 #endif /* SQLITE_SOUNDEX */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
+#எனில் defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
 /*
 ** This SQL function just invokes sqlite3OomFault() and then returns
 ** NULL.  Used for testing only.
 */
-static void oomFunc(
+நிலையான வெறுமை oomFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   sqlite3OomFault(db);
@@ -1875,28 +1875,28 @@ static void oomFunc(
 /*
 ** A function that loads a shared-library extension then returns NULL.
 */
-static void loadExt(sqlite3_context *context, int argc, sqlite3_value **argv){
-  const char *zFile = (const char *)sqlite3_value_text(argv[0]);
-  const char *zProc;
+நிலையான வெறுமை loadExt(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
+  மாறிலி எழுத்து *zFile = (மாறிலி எழுத்து *)sqlite3_மதிப்பு_text(argv[0]);
+  மாறிலி எழுத்து *zProc;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  char *zErrMsg = 0;
+  எழுத்து *z_Err_செய்தி = 0;
 
   /* Disallow the load_extension() SQL function unless the SQLITE_LoadExtFunc
   ** flag is set.  See the sqlite3_enable_load_extension() API.
   */
-  if( (db->flags & SQLITE_LoadExtFunc)==0 ){
+  எனில்( (db->flags & SQLITE_LoadExtFunc)==0 ){
     sqlite3_result_error(context, "not authorized", -1);
-    return;
+    திரும்பு;
   }
 
-  if( argc==2 ){
-    zProc = (const char *)sqlite3_value_text(argv[1]);
-  }else{
+  எனில்( argc==2 ){
+    zProc = (மாறிலி எழுத்து *)sqlite3_மதிப்பு_text(argv[1]);
+  }இல்லையெனில்{
     zProc = 0;
   }
-  if( zFile && sqlite3_load_extension(db, zFile, zProc, &zErrMsg) ){
-    sqlite3_result_error(context, zErrMsg, -1);
-    sqlite3_free(zErrMsg);
+  எனில்( zFile && sqlite3_load_extension(db, zFile, zProc, &z_Err_செய்தி) ){
+    sqlite3_result_error(context, z_Err_செய்தி, -1);
+    sqlite3_free(z_Err_செய்தி);
   }
 }
 #endif
@@ -1906,10 +1906,10 @@ static void loadExt(sqlite3_context *context, int argc, sqlite3_value **argv){
 ** An instance of the following structure holds the context of a
 ** sum() or avg() aggregate computation.
 */
-typedef struct SumCtx SumCtx;
-struct SumCtx {
-  double rSum;      /* Running sum as as a double */
-  double rErr;      /* Error term for Kahan-Babushka-Neumaier summation */
+வகைவரை கட்டமைப்பு SumCtx SumCtx;
+கட்டமைப்பு SumCtx {
+  இரட்டை rSum;      /* Running sum as as a double */
+  இரட்டை rErr;      /* Error term for Kahan-Babushka-Neumaier summation */
   i64 iSum;         /* Running sum as a signed integer */
   i64 cnt;          /* Number of elements summed */
   u8 approx;        /* True if any non-integer value was input to the sum */
@@ -1924,15 +1924,15 @@ struct SumCtx {
 ** Variables are marked "volatile" to defeat c89 x86 floating point
 ** optimizations can mess up this algorithm.
 */
-static void kahanBabuskaNeumaierStep(
-  volatile SumCtx *pSum,
-  volatile double r
+நிலையான வெறுமை kahanBabuskaNeumaierStep(
+  நிலையற்ற SumCtx *pSum,
+  நிலையற்ற இரட்டை r
 ){
-  volatile double s = pSum->rSum;
-  volatile double t = s + r;
-  if( fabs(s) > fabs(r) ){
+  நிலையற்ற இரட்டை s = pSum->rSum;
+  நிலையற்ற இரட்டை t = s + r;
+  எனில்( fabs(s) > fabs(r) ){
     pSum->rErr += (s - t) + r;
-  }else{
+  }இல்லையெனில்{
     pSum->rErr += (r - t) + s;
   }
   pSum->rSum = t;
@@ -1941,31 +1941,31 @@ static void kahanBabuskaNeumaierStep(
 /*
 ** Add a (possibly large) integer to the running sum.
 */
-static void kahanBabuskaNeumaierStepInt64(volatile SumCtx *pSum, i64 iVal){
-  if( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
+நிலையான வெறுமை kahanBabuskaNeumaierStepInt64(நிலையற்ற SumCtx *pSum, i64 iVal){
+  எனில்( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
     i64 iBig, iSm;
     iSm = iVal % 16384;
     iBig = iVal - iSm;
     kahanBabuskaNeumaierStep(pSum, iBig);
     kahanBabuskaNeumaierStep(pSum, iSm);
-  }else{
-    kahanBabuskaNeumaierStep(pSum, (double)iVal);
+  }இல்லையெனில்{
+    kahanBabuskaNeumaierStep(pSum, (இரட்டை)iVal);
   }
 }
 
 /*
 ** Initialize the Kahan-Babaska-Neumaier sum from a 64-bit integer
 */
-static void kahanBabuskaNeumaierInit(
-  volatile SumCtx *p,
+நிலையான வெறுமை kahanBabuskaNeumaierInit(
+  நிலையற்ற SumCtx *p,
   i64 iVal
 ){
-  if( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
+  எனில்( iVal<=-4503599627370496LL || iVal>=+4503599627370496LL ){
     i64 iSm = iVal % 16384;
-    p->rSum = (double)(iVal - iSm);
-    p->rErr = (double)iSm;
-  }else{
-    p->rSum = (double)iVal;
+    p->rSum = (இரட்டை)(iVal - iSm);
+    p->rErr = (இரட்டை)iSm;
+  }இல்லையெனில்{
+    p->rSum = (இரட்டை)iVal;
     p->rErr = 0.0;
   }
 }
@@ -1980,121 +1980,121 @@ static void kahanBabuskaNeumaierInit(
 ** value.  TOTAL never fails, but SUM might throw an exception if
 ** it overflows an integer.
 */
-static void sumStep(sqlite3_context *context, int argc, sqlite3_value **argv){
+நிலையான வெறுமை sumStep(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
   SumCtx *p;
-  int type;
-  assert( argc==1 );
+  முழு type;
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  type = sqlite3_value_numeric_type(argv[0]);
-  if( p && type!=SQLITE_NULL ){
+  p = sqlite3_aggregate_context(context, அளவு(*p));
+  type = sqlite3_மதிப்பு_numeric_type(argv[0]);
+  எனில்( p && type!=SQLITE_NULL ){
     p->cnt++;
-    if( p->approx==0 ){
-      if( type!=SQLITE_INTEGER ){
+    எனில்( p->approx==0 ){
+      எனில்( type!=SQLITE_INTEGER ){
         kahanBabuskaNeumaierInit(p, p->iSum);
         p->approx = 1;
-        kahanBabuskaNeumaierStep(p, sqlite3_value_double(argv[0]));
-      }else{
+        kahanBabuskaNeumaierStep(p, sqlite3_மதிப்பு_double(argv[0]));
+      }இல்லையெனில்{
         i64 x = p->iSum;
-        if( sqlite3AddInt64(&x, sqlite3_value_int64(argv[0]))==0 ){
+        எனில்( sqlite3AddInt64(&x, sqlite3_மதிப்பு_int64(argv[0]))==0 ){
           p->iSum = x;
-        }else{
+        }இல்லையெனில்{
           p->ovrfl = 1;
           kahanBabuskaNeumaierInit(p, p->iSum);
           p->approx = 1;
-          kahanBabuskaNeumaierStepInt64(p, sqlite3_value_int64(argv[0]));
+          kahanBabuskaNeumaierStepInt64(p, sqlite3_மதிப்பு_int64(argv[0]));
         }
       }
-    }else{
-      if( type==SQLITE_INTEGER ){
-        kahanBabuskaNeumaierStepInt64(p, sqlite3_value_int64(argv[0]));
-      }else{
+    }இல்லையெனில்{
+      எனில்( type==SQLITE_INTEGER ){
+        kahanBabuskaNeumaierStepInt64(p, sqlite3_மதிப்பு_int64(argv[0]));
+      }இல்லையெனில்{
         p->ovrfl = 0;
-        kahanBabuskaNeumaierStep(p, sqlite3_value_double(argv[0]));
+        kahanBabuskaNeumaierStep(p, sqlite3_மதிப்பு_double(argv[0]));
       }
     }
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void sumInverse(sqlite3_context *context, int argc, sqlite3_value**argv){
+நிலையான வெறுமை sumInverse(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு**argv){
   SumCtx *p;
-  int type;
-  assert( argc==1 );
+  முழு type;
+  ப்ரதிஜ்ஞா( argc==1 );
   UNUSED_PARAMETER(argc);
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  type = sqlite3_value_numeric_type(argv[0]);
+  p = sqlite3_aggregate_context(context, அளவு(*p));
+  type = sqlite3_மதிப்பு_numeric_type(argv[0]);
   /* p is always non-NULL because sumStep() will have been called first
   ** to initialize it */
-  if( ALWAYS(p) && type!=SQLITE_NULL ){
-    assert( p->cnt>0 );
+  எனில்( ALWAYS(p) && type!=SQLITE_NULL ){
+    ப்ரதிஜ்ஞா( p->cnt>0 );
     p->cnt--;
-    if( !p->approx ){
+    எனில்( !p->approx ){
       i64 x = p->iSum;
-      if( sqlite3SubInt64(&x, sqlite3_value_int64(argv[0]))==0 ){
+      எனில்( sqlite3SubInt64(&x, sqlite3_மதிப்பு_int64(argv[0]))==0 ){
         p->iSum = x;
-        return;
+        திரும்பு;
       }
       p->ovrfl = 1;
       p->approx = 1;
       kahanBabuskaNeumaierInit(p, p->iSum);
     }
-    if( type==SQLITE_INTEGER ){
-      i64 iVal = sqlite3_value_int64(argv[0]);
-      if( iVal!=SMALLEST_INT64 ){
+    எனில்( type==SQLITE_INTEGER ){
+      i64 iVal = sqlite3_மதிப்பு_int64(argv[0]);
+      எனில்( iVal!=SMALLEST_INT64 ){
         kahanBabuskaNeumaierStepInt64(p, -iVal);
-      }else{
+      }இல்லையெனில்{
         kahanBabuskaNeumaierStepInt64(p, LARGEST_INT64);
         kahanBabuskaNeumaierStepInt64(p, 1);
       }       
-    }else{
-      kahanBabuskaNeumaierStep(p, -sqlite3_value_double(argv[0]));
+    }இல்லையெனில்{
+      kahanBabuskaNeumaierStep(p, -sqlite3_மதிப்பு_double(argv[0]));
     }
   }
 }
-#else
+#இல்லையெனில்
 # define sumInverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void sumFinalize(sqlite3_context *context){
+நிலையான வெறுமை sumFinalize(sqlite3_context *context){
   SumCtx *p;
   p = sqlite3_aggregate_context(context, 0);
-  if( p && p->cnt>0 ){
-    if( p->approx ){
-      if( p->ovrfl ){
+  எனில்( p && p->cnt>0 ){
+    எனில்( p->approx ){
+      எனில்( p->ovrfl ){
         sqlite3_result_error(context,"integer overflow",-1);
-      }else if( !sqlite3IsOverflow(p->rErr) ){
+      }இல்லையெனில் எனில்( !sqlite3IsOverflow(p->rErr) ){
         sqlite3_result_double(context, p->rSum+p->rErr);
-      }else{
+      }இல்லையெனில்{
         sqlite3_result_double(context, p->rSum);
       }
-    }else{
+    }இல்லையெனில்{
       sqlite3_result_int64(context, p->iSum);
     }
   }
 }
-static void avgFinalize(sqlite3_context *context){
+நிலையான வெறுமை avgFinalize(sqlite3_context *context){
   SumCtx *p;
   p = sqlite3_aggregate_context(context, 0);
-  if( p && p->cnt>0 ){
-    double r;
-    if( p->approx ){
+  எனில்( p && p->cnt>0 ){
+    இரட்டை r;
+    எனில்( p->approx ){
       r = p->rSum;
-      if( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
-    }else{
-      r = (double)(p->iSum);
+      எனில்( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
+    }இல்லையெனில்{
+      r = (இரட்டை)(p->iSum);
     }
-    sqlite3_result_double(context, r/(double)p->cnt);
+    sqlite3_result_double(context, r/(இரட்டை)p->cnt);
   }
 }
-static void totalFinalize(sqlite3_context *context){
+நிலையான வெறுமை totalFinalize(sqlite3_context *context){
   SumCtx *p;
-  double r = 0.0;
+  இரட்டை r = 0.0;
   p = sqlite3_aggregate_context(context, 0);
-  if( p ){
-    if( p->approx ){
+  எனில்( p ){
+    எனில்( p->approx ){
       r = p->rSum;
-      if( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
-    }else{
-      r = (double)(p->iSum);
+      எனில்( !sqlite3IsOverflow(p->rErr) ) r += p->rErr;
+    }இல்லையெனில்{
+      r = (இரட்டை)(p->iSum);
     }
   }
   sqlite3_result_double(context, r);
@@ -2104,21 +2104,21 @@ static void totalFinalize(sqlite3_context *context){
 ** The following structure keeps track of state information for the
 ** count() aggregate function.
 */
-typedef struct CountCtx CountCtx;
-struct CountCtx {
+வகைவரை கட்டமைப்பு மொத்தம்_Ctx மொத்தம்_Ctx;
+கட்டமைப்பு மொத்தம்_Ctx {
   i64 n;
 #ifdef SQLITE_DEBUG
-  int bInverse;                   /* True if xInverse() ever called */
+  முழு bInverse;                   /* True if xInverse() ever called */
 #endif
 };
 
 /*
 ** Routines to implement the count() aggregate function.
 */
-static void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
-  CountCtx *p;
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0])) && p ){
+நிலையான வெறுமை மொத்தம்_Step(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
+  மொத்தம்_Ctx *p;
+  p = sqlite3_aggregate_context(context, அளவு(*p));
+  எனில்( (argc==0 || SQLITE_NULL!=sqlite3_மதிப்பு_type(argv[0])) && p ){
     p->n++;
   }
 
@@ -2127,51 +2127,51 @@ static void countStep(sqlite3_context *context, int argc, sqlite3_value **argv){
   ** sure it still operates correctly, verify that its count agrees with our
   ** internal count when using count(*) and when the total count can be
   ** expressed as a 32-bit integer. */
-  assert( argc==1 || p==0 || p->n>0x7fffffff || p->bInverse
-          || p->n==sqlite3_aggregate_count(context) );
+  ப்ரதிஜ்ஞா( argc==1 || p==0 || p->n>0x7fffffff || p->bInverse
+          || p->n==sqlite3_aggregate_மொத்தம்(context) );
 #endif
 }  
-static void countFinalize(sqlite3_context *context){
-  CountCtx *p;
+நிலையான வெறுமை மொத்தம்_Finalize(sqlite3_context *context){
+  மொத்தம்_Ctx *p;
   p = sqlite3_aggregate_context(context, 0);
   sqlite3_result_int64(context, p ? p->n : 0);
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void countInverse(sqlite3_context *ctx, int argc, sqlite3_value **argv){
-  CountCtx *p;
-  p = sqlite3_aggregate_context(ctx, sizeof(*p));
+நிலையான வெறுமை மொத்தம்_Inverse(sqlite3_context *ctx, முழு argc, sqlite3_மதிப்பு **argv){
+  மொத்தம்_Ctx *p;
+  p = sqlite3_aggregate_context(ctx, அளவு(*p));
   /* p is always non-NULL since countStep() will have been called first */
-  if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0])) && ALWAYS(p) ){
+  எனில்( (argc==0 || SQLITE_NULL!=sqlite3_மதிப்பு_type(argv[0])) && ALWAYS(p) ){
     p->n--;
 #ifdef SQLITE_DEBUG
     p->bInverse = 1;
 #endif
   }
 }  
-#else
-# define countInverse 0
+#இல்லையெனில்
+# define மொத்தம்_Inverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Routines to implement min() and max() aggregate functions.
 */
-static void minmaxStep(
+நிலையான வெறுமை minmaxStep(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  முழு NotUsed,
+  sqlite3_மதிப்பு **argv
 ){
   Mem *pArg  = (Mem *)argv[0];
   Mem *pBest;
   UNUSED_PARAMETER(NotUsed);
 
-  pBest = (Mem *)sqlite3_aggregate_context(context, sizeof(*pBest));
-  if( !pBest ) return;
+  pBest = (Mem *)sqlite3_aggregate_context(context, அளவு(*pBest));
+  எனில்( !pBest ) திரும்பு;
 
-  if( sqlite3_value_type(pArg)==SQLITE_NULL ){
-    if( pBest->flags ) sqlite3SkipAccumulatorLoad(context);
-  }else if( pBest->flags ){
-    int max;
-    int cmp;
+  எனில்( sqlite3_மதிப்பு_type(pArg)==SQLITE_NULL ){
+    எனில்( pBest->flags ) sqlite3SkipAccumulatorLoad(context);
+  }இல்லையெனில் எனில்( pBest->flags ){
+    முழு max;
+    முழு cmp;
     CollSeq *pColl = sqlite3GetFuncCollSeq(context);
     /* This step function is used for both the min() and max() aggregates,
     ** the only difference between the two being that the sense of the
@@ -2183,35 +2183,35 @@ static void minmaxStep(
     */
     max = sqlite3_user_data(context)!=0;
     cmp = sqlite3MemCompare(pBest, pArg, pColl);
-    if( (max && cmp<0) || (!max && cmp>0) ){
+    எனில்( (max && cmp<0) || (!max && cmp>0) ){
       sqlite3VdbeMemCopy(pBest, pArg);
-    }else{
+    }இல்லையெனில்{
       sqlite3SkipAccumulatorLoad(context);
     }
-  }else{
+  }இல்லையெனில்{
     pBest->db = sqlite3_context_db_handle(context);
     sqlite3VdbeMemCopy(pBest, pArg);
   }
 }
-static void minMaxValueFinalize(sqlite3_context *context, int bValue){
-  sqlite3_value *pRes;
-  pRes = (sqlite3_value *)sqlite3_aggregate_context(context, 0);
-  if( pRes ){
-    if( pRes->flags ){
-      sqlite3_result_value(context, pRes);
+நிலையான வெறுமை min_Max_மதிப்பு_Finalize(sqlite3_context *context, முழு b_மதிப்பு){
+  sqlite3_மதிப்பு *pRes;
+  pRes = (sqlite3_மதிப்பு *)sqlite3_aggregate_context(context, 0);
+  எனில்( pRes ){
+    எனில்( pRes->flags ){
+      sqlite3_result_மதிப்பு(context, pRes);
     }
-    if( bValue==0 ) sqlite3VdbeMemRelease(pRes);
+    எனில்( b_மதிப்பு==0 ) sqlite3VdbeMemRelease(pRes);
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void minMaxValue(sqlite3_context *context){
-  minMaxValueFinalize(context, 1);
+நிலையான வெறுமை min_Max_மதிப்பு(sqlite3_context *context){
+  min_Max_மதிப்பு_Finalize(context, 1);
 }
-#else
-# define minMaxValue 0
+#இல்லையெனில்
+# define min_Max_மதிப்பு 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void minMaxFinalize(sqlite3_context *context){
-  minMaxValueFinalize(context, 0);
+நிலையான வெறுமை minMaxFinalize(sqlite3_context *context){
+  min_Max_மதிப்பு_Finalize(context, 0);
 }
 
 /*
@@ -2228,141 +2228,141 @@ static void minMaxFinalize(sqlite3_context *context){
 ** so we could change it, in theory.  But the old behavior has been
 ** around for so long that we dare not, for fear of breaking something.
 */
-typedef struct {
+வகைவரை கட்டமைப்பு {
   StrAccum str;          /* The accumulated concatenation */
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  int nAccum;            /* Number of strings presently concatenated */
-  int nFirstSepLength;   /* Used to detect separator length change */
+  முழு nAccum;            /* Number of strings presently concatenated */
+  முழு nFirstSepLength;   /* Used to detect separator length change */
   /* If pnSepLengths!=0, refs an array of inter-string separator lengths,
   ** stored as actually incorporated into presently accumulated result.
   ** (Hence, its slots in use number nAccum-1 between method calls.)
   ** If pnSepLengths==0, nFirstSepLength is the length used throughout.
   */
-  int *pnSepLengths;
+  முழு *pnSepLengths;
 #endif
 } GroupConcatCtx;
 
-static void groupConcatStep(
+நிலையான வெறுமை groupConcatStep(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  const char *zVal;
+  மாறிலி எழுத்து *zVal;
   GroupConcatCtx *pGCC;
-  const char *zSep;
-  int nVal, nSep;
-  assert( argc==1 || argc==2 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, sizeof(*pGCC));
-  if( pGCC ){
+  மாறிலி எழுத்து *zSep;
+  முழு nVal, nSep;
+  ப்ரதிஜ்ஞா( argc==1 || argc==2 );
+  எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_NULL ) திரும்பு;
+  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, அளவு(*pGCC));
+  எனில்( pGCC ){
     sqlite3 *db = sqlite3_context_db_handle(context);
-    int firstTerm = pGCC->str.mxAlloc==0;
+    முழு firstTerm = pGCC->str.mxAlloc==0;
     pGCC->str.mxAlloc = db->aLimit[SQLITE_LIMIT_LENGTH];
-    if( argc==1 ){
-      if( !firstTerm ){
+    எனில்( argc==1 ){
+      எனில்( !firstTerm ){
         sqlite3_str_appendchar(&pGCC->str, 1, ',');
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      else{
+      இல்லையெனில்{
         pGCC->nFirstSepLength = 1;
       }
 #endif
-    }else if( !firstTerm ){
-      zSep = (char*)sqlite3_value_text(argv[1]);
-      nSep = sqlite3_value_bytes(argv[1]);
-      if( zSep ){
+    }இல்லையெனில் எனில்( !firstTerm ){
+      zSep = (எழுத்து*)sqlite3_மதிப்பு_text(argv[1]);
+      nSep = sqlite3_மதிப்பு_bytes(argv[1]);
+      எனில்( zSep ){
         sqlite3_str_append(&pGCC->str, zSep, nSep);
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      else{
+      இல்லையெனில்{
         nSep = 0;
       }
-      if( nSep != pGCC->nFirstSepLength || pGCC->pnSepLengths != 0 ){
-        int *pnsl = pGCC->pnSepLengths;
-        if( pnsl == 0 ){
+      எனில்( nSep != pGCC->nFirstSepLength || pGCC->pnSepLengths != 0 ){
+        முழு *pnsl = pGCC->pnSepLengths;
+        எனில்( pnsl == 0 ){
           /* First separator length variation seen, start tracking them. */
-          pnsl = (int*)sqlite3_malloc64((pGCC->nAccum+1) * sizeof(int));
-          if( pnsl!=0 ){
-            int i = 0, nA = pGCC->nAccum-1;
-            while( i<nA ) pnsl[i++] = pGCC->nFirstSepLength;
+          pnsl = (முழு*)sqlite3_malloc64((pGCC->nAccum+1) * அளவு(முழு));
+          எனில்( pnsl!=0 ){
+            முழு i = 0, nA = pGCC->nAccum-1;
+            போது( i<nA ) pnsl[i++] = pGCC->nFirstSepLength;
           }
-        }else{
-          pnsl = (int*)sqlite3_realloc64(pnsl, pGCC->nAccum * sizeof(int));
+        }இல்லையெனில்{
+          pnsl = (முழு*)sqlite3_realloc64(pnsl, pGCC->nAccum * அளவு(முழு));
         }
-        if( pnsl!=0 ){
-          if( ALWAYS(pGCC->nAccum>0) ){
+        எனில்( pnsl!=0 ){
+          எனில்( ALWAYS(pGCC->nAccum>0) ){
             pnsl[pGCC->nAccum-1] = nSep;
           }
           pGCC->pnSepLengths = pnsl;
-        }else{
+        }இல்லையெனில்{
           sqlite3StrAccumSetError(&pGCC->str, SQLITE_NOMEM);
         }
       }
 #endif
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    else{
-      pGCC->nFirstSepLength = sqlite3_value_bytes(argv[1]);
+    இல்லையெனில்{
+      pGCC->nFirstSepLength = sqlite3_மதிப்பு_bytes(argv[1]);
     }
     pGCC->nAccum += 1;
 #endif
-    zVal = (char*)sqlite3_value_text(argv[0]);
-    nVal = sqlite3_value_bytes(argv[0]);
-    if( zVal ) sqlite3_str_append(&pGCC->str, zVal, nVal);
+    zVal = (எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
+    nVal = sqlite3_மதிப்பு_bytes(argv[0]);
+    எனில்( zVal ) sqlite3_str_append(&pGCC->str, zVal, nVal);
   }
 }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatInverse(
+நிலையான வெறுமை groupConcatInverse(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   GroupConcatCtx *pGCC;
-  assert( argc==1 || argc==2 );
-  (void)argc;  /* Suppress unused parameter warning */
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, sizeof(*pGCC));
+  ப்ரதிஜ்ஞா( argc==1 || argc==2 );
+  (வெறுமை)argc;  /* Suppress unused parameter warning */
+  எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_NULL ) திரும்பு;
+  pGCC = (GroupConcatCtx*)sqlite3_aggregate_context(context, அளவு(*pGCC));
   /* pGCC is always non-NULL since groupConcatStep() will have always
   ** run first to initialize it */
-  if( ALWAYS(pGCC) ){
-    int nVS;  /* Number of characters to remove */
+  எனில்( ALWAYS(pGCC) ){
+    முழு nVS;  /* Number of characters to remove */
     /* Must call sqlite3_value_text() to convert the argument into text prior
     ** to invoking sqlite3_value_bytes(), in case the text encoding is UTF16 */
-    (void)sqlite3_value_text(argv[0]);
-    nVS = sqlite3_value_bytes(argv[0]);
+    (வெறுமை)sqlite3_மதிப்பு_text(argv[0]);
+    nVS = sqlite3_மதிப்பு_bytes(argv[0]);
     pGCC->nAccum -= 1;
-    if( pGCC->pnSepLengths!=0 ){
-      assert(pGCC->nAccum >= 0);
-      if( pGCC->nAccum>0 ){
+    எனில்( pGCC->pnSepLengths!=0 ){
+      ப்ரதிஜ்ஞா(pGCC->nAccum >= 0);
+      எனில்( pGCC->nAccum>0 ){
         nVS += *pGCC->pnSepLengths;
         memmove(pGCC->pnSepLengths, pGCC->pnSepLengths+1,
-               (pGCC->nAccum-1)*sizeof(int));
+               (pGCC->nAccum-1)*அளவு(முழு));
       }
-    }else{
+    }இல்லையெனில்{
       /* If removing single accumulated string, harmlessly over-do. */
       nVS += pGCC->nFirstSepLength;
     }
-    if( nVS>=(int)pGCC->str.nChar ){
+    எனில்( nVS>=(முழு)pGCC->str.nChar ){
       pGCC->str.nChar = 0;
-    }else{
+    }இல்லையெனில்{
       pGCC->str.nChar -= nVS;
       memmove(pGCC->str.zText, &pGCC->str.zText[nVS], pGCC->str.nChar);
     }
-    if( pGCC->nAccum==0 ){
+    எனில்( pGCC->nAccum==0 ){
       pGCC->str.mxAlloc = 0;
       sqlite3_free(pGCC->pnSepLengths);
       pGCC->pnSepLengths = 0;
     }
   }
 }
-#else
+#இல்லையெனில்
 # define groupConcatInverse 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
-static void groupConcatFinalize(sqlite3_context *context){
+நிலையான வெறுமை groupConcatFinalize(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
-  if( pGCC ){
+  எனில்( pGCC ){
     sqlite3_result_str(context, &pGCC->str, SQLITE_XFER);
 #ifndef SQLITE_OMIT_WINDOWFUNC
     sqlite3_free(pGCC->pnSepLengths);
@@ -2370,15 +2370,15 @@ static void groupConcatFinalize(sqlite3_context *context){
   }
 }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-static void groupConcatValue(sqlite3_context *context){
+நிலையான வெறுமை group_Concat_மதிப்பு(sqlite3_context *context){
   GroupConcatCtx *pGCC
     = (GroupConcatCtx*)sqlite3_aggregate_context(context, 0);
-  if( pGCC && pGCC->nAccum>0 ){
+  எனில்( pGCC && pGCC->nAccum>0 ){
     sqlite3_result_str(context, &pGCC->str, SQLITE_COPY);
   }
 }
-#else
-# define groupConcatValue 0
+#இல்லையெனில்
+# define group_Concat_மதிப்பு 0
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
@@ -2386,10 +2386,10 @@ static void groupConcatValue(sqlite3_context *context){
 ** of the built-in functions above are part of the global function set.
 ** This routine only deals with those that are not global.
 */
-void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
-  int rc = sqlite3_overload_function(db, "MATCH", 2);
-  assert( rc==SQLITE_NOMEM || rc==SQLITE_OK );
-  if( rc==SQLITE_NOMEM ){
+வெறுமை sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
+  முழு rc = sqlite3_overload_function(db, "MATCH", 2);
+  ப்ரதிஜ்ஞா( rc==SQLITE_NOMEM || rc==SQLITE_OK );
+  எனில்( rc==SQLITE_NOMEM ){
     sqlite3OomFault(db);
   }
 }
@@ -2399,23 +2399,23 @@ void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3 *db){
 ** parameter determines whether or not the LIKE operator is case
 ** sensitive.
 */
-void sqlite3RegisterLikeFunctions(sqlite3 *db, int caseSensitive){
+வெறுமை sqlite3RegisterLikeFunctions(sqlite3 *db, முழு caseSensitive){
   FuncDef *pDef;
-  struct compareInfo *pInfo;
-  int flags;
-  int nArg;
-  if( caseSensitive ){
-    pInfo = (struct compareInfo*)&likeInfoAlt;
+  கட்டமைப்பு compareInfo *pInfo;
+  முழு flags;
+  முழு nArg;
+  எனில்( caseSensitive ){
+    pInfo = (கட்டமைப்பு compareInfo*)&likeInfoAlt;
     flags = SQLITE_FUNC_LIKE | SQLITE_FUNC_CASE;
-  }else{
-    pInfo = (struct compareInfo*)&likeInfoNorm;
+  }இல்லையெனில்{
+    pInfo = (கட்டமைப்பு compareInfo*)&likeInfoNorm;
     flags = SQLITE_FUNC_LIKE;
   }
-  for(nArg=2; nArg<=3; nArg++){
+  க்கு(nArg=2; nArg<=3; nArg++){
     sqlite3CreateFunc(db, "like", nArg, SQLITE_UTF8, pInfo, likeFunc, 
                       0, 0, 0, 0, 0);
     pDef = sqlite3FindFunction(db, "like", nArg, SQLITE_UTF8, 0);
-    assert( pDef!=0 ); /* The sqlite3CreateFunc() call above cannot fail
+    ப்ரதிஜ்ஞா( pDef!=0 ); /* The sqlite3CreateFunc() call above cannot fail
                        ** because the "like" SQL-function already exists */
     pDef->funcFlags |= flags;
     pDef->funcFlags &= ~SQLITE_FUNC_UNSAFE;
@@ -2439,23 +2439,23 @@ void sqlite3RegisterLikeFunctions(sqlite3 *db, int caseSensitive){
 ** between uppercase and lowercase (as does GLOB) then *pIsNocase is set to
 ** false.
 */
-int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
+முழு sqlite3IsLikeFunction(sqlite3 *db, கோவை *p_கோவை, முழு *pIsNocase, எழுத்து *aWc){
   FuncDef *pDef;
-  int nExpr;
-  assert( pExpr!=0 );
-  assert( pExpr->op==TK_FUNCTION );
-  assert( ExprUseXList(pExpr) );
-  if( !pExpr->x.pList ){
-    return 0;
+  முழு n_கோவை;
+  ப்ரதிஜ்ஞா( p_கோவை!=0 );
+  ப்ரதிஜ்ஞா( p_கோவை->op==TK_FUNCTION );
+  ப்ரதிஜ்ஞா( கோவை_Use_XList(p_கோவை) );
+  எனில்( !p_கோவை->x.pList ){
+    திரும்பு 0;
   }
-  nExpr = pExpr->x.pList->nExpr;
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  pDef = sqlite3FindFunction(db, pExpr->u.zToken, nExpr, SQLITE_UTF8, 0);
+  n_கோவை = p_கோவை->x.pList->n_கோவை;
+  ப்ரதிஜ்ஞா( !கோவை_Has_Property(p_கோவை, EP_Int_மதிப்பு) );
+  pDef = sqlite3FindFunction(db, p_கோவை->u.zToken, n_கோவை, SQLITE_UTF8, 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-  if( pDef==0 ) return 0;
+  எனில்( pDef==0 ) திரும்பு 0;
 #endif
-  if( NEVER(pDef==0) || (pDef->funcFlags & SQLITE_FUNC_LIKE)==0 ){
-    return 0;
+  எனில்( NEVER(pDef==0) || (pDef->funcFlags & SQLITE_FUNC_LIKE)==0 ){
+    திரும்பு 0;
   }
 
   /* The memcpy() statement assumes that the wildcard characters are
@@ -2463,26 +2463,26 @@ int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
   ** asserts() that follow verify that assumption
   */
   memcpy(aWc, pDef->pUserData, 3);
-  assert( (char*)&likeInfoAlt == (char*)&likeInfoAlt.matchAll );
-  assert( &((char*)&likeInfoAlt)[1] == (char*)&likeInfoAlt.matchOne );
-  assert( &((char*)&likeInfoAlt)[2] == (char*)&likeInfoAlt.matchSet );
+  ப்ரதிஜ்ஞா( (எழுத்து*)&likeInfoAlt == (எழுத்து*)&likeInfoAlt.matchAll );
+  ப்ரதிஜ்ஞா( &((எழுத்து*)&likeInfoAlt)[1] == (எழுத்து*)&likeInfoAlt.matchOne );
+  ப்ரதிஜ்ஞா( &((எழுத்து*)&likeInfoAlt)[2] == (எழுத்து*)&likeInfoAlt.matchSet );
 
-  if( nExpr<3 ){
+  எனில்( n_கோவை<3 ){
     aWc[3] = 0;
-  }else{
-    Expr *pEscape = pExpr->x.pList->a[2].pExpr;
-    char *zEscape;
-    if( pEscape->op!=TK_STRING ) return 0;
-    assert( !ExprHasProperty(pEscape, EP_IntValue) );
+  }இல்லையெனில்{
+    கோவை *pEscape = p_கோவை->x.pList->a[2].p_கோவை;
+    எழுத்து *zEscape;
+    எனில்( pEscape->op!=TK_STRING ) திரும்பு 0;
+    ப்ரதிஜ்ஞா( !கோவை_Has_Property(pEscape, EP_Int_மதிப்பு) );
     zEscape = pEscape->u.zToken;
-    if( zEscape[0]==0 || zEscape[1]!=0 ) return 0;
-    if( zEscape[0]==aWc[0] ) return 0;
-    if( zEscape[0]==aWc[1] ) return 0;
+    எனில்( zEscape[0]==0 || zEscape[1]!=0 ) திரும்பு 0;
+    எனில்( zEscape[0]==aWc[0] ) திரும்பு 0;
+    எனில்( zEscape[0]==aWc[1] ) திரும்பு 0;
     aWc[3] = zEscape[0];
   }
 
   *pIsNocase = (pDef->funcFlags & SQLITE_FUNC_CASE)==0;
-  return 1;
+  திரும்பு 1;
 }
 
 /* Mathematical Constants */
@@ -2510,24 +2510,24 @@ int sqlite3IsLikeFunction(sqlite3 *db, Expr *pExpr, int *pIsNocase, char *aWc){
 ** The sqlite3_user_data() pointer is a pointer to the libm implementation
 ** of the underlying C function.
 */
-static void ceilingFunc(
+நிலையான வெறுமை ceilingFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  assert( argc==1 );
-  switch( sqlite3_value_numeric_type(argv[0]) ){
-    case SQLITE_INTEGER: {
-       sqlite3_result_int64(context, sqlite3_value_int64(argv[0]));
-       break;
+  ப்ரதிஜ்ஞா( argc==1 );
+  தேர்வு( sqlite3_மதிப்பு_numeric_type(argv[0]) ){
+    நிலை SQLITE_INTEGER: {
+       sqlite3_result_int64(context, sqlite3_மதிப்பு_int64(argv[0]));
+       நிறுத்து;
     }
-    case SQLITE_FLOAT: {
-       double (*x)(double) = (double(*)(double))sqlite3_user_data(context);
-       sqlite3_result_double(context, x(sqlite3_value_double(argv[0])));
-       break;
+    நிலை SQLITE_FLOAT: {
+       இரட்டை (*x)(இரட்டை) = (இரட்டை(*)(இரட்டை))sqlite3_user_data(context);
+       sqlite3_result_double(context, x(sqlite3_மதிப்பு_double(argv[0])));
+       நிறுத்து;
     }
-    default: {
-       break;
+    இயல்பு: {
+       நிறுத்து;
     }
   }
 }
@@ -2537,17 +2537,17 @@ static void ceilingFunc(
 ** unable to take a pointer to these functions.  Hence, we here wrap them
 ** in our own actual functions.
 */
-static double xCeil(double x){ return ceil(x); }
-static double xFloor(double x){ return floor(x); }
+நிலையான இரட்டை xCeil(இரட்டை x){ திரும்பு ceil(x); }
+நிலையான இரட்டை xFloor(இரட்டை x){ திரும்பு floor(x); }
 
 /*
 ** Some systems do not have log2() and log10() in their standard math
 ** libraries.
 */
-#if defined(HAVE_LOG10) && HAVE_LOG10==0
+#எனில் defined(HAVE_LOG10) && HAVE_LOG10==0
 # define log10(X) (0.4342944819032517867*log(X))
 #endif
-#if defined(HAVE_LOG2) && HAVE_LOG2==0
+#எனில் defined(HAVE_LOG2) && HAVE_LOG2==0
 # define log2(X) (1.442695040888963456*log(X))
 #endif
 
@@ -2560,46 +2560,46 @@ static double xFloor(double x){ return floor(x); }
 **   log10(X)    - log X base 10
 **   log(B,X)    - log X base B
 */
-static void logFunc(
+நிலையான வெறுமை logFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  double x, b, ans;
-  assert( argc==1 || argc==2 );
-  switch( sqlite3_value_numeric_type(argv[0]) ){
-    case SQLITE_INTEGER:
-    case SQLITE_FLOAT:
-      x = sqlite3_value_double(argv[0]);
-      if( x<=0.0 ) return;
-      break;
-    default:
-      return;
+  இரட்டை x, b, ans;
+  ப்ரதிஜ்ஞா( argc==1 || argc==2 );
+  தேர்வு( sqlite3_மதிப்பு_numeric_type(argv[0]) ){
+    நிலை SQLITE_INTEGER:
+    நிலை SQLITE_FLOAT:
+      x = sqlite3_மதிப்பு_double(argv[0]);
+      எனில்( x<=0.0 ) திரும்பு;
+      நிறுத்து;
+    இயல்பு:
+      திரும்பு;
   }
-  if( argc==2 ){
-    switch( sqlite3_value_numeric_type(argv[1]) ){
-      case SQLITE_INTEGER:
-      case SQLITE_FLOAT:
+  எனில்( argc==2 ){
+    தேர்வு( sqlite3_மதிப்பு_numeric_type(argv[1]) ){
+      நிலை SQLITE_INTEGER:
+      நிலை SQLITE_FLOAT:
         b = log(x);
-        if( b<=0.0 ) return;
-        x = sqlite3_value_double(argv[1]);
-        if( x<=0.0 ) return;
-        break;
-     default:
-        return;
+        எனில்( b<=0.0 ) திரும்பு;
+        x = sqlite3_மதிப்பு_double(argv[1]);
+        எனில்( x<=0.0 ) திரும்பு;
+        நிறுத்து;
+     இயல்பு:
+        திரும்பு;
     }
     ans = log(x)/b;
-  }else{
-    switch( SQLITE_PTR_TO_INT(sqlite3_user_data(context)) ){
-      case 1:
+  }இல்லையெனில்{
+    தேர்வு( SQLITE_PTR_TO_INT(sqlite3_user_data(context)) ){
+      நிலை 1:
         ans = log10(x);
-        break;
-      case 2:
+        நிறுத்து;
+      நிலை 2:
         ans = log2(x);
-        break;
-      default:
+        நிறுத்து;
+      இயல்பு:
         ans = log(x);
-        break;
+        நிறுத்து;
     }
   }
   sqlite3_result_double(context, ans);
@@ -2608,27 +2608,27 @@ static void logFunc(
 /*
 ** Functions to converts degrees to radians and radians to degrees.
 */
-static double degToRad(double x){ return x*(M_PI/180.0); }
-static double radToDeg(double x){ return x*(180.0/M_PI); }
+நிலையான இரட்டை degToRad(இரட்டை x){ திரும்பு x*(M_PI/180.0); }
+நிலையான இரட்டை radToDeg(இரட்டை x){ திரும்பு x*(180.0/M_PI); }
 
 /*
 ** Implementation of 1-argument SQL math functions:
 **
 **   exp(X)  - Compute e to the X-th power
 */
-static void math1Func(
+நிலையான வெறுமை math1Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  int type0;
-  double v0, ans;
-  double (*x)(double);
-  assert( argc==1 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  v0 = sqlite3_value_double(argv[0]);
-  x = (double(*)(double))sqlite3_user_data(context);
+  முழு type0;
+  இரட்டை v0, ans;
+  இரட்டை (*x)(இரட்டை);
+  ப்ரதிஜ்ஞா( argc==1 );
+  type0 = sqlite3_மதிப்பு_numeric_type(argv[0]);
+  எனில்( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) திரும்பு;
+  v0 = sqlite3_மதிப்பு_double(argv[0]);
+  x = (இரட்டை(*)(இரட்டை))sqlite3_user_data(context);
   ans = x(v0);
   sqlite3_result_double(context, ans);
 }
@@ -2638,22 +2638,22 @@ static void math1Func(
 **
 **   power(X,Y)  - Compute X to the Y-th power
 */
-static void math2Func(
+நிலையான வெறுமை math2Func(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  int type0, type1;
-  double v0, v1, ans;
-  double (*x)(double,double);
-  assert( argc==2 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  type1 = sqlite3_value_numeric_type(argv[1]);
-  if( type1!=SQLITE_INTEGER && type1!=SQLITE_FLOAT ) return;
-  v0 = sqlite3_value_double(argv[0]);
-  v1 = sqlite3_value_double(argv[1]);
-  x = (double(*)(double,double))sqlite3_user_data(context);
+  முழு type0, type1;
+  இரட்டை v0, v1, ans;
+  இரட்டை (*x)(இரட்டை,இரட்டை);
+  ப்ரதிஜ்ஞா( argc==2 );
+  type0 = sqlite3_மதிப்பு_numeric_type(argv[0]);
+  எனில்( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) திரும்பு;
+  type1 = sqlite3_மதிப்பு_numeric_type(argv[1]);
+  எனில்( type1!=SQLITE_INTEGER && type1!=SQLITE_FLOAT ) திரும்பு;
+  v0 = sqlite3_மதிப்பு_double(argv[0]);
+  v1 = sqlite3_மதிப்பு_double(argv[1]);
+  x = (இரட்டை(*)(இரட்டை,இரட்டை))sqlite3_user_data(context);
   ans = x(v0, v1);
   sqlite3_result_double(context, ans);
 }
@@ -2661,13 +2661,13 @@ static void math2Func(
 /*
 ** Implementation of 0-argument pi() function.
 */
-static void piFunc(
+நிலையான வெறுமை piFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  assert( argc==0 );
-  (void)argv;
+  ப்ரதிஜ்ஞா( argc==0 );
+  (வெறுமை)argv;
   sqlite3_result_double(context, M_PI);
 }
 
@@ -2676,22 +2676,22 @@ static void piFunc(
 /*
 ** Implementation of sign(X) function.
 */
-static void signFunc(
+நிலையான வெறுமை signFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  int type0;
-  double x;
+  முழு type0;
+  இரட்டை x;
   UNUSED_PARAMETER(argc);
-  assert( argc==1 );
-  type0 = sqlite3_value_numeric_type(argv[0]);
-  if( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) return;
-  x = sqlite3_value_double(argv[0]);
+  ப்ரதிஜ்ஞா( argc==1 );
+  type0 = sqlite3_மதிப்பு_numeric_type(argv[0]);
+  எனில்( type0!=SQLITE_INTEGER && type0!=SQLITE_FLOAT ) திரும்பு;
+  x = sqlite3_மதிப்பு_double(argv[0]);
   sqlite3_result_int(context, x<0.0 ? -1 : x>0.0 ? +1 : 0);
 }
 
-#if defined(SQLITE_ENABLE_PERCENTILE)
+#எனில் defined(SQLITE_ENABLE_PERCENTILE)
 /***********************************************************************
 ** This section implements the percentile(Y,P) SQL function and similar.
 ** Requirements:
@@ -2801,33 +2801,33 @@ static void signFunc(
 ** aggregate.  Remember all input Y values until the very end.
 ** Those values are accumulated in the Percentile.a[] array.
 */
-typedef struct Percentile Percentile;
-struct Percentile {
+வகைவரை கட்டமைப்பு Percentile Percentile;
+கட்டமைப்பு Percentile {
   u64 nAlloc;          /* Number of slots allocated for a[] */
   u64 nUsed;           /* Number of slots actually used in a[] */
-  char bSorted;        /* True if a[] is already in sorted order */
-  char bKeepSorted;    /* True if advantageous to keep a[] sorted */
-  char bPctValid;      /* True if rPct is valid */
-  double rPct;         /* Fraction.  0.0 to 1.0 */
-  double *a;           /* Array of Y values */
+  எழுத்து bSorted;        /* True if a[] is already in sorted order */
+  எழுத்து bKeepSorted;    /* True if advantageous to keep a[] sorted */
+  எழுத்து bPctValid;      /* True if rPct is valid */
+  இரட்டை rPct;         /* Fraction.  0.0 to 1.0 */
+  இரட்டை *a;           /* Array of Y values */
 };
 
 /*
 ** Return TRUE if the input floating-point number is an infinity.
 */
-static int percentIsInfinity(double r){
+நிலையான முழு percentIsInfinity(இரட்டை r){
   sqlite3_uint64 u;
-  assert( sizeof(u)==sizeof(r) );
-  memcpy(&u, &r, sizeof(u));
-  return ((u>>52)&0x7ff)==0x7ff;
+  ப்ரதிஜ்ஞா( அளவு(u)==அளவு(r) );
+  memcpy(&u, &r, அளவு(u));
+  திரும்பு ((u>>52)&0x7ff)==0x7ff;
 }
 
 /*
 ** Return TRUE if two doubles differ by 0.001 or less.
 */
-static int percentSameValue(double a, double b){
+நிலையான முழு percent_Same_மதிப்பு(இரட்டை a, இரட்டை b){
   a -= b;
-  return a>=-0.001 && a<=0.001;
+  திரும்பு a>=-0.001 && a<=0.001;
 }
 
 /*
@@ -2841,22 +2841,22 @@ static int percentSameValue(double a, double b){
 ** order.  The smallest return value in this case will be 0, and
 ** the largest return value will be p->nUsed.
 */
-static i64 percentBinarySearch(Percentile *p, double y, int bExact){
+நிலையான i64 percent_இருமம்_தேடல்(Percentile *p, இரட்டை y, முழு bExact){
   i64 iFirst = 0;                   /* First element of search range */
   i64 iLast = (i64)p->nUsed - 1;    /* Last element of search range */
-  while( iLast>=iFirst ){
+  போது( iLast>=iFirst ){
     i64 iMid = (iFirst+iLast)/2;
-    double x = p->a[iMid];
-    if( x<y ){
+    இரட்டை x = p->a[iMid];
+    எனில்( x<y ){
       iFirst = iMid + 1;
-    }else if( x>y ){
+    }இல்லையெனில் எனில்( x>y ){
       iLast = iMid - 1;
-    }else{
-      return iMid;
+    }இல்லையெனில்{
+      திரும்பு iMid;
     }
   }
-  if( bExact ) return -1;
-  return iFirst;
+  எனில்( bExact ) திரும்பு -1;
+  திரும்பு iFirst;
 }
 
 /*
@@ -2866,9 +2866,9 @@ static i64 percentBinarySearch(Percentile *p, double y, int bExact){
 ** (with two '%' characters).  That substring will be replaced by the name
 ** of the function.
 */
-static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
-  char *zMsg1;
-  char *zMsg2;
+நிலையான வெறுமை percentError(sqlite3_context *pCtx, மாறிலி எழுத்து *zFormat, ...){
+  எழுத்து *zMsg1;
+  எழுத்து *zMsg2;
   va_list ap;
 
   va_start(ap, zFormat);
@@ -2884,95 +2884,95 @@ static void percentError(sqlite3_context *pCtx, const char *zFormat, ...){
 ** The "step" function for percentile(Y,P) is called once for each
 ** input row.
 */
-static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
+நிலையான வெறுமை percentStep(sqlite3_context *pCtx, முழு argc, sqlite3_மதிப்பு **argv){
   Percentile *p;
-  double rPct;
-  int eType;
-  double y;
-  assert( argc==2 || argc==1 );
+  இரட்டை rPct;
+  முழு eType;
+  இரட்டை y;
+  ப்ரதிஜ்ஞா( argc==2 || argc==1 );
 
-  if( argc==1 ){
+  எனில்( argc==1 ){
     /* Requirement 13:  median(Y) is the same as percentile(Y,50). */
     rPct = 0.5;
-  }else{
+  }இல்லையெனில்{
     /* P must be a number between 0 and 100 for percentile() or between
     ** 0.0 and 1.0 for percentile_cont() and percentile_disc().
     **
     ** The user-data is an integer which is 10 times the upper bound.
     */
-    double mxFrac = (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&2)? 100.0 : 1.0;
-    eType = sqlite3_value_numeric_type(argv[1]);
-    rPct = sqlite3_value_double(argv[1])/mxFrac;
-    if( (eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT)
+    இரட்டை mxFrac = (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&2)? 100.0 : 1.0;
+    eType = sqlite3_மதிப்பு_numeric_type(argv[1]);
+    rPct = sqlite3_மதிப்பு_double(argv[1])/mxFrac;
+    எனில்( (eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT)
      || rPct<0.0 || rPct>1.0
     ){
       percentError(pCtx, "the fraction argument to %%s()"
                         " is not between 0.0 and %.1f",
-                        (double)mxFrac);
-      return;
+                        (இரட்டை)mxFrac);
+      திரும்பு;
     }
   }
 
   /* Allocate the session context. */
-  p = (Percentile*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p==0 ) return;
+  p = (Percentile*)sqlite3_aggregate_context(pCtx, அளவு(*p));
+  எனில்( p==0 ) திரும்பு;
 
   /* Remember the P value.  Throw an error if the P value is different
   ** from any prior row, per Requirement (2). */
-  if( !p->bPctValid ){
+  எனில்( !p->bPctValid ){
     p->rPct = rPct;
     p->bPctValid = 1;
-  }else if( !percentSameValue(p->rPct,rPct) ){
+  }இல்லையெனில் எனில்( !percent_Same_மதிப்பு(p->rPct,rPct) ){
     percentError(pCtx, "the fraction argument to %%s()"
                       " is not the same for all input rows");
-    return;
+    திரும்பு;
   }
 
   /* Ignore rows for which Y is NULL */
-  eType = sqlite3_value_type(argv[0]);
-  if( eType==SQLITE_NULL ) return;
+  eType = sqlite3_மதிப்பு_type(argv[0]);
+  எனில்( eType==SQLITE_NULL ) திரும்பு;
 
   /* If not NULL, then Y must be numeric.  Otherwise throw an error.
   ** Requirement 4 */
-  if( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
+  எனில்( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
     percentError(pCtx, "input to %%s() is not numeric");
-    return;
+    திரும்பு;
   }
 
   /* Throw an error if the Y value is infinity or NaN */
-  y = sqlite3_value_double(argv[0]);
-  if( percentIsInfinity(y) ){
+  y = sqlite3_மதிப்பு_double(argv[0]);
+  எனில்( percentIsInfinity(y) ){
     percentError(pCtx, "Inf input to %%s()");
-    return;
+    திரும்பு;
   }
 
   /* Allocate and store the Y */
-  if( p->nUsed>=p->nAlloc ){
+  எனில்( p->nUsed>=p->nAlloc ){
     u64 n = p->nAlloc*2 + 250;
-    double *a = sqlite3_realloc64(p->a, sizeof(double)*n);
-    if( a==0 ){
+    இரட்டை *a = sqlite3_realloc64(p->a, அளவு(இரட்டை)*n);
+    எனில்( a==0 ){
       sqlite3_free(p->a);
-      memset(p, 0, sizeof(*p));
+      memset(p, 0, அளவு(*p));
       sqlite3_result_error_nomem(pCtx);
-      return;
+      திரும்பு;
     }
     p->nAlloc = n;
     p->a = a;
   }
-  if( p->nUsed==0 ){
+  எனில்( p->nUsed==0 ){
     p->a[p->nUsed++] = y;
     p->bSorted = 1;
-  }else if( !p->bSorted || y>=p->a[p->nUsed-1] ){
+  }இல்லையெனில் எனில்( !p->bSorted || y>=p->a[p->nUsed-1] ){
     p->a[p->nUsed++] = y;
-  }else if( p->bKeepSorted ){
+  }இல்லையெனில் எனில்( p->bKeepSorted ){
     i64 i;
-    i = percentBinarySearch(p, y, 0);
-    if( i<(int)p->nUsed ){
-      memmove(&p->a[i+1], &p->a[i], (p->nUsed-i)*sizeof(p->a[0]));
+    i = percent_இருமம்_தேடல்(p, y, 0);
+    எனில்( i<(முழு)p->nUsed ){
+      memmove(&p->a[i+1], &p->a[i], (p->nUsed-i)*அளவு(p->a[0]));
     }
     p->a[i] = y;
     p->nUsed++;
-  }else{
+  }இல்லையெனில்{
     p->a[p->nUsed++] = y;
     p->bSorted = 0;
   }
@@ -2981,7 +2981,7 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 /*
 ** Interchange two doubles.
 */
-#define SWAP_DOUBLE(X,Y)  {double ttt=(X);(X)=(Y);(Y)=ttt;}
+#define SWAP_DOUBLE(X,Y)  {இரட்டை ttt=(X);(X)=(Y);(Y)=ttt;}
 
 /*
 ** Sort an array of doubles.
@@ -3000,34 +3000,34 @@ static void percentStep(sqlite3_context *pCtx, int argc, sqlite3_value **argv){
 ** so it is not necessary to position any other elements. Or if iReq is
 ** negative, then the final array must be fully sorted.
 */
-static void percentSort(
-  double *a,                      /* Array to sort */
-  unsigned int n,                 /* Number of elements in array a[] */
-  int iReq                        /* Element caller cares about (or -ve) */
+நிலையான வெறுமை percentSort(
+  இரட்டை *a,                      /* Array to sort */
+  unsigned முழு n,                 /* Number of elements in array a[] */
+  முழு iReq                        /* Element caller cares about (or -ve) */
 ){
-  int iLt;       /* Entries before a[iLt] are less than or equal to rPivot */
-  int iGt;       /* Entries a[iGt] and after are greater or equal to rPivot */
-  int i;         /* Loop counter */
-  double rPivot; /* The pivot value */
+  முழு iLt;       /* Entries before a[iLt] are less than or equal to rPivot */
+  முழு iGt;       /* Entries a[iGt] and after are greater or equal to rPivot */
+  முழு i;         /* Loop counter */
+  இரட்டை rPivot; /* The pivot value */
 
-  assert( n>=2 );
-  do{
+  ப்ரதிஜ்ஞா( n>=2 );
+  செய்{
     /* Put the first, middle, and last elements in sorted order.
     ** After doing so, return immediately if the array contains
     ** three or fewer elements as there is nothing more to do.
     */
-    if( a[0]>a[n-1] ){
+    எனில்( a[0]>a[n-1] ){
       SWAP_DOUBLE(a[0],a[n-1])
     }
-    if( n==2 ) return;
+    எனில்( n==2 ) திரும்பு;
     iGt = n-1;
     i = n/2;
-    if( a[0]>a[i] ){
+    எனில்( a[0]>a[i] ){
       SWAP_DOUBLE(a[0],a[i])
-    }else if( a[i]>a[iGt] ){
+    }இல்லையெனில் எனில்( a[i]>a[iGt] ){
       SWAP_DOUBLE(a[i],a[iGt])
     }
-    if( n==3 ) return;
+    எனில்( n==3 ) திரும்பு;
 
     /* Take the value of the middle element as the pivot.  Shuffle
     ** values around so that all elements less than the pivot come
@@ -3035,29 +3035,29 @@ static void percentSort(
     */
     rPivot = a[i];
     iLt = i = 1;
-    do{
-      if( a[i]<rPivot ){
-        if( i>iLt ) SWAP_DOUBLE(a[i],a[iLt])
+    செய்{
+      எனில்( a[i]<rPivot ){
+        எனில்( i>iLt ) SWAP_DOUBLE(a[i],a[iLt])
         iLt++;
         i++;
-      }else if( a[i]>rPivot ){
-        do{
+      }இல்லையெனில் எனில்( a[i]>rPivot ){
+        செய்{
           iGt--;
-        }while( iGt>i && a[iGt]>rPivot );
+        }போது( iGt>i && a[iGt]>rPivot );
         SWAP_DOUBLE(a[i],a[iGt])
-      }else{
+      }இல்லையெனில்{
         i++;
       }
-    }while( i<iGt );
+    }போது( i<iGt );
 
-    assert( iLt>0 && iLt<iGt && (unsigned)iGt<n );
+    ப்ரதிஜ்ஞா( iLt>0 && iLt<iGt && (unsigned)iGt<n );
     testcase( iGt>iLt+1 );
-    assert( a[iLt]==rPivot );
-    assert( a[iLt-1]<=rPivot );
-    assert( a[iGt]>=rPivot );
-    assert( a[iLt+1]>=rPivot );
+    ப்ரதிஜ்ஞா( a[iLt]==rPivot );
+    ப்ரதிஜ்ஞா( a[iLt-1]<=rPivot );
+    ப்ரதிஜ்ஞா( a[iGt]>=rPivot );
+    ப்ரதிஜ்ஞா( a[iLt+1]>=rPivot );
 
-    if( iReq>=0 ){
+    எனில்( iReq>=0 ){
       /* In this case, the only elements that the caller requires sorted into 
       ** the correct positions are elements a[iReq] and a[iReq+1]. At this
       ** point we know that element a[iLt] is in the correct position and
@@ -3069,73 +3069,73 @@ static void percentSort(
       ** right partition or the equal partition (elements for which 
       ** iLt<=iElem<iGt). Therefore it is always sufficient to sort only
       ** the right partition in this case.  */
-      if( iReq<iLt ){
+      எனில்( iReq<iLt ){
         n = iLt;
-      }else{
+      }இல்லையெனில்{
         a += iGt;
         n -= iGt;
         iReq = MAX(0, iReq-iGt);
       }
-    }else{
+    }இல்லையெனில்{
       /* Recurse on the smaller partition only.  The smaller partition
       ** will hold n/2 or fewer entries, which assures that the stack
       ** depth will not exceed O(log(n)), even for pathological cases.
       ** Loop without recursion for the larger partition. */
-      if( iLt>(int)(n/2) ){
-        if( n-iGt>=2 ) percentSort(a+iGt, n-iGt, -1);
+      எனில்( iLt>(முழு)(n/2) ){
+        எனில்( n-iGt>=2 ) percentSort(a+iGt, n-iGt, -1);
         n = iLt;
-      }else{
-        if( iLt>=2 ) percentSort(a, iLt, -1);
+      }இல்லையெனில்{
+        எனில்( iLt>=2 ) percentSort(a, iLt, -1);
         a += iGt;
         n -= iGt;
       }
     }
-  }while( n>=2 );
+  }போது( n>=2 );
 }
 
 /*
 ** The "inverse" function for percentile(Y,P) is called to remove a
 ** row that was previously inserted by "step".
 */
-static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
+நிலையான வெறுமை percentInverse(sqlite3_context *pCtx,முழு argc,sqlite3_மதிப்பு **argv){
   Percentile *p;
-  int eType;
-  double y;
+  முழு eType;
+  இரட்டை y;
   i64 i;
-  assert( argc==2 || argc==1 );
+  ப்ரதிஜ்ஞா( argc==2 || argc==1 );
 
   /* Allocate the session context. */
-  p = (Percentile*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  assert( p!=0 );
+  p = (Percentile*)sqlite3_aggregate_context(pCtx, அளவு(*p));
+  ப்ரதிஜ்ஞா( p!=0 );
 
   /* Ignore rows for which Y is NULL */
-  eType = sqlite3_value_type(argv[0]);
-  if( eType==SQLITE_NULL ) return;
+  eType = sqlite3_மதிப்பு_type(argv[0]);
+  எனில்( eType==SQLITE_NULL ) திரும்பு;
 
   /* If not NULL, then Y must be numeric.  Otherwise throw an error.
   ** Requirement 4 */
-  if( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
-    return;
+  எனில்( eType!=SQLITE_INTEGER && eType!=SQLITE_FLOAT ){
+    திரும்பு;
   }
 
   /* Ignore the Y value if it is infinity or NaN */
-  y = sqlite3_value_double(argv[0]);
-  if( percentIsInfinity(y) ){
-    return;
+  y = sqlite3_மதிப்பு_double(argv[0]);
+  எனில்( percentIsInfinity(y) ){
+    திரும்பு;
   }
-  if( p->bSorted==0 ){
-    assert( p->nUsed>1 );
+  எனில்( p->bSorted==0 ){
+    ப்ரதிஜ்ஞா( p->nUsed>1 );
     percentSort(p->a, p->nUsed, -1);
     p->bSorted = 1;
   }
   p->bKeepSorted = 1;
 
   /* Find and remove the row */
-  i = percentBinarySearch(p, y, 1);
-  if( i>=0 ){
+  i = percent_இருமம்_தேடல்(p, y, 1);
+  எனில்( i>=0 ){
     p->nUsed--;
-    if( i<(int)p->nUsed ){
-      memmove(&p->a[i], &p->a[i+1], (p->nUsed - i)*sizeof(p->a[0]));
+    எனில்( i<(முழு)p->nUsed ){
+      memmove(&p->a[i], &p->a[i+1], (p->nUsed - i)*அளவு(p->a[0]));
     }
   }
 }
@@ -3144,104 +3144,104 @@ static void percentInverse(sqlite3_context *pCtx,int argc,sqlite3_value **argv){
 ** Compute the final output of percentile().  Clean up all allocated
 ** memory if and only if bIsFinal is true.
 */
-static void percentCompute(sqlite3_context *pCtx, int bIsFinal){
+நிலையான வெறுமை percentCompute(sqlite3_context *pCtx, முழு bIsFinal){
   Percentile *p;
-  int settings = SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&1; /* Discrete? */
+  முழு settings = SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx))&1; /* Discrete? */
   unsigned i1, i2;
-  double v1, v2;
-  double ix, vx;
+  இரட்டை v1, v2;
+  இரட்டை ix, vx;
   p = (Percentile*)sqlite3_aggregate_context(pCtx, 0);
-  if( p==0 ) return;
-  if( p->a==0 ) return;
-  if( p->nUsed ){
+  எனில்( p==0 ) திரும்பு;
+  எனில்( p->a==0 ) திரும்பு;
+  எனில்( p->nUsed ){
     ix = p->rPct*(p->nUsed-1);
     i1 = (unsigned)ix;
-    if( p->bSorted==0 ){
+    எனில்( p->bSorted==0 ){
       /* In cases where bIsFinal is non-zero, setting Percentile.bSorted 
       ** after the percentSort() call here is not technically correct, as 
       ** the array is not fully sorted. But in this case the object will be 
       ** freed below anyway, so it doesn't matter.  */
-      assert( p->nUsed>1 );
-      percentSort(p->a, p->nUsed, (bIsFinal ? (int)i1 : -1));
+      ப்ரதிஜ்ஞா( p->nUsed>1 );
+      percentSort(p->a, p->nUsed, (bIsFinal ? (முழு)i1 : -1));
       p->bSorted = 1;
     }
-    if( settings & 1 ){
+    எனில்( settings & 1 ){
       vx = p->a[i1];
-    }else{
-      i2 = ix==(double)i1 || i1==p->nUsed-1 ? i1 : i1+1;
+    }இல்லையெனில்{
+      i2 = ix==(இரட்டை)i1 || i1==p->nUsed-1 ? i1 : i1+1;
       v1 = p->a[i1];
       v2 = p->a[i2];
       vx = v1 + (v2-v1)*(ix-i1);
     }
     sqlite3_result_double(pCtx, vx);
   }
-  if( bIsFinal ){
+  எனில்( bIsFinal ){
     sqlite3_free(p->a);
-    memset(p, 0, sizeof(*p));
-  }else{
+    memset(p, 0, அளவு(*p));
+  }இல்லையெனில்{
     p->bKeepSorted = 1;
   }
 }
-static void percentFinal(sqlite3_context *pCtx){
+நிலையான வெறுமை percentFinal(sqlite3_context *pCtx){
   percentCompute(pCtx, 1);
 }
-static void percentValue(sqlite3_context *pCtx){
+நிலையான வெறுமை percent_மதிப்பு(sqlite3_context *pCtx){
   percentCompute(pCtx, 0);
 }
 /****** End of percentile family of functions ******/
 #endif /* SQLITE_ENABLE_PERCENTILE */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#எனில் defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
 /*
 ** Implementation of sqlite_filestat(SCHEMA).
 **
 ** Return JSON text that describes low-level debug/diagnostic information
 ** about the sqlite3_file object associated with SCHEMA.
 */
-static void filestatFunc(
+நிலையான வெறுமை filestatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDbName;
+  மாறிலி எழுத்து *zDbName;
   sqlite3_str *pStr;
   Btree *pBtree;
 
-  zDbName = (const char*)sqlite3_value_text(argv[0]);
+  zDbName = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
   pBtree = sqlite3DbNameToBtree(db, zDbName);
-  if( pBtree ){
+  எனில்( pBtree ){
     Pager *pPager;
     sqlite3_file *fd;
-    int rc;
+    முழு rc;
     sqlite3BtreeEnter(pBtree);
     pPager = sqlite3BtreePager(pBtree);
-    assert( pPager!=0 );
+    ப்ரதிஜ்ஞா( pPager!=0 );
     fd = sqlite3PagerFile(pPager);
     pStr = sqlite3_str_new(db);
-    if( sqlite3_str_errcode(pStr) ){
+    எனில்( sqlite3_str_errcode(pStr) ){
       sqlite3_result_error_nomem(context);
-    }else{
+    }இல்லையெனில்{
       sqlite3_str_append(pStr, "{\"db\":", 6);
       rc = sqlite3OsFileControl(fd, SQLITE_FCNTL_FILESTAT, pStr);
-      if( rc ) sqlite3_str_append(pStr, "null", 4);
+      எனில்( rc ) sqlite3_str_append(pStr, "null", 4);
       fd = sqlite3PagerJrnlFile(pPager);
-      if( fd && fd->pMethods!=0 ){
+      எனில்( fd && fd->pMethods!=0 ){
         sqlite3_str_appendall(pStr, ",\"journal\":");
         rc = sqlite3OsFileControl(fd, SQLITE_FCNTL_FILESTAT, pStr);
-        if( rc ) sqlite3_str_append(pStr, "null", 4);
+        எனில்( rc ) sqlite3_str_append(pStr, "null", 4);
       }
       sqlite3_str_append(pStr, "}", 1);
       sqlite3_result_str(context, pStr, SQLITE_FINISH);
     }
     sqlite3BtreeLeave(pBtree);
-  }else{
+  }இல்லையெனில்{
     sqlite3_result_text(context, "{}", 2, SQLITE_STATIC);
   }
 }
 #endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+#எனில் defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
 /*
 ** Implementation of sqlite_walstat(SCHEMA).
 **
@@ -3250,34 +3250,34 @@ static void filestatFunc(
 ** of production builds.  This function is not part of the SQLite API
 ** and is likely to change or be removed in future versions of SQLite.
 */
-static void walstatFunc(
+நிலையான வெறுமை walstatFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zDbName;
+  மாறிலி எழுத்து *zDbName;
   sqlite3_str *pStr;
   Btree *pBtree;
 
-  zDbName = (const char*)sqlite3_value_text(argv[0]);
+  zDbName = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
   pBtree = sqlite3DbNameToBtree(db, zDbName);
-  if( pBtree ){
+  எனில்( pBtree ){
     Pager *pPager;
     sqlite3BtreeEnter(pBtree);
     pPager = sqlite3BtreePager(pBtree);
-    assert( pPager!=0 );
+    ப்ரதிஜ்ஞா( pPager!=0 );
     pStr = sqlite3_str_new(db);
-    if( sqlite3_str_errcode(pStr) ){
+    எனில்( sqlite3_str_errcode(pStr) ){
       sqlite3_result_error_nomem(context);
-    }else{
+    }இல்லையெனில்{
       sqlite3_str_append(pStr, "{", 1);
       sqlite3PagerWalStat(pPager, pStr);
       sqlite3_str_append(pStr, "}", 1);
       sqlite3_result_str(context, pStr, SQLITE_FINISH);
     }
     sqlite3BtreeLeave(pBtree);
-  }else{
+  }இல்லையெனில்{
     sqlite3_result_text(context, "{}", 2, SQLITE_STATIC);
   }
 }
@@ -3296,27 +3296,27 @@ static void walstatFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void fpdecodeFunc(
+நிலையான வெறுமை fpdecodeFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   FpDecode s;
-  double x;
-  int y, z;
-  char zBuf[100];
+  இரட்டை x;
+  முழு y, z;
+  எழுத்து zBuf[100];
   UNUSED_PARAMETER(argc);
-  assert( argc==3 );
-  x = sqlite3_value_double(argv[0]);
-  y = sqlite3_value_int(argv[1]);
-  z = sqlite3_value_int(argv[2]);
-  if( z<=0 ) z = 1;
-  if( y<-100000000 ) y = -100000000;  /* Same limit as printf() */
+  ப்ரதிஜ்ஞா( argc==3 );
+  x = sqlite3_மதிப்பு_double(argv[0]);
+  y = sqlite3_மதிப்பு_int(argv[1]);
+  z = sqlite3_மதிப்பு_int(argv[2]);
+  எனில்( z<=0 ) z = 1;
+  எனில்( y<-100000000 ) y = -100000000;  /* Same limit as printf() */
   sqlite3FpDecode(&s, x, y, z);
-  if( s.isSpecial==2 ){
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "NaN");
-  }else{
-    sqlite3_snprintf(sizeof(zBuf), zBuf, "%c%.*s/%d", s.sign, s.n, s.z, s.iDP);
+  எனில்( s.isSpecial==2 ){
+    sqlite3_snprintf(அளவு(zBuf), zBuf, "NaN");
+  }இல்லையெனில்{
+    sqlite3_snprintf(அளவு(zBuf), zBuf, "%c%.*s/%d", s.sign, s.n, s.z, s.iDP);
   }
   sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
 }
@@ -3341,52 +3341,52 @@ static void fpdecodeFunc(
 ** in production builds.  This function is not an API and is subject to
 ** modification or removal in future versions of SQLite.
 */
-static void parseuriFunc(
+நிலையான வெறுமை parseuriFunc(
   sqlite3_context *ctx,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
   sqlite3_str *pResult;
-  const char *zVfs;
-  const char *zUri;
-  unsigned int flgs;
-  int rc;
+  மாறிலி எழுத்து *zVfs;
+  மாறிலி எழுத்து *zUri;
+  unsigned முழு flgs;
+  முழு rc;
   sqlite3_vfs *pVfs = 0;
-  char *zFile = 0;
-  char *zErr = 0;
+  எழுத்து *zFile = 0;
+  எழுத்து *zErr = 0;
 
-  if( argc<2 ) return;
+  எனில்( argc<2 ) திரும்பு;
   pVfs = sqlite3_vfs_find(0);
-  assert( pVfs );
+  ப்ரதிஜ்ஞா( pVfs );
   zVfs = pVfs->zName;
-  zUri = (const char*)sqlite3_value_text(argv[0]);
-  if( zUri==0 ) return;
-  flgs = (unsigned int)sqlite3_value_int(argv[1]);
+  zUri = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
+  எனில்( zUri==0 ) திரும்பு;
+  flgs = (unsigned முழு)sqlite3_மதிப்பு_int(argv[1]);
   rc = sqlite3ParseUri(zVfs, zUri, &flgs, &pVfs, &zFile, &zErr);
   pResult = sqlite3_str_new(0);
-  if( !sqlite3_str_errcode(pResult) ){
-    int i;
+  எனில்( !sqlite3_str_errcode(pResult) ){
+    முழு i;
     sqlite3_str_appendf(pResult, "rc=%d", rc);
     sqlite3_str_appendf(pResult, ", flags=0x%x", flgs);
     sqlite3_str_appendf(pResult, ", vfs=%Q", pVfs ? pVfs->zName: 0);
     sqlite3_str_appendf(pResult, ", err=%Q", zErr);
     sqlite3_str_appendf(pResult, ", file=%Q", zFile);
-    if( zFile ){
-      const char *z = zFile;
+    எனில்( zFile ){
+      மாறிலி எழுத்து *z = zFile;
       z += sqlite3Strlen30(z)+1;
-      while( z[0] ){
+      போது( z[0] ){
         sqlite3_str_appendf(pResult, ", %Q", z);
         z += sqlite3Strlen30(z)+1;
       }
-      for(i=2; i<argc; i++){
-        const char *zArg;
-        if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
-          int k = sqlite3_value_int(argv[i]);
-          sqlite3_str_appendf(pResult, ", '%d:%q'",k,sqlite3_uri_key(zFile, k));
-        }else if( (zArg = (const char*)sqlite3_value_text(argv[i]))!=0 ){
+      க்கு(i=2; i<argc; i++){
+        மாறிலி எழுத்து *zArg;
+        எனில்( sqlite3_மதிப்பு_type(argv[i])==SQLITE_INTEGER ){
+          முழு k = sqlite3_மதிப்பு_int(argv[i]);
+          sqlite3_str_appendf(pResult, ", '%d:%q'",k,sqlite3_uri_சாவி(zFile, k));
+        }இல்லையெனில் எனில்( (zArg = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[i]))!=0 ){
           sqlite3_str_appendf(pResult, ", '%q:%q'",
                  zArg, sqlite3_uri_parameter(zFile,zArg));
-        }else{
+        }இல்லையெனில்{
           sqlite3_str_appendf(pResult, ", NULL");
         }
       }
@@ -3405,7 +3405,7 @@ static void parseuriFunc(
 **
 ** After this routine runs
 */
-void sqlite3RegisterBuiltinFunctions(void){
+வெறுமை sqlite3RegisterBuiltinFunctions(வெறுமை){
   /*
   ** The following array holds FuncDef structures for all of the functions
   ** defined in this file.
@@ -3416,12 +3416,12 @@ void sqlite3RegisterBuiltinFunctions(void){
   **
   ** For peak efficiency, put the most frequently used function last.
   */
-  static FuncDef aBuiltinFunc[] = {
+  நிலையான FuncDef aBuiltinFunc[] = {
 /***** Functions only available with SQLITE_TESTCTRL_INTERNAL_FUNCTIONS *****/
-#if !defined(SQLITE_UNTESTABLE)
+#எனில் !defined(SQLITE_UNTESTABLE)
     TEST_FUNC(implies_nonnull_row, 2, INLINEFUNC_implies_nonnull_row, 0),
-    TEST_FUNC(expr_compare,        2, INLINEFUNC_expr_compare,        0),
-    TEST_FUNC(expr_implies_expr,   2, INLINEFUNC_expr_implies_expr,   0),
+    TEST_FUNC(கோவை_compare,        2, INLINEFUNC_கோவை_compare,        0),
+    TEST_FUNC(கோவை_implies_கோவை,   2, INLINEFUNC_கோவை_implies_கோவை,   0),
     TEST_FUNC(affinity,            1, INLINEFUNC_affinity,            0),
 #endif /* !defined(SQLITE_UNTESTABLE) */
 /***** Regular functions *****/
@@ -3442,7 +3442,7 @@ void sqlite3RegisterBuiltinFunctions(void){
 #ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
     INLINE_FUNC(sqlite_offset,   1, INLINEFUNC_sqlite_offset, 0 ),
 #endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+#எனில் defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
     FUNCTION(sqlite_filestat,    1, 0, 0, filestatFunc     ),
     FUNCTION(sqlite_walstat,     1, 0, 0, walstatFunc      ),
 #endif
@@ -3453,10 +3453,10 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(trim,               1, 3, 0, trimFunc         ),
     FUNCTION(trim,               2, 3, 0, trimFunc         ),
     FUNCTION(min,               -3, 0, 1, minmaxFunc       ),
-    WAGGREGATE(min, 1, 0, 1, minmaxStep, minMaxFinalize, minMaxValue, 0,
+    WAGGREGATE(min, 1, 0, 1, minmaxStep, minMaxFinalize, min_Max_மதிப்பு, 0,
                                  SQLITE_FUNC_MINMAX|SQLITE_FUNC_ANYORDER ),
     FUNCTION(max,               -3, 1, 1, minmaxFunc       ),
-    WAGGREGATE(max, 1, 1, 1, minmaxStep, minMaxFinalize, minMaxValue, 0,
+    WAGGREGATE(max, 1, 1, 1, minmaxStep, minMaxFinalize, min_Max_மதிப்பு, 0,
                                  SQLITE_FUNC_MINMAX|SQLITE_FUNC_ANYORDER ),
     FUNCTION2(typeof,            1, 0, 0, typeofFunc,  SQLITE_FUNC_TYPEOF),
     FUNCTION2(subtype,           1, 0, 0, subtypeFunc,
@@ -3467,13 +3467,13 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(printf,            -1, 0, 0, printfFunc       ),
     FUNCTION(format,            -1, 0, 0, printfFunc       ),
     FUNCTION(unicode,            1, 0, 0, unicodeFunc      ),
-    FUNCTION(char,              -1, 0, 0, charFunc         ),
+    FUNCTION(எழுத்து,              -1, 0, 0, charFunc         ),
     FUNCTION(abs,                1, 0, 0, absFunc          ),
 #ifdef SQLITE_DEBUG
     FUNCTION(fpdecode,           3, 0, 0, fpdecodeFunc     ),
     FUNCTION(parseuri,          -1, 0, 0, parseuriFunc     ),
 #endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
+#எனில் defined(SQLITE_DEBUG) || defined(SQLITE_BUILTIN_OOM_FUNCTION)
     FUNCTION(oom,               -1, 0, 0, oomFunc          ),
 #endif
 #ifndef SQLITE_OMIT_FLOATING_POINT
@@ -3497,7 +3497,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(unistr,             1, 0, 0, unistrFunc       ),
     FUNCTION(quote,              1, 0, 0, quoteFunc        ),
     FUNCTION(unistr_quote,       1, 1, 0, quoteFunc        ),
-    VFUNCTION(last_insert_rowid, 0, 0, 0, last_insert_rowid),
+    VFUNCTION(last_செருகு_rowid, 0, 0, 0, last_செருகு_rowid),
     VFUNCTION(changes,           0, 0, 0, changes          ),
     VFUNCTION(total_changes,     0, 0, 0, total_changes    ),
     FUNCTION(replace,            3, 0, 0, replaceFunc      ),
@@ -3509,30 +3509,30 @@ void sqlite3RegisterBuiltinFunctions(void){
     WAGGREGATE(sum,   1,0,0, sumStep, sumFinalize, sumFinalize, sumInverse, 0),
     WAGGREGATE(total, 1,0,0, sumStep,totalFinalize,totalFinalize,sumInverse, 0),
     WAGGREGATE(avg,   1,0,0, sumStep, avgFinalize, avgFinalize, sumInverse, 0),
-    WAGGREGATE(count, 0,0,0, countStep,
-        countFinalize, countFinalize, countInverse,
-        SQLITE_FUNC_COUNT|SQLITE_FUNC_ANYORDER  ),
-    WAGGREGATE(count, 1,0,0, countStep,
-        countFinalize, countFinalize, countInverse, SQLITE_FUNC_ANYORDER ),
+    WAGGREGATE(மொத்தம், 0,0,0, மொத்தம்_Step,
+        மொத்தம்_Finalize, மொத்தம்_Finalize, மொத்தம்_Inverse,
+        SQLITE_FUNC_மொத்தம்|SQLITE_FUNC_ANYORDER  ),
+    WAGGREGATE(மொத்தம், 1,0,0, மொத்தம்_Step,
+        மொத்தம்_Finalize, மொத்தம்_Finalize, மொத்தம்_Inverse, SQLITE_FUNC_ANYORDER ),
     WAGGREGATE(group_concat, 1, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_மதிப்பு, groupConcatInverse, 0),
     WAGGREGATE(group_concat, 2, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_மதிப்பு, groupConcatInverse, 0),
     WAGGREGATE(string_agg,   2, 0, 0, groupConcatStep,
-        groupConcatFinalize, groupConcatValue, groupConcatInverse, 0),
+        groupConcatFinalize, group_Concat_மதிப்பு, groupConcatInverse, 0),
 
 #ifdef SQLITE_ENABLE_PERCENTILE
     WAGGREGATE(median,          1,   0,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_மதிப்பு, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile,      2, 0x2,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_மதிப்பு, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile_cont, 2,   0,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_மதிப்பு, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
     WAGGREGATE(percentile_disc, 2, 0x1,0, percentStep,
-        percentFinal, percentValue, percentInverse,
+        percentFinal, percent_மதிப்பு, percentInverse,
         SQLITE_INNOCUOUS|SQLITE_SELFORDER1),
 #endif /* SQLITE_ENABLE_PERCENTILE */
  
@@ -3540,7 +3540,7 @@ void sqlite3RegisterBuiltinFunctions(void){
 #ifdef SQLITE_CASE_SENSITIVE_LIKE
     LIKEFUNC(like, 2, &likeInfoAlt, SQLITE_FUNC_LIKE|SQLITE_FUNC_CASE),
     LIKEFUNC(like, 3, &likeInfoAlt, SQLITE_FUNC_LIKE|SQLITE_FUNC_CASE),
-#else
+#இல்லையெனில்
     LIKEFUNC(like, 2, &likeInfoNorm, SQLITE_FUNC_LIKE),
     LIKEFUNC(like, 3, &likeInfoNorm, SQLITE_FUNC_LIKE),
 #endif
@@ -3551,7 +3551,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     MFUNCTION(ceil,              1, xCeil,     ceilingFunc ),
     MFUNCTION(ceiling,           1, xCeil,     ceilingFunc ),
     MFUNCTION(floor,             1, xFloor,    ceilingFunc ),
-#if SQLITE_HAVE_C99_MATH_FUNCS
+#எனில் SQLITE_HAVE_C99_MATH_FUNCS
     MFUNCTION(trunc,             1, trunc,     ceilingFunc ),
 #endif
     FUNCTION(ln,                 1, 0, 0,      logFunc     ),
@@ -3573,7 +3573,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     MFUNCTION(cosh,              1, cosh,      math1Func   ),
     MFUNCTION(sinh,              1, sinh,      math1Func   ),
     MFUNCTION(tanh,              1, tanh,      math1Func   ),
-#if SQLITE_HAVE_C99_MATH_FUNCS
+#எனில் SQLITE_HAVE_C99_MATH_FUNCS
     MFUNCTION(acosh,             1, acosh,     math1Func   ),
     MFUNCTION(asinh,             1, asinh,     math1Func   ),
     MFUNCTION(atanh,             1, atanh,     math1Func   ),
@@ -3586,7 +3586,7 @@ void sqlite3RegisterBuiltinFunctions(void){
     FUNCTION(sign,               1, 0, 0,      signFunc    ),
     INLINE_FUNC(coalesce,       -4, INLINEFUNC_coalesce, 0 ),
     INLINE_FUNC(iif,            -4, INLINEFUNC_iif,      0 ),
-    INLINE_FUNC(if,             -4, INLINEFUNC_iif,      0 ),
+    INLINE_FUNC(எனில்,             -4, INLINEFUNC_iif,      0 ),
   };
 #ifndef SQLITE_OMIT_ALTERTABLE
   sqlite3AlterFunctions();
@@ -3594,18 +3594,18 @@ void sqlite3RegisterBuiltinFunctions(void){
   sqlite3WindowFunctions();
   sqlite3RegisterDateTimeFunctions();
   sqlite3RegisterJsonFunctions();
-  sqlite3InsertBuiltinFuncs(aBuiltinFunc, ArraySize(aBuiltinFunc));
+  sqlite3_செருகு_Builtin_Funcs(aBuiltinFunc, ArraySize(aBuiltinFunc));
 
-#if 0  /* Enable to print out how the built-in functions are hashed */
+#எனில் 0  /* Enable to print out how the built-in functions are hashed */
   {
-    int i;
+    முழு i;
     FuncDef *p;
-    for(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
+    க்கு(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
       printf("FUNC-HASH %02d:", i);
-      for(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash){
-        int n = sqlite3Strlen30(p->zName);
-        int h = p->zName[0] + n;
-        assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
+      க்கு(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash){
+        முழு n = sqlite3Strlen30(p->zName);
+        முழு h = p->zName[0] + n;
+        ப்ரதிஜ்ஞா( p->funcFlags & SQLITE_FUNC_BUILTIN );
         printf(" %s(%d)", p->zName, h);
       }
       printf("\n");

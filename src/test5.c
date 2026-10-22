@@ -15,32 +15,32 @@
 ** is used for testing the SQLite routines for converting between
 ** the various supported unicode encodings.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
+#அந்தர்பாவ "sqliteInt.h"
+#அந்தர்பாவ "vdbeInt.h"
+#அந்தர்பாவ "tclsqlite.h"
+#அந்தர்பாவ <stdlib.h>
+#அந்தர்பாவ <string.h>
 
 /*
 ** The first argument is a TCL UTF-8 string. Return the byte array
 ** object with the encoded representation of the string, including
 ** the NULL terminator.
 */
-static int SQLITE_TCLAPI binarize(
-  void * clientData,
+நிலையான முழு SQLITE_TCLAPI binarize(
+  வெறுமை * clientData,
   Tcl_Interp *interp,
-  int objc,
+  முழு objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Size len;
-  char *bytes;
+  எழுத்து *bytes;
   Tcl_Obj *pRet;
-  assert(objc==2);
+  ப்ரதிஜ்ஞா(objc==2);
 
   bytes = Tcl_GetStringFromObj(objv[1], &len);
   pRet = Tcl_NewByteArrayObj((u8*)bytes, len+1);
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  திரும்பு TCL_OK;
 }
 
 /*
@@ -54,42 +54,42 @@ static int SQLITE_TCLAPI binarize(
 ** If <do-calls> is 0, then the calls to sqlite3_value_text() are not
 ** actually made.
 */
-static int SQLITE_TCLAPI test_value_overhead(
-  void * clientData,
+நிலையான முழு SQLITE_TCLAPI test_மதிப்பு_overhead(
+  வெறுமை * clientData,
   Tcl_Interp *interp,
-  int objc,
+  முழு objc,
   Tcl_Obj *CONST objv[]
 ){
-  int do_calls;
-  int repeat_count;
-  int i;
+  முழு do_calls;
+  முழு repeat_மொத்தம்;
+  முழு i;
   Mem val;
 
-  if( objc!=3 ){
+  எனில்( objc!=3 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"",
-        Tcl_GetStringFromObj(objv[0], 0), " <repeat-count> <do-calls>", NULL);
-    return TCL_ERROR;
+        Tcl_GetStringFromObj(objv[0], 0), " <repeat-count> <do-calls>", வெற்று);
+    திரும்பு TCL_ERROR;
   }
 
-  if( Tcl_GetIntFromObj(interp, objv[1], &repeat_count) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &do_calls) ) return TCL_ERROR;
+  எனில்( Tcl_GetIntFromObj(interp, objv[1], &repeat_மொத்தம்) ) திரும்பு TCL_ERROR;
+  எனில்( Tcl_GetIntFromObj(interp, objv[2], &do_calls) ) திரும்பு TCL_ERROR;
 
   val.flags = MEM_Str|MEM_Term|MEM_Static;
   val.z = "hello world";
   val.enc = SQLITE_UTF8;
 
-  for(i=0; i<repeat_count; i++){
-    if( do_calls ){
-      sqlite3_value_text(&val);
+  க்கு(i=0; i<repeat_மொத்தம்; i++){
+    எனில்( do_calls ){
+      sqlite3_மதிப்பு_text(&val);
     }
   }
 
-  return TCL_OK;
+  திரும்பு TCL_OK;
 }
 
-static u8 name_to_enc(Tcl_Interp *interp, Tcl_Obj *pObj){
-  struct EncName {
-    char *zName;
+நிலையான u8 name_to_enc(Tcl_Interp *interp, Tcl_Obj *pObj){
+  கட்டமைப்பு EncName {
+    எழுத்து *zName;
     u8 enc;
   } encnames[] = {
     { "UTF8", SQLITE_UTF8 },
@@ -98,81 +98,81 @@ static u8 name_to_enc(Tcl_Interp *interp, Tcl_Obj *pObj){
     { "UTF16", SQLITE_UTF16 },
     { 0, 0 }
   };
-  struct EncName *pEnc;
-  char *z = Tcl_GetString(pObj);
-  for(pEnc=&encnames[0]; pEnc->zName; pEnc++){
-    if( 0==sqlite3StrICmp(z, pEnc->zName) ){
-      break;
+  கட்டமைப்பு EncName *pEnc;
+  எழுத்து *z = Tcl_GetString(pObj);
+  க்கு(pEnc=&encnames[0]; pEnc->zName; pEnc++){
+    எனில்( 0==sqlite3StrICmp(z, pEnc->zName) ){
+      நிறுத்து;
     }
   }
-  if( !pEnc->enc ){
-    Tcl_AppendResult(interp, "No such encoding: ", z, NULL);
+  எனில்( !pEnc->enc ){
+    Tcl_AppendResult(interp, "No such encoding: ", z, வெற்று);
   }
-  if( pEnc->enc==SQLITE_UTF16 ){
-    return SQLITE_UTF16NATIVE;
+  எனில்( pEnc->enc==SQLITE_UTF16 ){
+    திரும்பு SQLITE_UTF16NATIVE;
   }
-  return pEnc->enc;
+  திரும்பு pEnc->enc;
 }
 
 /*
 ** Usage:   test_translate <string/blob> <from enc> <to enc> ?<transient>?
 **
 */
-static int SQLITE_TCLAPI test_translate(
-  void * clientData,
+நிலையான முழு SQLITE_TCLAPI test_translate(
+  வெறுமை * clientData,
   Tcl_Interp *interp,
-  int objc,
+  முழு objc,
   Tcl_Obj *CONST objv[]
 ){
   u8 enc_from;
   u8 enc_to;
-  sqlite3_value *pVal;
+  sqlite3_மதிப்பு *pVal;
 
-  char *z;
+  எழுத்து *z;
   Tcl_Size len;
-  void (*xDel)(void *p) = SQLITE_STATIC;
+  வெறுமை (*xDel)(வெறுமை *p) = SQLITE_STATIC;
 
-  if( objc!=4 && objc!=5 ){
+  எனில்( objc!=4 && objc!=5 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"",
         Tcl_GetStringFromObj(objv[0], 0), 
-        " <string/blob> <from enc> <to enc>", NULL
+        " <string/blob> <from enc> <to enc>", வெற்று
     );
-    return TCL_ERROR;
+    திரும்பு TCL_ERROR;
   }
-  if( objc==5 ){
+  எனில்( objc==5 ){
     xDel = sqlite3_free;
   }
 
   enc_from = name_to_enc(interp, objv[2]);
-  if( !enc_from ) return TCL_ERROR;
+  எனில்( !enc_from ) திரும்பு TCL_ERROR;
   enc_to = name_to_enc(interp, objv[3]);
-  if( !enc_to ) return TCL_ERROR;
+  எனில்( !enc_to ) திரும்பு TCL_ERROR;
 
-  pVal = sqlite3ValueNew(0);
+  pVal = sqlite3_மதிப்பு_New(0);
 
-  if( enc_from==SQLITE_UTF8 ){
+  எனில்( enc_from==SQLITE_UTF8 ){
     z = Tcl_GetString(objv[1]);
-    if( objc==5 ){
+    எனில்( objc==5 ){
       z = sqlite3_mprintf("%s", z);
     }
-    sqlite3ValueSetStr(pVal, -1, z, enc_from, xDel);
-  }else{
-    z = (char*)Tcl_GetByteArrayFromObj(objv[1], &len);
-    if( objc==5 ){
-      char *zTmp = z;
+    sqlite3_மதிப்பு_Set_Str(pVal, -1, z, enc_from, xDel);
+  }இல்லையெனில்{
+    z = (எழுத்து*)Tcl_GetByteArrayFromObj(objv[1], &len);
+    எனில்( objc==5 ){
+      எழுத்து *zTmp = z;
       z = sqlite3_malloc64(len);
       memcpy(z, zTmp, len);
     }
-    sqlite3ValueSetStr(pVal, -1, z, enc_from, xDel);
+    sqlite3_மதிப்பு_Set_Str(pVal, -1, z, enc_from, xDel);
   }
 
-  z = (char *)sqlite3ValueText(pVal, enc_to);
-  len = sqlite3ValueBytes(pVal, enc_to) + (enc_to==SQLITE_UTF8?1:2);
+  z = (எழுத்து *)sqlite3_மதிப்பு_Text(pVal, enc_to);
+  len = sqlite3_மதிப்பு_Bytes(pVal, enc_to) + (enc_to==SQLITE_UTF8?1:2);
   Tcl_SetObjResult(interp, Tcl_NewByteArrayObj((u8*)z, len));
 
-  sqlite3ValueFree(pVal);
+  sqlite3_மதிப்பு_Free(pVal);
 
-  return TCL_OK;
+  திரும்பு TCL_OK;
 }
 
 /*
@@ -181,36 +181,36 @@ static int SQLITE_TCLAPI test_translate(
 ** Call sqlite3UtfSelfTest() to run the internal tests for unicode
 ** translation. If there is a problem an assert() will fail.
 **/
-void sqlite3UtfSelfTest(void);
-static int SQLITE_TCLAPI test_translate_selftest(
-  void * clientData,
+வெறுமை sqlite3UtfSelfTest(வெறுமை);
+நிலையான முழு SQLITE_TCLAPI test_translate_selftest(
+  வெறுமை * clientData,
   Tcl_Interp *interp,
-  int objc,
+  முழு objc,
   Tcl_Obj *CONST objv[]
 ){
 #ifndef SQLITE_OMIT_UTF16
   sqlite3UtfSelfTest();
 #endif
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest5_Init(Tcl_Interp *interp){
-  static struct {
-    char *zName;
+முழு Sqlitetest5_Init(Tcl_Interp *interp){
+  நிலையான கட்டமைப்பு {
+    எழுத்து *zName;
     Tcl_ObjCmdProc *xProc;
   } aCmd[] = {
     { "binarize",                (Tcl_ObjCmdProc*)binarize },
-    { "test_value_overhead",     (Tcl_ObjCmdProc*)test_value_overhead },
+    { "test_value_overhead",     (Tcl_ObjCmdProc*)test_மதிப்பு_overhead },
     { "test_translate",          (Tcl_ObjCmdProc*)test_translate     },
     { "translate_selftest",      (Tcl_ObjCmdProc*)test_translate_selftest},
   };
-  int i;
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  முழு i;
+  க்கு(i=0; i<அளவு(aCmd)/அளவு(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }

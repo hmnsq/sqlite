@@ -11,38 +11,38 @@
 *************************************************************************
 ** Test extension for testing the sqlite3_load_extension() function.
 */
-#include <string.h>
-#include "sqlite3ext.h"
+#அந்தர்பாவ <string.h>
+#அந்தர்பாவ "sqlite3ext.h"
 SQLITE_EXTENSION_INIT1
 
 /*
 ** The half() SQL function returns half of its input value.
 */
-static void halfFunc(
+நிலையான வெறுமை halfFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  sqlite3_result_double(context, 0.5*sqlite3_value_double(argv[0]));
+  sqlite3_result_double(context, 0.5*sqlite3_மதிப்பு_double(argv[0]));
 }
 
 /*
 ** SQL functions to call the sqlite3_status function and return results.
 */
-static void statusFunc(
+நிலையான வெறுமை statusFunc(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  முழு argc,
+  sqlite3_மதிப்பு **argv
 ){
-  int op = 0, mx, cur, resetFlag, rc;
-  if( sqlite3_value_type(argv[0])==SQLITE_INTEGER ){
-    op = sqlite3_value_int(argv[0]);
-  }else if( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
-    int i;
-    const char *zName;
-    static const struct {
-      const char *zName;
-      int op;
+  முழு op = 0, mx, cur, resetFlag, rc;
+  எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_INTEGER ){
+    op = sqlite3_மதிப்பு_int(argv[0]);
+  }இல்லையெனில் எனில்( sqlite3_மதிப்பு_type(argv[0])==SQLITE_TEXT ){
+    முழு i;
+    மாறிலி எழுத்து *zName;
+    நிலையான மாறிலி கட்டமைப்பு {
+      மாறிலி எழுத்து *zName;
+      முழு op;
     } aOp[] = {
       { "MEMORY_USED",         SQLITE_STATUS_MEMORY_USED         },
       { "PAGECACHE_USED",      SQLITE_STATUS_PAGECACHE_USED      },
@@ -51,39 +51,39 @@ static void statusFunc(
       { "SCRATCH_OVERFLOW",    SQLITE_STATUS_SCRATCH_OVERFLOW    },
       { "MALLOC_SIZE",         SQLITE_STATUS_MALLOC_SIZE         },
     };
-    int nOp = sizeof(aOp)/sizeof(aOp[0]);
-    zName = (const char*)sqlite3_value_text(argv[0]);
-    for(i=0; i<nOp; i++){
-      if( strcmp(aOp[i].zName, zName)==0 ){
+    முழு nOp = அளவு(aOp)/அளவு(aOp[0]);
+    zName = (மாறிலி எழுத்து*)sqlite3_மதிப்பு_text(argv[0]);
+    க்கு(i=0; i<nOp; i++){
+      எனில்( strcmp(aOp[i].zName, zName)==0 ){
         op = aOp[i].op;
-        break;
+        நிறுத்து;
       }
     }
-    if( i>=nOp ){
-      char *zMsg = sqlite3_mprintf("unknown status property: %s", zName);
-      sqlite3_result_error(context, zMsg, -1);
-      sqlite3_free(zMsg);
-      return;
+    எனில்( i>=nOp ){
+      எழுத்து *z_செய்தி = sqlite3_mprintf("unknown status property: %s", zName);
+      sqlite3_result_error(context, z_செய்தி, -1);
+      sqlite3_free(z_செய்தி);
+      திரும்பு;
     }
-  }else{
+  }இல்லையெனில்{
     sqlite3_result_error(context, "unknown status type", -1);
-    return;
+    திரும்பு;
   }
-  if( argc==2 ){
-    resetFlag = sqlite3_value_int(argv[1]);
-  }else{
+  எனில்( argc==2 ){
+    resetFlag = sqlite3_மதிப்பு_int(argv[1]);
+  }இல்லையெனில்{
     resetFlag = 0;
   }
   rc = sqlite3_status(op, &cur, &mx, resetFlag);
-  if( rc!=SQLITE_OK ){
-    char *zMsg = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
-    sqlite3_result_error(context, zMsg, -1);
-    sqlite3_free(zMsg);
-    return;
+  எனில்( rc!=SQLITE_OK ){
+    எழுத்து *z_செய்தி = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
+    sqlite3_result_error(context, z_செய்தி, -1);
+    sqlite3_free(z_செய்தி);
+    திரும்பு;
   } 
-  if( argc==2 ){
+  எனில்( argc==2 ){
     sqlite3_result_int(context, mx);
-  }else{
+  }இல்லையெனில்{
     sqlite3_result_int(context, cur);
   }
 }
@@ -94,19 +94,19 @@ static void statusFunc(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testloadext_init(
+முழு testloadext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  எழுத்து **pz_Err_செய்தி, 
+  மாறிலி sqlite3_api_routines *pApi
 ){
-  int nErr = 0;
+  முழு nErr = 0;
   SQLITE_EXTENSION_INIT2(pApi);
   nErr |= sqlite3_create_function(db, "half", 1, SQLITE_ANY, 0, halfFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 1, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 2, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
-  return nErr ? SQLITE_ERROR : SQLITE_OK;
+  திரும்பு nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 /*
@@ -115,14 +115,14 @@ int testloadext_init(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testbrokenext_init(
+முழு testbrokenext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  எழுத்து **pz_Err_செய்தி, 
+  மாறிலி sqlite3_api_routines *pApi
 ){
-  char *zErr;
+  எழுத்து *zErr;
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken!");
-  *pzErrMsg = zErr;
-  return 1;
+  *pz_Err_செய்தி = zErr;
+  திரும்பு 1;
 }

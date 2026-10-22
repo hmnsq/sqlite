@@ -27,14 +27,14 @@
 ** continues as if nothing had happened.
 */
 #ifndef _QUOTA_H_
-#include "sqlite3.h"
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#அந்தர்பாவ "sqlite3.h"
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <sys/stat.h>
 
 /* Make this callable from C++ */
 #ifdef __cplusplus
-extern "C" {
+வெளி "C" {
 #endif
 
 /*
@@ -48,7 +48,7 @@ extern "C" {
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once
 ** during start-up.
 */
-int sqlite3_quota_initialize(const char *zOrigVfsName, int makeDefault);
+முழு sqlite3_quota_initialize(மாறிலி எழுத்து *zOrigVfsName, முழு makeDefault);
 
 /*
 ** Shutdown the quota system.
@@ -59,7 +59,7 @@ int sqlite3_quota_initialize(const char *zOrigVfsName, int makeDefault);
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once while
 ** shutting down in order to free all remaining quota groups.
 */
-int sqlite3_quota_shutdown(void);
+முழு sqlite3_quota_shutdown(வெறுமை);
 
 /*
 ** Create or destroy a quota group.
@@ -113,17 +113,17 @@ int sqlite3_quota_shutdown(void);
 ** If the same filename matches more than one quota group pattern, then
 ** the behavior of this package is undefined.
 */
-int sqlite3_quota_set(
-  const char *zPattern,           /* The filename pattern */
+முழு sqlite3_quota_set(
+  மாறிலி எழுத்து *zPattern,           /* The filename pattern */
   sqlite3_int64 iLimit,           /* New quota to set for this quota group */
-  void (*xCallback)(              /* Callback invoked when going over quota */
-     const char *zFilename,         /* Name of file whose size increases */
+  வெறுமை (*xCallback)(              /* Callback invoked when going over quota */
+     மாறிலி எழுத்து *zFilename,         /* Name of file whose size increases */
      sqlite3_int64 *piLimit,        /* IN/OUT: The current limit */
      sqlite3_int64 iSize,           /* Total size of all files in the group */
-     void *pArg                     /* Client data */
+     வெறுமை *pArg                     /* Client data */
   ),
-  void *pArg,                     /* client data passed thru to callback */
-  void (*xDestroy)(void*)         /* Optional destructor for pArg */
+  வெறுமை *pArg,                     /* client data passed thru to callback */
+  வெறுமை (*xDestroy)(வெறுமை*)         /* Optional destructor for pArg */
 );
 
 /*
@@ -132,7 +132,7 @@ int sqlite3_quota_set(
 ** management, update its size.  If zFilename does not match the glob
 ** pattern of any quota group, this routine is a no-op.
 */
-int sqlite3_quota_file(const char *zFilename);
+முழு sqlite3_quota_file(மாறிலி எழுத்து *zFilename);
 
 /*
 ** The following object serves the same role as FILE in the standard C
@@ -142,21 +142,21 @@ int sqlite3_quota_file(const char *zFilename);
 ** same time.  Multiple threads can be using different quota_FILE objects
 ** simultaneously, but not the same quota_FILE object.
 */
-typedef struct quota_FILE quota_FILE;
+வகைவரை கட்டமைப்பு quota_FILE quota_FILE;
 
 /*
 ** Create a new quota_FILE object used to read and/or write to the
 ** file zFilename.  The zMode parameter is as with standard library zMode.
 */
-quota_FILE *sqlite3_quota_fopen(const char *zFilename, const char *zMode);
+quota_FILE *sqlite3_quota_fopen(மாறிலி எழுத்து *zFilename, மாறிலி எழுத்து *zMode);
 
 /*
 ** Perform I/O against a quota_FILE object.  When doing writes, the
 ** quota mechanism may result in a short write, in order to prevent
 ** the sum of sizes of all files from going over quota.
 */
-size_t sqlite3_quota_fread(void*, size_t, size_t, quota_FILE*);
-size_t sqlite3_quota_fwrite(const void*, size_t, size_t, quota_FILE*);
+size_t sqlite3_quota_fread(வெறுமை*, size_t, size_t, quota_FILE*);
+size_t sqlite3_quota_fwrite(மாறிலி வெறுமை*, size_t, size_t, quota_FILE*);
 
 /*
 ** Flush all written content held in memory buffers out to disk.
@@ -168,20 +168,20 @@ size_t sqlite3_quota_fwrite(const void*, size_t, size_t, quota_FILE*);
 ** This routine return zero on success and non-zero if something goes
 ** wrong.
 */
-int sqlite3_quota_fflush(quota_FILE*, int hardSync);
+முழு sqlite3_quota_fflush(quota_FILE*, முழு hardSync);
 
 /*
 ** Close a quota_FILE object and free all associated resources.  The
 ** file remains under quota management.
 */
-int sqlite3_quota_fclose(quota_FILE*);
+முழு sqlite3_quota_fclose(quota_FILE*);
 
 /*
 ** Move the read/write pointer for a quota_FILE object.  Or tell the
 ** current location of the read/write pointer.
 */
-int sqlite3_quota_fseek(quota_FILE*, long, int);
-void sqlite3_quota_rewind(quota_FILE*);
+முழு sqlite3_quota_fseek(quota_FILE*, long, முழு);
+வெறுமை sqlite3_quota_rewind(quota_FILE*);
 long sqlite3_quota_ftell(quota_FILE*);
 
 /*
@@ -189,7 +189,7 @@ long sqlite3_quota_ftell(quota_FILE*);
 **
 ** Return non-zero if the error indicator is set.
 */
-int sqlite3_quota_ferror(quota_FILE*);
+முழு sqlite3_quota_ferror(quota_FILE*);
 
 /*
 ** Truncate a file previously opened by sqlite3_quota_fopen().  Return
@@ -199,13 +199,13 @@ int sqlite3_quota_ferror(quota_FILE*);
 ** Any attempt to "truncate" a file to a larger size results in 
 ** undefined behavior.
 */
-int sqlite3_quota_ftruncate(quota_FILE*, sqlite3_int64 newSize);
+முழு sqlite3_quota_ftruncate(quota_FILE*, sqlite3_int64 newSize);
 
 /*
 ** Return the last modification time of the opened file, in seconds
 ** since 1970.
 */
-int sqlite3_quota_file_mtime(quota_FILE*, time_t *pTime);
+முழு sqlite3_quota_file_mtime(quota_FILE*, time_t *pTime);
 
 /*
 ** Return the size of the file as it is known to the quota system.
@@ -260,7 +260,7 @@ long sqlite3_quota_file_available(quota_FILE*);
 **
 ** This routine is a no-op for files that are not under quota management.
 */
-int sqlite3_quota_remove(const char *zFilename);
+முழு sqlite3_quota_remove(மாறிலி எழுத்து *zFilename);
 
 #ifdef __cplusplus
 }  /* end of the 'extern "C"' block */

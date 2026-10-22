@@ -13,43 +13,43 @@
 ** interface, and routines that contribute to loading the database schema
 ** from disk.
 */
-#include "sqliteInt.h"
+#அந்தர்பாவ "sqliteInt.h"
 
 /*
 ** Fill the InitData structure with an error message that indicates
 ** that the database is corrupt.
 */
-static void corruptSchema(
+நிலையான வெறுமை corruptSchema(
   InitData *pData,     /* Initialization context */
-  char **azObj,        /* Type and name of object being parsed */
-  const char *zExtra   /* Error information */
+  எழுத்து **azObj,        /* Type and name of object being parsed */
+  மாறிலி எழுத்து *zExtra   /* Error information */
 ){
   sqlite3 *db = pData->db;
-  if( db->mallocFailed ){
+  எனில்( db->mallocFailed ){
     pData->rc = SQLITE_NOMEM_BKPT;
-  }else if( pData->pzErrMsg[0]!=0 ){
+  }இல்லையெனில் எனில்( pData->pz_Err_செய்தி[0]!=0 ){
     /* A error message has already been generated.  Do not overwrite it */
-  }else if( pData->mInitFlags & (INITFLAG_AlterMask) ){
-    static const char *azAlterType[] = {
+  }இல்லையெனில் எனில்( pData->mInitFlags & (INITFLAG_AlterMask) ){
+    நிலையான மாறிலி எழுத்து *azAlterType[] = {
        "rename",
        "drop column",
        "add column",
        "drop constraint"
     };
-    *pData->pzErrMsg = sqlite3MPrintf(db, 
+    *pData->pz_Err_செய்தி = sqlite3MPrintf(db, 
         "error in %s %s after %s: %s", azObj[0], azObj[1], 
         azAlterType[(pData->mInitFlags&INITFLAG_AlterMask)-1], 
         zExtra
     );
     pData->rc = SQLITE_ERROR;
-  }else if( db->flags & SQLITE_WriteSchema ){
+  }இல்லையெனில் எனில்( db->flags & SQLITE_WriteSchema ){
     pData->rc = SQLITE_CORRUPT_BKPT;
-  }else{
-    char *z;
-    const char *zObj = azObj[1] ? azObj[1] : "?";
+  }இல்லையெனில்{
+    எழுத்து *z;
+    மாறிலி எழுத்து *zObj = azObj[1] ? azObj[1] : "?";
     z = sqlite3MPrintf(db, "malformed database schema (%s)", zObj);
-    if( zExtra && zExtra[0] ) z = sqlite3MPrintf(db, "%z - %s", z, zExtra);
-    *pData->pzErrMsg = z;
+    எனில்( zExtra && zExtra[0] ) z = sqlite3MPrintf(db, "%z - %s", z, zExtra);
+    *pData->pz_Err_செய்தி = z;
     pData->rc = SQLITE_CORRUPT_BKPT;
   }
 }
@@ -59,23 +59,23 @@ static void corruptSchema(
 ** of pIndex has the same root page number, and if it does, return true.
 ** This would indicate a corrupt schema.
 */
-int sqlite3IndexHasDuplicateRootPage(Index *pIndex){
+முழு sqlite3_Index_Has_Duplicate_வேர்_Page(Index *pIndex){
   Index *p;
-  for(p=pIndex->pTable->pIndex; p; p=p->pNext){
-    if( p->tnum==pIndex->tnum && p!=pIndex ) return 1;
+  க்கு(p=pIndex->pTable->pIndex; p; p=p->pNext){
+    எனில்( p->tnum==pIndex->tnum && p!=pIndex ) திரும்பு 1;
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /* forward declaration */
-static int sqlite3Prepare(
+நிலையான முழு sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி எழுத்து *zSql,         /* UTF-8 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pReprepare,         /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  மாறிலி எழுத்து **pzTail       /* OUT: End of parsed string */
 );
 
 
@@ -93,29 +93,29 @@ static int sqlite3Prepare(
 **     argv[4] = SQL text for the CREATE statement.
 **
 */
-int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
+முழு sqlite3InitCallback(வெறுமை *pInit, முழு argc, எழுத்து **argv, எழுத்து **NotUsed){
   InitData *pData = (InitData*)pInit;
   sqlite3 *db = pData->db;
-  int iDb = pData->iDb;
+  முழு iDb = pData->iDb;
 
-  assert( argc==5 );
+  ப்ரதிஜ்ஞா( argc==5 );
   UNUSED_PARAMETER2(NotUsed, argc);
-  assert( sqlite3_mutex_held(db->mutex) );
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
   db->mDbFlags |= DBFLAG_EncodingFixed;
-  if( argv==0 ) return 0;   /* Might happen if EMPTY_RESULT_CALLBACKS are on */
+  எனில்( argv==0 ) திரும்பு 0;   /* Might happen if EMPTY_RESULT_CALLBACKS are on */
   pData->nInitRow++;
-  if( db->mallocFailed ){
+  எனில்( db->mallocFailed ){
     corruptSchema(pData, argv, 0);
-    return 1;
+    திரும்பு 1;
   }
 
-  assert( iDb>=0 && iDb<db->nDb );
-  assert( db->aDb[iDb].pSchema!=0 );
-  if( argv[3]==0 ){
+  ப்ரதிஜ்ஞா( iDb>=0 && iDb<db->nDb );
+  ப்ரதிஜ்ஞா( db->aDb[iDb].pSchema!=0 );
+  எனில்( argv[3]==0 ){
     corruptSchema(pData, argv, 0);
-  }else if( argv[4]
-         && 'c'==sqlite3UpperToLower[(unsigned char)argv[4][0]]
-         && 'r'==sqlite3UpperToLower[(unsigned char)argv[4][1]] ){
+  }இல்லையெனில் எனில்( argv[4]
+         && 'c'==sqlite3UpperToLower[(unsigned எழுத்து)argv[4][0]]
+         && 'r'==sqlite3UpperToLower[(unsigned எழுத்து)argv[4][1]] ){
     /* Call the parser to process a CREATE TABLE, INDEX or VIEW.
     ** But because db->init.busy is set to 1, no VDBE code is generated
     ** or executed.  All the parser does is build the internal data
@@ -126,48 +126,48 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
     ** any other kind of statement while parsing the schema, even a corrupt
     ** schema.
     */
-    int rc;
+    முழு rc;
     u8 saved_iDb = db->init.iDb;
     sqlite3_stmt *pStmt;
-    const char *zEnd;
-    TESTONLY(int rcp);            /* Return code from sqlite3_prepare() */
+    மாறிலி எழுத்து *zEnd;
+    TESTONLY(முழு rcp);            /* Return code from sqlite3_prepare() */
 
-    assert( db->init.busy );
+    ப்ரதிஜ்ஞா( db->init.busy );
     db->init.iDb = iDb;
-    if( sqlite3GetUInt32(argv[3], &db->init.newTnum)==0
+    எனில்( sqlite3GetUInt32(argv[3], &db->init.newTnum)==0
      || (db->init.newTnum>pData->mxPage && pData->mxPage>0)
     ){
-      if( sqlite3Config.bExtraSchemaChecks ){
+      எனில்( sqlite3Config.bExtraSchemaChecks ){
         corruptSchema(pData, argv, "invalid rootpage");
       }
     }
     db->init.orphanTrigger = 0;
-    db->init.azInit = (const char**)argv;
+    db->init.azInit = (மாறிலி எழுத்து**)argv;
     pStmt = 0;
     TESTONLY(rcp = ) sqlite3Prepare(db, argv[4], -1, 0, 0, &pStmt, &zEnd);
     rc = db->errCode;
-    assert( (rc&0xFF)==(rcp&0xFF) );
+    ப்ரதிஜ்ஞா( (rc&0xFF)==(rcp&0xFF) );
     db->init.iDb = saved_iDb;
     /* assert( saved_iDb==0 || (db->mDbFlags & DBFLAG_Vacuum)!=0 ); */
-    if( SQLITE_OK!=rc ){
-      if( db->init.orphanTrigger ){
-        assert( iDb==1 );
-      }else{
-        if( rc > pData->rc ) pData->rc = rc;
-        if( rc==SQLITE_NOMEM ){
+    எனில்( SQLITE_OK!=rc ){
+      எனில்( db->init.orphanTrigger ){
+        ப்ரதிஜ்ஞா( iDb==1 );
+      }இல்லையெனில்{
+        எனில்( rc > pData->rc ) pData->rc = rc;
+        எனில்( rc==SQLITE_NOMEM ){
           sqlite3OomFault(db);
-        }else if( rc!=SQLITE_INTERRUPT && (rc&0xFF)!=SQLITE_LOCKED ){
+        }இல்லையெனில் எனில்( rc!=SQLITE_INTERRUPT && (rc&0xFF)!=SQLITE_LOCKED ){
           corruptSchema(pData, argv, sqlite3_errmsg(db));
         }
       }
-    }else if( zEnd[0] ){
+    }இல்லையெனில் எனில்( zEnd[0] ){
       corruptSchema(pData, argv, 0);
     }
     db->init.azInit = sqlite3StdType; /* Any array of string ptrs will do */
     sqlite3_finalize(pStmt);
-  }else if( argv[1]==0 || (argv[4]!=0 && argv[4][0]!=0) ){
+  }இல்லையெனில் எனில்( argv[1]==0 || (argv[4]!=0 && argv[4][0]!=0) ){
     corruptSchema(pData, argv, 0);
-  }else{
+  }இல்லையெனில்{
     /* If the SQL column is blank it means this is an index that
     ** was created to be the PRIMARY KEY or to fulfill a UNIQUE
     ** constraint for a CREATE TABLE.  The index should have already
@@ -176,30 +176,30 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
     */
     Index *pIndex;
     pIndex = sqlite3FindIndex(db, argv[1], db->aDb[iDb].zDbSName);
-    if( pIndex==0 ){
+    எனில்( pIndex==0 ){
       corruptSchema(pData, argv, "orphan index");
-    }else
-    if( sqlite3GetUInt32(argv[3],&pIndex->tnum)==0
+    }இல்லையெனில்
+    எனில்( sqlite3GetUInt32(argv[3],&pIndex->tnum)==0
      || pIndex->tnum<2
      || pIndex->tnum>pData->mxPage
-     || sqlite3IndexHasDuplicateRootPage(pIndex)
+     || sqlite3_Index_Has_Duplicate_வேர்_Page(pIndex)
     ){
-      if( sqlite3Config.bExtraSchemaChecks ){
+      எனில்( sqlite3Config.bExtraSchemaChecks ){
         corruptSchema(pData, argv, "invalid rootpage");
       }
     }
   }
-  if( pData->pzErrMsg[0]==0 ){
+  எனில்( pData->pz_Err_செய்தி[0]==0 ){
     Schema *pX = db->aDb[iDb].pSchema;
-    if( pX->tblHash.count + pX->idxHash.count + pX->trigHash.count
+    எனில்( pX->tblHash.மொத்தம் + pX->idxHash.மொத்தம் + pX->trigHash.மொத்தம்
                    > (u32)db->aLimit[SQLITE_LIMIT_SCHEMA]
     ){
-      *pData->pzErrMsg = sqlite3MPrintf(db, "too many schema objects");
+      *pData->pz_Err_செய்தி = sqlite3MPrintf(db, "too many schema objects");
       pData->rc = SQLITE_ERROR;
-      return 1;
+      திரும்பு 1;
     }
   }
-  return 0;
+  திரும்பு 0;
 }
 
 /*
@@ -210,25 +210,25 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
 ** auxiliary databases.  Return one of the SQLITE_ error codes to
 ** indicate success or failure.
 */
-int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
-  int rc;
-  int i;
+முழு sqlite3InitOne(sqlite3 *db, முழு iDb, எழுத்து **pz_Err_செய்தி, u32 mFlags){
+  முழு rc;
+  முழு i;
 #ifndef SQLITE_OMIT_DEPRECATED
-  int size;
+  முழு size;
 #endif
   Db *pDb;
-  char const *azArg[6];
-  int meta[5];
+  எழுத்து மாறிலி *azArg[6];
+  முழு meta[5];
   InitData initData;
-  const char *zSchemaTabName;
-  int openedTransaction = 0;
-  int mask = ((db->mDbFlags & DBFLAG_EncodingFixed) | ~DBFLAG_EncodingFixed);
+  மாறிலி எழுத்து *zSchemaTabName;
+  முழு openedTransaction = 0;
+  முழு mask = ((db->mDbFlags & DBFLAG_EncodingFixed) | ~DBFLAG_EncodingFixed);
 
-  assert( (db->mDbFlags & DBFLAG_SchemaKnownOk)==0 );
-  assert( iDb>=0 && iDb<db->nDb );
-  assert( db->aDb[iDb].pSchema );
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( iDb==1 || sqlite3BtreeHoldsMutex(db->aDb[iDb].pBt) );
+  ப்ரதிஜ்ஞா( (db->mDbFlags & DBFLAG_SchemaKnownOk)==0 );
+  ப்ரதிஜ்ஞா( iDb>=0 && iDb<db->nDb );
+  ப்ரதிஜ்ஞா( db->aDb[iDb].pSchema );
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
+  ப்ரதிஜ்ஞா( iDb==1 || sqlite3BtreeHoldsMutex(db->aDb[iDb].pBt) );
 
   db->init.busy = 1 + ((mFlags & INITFLAG_AlterAdd)!=0);
   /* ^--- Any non-zero value for init.busy means that we are scanning
@@ -253,36 +253,36 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   initData.db = db;
   initData.iDb = iDb;
   initData.rc = SQLITE_OK;
-  initData.pzErrMsg = pzErrMsg;
+  initData.pz_Err_செய்தி = pz_Err_செய்தி;
   initData.mInitFlags = mFlags;
   initData.nInitRow = 0;
   initData.mxPage = 0;
-  sqlite3InitCallback(&initData, 5, (char **)azArg, 0);
+  sqlite3InitCallback(&initData, 5, (எழுத்து **)azArg, 0);
   db->mDbFlags &= mask;
-  if( initData.rc ){
+  எனில்( initData.rc ){
     rc = initData.rc;
-    goto error_out;
+    செல் error_out;
   }
 
   /* Create a cursor to hold the database open
   */
   pDb = &db->aDb[iDb];
-  if( pDb->pBt==0 ){
-    assert( iDb==1 );
+  எனில்( pDb->pBt==0 ){
+    ப்ரதிஜ்ஞா( iDb==1 );
     DbSetProperty(db, 1, DB_SchemaLoaded);
     rc = SQLITE_OK;
-    goto error_out;
+    செல் error_out;
   }
 
   /* If there is not already a read-only (or read-write) transaction opened
   ** on the b-tree database, open one now. If a transaction is opened, it 
   ** will be closed before this function returns.  */
   sqlite3BtreeEnter(pDb->pBt);
-  if( sqlite3BtreeTxnState(pDb->pBt)==SQLITE_TXN_NONE ){
+  எனில்( sqlite3BtreeTxnState(pDb->pBt)==SQLITE_TXN_NONE ){
     rc = sqlite3BtreeBeginTrans(pDb->pBt, 0, 0);
-    if( rc!=SQLITE_OK ){
-      sqlite3SetString(pzErrMsg, db, sqlite3ErrStr(rc));
-      goto initone_error_out;
+    எனில்( rc!=SQLITE_OK ){
+      sqlite3SetString(pz_Err_செய்தி, db, sqlite3ErrStr(rc));
+      செல் initone_error_out;
     }
     openedTransaction = 1;
   }
@@ -304,11 +304,11 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** Note: The #defined SQLITE_UTF* symbols in sqliteInt.h correspond to
   ** the possible values of meta[4].
   */
-  for(i=0; i<ArraySize(meta); i++){
+  க்கு(i=0; i<ArraySize(meta); i++){
     sqlite3BtreeGetMeta(pDb->pBt, i+1, (u32 *)&meta[i]);
   }
-  if( (db->flags & SQLITE_ResetDatabase)!=0 ){
-    memset(meta, 0, sizeof(meta));
+  எனில்( (db->flags & SQLITE_ResetDatabase)!=0 ){
+    memset(meta, 0, அளவு(meta));
   }
   pDb->pSchema->schema_cookie = meta[BTREE_SCHEMA_VERSION-1];
 
@@ -317,35 +317,35 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** For an attached db, it is an error if the encoding is not the same
   ** as sqlite3.enc.
   */
-  if( meta[BTREE_TEXT_ENCODING-1] ){  /* text encoding */
-    if( iDb==0 && (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
+  எனில்( meta[BTREE_TEXT_ENCODING-1] ){  /* text encoding */
+    எனில்( iDb==0 && (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
       u8 encoding;
 #ifndef SQLITE_OMIT_UTF16
       /* If opening the main database, set ENC(db). */
       encoding = (u8)meta[BTREE_TEXT_ENCODING-1] & 3;
-      if( encoding==0 ) encoding = SQLITE_UTF8;
-#else
+      எனில்( encoding==0 ) encoding = SQLITE_UTF8;
+#இல்லையெனில்
       encoding = SQLITE_UTF8;
 #endif
       sqlite3SetTextEncoding(db, encoding);
-    }else{
+    }இல்லையெனில்{
       /* If opening an attached database, the encoding much match ENC(db) */
-      if( (meta[BTREE_TEXT_ENCODING-1] & 3)!=ENC(db) ){
-        sqlite3SetString(pzErrMsg, db, "attached databases must use the same"
+      எனில்( (meta[BTREE_TEXT_ENCODING-1] & 3)!=ENC(db) ){
+        sqlite3SetString(pz_Err_செய்தி, db, "attached databases must use the same"
             " text encoding as main database");
         rc = SQLITE_ERROR;
-        goto initone_error_out;
+        செல் initone_error_out;
       }
     }
   }
   pDb->pSchema->enc = ENC(db);
 
-  if( pDb->pSchema->cache_size==0 ){
+  எனில்( pDb->pSchema->cache_size==0 ){
 #ifndef SQLITE_OMIT_DEPRECATED
     size = sqlite3AbsInt32(meta[BTREE_DEFAULT_CACHE_SIZE-1]);
-    if( size==0 ){ size = SQLITE_DEFAULT_CACHE_SIZE; }
+    எனில்( size==0 ){ size = SQLITE_DEFAULT_CACHE_SIZE; }
     pDb->pSchema->cache_size = size;
-#else
+#இல்லையெனில்
     pDb->pSchema->cache_size = SQLITE_DEFAULT_CACHE_SIZE;
 #endif
     sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
@@ -358,13 +358,13 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** file_format==4    Version 3.3.0.  // DESC indices.  Boolean constants
   */
   pDb->pSchema->file_format = (u8)meta[BTREE_FILE_FORMAT-1];
-  if( pDb->pSchema->file_format==0 ){
+  எனில்( pDb->pSchema->file_format==0 ){
     pDb->pSchema->file_format = 1;
   }
-  if( pDb->pSchema->file_format>SQLITE_MAX_FILE_FORMAT ){
-    sqlite3SetString(pzErrMsg, db, "unsupported file format");
+  எனில்( pDb->pSchema->file_format>SQLITE_MAX_FILE_FORMAT ){
+    sqlite3SetString(pz_Err_செய்தி, db, "unsupported file format");
     rc = SQLITE_ERROR;
-    goto initone_error_out;
+    செல் initone_error_out;
   }
 
   /* Ticket #2804:  When we open a database in the newer file format,
@@ -372,16 +372,16 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** not downgrade the database and thus invalidate any descending
   ** indices that the user might have created.
   */
-  if( iDb==0 && meta[BTREE_FILE_FORMAT-1]>=4 ){
+  எனில்( iDb==0 && meta[BTREE_FILE_FORMAT-1]>=4 ){
     db->flags &= ~(u64)SQLITE_LegacyFileFmt;
   }
 
   /* Read the schema information out of the schema tables
   */
-  assert( db->init.busy );
+  ப்ரதிஜ்ஞா( db->init.busy );
   initData.mxPage = sqlite3BtreeLastPage(pDb->pBt);
   {
-    char *zSql;
+    எழுத்து *zSql;
     zSql = sqlite3MPrintf(db, 
         "SELECT*FROM\"%w\".%s ORDER BY rowid",
         db->aDb[iDb].zDbSName, zSchemaTabName);
@@ -396,21 +396,21 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
       db->xAuth = xAuth;
     }
 #endif
-    if( rc==SQLITE_OK ) rc = initData.rc;
+    எனில்( rc==SQLITE_OK ) rc = initData.rc;
     sqlite3DbFree(db, zSql);
 #ifndef SQLITE_OMIT_ANALYZE
-    if( rc==SQLITE_OK ){
+    எனில்( rc==SQLITE_OK ){
       sqlite3AnalysisLoad(db, iDb);
     }
 #endif
   }
-  assert( pDb == &(db->aDb[iDb]) );
-  if( db->mallocFailed ){
+  ப்ரதிஜ்ஞா( pDb == &(db->aDb[iDb]) );
+  எனில்( db->mallocFailed ){
     rc = SQLITE_NOMEM_BKPT;
     sqlite3ResetAllSchemasOfConnection(db);
     pDb = &db->aDb[iDb];
-  }else
-  if( rc==SQLITE_OK || ((db->flags&SQLITE_NoSchemaError) && rc!=SQLITE_NOMEM)){
+  }இல்லையெனில்
+  எனில்( rc==SQLITE_OK || ((db->flags&SQLITE_NoSchemaError) && rc!=SQLITE_NOMEM)){
     /* Hack: If the SQLITE_NoSchemaError flag is set, then consider
     ** the schema loaded, even if errors (other than OOM) occurred. In
     ** this situation the current sqlite3_prepare() operation will fail,
@@ -430,20 +430,20 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** before that point, jump to error_out.
   */
 initone_error_out:
-  if( openedTransaction ){
+  எனில்( openedTransaction ){
     sqlite3BtreeCommit(pDb->pBt);
   }
   sqlite3BtreeLeave(pDb->pBt);
 
 error_out:
-  if( rc ){
-    if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+  எனில்( rc ){
+    எனில்( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
       sqlite3OomFault(db);
     }
     sqlite3ResetOneSchema(db, iDb);
   }
   db->init.busy = 0;
-  return rc;
+  திரும்பு rc;
 }
 
 /*
@@ -455,52 +455,52 @@ error_out:
 ** After a database is initialized, the DB_SchemaLoaded bit is set
 ** bit is set in the flags field of the Db structure. 
 */
-int sqlite3Init(sqlite3 *db, char **pzErrMsg){
-  int i, rc;
-  int commit_internal = !(db->mDbFlags&DBFLAG_SchemaChange);
+முழு sqlite3Init(sqlite3 *db, எழுத்து **pz_Err_செய்தி){
+  முழு i, rc;
+  முழு commit_internal = !(db->mDbFlags&DBFLAG_SchemaChange);
   
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( sqlite3BtreeHoldsMutex(db->aDb[0].pBt) );
-  assert( db->init.busy==0 );
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
+  ப்ரதிஜ்ஞா( sqlite3BtreeHoldsMutex(db->aDb[0].pBt) );
+  ப்ரதிஜ்ஞா( db->init.busy==0 );
   ENC(db) = SCHEMA_ENC(db);
-  assert( db->nDb>0 );
+  ப்ரதிஜ்ஞா( db->nDb>0 );
   /* Do the main schema first */
-  if( !DbHasProperty(db, 0, DB_SchemaLoaded) ){
-    rc = sqlite3InitOne(db, 0, pzErrMsg, 0);
-    if( rc ) return rc;
+  எனில்( !DbHasProperty(db, 0, DB_SchemaLoaded) ){
+    rc = sqlite3InitOne(db, 0, pz_Err_செய்தி, 0);
+    எனில்( rc ) திரும்பு rc;
   }
   /* All other schemas after the main schema. The "temp" schema must be last */
-  for(i=db->nDb-1; i>0; i--){
-    assert( i==1 || sqlite3BtreeHoldsMutex(db->aDb[i].pBt) );
-    if( !DbHasProperty(db, i, DB_SchemaLoaded) ){
-      rc = sqlite3InitOne(db, i, pzErrMsg, 0);
-      if( rc ) return rc;
+  க்கு(i=db->nDb-1; i>0; i--){
+    ப்ரதிஜ்ஞா( i==1 || sqlite3BtreeHoldsMutex(db->aDb[i].pBt) );
+    எனில்( !DbHasProperty(db, i, DB_SchemaLoaded) ){
+      rc = sqlite3InitOne(db, i, pz_Err_செய்தி, 0);
+      எனில்( rc ) திரும்பு rc;
     }
   }
-  if( commit_internal ){
+  எனில்( commit_internal ){
     sqlite3CommitInternalChanges(db);
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** This routine is a no-op if the database schema is already initialized.
 ** Otherwise, the schema is loaded. An error code is returned.
 */
-int sqlite3ReadSchema(Parse *pParse){
-  int rc = SQLITE_OK;
+முழு sqlite3ReadSchema(Parse *pParse){
+  முழு rc = SQLITE_OK;
   sqlite3 *db = pParse->db;
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( !db->init.busy ){
-    rc = sqlite3Init(db, &pParse->zErrMsg);
-    if( rc!=SQLITE_OK ){
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
+  எனில்( !db->init.busy ){
+    rc = sqlite3Init(db, &pParse->z_Err_செய்தி);
+    எனில்( rc!=SQLITE_OK ){
       pParse->rc = rc;
       pParse->nErr++;
-    }else if( db->noSharedCache ){
+    }இல்லையெனில் எனில்( db->noSharedCache ){
       db->mDbFlags |= DBFLAG_SchemaKnownOk;
     }
   }
-  return rc;
+  திரும்பு rc;
 }
 
 
@@ -509,29 +509,29 @@ int sqlite3ReadSchema(Parse *pParse){
 ** of date set pParse->rc to SQLITE_SCHEMA.  If all schema cookies
 ** make no changes to pParse->rc.
 */
-static void schemaIsValid(Parse *pParse){
+நிலையான வெறுமை schemaIsValid(Parse *pParse){
   sqlite3 *db = pParse->db;
-  int iDb;
-  int rc;
-  int cookie;
+  முழு iDb;
+  முழு rc;
+  முழு cookie;
 
-  assert( pParse->checkSchema );
-  assert( sqlite3_mutex_held(db->mutex) );
-  for(iDb=0; iDb<db->nDb; iDb++){
-    int openedTransaction = 0;         /* True if a transaction is opened */
+  ப்ரதிஜ்ஞா( pParse->checkSchema );
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
+  க்கு(iDb=0; iDb<db->nDb; iDb++){
+    முழு openedTransaction = 0;         /* True if a transaction is opened */
     Btree *pBt = db->aDb[iDb].pBt;     /* Btree database to read cookie from */
-    if( pBt==0 ) continue;
+    எனில்( pBt==0 ) தொடர்;
 
     /* If there is not already a read-only (or read-write) transaction opened
     ** on the b-tree database, open one now. If a transaction is opened, it 
     ** will be closed immediately after reading the meta-value. */
-    if( sqlite3BtreeTxnState(pBt)==SQLITE_TXN_NONE ){
+    எனில்( sqlite3BtreeTxnState(pBt)==SQLITE_TXN_NONE ){
       rc = sqlite3BtreeBeginTrans(pBt, 0, 0);
-      if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+      எனில்( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
         sqlite3OomFault(db);
         pParse->rc = SQLITE_NOMEM;
       }
-      if( rc!=SQLITE_OK ) return;
+      எனில்( rc!=SQLITE_OK ) திரும்பு;
       openedTransaction = 1;
     }
 
@@ -539,14 +539,14 @@ static void schemaIsValid(Parse *pParse){
     ** value stored as part of the in-memory schema representation,
     ** set Parse.rc to SQLITE_SCHEMA. */
     sqlite3BtreeGetMeta(pBt, BTREE_SCHEMA_VERSION, (u32 *)&cookie);
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( cookie!=db->aDb[iDb].pSchema->schema_cookie ){
-      if( DbHasProperty(db, iDb, DB_SchemaLoaded) ) pParse->rc = SQLITE_SCHEMA;
+    ப்ரதிஜ்ஞா( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    எனில்( cookie!=db->aDb[iDb].pSchema->schema_cookie ){
+      எனில்( DbHasProperty(db, iDb, DB_SchemaLoaded) ) pParse->rc = SQLITE_SCHEMA;
       sqlite3ResetOneSchema(db, iDb);
     }
 
     /* Close the transaction, if one was opened. */
-    if( openedTransaction ){
+    எனில்( openedTransaction ){
       sqlite3BtreeCommit(pBt);
     }
   }
@@ -559,8 +559,8 @@ static void schemaIsValid(Parse *pParse){
 ** If the same database is attached more than once, the first
 ** attached database is returned.
 */
-int sqlite3SchemaToIndex(sqlite3 *db, Schema *pSchema){
-  int i = -32768;
+முழு sqlite3SchemaToIndex(sqlite3 *db, Schema *pSchema){
+  முழு i = -32768;
 
   /* If pSchema is NULL, then return -32768. This happens when code in 
   ** expr.c is trying to resolve a reference to a transient table (i.e. one
@@ -573,44 +573,44 @@ int sqlite3SchemaToIndex(sqlite3 *db, Schema *pSchema){
   ** statements too, but it never hurts to play the odds) and
   ** -32768 will still fit into a 16-bit signed integer.
   */
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( pSchema ){
-    for(i=0; 1; i++){
-      assert( i<db->nDb );
-      if( db->aDb[i].pSchema==pSchema ){
-        break;
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
+  எனில்( pSchema ){
+    க்கு(i=0; 1; i++){
+      ப்ரதிஜ்ஞா( i<db->nDb );
+      எனில்( db->aDb[i].pSchema==pSchema ){
+        நிறுத்து;
       }
     }
-    assert( i>=0 && i<db->nDb );
+    ப்ரதிஜ்ஞா( i>=0 && i<db->nDb );
   }
-  return i;
+  திரும்பு i;
 }
 
 /*
 ** Free all memory allocations in the pParse object
 */
-void sqlite3ParseObjectReset(Parse *pParse){
+வெறுமை sqlite3ParseObjectReset(Parse *pParse){
   sqlite3 *db = pParse->db;
-  assert( db!=0 );
-  assert( db->pParse==pParse );
-  assert( pParse->nested==0 );
+  ப்ரதிஜ்ஞா( db!=0 );
+  ப்ரதிஜ்ஞா( db->pParse==pParse );
+  ப்ரதிஜ்ஞா( pParse->nested==0 );
 #ifndef SQLITE_OMIT_SHARED_CACHE
-  if( pParse->nTableLock ) sqlite3DbNNFreeNN(db, pParse->aTableLock);
+  எனில்( pParse->nTableLock ) sqlite3DbNNFreeNN(db, pParse->aTableLock);
 #endif
-  while( pParse->pCleanup ){
+  போது( pParse->pCleanup ){
     ParseCleanup *pCleanup = pParse->pCleanup;
     pParse->pCleanup = pCleanup->pNext;
     pCleanup->xCleanup(db, pCleanup->pPtr);
     sqlite3DbNNFreeNN(db, pCleanup);
   }
-  if( pParse->aLabel ) sqlite3DbNNFreeNN(db, pParse->aLabel);
-  if( pParse->pConstExpr ){
-    sqlite3ExprListDelete(db, pParse->pConstExpr);
+  எனில்( pParse->aLabel ) sqlite3DbNNFreeNN(db, pParse->aLabel);
+  எனில்( pParse->p_Const_கோவை ){
+    sqlite3_கோவை_List_Delete(db, pParse->p_Const_கோவை);
   }
-  assert( db->lookaside.bDisable >= pParse->disableLookaside );
+  ப்ரதிஜ்ஞா( db->lookaside.bDisable >= pParse->disableLookaside );
   db->lookaside.bDisable -= pParse->disableLookaside;
   db->lookaside.sz = db->lookaside.bDisable ? 0 : db->lookaside.szTrue;
-  assert( pParse->db->pParse==pParse );
+  ப்ரதிஜ்ஞா( pParse->db->pParse==pParse );
   db->pParse = pParse->pOuterParse;
 }
 
@@ -642,31 +642,31 @@ void sqlite3ParseObjectReset(Parse *pParse){
 **
 **       pObj = sqlite3ParserAddCleanup(pParse, destructor, pObj);
 */
-void *sqlite3ParserAddCleanup(
+வெறுமை *sqlite3ParserAddCleanup(
   Parse *pParse,                      /* Destroy when this Parser finishes */
-  void (*xCleanup)(sqlite3*,void*),   /* The cleanup routine */
-  void *pPtr                          /* Pointer to object to be cleaned up */
+  வெறுமை (*xCleanup)(sqlite3*,வெறுமை*),   /* The cleanup routine */
+  வெறுமை *pPtr                          /* Pointer to object to be cleaned up */
 ){
   ParseCleanup *pCleanup;
-  if( sqlite3FaultSim(300) ){
+  எனில்( sqlite3FaultSim(300) ){
     pCleanup = 0;
     sqlite3OomFault(pParse->db);
-  }else{
-    pCleanup = sqlite3DbMallocRaw(pParse->db, sizeof(*pCleanup));
+  }இல்லையெனில்{
+    pCleanup = sqlite3DbMallocRaw(pParse->db, அளவு(*pCleanup));
   }
-  if( pCleanup ){
+  எனில்( pCleanup ){
     pCleanup->pNext = pParse->pCleanup;
     pParse->pCleanup = pCleanup;
     pCleanup->pPtr = pPtr;
     pCleanup->xCleanup = xCleanup;
-  }else{
+  }இல்லையெனில்{
     xCleanup(pParse->db, pPtr);
     pPtr = 0;
-#if defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
+#எனில் defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
     pParse->earlyCleanup = 1;
 #endif
   }
-  return pPtr;
+  திரும்பு pPtr;
 }
 
 /*
@@ -678,15 +678,15 @@ void *sqlite3ParserAddCleanup(
 ** Caution:  Do not confuse this routine with sqlite3ParseObjectInit() which
 ** is generated by Lemon.
 */
-void sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
-  assert( db!=0 );
+வெறுமை sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
+  ப்ரதிஜ்ஞா( db!=0 );
   memset(PARSE_HDR(pParse), 0, PARSE_HDR_SZ);
   memset(PARSE_TAIL(pParse), 0, PARSE_TAIL_SZ);
-  assert( db->pParse!=pParse );
+  ப்ரதிஜ்ஞா( db->pParse!=pParse );
   pParse->pOuterParse = db->pParse;
   db->pParse = pParse;
   pParse->db = db;
-  if( db->mallocFailed ) sqlite3ErrorMsg(pParse, "out of memory");
+  எனில்( db->mallocFailed ) sqlite3_Error_செய்தி(pParse, "out of memory");
 }
 
 /*
@@ -700,17 +700,17 @@ void sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
 /*
 ** Compile the UTF-8 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare(
+நிலையான முழு sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி எழுத்து *zSql,         /* UTF-8 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pReprepare,         /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  மாறிலி எழுத்து **pzTail       /* OUT: End of parsed string */
 ){
-  int rc = SQLITE_OK;       /* Result code */
-  int i;                    /* Loop counter */
+  முழு rc = SQLITE_OK;       /* Result code */
+  முழு i;                    /* Loop counter */
   Parse sParse;             /* Parsing context */
 
   /* sqlite3ParseObjectInit(&sParse, db); // inlined for performance */
@@ -719,24 +719,24 @@ static int sqlite3Prepare(
   sParse.pOuterParse = db->pParse;
   db->pParse = &sParse;
   sParse.db = db;
-  if( pReprepare ){
+  எனில்( pReprepare ){
     sParse.pReprepare = pReprepare;
     sParse.explain = sqlite3_stmt_isexplain((sqlite3_stmt*)pReprepare);
-  }else{
-    assert( sParse.pReprepare==0 );
+  }இல்லையெனில்{
+    ப்ரதிஜ்ஞா( sParse.pReprepare==0 );
   }
-  assert( ppStmt && *ppStmt==0 );
-  if( db->mallocFailed ){
-    sqlite3ErrorMsg(&sParse, "out of memory");
+  ப்ரதிஜ்ஞா( ppStmt && *ppStmt==0 );
+  எனில்( db->mallocFailed ){
+    sqlite3_Error_செய்தி(&sParse, "out of memory");
     db->errCode = rc = SQLITE_NOMEM;
-    goto end_prepare;
+    செல் end_prepare;
   }
-  assert( sqlite3_mutex_held(db->mutex) );
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
 
   /* For a long-term use prepared statement avoid the use of
   ** lookaside memory.
   */
-  if( prepFlags & SQLITE_PREPARE_PERSISTENT ){
+  எனில்( prepFlags & SQLITE_PREPARE_PERSISTENT ){
     sParse.disableLookaside++;
     DisableLookaside;
   }
@@ -765,77 +765,77 @@ static int sqlite3Prepare(
   ** but it does *not* override schema lock detection, so this all still
   ** works even if READ_UNCOMMITTED is set.
   */
-  if( !db->noSharedCache ){
-    for(i=0; i<db->nDb; i++) {
+  எனில்( !db->noSharedCache ){
+    க்கு(i=0; i<db->nDb; i++) {
       Btree *pBt = db->aDb[i].pBt;
-      if( pBt ){
-        assert( sqlite3BtreeHoldsMutex(pBt) );
+      எனில்( pBt ){
+        ப்ரதிஜ்ஞா( sqlite3BtreeHoldsMutex(pBt) );
         rc = sqlite3BtreeSchemaLocked(pBt);
-        if( rc ){
-          const char *zDb = db->aDb[i].zDbSName;
-          sqlite3ErrorWithMsg(db, rc, "database schema is locked: %s", zDb);
+        எனில்( rc ){
+          மாறிலி எழுத்து *zDb = db->aDb[i].zDbSName;
+          sqlite3_Error_With_செய்தி(db, rc, "database schema is locked: %s", zDb);
           testcase( db->flags & SQLITE_ReadUncommit );
-          goto end_prepare;
+          செல் end_prepare;
         }
       }
     }
   }
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( db->pDisconnect ) sqlite3VtabUnlockList(db);
+  எனில்( db->pDisconnect ) sqlite3VtabUnlockList(db);
 #endif
 
-  if( nBytes>=0 && (nBytes==0 || zSql[nBytes-1]!=0) ){
-    char *zSqlCopy;
-    int mxLen = db->aLimit[SQLITE_LIMIT_SQL_LENGTH];
+  எனில்( nBytes>=0 && (nBytes==0 || zSql[nBytes-1]!=0) ){
+    எழுத்து *zSqlCopy;
+    முழு mxLen = db->aLimit[SQLITE_LIMIT_SQL_LENGTH];
     testcase( nBytes==mxLen );
     testcase( nBytes==mxLen+1 );
-    if( nBytes>mxLen ){
-      sqlite3ErrorWithMsg(db, SQLITE_TOOBIG, "statement too long");
+    எனில்( nBytes>mxLen ){
+      sqlite3_Error_With_செய்தி(db, SQLITE_TOOBIG, "statement too long");
       rc = sqlite3ApiExit(db, SQLITE_TOOBIG);
-      goto end_prepare;
+      செல் end_prepare;
     }
     zSqlCopy = sqlite3DbStrNDup(db, zSql, nBytes);
-    if( zSqlCopy ){
+    எனில்( zSqlCopy ){
       sqlite3RunParser(&sParse, zSqlCopy);
       sParse.zTail = &zSql[sParse.zTail-zSqlCopy];
       sqlite3DbFree(db, zSqlCopy);
-    }else{
+    }இல்லையெனில்{
       sParse.zTail = &zSql[nBytes];
     }
-  }else{
+  }இல்லையெனில்{
     sqlite3RunParser(&sParse, zSql);
   }
-  assert( 0==sParse.nQueryLoop );
+  ப்ரதிஜ்ஞா( 0==sParse.nQueryLoop );
 
-  if( pzTail ){
+  எனில்( pzTail ){
     *pzTail = sParse.zTail;
   }
 
-  if( db->init.busy==0 ){
-    sqlite3VdbeSetSql(sParse.pVdbe, zSql, (int)(sParse.zTail-zSql), prepFlags);
+  எனில்( db->init.busy==0 ){
+    sqlite3VdbeSetSql(sParse.pVdbe, zSql, (முழு)(sParse.zTail-zSql), prepFlags);
   }
-  if( db->mallocFailed ){
+  எனில்( db->mallocFailed ){
     sParse.rc = SQLITE_NOMEM_BKPT;
     sParse.checkSchema = 0;
   }
-  if( sParse.rc!=SQLITE_OK && sParse.rc!=SQLITE_DONE ){
-    if( sParse.checkSchema && db->init.busy==0 ){
+  எனில்( sParse.rc!=SQLITE_OK && sParse.rc!=SQLITE_DONE ){
+    எனில்( sParse.checkSchema && db->init.busy==0 ){
       schemaIsValid(&sParse);
     }
-    if( sParse.pVdbe ){
+    எனில்( sParse.pVdbe ){
       sqlite3VdbeFinalize(sParse.pVdbe);
     }
-    assert( 0==(*ppStmt) );
+    ப்ரதிஜ்ஞா( 0==(*ppStmt) );
     rc = sParse.rc;
-    if( sParse.zErrMsg ){
-      sqlite3ErrorWithMsg(db, rc, "%s", sParse.zErrMsg);
-      sqlite3DbFree(db, sParse.zErrMsg);
-    }else{
+    எனில்( sParse.z_Err_செய்தி ){
+      sqlite3_Error_With_செய்தி(db, rc, "%s", sParse.z_Err_செய்தி);
+      sqlite3DbFree(db, sParse.z_Err_செய்தி);
+    }இல்லையெனில்{
       sqlite3Error(db, rc);
     }
-  }else{
-    assert( sParse.zErrMsg==0 );
+  }இல்லையெனில்{
+    ப்ரதிஜ்ஞா( sParse.z_Err_செய்தி==0 );
     *ppStmt = (sqlite3_stmt*)sParse.pVdbe;
     rc = SQLITE_OK;
     sqlite3ErrorClear(db);
@@ -843,7 +843,7 @@ static int sqlite3Prepare(
 
 
   /* Delete any TriggerPrg structures allocated while parsing this statement. */
-  while( sParse.pTriggerPrg ){
+  போது( sParse.pTriggerPrg ){
     TriggerPrg *pT = sParse.pTriggerPrg;
     sParse.pTriggerPrg = pT->pNext;
     sqlite3DbFree(db, pT);
@@ -852,47 +852,47 @@ static int sqlite3Prepare(
 end_prepare:
 
   sqlite3ParseObjectReset(&sParse);
-  return rc;
+  திரும்பு rc;
 }
-static int sqlite3LockAndPrepare(
+நிலையான முழு sqlite3LockAndPrepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி எழுத்து *zSql,         /* UTF-8 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pOld,               /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  மாறிலி எழுத்து **pzTail       /* OUT: End of parsed string */
 ){
-  int rc;
-  int cnt = 0;
+  முழு rc;
+  முழு cnt = 0;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppStmt==0 ) return SQLITE_MISUSE_BKPT;
+  எனில்( ppStmt==0 ) திரும்பு SQLITE_MISUSE_BKPT;
 #endif
   *ppStmt = 0;
-  if( !sqlite3SafetyCheckOk(db)||zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  எனில்( !sqlite3SafetyCheckOk(db)||zSql==0 ){
+    திரும்பு SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
   sqlite3BtreeEnterAll(db);
-  do{
+  செய்{
     /* Make multiple attempts to compile the SQL, until it either succeeds
     ** or encounters a permanent error.  A schema problem after one schema
     ** reset is considered a permanent error. */
     rc = sqlite3Prepare(db, zSql, nBytes, prepFlags, pOld, ppStmt, pzTail);
-    assert( rc==SQLITE_OK || *ppStmt==0 );
-    if( rc==SQLITE_OK || db->mallocFailed ) break;
+    ப்ரதிஜ்ஞா( rc==SQLITE_OK || *ppStmt==0 );
+    எனில்( rc==SQLITE_OK || db->mallocFailed ) நிறுத்து;
     cnt++;
-  }while( (rc==SQLITE_ERROR_RETRY && ALWAYS(cnt<=SQLITE_MAX_PREPARE_RETRY))
+  }போது( (rc==SQLITE_ERROR_RETRY && ALWAYS(cnt<=SQLITE_MAX_PREPARE_RETRY))
        || (rc==SQLITE_SCHEMA && (sqlite3ResetOneSchema(db,-1), cnt)==1) );
   sqlite3BtreeLeaveAll(db);
-  assert( rc!=SQLITE_ERROR_RETRY );
+  ப்ரதிஜ்ஞா( rc!=SQLITE_ERROR_RETRY );
   rc = sqlite3ApiExit(db, rc);
-  assert( (rc&db->errMask)==rc );
+  ப்ரதிஜ்ஞா( (rc&db->errMask)==rc );
   db->busyHandler.nBusy = 0;
   sqlite3_mutex_leave(db->mutex);
-  assert( rc==SQLITE_OK || (*ppStmt)==0 );
-  return rc;
+  ப்ரதிஜ்ஞா( rc==SQLITE_OK || (*ppStmt)==0 );
+  திரும்பு rc;
 }
 
 
@@ -904,34 +904,34 @@ static int sqlite3LockAndPrepare(
 ** locked the sqlite3_schema table, return SQLITE_LOCKED. If any other error
 ** occurs, return SQLITE_SCHEMA.
 */
-int sqlite3Reprepare(Vdbe *p){
-  int rc;
+முழு sqlite3Reprepare(Vdbe *p){
+  முழு rc;
   sqlite3_stmt *pNew;
-  const char *zSql;
+  மாறிலி எழுத்து *zSql;
   sqlite3 *db;
   u8 prepFlags;
 
-  assert( sqlite3_mutex_held(sqlite3VdbeDb(p)->mutex) );
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(sqlite3VdbeDb(p)->mutex) );
   zSql = sqlite3_sql((sqlite3_stmt *)p);
-  assert( zSql!=0 );  /* Reprepare only called for prepare_v2() statements */
+  ப்ரதிஜ்ஞா( zSql!=0 );  /* Reprepare only called for prepare_v2() statements */
   db = sqlite3VdbeDb(p);
-  assert( sqlite3_mutex_held(db->mutex) );
+  ப்ரதிஜ்ஞா( sqlite3_mutex_held(db->mutex) );
   prepFlags = sqlite3VdbePrepareFlags(p);
   rc = sqlite3LockAndPrepare(db, zSql, -1, prepFlags, p, &pNew, 0);
-  if( rc ){
-    if( rc==SQLITE_NOMEM ){
+  எனில்( rc ){
+    எனில்( rc==SQLITE_NOMEM ){
       sqlite3OomFault(db);
     }
-    assert( pNew==0 );
-    return rc;
-  }else{
-    assert( pNew!=0 );
+    ப்ரதிஜ்ஞா( pNew==0 );
+    திரும்பு rc;
+  }இல்லையெனில்{
+    ப்ரதிஜ்ஞா( pNew!=0 );
   }
   sqlite3VdbeSwap((Vdbe*)pNew, p);
   sqlite3TransferBindings(pNew, (sqlite3_stmt*)p);
   sqlite3VdbeResetStepResult((Vdbe*)pNew);
   sqlite3VdbeFinalize((Vdbe*)pNew);
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 
@@ -943,26 +943,26 @@ int sqlite3Reprepare(Vdbe *p){
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-int sqlite3_prepare(
+முழு sqlite3_prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி எழுத்து *zSql,         /* UTF-8 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  மாறிலி எழுத்து **pzTail       /* OUT: End of parsed string */
 ){
-  int rc;
+  முழு rc;
   rc = sqlite3LockAndPrepare(db,zSql,nBytes,0,0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ப்ரதிஜ்ஞா( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  திரும்பு rc;
 }
-int sqlite3_prepare_v2(
+முழு sqlite3_prepare_v2(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி எழுத்து *zSql,         /* UTF-8 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  மாறிலி எழுத்து **pzTail       /* OUT: End of parsed string */
 ){
-  int rc;
+  முழு rc;
   /* EVIDENCE-OF: R-37923-12173 The sqlite3_prepare_v2() interface works
   ** exactly the same as sqlite3_prepare_v3() with a zero prepFlags
   ** parameter.
@@ -970,18 +970,18 @@ int sqlite3_prepare_v2(
   ** Proof in that the 5th parameter to sqlite3LockAndPrepare is 0 */
   rc = sqlite3LockAndPrepare(db,zSql,nBytes,SQLITE_PREPARE_SAVESQL,0,
                              ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
-  return rc;
+  ப்ரதிஜ்ஞா( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
+  திரும்பு rc;
 }
-int sqlite3_prepare_v3(
+முழு sqlite3_prepare_v3(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
-  unsigned int prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
+  மாறிலி எழுத்து *zSql,         /* UTF-8 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
+  unsigned முழு prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  மாறிலி எழுத்து **pzTail       /* OUT: End of parsed string */
 ){
-  int rc;
+  முழு rc;
   /* EVIDENCE-OF: R-56861-42673 sqlite3_prepare_v3() differs from
   ** sqlite3_prepare_v2() only in having the extra prepFlags parameter,
   ** which is a bit array consisting of zero or more of the
@@ -992,8 +992,8 @@ int sqlite3_prepare_v3(
   rc = sqlite3LockAndPrepare(db,zSql,nBytes,
                  SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_MASK),
                  0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
-  return rc;
+  ப்ரதிஜ்ஞா( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
+  திரும்பு rc;
 }
 
 
@@ -1001,28 +1001,28 @@ int sqlite3_prepare_v3(
 /*
 ** Compile the UTF-16 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare16(
+நிலையான முழு sqlite3Prepare16(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி வெறுமை *zSql,         /* UTF-16 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  மாறிலி வெறுமை **pzTail       /* OUT: End of parsed string */
 ){
   /* This function currently works by first transforming the UTF-16
   ** encoded string to UTF-8, then invoking sqlite3_prepare(). The
   ** tricky bit is figuring out the pointer to return in *pzTail.
   */
-  char *zSql8;
-  const char *zTail8 = 0;
-  int rc = SQLITE_OK;
+  எழுத்து *zSql8;
+  மாறிலி எழுத்து *zTail8 = 0;
+  முழு rc = SQLITE_OK;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppStmt==0 ) return SQLITE_MISUSE_BKPT;
+  எனில்( ppStmt==0 ) திரும்பு SQLITE_MISUSE_BKPT;
 #endif
   *ppStmt = 0;
-  if( !sqlite3SafetyCheckOk(db)||zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  எனில்( !sqlite3SafetyCheckOk(db)||zSql==0 ){
+    திரும்பு SQLITE_MISUSE_BKPT;
   }
 
   /* Make sure nBytes is non-negative and correct.  It should be the
@@ -1030,37 +1030,37 @@ static int sqlite3Prepare16(
   ** U+0000 character.  If the input nBytes is odd, convert it into
   ** an even number.  If the input nBytes is negative, then the input
   ** must be terminated by at least one U+0000 character */
-  if( nBytes>=0 ){
-    int sz;
-    const char *z = (const char*)zSql;
-    for(sz=0; sz<nBytes && (z[sz]!=0 || z[sz+1]!=0); sz += 2){}
+  எனில்( nBytes>=0 ){
+    முழு sz;
+    மாறிலி எழுத்து *z = (மாறிலி எழுத்து*)zSql;
+    க்கு(sz=0; sz<nBytes && (z[sz]!=0 || z[sz+1]!=0); sz += 2){}
     nBytes = sz;
-  }else{
-    int sz;
-    const char *z = (const char*)zSql;
-    for(sz=0; z[sz]!=0 || z[sz+1]!=0; sz += 2){}
+  }இல்லையெனில்{
+    முழு sz;
+    மாறிலி எழுத்து *z = (மாறிலி எழுத்து*)zSql;
+    க்கு(sz=0; z[sz]!=0 || z[sz+1]!=0; sz += 2){}
     nBytes = sz;
   }
 
   sqlite3_mutex_enter(db->mutex);
   zSql8 = sqlite3Utf16to8(db, zSql, nBytes, SQLITE_UTF16NATIVE);
-  if( zSql8 ){
+  எனில்( zSql8 ){
     rc = sqlite3LockAndPrepare(db, zSql8, -1, prepFlags, 0, ppStmt, &zTail8);
   }
 
-  if( zTail8 && pzTail ){
+  எனில்( zTail8 && pzTail ){
     /* If sqlite3_prepare returns a tail pointer, we calculate the
     ** equivalent pointer into the UTF-16 string by counting the unicode
     ** characters between zSql8 and zTail8, and then returning a pointer
     ** the same number of characters into the UTF-16 string.
     */
-    int chars_parsed = sqlite3Utf8CharLen(zSql8, (int)(zTail8-zSql8));
+    முழு chars_parsed = sqlite3Utf8CharLen(zSql8, (முழு)(zTail8-zSql8));
     *pzTail = (u8 *)zSql + sqlite3Utf16ByteLen(zSql, nBytes, chars_parsed);
   }
   sqlite3DbFree(db, zSql8); 
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  திரும்பு rc;
 }
 
 /*
@@ -1071,44 +1071,44 @@ static int sqlite3Prepare16(
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-int sqlite3_prepare16(
+முழு sqlite3_prepare16(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி வெறுமை *zSql,         /* UTF-16 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  மாறிலி வெறுமை **pzTail       /* OUT: End of parsed string */
 ){
-  int rc;
+  முழு rc;
   rc = sqlite3Prepare16(db,zSql,nBytes&~1,0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ப்ரதிஜ்ஞா( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  திரும்பு rc;
 }
-int sqlite3_prepare16_v2(
+முழு sqlite3_prepare16_v2(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  மாறிலி வெறுமை *zSql,         /* UTF-16 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  மாறிலி வெறுமை **pzTail       /* OUT: End of parsed string */
 ){
-  int rc;
+  முழு rc;
   rc = sqlite3Prepare16(db,zSql,nBytes&~1,SQLITE_PREPARE_SAVESQL,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ப்ரதிஜ்ஞா( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  திரும்பு rc;
 }
-int sqlite3_prepare16_v3(
+முழு sqlite3_prepare16_v3(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
-  unsigned int prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
+  மாறிலி வெறுமை *zSql,         /* UTF-16 encoded SQL statement. */
+  முழு nBytes,               /* Length of zSql in bytes. */
+  unsigned முழு prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  மாறிலி வெறுமை **pzTail       /* OUT: End of parsed string */
 ){
-  int rc;
+  முழு rc;
   rc = sqlite3Prepare16(db,zSql,nBytes&~1,
          SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_MASK),
          ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ப்ரதிஜ்ஞா( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  திரும்பு rc;
 }
 
 #endif /* SQLITE_OMIT_UTF16 */

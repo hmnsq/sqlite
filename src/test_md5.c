@@ -12,11 +12,11 @@
 **
 ** This file contains code to implement an MD5 extension to TCL.
 */
-#include "sqlite3.h"
-#include <stdlib.h>
-#include <string.h>
-#include "sqlite3.h"
-#include "tclsqlite.h"
+#அந்தர்பாவ "sqlite3.h"
+#அந்தர்பாவ <stdlib.h>
+#அந்தர்பாவ <string.h>
+#அந்தர்பாவ "sqlite3.h"
+#அந்தர்பாவ "tclsqlite.h"
 
 /*
  * This code implements the MD5 message-digest algorithm.
@@ -44,28 +44,28 @@
  *
  */
 #ifndef uint32
-#  define uint32 unsigned int
+#  define uint32 unsigned முழு
 #endif
 
-struct MD5Context {
-  int isInit;
+கட்டமைப்பு MD5Context {
+  முழு isInit;
   uint32 buf[4];
   uint32 bits[2];
-  unsigned char in[64];
+  unsigned எழுத்து in[64];
 };
-typedef struct MD5Context MD5Context;
+வகைவரை கட்டமைப்பு MD5Context MD5Context;
 
 /*
  * Note: this code is harmless on little-endian machines.
  */
-static void byteReverse (unsigned char *buf, unsigned longs){
+நிலையான வெறுமை byteReverse (unsigned எழுத்து *buf, unsigned longs){
         uint32 t;
-        do {
+        செய் {
                 t = (uint32)((unsigned)buf[3]<<8 | buf[2]) << 16 |
                             ((unsigned)buf[1]<<8 | buf[0]);
                 *(uint32 *)buf = t;
                 buf += 4;
-        } while (--longs);
+        } போது (--longs);
 }
 /* The four core functions - F1 is optimized somewhat */
 
@@ -84,8 +84,8 @@ static void byteReverse (unsigned char *buf, unsigned longs){
  * reflect the addition of 16 longwords of new data.  MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
-static void MD5Transform(uint32 buf[4], const uint32 in[16]){
-        register uint32 a, b, c, d;
+நிலையான வெறுமை MD5Transform(uint32 buf[4], மாறிலி uint32 in[16]){
+        பதிவு uint32 a, b, c, d;
 
         a = buf[0];
         b = buf[1];
@@ -170,7 +170,7 @@ static void MD5Transform(uint32 buf[4], const uint32 in[16]){
  * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
  * initialization constants.
  */
-static void MD5Init(MD5Context *ctx){
+நிலையான வெறுமை MD5Init(MD5Context *ctx){
         ctx->isInit = 1;
         ctx->buf[0] = 0x67452301;
         ctx->buf[1] = 0xefcdab89;
@@ -184,14 +184,14 @@ static void MD5Init(MD5Context *ctx){
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
  */
-static
-void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
+நிலையான
+வெறுமை MD5Update(MD5Context *ctx, மாறிலி unsigned எழுத்து *buf, unsigned முழு len){
         uint32 t;
 
         /* Update bitcount */
 
         t = ctx->bits[0];
-        if ((ctx->bits[0] = t + ((uint32)len << 3)) < t)
+        எனில் ((ctx->bits[0] = t + ((uint32)len << 3)) < t)
                 ctx->bits[1]++; /* Carry from low to high */
         ctx->bits[1] += len >> 29;
 
@@ -199,13 +199,13 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
 
         /* Handle any leading odd-sized chunks */
 
-        if ( t ) {
-                unsigned char *p = (unsigned char *)ctx->in + t;
+        எனில் ( t ) {
+                unsigned எழுத்து *p = (unsigned எழுத்து *)ctx->in + t;
 
                 t = 64-t;
-                if (len < t) {
+                எனில் (len < t) {
                         memcpy(p, buf, len);
-                        return;
+                        திரும்பு;
                 }
                 memcpy(p, buf, t);
                 byteReverse(ctx->in, 16);
@@ -216,7 +216,7 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
 
         /* Process data in 64-byte chunks */
 
-        while (len >= 64) {
+        போது (len >= 64) {
                 memcpy(ctx->in, buf, 64);
                 byteReverse(ctx->in, 16);
                 MD5Transform(ctx->buf, (uint32 *)ctx->in);
@@ -233,33 +233,33 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
  * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
-static void MD5Final(unsigned char digest[16], MD5Context *ctx){
-        unsigned count;
-        unsigned char *p;
+நிலையான வெறுமை MD5Final(unsigned எழுத்து digest[16], MD5Context *ctx){
+        unsigned மொத்தம்;
+        unsigned எழுத்து *p;
 
         /* Compute number of bytes mod 64 */
-        count = (ctx->bits[0] >> 3) & 0x3F;
+        மொத்தம் = (ctx->bits[0] >> 3) & 0x3F;
 
         /* Set the first char of padding to 0x80.  This is safe since there is
            always at least one byte free */
-        p = ctx->in + count;
+        p = ctx->in + மொத்தம்;
         *p++ = 0x80;
 
         /* Bytes of padding needed to make 64 bytes */
-        count = 64 - 1 - count;
+        மொத்தம் = 64 - 1 - மொத்தம்;
 
         /* Pad out to 56 mod 64 */
-        if (count < 8) {
+        எனில் (மொத்தம் < 8) {
                 /* Two lots of padding:  Pad the first block to 64 bytes */
-                memset(p, 0, count);
+                memset(p, 0, மொத்தம்);
                 byteReverse(ctx->in, 16);
                 MD5Transform(ctx->buf, (uint32 *)ctx->in);
 
                 /* Now fill the next block with 56 bytes */
                 memset(ctx->in, 0, 56);
-        } else {
+        } இல்லையெனில் {
                 /* Pad block to 56 bytes */
-                memset(p, 0, count-8);
+                memset(p, 0, மொத்தம்-8);
         }
         byteReverse(ctx->in, 14);
 
@@ -267,19 +267,19 @@ static void MD5Final(unsigned char digest[16], MD5Context *ctx){
         memcpy(ctx->in + 14*4, ctx->bits, 8);
 
         MD5Transform(ctx->buf, (uint32 *)ctx->in);
-        byteReverse((unsigned char *)ctx->buf, 4);
+        byteReverse((unsigned எழுத்து *)ctx->buf, 4);
         memcpy(digest, ctx->buf, 16);
 }
 
 /*
 ** Convert a 128-bit MD5 digest into a 32-digit base-16 number.
 */
-static void MD5DigestToBase16(unsigned char *digest, char *zBuf){
-  static char const zEncode[] = "0123456789abcdef";
-  int i, j;
+நிலையான வெறுமை MD5DigestToBase16(unsigned எழுத்து *digest, எழுத்து *zBuf){
+  நிலையான எழுத்து மாறிலி zEncode[] = "0123456789abcdef";
+  முழு i, j;
 
-  for(j=i=0; i<16; i++){
-    int a = digest[i];
+  க்கு(j=i=0; i<16; i++){
+    முழு a = digest[i];
     zBuf[j++] = zEncode[(a>>4)&0xf];
     zBuf[j++] = zEncode[a & 0xf];
   }
@@ -292,12 +292,12 @@ static void MD5DigestToBase16(unsigned char *digest, char *zBuf){
 ** each representing 16 bits of the digest and separated from each
 ** other by a "-" character.
 */
-static void MD5DigestToBase10x8(unsigned char digest[16], char zDigest[50]){
-  int i, j;
-  unsigned int x;
-  for(i=j=0; i<16; i+=2){
+நிலையான வெறுமை MD5DigestToBase10x8(unsigned எழுத்து digest[16], எழுத்து zDigest[50]){
+  முழு i, j;
+  unsigned முழு x;
+  க்கு(i=j=0; i<16; i+=2){
     x = digest[i]*256 + digest[i+1];
-    if( i>0 ) zDigest[j++] = '-';
+    எனில்( i>0 ) zDigest[j++] = '-';
     sqlite3_snprintf(50-j, &zDigest[j], "%05u", x);
     j += 5;
   }
@@ -308,89 +308,89 @@ static void MD5DigestToBase10x8(unsigned char digest[16], char zDigest[50]){
 ** A TCL command for md5.  The argument is the text to be hashed.  The
 ** Result is the hash in base64.
 */
-static int SQLITE_TCLAPI md5_cmd(
-  void*cd,
+நிலையான முழு SQLITE_TCLAPI md5_cmd(
+  வெறுமை*cd,
   Tcl_Interp *interp,
-  int argc,
-  const char **argv
+  முழு argc,
+  மாறிலி எழுத்து **argv
 ){
   MD5Context ctx;
-  unsigned char digest[16];
-  char zBuf[50];
-  void (*converter)(unsigned char*, char*);
+  unsigned எழுத்து digest[16];
+  எழுத்து zBuf[50];
+  வெறுமை (*converter)(unsigned எழுத்து*, எழுத்து*);
 
-  if( argc!=2 ){
+  எனில்( argc!=2 ){
     Tcl_AppendResult(interp,"wrong # args: should be \"", argv[0],
-        " TEXT\"", (char*)0);
-    return TCL_ERROR;
+        " TEXT\"", (எழுத்து*)0);
+    திரும்பு TCL_ERROR;
   }
   MD5Init(&ctx);
-  MD5Update(&ctx, (unsigned char*)argv[1], (unsigned)strlen(argv[1]));
+  MD5Update(&ctx, (unsigned எழுத்து*)argv[1], (unsigned)strlen(argv[1]));
   MD5Final(digest, &ctx);
-  converter = (void(*)(unsigned char*,char*))cd;
+  converter = (வெறுமை(*)(unsigned எழுத்து*,எழுத்து*))cd;
   converter(digest, zBuf);
-  Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  Tcl_AppendResult(interp, zBuf, (எழுத்து*)0);
+  திரும்பு TCL_OK;
 }
 
 /*
 ** A TCL command to take the md5 hash of a file.  The argument is the
 ** name of the file.
 */
-static int SQLITE_TCLAPI md5file_cmd(
-  void*cd,
+நிலையான முழு SQLITE_TCLAPI md5file_cmd(
+  வெறுமை*cd,
   Tcl_Interp *interp,
-  int argc,
-  const char **argv
+  முழு argc,
+  மாறிலி எழுத்து **argv
 ){
   FILE *in;
-  int ofst;
-  int amt;
+  முழு ofst;
+  முழு amt;
   MD5Context ctx;
-  void (*converter)(unsigned char*, char*);
-  unsigned char digest[16];
-  char zBuf[10240];
+  வெறுமை (*converter)(unsigned எழுத்து*, எழுத்து*);
+  unsigned எழுத்து digest[16];
+  எழுத்து zBuf[10240];
 
-  if( argc!=2 && argc!=4 ){
+  எனில்( argc!=2 && argc!=4 ){
     Tcl_AppendResult(interp,"wrong # args: should be \"", argv[0],
-        " FILENAME [OFFSET AMT]\"", (char*)0);
-    return TCL_ERROR;
+        " FILENAME [OFFSET AMT]\"", (எழுத்து*)0);
+    திரும்பு TCL_ERROR;
   }
-  if( argc==4 ){
+  எனில்( argc==4 ){
     ofst = atoi(argv[2]);
     amt = atoi(argv[3]);
-  }else{
+  }இல்லையெனில்{
     ofst = 0;
     amt = 2147483647;
   }
   in = fopen(argv[1],"rb");
-  if( in==0 ){
+  எனில்( in==0 ){
     Tcl_AppendResult(interp,"unable to open file \"", argv[1],
-         "\" for reading", (char*)0);
-    return TCL_ERROR;
+         "\" for reading", (எழுத்து*)0);
+    திரும்பு TCL_ERROR;
   }
   fseek(in, ofst, SEEK_SET);
   MD5Init(&ctx);
-  while( amt>0 ){
-    int n;
-    n = (int)fread(zBuf, 1, sizeof(zBuf)<=amt ? sizeof(zBuf) : amt, in);
-    if( n<=0 ) break;
-    MD5Update(&ctx, (unsigned char*)zBuf, (unsigned)n);
+  போது( amt>0 ){
+    முழு n;
+    n = (முழு)fread(zBuf, 1, அளவு(zBuf)<=amt ? அளவு(zBuf) : amt, in);
+    எனில்( n<=0 ) நிறுத்து;
+    MD5Update(&ctx, (unsigned எழுத்து*)zBuf, (unsigned)n);
     amt -= n;
   }
   fclose(in);
   MD5Final(digest, &ctx);
-  converter = (void(*)(unsigned char*,char*))cd;
+  converter = (வெறுமை(*)(unsigned எழுத்து*,எழுத்து*))cd;
   converter(digest, zBuf);
-  Tcl_AppendResult(interp, zBuf, (char*)0);
-  return TCL_OK;
+  Tcl_AppendResult(interp, zBuf, (எழுத்து*)0);
+  திரும்பு TCL_OK;
 }
 
 /*
 ** Register the four new TCL commands for generating MD5 checksums
 ** with the TCL interpreter.
 */
-int Md5_Init(Tcl_Interp *interp){
+முழு Md5_Init(Tcl_Interp *interp){
   Tcl_CreateCommand(interp, "md5", (Tcl_CmdProc*)md5_cmd,
                     MD5DigestToBase16, 0);
   Tcl_CreateCommand(interp, "md5-10x8", (Tcl_CmdProc*)md5_cmd,
@@ -399,45 +399,45 @@ int Md5_Init(Tcl_Interp *interp){
                     MD5DigestToBase16, 0);
   Tcl_CreateCommand(interp, "md5file-10x8", (Tcl_CmdProc*)md5file_cmd,
                     MD5DigestToBase10x8, 0);
-  return TCL_OK;
+  திரும்பு TCL_OK;
 }
 
 /*
 ** During testing, the special md5sum() aggregate function is available.
 ** inside SQLite.  The following routines implement that function.
 */
-static void md5step(sqlite3_context *context, int argc, sqlite3_value **argv){
+நிலையான வெறுமை md5step(sqlite3_context *context, முழு argc, sqlite3_மதிப்பு **argv){
   MD5Context *p;
-  int i;
-  if( argc<1 ) return;
-  p = sqlite3_aggregate_context(context, sizeof(*p));
-  if( p==0 ) return;
-  if( !p->isInit ){
+  முழு i;
+  எனில்( argc<1 ) திரும்பு;
+  p = sqlite3_aggregate_context(context, அளவு(*p));
+  எனில்( p==0 ) திரும்பு;
+  எனில்( !p->isInit ){
     MD5Init(p);
   }
-  for(i=0; i<argc; i++){
-    const char *zData = (char*)sqlite3_value_text(argv[i]);
-    if( zData ){
-      MD5Update(p, (unsigned char*)zData, (int)strlen(zData));
+  க்கு(i=0; i<argc; i++){
+    மாறிலி எழுத்து *zData = (எழுத்து*)sqlite3_மதிப்பு_text(argv[i]);
+    எனில்( zData ){
+      MD5Update(p, (unsigned எழுத்து*)zData, (முழு)strlen(zData));
     }
   }
 }
-static void md5finalize(sqlite3_context *context){
+நிலையான வெறுமை md5finalize(sqlite3_context *context){
   MD5Context *p;
-  unsigned char digest[16];
-  char zBuf[33];
-  p = sqlite3_aggregate_context(context, sizeof(*p));
+  unsigned எழுத்து digest[16];
+  எழுத்து zBuf[33];
+  p = sqlite3_aggregate_context(context, அளவு(*p));
   MD5Final(digest,p);
   MD5DigestToBase16(digest, zBuf);
   sqlite3_result_text(context, zBuf, -1, SQLITE_TRANSIENT);
 }
-int Md5_Register(
+முழு Md5_Register(
   sqlite3 *db,
-  char **pzErrMsg,
-  const sqlite3_api_routines *pThunk
+  எழுத்து **pz_Err_செய்தி,
+  மாறிலி sqlite3_api_routines *pThunk
 ){
-  int rc = sqlite3_create_function(db, "md5sum", -1, SQLITE_UTF8, 0, 0,
+  முழு rc = sqlite3_create_function(db, "md5sum", -1, SQLITE_UTF8, 0, 0,
                                  md5step, md5finalize);
   sqlite3_overload_function(db, "md5sum", -1);  /* To exercise this API */
-  return rc;
+  திரும்பு rc;
 }

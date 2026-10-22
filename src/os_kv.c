@@ -30,31 +30,31 @@
 ** a few characters.  If the database name is too long, the VFS will
 ** malfunction and you will get SQLITE_CORRUPT errors.
 */
-#include <sqliteInt.h>
-#if SQLITE_OS_KV || (SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL))
+#அந்தர்பாவ <sqliteInt.h>
+#எனில் SQLITE_OS_KV || (SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL))
 
 /*****************************************************************************
 ** Debugging logic
 */
 
 /* SQLITE_KV_TRACE() is used for tracing calls to kvrecord routines. */
-#if 0
+#எனில் 0
 #define SQLITE_KV_TRACE(X)  printf X
-#else
+#இல்லையெனில்
 #define SQLITE_KV_TRACE(X)
 #endif
 
 /* SQLITE_KV_LOG() is used for tracing calls to the VFS interface */
-#if 0
+#எனில் 0
 #define SQLITE_KV_LOG(X)  printf X
-#else
+#இல்லையெனில்
 #define SQLITE_KV_LOG(X)
 #endif
 
 /*
 ** Forward declaration of objects used by this VFS implementation
 */
-typedef struct KVVfsFile KVVfsFile;
+வகைவரை கட்டமைப்பு KVVfsFile KVVfsFile;
 
 /* A single open file.  There are only two files represented by this
 ** VFS - the database and the rollback journal.
@@ -64,56 +64,56 @@ typedef struct KVVfsFile KVVfsFile;
 ** sqlite3-wasm.c:sqlite3__wasm_enum_json(). There are no binary
 ** compatibility concerns, so it does not need an iVersion member.
 */
-struct KVVfsFile {
+கட்டமைப்பு KVVfsFile {
   sqlite3_file base;              /* IO methods */
-  const char *zClass;             /* Storage class */
-  int isJournal;                  /* True if this is a journal file */
-  unsigned int nJrnl;             /* Space allocated for aJrnl[] */
-  char *aJrnl;                    /* Journal content */
-  int szPage;                     /* Last known page size */
+  மாறிலி எழுத்து *zClass;             /* Storage class */
+  முழு isJournal;                  /* True if this is a journal file */
+  unsigned முழு nJrnl;             /* Space allocated for aJrnl[] */
+  எழுத்து *aJrnl;                    /* Journal content */
+  முழு szPage;                     /* Last known page size */
   sqlite3_int64 szDb;             /* Database file size.  -1 means unknown */
-  char *aData;                    /* Buffer to hold page data */
+  எழுத்து *aData;                    /* Buffer to hold page data */
 };
 #define SQLITE_KVOS_SZ 133073
 
 /*
 ** Methods for KVVfsFile
 */
-static int kvvfsClose(sqlite3_file*);
-static int kvvfsReadDb(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int kvvfsReadJrnl(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int kvvfsWriteDb(sqlite3_file*,const void*,int iAmt, sqlite3_int64);
-static int kvvfsWriteJrnl(sqlite3_file*,const void*,int iAmt, sqlite3_int64);
-static int kvvfsTruncateDb(sqlite3_file*, sqlite3_int64 size);
-static int kvvfsTruncateJrnl(sqlite3_file*, sqlite3_int64 size);
-static int kvvfsSyncDb(sqlite3_file*, int flags);
-static int kvvfsSyncJrnl(sqlite3_file*, int flags);
-static int kvvfsFileSizeDb(sqlite3_file*, sqlite3_int64 *pSize);
-static int kvvfsFileSizeJrnl(sqlite3_file*, sqlite3_int64 *pSize);
-static int kvvfsLock(sqlite3_file*, int);
-static int kvvfsUnlock(sqlite3_file*, int);
-static int kvvfsCheckReservedLock(sqlite3_file*, int *pResOut);
-static int kvvfsFileControlDb(sqlite3_file*, int op, void *pArg);
-static int kvvfsFileControlJrnl(sqlite3_file*, int op, void *pArg);
-static int kvvfsSectorSize(sqlite3_file*);
-static int kvvfsDeviceCharacteristics(sqlite3_file*);
+நிலையான முழு kvvfsClose(sqlite3_file*);
+நிலையான முழு kvvfsReadDb(sqlite3_file*, வெறுமை*, முழு iAmt, sqlite3_int64 iOfst);
+நிலையான முழு kvvfsReadJrnl(sqlite3_file*, வெறுமை*, முழு iAmt, sqlite3_int64 iOfst);
+நிலையான முழு kvvfsWriteDb(sqlite3_file*,மாறிலி வெறுமை*,முழு iAmt, sqlite3_int64);
+நிலையான முழு kvvfsWriteJrnl(sqlite3_file*,மாறிலி வெறுமை*,முழு iAmt, sqlite3_int64);
+நிலையான முழு kvvfsTruncateDb(sqlite3_file*, sqlite3_int64 size);
+நிலையான முழு kvvfsTruncateJrnl(sqlite3_file*, sqlite3_int64 size);
+நிலையான முழு kvvfsSyncDb(sqlite3_file*, முழு flags);
+நிலையான முழு kvvfsSyncJrnl(sqlite3_file*, முழு flags);
+நிலையான முழு kvvfsFileSizeDb(sqlite3_file*, sqlite3_int64 *pSize);
+நிலையான முழு kvvfsFileSizeJrnl(sqlite3_file*, sqlite3_int64 *pSize);
+நிலையான முழு kvvfsLock(sqlite3_file*, முழு);
+நிலையான முழு kvvfsUnlock(sqlite3_file*, முழு);
+நிலையான முழு kvvfsCheckReservedLock(sqlite3_file*, முழு *pResOut);
+நிலையான முழு kvvfsFileControlDb(sqlite3_file*, முழு op, வெறுமை *pArg);
+நிலையான முழு kvvfsFileControlJrnl(sqlite3_file*, முழு op, வெறுமை *pArg);
+நிலையான முழு kvvfsSectorSize(sqlite3_file*);
+நிலையான முழு kvvfsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Methods for sqlite3_vfs
 */
-static int kvvfsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int kvvfsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int kvvfsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int kvvfsFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *kvvfsDlOpen(sqlite3_vfs*, const char *zFilename);
-static int kvvfsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int kvvfsSleep(sqlite3_vfs*, int microseconds);
-static int kvvfsCurrentTime(sqlite3_vfs*, double*);
-static int kvvfsCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+நிலையான முழு kvvfsOpen(sqlite3_vfs*, மாறிலி எழுத்து *, sqlite3_file*, முழு , முழு *);
+நிலையான முழு kvvfsDelete(sqlite3_vfs*, மாறிலி எழுத்து *zName, முழு syncDir);
+நிலையான முழு kvvfsAccess(sqlite3_vfs*, மாறிலி எழுத்து *zName, முழு flags, முழு *);
+நிலையான முழு kvvfsFullPathname(sqlite3_vfs*, மாறிலி எழுத்து *zName, முழு, எழுத்து *zOut);
+நிலையான வெறுமை *kvvfsDlOpen(sqlite3_vfs*, மாறிலி எழுத்து *zFilename);
+நிலையான முழு kvvfsRandomness(sqlite3_vfs*, முழு nByte, எழுத்து *zOut);
+நிலையான முழு kvvfsSleep(sqlite3_vfs*, முழு microseconds);
+நிலையான முழு kvvfsCurrentTime(sqlite3_vfs*, இரட்டை*);
+நிலையான முழு kvvfsCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
 
-static sqlite3_vfs sqlite3OsKvvfsObject = {
+நிலையான sqlite3_vfs sqlite3OsKvvfsObject = {
   2,                              /* iVersion */
-  sizeof(KVVfsFile),              /* szOsFile */
+  அளவு(KVVfsFile),              /* szOsFile */
   1024,                           /* mxPathname */
   0,                              /* pNext */
   "kvvfs",                        /* zName */
@@ -135,7 +135,7 @@ static sqlite3_vfs sqlite3OsKvvfsObject = {
 
 /* Methods for sqlite3_file objects referencing a database file
 */
-static sqlite3_io_methods kvvfs_db_io_methods = {
+நிலையான sqlite3_io_methods kvvfs_db_io_methods = {
   1,                              /* iVersion */
   kvvfsClose,                     /* xClose */
   kvvfsReadDb,                    /* xRead */
@@ -159,7 +159,7 @@ static sqlite3_io_methods kvvfs_db_io_methods = {
 
 /* Methods for sqlite3_file objects referencing a rollback journal
 */
-static sqlite3_io_methods kvvfs_jrnl_io_methods = {
+நிலையான sqlite3_io_methods kvvfs_jrnl_io_methods = {
   1,                              /* iVersion */
   kvvfsClose,                     /* xClose */
   kvvfsReadJrnl,                  /* xRead */
@@ -182,36 +182,36 @@ static sqlite3_io_methods kvvfs_jrnl_io_methods = {
 };
 
 /****** Storage subsystem **************************************************/
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <sys/stat.h>
+#அந்தர்பாவ <unistd.h>
 
 /* Forward declarations for the low-level storage engine
 */
 #ifndef SQLITE_WASM
 /* In WASM builds these are implemented in JS. */
-static int kvrecordWrite(const char*, const char *zKey, const char *zData);
-static int kvrecordDelete(const char*, const char *zKey);
-static int kvrecordRead(const char*, const char *zKey, char *zBuf, int nBuf);
+நிலையான முழு kvrecordWrite(மாறிலி எழுத்து*, மாறிலி எழுத்து *z_சாவி, மாறிலி எழுத்து *zData);
+நிலையான முழு kvrecordDelete(மாறிலி எழுத்து*, மாறிலி எழுத்து *z_சாவி);
+நிலையான முழு kvrecordRead(மாறிலி எழுத்து*, மாறிலி எழுத்து *z_சாவி, எழுத்து *zBuf, முழு nBuf);
 #endif
-#ifndef KVRECORD_KEY_SZ
-#define KVRECORD_KEY_SZ 32
+#ifndef KVRECORD_சாவி_SZ
+#define KVRECORD_சாவி_SZ 32
 #endif
 
 /* Expand the key name with an appropriate prefix and put the result
 ** in zKeyOut[].  The zKeyOut[] buffer is assumed to hold at least
 ** KVRECORD_KEY_SZ bytes.
 */
-static void kvrecordMakeKey(
-  const char *zClass,
-  const char *zKeyIn,
-  char *zKeyOut
+நிலையான வெறுமை kvrecord_Make_சாவி(
+  மாறிலி எழுத்து *zClass,
+  மாறிலி எழுத்து *z_சாவி_In,
+  எழுத்து *z_சாவி_Out
 ){
-  assert( zKeyIn );
-  assert( zKeyOut );
-  assert( zClass );
-  sqlite3_snprintf(KVRECORD_KEY_SZ, zKeyOut, "kvvfs-%s-%s",
-                   zClass, zKeyIn);
+  ப்ரதிஜ்ஞா( z_சாவி_In );
+  ப்ரதிஜ்ஞா( z_சாவி_Out );
+  ப்ரதிஜ்ஞா( zClass );
+  sqlite3_snprintf(KVRECORD_சாவி_SZ, z_சாவி_Out, "kvvfs-%s-%s",
+                   zClass, z_சாவி_In);
 }
 
 #ifndef SQLITE_WASM
@@ -226,24 +226,24 @@ static void kvrecordMakeKey(
 **
 ** Return the number of errors.
 */
-static int kvrecordWrite(
-  const char *zClass,
-  const char *zKey,
-  const char *zData
+நிலையான முழு kvrecordWrite(
+  மாறிலி எழுத்து *zClass,
+  மாறிலி எழுத்து *z_சாவி,
+  மாறிலி எழுத்து *zData
 ){
   FILE *fd;
-  char zXKey[KVRECORD_KEY_SZ];
-  kvrecordMakeKey(zClass, zKey, zXKey);
+  எழுத்து zXKey[KVRECORD_சாவி_SZ];
+  kvrecord_Make_சாவி(zClass, z_சாவி, zXKey);
   fd = fopen(zXKey, "wb");
-  if( fd ){
+  எனில்( fd ){
     SQLITE_KV_TRACE(("KVVFS-WRITE  %-15s (%d) %.50s%s\n", zXKey,
-                 (int)strlen(zData), zData,
+                 (முழு)strlen(zData), zData,
                  strlen(zData)>50 ? "..." : ""));
     fputs(zData, fd);
     fclose(fd);
-    return 0;
-  }else{
-    return 1;
+    திரும்பு 0;
+  }இல்லையெனில்{
+    திரும்பு 1;
   }
 }
 
@@ -251,12 +251,12 @@ static int kvrecordWrite(
 ** namespace given by zClass.  If the key does not previously exist,
 ** this routine is a no-op.
 */
-static int kvrecordDelete(const char *zClass, const char *zKey){
-  char zXKey[KVRECORD_KEY_SZ];
-  kvrecordMakeKey(zClass, zKey, zXKey);
+நிலையான முழு kvrecordDelete(மாறிலி எழுத்து *zClass, மாறிலி எழுத்து *z_சாவி){
+  எழுத்து zXKey[KVRECORD_சாவி_SZ];
+  kvrecord_Make_சாவி(zClass, z_சாவி, zXKey);
   unlink(zXKey);
   SQLITE_KV_TRACE(("KVVFS-DELETE %-15s\n", zXKey));
-  return 0;
+  திரும்பு 0;
 }
 
 /* Read the value associated with a zKey from the key/value namespace given
@@ -274,45 +274,45 @@ static int kvrecordDelete(const char *zClass, const char *zKey){
 ** zero-terminates zBuf at zBuf[0] and returns the size of the data
 ** without reading it.
 */
-static int kvrecordRead(
-  const char *zClass,
-  const char *zKey,
-  char *zBuf,
-  int nBuf
+நிலையான முழு kvrecordRead(
+  மாறிலி எழுத்து *zClass,
+  மாறிலி எழுத்து *z_சாவி,
+  எழுத்து *zBuf,
+  முழு nBuf
 ){
   FILE *fd;
-  struct stat buf;
-  char zXKey[KVRECORD_KEY_SZ];
-  kvrecordMakeKey(zClass, zKey, zXKey);
-  if( access(zXKey, R_OK)!=0
+  கட்டமைப்பு stat buf;
+  எழுத்து zXKey[KVRECORD_சாவி_SZ];
+  kvrecord_Make_சாவி(zClass, z_சாவி, zXKey);
+  எனில்( access(zXKey, R_OK)!=0
    || stat(zXKey, &buf)!=0
    || !S_ISREG(buf.st_mode)
   ){
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (-1)\n", zXKey));
-    return -1;
+    திரும்பு -1;
   }
-  if( nBuf<=0 ){
-    return (int)buf.st_size;
-  }else if( nBuf==1 ){
+  எனில்( nBuf<=0 ){
+    திரும்பு (முழு)buf.st_size;
+  }இல்லையெனில் எனில்( nBuf==1 ){
     zBuf[0] = 0;
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (%d)\n", zXKey,
-                 (int)buf.st_size));
-    return (int)buf.st_size;
+                 (முழு)buf.st_size));
+    திரும்பு (முழு)buf.st_size;
   }
-  if( nBuf > buf.st_size + 1 ){
+  எனில்( nBuf > buf.st_size + 1 ){
     nBuf = buf.st_size + 1;
   }
   fd = fopen(zXKey, "rb");
-  if( fd==0 ){
+  எனில்( fd==0 ){
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (-1)\n", zXKey));
-    return -1;
-  }else{
+    திரும்பு -1;
+  }இல்லையெனில்{
     sqlite3_int64 n = fread(zBuf, 1, nBuf-1, fd);
     fclose(fd);
     zBuf[n] = 0;
     SQLITE_KV_TRACE(("KVVFS-READ   %-15s (%lld) %.50s%s\n", zXKey,
                  n, zBuf, n>50 ? "..." : ""));
-    return (int)n;
+    திரும்பு (முழு)n;
   }
 }
 #endif /* #ifndef SQLITE_WASM */
@@ -326,16 +326,16 @@ static int kvrecordRead(
 ** sqlite3-wasm.c:sqlite3__wasm_enum_json(). There are no binary
 ** compatibility concerns, so it does not need an iVersion member.
 */
-typedef struct sqlite3_kvvfs_methods sqlite3_kvvfs_methods;
-struct sqlite3_kvvfs_methods {
-  int (*xRcrdRead)(const char*, const char *zKey, char *zBuf, int nBuf);
-  int (*xRcrdWrite)(const char*, const char *zKey, const char *zData);
-  int (*xRcrdDelete)(const char*, const char *zKey);
-  const int nKeySize;
-  const int nBufferSize;
+வகைவரை கட்டமைப்பு sqlite3_kvvfs_methods sqlite3_kvvfs_methods;
+கட்டமைப்பு sqlite3_kvvfs_methods {
+  முழு (*xRcrdRead)(மாறிலி எழுத்து*, மாறிலி எழுத்து *z_சாவி, எழுத்து *zBuf, முழு nBuf);
+  முழு (*xRcrdWrite)(மாறிலி எழுத்து*, மாறிலி எழுத்து *z_சாவி, மாறிலி எழுத்து *zData);
+  முழு (*xRcrdDelete)(மாறிலி எழுத்து*, மாறிலி எழுத்து *z_சாவி);
+  மாறிலி முழு n_சாவி_Size;
+  மாறிலி முழு nBufferSize;
 #ifndef SQLITE_WASM
-#  define MAYBE_CONST const
-#else
+#  define MAYBE_CONST மாறிலி
+#இல்லையெனில்
 #  define MAYBE_CONST
 #endif
   MAYBE_CONST sqlite3_vfs * pVfs;
@@ -356,19 +356,19 @@ struct sqlite3_kvvfs_methods {
 ** build will tag it with SQLITE_PRIVATE.
 */
 #ifndef SQLITE_WASM
-const
+மாறிலி
 #endif
 sqlite3_kvvfs_methods sqlite3KvvfsMethods = {
 #ifndef SQLITE_WASM
   .xRcrdRead       = kvrecordRead,
   .xRcrdWrite      = kvrecordWrite,
   .xRcrdDelete     = kvrecordDelete,
-#else
+#இல்லையெனில்
   .xRcrdRead       = 0,
   .xRcrdWrite      = 0,
   .xRcrdDelete     = 0,
 #endif
-  .nKeySize        = KVRECORD_KEY_SZ,
+  .n_சாவி_Size        = KVRECORD_சாவி_SZ,
   .nBufferSize     = SQLITE_KVOS_SZ,
   .pVfs            = &sqlite3OsKvvfsObject,
   .pIoDb           = &kvvfs_db_io_methods,
@@ -400,36 +400,36 @@ sqlite3_kvvfs_methods sqlite3KvvfsMethods = {
 **      one stops and the next begins.
 */
 #ifndef SQLITE_WASM
-static
+நிலையான
 #endif
-int kvvfsEncode(const char *aData, int nData, char *aOut){
-  int i, j;
-  const unsigned char *a = (const unsigned char*)aData;
-  for(i=j=0; i<nData; i++){
-    unsigned char c = a[i];
-    if( c!=0 ){
+முழு kvvfsEncode(மாறிலி எழுத்து *aData, முழு nData, எழுத்து *aOut){
+  முழு i, j;
+  மாறிலி unsigned எழுத்து *a = (மாறிலி unsigned எழுத்து*)aData;
+  க்கு(i=j=0; i<nData; i++){
+    unsigned எழுத்து c = a[i];
+    எனில்( c!=0 ){
       aOut[j++] = "0123456789ABCDEF"[c>>4];
       aOut[j++] = "0123456789ABCDEF"[c&0xf];
-    }else{
+    }இல்லையெனில்{
       /* A sequence of 1 or more zeros is stored as a little-endian
       ** base-26 number using a..z as the digits. So one zero is "b".
       ** Two zeros is "c". 25 zeros is "z", 26 zeros is "ab", 27 is "bb",
       ** and so forth.
       */
-      int k;
-      for(k=1; i+k<nData && a[i+k]==0; k++){}
+      முழு k;
+      க்கு(k=1; i+k<nData && a[i+k]==0; k++){}
       i += k-1;
-      while( k>0 ){
+      போது( k>0 ){
         aOut[j++] = 'a'+(k%26);
         k /= 26;
       }
     }
   }
   aOut[j] = 0;
-  return j;
+  திரும்பு j;
 }
 
-static const signed char kvvfsHexValue[256] = {
+நிலையான மாறிலி signed எழுத்து kvvfs_Hex_மதிப்பு[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1, -1, -1,
@@ -457,42 +457,42 @@ static const signed char kvvfsHexValue[256] = {
 ** -1 for malformed inputs.
 */
 #ifndef SQLITE_WASM
-static
+நிலையான
 #endif
-int kvvfsDecode(const char *a, char *aOut, int nOut){
-  int i, j;
-  int c;
-  const unsigned char *aIn = (const unsigned char*)a;
+முழு kvvfsDecode(மாறிலி எழுத்து *a, எழுத்து *aOut, முழு nOut){
+  முழு i, j;
+  முழு c;
+  மாறிலி unsigned எழுத்து *aIn = (மாறிலி unsigned எழுத்து*)a;
   i = 0;
   j = 0;
-  while( 1 ){
-    c = kvvfsHexValue[aIn[i]];
-    if( c<0 ){
+  போது( 1 ){
+    c = kvvfs_Hex_மதிப்பு[aIn[i]];
+    எனில்( c<0 ){
       sqlite3_int64 n = 0;
       sqlite3_int64 mult = 1;
       c = aIn[i];
-      if( c==0 ) break;
-      while( c>='a' && c<='z' ){
+      எனில்( c==0 ) நிறுத்து;
+      போது( c>='a' && c<='z' ){
         n += (c - 'a')*mult;
-        if( n>nOut ) return -1 /* oversized/malformed input */;
+        எனில்( n>nOut ) திரும்பு -1 /* oversized/malformed input */;
         mult *= 26;
         c = aIn[++i];
       }
-      if( j+n>nOut ) return -1 /* oversized/malformed input */;
+      எனில்( j+n>nOut ) திரும்பு -1 /* oversized/malformed input */;
       memset(&aOut[j], 0, n);
       j += n;
-      if( c==0 || mult==1 ) break; /* progress stalled if mult==1 */
-    }else if( j<nOut ){
+      எனில்( c==0 || mult==1 ) நிறுத்து; /* progress stalled if mult==1 */
+    }இல்லையெனில் எனில்( j<nOut ){
       aOut[j] = c<<4;
-      c = kvvfsHexValue[aIn[++i]];
-      if( c<0 ) return -1 /* hex bytes are always in pairs */;
+      c = kvvfs_Hex_மதிப்பு[aIn[++i]];
+      எனில்( c<0 ) திரும்பு -1 /* hex bytes are always in pairs */;
       aOut[j++] += c;
       i++;
-    }else{
-      return -1;
+    }இல்லையெனில்{
+      திரும்பு -1;
     }
   }
-  return j;
+  திரும்பு j;
 }
 
 /*
@@ -506,34 +506,34 @@ int kvvfsDecode(const char *a, char *aOut, int nOut){
 ** by a single space, then the encoding of the journal.  The space
 ** separator is required to act as a terminator for the base-26 number.
 */
-static void kvvfsDecodeJournal(
+நிலையான வெறுமை kvvfsDecodeJournal(
   KVVfsFile *pFile,      /* Store decoding in pFile->aJrnl */
-  const char *zTxt,      /* Text encoding.  Zero-terminated */
-  int nTxt               /* Bytes in zTxt, excluding zero terminator */
+  மாறிலி எழுத்து *zTxt,      /* Text encoding.  Zero-terminated */
+  முழு nTxt               /* Bytes in zTxt, excluding zero terminator */
 ){
-  unsigned int n = 0, mult;
-  int c, i;
+  unsigned முழு n = 0, mult;
+  முழு c, i;
   i = 0;
   mult = 1;
   sqlite3_free(pFile->aJrnl);
   pFile->aJrnl = 0;
   pFile->nJrnl = 0;
-  while( (c = zTxt[i])>='a' && c<='z' ){
+  போது( (c = zTxt[i])>='a' && c<='z' ){
     n += (c - 'a')*mult;
     mult *= 26;
     ++i;
   }
-  if( ' '!=zTxt[i++] ){
+  எனில்( ' '!=zTxt[i++] ){
     /* Malformed input */
-    return;
+    திரும்பு;
   }
   pFile->aJrnl = sqlite3_malloc64( n );
-  if( pFile->aJrnl==0 ){
-    return;
+  எனில்( pFile->aJrnl==0 ){
+    திரும்பு;
   }
   pFile->nJrnl = n;
   n = kvvfsDecode(zTxt+i, pFile->aJrnl, pFile->nJrnl);
-  if( n<pFile->nJrnl ){
+  எனில்( n<pFile->nJrnl ){
     sqlite3_free(pFile->aJrnl);
     pFile->aJrnl = 0;
     pFile->nJrnl = 0;
@@ -543,17 +543,17 @@ static void kvvfsDecodeJournal(
 /*
 ** Read or write the "sz" element, containing the database file size.
 */
-static sqlite3_int64 kvvfsReadFileSize(KVVfsFile *pFile){
-  char zData[50];
+நிலையான sqlite3_int64 kvvfsReadFileSize(KVVfsFile *pFile){
+  எழுத்து zData[50];
   zData[0] = 0;
   sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "sz", zData,
-                                sizeof(zData)-1);
-  return strtoll(zData, 0, 0);
+                                அளவு(zData)-1);
+  திரும்பு strtoll(zData, 0, 0);
 }
-static int kvvfsWriteFileSize(KVVfsFile *pFile, sqlite3_int64 sz){
-  char zData[50];
-  sqlite3_snprintf(sizeof(zData), zData, "%lld", sz);
-  return sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, "sz", zData);
+நிலையான முழு kvvfsWriteFileSize(KVVfsFile *pFile, sqlite3_int64 sz){
+  எழுத்து zData[50];
+  sqlite3_snprintf(அளவு(zData), zData, "%lld", sz);
+  திரும்பு sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, "sz", zData);
 }
 
 /****** sqlite3_io_methods methods ******************************************/
@@ -561,328 +561,328 @@ static int kvvfsWriteFileSize(KVVfsFile *pFile, sqlite3_int64 sz){
 /*
 ** Close an kvvfs-file.
 */
-static int kvvfsClose(sqlite3_file *pProtoFile){
+நிலையான முழு kvvfsClose(sqlite3_file *pProtoFile){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
 
   SQLITE_KV_LOG(("xClose %s %s\n", pFile->zClass,
              pFile->isJournal ? "journal" : "db"));
   sqlite3_free(pFile->aJrnl);
   sqlite3_free(pFile->aData);
-  memset(pFile, 0, sizeof(*pFile));
-  return SQLITE_OK;
+  memset(pFile, 0, அளவு(*pFile));
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Read from the -journal file.
 */
-static int kvvfsReadJrnl(
+நிலையான முழு kvvfsReadJrnl(
   sqlite3_file *pProtoFile,
-  void *zBuf,
-  int iAmt,
+  வெறுமை *zBuf,
+  முழு iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  assert( pFile->isJournal );
+  ப்ரதிஜ்ஞா( pFile->isJournal );
   SQLITE_KV_LOG(("xRead('%s-journal',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  if( pFile->aJrnl==0 ){
-    int rc;
-    int szTxt = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "jrnl",
+  எனில்( pFile->aJrnl==0 ){
+    முழு rc;
+    முழு szTxt = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "jrnl",
                                               0, 0);
-    char *aTxt;
-    if( szTxt<=4 ){
-      return SQLITE_IOERR;
+    எழுத்து *aTxt;
+    எனில்( szTxt<=4 ){
+      திரும்பு SQLITE_IOERR;
     }
     aTxt = sqlite3_malloc64( szTxt+1 );
-    if( aTxt==0 ) return SQLITE_NOMEM;
+    எனில்( aTxt==0 ) திரும்பு SQLITE_NOMEM;
     rc = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, "jrnl",
                                        aTxt, szTxt+1);
-    if( rc>=0 ){
+    எனில்( rc>=0 ){
       kvvfsDecodeJournal(pFile, aTxt, szTxt);
       rc = 0;
     }
     sqlite3_free(aTxt);
-    if( rc ) return rc;
-    if( pFile->aJrnl==0 ) return SQLITE_IOERR;
+    எனில்( rc ) திரும்பு rc;
+    எனில்( pFile->aJrnl==0 ) திரும்பு SQLITE_IOERR;
   }
-  if( iOfst+iAmt>pFile->nJrnl ){
-    return SQLITE_IOERR_SHORT_READ;
+  எனில்( iOfst+iAmt>pFile->nJrnl ){
+    திரும்பு SQLITE_IOERR_SHORT_READ;
   }
   memcpy(zBuf, pFile->aJrnl+iOfst, iAmt);
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Read from the database file.
 */
-static int kvvfsReadDb(
+நிலையான முழு kvvfsReadDb(
   sqlite3_file *pProtoFile,
-  void *zBuf,
-  int iAmt,
+  வெறுமை *zBuf,
+  முழு iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  unsigned int pgno;
-  int got, n;
-  char zKey[30];
-  char *aData = pFile->aData;
-  assert( iOfst>=0 );
-  assert( iAmt>=0 );
+  unsigned முழு pgno;
+  முழு got, n;
+  எழுத்து z_சாவி[30];
+  எழுத்து *aData = pFile->aData;
+  ப்ரதிஜ்ஞா( iOfst>=0 );
+  ப்ரதிஜ்ஞா( iAmt>=0 );
   SQLITE_KV_LOG(("xRead('%s-db',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  if( iOfst+iAmt>=512 ){
-    if( (iOfst % iAmt)!=0 ){
-      return SQLITE_IOERR_READ;
+  எனில்( iOfst+iAmt>=512 ){
+    எனில்( (iOfst % iAmt)!=0 ){
+      திரும்பு SQLITE_IOERR_READ;
     }
-    if( (iAmt & (iAmt-1))!=0 || iAmt<512 || iAmt>65536 ){
-      return SQLITE_IOERR_READ;
+    எனில்( (iAmt & (iAmt-1))!=0 || iAmt<512 || iAmt>65536 ){
+      திரும்பு SQLITE_IOERR_READ;
     }
     pFile->szPage = iAmt;
     pgno = 1 + iOfst/iAmt;
-  }else{
+  }இல்லையெனில்{
     pgno = 1;
   }
-  sqlite3_snprintf(sizeof(zKey), zKey, "%u", pgno);
-  got = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, zKey,
+  sqlite3_snprintf(அளவு(z_சாவி), z_சாவி, "%u", pgno);
+  got = sqlite3KvvfsMethods.xRcrdRead(pFile->zClass, z_சாவி,
                                       aData, SQLITE_KVOS_SZ-1);
-  if( got<0 ){
+  எனில்( got<0 ){
     n = 0;
-  }else{
+  }இல்லையெனில்{
     aData[got] = 0;
-    if( iOfst+iAmt<512 ){
-      int k = iOfst+iAmt;
+    எனில்( iOfst+iAmt<512 ){
+      முழு k = iOfst+iAmt;
       aData[k*2] = 0;
       n = kvvfsDecode(aData, &aData[2000], SQLITE_KVOS_SZ-2000);
-      if( n>=iOfst+iAmt ){
+      எனில்( n>=iOfst+iAmt ){
         memcpy(zBuf, &aData[2000+iOfst], iAmt);
         n = iAmt;
-      }else{
+      }இல்லையெனில்{
         n = 0;
       }
-    }else{
+    }இல்லையெனில்{
       n = kvvfsDecode(aData, zBuf, iAmt);
     }
   }
-  if( n<iAmt ){
+  எனில்( n<iAmt ){
     memset(zBuf+n, 0, iAmt-n);
-    return SQLITE_IOERR_SHORT_READ;
+    திரும்பு SQLITE_IOERR_SHORT_READ;
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 
 /*
 ** Write into the -journal file.
 */
-static int kvvfsWriteJrnl(
+நிலையான முழு kvvfsWriteJrnl(
   sqlite3_file *pProtoFile,
-  const void *zBuf,
-  int iAmt,
+  மாறிலி வெறுமை *zBuf,
+  முழு iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
   sqlite3_int64 iEnd = iOfst+iAmt;
   SQLITE_KV_LOG(("xWrite('%s-journal',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  if( iEnd>=0x10000000 ) return SQLITE_FULL;
-  if( pFile->aJrnl==0 || pFile->nJrnl<iEnd ){
-    char *aNew = sqlite3_realloc(pFile->aJrnl, iEnd);
-    if( aNew==0 ){
-      return SQLITE_IOERR_NOMEM;
+  எனில்( iEnd>=0x10000000 ) திரும்பு SQLITE_FULL;
+  எனில்( pFile->aJrnl==0 || pFile->nJrnl<iEnd ){
+    எழுத்து *aNew = sqlite3_realloc(pFile->aJrnl, iEnd);
+    எனில்( aNew==0 ){
+      திரும்பு SQLITE_IOERR_NOMEM;
     }
     pFile->aJrnl = aNew;
-    if( pFile->nJrnl<iOfst ){
+    எனில்( pFile->nJrnl<iOfst ){
       memset(pFile->aJrnl+pFile->nJrnl, 0, iOfst-pFile->nJrnl);
     }
     pFile->nJrnl = iEnd;
   }
   memcpy(pFile->aJrnl+iOfst, zBuf, iAmt);
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Write into the database file.
 */
-static int kvvfsWriteDb(
+நிலையான முழு kvvfsWriteDb(
   sqlite3_file *pProtoFile,
-  const void *zBuf,
-  int iAmt,
+  மாறிலி வெறுமை *zBuf,
+  முழு iAmt,
   sqlite_int64 iOfst
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  unsigned int pgno;
-  char zKey[30];
-  char *aData = pFile->aData;
-  int rc;
+  unsigned முழு pgno;
+  எழுத்து z_சாவி[30];
+  எழுத்து *aData = pFile->aData;
+  முழு rc;
   SQLITE_KV_LOG(("xWrite('%s-db',%d,%lld)\n", pFile->zClass, iAmt, iOfst));
-  assert( iAmt>=512 && iAmt<=65536 );
-  assert( (iAmt & (iAmt-1))==0 );
-  assert( pFile->szPage<0 || pFile->szPage==iAmt );
+  ப்ரதிஜ்ஞா( iAmt>=512 && iAmt<=65536 );
+  ப்ரதிஜ்ஞா( (iAmt & (iAmt-1))==0 );
+  ப்ரதிஜ்ஞா( pFile->szPage<0 || pFile->szPage==iAmt );
   pFile->szPage = iAmt;
   pgno = 1 + iOfst/iAmt;
-  sqlite3_snprintf(sizeof(zKey), zKey, "%u", pgno);
+  sqlite3_snprintf(அளவு(z_சாவி), z_சாவி, "%u", pgno);
   kvvfsEncode(zBuf, iAmt, aData);
-  rc = sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, zKey, aData);
-  if( 0==rc ){
-    if( iOfst+iAmt > pFile->szDb ){
+  rc = sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, z_சாவி, aData);
+  எனில்( 0==rc ){
+    எனில்( iOfst+iAmt > pFile->szDb ){
       pFile->szDb = iOfst + iAmt;
     }
   }
-  return rc;
+  திரும்பு rc;
 }
 
 /*
 ** Truncate an kvvfs-file.
 */
-static int kvvfsTruncateJrnl(sqlite3_file *pProtoFile, sqlite_int64 size){
+நிலையான முழு kvvfsTruncateJrnl(sqlite3_file *pProtoFile, sqlite_int64 size){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
   SQLITE_KV_LOG(("xTruncate('%s-journal',%lld)\n", pFile->zClass, size));
-  assert( size==0 );
+  ப்ரதிஜ்ஞா( size==0 );
   sqlite3KvvfsMethods.xRcrdDelete(pFile->zClass, "jrnl");
   sqlite3_free(pFile->aJrnl);
   pFile->aJrnl = 0;
   pFile->nJrnl = 0;
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
-static int kvvfsTruncateDb(sqlite3_file *pProtoFile, sqlite_int64 size){
+நிலையான முழு kvvfsTruncateDb(sqlite3_file *pProtoFile, sqlite_int64 size){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  if( pFile->szDb>size
+  எனில்( pFile->szDb>size
    && pFile->szPage>0
    && (size % pFile->szPage)==0
   ){
-    char zKey[50];
-    unsigned int pgno, pgnoMax;
+    எழுத்து z_சாவி[50];
+    unsigned முழு pgno, pgnoMax;
     SQLITE_KV_LOG(("xTruncate('%s-db',%lld)\n", pFile->zClass, size));
     pgno = 1 + size/pFile->szPage;
     pgnoMax = 2 + pFile->szDb/pFile->szPage;
-    while( pgno<=pgnoMax ){
-      sqlite3_snprintf(sizeof(zKey), zKey, "%u", pgno);
-      sqlite3KvvfsMethods.xRcrdDelete(pFile->zClass, zKey);
+    போது( pgno<=pgnoMax ){
+      sqlite3_snprintf(அளவு(z_சாவி), z_சாவி, "%u", pgno);
+      sqlite3KvvfsMethods.xRcrdDelete(pFile->zClass, z_சாவி);
       pgno++;
     }
     pFile->szDb = size;
-    return kvvfsWriteFileSize(pFile, size) ? SQLITE_IOERR : SQLITE_OK;
+    திரும்பு kvvfsWriteFileSize(pFile, size) ? SQLITE_IOERR : SQLITE_OK;
   }
-  return SQLITE_IOERR;
+  திரும்பு SQLITE_IOERR;
 }
 
 /*
 ** Sync an kvvfs-file.
 */
-static int kvvfsSyncJrnl(sqlite3_file *pProtoFile, int flags){
-  int i, n;
+நிலையான முழு kvvfsSyncJrnl(sqlite3_file *pProtoFile, முழு flags){
+  முழு i, n;
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  char *zOut;
+  எழுத்து *zOut;
   SQLITE_KV_LOG(("xSync('%s-journal')\n", pFile->zClass));
-  if( pFile->nJrnl<=0 ){
-    return kvvfsTruncateJrnl(pProtoFile, 0);
+  எனில்( pFile->nJrnl<=0 ){
+    திரும்பு kvvfsTruncateJrnl(pProtoFile, 0);
   }
   zOut = sqlite3_malloc64( pFile->nJrnl*2 + 50 );
-  if( zOut==0 ){
-    return SQLITE_IOERR_NOMEM;
+  எனில்( zOut==0 ){
+    திரும்பு SQLITE_IOERR_NOMEM;
   }
   n = pFile->nJrnl;
   i = 0;
-  do{
+  செய்{
     zOut[i++] = 'a' + (n%26);
     n /= 26;
-  }while( n>0 );
+  }போது( n>0 );
   zOut[i++] = ' ';
   kvvfsEncode(pFile->aJrnl, pFile->nJrnl, &zOut[i]);
   i = sqlite3KvvfsMethods.xRcrdWrite(pFile->zClass, "jrnl", zOut);
   sqlite3_free(zOut);
-  return i ? SQLITE_IOERR : SQLITE_OK;
+  திரும்பு i ? SQLITE_IOERR : SQLITE_OK;
 }
-static int kvvfsSyncDb(sqlite3_file *pProtoFile, int flags){
-  return SQLITE_OK;
+நிலையான முழு kvvfsSyncDb(sqlite3_file *pProtoFile, முழு flags){
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Return the current file-size of an kvvfs-file.
 */
-static int kvvfsFileSizeJrnl(sqlite3_file *pProtoFile, sqlite_int64 *pSize){
+நிலையான முழு kvvfsFileSizeJrnl(sqlite3_file *pProtoFile, sqlite_int64 *pSize){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
   SQLITE_KV_LOG(("xFileSize('%s-journal')\n", pFile->zClass));
   *pSize = pFile->nJrnl;
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
-static int kvvfsFileSizeDb(sqlite3_file *pProtoFile, sqlite_int64 *pSize){
+நிலையான முழு kvvfsFileSizeDb(sqlite3_file *pProtoFile, sqlite_int64 *pSize){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
   SQLITE_KV_LOG(("xFileSize('%s-db')\n", pFile->zClass));
-  if( pFile->szDb>=0 ){
+  எனில்( pFile->szDb>=0 ){
     *pSize = pFile->szDb;
-  }else{
+  }இல்லையெனில்{
     *pSize = kvvfsReadFileSize(pFile);
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Lock an kvvfs-file.
 */
-static int kvvfsLock(sqlite3_file *pProtoFile, int eLock){
+நிலையான முழு kvvfsLock(sqlite3_file *pProtoFile, முழு eLock){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  assert( !pFile->isJournal );
+  ப்ரதிஜ்ஞா( !pFile->isJournal );
   SQLITE_KV_LOG(("xLock(%s,%d)\n", pFile->zClass, eLock));
 
-  if( eLock!=SQLITE_LOCK_NONE ){
+  எனில்( eLock!=SQLITE_LOCK_NONE ){
     pFile->szDb = kvvfsReadFileSize(pFile);
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Unlock an kvvfs-file.
 */
-static int kvvfsUnlock(sqlite3_file *pProtoFile, int eLock){
+நிலையான முழு kvvfsUnlock(sqlite3_file *pProtoFile, முழு eLock){
   KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-  assert( !pFile->isJournal );
+  ப்ரதிஜ்ஞா( !pFile->isJournal );
   SQLITE_KV_LOG(("xUnlock(%s,%d)\n", pFile->zClass, eLock));
-  if( eLock==SQLITE_LOCK_NONE ){
+  எனில்( eLock==SQLITE_LOCK_NONE ){
     pFile->szDb = -1;
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an kvvfs-file.
 */
-static int kvvfsCheckReservedLock(sqlite3_file *pProtoFile, int *pResOut){
+நிலையான முழு kvvfsCheckReservedLock(sqlite3_file *pProtoFile, முழு *pResOut){
   SQLITE_KV_LOG(("xCheckReservedLock\n"));
   *pResOut = 0;
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on an kvvfs-file.
 */
-static int kvvfsFileControlJrnl(sqlite3_file *pProtoFile, int op, void *pArg){
+நிலையான முழு kvvfsFileControlJrnl(sqlite3_file *pProtoFile, முழு op, வெறுமை *pArg){
   SQLITE_KV_LOG(("xFileControl(%d) on journal\n", op));
-  return SQLITE_NOTFOUND;
+  திரும்பு SQLITE_NOTFOUND;
 }
-static int kvvfsFileControlDb(sqlite3_file *pProtoFile, int op, void *pArg){
+நிலையான முழு kvvfsFileControlDb(sqlite3_file *pProtoFile, முழு op, வெறுமை *pArg){
   SQLITE_KV_LOG(("xFileControl(%d) on database\n", op));
-  if( op==SQLITE_FCNTL_SYNC ){
+  எனில்( op==SQLITE_FCNTL_SYNC ){
     KVVfsFile *pFile = (KVVfsFile *)pProtoFile;
-    int rc = SQLITE_OK;
+    முழு rc = SQLITE_OK;
     SQLITE_KV_LOG(("xSync('%s-db')\n", pFile->zClass));
-    if( pFile->szDb>0 && 0!=kvvfsWriteFileSize(pFile, pFile->szDb) ){
+    எனில்( pFile->szDb>0 && 0!=kvvfsWriteFileSize(pFile, pFile->szDb) ){
       rc = SQLITE_IOERR;
     }
-    return rc;
+    திரும்பு rc;
   }
-  return SQLITE_NOTFOUND;
+  திரும்பு SQLITE_NOTFOUND;
 }
 
 /*
 ** Return the sector-size in bytes for an kvvfs-file.
 */
-static int kvvfsSectorSize(sqlite3_file *pFile){
-  return 512;
+நிலையான முழு kvvfsSectorSize(sqlite3_file *pFile){
+  திரும்பு 512;
 }
 
 /*
 ** Return the device characteristic flags supported by an kvvfs-file.
 */
-static int kvvfsDeviceCharacteristics(sqlite3_file *pProtoFile){
-  return 0;
+நிலையான முழு kvvfsDeviceCharacteristics(sqlite3_file *pProtoFile){
+  திரும்பு 0;
 }
 
 /****** sqlite3_vfs methods *************************************************/
@@ -890,55 +890,55 @@ static int kvvfsDeviceCharacteristics(sqlite3_file *pProtoFile){
 /*
 ** Open an kvvfs file handle.
 */
-static int kvvfsOpen(
+நிலையான முழு kvvfsOpen(
   sqlite3_vfs *pProtoVfs,
-  const char *zName,
+  மாறிலி எழுத்து *zName,
   sqlite3_file *pProtoFile,
-  int flags,
-  int *pOutFlags
+  முழு flags,
+  முழு *pOutFlags
 ){
   KVVfsFile *pFile = (KVVfsFile*)pProtoFile;
-  if( zName==0 ) zName = "";
+  எனில்( zName==0 ) zName = "";
   SQLITE_KV_LOG(("xOpen(\"%s\")\n", zName));
-  assert(!pFile->zClass);
-  assert(!pFile->aData);
-  assert(!pFile->aJrnl);
-  assert(!pFile->nJrnl);
-  assert(!pFile->base.pMethods);
+  ப்ரதிஜ்ஞா(!pFile->zClass);
+  ப்ரதிஜ்ஞா(!pFile->aData);
+  ப்ரதிஜ்ஞா(!pFile->aJrnl);
+  ப்ரதிஜ்ஞா(!pFile->nJrnl);
+  ப்ரதிஜ்ஞா(!pFile->base.pMethods);
   pFile->szPage = -1;
   pFile->szDb = -1;
-  if( 0==sqlite3_strglob("*-journal", zName) ){
+  எனில்( 0==sqlite3_strglob("*-journal", zName) ){
     pFile->isJournal = 1;
     pFile->base.pMethods = &kvvfs_jrnl_io_methods;
-    if( 0==strcmp("session-journal",zName) ){
+    எனில்( 0==strcmp("session-journal",zName) ){
       pFile->zClass = "session";
-    }else if( 0==strcmp("local-journal",zName) ){
+    }இல்லையெனில் எனில்( 0==strcmp("local-journal",zName) ){
       pFile->zClass = "local";
     }
-  }else{
+  }இல்லையெனில்{
     pFile->isJournal = 0;
     pFile->base.pMethods = &kvvfs_db_io_methods;
   }
-  if( !pFile->zClass ){
+  எனில்( !pFile->zClass ){
 #ifdef SQLITE_WASM
-    if( strlen(zName) >= (KVRECORD_KEY_SZ
+    எனில்( strlen(zName) >= (KVRECORD_சாவி_SZ
                           - 6 /* "kvvfs-" */
                           - 11 /* "-NNNNNNNNNNN" */) ){
-      return SQLITE_CANTOPEN;
+      திரும்பு SQLITE_CANTOPEN;
     }
-#else
-    if( 0!=strcmp(zName, "local") && 0!=strcmp(zName, "session") ){
+#இல்லையெனில்
+    எனில்( 0!=strcmp(zName, "local") && 0!=strcmp(zName, "session") ){
       /* Historical naming restriction which journaling depends on. */
-      return SQLITE_CANTOPEN;
+      திரும்பு SQLITE_CANTOPEN;
     }
 #endif
     pFile->zClass = zName;
   }
   pFile->aData = sqlite3_malloc64(SQLITE_KVOS_SZ);
-  if( pFile->aData==0 ){
-    return SQLITE_NOMEM;
+  எனில்( pFile->aData==0 ){
+    திரும்பு SQLITE_NOMEM;
   }
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
@@ -946,32 +946,32 @@ static int kvvfsOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int kvvfsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc /* The JS impl can fail with OOM in argument conversion */;
-  if( strcmp(zPath, "local-journal")==0 ){
+நிலையான முழு kvvfsDelete(sqlite3_vfs *pVfs, மாறிலி எழுத்து *zPath, முழு dirSync){
+  முழு rc /* The JS impl can fail with OOM in argument conversion */;
+  எனில்( strcmp(zPath, "local-journal")==0 ){
     rc = sqlite3KvvfsMethods.xRcrdDelete("local", "jrnl");
-  }else
-  if( strcmp(zPath, "session-journal")==0 ){
+  }இல்லையெனில்
+  எனில்( strcmp(zPath, "session-journal")==0 ){
     rc = sqlite3KvvfsMethods.xRcrdDelete("session", "jrnl");
   }
-  else{
+  இல்லையெனில்{
     rc = 0;
   }
-  return rc;
+  திரும்பு rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int kvvfsAccess(
+நிலையான முழு kvvfsAccess(
   sqlite3_vfs *pProtoVfs,
-  const char *zPath,
-  int flags,
-  int *pResOut
+  மாறிலி எழுத்து *zPath,
+  முழு flags,
+  முழு *pResOut
 ){
   SQLITE_KV_LOG(("xAccess(\"%s\")\n", zPath));
-#if 0 && defined(SQLITE_WASM)
+#எனில் 0 && defined(SQLITE_WASM)
   /*
   ** This is not having the desired effect in the JS bindings.
   ** It's ostensibly the same logic as the #else block, but
@@ -981,34 +981,34 @@ static int kvvfsAccess(
   ** are mapped to the storage for the main db (which is is exactly
   ** what the mapping of "local-journal" -> "local" is doing).
   */
-  const char *zKey = (0==sqlite3_strglob("*-journal", zPath))
+  மாறிலி எழுத்து *z_சாவி = (0==sqlite3_strglob("*-journal", zPath))
     ? "jrnl" : "sz";
   *pResOut =
-    sqlite3KvvfsMethods.xRcrdRead(zPath, zKey, 0, 0)>0;
-#else
-  if( strcmp(zPath, "local-journal")==0 ){
+    sqlite3KvvfsMethods.xRcrdRead(zPath, z_சாவி, 0, 0)>0;
+#இல்லையெனில்
+  எனில்( strcmp(zPath, "local-journal")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("local", "jrnl", 0, 0)>0;
-  }else
-  if( strcmp(zPath, "session-journal")==0 ){
+  }இல்லையெனில்
+  எனில்( strcmp(zPath, "session-journal")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("session", "jrnl", 0, 0)>0;
-  }else
-  if( strcmp(zPath, "local")==0 ){
+  }இல்லையெனில்
+  எனில்( strcmp(zPath, "local")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("local", "sz", 0, 0)>0;
-  }else
-  if( strcmp(zPath, "session")==0 ){
+  }இல்லையெனில்
+  எனில்( strcmp(zPath, "session")==0 ){
     *pResOut =
       sqlite3KvvfsMethods.xRcrdRead("session", "sz", 0, 0)>0;
-  }else
+  }இல்லையெனில்
   {
     *pResOut = 0;
   }
   /*all current JS tests avoid triggering: assert( *pResOut == 0 ); */
 #endif
   SQLITE_KV_LOG(("xAccess returns %d\n",*pResOut));
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
@@ -1016,11 +1016,11 @@ static int kvvfsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (INST_MAX_PATHNAME+1) bytes.
 */
-static int kvvfsFullPathname(
+நிலையான முழு kvvfsFullPathname(
   sqlite3_vfs *pVfs,
-  const char *zPath,
-  int nOut,
-  char *zOut
+  மாறிலி எழுத்து *zPath,
+  முழு nOut,
+  எழுத்து *zOut
 ){
   size_t nPath;
 #ifdef SQLITE_OS_KV_ALWAYS_LOCAL
@@ -1028,70 +1028,70 @@ static int kvvfsFullPathname(
 #endif
   nPath = strlen(zPath);
   SQLITE_KV_LOG(("xFullPathname(\"%s\")\n", zPath));
-  if( nOut<nPath+1 ) nPath = nOut - 1;
+  எனில்( nOut<nPath+1 ) nPath = nOut - 1;
   memcpy(zOut, zPath, nPath);
   zOut[nPath] = 0;
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *kvvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return 0;
+நிலையான வெறுமை *kvvfsDlOpen(sqlite3_vfs *pVfs, மாறிலி எழுத்து *zPath){
+  திரும்பு 0;
 }
 
 /*
 ** Populate the buffer pointed to by zBufOut with nByte bytes of
 ** random data.
 */
-static int kvvfsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
+நிலையான முழு kvvfsRandomness(sqlite3_vfs *pVfs, முழு nByte, எழுத்து *zBufOut){
   memset(zBufOut, 0, nByte);
-  return nByte;
+  திரும்பு nByte;
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds
 ** actually slept.
 */
-static int kvvfsSleep(sqlite3_vfs *pVfs, int nMicro){
-  return SQLITE_OK;
+நிலையான முழு kvvfsSleep(sqlite3_vfs *pVfs, முழு nMicro){
+  திரும்பு SQLITE_OK;
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int kvvfsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+நிலையான முழு kvvfsCurrentTime(sqlite3_vfs *pVfs, இரட்டை *pTimeOut){
   sqlite3_int64 i = 0;
-  int rc;
+  முழு rc;
   rc = kvvfsCurrentTimeInt64(0, &i);
   *pTimeOut = i/86400000.0;
-  return rc;
+  திரும்பு rc;
 }
-#include <sys/time.h>
-static int kvvfsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
-  static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
-  struct timeval sNow;
-  (void)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
+#அந்தர்பாவ <sys/time.h>
+நிலையான முழு kvvfsCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *pTimeOut){
+  நிலையான மாறிலி sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+  கட்டமைப்பு timeval sNow;
+  (வெறுமை)gettimeofday(&sNow, 0);  /* Cannot fail given valid arguments */
   *pTimeOut = unixEpoch + 1000*(sqlite3_int64)sNow.tv_sec + sNow.tv_usec/1000;
-  return SQLITE_OK;
+  திரும்பு SQLITE_OK;
 }
 #endif /* SQLITE_OS_KV || SQLITE_OS_UNIX */
 
-#if SQLITE_OS_KV
+#எனில் SQLITE_OS_KV
 /*
 ** This routine is called initialize the KV-vfs as the default VFS.
 */
-int sqlite3_os_init(void){
-  return sqlite3_vfs_register(&sqlite3OsKvvfsObject, 1);
+முழு sqlite3_os_init(வெறுமை){
+  திரும்பு sqlite3_vfs_register(&sqlite3OsKvvfsObject, 1);
 }
-int sqlite3_os_end(void){
-  return SQLITE_OK;
+முழு sqlite3_os_end(வெறுமை){
+  திரும்பு SQLITE_OK;
 }
 #endif /* SQLITE_OS_KV */
 
-#if SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
-int sqlite3KvvfsInit(void){
-  return sqlite3_vfs_register(&sqlite3OsKvvfsObject, 0);
+#எனில் SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
+முழு sqlite3KvvfsInit(வெறுமை){
+  திரும்பு sqlite3_vfs_register(&sqlite3OsKvvfsObject, 0);
 }
 #endif
