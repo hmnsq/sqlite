@@ -12,7 +12,7 @@
 ** This file contains C code routines that are called by the parser
 ** to handle INSERT statements in SQLite.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 /*
 ** Generate code that will
@@ -23,31 +23,31 @@
 ** If pTab is a WITHOUT ROWID table, then it is the PRIMARY KEY index
 ** for that table that is actually opened.
 */
-void sqlite3OpenTable(
+فراغ sqlite3OpenTable(
   Parse *pParse,  /* Generate code into this VDBE */
-  int iCur,       /* The cursor number of the table */
-  int iDb,        /* The database index in sqlite3.aDb[] */
+  صحيح iCur,       /* The cursor number of the table */
+  صحيح iDb,        /* The database index in sqlite3.aDb[] */
   Table *pTab,    /* The table to be opened */
-  int opcode      /* OP_OpenRead or OP_OpenWrite */
+  صحيح opcode      /* OP_OpenRead or OP_OpenWrite */
 ){
   Vdbe *v;
-  assert( !IsVirtual(pTab) );
-  assert( pParse->pVdbe!=0 );
+  أكد( !IsVirtual(pTab) );
+  أكد( pParse->pVdbe!=0 );
   v = pParse->pVdbe;
-  assert( opcode==OP_OpenWrite || opcode==OP_OpenRead );
-  if( !pParse->db->noSharedCache ){
+  أكد( opcode==OP_OpenWrite || opcode==OP_OpenRead );
+  إذا( !pParse->db->noSharedCache ){
     sqlite3TableLock(pParse, iDb, pTab->tnum,
                      (opcode==OP_OpenWrite)?1:0, pTab->zName);
   }
-  if( HasRowid(pTab) ){
+  إذا( HasRowid(pTab) ){
     sqlite3VdbeAddOp4Int(v, opcode, iCur, pTab->tnum, iDb, pTab->nNVCol);
     VdbeComment((v, "%s", pTab->zName));
-  }else{
-    Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-    assert( pPk!=0 );
-    assert( pPk->tnum==pTab->tnum || CORRUPT_DB );
+  }وإلا{
+    Index *pPk = sqlite3_Primary_ئاچقۇچ_Index(pTab);
+    أكد( pPk!=0 );
+    أكد( pPk->tnum==pTab->tnum || CORRUPT_DB );
     sqlite3VdbeAddOp3(v, opcode, iCur, pPk->tnum, iDb);
-    sqlite3VdbeSetP4KeyInfo(pParse, pPk);
+    sqlite3_Vdbe_Set_P4_ئاچقۇچ_Info(pParse, pPk);
     VdbeComment((v, "%s", pTab->zName));
   }
 }
@@ -72,7 +72,7 @@ void sqlite3OpenTable(
 ** is managed along with the rest of the Index structure. It will be
 ** released when sqlite3DeleteIndex() is called.
 */
-static SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
+ساكن SQLITE_NOINLINE ثابت حرف *computeIndexAffStr(sqlite3 *db, Index *pIdx){
   /* The first time a column affinity string for a particular index is
   ** required, it is allocated and populated here. It is then stored as
   ** a member of the Index structure for subsequent use.
@@ -81,36 +81,36 @@ static SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
   ** sqliteDeleteIndex() when the Index structure itself is cleaned
   ** up.
   */
-  int n;
+  صحيح n;
   Table *pTab = pIdx->pTable;
-  pIdx->zColAff = (char *)sqlite3DbMallocRaw(0, pIdx->nColumn+1);
-  if( !pIdx->zColAff ){
+  pIdx->zColAff = (حرف *)sqlite3DbMallocRaw(0, pIdx->nColumn+1);
+  إذا( !pIdx->zColAff ){
     sqlite3OomFault(db);
-    return 0;
+    أرجع 0;
   }
-  for(n=0; n<pIdx->nColumn; n++){
+  لكل(n=0; n<pIdx->nColumn; n++){
     i16 x = pIdx->aiColumn[n];
-    char aff;
-    if( x>=0 ){
+    حرف aff;
+    إذا( x>=0 ){
       aff = pTab->aCol[x].affinity;
-    }else if( x==XN_ROWID ){
+    }وإلا إذا( x==XN_ROWID ){
       aff = SQLITE_AFF_INTEGER;
-    }else{
-      assert( x==XN_EXPR );
-      assert( pIdx->bHasExpr );
-      assert( pIdx->aColExpr!=0 );
-      aff = sqlite3ExprAffinity(pIdx->aColExpr->a[n].pExpr);
+    }وإلا{
+      أكد( x==XN_ئىپادە );
+      أكد( pIdx->b_Has_ئىپادە );
+      أكد( pIdx->a_Col_ئىپادە!=0 );
+      aff = sqlite3_ئىپادە_Affinity(pIdx->a_Col_ئىپادە->a[n].p_ئىپادە);
     }
-    if( aff<SQLITE_AFF_BLOB ) aff = SQLITE_AFF_BLOB;
-    if( aff>SQLITE_AFF_NUMERIC) aff = SQLITE_AFF_NUMERIC;
+    إذا( aff<SQLITE_AFF_BLOB ) aff = SQLITE_AFF_BLOB;
+    إذا( aff>SQLITE_AFF_NUMERIC) aff = SQLITE_AFF_NUMERIC;
     pIdx->zColAff[n] = aff;
   }
   pIdx->zColAff[n] = 0;
-  return pIdx->zColAff;
+  أرجع pIdx->zColAff;
 }
-const char *sqlite3IndexAffinityStr(sqlite3 *db, Index *pIdx){
-  if( !pIdx->zColAff ) return computeIndexAffStr(db, pIdx);
-  return pIdx->zColAff;
+ثابت حرف *sqlite3IndexAffinityStr(sqlite3 *db, Index *pIdx){
+  إذا( !pIdx->zColAff ) أرجع computeIndexAffStr(db, pIdx);
+  أرجع pIdx->zColAff;
 }
 
 
@@ -119,21 +119,21 @@ const char *sqlite3IndexAffinityStr(sqlite3 *db, Index *pIdx){
 ** from sqlite3DbMalloc().  The caller is responsible for freeing
 ** the space when done.
 */
-char *sqlite3TableAffinityStr(sqlite3 *db, const Table *pTab){
-  char *zColAff;
-  zColAff = (char *)sqlite3DbMallocRaw(db, pTab->nCol+1);
-  if( zColAff ){
-    int i, j;
-    for(i=j=0; i<pTab->nCol; i++){
-      if( (pTab->aCol[i].colFlags & COLFLAG_VIRTUAL)==0 ){
+حرف *sqlite3TableAffinityStr(sqlite3 *db, ثابت Table *pTab){
+  حرف *zColAff;
+  zColAff = (حرف *)sqlite3DbMallocRaw(db, pTab->nCol+1);
+  إذا( zColAff ){
+    صحيح i, j;
+    لكل(i=j=0; i<pTab->nCol; i++){
+      إذا( (pTab->aCol[i].colFlags & COLFLAG_VIRTUAL)==0 ){
         zColAff[j++] = pTab->aCol[i].affinity;
       }
     }
-    do{
+    افعل{
       zColAff[j--] = 0;
-    }while( j>=0 && zColAff[j]<=SQLITE_AFF_BLOB );
+    }طالما( j>=0 && zColAff[j]<=SQLITE_AFF_BLOB );
   }
-  return zColAff; 
+  أرجع zColAff; 
 }
 
 /*
@@ -176,47 +176,47 @@ char *sqlite3TableAffinityStr(sqlite3 *db, const Table *pTab){
 ** the first of a series of registers that will form the new record.
 ** Apply the type checking to that array of registers.
 */
-void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg){
-  int i;
-  char *zColAff;
-  if( pTab->tabFlags & TF_Strict ){
-    if( iReg==0 ){
+فراغ sqlite3TableAffinity(Vdbe *v, Table *pTab, صحيح iReg){
+  صحيح i;
+  حرف *zColAff;
+  إذا( pTab->tabFlags & TF_Strict ){
+    إذا( iReg==0 ){
       /* Move the previous opcode (which should be OP_MakeRecord) forward
       ** by one slot and insert a new OP_TypeCheck where the current
       ** OP_MakeRecord is found */
       VdbeOp *pPrev;
-      int p3;
+      صحيح p3;
       sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
       pPrev = sqlite3VdbeGetLastOp(v);
-      assert( pPrev!=0 );
-      assert( pPrev->opcode==OP_MakeRecord || sqlite3VdbeDb(v)->mallocFailed );
+      أكد( pPrev!=0 );
+      أكد( pPrev->opcode==OP_MakeRecord || sqlite3VdbeDb(v)->mallocFailed );
       pPrev->opcode = OP_TypeCheck;
       p3 = pPrev->p3;
       pPrev->p3 = 0;
       sqlite3VdbeAddOp3(v, OP_MakeRecord, pPrev->p1, pPrev->p2, p3);
-    }else{
+    }وإلا{
       /* Insert an isolated OP_Typecheck */
       sqlite3VdbeAddOp2(v, OP_TypeCheck, iReg, pTab->nNVCol);
       sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
     }
-    return;
+    أرجع;
   }
   zColAff = pTab->zColAff;
-  if( zColAff==0 ){
+  إذا( zColAff==0 ){
     zColAff = sqlite3TableAffinityStr(0, pTab);
-    if( !zColAff ){
+    إذا( !zColAff ){
       sqlite3OomFault(sqlite3VdbeDb(v));
-      return;
+      أرجع;
     }
     pTab->zColAff = zColAff;
   }
-  assert( zColAff!=0 );
+  أكد( zColAff!=0 );
   i = sqlite3Strlen30NN(zColAff);
-  if( i ){
-    if( iReg ){
+  إذا( i ){
+    إذا( iReg ){
       sqlite3VdbeAddOp4(v, OP_Affinity, iReg, i, 0, zColAff, i);
-    }else{
-      assert( sqlite3VdbeGetLastOp(v)->opcode==OP_MakeRecord
+    }وإلا{
+      أكد( sqlite3VdbeGetLastOp(v)->opcode==OP_MakeRecord
               || sqlite3VdbeDb(v)->mallocFailed );
       sqlite3VdbeChangeP4(v, -1, zColAff, i);
     }
@@ -229,49 +229,49 @@ void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg){
 ** a statement of the form  "INSERT INTO <iDb, pTab> SELECT ..." can
 ** run without using a temporary table for the results of the SELECT.
 */
-static int readsTable(Parse *p, int iDb, Table *pTab){
+ساكن صحيح readsTable(Parse *p, صحيح iDb, Table *pTab){
   Vdbe *v = sqlite3GetVdbe(p);
-  int i;
-  int iEnd = sqlite3VdbeCurrentAddr(v);
+  صحيح i;
+  صحيح iEnd = sqlite3VdbeCurrentAddr(v);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   VTable *pVTab = IsVirtual(pTab) ? sqlite3GetVTable(p->db, pTab) : 0;
 #endif
 
-  for(i=1; i<iEnd; i++){
+  لكل(i=1; i<iEnd; i++){
     VdbeOp *pOp = sqlite3VdbeGetOp(v, i);
-    assert( pOp!=0 );
-    if( pOp->opcode==OP_OpenRead && pOp->p3==iDb ){
+    أكد( pOp!=0 );
+    إذا( pOp->opcode==OP_OpenRead && pOp->p3==iDb ){
       Index *pIndex;
       Pgno tnum = pOp->p2;
-      if( tnum==pTab->tnum ){
-        return 1;
+      إذا( tnum==pTab->tnum ){
+        أرجع 1;
       }
-      for(pIndex=pTab->pIndex; pIndex; pIndex=pIndex->pNext){
-        if( tnum==pIndex->tnum ){
-          return 1;
+      لكل(pIndex=pTab->pIndex; pIndex; pIndex=pIndex->pNext){
+        إذا( tnum==pIndex->tnum ){
+          أرجع 1;
         }
       }
     }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( pOp->opcode==OP_VOpen && pOp->p4.pVtab==pVTab ){
-      assert( pOp->p4.pVtab!=0 );
-      assert( pOp->p4type==P4_VTAB );
-      return 1;
+    إذا( pOp->opcode==OP_VOpen && pOp->p4.pVtab==pVTab ){
+      أكد( pOp->p4.pVtab!=0 );
+      أكد( pOp->p4type==P4_VTAB );
+      أرجع 1;
     }
 #endif
   }
-  return 0;
+  أرجع 0;
 }
 
 /* This walker callback will compute the union of colFlags flags for all
 ** referenced columns in a CHECK constraint or generated column expression.
 */
-static int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN && pExpr->iColumn>=0 ){
-    assert( pExpr->iColumn < pWalker->u.pTab->nCol );
-    pWalker->eCode |= pWalker->u.pTab->aCol[pExpr->iColumn].colFlags;
+ساكن صحيح ئىپادە_Column_Flag_Union(Walker *pWalker, ئىپادە *p_ئىپادە){
+  إذا( p_ئىپادە->op==TK_COLUMN && p_ئىپادە->iColumn>=0 ){
+    أكد( p_ئىپادە->iColumn < pWalker->u.pTab->nCol );
+    pWalker->eCode |= pWalker->u.pTab->aCol[p_ئىپادە->iColumn].colFlags;
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
@@ -282,18 +282,18 @@ static int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
 ** back and computes the values for those columns based on the previously
 ** computed normal columns.
 */
-void sqlite3ComputeGeneratedColumns(
+فراغ sqlite3ComputeGeneratedColumns(
   Parse *pParse,    /* Parsing context */
-  int iRegStore,    /* Register holding the first column */
+  صحيح iRegStore,    /* Register holding the first column */
   Table *pTab       /* The table */
 ){
-  int i;
+  صحيح i;
   Walker w;
   Column *pRedo;
-  int eProgress;
+  صحيح eProgress;
   VdbeOp *pOp;
 
-  assert( pTab->tabFlags & TF_HasGenerated );
+  أكد( pTab->tabFlags & TF_HasGenerated );
   testcase( pTab->tabFlags & TF_HasVirtual );
   testcase( pTab->tabFlags & TF_HasStored );
 
@@ -301,26 +301,26 @@ void sqlite3ComputeGeneratedColumns(
   ** that appropriate affinity has been applied to the regular columns
   */
   sqlite3TableAffinity(pParse->pVdbe, pTab, iRegStore);
-  if( (pTab->tabFlags & TF_HasStored)!=0 ){
+  إذا( (pTab->tabFlags & TF_HasStored)!=0 ){
     pOp = sqlite3VdbeGetLastOp(pParse->pVdbe);
-    if( pOp->opcode==OP_Affinity ){
+    إذا( pOp->opcode==OP_Affinity ){
       /* Change the OP_Affinity argument to '@' (NONE) for all stored
       ** columns.  '@' is the no-op affinity and those columns have not
       ** yet been computed. */
-      int ii, jj;
-      char *zP4 = pOp->p4.z;
-      assert( zP4!=0 );
-      assert( pOp->p4type==P4_DYNAMIC );
-      for(ii=jj=0; zP4[jj]; ii++){
-        if( pTab->aCol[ii].colFlags & COLFLAG_VIRTUAL ){
-          continue;
+      صحيح ii, jj;
+      حرف *zP4 = pOp->p4.z;
+      أكد( zP4!=0 );
+      أكد( pOp->p4type==P4_DYNAMIC );
+      لكل(ii=jj=0; zP4[jj]; ii++){
+        إذا( pTab->aCol[ii].colFlags & COLFLAG_VIRTUAL ){
+          استمر;
         }
-        if( pTab->aCol[ii].colFlags & COLFLAG_STORED ){
+        إذا( pTab->aCol[ii].colFlags & COLFLAG_STORED ){
           zP4[jj] = SQLITE_AFF_NONE;
         }
         jj++;
       }
-    }else if( pOp->opcode==OP_TypeCheck ){
+    }وإلا إذا( pOp->opcode==OP_TypeCheck ){
       /* If an OP_TypeCheck was generated because the table is STRICT,
       ** then set the P3 operand to indicate that generated columns should
       ** not be checked */
@@ -332,8 +332,8 @@ void sqlite3ComputeGeneratedColumns(
   ** this is a two-pass algorithm.  On the first pass, mark all generated
   ** columns as "not available".
   */
-  for(i=0; i<pTab->nCol; i++){
-    if( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
+  لكل(i=0; i<pTab->nCol; i++){
+    إذا( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
       testcase( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL );
       testcase( pTab->aCol[i].colFlags & COLFLAG_STORED );
       pTab->aCol[i].colFlags |= COLFLAG_NOTAVAIL;
@@ -341,7 +341,7 @@ void sqlite3ComputeGeneratedColumns(
   }
 
   w.u.pTab = pTab;
-  w.xExprCallback = exprColumnFlagUnion;
+  w.x_ئىپادە_Callback = ئىپادە_Column_Flag_Union;
   w.xSelectCallback = 0;
   w.xSelectCallback2 = 0;
 
@@ -351,31 +351,31 @@ void sqlite3ComputeGeneratedColumns(
   ** they are needed.
   */
   pParse->iSelfTab = -iRegStore;
-  do{
+  افعل{
     eProgress = 0;
     pRedo = 0;
-    for(i=0; i<pTab->nCol; i++){
+    لكل(i=0; i<pTab->nCol; i++){
       Column *pCol = pTab->aCol + i;
-      if( (pCol->colFlags & COLFLAG_NOTAVAIL)!=0 ){
-        int x;
+      إذا( (pCol->colFlags & COLFLAG_NOTAVAIL)!=0 ){
+        صحيح x;
         pCol->colFlags |= COLFLAG_BUSY;
         w.eCode = 0;
-        sqlite3WalkExpr(&w, sqlite3ColumnExpr(pTab, pCol));
+        sqlite3_Walk_ئىپادە(&w, sqlite3_Column_ئىپادە(pTab, pCol));
         pCol->colFlags &= ~COLFLAG_BUSY;
-        if( w.eCode & COLFLAG_NOTAVAIL ){
+        إذا( w.eCode & COLFLAG_NOTAVAIL ){
           pRedo = pCol;
-          continue;
+          استمر;
         }
         eProgress = 1;
-        assert( pCol->colFlags & COLFLAG_GENERATED );
+        أكد( pCol->colFlags & COLFLAG_GENERATED );
         x = sqlite3TableColumnToStorage(pTab, i) + iRegStore;
-        sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, x);
+        sqlite3_ئىپادە_Code_Generated_Column(pParse, pTab, pCol, x);
         pCol->colFlags &= ~COLFLAG_NOTAVAIL;
       }
     }
-  }while( pRedo && eProgress );
-  if( pRedo ){
-    sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"", pRedo->zCnName);
+  }طالما( pRedo && eProgress );
+  إذا( pRedo ){
+    sqlite3_Error_ئۇچۇر(pParse, "generated column loop on \"%s\"", pRedo->zCnName);
   }
   pParse->iSelfTab = 0;
 }
@@ -406,14 +406,14 @@ void sqlite3ComputeGeneratedColumns(
 ** The 2nd register is the one that is returned.  That is all the
 ** insert routine needs to know about.
 */
-static int autoIncBegin(
+ساكن صحيح autoIncBegin(
   Parse *pParse,      /* Parsing context */
-  int iDb,            /* Index of the database holding pTab */
+  صحيح iDb,            /* Index of the database holding pTab */
   Table *pTab         /* The table we are writing to */
 ){
-  int memId = 0;      /* Register holding maximum rowid */
-  assert( pParse->db->aDb[iDb].pSchema!=0 );
-  if( (pTab->tabFlags & TF_Autoincrement)!=0
+  صحيح memId = 0;      /* Register holding maximum rowid */
+  أكد( pParse->db->aDb[iDb].pSchema!=0 );
+  إذا( (pTab->tabFlags & TF_Autoincrement)!=0
    && (pParse->db->mDbFlags & DBFLAG_Vacuum)==0
   ){
     Parse *pToplevel = sqlite3ParseToplevel(pParse);
@@ -423,26 +423,26 @@ static int autoIncBegin(
     /* Verify that the sqlite_sequence table exists and is an ordinary
     ** rowid table with exactly two columns.
     ** Ticket d8dc2b3a58cd5dc2918a1d4acb 2018-05-23 */
-    if( pSeqTab==0
+    إذا( pSeqTab==0
      || !HasRowid(pSeqTab)
      || NEVER(IsVirtual(pSeqTab))
      || pSeqTab->nCol!=2
     ){
       pParse->nErr++;
       pParse->rc = SQLITE_CORRUPT_SEQUENCE;
-      return 0;
+      أرجع 0;
     }
 
-    if( pToplevel->usesAinc==0 ){
+    إذا( pToplevel->usesAinc==0 ){
       pToplevel->pAinc = 0;
     }
     pInfo = pToplevel->pAinc;
-    while( pInfo && pInfo->pTab!=pTab ){ pInfo = pInfo->pNext; }
-    if( pInfo==0 ){
-      pInfo = sqlite3DbMallocRawNN(pParse->db, sizeof(*pInfo));
+    طالما( pInfo && pInfo->pTab!=pTab ){ pInfo = pInfo->pNext; }
+    إذا( pInfo==0 ){
+      pInfo = sqlite3DbMallocRawNN(pParse->db, حجم(*pInfo));
       sqlite3ParserAddCleanup(pToplevel, sqlite3DbFree, pInfo);
       testcase( pParse->earlyCleanup );
-      if( pParse->db->mallocFailed ) return 0;
+      إذا( pParse->db->mallocFailed ) أرجع 0;
       pInfo->pNext = pToplevel->pAinc;
       pToplevel->pAinc = pInfo;
       pToplevel->usesAinc = 1;
@@ -454,30 +454,30 @@ static int autoIncBegin(
     }
     memId = pInfo->regCtr;
   }
-  return memId;
+  أرجع memId;
 }
 
 /*
 ** This routine generates code that will initialize all of the
 ** register used by the autoincrement tracker. 
 */
-void sqlite3AutoincrementBegin(Parse *pParse){
+فراغ sqlite3AutoincrementBegin(Parse *pParse){
   AutoincInfo *p;            /* Information about an AUTOINCREMENT */
   sqlite3 *db = pParse->db;  /* The database connection */
   Db *pDb;                   /* Database only autoinc table */
-  int memId;                 /* Register holding max rowid */
+  صحيح memId;                 /* Register holding max rowid */
   Vdbe *v = pParse->pVdbe;   /* VDBE under construction */
 
   /* This routine is never called during trigger-generation.  It is
   ** only called from the top-level */
-  assert( pParse->pTriggerTab==0 );
-  assert( sqlite3IsToplevel(pParse) );
+  أكد( pParse->pTriggerTab==0 );
+  أكد( sqlite3IsToplevel(pParse) );
 
-  assert( v );   /* We failed long ago if this is not so */
-  assert( pParse->usesAinc );
-  for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoInc[] = {
+  أكد( v );   /* We failed long ago if this is not so */
+  أكد( pParse->usesAinc );
+  لكل(p = pParse->pAinc; p; p = p->pNext){
+    ساكن ثابت صحيح iLn = VDBE_OFFSET_LINENO(2);
+    ساكن ثابت VdbeOpList autoInc[] = {
       /* 0  */ {OP_Null,    0,  0, 0},
       /* 1  */ {OP_Rewind,  0, 10, 0},
       /* 2  */ {OP_Column,  0,  0, 0},
@@ -494,11 +494,11 @@ void sqlite3AutoincrementBegin(Parse *pParse){
     VdbeOp *aOp;
     pDb = &db->aDb[p->iDb];
     memId = p->regCtr;
-    assert( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
+    أكد( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
     sqlite3OpenTable(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenRead);
     sqlite3VdbeLoadString(v, memId-1, p->pTab->zName);
     aOp = sqlite3VdbeAddOpList(v, ArraySize(autoInc), autoInc, iLn);
-    if( aOp==0 ) break;
+    إذا( aOp==0 ) اكسر;
     aOp[0].p2 = memId;
     aOp[0].p3 = memId+2;
     aOp[2].p3 = memId;
@@ -511,7 +511,7 @@ void sqlite3AutoincrementBegin(Parse *pParse){
     aOp[7].p2 = memId+2;
     aOp[7].p1 = memId;
     aOp[10].p2 = memId;
-    if( pParse->nTab==0 ) pParse->nTab = 1;
+    إذا( pParse->nTab==0 ) pParse->nTab = 1;
   }
 }
 
@@ -523,8 +523,8 @@ void sqlite3AutoincrementBegin(Parse *pParse){
 ** larger than the maximum rowid in the memId memory cell, then the
 ** memory cell is updated.
 */
-static void autoIncStep(Parse *pParse, int memId, int regRowid){
-  if( memId>0 ){
+ساكن فراغ autoIncStep(Parse *pParse, صحيح memId, صحيح regRowid){
+  إذا( memId>0 ){
     sqlite3VdbeAddOp2(pParse->pVdbe, OP_MemMax, memId, regRowid);
   }
 }
@@ -536,34 +536,34 @@ static void autoIncStep(Parse *pParse, int memId, int regRowid){
 ** table (either directly or through triggers) needs to call this
 ** routine just before the "exit" code.
 */
-static SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
+ساكن SQLITE_NOINLINE فراغ autoIncrementEnd(Parse *pParse){
   AutoincInfo *p;
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
 
-  assert( v );
-  assert( pParse->usesAinc );
-  for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoIncEnd[] = {
+  أكد( v );
+  أكد( pParse->usesAinc );
+  لكل(p = pParse->pAinc; p; p = p->pNext){
+    ساكن ثابت صحيح iLn = VDBE_OFFSET_LINENO(2);
+    ساكن ثابت VdbeOpList autoIncEnd[] = {
       /* 0 */ {OP_NotNull,     0, 2, 0},
       /* 1 */ {OP_NewRowid,    0, 0, 0},
       /* 2 */ {OP_MakeRecord,  0, 2, 0},
-      /* 3 */ {OP_Insert,      0, 0, 0},
+      /* 3 */ {OP_قىستۇرۇش,      0, 0, 0},
       /* 4 */ {OP_Close,       0, 0, 0}
     };
     VdbeOp *aOp;
     Db *pDb = &db->aDb[p->iDb];
-    int iRec;
-    int memId = p->regCtr;
+    صحيح iRec;
+    صحيح memId = p->regCtr;
 
     iRec = sqlite3GetTempReg(pParse);
-    assert( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
+    أكد( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
     sqlite3VdbeAddOp3(v, OP_Le, memId+2, sqlite3VdbeCurrentAddr(v)+7, memId);
     VdbeCoverage(v);
     sqlite3OpenTable(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenWrite);
     aOp = sqlite3VdbeAddOpList(v, ArraySize(autoIncEnd), autoIncEnd, iLn);
-    if( aOp==0 ) break;
+    إذا( aOp==0 ) اكسر;
     aOp[0].p1 = memId+1;
     aOp[1].p2 = memId+1;
     aOp[2].p1 = memId-1;
@@ -574,10 +574,10 @@ static SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
     sqlite3ReleaseTempReg(pParse, iRec);
   }
 }
-void sqlite3AutoincrementEnd(Parse *pParse){
-  if( pParse->usesAinc ) autoIncrementEnd(pParse);
+فراغ sqlite3AutoincrementEnd(Parse *pParse){
+  إذا( pParse->usesAinc ) autoIncrementEnd(pParse);
 }
-#else
+#وإلا
 /*
 ** If SQLITE_OMIT_AUTOINCREMENT is defined, then the three routines
 ** above are all no-ops
@@ -591,11 +591,11 @@ void sqlite3AutoincrementEnd(Parse *pParse){
 ** that was able to use the co-routine optimization, finish coding the
 ** co-routine.
 */
-void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal){
-  if( ALWAYS(pVal) && pVal->pSrc->nSrc>0 ){
+فراغ sqlite3_Multi_قىممەتلەر_End(Parse *pParse, Select *pVal){
+  إذا( ALWAYS(pVal) && pVal->pSrc->nSrc>0 ){
     SrcItem *pItem = &pVal->pSrc->a[0];
-    assert( (pItem->fg.isSubquery && pItem->u4.pSubq!=0) || pParse->nErr );
-    if( pItem->fg.isSubquery ){
+    أكد( (pItem->fg.isSubquery && pItem->u4.pSubq!=0) || pParse->nErr );
+    إذا( pItem->fg.isSubquery ){
       sqlite3VdbeEndCoroutine(pParse->pVdbe, pItem->u4.pSubq->regReturn);
       sqlite3VdbeJumpHere(pParse->pVdbe, pItem->u4.pSubq->addrFillSub - 1);
     }
@@ -606,16 +606,16 @@ void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal){
 ** Return true if all expressions in the expression-list passed as the
 ** only argument are both constant and have no affinity.
 */
-static int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
-  int ii;
-  if( sqlite3ExprListIsConstant(pParse, pRow, 0)==0 ) return 0;
-  for(ii=0; ii<pRow->nExpr; ii++){
-    Expr *pExpr = pRow->a[ii].pExpr;
-    assert( pExpr->op!=TK_RAISE );
-    assert( pExpr->affExpr==0 );
-    if( 0!=sqlite3ExprAffinity(pExpr) ) return 0;
+ساكن صحيح ئىپادە_List_Is_No_Affinity(Parse *pParse, ئىپادە_List *pRow){
+  صحيح ii;
+  إذا( sqlite3_ئىپادە_List_Is_Constant(pParse, pRow, 0)==0 ) أرجع 0;
+  لكل(ii=0; ii<pRow->n_ئىپادە; ii++){
+    ئىپادە *p_ئىپادە = pRow->a[ii].p_ئىپادە;
+    أكد( p_ئىپادە->op!=TK_RAISE );
+    أكد( p_ئىپادە->aff_ئىپادە==0 );
+    إذا( 0!=sqlite3_ئىپادە_Affinity(p_ئىپادە) ) أرجع 0;
   }
-  return 1;
+  أرجع 1;
 
 }
 
@@ -670,36 +670,36 @@ static int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
 **       affinity of such a column for all rows require access to all values in
 **       the column simultaneously. 
 */
-Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
+Select *sqlite3_Multi_قىممەتلەر(Parse *pParse, Select *p_سول, ئىپادە_List *pRow){
 
-  if( pParse->bHasWith                   /* condition (a) above */
+  إذا( pParse->bHasWith                   /* condition (a) above */
    || pParse->db->init.busy              /* condition (b) above */
-   || sqlite3ExprListIsConstant(pParse, pRow, 1)==0   /* condition (c) above */
-   || (pLeft->pSrc->nSrc==0 &&
-       exprListIsNoAffinity(pParse,pLeft->pEList)==0) /* condition (d) above */
+   || sqlite3_ئىپادە_List_Is_Constant(pParse, pRow, 1)==0   /* condition (c) above */
+   || (p_سول->pSrc->nSrc==0 &&
+       ئىپادە_List_Is_No_Affinity(pParse,p_سول->pEList)==0) /* condition (d) above */
    || IN_SPECIAL_PARSE
   ){
     /* The co-routine method cannot be used. Fall back to UNION ALL. */
     Select *pSelect = 0;
-    int f = SF_Values | SF_MultiValue;
-    if( pLeft->pSrc->nSrc ){
-      sqlite3MultiValuesEnd(pParse, pLeft);
-      f = SF_Values;
-    }else if( pLeft->pPrior ){
+    صحيح f = SF_قىممەتلەر | SF_Multi_قىممەت;
+    إذا( p_سول->pSrc->nSrc ){
+      sqlite3_Multi_قىممەتلەر_End(pParse, p_سول);
+      f = SF_قىممەتلەر;
+    }وإلا إذا( p_سول->pPrior ){
       /* In this case set the SF_MultiValue flag only if it was set on pLeft */
-      f = (f & pLeft->selFlags);
+      f = (f & p_سول->selFlags);
     }
     pSelect = sqlite3SelectNew(pParse, pRow, 0, 0, 0, 0, 0, f, 0);
-    pLeft->selFlags &= ~(u32)SF_MultiValue;
-    if( pSelect ){
+    p_سول->selFlags &= ~(u32)SF_Multi_قىممەت;
+    إذا( pSelect ){
       pSelect->op = TK_ALL;
-      pSelect->pPrior = pLeft;
-      pLeft = pSelect;
+      pSelect->pPrior = p_سول;
+      p_سول = pSelect;
     }
-  }else{
+  }وإلا{
     SrcItem *p = 0;               /* SrcItem that reads from co-routine */
 
-    if( pLeft->pSrc->nSrc==0 ){
+    إذا( p_سول->pSrc->nSrc==0 ){
       /* Co-routine has not yet been started and the special Select object
       ** that accesses the co-routine has not yet been created. This block 
       ** does both those things. */
@@ -708,27 +708,27 @@ Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
 
       /* Ensure the database schema has been read. This is to ensure we have
       ** the correct text encoding.  */
-      if( (pParse->db->mDbFlags & DBFLAG_SchemaKnownOk)==0 ){
+      إذا( (pParse->db->mDbFlags & DBFLAG_SchemaKnownOk)==0 ){
         sqlite3ReadSchema(pParse);
       }
 
-      if( pRet ){
+      إذا( pRet ){
         SelectDest dest;
         Subquery *pSubq;
         pRet->pSrc->nSrc = 1;
-        pRet->pPrior = pLeft->pPrior;
-        pRet->op = pLeft->op;
-        if( pRet->pPrior ) pRet->selFlags |= SF_Values;
-        pLeft->pPrior = 0;
-        pLeft->op = TK_SELECT;
-        assert( pLeft->pNext==0 );
-        assert( pRet->pNext==0 );
+        pRet->pPrior = p_سول->pPrior;
+        pRet->op = p_سول->op;
+        إذا( pRet->pPrior ) pRet->selFlags |= SF_قىممەتلەر;
+        p_سول->pPrior = 0;
+        p_سول->op = TK_SELECT;
+        أكد( p_سول->pNext==0 );
+        أكد( pRet->pNext==0 );
         p = &pRet->pSrc->a[0];
         p->fg.viaCoroutine = 1;
         p->iCursor = -1;
-        assert( !p->fg.isIndexedBy && !p->fg.isTabFunc );
+        أكد( !p->fg.isIndexedBy && !p->fg.isTabFunc );
         p->u1.nRow = 2;
-        if( sqlite3SrcItemAttachSubquery(pParse, p, pLeft, 0) ){
+        إذا( sqlite3SrcItemAttachSubquery(pParse, p, p_سول, 0) ){
           pSubq = p->u4.pSubq;
           pSubq->addrFillSub = sqlite3VdbeCurrentAddr(v) + 1;
           pSubq->regReturn = ++pParse->nMem;
@@ -742,50 +742,50 @@ Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
           ** to use these registers directly, instead of copying the output
           ** of the co-routine to a separate array for processing.  */
           dest.iSdst = pParse->nMem + 3; 
-          dest.nSdst = pLeft->pEList->nExpr;
+          dest.nSdst = p_سول->pEList->n_ئىپادە;
           pParse->nMem += 2 + dest.nSdst;
 
-          pLeft->selFlags |= SF_MultiValue;
-          sqlite3Select(pParse, pLeft, &dest);
+          p_سول->selFlags |= SF_Multi_قىممەت;
+          sqlite3Select(pParse, p_سول, &dest);
           pSubq->regResult = dest.iSdst;
-          assert( pParse->nErr || dest.iSdst>0 );
+          أكد( pParse->nErr || dest.iSdst>0 );
         }
-        pLeft = pRet;
+        p_سول = pRet;
       }
-    }else{
-      p = &pLeft->pSrc->a[0];
-      assert( !p->fg.isTabFunc && !p->fg.isIndexedBy );
+    }وإلا{
+      p = &p_سول->pSrc->a[0];
+      أكد( !p->fg.isTabFunc && !p->fg.isIndexedBy );
       p->u1.nRow++;
     }
   
-    if( pParse->nErr==0 ){
+    إذا( pParse->nErr==0 ){
       Subquery *pSubq;
-      assert( p!=0 );
-      assert( p->fg.isSubquery );
+      أكد( p!=0 );
+      أكد( p->fg.isSubquery );
       pSubq = p->u4.pSubq;
-      assert( pSubq!=0 );
-      assert( pSubq->pSelect!=0 );
-      assert( pSubq->pSelect->pEList!=0 );
-      if( pSubq->pSelect->pEList->nExpr!=pRow->nExpr ){
-        sqlite3SelectWrongNumTermsError(pParse, pSubq->pSelect);
-      }else{
-        sqlite3ExprCodeExprList(pParse, pRow, pSubq->regResult, 0, 0);
+      أكد( pSubq!=0 );
+      أكد( pSubq->pSelect!=0 );
+      أكد( pSubq->pSelect->pEList!=0 );
+      إذا( pSubq->pSelect->pEList->n_ئىپادە!=pRow->n_ئىپادە ){
+        sqlite3_Select_Wrong_رەقەم_Terms_Error(pParse, pSubq->pSelect);
+      }وإلا{
+        sqlite3_ئىپادە_Code_ئىپادە_List(pParse, pRow, pSubq->regResult, 0, 0);
         sqlite3VdbeAddOp1(pParse->pVdbe, OP_Yield, pSubq->regReturn);
       }
     }
-    sqlite3ExprListDelete(pParse->db, pRow);
+    sqlite3_ئىپادە_List_Delete(pParse->db, pRow);
   }
 
-  return pLeft;
+  أرجع p_سول;
 }
 
 /* Forward declaration */
-static int xferOptimization(
+ساكن صحيح xferOptimization(
   Parse *pParse,        /* Parser context */
   Table *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */
-  int onError,          /* How to handle constraint errors */
-  int iDbDest           /* The database of pDest */
+  صحيح onError,          /* How to handle constraint errors */
+  صحيح iDbDest           /* The database of pDest */
 );
 
 /*
@@ -885,66 +885,66 @@ static int xferOptimization(
 **         end loop
 **      D: cleanup
 */
-void sqlite3Insert(
+فراغ sqlite3_قىستۇرۇش(
   Parse *pParse,        /* Parser context */
   SrcList *pTabList,    /* Name of table into which we are inserting */
   Select *pSelect,      /* A SELECT statement to use as the data source */
   IdList *pColumn,      /* Column names corresponding to IDLIST, or NULL. */
-  int onError,          /* How to handle constraint errors */
+  صحيح onError,          /* How to handle constraint errors */
   Upsert *pUpsert       /* ON CONFLICT clauses for upsert, or NULL */
 ){
   sqlite3 *db;          /* The main database structure */
   Table *pTab;          /* The table to insert into.  aka TABLE */
-  int i, j;             /* Loop counters */
+  صحيح i, j;             /* Loop counters */
   Vdbe *v;              /* Generate code into this virtual machine */
   Index *pIdx;          /* For looping over indices of the table */
-  int nColumn;          /* Number of columns in the data */
-  int nHidden = 0;      /* Number of hidden columns if TABLE is virtual */
-  int iDataCur = 0;     /* VDBE cursor that is the main data repository */
-  int iIdxCur = 0;      /* First index cursor */
-  int ipkColumn = -1;   /* Column that is the INTEGER PRIMARY KEY */
-  int endOfLoop;        /* Label for the end of the insertion loop */
-  int srcTab = 0;       /* Data comes from this temporary cursor if >=0 */
-  int addrInsTop = 0;   /* Jump to label "D" */
-  int addrCont = 0;     /* Top of insert loop. Label "C" in templates 3 and 4 */
+  صحيح nColumn;          /* Number of columns in the data */
+  صحيح nHidden = 0;      /* Number of hidden columns if TABLE is virtual */
+  صحيح iDataCur = 0;     /* VDBE cursor that is the main data repository */
+  صحيح iIdxCur = 0;      /* First index cursor */
+  صحيح ipkColumn = -1;   /* Column that is the INTEGER PRIMARY KEY */
+  صحيح endOfLoop;        /* Label for the end of the insertion loop */
+  صحيح srcTab = 0;       /* Data comes from this temporary cursor if >=0 */
+  صحيح addr_Ins_چوققا = 0;   /* Jump to label "D" */
+  صحيح addrCont = 0;     /* Top of insert loop. Label "C" in templates 3 and 4 */
   SelectDest dest;      /* Destination for SELECT on rhs of INSERT */
-  int iDb;              /* Index of database holding TABLE */
+  صحيح iDb;              /* Index of database holding TABLE */
   u8 useTempTable = 0;  /* Store SELECT results in intermediate table */
   u8 appendFlag = 0;    /* True if the insert is likely to be an append */
   u8 withoutRowid;      /* 0 for normal table.  1 for WITHOUT ROWID table */
   u8 bIdListInOrder;    /* True if IDLIST is in table order */
-  ExprList *pList = 0;  /* List of VALUES() to be inserted  */
-  int iRegStore;        /* Register in which to store next column */
+  ئىپادە_List *pList = 0;  /* List of VALUES() to be inserted  */
+  صحيح iRegStore;        /* Register in which to store next column */
 
   /* Register allocations */
-  int regFromSelect = 0;/* Base register for data coming from SELECT */
-  int regAutoinc = 0;   /* Register holding the AUTOINCREMENT counter */
-  int regRowCount = 0;  /* Memory cell used for the row counter */
-  int regIns;           /* Block of regs holding rowid+data being inserted */
-  int regRowid;         /* registers holding insert rowid */
-  int regData;          /* register holding first column to insert */
-  int *aRegIdx = 0;     /* One register allocated to each index */
-  int *aTabColMap = 0;  /* Mapping from pTab columns to pCol entries */
+  صحيح regFromSelect = 0;/* Base register for data coming from SELECT */
+  صحيح regAutoinc = 0;   /* Register holding the AUTOINCREMENT counter */
+  صحيح reg_Row_سانى = 0;  /* Memory cell used for the row counter */
+  صحيح regIns;           /* Block of regs holding rowid+data being inserted */
+  صحيح regRowid;         /* registers holding insert rowid */
+  صحيح regData;          /* register holding first column to insert */
+  صحيح *aRegIdx = 0;     /* One register allocated to each index */
+  صحيح *aTabColMap = 0;  /* Mapping from pTab columns to pCol entries */
 
 #ifndef SQLITE_OMIT_TRIGGER
-  int isView;                 /* True if attempting to insert into a view */
+  صحيح isView;                 /* True if attempting to insert into a view */
   Trigger *pTrigger;          /* List of triggers on pTab, if required */
-  int tmask;                  /* Mask of trigger times */
+  صحيح tmask;                  /* Mask of trigger times */
 #endif
 
   db = pParse->db;
-  assert( db->pParse==pParse );
-  if( pParse->nErr ){
-    goto insert_cleanup;
+  أكد( db->pParse==pParse );
+  إذا( pParse->nErr ){
+    اذهب قىستۇرۇش_cleanup;
   }
-  assert( db->mallocFailed==0 );
+  أكد( db->mallocFailed==0 );
   dest.iSDParm = 0;  /* Suppress a harmless compiler warning */
 
   /* If the Select object is really just a simple VALUES() list with a
   ** single row (the common case) then keep that one row of values
   ** and discard the other (unused) parts of the pSelect object
   */
-  if( pSelect && (pSelect->selFlags & SF_Values)!=0 && pSelect->pPrior==0 ){
+  إذا( pSelect && (pSelect->selFlags & SF_قىممەتلەر)!=0 && pSelect->pPrior==0 ){
     pList = pSelect->pEList;
     pSelect->pEList = 0;
     sqlite3SelectDelete(db, pSelect);
@@ -953,16 +953,16 @@ void sqlite3Insert(
 
   /* Locate the table into which we will be inserting new information.
   */
-  assert( pTabList->nSrc==1 );
+  أكد( pTabList->nSrc==1 );
   pTab = sqlite3SrcListLookup(pParse, pTabList);
-  if( pTab==0 ){
-    goto insert_cleanup;
+  إذا( pTab==0 ){
+    اذهب قىستۇرۇش_cleanup;
   }
   iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb<db->nDb );
-  if( sqlite3AuthCheck(pParse, SQLITE_INSERT, pTab->zName, 0,
+  أكد( iDb<db->nDb );
+  إذا( sqlite3AuthCheck(pParse, SQLITE_قىستۇرۇش, pTab->zName, 0,
                        db->aDb[iDb].zDbSName) ){
-    goto insert_cleanup;
+    اذهب قىستۇرۇش_cleanup;
   }
   withoutRowid = !HasRowid(pTab);
 
@@ -970,9 +970,9 @@ void sqlite3Insert(
   ** inserted into is a view
   */
 #ifndef SQLITE_OMIT_TRIGGER
-  pTrigger = sqlite3TriggersExist(pParse, pTab, TK_INSERT, 0, &tmask);
+  pTrigger = sqlite3TriggersExist(pParse, pTab, TK_قىستۇرۇش, 0, &tmask);
   isView = IsView(pTab);
-#else
+#وإلا
 # define pTrigger 0
 # define tmask 0
 # define isView 0
@@ -981,12 +981,12 @@ void sqlite3Insert(
 # undef isView
 # define isView 0
 #endif
-  assert( (pTrigger && tmask) || (pTrigger==0 && tmask==0) );
+  أكد( (pTrigger && tmask) || (pTrigger==0 && tmask==0) );
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
-    sqlite3TreeViewLine(0, "In sqlite3Insert() at %s:%d", __FILE__, __LINE__);
-    sqlite3TreeViewInsert(pParse->pWith, pTabList, pColumn, pSelect, pList,
+#إذا TREETRACE_ENABLED
+  إذا( sqlite3_دەرەخ_Trace & 0x10000 ){
+    sqlite3_دەرەخ_View_قۇر(0, "In sqlite3Insert() at %s:%d", __FILE__, __LINE__);
+    sqlite3_دەرەخ_View_قىستۇرۇش(pParse->pWith, pTabList, pColumn, pSelect, pList,
                           onError, pUpsert, pTrigger);
   }
 #endif
@@ -994,21 +994,21 @@ void sqlite3Insert(
   /* If pTab is really a view, make sure it has been initialized.
   ** ViewGetColumnNames() is a no-op if pTab is not a view.
   */
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-    goto insert_cleanup;
+  إذا( sqlite3ViewGetColumnNames(pParse, pTab) ){
+    اذهب قىستۇرۇش_cleanup;
   }
 
   /* Cannot insert into a read-only table.
   */
-  if( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
-    goto insert_cleanup;
+  إذا( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
+    اذهب قىستۇرۇش_cleanup;
   }
 
   /* Allocate a VDBE
   */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ) goto insert_cleanup;
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  إذا( v==0 ) اذهب قىستۇرۇش_cleanup;
+  إذا( pParse->nested==0 ) sqlite3_Vdbe_سانى_Changes(v);
   sqlite3BeginWriteOperation(pParse, pSelect || pTrigger, iDb);
 
 #ifndef SQLITE_OMIT_XFER_OPT
@@ -1021,14 +1021,14 @@ void sqlite3Insert(
   **
   ** This is the 2nd template.
   */
-  if( pColumn==0
+  إذا( pColumn==0
    && pSelect!=0
    && pTrigger==0
    && xferOptimization(pParse, pTab, pSelect, onError, iDb)
   ){
-    assert( !pTrigger );
-    assert( pList==0 );
-    goto insert_end;
+    أكد( !pTrigger );
+    أكد( pList==0 );
+    اذهب قىستۇرۇش_end;
   }
 #endif /* SQLITE_OMIT_XFER_OPT */
 
@@ -1042,7 +1042,7 @@ void sqlite3Insert(
   */
   regRowid = regIns = pParse->nMem+1;
   pParse->nMem += pTab->nCol + 1;
-  if( IsVirtual(pTab) ){
+  إذا( IsVirtual(pTab) ){
     regRowid++;
     pParse->nMem++;
   }
@@ -1068,34 +1068,34 @@ void sqlite3Insert(
   ** but false positives will cause database corruption.
   */
   bIdListInOrder = (pTab->tabFlags & (TF_OOOHidden|TF_HasStored))==0;
-  if( pColumn ){
-    aTabColMap = sqlite3DbMallocZero(db, pTab->nCol*sizeof(int));
-    if( aTabColMap==0 ) goto insert_cleanup;
-    for(i=0; i<pColumn->nId; i++){
+  إذا( pColumn ){
+    aTabColMap = sqlite3DbMallocZero(db, pTab->nCol*حجم(صحيح));
+    إذا( aTabColMap==0 ) اذهب قىستۇرۇش_cleanup;
+    لكل(i=0; i<pColumn->nId; i++){
       j = sqlite3ColumnIndex(pTab, pColumn->a[i].zName);
-      if( j>=0 ){
-        if( aTabColMap[j]==0 ) aTabColMap[j] = i+1;
-        if( i!=j ) bIdListInOrder = 0;
-        if( j==pTab->iPKey ){
-          ipkColumn = i;  assert( !withoutRowid );
+      إذا( j>=0 ){
+        إذا( aTabColMap[j]==0 ) aTabColMap[j] = i+1;
+        إذا( i!=j ) bIdListInOrder = 0;
+        إذا( j==pTab->iPKey ){
+          ipkColumn = i;  أكد( !withoutRowid );
         }
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-        if( pTab->aCol[j].colFlags & (COLFLAG_STORED|COLFLAG_VIRTUAL) ){
-          sqlite3ErrorMsg(pParse,
+        إذا( pTab->aCol[j].colFlags & (COLFLAG_STORED|COLFLAG_VIRTUAL) ){
+          sqlite3_Error_ئۇچۇر(pParse,
              "cannot INSERT into generated column \"%s\"",
              pTab->aCol[j].zCnName);
-          goto insert_cleanup;
+          اذهب قىستۇرۇش_cleanup;
         }
 #endif
-      }else{
-        if( sqlite3IsRowid(pColumn->a[i].zName) && !withoutRowid ){
+      }وإلا{
+        إذا( sqlite3IsRowid(pColumn->a[i].zName) && !withoutRowid ){
           ipkColumn = i;
           bIdListInOrder = 0;
-        }else{
-          sqlite3ErrorMsg(pParse, "table %S has no column named %s",
+        }وإلا{
+          sqlite3_Error_ئۇچۇر(pParse, "table %S has no column named %s",
               pTabList->a, pColumn->a[i].zName);
           pParse->checkSchema = 1;
-          goto insert_cleanup;
+          اذهب قىستۇرۇش_cleanup;
         }
       }
     }
@@ -1106,47 +1106,47 @@ void sqlite3Insert(
   ** produces a single row of the SELECT on each invocation.  The
   ** co-routine is the common header to the 3rd and 4th templates.
   */
-  if( pSelect ){
+  إذا( pSelect ){
     /* Data is coming from a SELECT or from a multi-row VALUES clause.
     ** Generate a co-routine to run the SELECT. */
-    int rc;             /* Result code */
+    صحيح rc;             /* Result code */
 
-    if( pSelect->pSrc->nSrc==1 
+    إذا( pSelect->pSrc->nSrc==1 
      && pSelect->pSrc->a[0].fg.viaCoroutine 
      && pSelect->pPrior==0
     ){
       SrcItem *pItem = &pSelect->pSrc->a[0];
       Subquery *pSubq;
-      assert( pItem->fg.isSubquery );
+      أكد( pItem->fg.isSubquery );
       pSubq = pItem->u4.pSubq;
       dest.iSDParm = pSubq->regReturn;
       regFromSelect = pSubq->regResult;
-      assert( pSubq->pSelect!=0 );
-      assert( pSubq->pSelect->pEList!=0 );
-      nColumn = pSubq->pSelect->pEList->nExpr;
+      أكد( pSubq->pSelect!=0 );
+      أكد( pSubq->pSelect->pEList!=0 );
+      nColumn = pSubq->pSelect->pEList->n_ئىپادە;
       ExplainQueryPlan((pParse, 0, "SCAN %S", pItem));
-      if( bIdListInOrder && nColumn==pTab->nCol ){
+      إذا( bIdListInOrder && nColumn==pTab->nCol ){
         regData = regFromSelect;
         regRowid = regData - 1;
         regIns = regRowid - (IsVirtual(pTab) ? 1 : 0);
       }
-    }else{
-      int addrTop;        /* Top of the co-routine */
-      int regYield = ++pParse->nMem;
-      addrTop = sqlite3VdbeCurrentAddr(v) + 1;
-      sqlite3VdbeAddOp3(v, OP_InitCoroutine, regYield, 0, addrTop);
+    }وإلا{
+      صحيح addr_چوققا;        /* Top of the co-routine */
+      صحيح regYield = ++pParse->nMem;
+      addr_چوققا = sqlite3VdbeCurrentAddr(v) + 1;
+      sqlite3VdbeAddOp3(v, OP_InitCoroutine, regYield, 0, addr_چوققا);
       sqlite3SelectDestInit(&dest, SRT_Coroutine, regYield);
       dest.iSdst = bIdListInOrder ? regData : 0;
       dest.nSdst = pTab->nCol;
       rc = sqlite3Select(pParse, pSelect, &dest);
       regFromSelect = dest.iSdst;
-      assert( db->pParse==pParse );
-      if( rc || pParse->nErr ) goto insert_cleanup;
-      assert( db->mallocFailed==0 );
+      أكد( db->pParse==pParse );
+      إذا( rc || pParse->nErr ) اذهب قىستۇرۇش_cleanup;
+      أكد( db->mallocFailed==0 );
       sqlite3VdbeEndCoroutine(v, regYield);
-      sqlite3VdbeJumpHere(v, addrTop - 1);                       /* label B: */
-      assert( pSelect->pEList );
-      nColumn = pSelect->pEList->nExpr;
+      sqlite3VdbeJumpHere(v, addr_چوققا - 1);                       /* label B: */
+      أكد( pSelect->pEList );
+      nColumn = pSelect->pEList->n_ئىپادە;
     }
 
     /* Set useTempTable to TRUE if the result of the SELECT statement
@@ -1158,11 +1158,11 @@ void sqlite3Insert(
     ** of the tables being read by the SELECT statement.  Also use a
     ** temp table in the case of row triggers.
     */
-    if( pTrigger || readsTable(pParse, iDb, pTab) ){
+    إذا( pTrigger || readsTable(pParse, iDb, pTab) ){
       useTempTable = 1;
     }
 
-    if( useTempTable ){
+    إذا( useTempTable ){
       /* Invoke the coroutine to extract information from the SELECT
       ** and add it to a transient table srcTab.  The code generated
       ** here is from the 4th template:
@@ -1173,9 +1173,9 @@ void sqlite3Insert(
       **         goto L
       **      M: ...
       */
-      int regRec;          /* Register to hold packed record */
-      int regTempRowid;    /* Register to hold temp table ROWID */
-      int addrL;           /* Label "L" */
+      صحيح regRec;          /* Register to hold packed record */
+      صحيح regTempRowid;    /* Register to hold temp table ROWID */
+      صحيح addrL;           /* Label "L" */
 
       srcTab = pParse->nTab++;
       regRec = sqlite3GetTempReg(pParse);
@@ -1184,27 +1184,27 @@ void sqlite3Insert(
       addrL = sqlite3VdbeAddOp1(v, OP_Yield, dest.iSDParm); VdbeCoverage(v);
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regFromSelect, nColumn, regRec);
       sqlite3VdbeAddOp2(v, OP_NewRowid, srcTab, regTempRowid);
-      sqlite3VdbeAddOp3(v, OP_Insert, srcTab, regRec, regTempRowid);
+      sqlite3VdbeAddOp3(v, OP_قىستۇرۇش, srcTab, regRec, regTempRowid);
       sqlite3VdbeGoto(v, addrL);
       sqlite3VdbeJumpHere(v, addrL);
       sqlite3ReleaseTempReg(pParse, regRec);
       sqlite3ReleaseTempReg(pParse, regTempRowid);
     }
-  }else{
+  }وإلا{
     /* This is the case if the data for the INSERT is coming from a
     ** single-row VALUES clause
     */
     NameContext sNC;
-    memset(&sNC, 0, sizeof(sNC));
+    memset(&sNC, 0, حجم(sNC));
     sNC.pParse = pParse;
     srcTab = -1;
-    assert( useTempTable==0 );
-    if( pList ){
-      nColumn = pList->nExpr;
-      if( sqlite3ResolveExprListNames(&sNC, pList) ){
-        goto insert_cleanup;
+    أكد( useTempTable==0 );
+    إذا( pList ){
+      nColumn = pList->n_ئىپادە;
+      إذا( sqlite3_Resolve_ئىپادە_List_Names(&sNC, pList) ){
+        اذهب قىستۇرۇش_cleanup;
       }
-    }else{
+    }وإلا{
       nColumn = 0;
     }
   }
@@ -1213,14 +1213,14 @@ void sqlite3Insert(
   ** key, the set the ipkColumn variable to the integer primary key
   ** column index in the original table definition.
   */
-  if( pColumn==0 && nColumn>0 ){
+  إذا( pColumn==0 && nColumn>0 ){
     ipkColumn = pTab->iPKey;
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-    if( ipkColumn>=0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
+    إذا( ipkColumn>=0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
       testcase( pTab->tabFlags & TF_HasVirtual );
       testcase( pTab->tabFlags & TF_HasStored );
-      for(i=ipkColumn-1; i>=0; i--){
-        if( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
+      لكل(i=ipkColumn-1; i>=0; i--){
+        إذا( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
           testcase( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL );
           testcase( pTab->aCol[i].colFlags & COLFLAG_STORED );
           ipkColumn--;
@@ -1232,88 +1232,88 @@ void sqlite3Insert(
     /* Make sure the number of columns in the source data matches the number
     ** of columns to be inserted into the table.
     */
-    assert( TF_HasHidden==COLFLAG_HIDDEN );
-    assert( TF_HasGenerated==COLFLAG_GENERATED );
-    assert( COLFLAG_NOINSERT==(COLFLAG_GENERATED|COLFLAG_HIDDEN) );
-    if( (pTab->tabFlags & (TF_HasGenerated|TF_HasHidden))!=0 ){
-      for(i=0; i<pTab->nCol; i++){
-        if( pTab->aCol[i].colFlags & COLFLAG_NOINSERT ) nHidden++;
+    أكد( TF_HasHidden==COLFLAG_HIDDEN );
+    أكد( TF_HasGenerated==COLFLAG_GENERATED );
+    أكد( COLFLAG_NOINSERT==(COLFLAG_GENERATED|COLFLAG_HIDDEN) );
+    إذا( (pTab->tabFlags & (TF_HasGenerated|TF_HasHidden))!=0 ){
+      لكل(i=0; i<pTab->nCol; i++){
+        إذا( pTab->aCol[i].colFlags & COLFLAG_NOINSERT ) nHidden++;
       }
     }
-    if( nColumn!=(pTab->nCol-nHidden) ){
-      sqlite3ErrorMsg(pParse,
+    إذا( nColumn!=(pTab->nCol-nHidden) ){
+      sqlite3_Error_ئۇچۇر(pParse,
          "table %S has %d columns but %d values were supplied",
          pTabList->a, pTab->nCol-nHidden, nColumn);
-     goto insert_cleanup;
+     اذهب قىستۇرۇش_cleanup;
     }
   }
-  if( pColumn!=0 && nColumn!=pColumn->nId ){
-    sqlite3ErrorMsg(pParse, "%d values for %d columns", nColumn, pColumn->nId);
-    goto insert_cleanup;
+  إذا( pColumn!=0 && nColumn!=pColumn->nId ){
+    sqlite3_Error_ئۇچۇر(pParse, "%d values for %d columns", nColumn, pColumn->nId);
+    اذهب قىستۇرۇش_cleanup;
   }
    
   /* Initialize the count of rows to be inserted
   */
-  if( (db->flags & SQLITE_CountRows)!=0
+  إذا( (db->flags & SQLITE_سانى_Rows)!=0
    && !pParse->nested
    && !pParse->pTriggerTab
    && !pParse->bReturning
   ){
-    regRowCount = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, regRowCount);
+    reg_Row_سانى = ++pParse->nMem;
+    sqlite3VdbeAddOp2(v, OP_Integer, 0, reg_Row_سانى);
   }
 
   /* If this is not a view, open the table and and all indices */
-  if( !isView ){
-    int nIdx;
+  إذا( !isView ){
+    صحيح nIdx;
     nIdx = sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenWrite, 0, -1, 0,
                                       &iDataCur, &iIdxCur);
-    aRegIdx = sqlite3DbMallocRawNN(db, sizeof(int)*(nIdx+2));
-    if( aRegIdx==0 ){
-      goto insert_cleanup;
+    aRegIdx = sqlite3DbMallocRawNN(db, حجم(صحيح)*(nIdx+2));
+    إذا( aRegIdx==0 ){
+      اذهب قىستۇرۇش_cleanup;
     }
-    for(i=0, pIdx=pTab->pIndex; i<nIdx; pIdx=pIdx->pNext, i++){
-      assert( pIdx );
+    لكل(i=0, pIdx=pTab->pIndex; i<nIdx; pIdx=pIdx->pNext, i++){
+      أكد( pIdx );
       aRegIdx[i] = ++pParse->nMem;
       pParse->nMem += pIdx->nColumn;
     }
     aRegIdx[i] = ++pParse->nMem;  /* Register to store the table record */
   }
 #ifndef SQLITE_OMIT_UPSERT
-  if( pUpsert ){
+  إذا( pUpsert ){
     Upsert *pNx;
-    if( IsVirtual(pTab) ){
-      sqlite3ErrorMsg(pParse, "UPSERT not implemented for virtual table \"%s\"",
+    إذا( IsVirtual(pTab) ){
+      sqlite3_Error_ئۇچۇر(pParse, "UPSERT not implemented for virtual table \"%s\"",
               pTab->zName);
-      goto insert_cleanup;
+      اذهب قىستۇرۇش_cleanup;
     }
-    if( IsView(pTab) ){
-      sqlite3ErrorMsg(pParse, "cannot UPSERT a view");
-      goto insert_cleanup;
+    إذا( IsView(pTab) ){
+      sqlite3_Error_ئۇچۇر(pParse, "cannot UPSERT a view");
+      اذهب قىستۇرۇش_cleanup;
     }
-    if( sqlite3HasExplicitNulls(pParse, pUpsert->pUpsertTarget) ){
-      goto insert_cleanup;
+    إذا( sqlite3HasExplicitNulls(pParse, pUpsert->pUpsertTarget) ){
+      اذهب قىستۇرۇش_cleanup;
     }
     pTabList->a[0].iCursor = iDataCur;
     pNx = pUpsert;
-    do{
+    افعل{
       pNx->pUpsertSrc = pTabList;
       pNx->regData = regData;
       pNx->iDataCur = iDataCur;
       pNx->iIdxCur = iIdxCur;
-      if( pNx->pUpsertTarget ){
-        if( sqlite3UpsertAnalyzeTarget(pParse, pTabList, pNx, pUpsert) ){
-          goto insert_cleanup;
+      إذا( pNx->pUpsertTarget ){
+        إذا( sqlite3UpsertAnalyzeTarget(pParse, pTabList, pNx, pUpsert) ){
+          اذهب قىستۇرۇش_cleanup;
         }
       }
       pNx = pNx->pNextUpsert;
-    }while( pNx!=0 );
+    }طالما( pNx!=0 );
   }
 #endif
 
 
   /* This is the top of the main insertion loop */
-  if( useTempTable ){
+  إذا( useTempTable ){
     /* This block codes the top of loop only.  The complete loop is the
     ** following pseudocode (template 4):
     **
@@ -1323,9 +1323,9 @@ void sqlite3Insert(
     **         end loop
     **      D: ...
     */
-    addrInsTop = sqlite3VdbeAddOp1(v, OP_Rewind, srcTab); VdbeCoverage(v);
+    addr_Ins_چوققا = sqlite3VdbeAddOp1(v, OP_Rewind, srcTab); VdbeCoverage(v);
     addrCont = sqlite3VdbeCurrentAddr(v);
-  }else if( pSelect ){
+  }وإلا إذا( pSelect ){
     /* This block codes the top of loop only.  The complete loop is the
     ** following pseudocode (template 3):
     **
@@ -1335,9 +1335,9 @@ void sqlite3Insert(
     **      D: ...
     */
     sqlite3VdbeReleaseRegisters(pParse, regData, pTab->nCol, 0, 0);
-    addrInsTop = addrCont = sqlite3VdbeAddOp1(v, OP_Yield, dest.iSDParm);
+    addr_Ins_چوققا = addrCont = sqlite3VdbeAddOp1(v, OP_Yield, dest.iSDParm);
     VdbeCoverage(v);
-    if( ipkColumn>=0 ){
+    إذا( ipkColumn>=0 ){
       /* tag-20191021-001: If the INTEGER PRIMARY KEY is being generated by the
       ** SELECT, go ahead and copy the value into the rowid slot now, so that
       ** the value does not get overwritten by a NULL at tag-20191021-002. */
@@ -1353,79 +1353,79 @@ void sqlite3Insert(
   ** of the rowid.
   */
   nHidden = 0;
-  iRegStore = regData;  assert( regData==regRowid+1 );
-  for(i=0; i<pTab->nCol; i++, iRegStore++){
-    int k;
+  iRegStore = regData;  أكد( regData==regRowid+1 );
+  لكل(i=0; i<pTab->nCol; i++, iRegStore++){
+    صحيح k;
     u32 colFlags;
-    assert( i>=nHidden );
-    if( i==pTab->iPKey ){
+    أكد( i>=nHidden );
+    إذا( i==pTab->iPKey ){
       /* tag-20191021-002: References to the INTEGER PRIMARY KEY are filled
       ** using the rowid. So put a NULL in the IPK slot of the record to avoid
       ** using excess space.  The file format definition requires this extra
       ** NULL - we cannot optimize further by skipping the column completely */
       sqlite3VdbeAddOp1(v, OP_SoftNull, iRegStore);
-      continue;
+      استمر;
     }
-    if( ((colFlags = pTab->aCol[i].colFlags) & COLFLAG_NOINSERT)!=0 ){
+    إذا( ((colFlags = pTab->aCol[i].colFlags) & COLFLAG_NOINSERT)!=0 ){
       nHidden++;
-      if( (colFlags & COLFLAG_VIRTUAL)!=0 ){
+      إذا( (colFlags & COLFLAG_VIRTUAL)!=0 ){
         /* Virtual columns do not participate in OP_MakeRecord.  So back up
         ** iRegStore by one slot to compensate for the iRegStore++ in the
         ** outer for() loop */
         iRegStore--;
-        continue;
-      }else if( (colFlags & COLFLAG_STORED)!=0 ){
+        استمر;
+      }وإلا إذا( (colFlags & COLFLAG_STORED)!=0 ){
         /* Stored columns are computed later.  But if there are BEFORE
         ** triggers, the slots used for stored columns will be OP_Copy-ed
         ** to a second block of registers, so the register needs to be
         ** initialized to NULL to avoid an uninitialized register read */
-        if( tmask & TRIGGER_BEFORE ){
+        إذا( tmask & TRIGGER_BEFORE ){
           sqlite3VdbeAddOp1(v, OP_SoftNull, iRegStore);
         }
-        continue;
-      }else if( pColumn==0 ){
+        استمر;
+      }وإلا إذا( pColumn==0 ){
         /* Hidden columns that are not explicitly named in the INSERT
         ** get their default value */
-        sqlite3ExprCodeFactorable(pParse,
-            sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+        sqlite3_ئىپادە_Code_Factorable(pParse,
+            sqlite3_Column_ئىپادە_Auth(pTab, &pTab->aCol[i], pParse),
             iRegStore);
-        continue;
+        استمر;
       }
     }
-    if( pColumn ){
+    إذا( pColumn ){
       j = aTabColMap[i];
-      assert( j>=0 && j<=pColumn->nId );   
-      if( j==0 ){
+      أكد( j>=0 && j<=pColumn->nId );   
+      إذا( j==0 ){
         /* A column not named in the insert column list gets its
         ** default value */
-        sqlite3ExprCodeFactorable(pParse,
-            sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+        sqlite3_ئىپادە_Code_Factorable(pParse,
+            sqlite3_Column_ئىپادە_Auth(pTab, &pTab->aCol[i], pParse),
             iRegStore);
-        continue;
+        استمر;
       }
       k = j - 1;
-    }else if( nColumn==0 ){
+    }وإلا إذا( nColumn==0 ){
       /* This is INSERT INTO ... DEFAULT VALUES.  Load the default value. */
-      sqlite3ExprCodeFactorable(pParse,
-          sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+      sqlite3_ئىپادە_Code_Factorable(pParse,
+          sqlite3_Column_ئىپادە_Auth(pTab, &pTab->aCol[i], pParse),
           iRegStore);
-      continue;
-    }else{
+      استمر;
+    }وإلا{
       k = i - nHidden;
     }
 
-    if( useTempTable ){
+    إذا( useTempTable ){
       sqlite3VdbeAddOp3(v, OP_Column, srcTab, k, iRegStore);
-    }else if( pSelect ){
-      if( regFromSelect!=regData ){
+    }وإلا إذا( pSelect ){
+      إذا( regFromSelect!=regData ){
         sqlite3VdbeAddOp2(v, OP_SCopy, regFromSelect+k, iRegStore);
       }
-    }else{
-      Expr *pX = pList->a[k].pExpr;
-      int y = sqlite3ExprCodeTarget(pParse, pX, iRegStore);
-      if( y!=iRegStore ){
+    }وإلا{
+      ئىپادە *pX = pList->a[k].p_ئىپادە;
+      صحيح y = sqlite3_ئىپادە_Code_Target(pParse, pX, iRegStore);
+      إذا( y!=iRegStore ){
         sqlite3VdbeAddOp2(v,
-          ExprHasProperty(pX, EP_Subquery) ? OP_Copy : OP_SCopy, y, iRegStore);
+          ئىپادە_Has_Property(pX, EP_Subquery) ? OP_Copy : OP_SCopy, y, iRegStore);
       }
     }
   }
@@ -1434,8 +1434,8 @@ void sqlite3Insert(
   /* Run the BEFORE and INSTEAD OF triggers, if there are any
   */
   endOfLoop = sqlite3VdbeMakeLabel(pParse);
-  if( tmask & TRIGGER_BEFORE ){
-    int regCols = sqlite3GetTempRange(pParse, pTab->nCol+1);
+  إذا( tmask & TRIGGER_BEFORE ){
+    صحيح regCols = sqlite3GetTempRange(pParse, pTab->nCol+1);
 
     /* build the NEW.* reference row.  Note that if there is an INTEGER
     ** PRIMARY KEY into which a NULL is being inserted, that NULL will be
@@ -1443,16 +1443,16 @@ void sqlite3Insert(
     ** we do not know what the unique ID will be (because the insert has
     ** not happened yet) so we substitute a rowid of -1
     */
-    if( ipkColumn<0 ){
+    إذا( ipkColumn<0 ){
       sqlite3VdbeAddOp2(v, OP_Integer, -1, regCols);
-    }else{
-      int addr1;
-      assert( !withoutRowid );
-      if( useTempTable ){
+    }وإلا{
+      صحيح addr1;
+      أكد( !withoutRowid );
+      إذا( useTempTable ){
         sqlite3VdbeAddOp3(v, OP_Column, srcTab, ipkColumn, regCols);
-      }else{
-        assert( pSelect==0 );  /* Otherwise useTempTable is true */
-        sqlite3ExprCode(pParse, pList->a[ipkColumn].pExpr, regCols);
+      }وإلا{
+        أكد( pSelect==0 );  /* Otherwise useTempTable is true */
+        sqlite3_ئىپادە_Code(pParse, pList->a[ipkColumn].p_ئىپادە, regCols);
       }
       addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, regCols); VdbeCoverage(v);
       sqlite3VdbeAddOp2(v, OP_Integer, -1, regCols);
@@ -1462,7 +1462,7 @@ void sqlite3Insert(
     }
 
     /* Copy the new data already generated. */
-    assert( pTab->nNVCol>0 || pParse->nErr>0 );
+    أكد( pTab->nNVCol>0 || pParse->nErr>0 );
     sqlite3VdbeAddOp3(v, OP_Copy, regRowid+1, regCols+1, pTab->nNVCol-1);
 
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
@@ -1470,7 +1470,7 @@ void sqlite3Insert(
     ** columns have already been computed.  This must be done after
     ** computing the ROWID in case one of the generated columns
     ** refers to the ROWID. */
-    if( pTab->tabFlags & TF_HasGenerated ){
+    إذا( pTab->tabFlags & TF_HasGenerated ){
       testcase( pTab->tabFlags & TF_HasVirtual );
       testcase( pTab->tabFlags & TF_HasStored );
       sqlite3ComputeGeneratedColumns(pParse, regCols+1, pTab);
@@ -1482,56 +1482,56 @@ void sqlite3Insert(
     ** If this is a real table, attempt conversions as required by the
     ** table column affinities.
     */
-    if( !isView ){
+    إذا( !isView ){
       sqlite3TableAffinity(v, pTab, regCols+1);
     }
 
     /* Fire BEFORE or INSTEAD OF triggers */
-    sqlite3CodeRowTrigger(pParse, pTrigger, TK_INSERT, 0, TRIGGER_BEFORE,
+    sqlite3CodeRowTrigger(pParse, pTrigger, TK_قىستۇرۇش, 0, TRIGGER_BEFORE,
         pTab, regCols-pTab->nCol-1, onError, endOfLoop);
 
     sqlite3ReleaseTempRange(pParse, regCols, pTab->nCol+1);
   }
 
-  if( !isView ){
-    if( IsVirtual(pTab) ){
+  إذا( !isView ){
+    إذا( IsVirtual(pTab) ){
       /* The row that the VUpdate opcode will delete: none */
       sqlite3VdbeAddOp2(v, OP_Null, 0, regIns);
     }
-    if( ipkColumn>=0 ){
+    إذا( ipkColumn>=0 ){
       /* Compute the new rowid */
-      if( useTempTable ){
+      إذا( useTempTable ){
         sqlite3VdbeAddOp3(v, OP_Column, srcTab, ipkColumn, regRowid);
-      }else if( pSelect ){
+      }وإلا إذا( pSelect ){
         /* Rowid already initialized at tag-20191021-001 */
-      }else{
-        Expr *pIpk = pList->a[ipkColumn].pExpr;
-        if( pIpk->op==TK_NULL && !IsVirtual(pTab) ){
+      }وإلا{
+        ئىپادە *pIpk = pList->a[ipkColumn].p_ئىپادە;
+        إذا( pIpk->op==TK_NULL && !IsVirtual(pTab) ){
           sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
           appendFlag = 1;
-        }else{
-          sqlite3ExprCode(pParse, pList->a[ipkColumn].pExpr, regRowid);
+        }وإلا{
+          sqlite3_ئىپادە_Code(pParse, pList->a[ipkColumn].p_ئىپادە, regRowid);
         }
       }
       /* If the PRIMARY KEY expression is NULL, then use OP_NewRowid
       ** to generate a unique primary key value.
       */
-      if( !appendFlag ){
-        int addr1;
-        if( !IsVirtual(pTab) ){
+      إذا( !appendFlag ){
+        صحيح addr1;
+        إذا( !IsVirtual(pTab) ){
           addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, regRowid); VdbeCoverage(v);
           sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
           sqlite3VdbeJumpHere(v, addr1);
-        }else{
+        }وإلا{
           addr1 = sqlite3VdbeCurrentAddr(v);
           sqlite3VdbeAddOp2(v, OP_IsNull, regRowid, addr1+2); VdbeCoverage(v);
         }
         sqlite3VdbeAddOp1(v, OP_MustBeInt, regRowid); VdbeCoverage(v);
         sqlite3MayAbort(pParse);
       }
-    }else if( IsVirtual(pTab) || withoutRowid ){
+    }وإلا إذا( IsVirtual(pTab) || withoutRowid ){
       sqlite3VdbeAddOp2(v, OP_Null, 0, regRowid);
-    }else{
+    }وإلا{
       sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
       appendFlag = 1;
     }
@@ -1542,7 +1542,7 @@ void sqlite3Insert(
     ** columns have already been computed.  This must be done after
     ** computing the ROWID in case one of the generated columns
     ** is derived from the INTEGER PRIMARY KEY. */
-    if( pTab->tabFlags & TF_HasGenerated ){
+    إذا( pTab->tabFlags & TF_HasGenerated ){
       sqlite3ComputeGeneratedColumns(pParse, regRowid+1, pTab);
     }
 #endif
@@ -1551,21 +1551,21 @@ void sqlite3Insert(
     ** do the insertion.
     */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( IsVirtual(pTab) ){
-      const char *pVTab = (const char *)sqlite3GetVTable(db, pTab);
+    إذا( IsVirtual(pTab) ){
+      ثابت حرف *pVTab = (ثابت حرف *)sqlite3GetVTable(db, pTab);
       sqlite3VtabMakeWritable(pParse, pTab);
       sqlite3VdbeAddOp4(v, OP_VUpdate, 1, pTab->nCol+2, regIns, pVTab, P4_VTAB);
       sqlite3VdbeChangeP5(v, onError==OE_Default ? OE_Abort : onError);
       sqlite3MayAbort(pParse);
-    }else
+    }وإلا
 #endif
     {
-      int isReplace = 0;/* Set to true if constraints may cause a replace */
-      int bUseSeek;     /* True to use OPFLAG_SEEKRESULT */
+      صحيح isReplace = 0;/* Set to true if constraints may cause a replace */
+      صحيح bUseSeek;     /* True to use OPFLAG_SEEKRESULT */
       sqlite3GenerateConstraintChecks(pParse, pTab, aRegIdx, iDataCur, iIdxCur,
           regIns, 0, ipkColumn>=0, onError, endOfLoop, &isReplace, 0, pUpsert
       );
-      if( db->flags & SQLITE_ForeignKeys ){
+      إذا( db->flags & SQLITE_Foreign_ئاچقۇچلار ){
         sqlite3FkCheck(pParse, pTab, 0, regIns, 0, 0);
       }
 
@@ -1583,7 +1583,7 @@ void sqlite3Insert(
       );
     }
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-  }else if( pParse->bReturning ){
+  }وإلا إذا( pParse->bReturning ){
     /* If there is a RETURNING clause, populate the rowid register with
     ** constant value -1, in case one or more of the returned expressions
     ** refer to the "rowid" of the view.  */
@@ -1593,13 +1593,13 @@ void sqlite3Insert(
 
   /* Update the count of rows that are inserted
   */
-  if( regRowCount ){
-    sqlite3VdbeAddOp2(v, OP_AddImm, regRowCount, 1);
+  إذا( reg_Row_سانى ){
+    sqlite3VdbeAddOp2(v, OP_AddImm, reg_Row_سانى, 1);
   }
 
-  if( pTrigger ){
+  إذا( pTrigger ){
     /* Code AFTER triggers */
-    sqlite3CodeRowTrigger(pParse, pTrigger, TK_INSERT, 0, TRIGGER_AFTER,
+    sqlite3CodeRowTrigger(pParse, pTrigger, TK_قىستۇرۇش, 0, TRIGGER_AFTER,
         pTab, regData-2-pTab->nCol, onError, endOfLoop);
   }
 
@@ -1607,32 +1607,32 @@ void sqlite3Insert(
   ** is a SELECT statement.
   */
   sqlite3VdbeResolveLabel(v, endOfLoop);
-  if( useTempTable ){
+  إذا( useTempTable ){
     sqlite3VdbeAddOp2(v, OP_Next, srcTab, addrCont); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addrInsTop);
+    sqlite3VdbeJumpHere(v, addr_Ins_چوققا);
     sqlite3VdbeAddOp1(v, OP_Close, srcTab);
-  }else if( pSelect ){
+  }وإلا إذا( pSelect ){
     sqlite3VdbeGoto(v, addrCont);
 #ifdef SQLITE_DEBUG
     /* If we are jumping back to an OP_Yield that is preceded by an
     ** OP_ReleaseReg, set the p5 flag on the OP_Goto so that the
     ** OP_ReleaseReg will be included in the loop. */
-    if( sqlite3VdbeGetOp(v, addrCont-1)->opcode==OP_ReleaseReg ){
-      assert( sqlite3VdbeGetOp(v, addrCont)->opcode==OP_Yield );
+    إذا( sqlite3VdbeGetOp(v, addrCont-1)->opcode==OP_ReleaseReg ){
+      أكد( sqlite3VdbeGetOp(v, addrCont)->opcode==OP_Yield );
       sqlite3VdbeChangeP5(v, 1);
     }
 #endif
-    sqlite3VdbeJumpHere(v, addrInsTop);
+    sqlite3VdbeJumpHere(v, addr_Ins_چوققا);
   }
 
 #ifndef SQLITE_OMIT_XFER_OPT
-insert_end:
+قىستۇرۇش_end:
 #endif /* SQLITE_OMIT_XFER_OPT */
   /* Update the sqlite_sequence table by storing the content of the
   ** maximum rowid counter values recorded while inserting into
   ** autoincrement tables.
   */
-  if( pParse->nested==0 && pParse->pTriggerTab==0 ){
+  إذا( pParse->nested==0 && pParse->pTriggerTab==0 ){
     sqlite3AutoincrementEnd(pParse);
   }
 
@@ -1641,20 +1641,20 @@ insert_end:
   ** generating code because of a call to sqlite3NestedParse(), do not
   ** invoke the callback function.
   */
-  if( regRowCount ){
-    sqlite3CodeChangeCount(v, regRowCount, "rows inserted");
+  إذا( reg_Row_سانى ){
+    sqlite3_Code_Change_سانى(v, reg_Row_سانى, "rows inserted");
   }
 
-insert_cleanup:
+قىستۇرۇش_cleanup:
   sqlite3SrcListDelete(db, pTabList);
-  sqlite3ExprListDelete(db, pList);
+  sqlite3_ئىپادە_List_Delete(db, pList);
   sqlite3UpsertDelete(db, pUpsert);
   sqlite3SelectDelete(db, pSelect);
-  if( pColumn ){
+  إذا( pColumn ){
     sqlite3IdListDelete(db, pColumn);
     sqlite3DbFree(db, aTabColMap);
   }
-  if( aRegIdx ) sqlite3DbNNFreeNN(db, aRegIdx);
+  إذا( aRegIdx ) sqlite3DbNNFreeNN(db, aRegIdx);
 }
 
 /* Make sure "isView" and other macros defined above are undefined. Otherwise
@@ -1682,18 +1682,18 @@ insert_cleanup:
 ** expression node references any of the
 ** columns that are being modified by an UPDATE statement.
 */
-static int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN ){
-    assert( pExpr->iColumn>=0 || pExpr->iColumn==-1 );
-    if( pExpr->iColumn>=0 ){
-      if( pWalker->u.aiCol[pExpr->iColumn]>=0 ){
+ساكن صحيح check_Constraint_ئىپادە_تۈگۈن(Walker *pWalker, ئىپادە *p_ئىپادە){
+  إذا( p_ئىپادە->op==TK_COLUMN ){
+    أكد( p_ئىپادە->iColumn>=0 || p_ئىپادە->iColumn==-1 );
+    إذا( p_ئىپادە->iColumn>=0 ){
+      إذا( pWalker->u.aiCol[p_ئىپادە->iColumn]>=0 ){
         pWalker->eCode |= CKCNSTRNT_COLUMN;
       }
-    }else{
+    }وإلا{
       pWalker->eCode |= CKCNSTRNT_ROWID;
     }
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
@@ -1711,18 +1711,18 @@ static int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
 ** the expression uses one or more of columns identified by the second and
 ** third arguments.
 */
-int sqlite3ExprReferencesUpdatedColumn(
-  Expr *pExpr,    /* The expression to be checked */
-  int *aiChng,    /* aiChng[x]>=0 if column x changed by the UPDATE */
-  int chngRowid   /* True if UPDATE changes the rowid */
+صحيح sqlite3_ئىپادە_References_Updated_Column(
+  ئىپادە *p_ئىپادە,    /* The expression to be checked */
+  صحيح *aiChng,    /* aiChng[x]>=0 if column x changed by the UPDATE */
+  صحيح chngRowid   /* True if UPDATE changes the rowid */
 ){
   Walker w;
-  memset(&w, 0, sizeof(w));
+  memset(&w, 0, حجم(w));
   w.eCode = 0;
-  w.xExprCallback = checkConstraintExprNode;
+  w.x_ئىپادە_Callback = check_Constraint_ئىپادە_تۈگۈن;
   w.u.aiCol = aiChng;
-  sqlite3WalkExpr(&w, pExpr);
-  if( !chngRowid ){
+  sqlite3_Walk_ئىپادە(&w, p_ئىپادە);
+  إذا( !chngRowid ){
     testcase( (w.eCode & CKCNSTRNT_ROWID)!=0 );
     w.eCode &= ~CKCNSTRNT_ROWID;
   }
@@ -1730,7 +1730,7 @@ int sqlite3ExprReferencesUpdatedColumn(
   testcase( w.eCode==CKCNSTRNT_COLUMN );
   testcase( w.eCode==CKCNSTRNT_ROWID );
   testcase( w.eCode==(CKCNSTRNT_ROWID|CKCNSTRNT_COLUMN) );
-  return w.eCode!=0;
+  أرجع w.eCode!=0;
 }
 
 /*
@@ -1744,17 +1744,17 @@ int sqlite3ExprReferencesUpdatedColumn(
 ** of a table in either Index.pNext order, or in some other order established
 ** by an array of IndexListTerm objects.
 */
-typedef struct IndexListTerm IndexListTerm;
-typedef struct IndexIterator IndexIterator;
-struct IndexIterator {
-  int eType;    /* 0 for Index.pNext list.  1 for an array of IndexListTerm */
-  int i;        /* Index of the current item from the list */
-  union {
-    struct {    /* Use this object for eType==0: A Index.pNext list */
+تعريفنوع بنية IndexListTerm IndexListTerm;
+تعريفنوع بنية IndexIterator IndexIterator;
+بنية IndexIterator {
+  صحيح eType;    /* 0 for Index.pNext list.  1 for an array of IndexListTerm */
+  صحيح i;        /* Index of the current item from the list */
+  اتحاد {
+    بنية {    /* Use this object for eType==0: A Index.pNext list */
       Index *pIdx;   /* The current Index */
     } lx;     
-    struct {    /* Use this object for eType==1; Array of IndexListTerm */
-      int nIdx;               /* Size of the array */
+    بنية {    /* Use this object for eType==1; Array of IndexListTerm */
+      صحيح nIdx;               /* Size of the array */
       IndexListTerm *aIdx;    /* Array of IndexListTerms */
     } ax;
   } u;
@@ -1763,37 +1763,37 @@ struct IndexIterator {
 /* When IndexIterator.eType==1, then each index is an array of instances
 ** of the following object
 */
-struct IndexListTerm {
+بنية IndexListTerm {
   Index *p;  /* The index */
-  int ix;    /* Which entry in the original Table.pIndex list is this index*/
+  صحيح ix;    /* Which entry in the original Table.pIndex list is this index*/
 };
 
 /* Return the first index on the list */
-static Index *indexIteratorFirst(IndexIterator *pIter, int *pIx){
-  assert( pIter->i==0 );
-  if( pIter->eType ){
+ساكن Index *indexIteratorFirst(IndexIterator *pIter, صحيح *pIx){
+  أكد( pIter->i==0 );
+  إذا( pIter->eType ){
     *pIx = pIter->u.ax.aIdx[0].ix;
-    return pIter->u.ax.aIdx[0].p;
-  }else{
+    أرجع pIter->u.ax.aIdx[0].p;
+  }وإلا{
     *pIx = 0;
-    return pIter->u.lx.pIdx;
+    أرجع pIter->u.lx.pIdx;
   }
 }
 
 /* Return the next index from the list.  Return NULL when out of indexes */
-static Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
-  if( pIter->eType ){
-    int i = ++pIter->i;
-    if( i>=pIter->u.ax.nIdx ){
+ساكن Index *indexIteratorNext(IndexIterator *pIter, صحيح *pIx){
+  إذا( pIter->eType ){
+    صحيح i = ++pIter->i;
+    إذا( i>=pIter->u.ax.nIdx ){
       *pIx = i;
-      return 0;
+      أرجع 0;
     }
     *pIx = pIter->u.ax.aIdx[i].ix;
-    return pIter->u.ax.aIdx[i].p;
-  }else{
+    أرجع pIter->u.ax.aIdx[i].p;
+  }وإلا{
     ++(*pIx);
     pIter->u.lx.pIdx = pIter->u.lx.pIdx->pNext;
-    return pIter->u.lx.pIdx;
+    أرجع pIter->u.lx.pIdx;
   }
 }
  
@@ -1888,64 +1888,64 @@ static Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
 ** is used.  Or if pParse->onError==OE_Default then the onError value
 ** for the constraint is used.
 */
-void sqlite3GenerateConstraintChecks(
+فراغ sqlite3GenerateConstraintChecks(
   Parse *pParse,       /* The parser context */
   Table *pTab,         /* The table being inserted or updated */
-  int *aRegIdx,        /* Use register aRegIdx[i] for index i.  0 for unused */
-  int iDataCur,        /* Canonical data cursor (main table or PK index) */
-  int iIdxCur,         /* First index cursor */
-  int regNewData,      /* First register in a range holding values to insert */
-  int regOldData,      /* Previous content.  0 for INSERTs */
+  صحيح *aRegIdx,        /* Use register aRegIdx[i] for index i.  0 for unused */
+  صحيح iDataCur,        /* Canonical data cursor (main table or PK index) */
+  صحيح iIdxCur,         /* First index cursor */
+  صحيح regNewData,      /* First register in a range holding values to insert */
+  صحيح regOldData,      /* Previous content.  0 for INSERTs */
   u8 pkChng,           /* Non-zero if the rowid or PRIMARY KEY changed */
   u8 overrideError,    /* Override onError to this if not OE_Default */
-  int ignoreDest,      /* Jump to this label on an OE_Ignore resolution */
-  int *pbMayReplace,   /* OUT: Set to true if constraint may cause a replace */
-  int *aiChng,         /* column i is unchanged if aiChng[i]<0 */
+  صحيح ignoreDest,      /* Jump to this label on an OE_Ignore resolution */
+  صحيح *pbMayReplace,   /* OUT: Set to true if constraint may cause a replace */
+  صحيح *aiChng,         /* column i is unchanged if aiChng[i]<0 */
   Upsert *pUpsert      /* ON CONFLICT clauses, if any.  NULL otherwise */
 ){
   Vdbe *v;             /* VDBE under construction */
   Index *pIdx;         /* Pointer to one of the indices */
   Index *pPk = 0;      /* The PRIMARY KEY index for WITHOUT ROWID tables */
   sqlite3 *db;         /* Database connection */
-  int i;               /* loop counter */
-  int ix;              /* Index loop counter */
-  int nCol;            /* Number of columns */
-  int onError;         /* Conflict resolution strategy */
-  int seenReplace = 0; /* True if REPLACE is used to resolve INT PK conflict */
-  int nPkField;        /* Number of fields in PRIMARY KEY. 1 for ROWID tables */
+  صحيح i;               /* loop counter */
+  صحيح ix;              /* Index loop counter */
+  صحيح nCol;            /* Number of columns */
+  صحيح onError;         /* Conflict resolution strategy */
+  صحيح seenReplace = 0; /* True if REPLACE is used to resolve INT PK conflict */
+  صحيح nPkField;        /* Number of fields in PRIMARY KEY. 1 for ROWID tables */
   Upsert *pUpsertClause = 0;  /* The specific ON CONFLICT clause for pIdx */
   u8 isUpdate;           /* True if this is an UPDATE operation */
   u8 bAffinityDone = 0;  /* True if the OP_Affinity operation has been run */
-  int upsertIpkReturn = 0; /* Address of Goto at end of IPK uniqueness check */
-  int upsertIpkDelay = 0;  /* Address of Goto to bypass initial IPK check */
-  int ipkTop = 0;        /* Top of the IPK uniqueness check */
-  int ipkBottom = 0;     /* OP_Goto at the end of the IPK uniqueness check */
+  صحيح upsertIpkReturn = 0; /* Address of Goto at end of IPK uniqueness check */
+  صحيح upsertIpkDelay = 0;  /* Address of Goto to bypass initial IPK check */
+  صحيح ipk_چوققا = 0;        /* Top of the IPK uniqueness check */
+  صحيح ipkBottom = 0;     /* OP_Goto at the end of the IPK uniqueness check */
   /* Variables associated with retesting uniqueness constraints after
   ** replace triggers fire have run */
-  int regTrigCnt;       /* Register used to count replace trigger invocations */
-  int addrRecheck = 0;  /* Jump here to recheck all uniqueness constraints */
-  int lblRecheckOk = 0; /* Each recheck jumps to this label if it passes */
+  صحيح regTrigCnt;       /* Register used to count replace trigger invocations */
+  صحيح addrRecheck = 0;  /* Jump here to recheck all uniqueness constraints */
+  صحيح lblRecheckOk = 0; /* Each recheck jumps to this label if it passes */
   Trigger *pTrigger;    /* List of DELETE triggers on the table pTab */
-  int nReplaceTrig = 0; /* Number of replace triggers coded */
+  صحيح nReplaceTrig = 0; /* Number of replace triggers coded */
   IndexIterator sIdxIter;  /* Index iterator */
 
   isUpdate = regOldData!=0;
   db = pParse->db;
   v = pParse->pVdbe;
-  assert( v!=0 );
-  assert( !IsView(pTab) );  /* This table is not a VIEW */
+  أكد( v!=0 );
+  أكد( !IsView(pTab) );  /* This table is not a VIEW */
   nCol = pTab->nCol;
  
   /* pPk is the PRIMARY KEY index for WITHOUT ROWID tables and NULL for
   ** normal rowid tables.  nPkField is the number of key fields in the
   ** pPk index or 1 for a rowid table.  In other words, nPkField is the
   ** number of fields in the true primary key of the table. */
-  if( HasRowid(pTab) ){
+  إذا( HasRowid(pTab) ){
     pPk = 0;
     nPkField = 1;
-  }else{
-    pPk = sqlite3PrimaryKeyIndex(pTab);
-    nPkField = pPk->nKeyCol;
+  }وإلا{
+    pPk = sqlite3_Primary_ئاچقۇچ_Index(pTab);
+    nPkField = pPk->n_ئاچقۇچ_Col;
   }
 
   /* Record that this module has started */
@@ -1954,96 +1954,96 @@ void sqlite3GenerateConstraintChecks(
 
   /* Test all NOT NULL constraints.
   */
-  if( pTab->tabFlags & TF_HasNotNull ){
-    int b2ndPass = 0;         /* True if currently running 2nd pass */
-    int nSeenReplace = 0;     /* Number of ON CONFLICT REPLACE operations */
-    int nGenerated = 0;       /* Number of generated columns with NOT NULL */
-    while(1){  /* Make 2 passes over columns. Exit loop via "break" */
-      for(i=0; i<nCol; i++){
-        int iReg;                        /* Register holding column value */
+  إذا( pTab->tabFlags & TF_HasNotNull ){
+    صحيح b2ndPass = 0;         /* True if currently running 2nd pass */
+    صحيح nSeenReplace = 0;     /* Number of ON CONFLICT REPLACE operations */
+    صحيح nGenerated = 0;       /* Number of generated columns with NOT NULL */
+    طالما(1){  /* Make 2 passes over columns. Exit loop via "break" */
+      لكل(i=0; i<nCol; i++){
+        صحيح iReg;                        /* Register holding column value */
         Column *pCol = &pTab->aCol[i];   /* The column to check for NOT NULL */
-        int isGenerated;                 /* non-zero if column is generated */
+        صحيح isGenerated;                 /* non-zero if column is generated */
         onError = pCol->notNull;
-        if( onError==OE_None ) continue; /* No NOT NULL on this column */
-        if( i==pTab->iPKey ){
-          continue;        /* ROWID is never NULL */
+        إذا( onError==OE_None ) استمر; /* No NOT NULL on this column */
+        إذا( i==pTab->iPKey ){
+          استمر;        /* ROWID is never NULL */
         }
         isGenerated = pCol->colFlags & COLFLAG_GENERATED;
-        if( isGenerated && !b2ndPass ){
+        إذا( isGenerated && !b2ndPass ){
           nGenerated++;
-          continue;        /* Generated columns processed on 2nd pass */
+          استمر;        /* Generated columns processed on 2nd pass */
         }
-        if( aiChng && aiChng[i]<0 && !isGenerated ){
+        إذا( aiChng && aiChng[i]<0 && !isGenerated ){
           /* Do not check NOT NULL on columns that do not change */
-          continue;
+          استمر;
         }
-        if( overrideError!=OE_Default ){
+        إذا( overrideError!=OE_Default ){
           onError = overrideError;
-        }else if( onError==OE_Default ){
+        }وإلا إذا( onError==OE_Default ){
           onError = OE_Abort;
         }
-        if( onError==OE_Replace ){
-          if( b2ndPass        /* REPLACE becomes ABORT on the 2nd pass */
+        إذا( onError==OE_Replace ){
+          إذا( b2ndPass        /* REPLACE becomes ABORT on the 2nd pass */
            || pCol->iDflt==0  /* REPLACE is ABORT if no DEFAULT value */
           ){
             testcase( pCol->colFlags & COLFLAG_VIRTUAL );
             testcase( pCol->colFlags & COLFLAG_STORED );
             testcase( pCol->colFlags & COLFLAG_GENERATED );
             onError = OE_Abort;
-          }else{
-            assert( !isGenerated );
+          }وإلا{
+            أكد( !isGenerated );
           }
-        }else if( b2ndPass && !isGenerated ){
-          continue;
+        }وإلا إذا( b2ndPass && !isGenerated ){
+          استمر;
         }
-        assert( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
+        أكد( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
             || onError==OE_Ignore || onError==OE_Replace );
         testcase( i!=sqlite3TableColumnToStorage(pTab, i) );
         iReg = sqlite3TableColumnToStorage(pTab, i) + regNewData + 1;
-        switch( onError ){
-          case OE_Replace: {
-            int addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, iReg);
+        بدل( onError ){
+          حالة OE_Replace: {
+            صحيح addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, iReg);
             VdbeCoverage(v);
-            assert( (pCol->colFlags & COLFLAG_GENERATED)==0 );
+            أكد( (pCol->colFlags & COLFLAG_GENERATED)==0 );
             nSeenReplace++;
-            sqlite3ExprCodeCopy(pParse,
-               sqlite3ColumnExprAuth(pTab, pCol, pParse), iReg);
+            sqlite3_ئىپادە_Code_Copy(pParse,
+               sqlite3_Column_ئىپادە_Auth(pTab, pCol, pParse), iReg);
             sqlite3VdbeJumpHere(v, addr1);
-            break;
+            اكسر;
           }
-          case OE_Abort:
+          حالة OE_Abort:
             sqlite3MayAbort(pParse);
             /* no break */ deliberate_fall_through
-          case OE_Rollback:
-          case OE_Fail: {
-            char *zMsg = sqlite3MPrintf(db, "%s.%s", pTab->zName,
+          حالة OE_Rollback:
+          حالة OE_Fail: {
+            حرف *z_ئۇچۇر = sqlite3MPrintf(db, "%s.%s", pTab->zName,
                                         pCol->zCnName);
-            testcase( zMsg==0 && db->mallocFailed==0 );
+            testcase( z_ئۇچۇر==0 && db->mallocFailed==0 );
             sqlite3VdbeAddOp3(v, OP_HaltIfNull, SQLITE_CONSTRAINT_NOTNULL,
                               onError, iReg);
-            sqlite3VdbeAppendP4(v, zMsg, P4_DYNAMIC);
+            sqlite3VdbeAppendP4(v, z_ئۇچۇر, P4_DYNAMIC);
             sqlite3VdbeChangeP5(v, P5_ConstraintNotNull);
             VdbeCoverage(v);
-            break;
+            اكسر;
           }
-          default: {
-            assert( onError==OE_Ignore );
+          افتراضي: {
+            أكد( onError==OE_Ignore );
             sqlite3VdbeAddOp2(v, OP_IsNull, iReg, ignoreDest);
             VdbeCoverage(v);
-            break;
+            اكسر;
           }
         } /* end switch(onError) */
       } /* end loop i over columns */
-      if( nGenerated==0 && nSeenReplace==0 ){
+      إذا( nGenerated==0 && nSeenReplace==0 ){
         /* If there are no generated columns with NOT NULL constraints
         ** and no NOT NULL ON CONFLICT REPLACE constraints, then a single
         ** pass is sufficient */
-        break;
+        اكسر;
       }
-      if( b2ndPass ) break;  /* Never need more than 2 passes */
+      إذا( b2ndPass ) اكسر;  /* Never need more than 2 passes */
       b2ndPass = 1;
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-      if( nSeenReplace>0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
+      إذا( nSeenReplace>0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
         /* If any NOT NULL ON CONFLICT REPLACE constraints fired on the
         ** first pass, recomputed values for all generated columns, as
         ** those values might depend on columns affected by the REPLACE.
@@ -2057,38 +2057,38 @@ void sqlite3GenerateConstraintChecks(
   /* Test all CHECK constraints
   */
 #ifndef SQLITE_OMIT_CHECK
-  if( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
-    ExprList *pCheck = pTab->pCheck;
+  إذا( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
+    ئىپادە_List *pCheck = pTab->pCheck;
     pParse->iSelfTab = -(regNewData+1);
     onError = overrideError!=OE_Default ? overrideError : OE_Abort;
-    for(i=0; i<pCheck->nExpr; i++){
-      int allOk;
-      Expr *pCopy;
-      Expr *pExpr = pCheck->a[i].pExpr;
-      if( aiChng
-       && !sqlite3ExprReferencesUpdatedColumn(pExpr, aiChng, pkChng)
+    لكل(i=0; i<pCheck->n_ئىپادە; i++){
+      صحيح allOk;
+      ئىپادە *pCopy;
+      ئىپادە *p_ئىپادە = pCheck->a[i].p_ئىپادە;
+      إذا( aiChng
+       && !sqlite3_ئىپادە_References_Updated_Column(p_ئىپادە, aiChng, pkChng)
       ){
         /* The check constraints do not reference any of the columns being
         ** updated so there is no point it verifying the check constraint */
-        continue;
+        استمر;
       }
-      if( bAffinityDone==0 ){
+      إذا( bAffinityDone==0 ){
         sqlite3TableAffinity(v, pTab, regNewData+1);
         bAffinityDone = 1;
       }
       allOk = sqlite3VdbeMakeLabel(pParse);
       sqlite3VdbeVerifyAbortable(v, onError);
-      pCopy = sqlite3ExprDup(db, pExpr, 0);
-      if( !db->mallocFailed ){
-        sqlite3ExprIfTrue(pParse, pCopy, allOk, SQLITE_JUMPIFNULL);
+      pCopy = sqlite3_ئىپادە_Dup(db, p_ئىپادە, 0);
+      إذا( !db->mallocFailed ){
+        sqlite3_ئىپادە_If_True(pParse, pCopy, allOk, SQLITE_JUMPIFNULL);
       }
-      sqlite3ExprDelete(db, pCopy);
-      if( onError==OE_Ignore ){
+      sqlite3_ئىپادە_Delete(db, pCopy);
+      إذا( onError==OE_Ignore ){
         sqlite3VdbeGoto(v, ignoreDest);
-      }else{
-        char *zName = pCheck->a[i].zEName;
-        assert( zName!=0 || pParse->db->mallocFailed );
-        if( onError==OE_Replace ) onError = OE_Abort; /* IMP: R-26383-51744 */
+      }وإلا{
+        حرف *zName = pCheck->a[i].zEName;
+        أكد( zName!=0 || pParse->db->mallocFailed );
+        إذا( onError==OE_Replace ) onError = OE_Abort; /* IMP: R-26383-51744 */
         sqlite3HaltConstraint(pParse, SQLITE_CONSTRAINT_CHECK,
                               onError, zName, P4_TRANSIENT,
                               P5_ConstraintCheck);
@@ -2131,59 +2131,59 @@ void sqlite3GenerateConstraintChecks(
   sIdxIter.i = 0;
   sIdxIter.u.ax.aIdx = 0;  /* Silence harmless compiler warning */
   sIdxIter.u.lx.pIdx = pTab->pIndex;
-  if( pUpsert ){
-    if( pUpsert->pUpsertTarget==0 ){
+  إذا( pUpsert ){
+    إذا( pUpsert->pUpsertTarget==0 ){
       /* There is just on ON CONFLICT clause and it has no constraint-target */
-      assert( pUpsert->pNextUpsert==0 );
-      if( pUpsert->isDoUpdate==0 ){
+      أكد( pUpsert->pNextUpsert==0 );
+      إذا( pUpsert->isDoUpdate==0 ){
         /* A single ON CONFLICT DO NOTHING clause, without a constraint-target.
         ** Make all unique constraint resolution be OE_Ignore */
         overrideError = OE_Ignore;
         pUpsert = 0;
-      }else{
+      }وإلا{
         /* A single ON CONFLICT DO UPDATE.  Make all resolutions OE_Update */
         overrideError = OE_Update;
       }
-    }else if( pTab->pIndex!=0 ){
+    }وإلا إذا( pTab->pIndex!=0 ){
       /* Otherwise, we'll need to run the IndexListTerm array version of the
       ** iterator to ensure that all of the ON CONFLICT conditions are
       ** checked first and in order. */
-      int nIdx, jj;
+      صحيح nIdx, jj;
       u64 nByte;
       Upsert *pTerm;
       u8 *bUsed;
-      for(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
-         assert( aRegIdx[nIdx]>0 );
+      لكل(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
+         أكد( aRegIdx[nIdx]>0 );
       }
       sIdxIter.eType = 1;
       sIdxIter.u.ax.nIdx = nIdx;
-      nByte = (sizeof(IndexListTerm)+1)*nIdx + nIdx;
+      nByte = (حجم(IndexListTerm)+1)*nIdx + nIdx;
       sIdxIter.u.ax.aIdx = sqlite3DbMallocZero(db, nByte);
-      if( sIdxIter.u.ax.aIdx==0 ) return; /* OOM */
+      إذا( sIdxIter.u.ax.aIdx==0 ) أرجع; /* OOM */
       bUsed = (u8*)&sIdxIter.u.ax.aIdx[nIdx];
       pUpsert->pToFree = sIdxIter.u.ax.aIdx;
-      for(i=0, pTerm=pUpsert; pTerm; pTerm=pTerm->pNextUpsert){
-        if( pTerm->pUpsertTarget==0 ) break;
-        if( pTerm->pUpsertIdx==0 ) continue;  /* Skip ON CONFLICT for the IPK */
+      لكل(i=0, pTerm=pUpsert; pTerm; pTerm=pTerm->pNextUpsert){
+        إذا( pTerm->pUpsertTarget==0 ) اكسر;
+        إذا( pTerm->pUpsertIdx==0 ) استمر;  /* Skip ON CONFLICT for the IPK */
         jj = 0;
         pIdx = pTab->pIndex;
-        while( ALWAYS(pIdx!=0) && pIdx!=pTerm->pUpsertIdx ){
+        طالما( ALWAYS(pIdx!=0) && pIdx!=pTerm->pUpsertIdx ){
            pIdx = pIdx->pNext;
            jj++;
         }
-        if( bUsed[jj] ) continue; /* Duplicate ON CONFLICT clause ignored */
+        إذا( bUsed[jj] ) استمر; /* Duplicate ON CONFLICT clause ignored */
         bUsed[jj] = 1;
         sIdxIter.u.ax.aIdx[i].p = pIdx;
         sIdxIter.u.ax.aIdx[i].ix = jj;
         i++;
       }
-      for(jj=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, jj++){
-        if( bUsed[jj] ) continue;
+      لكل(jj=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, jj++){
+        إذا( bUsed[jj] ) استمر;
         sIdxIter.u.ax.aIdx[i].p = pIdx;
         sIdxIter.u.ax.aIdx[i].ix = jj;
         i++;
       }
-      assert( i==nIdx );
+      أكد( i==nIdx );
     }
   }
 
@@ -2207,36 +2207,36 @@ void sqlite3GenerateConstraintChecks(
   ** used to link together these tests which are separated from each other
   ** in the generate bytecode.
   */
-  if( (db->flags & (SQLITE_RecTriggers|SQLITE_ForeignKeys))==0 ){
+  إذا( (db->flags & (SQLITE_RecTriggers|SQLITE_Foreign_ئاچقۇچلار))==0 ){
     /* There are not DELETE triggers nor FK constraints.  No constraint
     ** rechecks are needed. */
     pTrigger = 0;
     regTrigCnt = 0;
-  }else{
-    if( db->flags&SQLITE_RecTriggers ){
+  }وإلا{
+    إذا( db->flags&SQLITE_RecTriggers ){
       pTrigger = sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0);
       regTrigCnt = pTrigger!=0 || sqlite3FkRequired(pParse, pTab, 0, 0);
-    }else{
+    }وإلا{
       pTrigger = 0;
       regTrigCnt = sqlite3FkRequired(pParse, pTab, 0, 0);
     }
-    if( regTrigCnt ){
+    إذا( regTrigCnt ){
       /* At this point regTrigCnt is non-zero if there are DELETE triggers
       ** or FK triggers. But we only care about these things if there is
       ** a chance that a row will be deleted by an ON CONFLICT REPLACE
       ** constraint. So zero regTrigCnt if no such constraint can be found. */
-      if( overrideError!=OE_Replace ){
-        if( overrideError!=OE_Default ){
+      إذا( overrideError!=OE_Replace ){
+        إذا( overrideError!=OE_Default ){
           regTrigCnt = 0;
-        }else if( pkChng==0 || pPk || pTab->keyConf!=OE_Replace ){
-          for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-            if( pIdx->onError==OE_Replace ) break;
+        }وإلا إذا( pkChng==0 || pPk || pTab->ئاچقۇچ_Conf!=OE_Replace ){
+          لكل(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+            إذا( pIdx->onError==OE_Replace ) اكسر;
           }
-          if( pIdx==0 ) regTrigCnt = 0;
+          إذا( pIdx==0 ) regTrigCnt = 0;
         }
       }
     }
-    if( regTrigCnt ){
+    إذا( regTrigCnt ){
       /* Replace triggers might exist.  Allocate the counter and
       ** initialize it to zero. */
       regTrigCnt = ++pParse->nMem;
@@ -2250,28 +2250,28 @@ void sqlite3GenerateConstraintChecks(
   /* If rowid is changing, make sure the new rowid does not previously
   ** exist in the table.
   */
-  if( pkChng && pPk==0 ){
-    int addrRowidOk = sqlite3VdbeMakeLabel(pParse);
+  إذا( pkChng && pPk==0 ){
+    صحيح addrRowidOk = sqlite3VdbeMakeLabel(pParse);
 
     /* Figure out what action to take in case of a rowid collision */
-    onError = pTab->keyConf;
-    if( overrideError!=OE_Default ){
+    onError = pTab->ئاچقۇچ_Conf;
+    إذا( overrideError!=OE_Default ){
       onError = overrideError;
-    }else if( onError==OE_Default ){
+    }وإلا إذا( onError==OE_Default ){
       onError = OE_Abort;
     }
 
     /* figure out whether or not upsert applies in this case */
-    if( pUpsert ){
+    إذا( pUpsert ){
       pUpsertClause = sqlite3UpsertOfIndex(pUpsert,0);
-      if( pUpsertClause!=0 ){
-        if( pUpsertClause->isDoUpdate==0 ){
+      إذا( pUpsertClause!=0 ){
+        إذا( pUpsertClause->isDoUpdate==0 ){
           onError = OE_Ignore;  /* DO NOTHING is the same as INSERT OR IGNORE */
-        }else{
+        }وإلا{
           onError = OE_Update;  /* DO UPDATE */
         }
       }
-      if( pUpsertClause!=pUpsert ){
+      إذا( pUpsertClause!=pUpsert ){
         /* The first ON CONFLICT clause has a conflict target other than
         ** the IPK.  We have to jump ahead to that first ON CONFLICT clause
         ** and then come back here and deal with the IPK afterwards */
@@ -2284,20 +2284,20 @@ void sqlite3GenerateConstraintChecks(
     ** to defer the running of the rowid conflict checking until after
     ** the UNIQUE constraints have run.
     */
-    if( onError==OE_Replace      /* IPK rule is REPLACE */
+    إذا( onError==OE_Replace      /* IPK rule is REPLACE */
      && onError!=overrideError   /* Rules for other constraints are different */
      && pTab->pIndex             /* There exist other constraints */
     ){
-      if( upsertIpkDelay ){
-        ipkTop = upsertIpkDelay + 1;
+      إذا( upsertIpkDelay ){
+        ipk_چوققا = upsertIpkDelay + 1;
         upsertIpkDelay = 0;
-      }else{
-        ipkTop = sqlite3VdbeAddOp0(v, OP_Goto)+1;
+      }وإلا{
+        ipk_چوققا = sqlite3VdbeAddOp0(v, OP_Goto)+1;
       }
       VdbeComment((v, "defer IPK REPLACE until last"));
     }
 
-    if( isUpdate ){
+    إذا( isUpdate ){
       /* pkChng!=0 does not mean that the rowid has changed, only that
       ** it might have changed.  Skip the conflict logic below if the rowid
       ** is unchanged. */
@@ -2313,21 +2313,21 @@ void sqlite3GenerateConstraintChecks(
     sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, addrRowidOk, regNewData);
     VdbeCoverage(v);
 
-    switch( onError ){
-      default: {
+    بدل( onError ){
+      افتراضي: {
         onError = OE_Abort;
         /* no break */ deliberate_fall_through
       }
-      case OE_Rollback:
-      case OE_Abort:
-      case OE_Fail: {
+      حالة OE_Rollback:
+      حالة OE_Abort:
+      حالة OE_Fail: {
         testcase( onError==OE_Rollback );
         testcase( onError==OE_Abort );
         testcase( onError==OE_Fail );
         sqlite3RowidConstraint(pParse, onError, pTab);
-        break;
+        اكسر;
       }
-      case OE_Replace: {
+      حالة OE_Replace: {
         /* If there are DELETE triggers on this table and the
         ** recursive-triggers flag is set, call GenerateRowDelete() to
         ** remove the conflicting row from the table. This will fire
@@ -2350,15 +2350,15 @@ void sqlite3GenerateConstraintChecks(
         ** to run without a statement journal if there are no indexes on the
         ** table.
         */
-        if( regTrigCnt ){
+        إذا( regTrigCnt ){
           sqlite3MultiWrite(pParse);
           sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
                                    regNewData, 1, 0, OE_Replace, 1, -1);
           sqlite3VdbeAddOp2(v, OP_AddImm, regTrigCnt, 1); /* incr trigger cnt */
           nReplaceTrig++;
-        }else{
+        }وإلا{
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-          assert( HasRowid(pTab) );
+          أكد( HasRowid(pTab) );
           /* This OP_Delete opcode fires the pre-update-hook only. It does
           ** not modify the b-tree. It is more efficient to let the coming
           ** OP_Insert replace the existing entry than it is to delete the
@@ -2366,31 +2366,31 @@ void sqlite3GenerateConstraintChecks(
           sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, OPFLAG_ISNOOP);
           sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
-          if( pTab->pIndex ){
+          إذا( pTab->pIndex ){
             sqlite3MultiWrite(pParse);
             sqlite3GenerateRowIndexDelete(pParse, pTab, iDataCur, iIdxCur,0,-1);
           }
         }
         seenReplace = 1;
-        break;
+        اكسر;
       }
 #ifndef SQLITE_OMIT_UPSERT
-      case OE_Update: {
+      حالة OE_Update: {
         sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, 0, iDataCur);
         /* no break */ deliberate_fall_through
       }
 #endif
-      case OE_Ignore: {
+      حالة OE_Ignore: {
         testcase( onError==OE_Ignore );
         sqlite3VdbeGoto(v, ignoreDest);
-        break;
+        اكسر;
       }
     }
     sqlite3VdbeResolveLabel(v, addrRowidOk);
-    if( ipkTop ){
+    إذا( ipk_چوققا ){
       ipkBottom = sqlite3VdbeAddOp0(v, OP_Goto);
-      sqlite3VdbeJumpHere(v, ipkTop-1);
-    }else if( pUpsert && pUpsertClause!=pUpsert ){
+      sqlite3VdbeJumpHere(v, ipk_چوققا-1);
+    }وإلا إذا( pUpsert && pUpsertClause!=pUpsert ){
       upsertIpkReturn = sqlite3VdbeAddOp0(v, OP_Goto);
     }
   }
@@ -2402,26 +2402,26 @@ void sqlite3GenerateConstraintChecks(
   ** This loop also handles the case of the PRIMARY KEY index for a
   ** WITHOUT ROWID table.
   */
-  for(pIdx = indexIteratorFirst(&sIdxIter, &ix);
+  لكل(pIdx = indexIteratorFirst(&sIdxIter, &ix);
       pIdx;
       pIdx = indexIteratorNext(&sIdxIter, &ix)
   ){
-    int regIdx;          /* Range of registers holding content for pIdx */
-    int regR;            /* Range of registers holding conflicting PK */
-    int iThisCur;        /* Cursor for this UNIQUE index */
-    int addrUniqueOk;    /* Jump here if the UNIQUE constraint is satisfied */
-    int addrConflictCk;  /* First opcode in the conflict check logic */
-    int nConflictCk;     /* Number of opcodes in conflict check logic */
+    صحيح regIdx;          /* Range of registers holding content for pIdx */
+    صحيح regR;            /* Range of registers holding conflicting PK */
+    صحيح iThisCur;        /* Cursor for this UNIQUE index */
+    صحيح addrUniqueOk;    /* Jump here if the UNIQUE constraint is satisfied */
+    صحيح addrConflictCk;  /* First opcode in the conflict check logic */
+    صحيح nConflictCk;     /* Number of opcodes in conflict check logic */
 
-    if( aRegIdx[ix]==0 ) continue;  /* Skip indices that do not change */
-    if( pUpsert ){
+    إذا( aRegIdx[ix]==0 ) استمر;  /* Skip indices that do not change */
+    إذا( pUpsert ){
       pUpsertClause = sqlite3UpsertOfIndex(pUpsert, pIdx);
-      if( upsertIpkDelay && pUpsertClause==pUpsert ){
+      إذا( upsertIpkDelay && pUpsertClause==pUpsert ){
         sqlite3VdbeJumpHere(v, upsertIpkDelay);
       }
     }
     addrUniqueOk = sqlite3VdbeMakeLabel(pParse);
-    if( bAffinityDone==0 ){
+    إذا( bAffinityDone==0 ){
       sqlite3TableAffinity(v, pTab, regNewData+1);
       bAffinityDone = 1;
     }
@@ -2430,10 +2430,10 @@ void sqlite3GenerateConstraintChecks(
 
 
     /* Skip partial indices for which the WHERE clause is not true */
-    if( pIdx->pPartIdxWhere ){
+    إذا( pIdx->pPartIdxWhere ){
       sqlite3VdbeAddOp2(v, OP_Null, 0, aRegIdx[ix]);
       pParse->iSelfTab = -(regNewData+1);
-      sqlite3ExprIfFalseDup(pParse, pIdx->pPartIdxWhere, addrUniqueOk,
+      sqlite3_ئىپادە_If_False_Dup(pParse, pIdx->pPartIdxWhere, addrUniqueOk,
                             SQLITE_JUMPIFNULL);
       pParse->iSelfTab = 0;
     }
@@ -2442,19 +2442,19 @@ void sqlite3GenerateConstraintChecks(
     ** the insert or update.  Store that record in the aRegIdx[ix] register
     */
     regIdx = aRegIdx[ix]+1;
-    for(i=0; i<pIdx->nColumn; i++){
-      int iField = pIdx->aiColumn[i];
-      int x;
-      if( iField==XN_EXPR ){
+    لكل(i=0; i<pIdx->nColumn; i++){
+      صحيح iField = pIdx->aiColumn[i];
+      صحيح x;
+      إذا( iField==XN_ئىپادە ){
         pParse->iSelfTab = -(regNewData+1);
-        sqlite3ExprCodeCopy(pParse, pIdx->aColExpr->a[i].pExpr, regIdx+i);
+        sqlite3_ئىپادە_Code_Copy(pParse, pIdx->a_Col_ئىپادە->a[i].p_ئىپادە, regIdx+i);
         pParse->iSelfTab = 0;
         VdbeComment((v, "%s column %d", pIdx->zName, i));
-      }else if( iField==XN_ROWID || iField==pTab->iPKey ){
+      }وإلا إذا( iField==XN_ROWID || iField==pTab->iPKey ){
         x = regNewData;
         sqlite3VdbeAddOp2(v, OP_IntCopy, x, regIdx+i);
         VdbeComment((v, "rowid"));
-      }else{
+      }وإلا{
         testcase( sqlite3TableColumnToStorage(pTab, iField)!=iField );
         x = sqlite3TableColumnToStorage(pTab, iField) + regNewData + 1;
         sqlite3VdbeAddOp2(v, OP_SCopy, x, regIdx+i);
@@ -2464,7 +2464,7 @@ void sqlite3GenerateConstraintChecks(
     sqlite3VdbeAddOp3(v, OP_MakeRecord, regIdx, pIdx->nColumn, aRegIdx[ix]);
     VdbeComment((v, "for %s", pIdx->zName));
 #ifdef SQLITE_ENABLE_NULL_TRIM
-    if( pIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
+    إذا( pIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
       sqlite3SetMakeRecordP5(v, pIdx->pTable);
     }
 #endif
@@ -2474,28 +2474,28 @@ void sqlite3GenerateConstraintChecks(
     ** of a WITHOUT ROWID table and there has been no change the
     ** primary key, then no collision is possible.  The collision detection
     ** logic below can all be skipped. */
-    if( isUpdate && pPk==pIdx && pkChng==0 ){
+    إذا( isUpdate && pPk==pIdx && pkChng==0 ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;
+      استمر;
     }
 
     /* Find out what action to take in case there is a uniqueness conflict */
     onError = pIdx->onError;
-    if( onError==OE_None ){
+    إذا( onError==OE_None ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;  /* pIdx is not a UNIQUE index */
+      استمر;  /* pIdx is not a UNIQUE index */
     }
-    if( overrideError!=OE_Default ){
+    إذا( overrideError!=OE_Default ){
       onError = overrideError;
-    }else if( onError==OE_Default ){
+    }وإلا إذا( onError==OE_Default ){
       onError = OE_Abort;
     }
 
     /* Figure out if the upsert clause applies to this index */
-    if( pUpsertClause ){
-      if( pUpsertClause->isDoUpdate==0 ){
+    إذا( pUpsertClause ){
+      إذا( pUpsertClause->isDoUpdate==0 ){
         onError = OE_Ignore;  /* DO NOTHING is the same as INSERT OR IGNORE */
-      }else{
+      }وإلا{
         onError = OE_Update;  /* DO UPDATE */
       }
     }
@@ -2510,18 +2510,18 @@ void sqlite3GenerateConstraintChecks(
     ** This is not possible for ENABLE_PREUPDATE_HOOK builds, as the row
     ** must be explicitly deleted in order to ensure any pre-update hook
     ** is invoked.  */
-    assert( IsOrdinaryTable(pTab) );
+    أكد( IsOrdinaryTable(pTab) );
 #ifndef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( (ix==0 && pIdx->pNext==0)                   /* Condition 3 */
+    إذا( (ix==0 && pIdx->pNext==0)                   /* Condition 3 */
      && pPk==pIdx                                   /* Condition 2 */
      && onError==OE_Replace                         /* Condition 1 */
      && ( 0==(db->flags&SQLITE_RecTriggers) ||      /* Condition 4 */
           0==sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0))
-     && ( 0==(db->flags&SQLITE_ForeignKeys) ||      /* Condition 5 */
+     && ( 0==(db->flags&SQLITE_Foreign_ئاچقۇچلار) ||      /* Condition 5 */
          (0==pTab->u.tab.pFKey && 0==sqlite3FkReferences(pTab)))
     ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;
+      استمر;
     }
 #endif /* ifndef SQLITE_ENABLE_PREUPDATE_HOOK */
 
@@ -2529,34 +2529,34 @@ void sqlite3GenerateConstraintChecks(
     sqlite3VdbeVerifyAbortable(v, onError);
     addrConflictCk =
       sqlite3VdbeAddOp4Int(v, OP_NoConflict, iThisCur, addrUniqueOk,
-                           regIdx, pIdx->nKeyCol); VdbeCoverage(v);
+                           regIdx, pIdx->n_ئاچقۇچ_Col); VdbeCoverage(v);
 
     /* Generate code to handle collisions */
     regR = pIdx==pPk ? regIdx : sqlite3GetTempRange(pParse, nPkField);
-    if( isUpdate || onError==OE_Replace ){
-      if( HasRowid(pTab) ){
+    إذا( isUpdate || onError==OE_Replace ){
+      إذا( HasRowid(pTab) ){
         sqlite3VdbeAddOp2(v, OP_IdxRowid, iThisCur, regR);
         /* Conflict only if the rowid of the existing index entry
         ** is different from old-rowid */
-        if( isUpdate ){
+        إذا( isUpdate ){
           sqlite3VdbeAddOp3(v, OP_Eq, regR, addrUniqueOk, regOldData);
           sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
           VdbeCoverage(v);
         }
-      }else{
-        int x;
+      }وإلا{
+        صحيح x;
         /* Extract the PRIMARY KEY from the end of the index entry and
         ** store it in registers regR..regR+nPk-1 */
-        if( pIdx!=pPk ){
-          for(i=0; i<pPk->nKeyCol; i++){
-            assert( pPk->aiColumn[i]>=0 );
+        إذا( pIdx!=pPk ){
+          لكل(i=0; i<pPk->n_ئاچقۇچ_Col; i++){
+            أكد( pPk->aiColumn[i]>=0 );
             x = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[i]);
             sqlite3VdbeAddOp3(v, OP_Column, iThisCur, x, regR+i);
             VdbeComment((v, "%s.%s", pTab->zName,
                          pTab->aCol[pPk->aiColumn[i]].zCnName));
           }
         }
-        if( isUpdate ){
+        إذا( isUpdate ){
           /* If currently processing the PRIMARY KEY of a WITHOUT ROWID
           ** table, only conflict if the new PRIMARY KEY values are actually
           ** different from the old.  See TH3 withoutrowid04.test.
@@ -2564,15 +2564,15 @@ void sqlite3GenerateConstraintChecks(
           ** For a UNIQUE index, only conflict if the PRIMARY KEY values
           ** of the matched index row are different from the original PRIMARY
           ** KEY values of this row before the update.  */
-          int addrJump = sqlite3VdbeCurrentAddr(v)+pPk->nKeyCol;
-          int op = OP_Ne;
-          int regCmp = (IsPrimaryKeyIndex(pIdx) ? regIdx : regR);
+          صحيح addrJump = sqlite3VdbeCurrentAddr(v)+pPk->n_ئاچقۇچ_Col;
+          صحيح op = OP_Ne;
+          صحيح regCmp = (Is_Primary_ئاچقۇچ_Index(pIdx) ? regIdx : regR);
  
-          for(i=0; i<pPk->nKeyCol; i++){
-            char *p4 = (char*)sqlite3LocateCollSeq(pParse, pPk->azColl[i]);
+          لكل(i=0; i<pPk->n_ئاچقۇچ_Col; i++){
+            حرف *p4 = (حرف*)sqlite3LocateCollSeq(pParse, pPk->azColl[i]);
             x = pPk->aiColumn[i];
-            assert( x>=0 );
-            if( i==(pPk->nKeyCol-1) ){
+            أكد( x>=0 );
+            إذا( i==(pPk->n_ئاچقۇچ_Col-1) ){
               addrJump = addrUniqueOk;
               op = OP_Eq;
             }
@@ -2589,55 +2589,55 @@ void sqlite3GenerateConstraintChecks(
     }
 
     nConflictCk = sqlite3VdbeCurrentAddr(v) - addrConflictCk;
-    assert( nConflictCk>0 || db->mallocFailed );
+    أكد( nConflictCk>0 || db->mallocFailed );
     testcase( nConflictCk<=0 );
     testcase( nConflictCk>1 );
 
     /* Generate code that executes if the new index entry is not unique */
-    assert( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
+    أكد( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
         || onError==OE_Ignore || onError==OE_Replace || onError==OE_Update );
-    switch( onError ){
-      case OE_Rollback:
-      case OE_Abort:
-      case OE_Fail: {
+    بدل( onError ){
+      حالة OE_Rollback:
+      حالة OE_Abort:
+      حالة OE_Fail: {
         testcase( onError==OE_Rollback );
         testcase( onError==OE_Abort );
         testcase( onError==OE_Fail );
         sqlite3UniqueConstraint(pParse, onError, pIdx);
-        break;
+        اكسر;
       }
 #ifndef SQLITE_OMIT_UPSERT
-      case OE_Update: {
+      حالة OE_Update: {
         sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, pIdx, iIdxCur+ix);
         /* no break */ deliberate_fall_through
       }
 #endif
-      case OE_Ignore: {
+      حالة OE_Ignore: {
         testcase( onError==OE_Ignore );
         sqlite3VdbeGoto(v, ignoreDest);
-        break;
+        اكسر;
       }
-      default: {
-        assert( onError==OE_Replace );
-        if( regTrigCnt ){
+      افتراضي: {
+        أكد( onError==OE_Replace );
+        إذا( regTrigCnt ){
           sqlite3MultiWrite(pParse);
           nReplaceTrig++;
         }
-        if( pTrigger && isUpdate ){
+        إذا( pTrigger && isUpdate ){
           sqlite3VdbeAddOp1(v, OP_CursorLock, iDataCur);
         }
         sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
             regR, nPkField, 0, OE_Replace,
             (pIdx==pPk ? ONEPASS_SINGLE : ONEPASS_OFF), iThisCur);
-        if( pTrigger && isUpdate ){
+        إذا( pTrigger && isUpdate ){
           sqlite3VdbeAddOp1(v, OP_CursorUnlock, iDataCur);
         }
         seenReplace = 1;
-        break;
+        اكسر;
       }
     }
-    if( regTrigCnt ){
-      int addrBypass;  /* Jump destination to bypass recheck logic */
+    إذا( regTrigCnt ){
+      صحيح addrBypass;  /* Jump destination to bypass recheck logic */
 
       sqlite3VdbeAddOp2(v, OP_AddImm, regTrigCnt, 1); /* incr trigger cnt */
       addrBypass = sqlite3VdbeAddOp0(v, OP_Goto);  /* Bypass recheck */
@@ -2648,7 +2648,7 @@ void sqlite3GenerateConstraintChecks(
       ** fired. */
       sqlite3VdbeResolveLabel(v, lblRecheckOk);
       lblRecheckOk = sqlite3VdbeMakeLabel(pParse);
-      if( pIdx->pPartIdxWhere ){
+      إذا( pIdx->pPartIdxWhere ){
         /* Bypass the recheck if this partial index is not defined
         ** for the current row */
         sqlite3VdbeAddOp2(v, OP_IsNull, regIdx-1, lblRecheckOk);
@@ -2657,18 +2657,18 @@ void sqlite3GenerateConstraintChecks(
       /* Copy the constraint check code from above, except change
       ** the constraint-ok jump destination to be the address of
       ** the next retest block */
-      while( nConflictCk>0 ){
+      طالما( nConflictCk>0 ){
         VdbeOp x;    /* Conflict check opcode to copy */
         /* The sqlite3VdbeAddOp4() call might reallocate the opcode array.
         ** Hence, make a complete copy of the opcode, rather than using
         ** a pointer to the opcode. */
         x = *sqlite3VdbeGetOp(v, addrConflictCk);
-        if( x.opcode!=OP_IdxRowid || isUpdate ){
-          int p2;      /* New P2 value for copied conflict check opcode */
-          const char *zP4;
-          if( sqlite3OpcodeProperty[x.opcode]&OPFLG_JUMP ){
+        إذا( x.opcode!=OP_IdxRowid || isUpdate ){
+          صحيح p2;      /* New P2 value for copied conflict check opcode */
+          ثابت حرف *zP4;
+          إذا( sqlite3OpcodeProperty[x.opcode]&OPFLG_JUMP ){
             p2 = lblRecheckOk;
-          }else{
+          }وإلا{
             p2 = x.p2;
           }
           zP4 = x.p4type==P4_INT32 ? SQLITE_INT_TO_PTR(x.p4.i) : x.p4.z;
@@ -2685,8 +2685,8 @@ void sqlite3GenerateConstraintChecks(
       sqlite3VdbeJumpHere(v, addrBypass); /* Terminate the recheck bypass */
     }
     sqlite3VdbeResolveLabel(v, addrUniqueOk);
-    if( regR!=regIdx ) sqlite3ReleaseTempRange(pParse, regR, nPkField);
-    if( pUpsertClause
+    إذا( regR!=regIdx ) sqlite3ReleaseTempRange(pParse, regR, nPkField);
+    إذا( pUpsertClause
      && upsertIpkReturn
      && sqlite3UpsertNextIsIPK(pUpsertClause)
     ){
@@ -2697,20 +2697,20 @@ void sqlite3GenerateConstraintChecks(
   }
 
   /* If the IPK constraint is a REPLACE, run it last */
-  if( ipkTop ){
-    sqlite3VdbeGoto(v, ipkTop);
+  إذا( ipk_چوققا ){
+    sqlite3VdbeGoto(v, ipk_چوققا);
     VdbeComment((v, "Do IPK REPLACE"));
-    assert( ipkBottom>0 );
+    أكد( ipkBottom>0 );
     sqlite3VdbeJumpHere(v, ipkBottom);
   }
 
   /* Recheck all uniqueness constraints after replace triggers have run */
   testcase( regTrigCnt!=0 && nReplaceTrig==0 );
-  assert( regTrigCnt!=0 || nReplaceTrig==0 );
-  if( nReplaceTrig ){
+  أكد( regTrigCnt!=0 || nReplaceTrig==0 );
+  إذا( nReplaceTrig ){
     sqlite3VdbeAddOp2(v, OP_IfNot, regTrigCnt, lblRecheckOk);VdbeCoverage(v);
-    if( !pPk ){
-      if( isUpdate ){
+    إذا( !pPk ){
+      إذا( isUpdate ){
         sqlite3VdbeAddOp3(v, OP_Eq, regNewData, addrRecheck, regOldData);
         sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
         VdbeCoverage(v);
@@ -2718,18 +2718,18 @@ void sqlite3GenerateConstraintChecks(
       sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, addrRecheck, regNewData);
       VdbeCoverage(v);
       sqlite3RowidConstraint(pParse, OE_Abort, pTab);
-    }else{
+    }وإلا{
       sqlite3VdbeGoto(v, addrRecheck);
     }
   }
-  if( regTrigCnt ) sqlite3VdbeResolveLabel(v, lblRecheckOk);
+  إذا( regTrigCnt ) sqlite3VdbeResolveLabel(v, lblRecheckOk);
 
   /* Generate the table record */
-  if( HasRowid(pTab) ){
-    int regRec = aRegIdx[ix];
+  إذا( HasRowid(pTab) ){
+    صحيح regRec = aRegIdx[ix];
     sqlite3VdbeAddOp3(v, OP_MakeRecord, regNewData+1, pTab->nNVCol, regRec);
     sqlite3SetMakeRecordP5(v, pTab);
-    if( !bAffinityDone ){
+    إذا( !bAffinityDone ){
       sqlite3TableAffinity(v, pTab, 0);
     }
   }
@@ -2745,16 +2745,16 @@ void sqlite3GenerateConstraintChecks(
 **
 ** Or if no columns of pTab may be NULL-trimmed, leave P5 at zero.
 */
-void sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
+فراغ sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
   u16 i;
 
   /* Records with omitted columns are only allowed for schema format
   ** version 2 and later (SQLite version 3.1.4, 2005-02-20). */
-  if( pTab->pSchema->file_format<2 ) return;
+  إذا( pTab->pSchema->file_format<2 ) أرجع;
 
-  for(i=pTab->nCol-1; i>0; i--){
-    if( pTab->aCol[i].iDflt!=0 ) break;
-    if( pTab->aCol[i].colFlags & COLFLAG_PRIMKEY ) break;
+  لكل(i=pTab->nCol-1; i>0; i--){
+    إذا( pTab->aCol[i].iDflt!=0 ) اكسر;
+    إذا( pTab->aCol[i].colFlags & COLFLAG_PRIMKEY ) اكسر;
   }
   sqlite3VdbeChangeP5(v, i+1);
 }
@@ -2767,22 +2767,22 @@ void sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
 ** if one is registered.
 */
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-static void codeWithoutRowidPreupdate(
+ساكن فراغ codeWithoutRowidPreupdate(
   Parse *pParse,                  /* Parse context */
   Table *pTab,                    /* Table being updated */
-  int iCur,                       /* Cursor number for table */
-  int regData                     /* Data containing new record */
+  صحيح iCur,                       /* Cursor number for table */
+  صحيح regData                     /* Data containing new record */
 ){
   Vdbe *v = pParse->pVdbe;
-  int r = sqlite3GetTempReg(pParse);
-  assert( !HasRowid(pTab) );
-  assert( 0==(pParse->db->mDbFlags & DBFLAG_Vacuum) || CORRUPT_DB );
+  صحيح r = sqlite3GetTempReg(pParse);
+  أكد( !HasRowid(pTab) );
+  أكد( 0==(pParse->db->mDbFlags & DBFLAG_Vacuum) || CORRUPT_DB );
   sqlite3VdbeAddOp2(v, OP_Integer, 0, r);
-  sqlite3VdbeAddOp4(v, OP_Insert, iCur, regData, r, (char*)pTab, P4_TABLE);
+  sqlite3VdbeAddOp4(v, OP_قىستۇرۇش, iCur, regData, r, (حرف*)pTab, P4_TABLE);
   sqlite3VdbeChangeP5(v, OPFLAG_ISNOOP);
   sqlite3ReleaseTempReg(pParse, r);
 }
-#else
+#وإلا
 # define codeWithoutRowidPreupdate(a,b,c,d)
 #endif
 
@@ -2795,37 +2795,37 @@ static void codeWithoutRowidPreupdate(
 ** The arguments to this routine should be the same as the first six
 ** arguments to sqlite3GenerateConstraintChecks.
 */
-void sqlite3CompleteInsertion(
+فراغ sqlite3CompleteInsertion(
   Parse *pParse,      /* The parser context */
   Table *pTab,        /* the table into which we are inserting */
-  int iDataCur,       /* Cursor of the canonical data source */
-  int iIdxCur,        /* First index cursor */
-  int regNewData,     /* Range of content */
-  int *aRegIdx,       /* Register used by each index.  0 for unused indices */
-  int update_flags,   /* True for UPDATE, False for INSERT */
-  int appendBias,     /* True if this is likely to be an append */
-  int useSeekResult   /* True to set the USESEEKRESULT flag on OP_[Idx]Insert */
+  صحيح iDataCur,       /* Cursor of the canonical data source */
+  صحيح iIdxCur,        /* First index cursor */
+  صحيح regNewData,     /* Range of content */
+  صحيح *aRegIdx,       /* Register used by each index.  0 for unused indices */
+  صحيح update_flags,   /* True for UPDATE, False for INSERT */
+  صحيح appendBias,     /* True if this is likely to be an append */
+  صحيح useSeekResult   /* True to set the USESEEKRESULT flag on OP_[Idx]Insert */
 ){
   Vdbe *v;            /* Prepared statements under construction */
   Index *pIdx;        /* An index being inserted or updated */
   u8 pik_flags;       /* flag values passed to the btree insert */
-  int i;              /* Loop counter */
+  صحيح i;              /* Loop counter */
 
-  assert( update_flags==0
+  أكد( update_flags==0
        || update_flags==OPFLAG_ISUPDATE
        || update_flags==(OPFLAG_ISUPDATE|OPFLAG_SAVEPOSITION)
   );
 
   v = pParse->pVdbe;
-  assert( v!=0 );
-  assert( !IsView(pTab) );  /* This table is not a VIEW */
-  for(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
+  أكد( v!=0 );
+  أكد( !IsView(pTab) );  /* This table is not a VIEW */
+  لكل(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
     /* All REPLACE indexes are at the end of the list */
-    assert( pIdx->onError!=OE_Replace
+    أكد( pIdx->onError!=OE_Replace
          || pIdx->pNext==0
          || pIdx->pNext->onError==OE_Replace );
-    if( aRegIdx[i]==0 ) continue;
-    if( pIdx->pPartIdxWhere || (update_flags && pIdx->bHasExpr) ){
+    إذا( aRegIdx[i]==0 ) استمر;
+    إذا( pIdx->pPartIdxWhere || (update_flags && pIdx->b_Has_ئىپادە) ){
       /* If this is a partial index, or an UPDATE of an index on an
       ** expression, then the record register may be set to NULL to indicate
       ** that no record should be inserted into this index. */
@@ -2833,33 +2833,33 @@ void sqlite3CompleteInsertion(
       VdbeCoverage(v);
     }
     pik_flags = (useSeekResult ? OPFLAG_USESEEKRESULT : 0);
-    if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
+    إذا( Is_Primary_ئاچقۇچ_Index(pIdx) && !HasRowid(pTab) ){
       pik_flags |= OPFLAG_NCHANGE;
       pik_flags |= (update_flags & OPFLAG_SAVEPOSITION);
-      if( update_flags==0 ){
+      إذا( update_flags==0 ){
         codeWithoutRowidPreupdate(pParse, pTab, iIdxCur+i, aRegIdx[i]);
       }
     }
-    sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iIdxCur+i, aRegIdx[i],
+    sqlite3VdbeAddOp4Int(v, OP_Idx_قىستۇرۇش, iIdxCur+i, aRegIdx[i],
                          aRegIdx[i]+1,
-                         pIdx->uniqNotNull ? pIdx->nKeyCol: pIdx->nColumn);
+                         pIdx->uniqNotNull ? pIdx->n_ئاچقۇچ_Col: pIdx->nColumn);
     sqlite3VdbeChangeP5(v, pik_flags);
   }
-  if( !HasRowid(pTab) ) return;
-  if( pParse->nested ){
+  إذا( !HasRowid(pTab) ) أرجع;
+  إذا( pParse->nested ){
     pik_flags = 0;
-  }else{
+  }وإلا{
     pik_flags = OPFLAG_NCHANGE;
     pik_flags |= (update_flags?update_flags:OPFLAG_LASTROWID);
   }
-  if( appendBias ){
+  إذا( appendBias ){
     pik_flags |= OPFLAG_APPEND;
   }
-  if( useSeekResult ){
+  إذا( useSeekResult ){
     pik_flags |= OPFLAG_USESEEKRESULT;
   }
-  sqlite3VdbeAddOp3(v, OP_Insert, iDataCur, aRegIdx[i], regNewData);
-  if( !pParse->nested ){
+  sqlite3VdbeAddOp3(v, OP_قىستۇرۇش, iDataCur, aRegIdx[i], regNewData);
+  إذا( !pParse->nested ){
     sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
   }
   sqlite3VdbeChangeP5(v, pik_flags);
@@ -2886,61 +2886,61 @@ void sqlite3CompleteInsertion(
 ** If pTab is a virtual table, then this routine is a no-op and the
 ** *piDataCur and *piIdxCur values are left uninitialized.
 */
-int sqlite3OpenTableAndIndices(
+صحيح sqlite3OpenTableAndIndices(
   Parse *pParse,   /* Parsing context */
   Table *pTab,     /* Table to be opened */
-  int op,          /* OP_OpenRead or OP_OpenWrite */
+  صحيح op,          /* OP_OpenRead or OP_OpenWrite */
   u8 p5,           /* P5 value for OP_Open* opcodes (except on WITHOUT ROWID) */
-  int iBase,       /* Use this for the table cursor, if there is one */
+  صحيح iBase,       /* Use this for the table cursor, if there is one */
   u8 *aToOpen,     /* If not NULL: boolean for each table and index */
-  int *piDataCur,  /* Write the database source cursor number here */
-  int *piIdxCur    /* Write the first index cursor number here */
+  صحيح *piDataCur,  /* Write the database source cursor number here */
+  صحيح *piIdxCur    /* Write the first index cursor number here */
 ){
-  int i;
-  int iDb;
-  int iDataCur;
+  صحيح i;
+  صحيح iDb;
+  صحيح iDataCur;
   Index *pIdx;
   Vdbe *v;
 
-  assert( op==OP_OpenRead || op==OP_OpenWrite );
-  assert( op==OP_OpenWrite || p5==0 );
-  assert( piDataCur!=0 );
-  assert( piIdxCur!=0 );
-  if( IsVirtual(pTab) ){
+  أكد( op==OP_OpenRead || op==OP_OpenWrite );
+  أكد( op==OP_OpenWrite || p5==0 );
+  أكد( piDataCur!=0 );
+  أكد( piIdxCur!=0 );
+  إذا( IsVirtual(pTab) ){
     /* This routine is a no-op for virtual tables. Leave the output
     ** variables *piDataCur and *piIdxCur set to illegal cursor numbers
     ** for improved error detection. */
     *piDataCur = *piIdxCur = -999;
-    return 0;
+    أرجع 0;
   }
   iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
   v = pParse->pVdbe;
-  assert( v!=0 );
-  if( iBase<0 ) iBase = pParse->nTab;
+  أكد( v!=0 );
+  إذا( iBase<0 ) iBase = pParse->nTab;
   iDataCur = iBase++;
   *piDataCur = iDataCur;
-  if( HasRowid(pTab) && (aToOpen==0 || aToOpen[0]) ){
+  إذا( HasRowid(pTab) && (aToOpen==0 || aToOpen[0]) ){
     sqlite3OpenTable(pParse, iDataCur, iDb, pTab, op);
-  }else if( pParse->db->noSharedCache==0 ){
+  }وإلا إذا( pParse->db->noSharedCache==0 ){
     sqlite3TableLock(pParse, iDb, pTab->tnum, op==OP_OpenWrite, pTab->zName);
   }
   *piIdxCur = iBase;
-  for(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
-    int iIdxCur = iBase++;
-    assert( pIdx->pSchema==pTab->pSchema );
-    if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
+  لكل(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
+    صحيح iIdxCur = iBase++;
+    أكد( pIdx->pSchema==pTab->pSchema );
+    إذا( Is_Primary_ئاچقۇچ_Index(pIdx) && !HasRowid(pTab) ){
       *piDataCur = iIdxCur;
       p5 = 0;
     }
-    if( aToOpen==0 || aToOpen[i+1] ){
+    إذا( aToOpen==0 || aToOpen[i+1] ){
       sqlite3VdbeAddOp3(v, op, iIdxCur, pIdx->tnum, iDb);
-      sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+      sqlite3_Vdbe_Set_P4_ئاچقۇچ_Info(pParse, pIdx);
       sqlite3VdbeChangeP5(v, p5);
       VdbeComment((v, "%s", pIdx->zName));
     }
   }
-  if( iBase>pParse->nTab ) pParse->nTab = iBase;
-  return i;
+  إذا( iBase>pParse->nTab ) pParse->nTab = iBase;
+  أرجع i;
 }
 
 
@@ -2951,7 +2951,7 @@ int sqlite3OpenTableAndIndices(
 ** purposes only - to make sure the transfer optimization really
 ** is happening when it is supposed to.
 */
-int sqlite3_xferopt_count;
+صحيح sqlite3_xferopt_سانى;
 #endif /* SQLITE_TEST */
 
 
@@ -2967,52 +2967,52 @@ int sqlite3_xferopt_count;
 **    *   The same collating sequence on each column
 **    *   The index has the exact same WHERE clause
 */
-static int xferCompatibleIndex(Index *pDest, Index *pSrc){
-  int i;
-  assert( pDest && pSrc );
-  assert( pDest->pTable!=pSrc->pTable );
-  if( pDest->nKeyCol!=pSrc->nKeyCol || pDest->nColumn!=pSrc->nColumn ){
-    return 0;   /* Different number of columns */
+ساكن صحيح xferCompatibleIndex(Index *pDest, Index *pSrc){
+  صحيح i;
+  أكد( pDest && pSrc );
+  أكد( pDest->pTable!=pSrc->pTable );
+  إذا( pDest->n_ئاچقۇچ_Col!=pSrc->n_ئاچقۇچ_Col || pDest->nColumn!=pSrc->nColumn ){
+    أرجع 0;   /* Different number of columns */
   }
-  if( pDest->onError!=pSrc->onError ){
-    return 0;   /* Different conflict resolution strategies */
+  إذا( pDest->onError!=pSrc->onError ){
+    أرجع 0;   /* Different conflict resolution strategies */
   }
-  for(i=0; i<pSrc->nKeyCol; i++){
-    if( pSrc->aiColumn[i]!=pDest->aiColumn[i] ){
-      return 0;   /* Different columns indexed */
+  لكل(i=0; i<pSrc->n_ئاچقۇچ_Col; i++){
+    إذا( pSrc->aiColumn[i]!=pDest->aiColumn[i] ){
+      أرجع 0;   /* Different columns indexed */
     }
-    if( pSrc->aiColumn[i]==XN_EXPR ){
-      assert( pSrc->aColExpr!=0 && pDest->aColExpr!=0 );
-      if( sqlite3ExprCompare(0, pSrc->aColExpr->a[i].pExpr,
-                             pDest->aColExpr->a[i].pExpr, -1)!=0 ){
-        return 0;   /* Different expressions in the index */
+    إذا( pSrc->aiColumn[i]==XN_ئىپادە ){
+      أكد( pSrc->a_Col_ئىپادە!=0 && pDest->a_Col_ئىپادە!=0 );
+      إذا( sqlite3_ئىپادە_Compare(0, pSrc->a_Col_ئىپادە->a[i].p_ئىپادە,
+                             pDest->a_Col_ئىپادە->a[i].p_ئىپادە, -1)!=0 ){
+        أرجع 0;   /* Different expressions in the index */
       }
     }
-    if( pSrc->aSortOrder[i]!=pDest->aSortOrder[i] ){
-      return 0;   /* Different sort orders */
+    إذا( pSrc->aSortOrder[i]!=pDest->aSortOrder[i] ){
+      أرجع 0;   /* Different sort orders */
     }
-    if( sqlite3_stricmp(pSrc->azColl[i],pDest->azColl[i])!=0 ){
-      return 0;   /* Different collating sequences */
+    إذا( sqlite3_stricmp(pSrc->azColl[i],pDest->azColl[i])!=0 ){
+      أرجع 0;   /* Different collating sequences */
     }
   }
-  if( sqlite3ExprCompare(0, pSrc->pPartIdxWhere, pDest->pPartIdxWhere, -1) ){
-    return 0;     /* Different WHERE clauses */
+  إذا( sqlite3_ئىپادە_Compare(0, pSrc->pPartIdxWhere, pDest->pPartIdxWhere, -1) ){
+    أرجع 0;     /* Different WHERE clauses */
   }
 
   /* If no test above fails then the indices must be compatible */
-  return 1;
+  أرجع 1;
 }
 
 /*
 ** Examine an expression node and abort if it references the ROWID.
 ** This is a Walker callback used by xferCompatibleCheck()
 */
-static int xferCheckRowid(Walker *pWalk, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN && pExpr->iColumn<0 ){
+ساكن صحيح xferCheckRowid(Walker *pWalk, ئىپادە *p_ئىپادە){
+  إذا( p_ئىپادە->op==TK_COLUMN && p_ئىپادە->iColumn<0 ){
     pWalk->eCode = 1;
-    return WRC_Abort;
-  }else{
-    return WRC_Continue;
+    أرجع WRC_Abort;
+  }وإلا{
+    أرجع WRC_Continue;
   }
 }
 
@@ -3027,18 +3027,18 @@ static int xferCheckRowid(Walker *pWalk, Expr *pExpr){
 **       INTEGER PRIMARY KEY column, then no CHECK constraint may
 **       referenced the ROWID.  (See forum post 2026-05-11T13:15:57Z)
 */
-static int xferCompatibleCheck(Table *pDest, Table *pSrc){
-  if( sqlite3ExprListCompare(pSrc->pCheck,pDest->pCheck,-1) ){
-    return 0;
+ساكن صحيح xferCompatibleCheck(Table *pDest, Table *pSrc){
+  إذا( sqlite3_ئىپادە_List_Compare(pSrc->pCheck,pDest->pCheck,-1) ){
+    أرجع 0;
   }
-  if( pDest->iPKey<0 ){
+  إذا( pDest->iPKey<0 ){
     Walker w;
-    memset(&w, 0, sizeof(w));
-    w.xExprCallback = xferCheckRowid;
-    sqlite3WalkExprList(&w,pDest->pCheck);
-    if( w.eCode ) return 0;
+    memset(&w, 0, حجم(w));
+    w.x_ئىپادە_Callback = xferCheckRowid;
+    sqlite3_Walk_ئىپادە_List(&w,pDest->pCheck);
+    إذا( w.eCode ) أرجع 0;
   }
-  return 1;
+  أرجع 1;
 }
 
 /*
@@ -3066,80 +3066,80 @@ static int xferCompatibleCheck(Table *pDest, Table *pSrc){
 **
 ** This optimization is particularly useful at making VACUUM run faster.
 */
-static int xferOptimization(
+ساكن صحيح xferOptimization(
   Parse *pParse,        /* Parser context */
   Table *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */
-  int onError,          /* How to handle constraint errors */
-  int iDbDest           /* The database of pDest */
+  صحيح onError,          /* How to handle constraint errors */
+  صحيح iDbDest           /* The database of pDest */
 ){
   sqlite3 *db = pParse->db;
-  ExprList *pEList;                /* The result set of the SELECT */
+  ئىپادە_List *pEList;                /* The result set of the SELECT */
   Table *pSrc;                     /* The table in the FROM clause of SELECT */
   Index *pSrcIdx, *pDestIdx;       /* Source and destination indices */
   SrcItem *pItem;                  /* An element of pSelect->pSrc */
-  int i;                           /* Loop counter */
-  int iDbSrc;                      /* The database of pSrc */
-  int iSrc, iDest;                 /* Cursors from source and destination */
-  int addr1, addr2;                /* Loop addresses */
-  int emptyDestTest = 0;           /* Address of test for empty pDest */
-  int emptySrcTest = 0;            /* Address of test for empty pSrc */
+  صحيح i;                           /* Loop counter */
+  صحيح iDbSrc;                      /* The database of pSrc */
+  صحيح iSrc, iDest;                 /* Cursors from source and destination */
+  صحيح addr1, addr2;                /* Loop addresses */
+  صحيح emptyDestTest = 0;           /* Address of test for empty pDest */
+  صحيح emptySrcTest = 0;            /* Address of test for empty pSrc */
   Vdbe *v;                         /* The VDBE we are building */
-  int regAutoinc;                  /* Memory register used by AUTOINC */
-  int destHasUniqueIdx = 0;        /* True if pDest has a UNIQUE index */
-  int regData, regRowid;           /* Registers holding data and rowid */
+  صحيح regAutoinc;                  /* Memory register used by AUTOINC */
+  صحيح destHasUniqueIdx = 0;        /* True if pDest has a UNIQUE index */
+  صحيح regData, regRowid;           /* Registers holding data and rowid */
 
-  assert( pSelect!=0 );
-  if( pParse->pWith || pSelect->pWith ){
+  أكد( pSelect!=0 );
+  إذا( pParse->pWith || pSelect->pWith ){
     /* Do not attempt to process this query if there are an WITH clauses
     ** attached to it. Proceeding may generate a false "no such table: xxx"
     ** error if pSelect reads from a CTE named "xxx".  */
-    return 0;
+    أرجع 0;
   }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( IsVirtual(pDest) ){
-    return 0;   /* tab1 must not be a virtual table */
+  إذا( IsVirtual(pDest) ){
+    أرجع 0;   /* tab1 must not be a virtual table */
   }
 #endif
-  if( onError==OE_Default ){
-    if( pDest->iPKey>=0 ) onError = pDest->keyConf;
-    if( onError==OE_Default ) onError = OE_Abort;
+  إذا( onError==OE_Default ){
+    إذا( pDest->iPKey>=0 ) onError = pDest->ئاچقۇچ_Conf;
+    إذا( onError==OE_Default ) onError = OE_Abort;
   }
-  assert(pSelect->pSrc);   /* allocated even if there is no FROM clause */
-  if( pSelect->pSrc->nSrc!=1 ){
-    return 0;   /* FROM clause must have exactly one term */
+  أكد(pSelect->pSrc);   /* allocated even if there is no FROM clause */
+  إذا( pSelect->pSrc->nSrc!=1 ){
+    أرجع 0;   /* FROM clause must have exactly one term */
   }
-  if( pSelect->pSrc->a[0].fg.isSubquery ){
-    return 0;   /* FROM clause cannot contain a subquery */
+  إذا( pSelect->pSrc->a[0].fg.isSubquery ){
+    أرجع 0;   /* FROM clause cannot contain a subquery */
   }
-  if( pSelect->pWhere ){
-    return 0;   /* SELECT may not have a WHERE clause */
+  إذا( pSelect->pWhere ){
+    أرجع 0;   /* SELECT may not have a WHERE clause */
   }
-  if( pSelect->pOrderBy ){
-    return 0;   /* SELECT may not have an ORDER BY clause */
+  إذا( pSelect->pOrderBy ){
+    أرجع 0;   /* SELECT may not have an ORDER BY clause */
   }
   /* Do not need to test for a HAVING clause.  If HAVING is present but
   ** there is no ORDER BY, we will get an error. */
-  if( pSelect->pGroupBy ){
-    return 0;   /* SELECT may not have a GROUP BY clause */
+  إذا( pSelect->pGroupBy ){
+    أرجع 0;   /* SELECT may not have a GROUP BY clause */
   }
-  if( pSelect->pLimit ){
-    return 0;   /* SELECT may not have a LIMIT clause */
+  إذا( pSelect->pLimit ){
+    أرجع 0;   /* SELECT may not have a LIMIT clause */
   }
-  if( pSelect->pPrior ){
-    return 0;   /* SELECT may not be a compound query */
+  إذا( pSelect->pPrior ){
+    أرجع 0;   /* SELECT may not be a compound query */
   }
-  if( pSelect->selFlags & SF_Distinct ){
-    return 0;   /* SELECT may not be DISTINCT */
+  إذا( pSelect->selFlags & SF_Distinct ){
+    أرجع 0;   /* SELECT may not be DISTINCT */
   }
   pEList = pSelect->pEList;
-  assert( pEList!=0 );
-  if( pEList->nExpr!=1 ){
-    return 0;   /* The result set must have exactly one column */
+  أكد( pEList!=0 );
+  إذا( pEList->n_ئىپادە!=1 ){
+    أرجع 0;   /* The result set must have exactly one column */
   }
-  assert( pEList->a[0].pExpr );
-  if( pEList->a[0].pExpr->op!=TK_ASTERISK ){
-    return 0;   /* The result set must be the special operator "*" */
+  أكد( pEList->a[0].p_ئىپادە );
+  إذا( pEList->a[0].p_ئىپادە->op!=TK_ASTERISK ){
+    أرجع 0;   /* The result set must be the special operator "*" */
   }
 
   /* At this point we have established that the statement is of the
@@ -3148,47 +3148,47 @@ static int xferOptimization(
   */
   pItem = pSelect->pSrc->a;
   pSrc = sqlite3LocateTableItem(pParse, 0, pItem);
-  if( pSrc==0 ){
-    return 0;   /* FROM clause does not contain a real table */
+  إذا( pSrc==0 ){
+    أرجع 0;   /* FROM clause does not contain a real table */
   }
-  if( pSrc->tnum==pDest->tnum && pSrc->pSchema==pDest->pSchema ){
+  إذا( pSrc->tnum==pDest->tnum && pSrc->pSchema==pDest->pSchema ){
     testcase( pSrc!=pDest ); /* Possible due to bad sqlite_schema.rootpage */
-    return 0;   /* tab1 and tab2 may not be the same table */
+    أرجع 0;   /* tab1 and tab2 may not be the same table */
   }
-  if( HasRowid(pDest)!=HasRowid(pSrc) ){
-    return 0;   /* source and destination must both be WITHOUT ROWID or not */
+  إذا( HasRowid(pDest)!=HasRowid(pSrc) ){
+    أرجع 0;   /* source and destination must both be WITHOUT ROWID or not */
   }
-  if( !IsOrdinaryTable(pSrc) ){
-    return 0;   /* tab2 may not be a view or virtual table */
+  إذا( !IsOrdinaryTable(pSrc) ){
+    أرجع 0;   /* tab2 may not be a view or virtual table */
   }
-  if( pDest->nCol!=pSrc->nCol ){
-    return 0;   /* Number of columns must be the same in tab1 and tab2 */
+  إذا( pDest->nCol!=pSrc->nCol ){
+    أرجع 0;   /* Number of columns must be the same in tab1 and tab2 */
   }
-  if( pDest->iPKey!=pSrc->iPKey ){
-    return 0;   /* Both tables must have the same INTEGER PRIMARY KEY */
+  إذا( pDest->iPKey!=pSrc->iPKey ){
+    أرجع 0;   /* Both tables must have the same INTEGER PRIMARY KEY */
   }
-  if( (pDest->tabFlags & TF_Strict)!=0 ){
-    if( (pSrc->tabFlags & TF_Strict)==0 ){
-      return 0;  /* Cannot feed from a non-strict into a strict table */
+  إذا( (pDest->tabFlags & TF_Strict)!=0 ){
+    إذا( (pSrc->tabFlags & TF_Strict)==0 ){
+      أرجع 0;  /* Cannot feed from a non-strict into a strict table */
     }
-    for(i=0; i<pDest->nCol; i++){
+    لكل(i=0; i<pDest->nCol; i++){
       unsigned eDestType = pDest->aCol[i].eCType;
       unsigned eSrcType = pSrc->aCol[i].eCType;
-      if( eDestType==COLTYPE_ANY ) continue;
-      if( eDestType==eSrcType ) continue;
-      if( eDestType==COLTYPE_INT && eSrcType==COLTYPE_INTEGER ) continue;
-      if( eDestType==COLTYPE_INTEGER && eSrcType==COLTYPE_INT ) continue;
-      return 0; /* Incompatible types in source and destination */
+      إذا( eDestType==COLTYPE_ANY ) استمر;
+      إذا( eDestType==eSrcType ) استمر;
+      إذا( eDestType==COLTYPE_INT && eSrcType==COLTYPE_INTEGER ) استمر;
+      إذا( eDestType==COLTYPE_INTEGER && eSrcType==COLTYPE_INT ) استمر;
+      أرجع 0; /* Incompatible types in source and destination */
     }
   }
-  for(i=0; i<pDest->nCol; i++){
+  لكل(i=0; i<pDest->nCol; i++){
     Column *pDestCol = &pDest->aCol[i];
     Column *pSrcCol = &pSrc->aCol[i];
 #ifdef SQLITE_ENABLE_HIDDEN_COLUMNS
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0
+    إذا( (db->mDbFlags & DBFLAG_Vacuum)==0
      && (pDestCol->colFlags | pSrcCol->colFlags) & COLFLAG_HIDDEN
     ){
-      return 0;    /* Neither table may have __hidden__ columns */
+      أرجع 0;    /* Neither table may have __hidden__ columns */
     }
 #endif
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
@@ -3208,77 +3208,77 @@ static int xferOptimization(
     ** VACUUM command where it is actually needed).  But why do that?  It
     ** seems harmless enough, and provides a useful service.
     */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED) !=
+    إذا( (pDestCol->colFlags & COLFLAG_GENERATED) !=
         (pSrcCol->colFlags & COLFLAG_GENERATED) ){
-      return 0;    /* Both columns have the same generated-column type */
+      أرجع 0;    /* Both columns have the same generated-column type */
     }
     /* But the transfer is only allowed if both the source and destination
     ** tables have the exact same expressions for generated columns.
     ** This requirement could be relaxed for VIRTUAL columns, I suppose.
     */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED)!=0 ){
-      if( sqlite3ExprCompare(0,
-             sqlite3ColumnExpr(pSrc, pSrcCol),
-             sqlite3ColumnExpr(pDest, pDestCol), -1)!=0 ){
+    إذا( (pDestCol->colFlags & COLFLAG_GENERATED)!=0 ){
+      إذا( sqlite3_ئىپادە_Compare(0,
+             sqlite3_Column_ئىپادە(pSrc, pSrcCol),
+             sqlite3_Column_ئىپادە(pDest, pDestCol), -1)!=0 ){
         testcase( pDestCol->colFlags & COLFLAG_VIRTUAL );
         testcase( pDestCol->colFlags & COLFLAG_STORED );
-        return 0;  /* Different generator expressions */
+        أرجع 0;  /* Different generator expressions */
       }
     }
 #endif
-    if( pDestCol->affinity!=pSrcCol->affinity ){
-      return 0;    /* Affinity must be the same on all columns */
+    إذا( pDestCol->affinity!=pSrcCol->affinity ){
+      أرجع 0;    /* Affinity must be the same on all columns */
     }
-    if( sqlite3_stricmp(sqlite3ColumnColl(pDestCol),
+    إذا( sqlite3_stricmp(sqlite3ColumnColl(pDestCol),
                         sqlite3ColumnColl(pSrcCol))!=0 ){
-      return 0;    /* Collating sequence must be the same on all columns */
+      أرجع 0;    /* Collating sequence must be the same on all columns */
     }
-    if( pDestCol->notNull && !pSrcCol->notNull ){
-      return 0;    /* tab2 must be NOT NULL if tab1 is */
+    إذا( pDestCol->notNull && !pSrcCol->notNull ){
+      أرجع 0;    /* tab2 must be NOT NULL if tab1 is */
     }
     /* Default values for second and subsequent columns need to match. */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED)==0 && i>0 ){
-      Expr *pDestExpr = sqlite3ColumnExpr(pDest, pDestCol);
-      Expr *pSrcExpr = sqlite3ColumnExpr(pSrc, pSrcCol);
-      assert( pDestExpr==0 || pDestExpr->op==TK_SPAN );
-      assert( pDestExpr==0 || !ExprHasProperty(pDestExpr, EP_IntValue) );
-      assert( pSrcExpr==0 || pSrcExpr->op==TK_SPAN );
-      assert( pSrcExpr==0 || !ExprHasProperty(pSrcExpr, EP_IntValue) );
-      if( (pDestExpr==0)!=(pSrcExpr==0)
-       || (pDestExpr!=0 && strcmp(pDestExpr->u.zToken,
-                                       pSrcExpr->u.zToken)!=0)
+    إذا( (pDestCol->colFlags & COLFLAG_GENERATED)==0 && i>0 ){
+      ئىپادە *p_Dest_ئىپادە = sqlite3_Column_ئىپادە(pDest, pDestCol);
+      ئىپادە *p_Src_ئىپادە = sqlite3_Column_ئىپادە(pSrc, pSrcCol);
+      أكد( p_Dest_ئىپادە==0 || p_Dest_ئىپادە->op==TK_SPAN );
+      أكد( p_Dest_ئىپادە==0 || !ئىپادە_Has_Property(p_Dest_ئىپادە, EP_Int_قىممەت) );
+      أكد( p_Src_ئىپادە==0 || p_Src_ئىپادە->op==TK_SPAN );
+      أكد( p_Src_ئىپادە==0 || !ئىپادە_Has_Property(p_Src_ئىپادە, EP_Int_قىممەت) );
+      إذا( (p_Dest_ئىپادە==0)!=(p_Src_ئىپادە==0)
+       || (p_Dest_ئىپادە!=0 && strcmp(p_Dest_ئىپادە->u.zToken,
+                                       p_Src_ئىپادە->u.zToken)!=0)
       ){
-        return 0;    /* Default values must be the same for all columns */
+        أرجع 0;    /* Default values must be the same for all columns */
       }
     }
   }
-  for(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
-    if( IsUniqueIndex(pDestIdx) ){
+  لكل(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
+    إذا( IsUniqueIndex(pDestIdx) ){
       destHasUniqueIdx = 1;
     }
-    for(pSrcIdx=pSrc->pIndex; pSrcIdx; pSrcIdx=pSrcIdx->pNext){
-      if( xferCompatibleIndex(pDestIdx, pSrcIdx) ) break;
+    لكل(pSrcIdx=pSrc->pIndex; pSrcIdx; pSrcIdx=pSrcIdx->pNext){
+      إذا( xferCompatibleIndex(pDestIdx, pSrcIdx) ) اكسر;
     }
-    if( pSrcIdx==0 ){
-      return 0;    /* pDestIdx has no corresponding index in pSrc */
+    إذا( pSrcIdx==0 ){
+      أرجع 0;    /* pDestIdx has no corresponding index in pSrc */
     }
-    if( pSrcIdx->tnum==pDestIdx->tnum && pSrc->pSchema==pDest->pSchema
+    إذا( pSrcIdx->tnum==pDestIdx->tnum && pSrc->pSchema==pDest->pSchema
          && sqlite3FaultSim(411)==SQLITE_OK ){
       /* The sqlite3FaultSim() call allows this corruption test to be
       ** bypassed during testing, in order to exercise other corruption tests
       ** further downstream. */
-      return 0;   /* Corrupt schema - two indexes on the same btree */
+      أرجع 0;   /* Corrupt schema - two indexes on the same btree */
     }
   }
 #ifndef SQLITE_OMIT_CHECK
-  if( pDest->pCheck
+  إذا( pDest->pCheck
    && (db->mDbFlags & DBFLAG_Vacuum)==0
    && !xferCompatibleCheck(pDest,pSrc)
   ){
-    return 0;   /* Tables have different CHECK constraints.  Ticket #2252 */
+    أرجع 0;   /* Tables have different CHECK constraints.  Ticket #2252 */
   }
 #endif
-#ifndef SQLITE_OMIT_FOREIGN_KEY
+#ifndef SQLITE_OMIT_FOREIGN_ئاچقۇچ
   /* Disallow the transfer optimization if the destination table contains
   ** any foreign key constraints.  This is more restrictive than necessary.
   ** But the main beneficiary of the transfer optimization is the VACUUM
@@ -3286,22 +3286,22 @@ static int xferOptimization(
   ** the extra complication to make this rule less restrictive is probably
   ** not worth the effort.  Ticket [6284df89debdfa61db8073e062908af0c9b6118e]
   */
-  assert( IsOrdinaryTable(pDest) );
-  if( (db->flags & SQLITE_ForeignKeys)!=0 && pDest->u.tab.pFKey!=0 ){
-    return 0;
+  أكد( IsOrdinaryTable(pDest) );
+  إذا( (db->flags & SQLITE_Foreign_ئاچقۇچلار)!=0 && pDest->u.tab.pFKey!=0 ){
+    أرجع 0;
   }
 #endif
-  if( (db->flags & SQLITE_CountRows)!=0 ){
-    return 0;  /* xfer opt does not play well with PRAGMA count_changes */
+  إذا( (db->flags & SQLITE_سانى_Rows)!=0 ){
+    أرجع 0;  /* xfer opt does not play well with PRAGMA count_changes */
   }
 #ifndef SQLITE_OMIT_AUTHORIZATION
-  if( db->xAuth ){
-    int iDb = sqlite3SchemaToIndex(db, pSrc->pSchema);
-    if( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) return 0;
-    for(i=0; i<pSrc->nCol; i++){
+  إذا( db->xAuth ){
+    صحيح iDb = sqlite3SchemaToIndex(db, pSrc->pSchema);
+    إذا( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) أرجع 0;
+    لكل(i=0; i<pSrc->nCol; i++){
       Column *pSrcCol = &pSrc->aCol[i];
-      if( sqlite3AuthReadCol(pParse, pSrc->zName, pSrcCol->zCnName, iDb) ){
-        return 0;
+      إذا( sqlite3AuthReadCol(pParse, pSrc->zName, pSrcCol->zCnName, iDb) ){
+        أرجع 0;
       }
     }
   }
@@ -3312,7 +3312,7 @@ static int xferOptimization(
   ** table (tab1) is initially empty.
   */
 #ifdef SQLITE_TEST
-  sqlite3_xferopt_count++;
+  sqlite3_xferopt_سانى++;
 #endif
   iDbSrc = sqlite3SchemaToIndex(db, pSrc->pSchema);
   v = sqlite3GetVdbe(pParse);
@@ -3324,8 +3324,8 @@ static int xferOptimization(
   sqlite3VdbeAddOp2(v, OP_Null, 0, regData);
   regRowid = sqlite3GetTempReg(pParse);
   sqlite3OpenTable(pParse, iDest, iDbDest, pDest, OP_OpenWrite);
-  assert( HasRowid(pDest) || destHasUniqueIdx );
-  if( (db->mDbFlags & DBFLAG_Vacuum)==0 && (
+  أكد( HasRowid(pDest) || destHasUniqueIdx );
+  إذا( (db->mDbFlags & DBFLAG_Vacuum)==0 && (
       (pDest->iPKey<0 && pDest->pIndex!=0)          /* (1) */
    || destHasUniqueIdx                              /* (2) */
    || (onError!=OE_Abort && onError!=OE_Rollback)   /* (3) */
@@ -3351,13 +3351,13 @@ static int xferOptimization(
     emptyDestTest = sqlite3VdbeAddOp0(v, OP_Goto);
     sqlite3VdbeJumpHere(v, addr1);
   }
-  if( HasRowid(pSrc) ){
+  إذا( HasRowid(pSrc) ){
     u8 insFlags;
     sqlite3OpenTable(pParse, iSrc, iDbSrc, pSrc, OP_OpenRead);
     emptySrcTest = sqlite3VdbeAddOp2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
-    if( pDest->iPKey>=0 ){
+    إذا( pDest->iPKey>=0 ){
       addr1 = sqlite3VdbeAddOp2(v, OP_Rowid, iSrc, regRowid);
-      if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+      إذا( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
         sqlite3VdbeVerifyAbortable(v, onError);
         addr2 = sqlite3VdbeAddOp3(v, OP_NotExists, iDest, 0, regRowid);
         VdbeCoverage(v);
@@ -3365,56 +3365,56 @@ static int xferOptimization(
         sqlite3VdbeJumpHere(v, addr2);
       }
       autoIncStep(pParse, regAutoinc, regRowid);
-    }else if( pDest->pIndex==0 && !(db->mDbFlags & DBFLAG_VacuumInto) ){
+    }وإلا إذا( pDest->pIndex==0 && !(db->mDbFlags & DBFLAG_VacuumInto) ){
       addr1 = sqlite3VdbeAddOp2(v, OP_NewRowid, iDest, regRowid);
-    }else{
+    }وإلا{
       addr1 = sqlite3VdbeAddOp2(v, OP_Rowid, iSrc, regRowid);
-      assert( (pDest->tabFlags & TF_Autoincrement)==0 );
+      أكد( (pDest->tabFlags & TF_Autoincrement)==0 );
     }
 
-    if( db->mDbFlags & DBFLAG_Vacuum ){
+    إذا( db->mDbFlags & DBFLAG_Vacuum ){
       sqlite3VdbeAddOp1(v, OP_SeekEnd, iDest);
       insFlags = OPFLAG_APPEND|OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT;
-    }else{
+    }وإلا{
       insFlags = OPFLAG_NCHANGE|OPFLAG_LASTROWID|OPFLAG_APPEND|OPFLAG_PREFORMAT;
     }
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+    إذا( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
       sqlite3VdbeAddOp3(v, OP_RowData, iSrc, regData, 1);
       insFlags &= ~OPFLAG_PREFORMAT;
-    }else
+    }وإلا
 #endif
     {
       sqlite3VdbeAddOp3(v, OP_RowCell, iDest, iSrc, regRowid);
     }
-    sqlite3VdbeAddOp3(v, OP_Insert, iDest, regData, regRowid);
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
-      sqlite3VdbeChangeP4(v, -1, (char*)pDest, P4_TABLE);
+    sqlite3VdbeAddOp3(v, OP_قىستۇرۇش, iDest, regData, regRowid);
+    إذا( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+      sqlite3VdbeChangeP4(v, -1, (حرف*)pDest, P4_TABLE);
     }
     sqlite3VdbeChangeP5(v, insFlags);
 
     sqlite3VdbeAddOp2(v, OP_Next, iSrc, addr1); VdbeCoverage(v);
     sqlite3VdbeAddOp2(v, OP_Close, iSrc, 0);
     sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
-  }else{
+  }وإلا{
     sqlite3TableLock(pParse, iDbDest, pDest->tnum, 1, pDest->zName);
     sqlite3TableLock(pParse, iDbSrc, pSrc->tnum, 0, pSrc->zName);
   }
-  for(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
+  لكل(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
     u8 idxInsFlags = 0;
-    for(pSrcIdx=pSrc->pIndex; ALWAYS(pSrcIdx); pSrcIdx=pSrcIdx->pNext){
-      if( xferCompatibleIndex(pDestIdx, pSrcIdx) ) break;
+    لكل(pSrcIdx=pSrc->pIndex; ALWAYS(pSrcIdx); pSrcIdx=pSrcIdx->pNext){
+      إذا( xferCompatibleIndex(pDestIdx, pSrcIdx) ) اكسر;
     }
-    assert( pSrcIdx );
+    أكد( pSrcIdx );
     sqlite3VdbeAddOp3(v, OP_OpenRead, iSrc, pSrcIdx->tnum, iDbSrc);
-    sqlite3VdbeSetP4KeyInfo(pParse, pSrcIdx);
+    sqlite3_Vdbe_Set_P4_ئاچقۇچ_Info(pParse, pSrcIdx);
     VdbeComment((v, "%s", pSrcIdx->zName));
     sqlite3VdbeAddOp3(v, OP_OpenWrite, iDest, pDestIdx->tnum, iDbDest);
-    sqlite3VdbeSetP4KeyInfo(pParse, pDestIdx);
+    sqlite3_Vdbe_Set_P4_ئاچقۇچ_Info(pParse, pDestIdx);
     sqlite3VdbeChangeP5(v, OPFLAG_BULKCSR);
     VdbeComment((v, "%s", pDestIdx->zName));
     addr1 = sqlite3VdbeAddOp2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
-    if( db->mDbFlags & DBFLAG_Vacuum ){
+    إذا( db->mDbFlags & DBFLAG_Vacuum ){
       /* This INSERT command is part of a VACUUM operation, which guarantees
       ** that the destination table is empty. If all indexed columns use
       ** collation sequence BINARY, then it can also be assumed that the
@@ -3429,45 +3429,45 @@ static int xferOptimization(
       ** might change the definition of a collation sequence and then run
       ** a VACUUM command. In that case keys may not be written in strictly
       ** sorted order.  */
-      for(i=0; i<pSrcIdx->nColumn; i++){
-        const char *zColl = pSrcIdx->azColl[i];
-        if( sqlite3_stricmp(sqlite3StrBINARY, zColl) ) break;
+      لكل(i=0; i<pSrcIdx->nColumn; i++){
+        ثابت حرف *zColl = pSrcIdx->azColl[i];
+        إذا( sqlite3_stricmp(sqlite3_Str_ئىككىلىك, zColl) ) اكسر;
       }
-      if( i==pSrcIdx->nColumn ){
+      إذا( i==pSrcIdx->nColumn ){
         idxInsFlags = OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT;
         sqlite3VdbeAddOp1(v, OP_SeekEnd, iDest);
         sqlite3VdbeAddOp2(v, OP_RowCell, iDest, iSrc);
       }
-    }else if( !HasRowid(pSrc) && pDestIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
+    }وإلا إذا( !HasRowid(pSrc) && pDestIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
       idxInsFlags |= OPFLAG_NCHANGE;
     }
-    if( idxInsFlags!=(OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT) ){
+    إذا( idxInsFlags!=(OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT) ){
       sqlite3VdbeAddOp3(v, OP_RowData, iSrc, regData, 1);
-      if( (db->mDbFlags & DBFLAG_Vacuum)==0
+      إذا( (db->mDbFlags & DBFLAG_Vacuum)==0
        && !HasRowid(pDest)
-       && IsPrimaryKeyIndex(pDestIdx)
+       && Is_Primary_ئاچقۇچ_Index(pDestIdx)
       ){
         codeWithoutRowidPreupdate(pParse, pDest, iDest, regData);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_IdxInsert, iDest, regData);
+    sqlite3VdbeAddOp2(v, OP_Idx_قىستۇرۇش, iDest, regData);
     sqlite3VdbeChangeP5(v, idxInsFlags|OPFLAG_APPEND);
     sqlite3VdbeAddOp2(v, OP_Next, iSrc, addr1+1); VdbeCoverage(v);
     sqlite3VdbeJumpHere(v, addr1);
     sqlite3VdbeAddOp2(v, OP_Close, iSrc, 0);
     sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
   }
-  if( emptySrcTest ) sqlite3VdbeJumpHere(v, emptySrcTest);
+  إذا( emptySrcTest ) sqlite3VdbeJumpHere(v, emptySrcTest);
   sqlite3ReleaseTempReg(pParse, regRowid);
   sqlite3ReleaseTempReg(pParse, regData);
-  if( emptyDestTest ){
+  إذا( emptyDestTest ){
     sqlite3AutoincrementEnd(pParse);
     sqlite3VdbeAddOp2(v, OP_Halt, SQLITE_OK, 0);
     sqlite3VdbeJumpHere(v, emptyDestTest);
     sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
-    return 0;
-  }else{
-    return 1;
+    أرجع 0;
+  }وإلا{
+    أرجع 1;
   }
 }
 #endif /* SQLITE_OMIT_XFER_OPT */
