@@ -12,7 +12,7 @@
 **
 ** This file contains definitions of global variables and constants.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 /* An array to map all upper-case characters into their corresponding
 ** lower-case character. 
@@ -21,7 +21,7 @@
 ** handle case conversions for the UTF character set since the tables
 ** involved are nearly as big or bigger than SQLite itself.
 */
-const unsigned char sqlite3UpperToLower[] = {
+ثابت unsigned حرف sqlite3UpperToLower[] = {
 #ifdef SQLITE_ASCII
       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
      18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
@@ -83,9 +83,9 @@ const unsigned char sqlite3UpperToLower[] = {
    0,  1,  0,  1,  0,  1,  /* aEQb[]: Use when compare(A,B) equals zero */
    1,  0,  1,  0,  0,  1   /* aGTb[]: Use when compare(A,B) greater than zero*/
 };
-const unsigned char *sqlite3aLTb = &sqlite3UpperToLower[256-OP_Ne];
-const unsigned char *sqlite3aEQb = &sqlite3UpperToLower[256+6-OP_Ne];
-const unsigned char *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
+ثابت unsigned حرف *sqlite3aLTb = &sqlite3UpperToLower[256-OP_Ne];
+ثابت unsigned حرف *sqlite3aEQb = &sqlite3UpperToLower[256+6-OP_Ne];
+ثابت unsigned حرف *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
 
 /*
 ** The following 256 byte lookup table is used to support SQLites built-in
@@ -115,7 +115,7 @@ const unsigned char *sqlite3aGTb = &sqlite3UpperToLower[256+12-OP_Ne];
 ** non-ASCII UTF character. Hence the test for whether or not a character is
 ** part of an identifier is 0x46.
 */
-const unsigned char sqlite3CtypeMap[256] = {
+ثابت unsigned حرف sqlite3CtypeMap[256] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 00..07    ........ */
   0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00,  /* 08..0f    ........ */
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  /* 10..17    ........ */
@@ -172,14 +172,14 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** SQLITE_ALLOW_COVERING_INDEX_SCAN compile-time option, or is "on" if
 ** that compile-time option is omitted.
 */
-#if !defined(SQLITE_ALLOW_COVERING_INDEX_SCAN)
+#إذا !defined(SQLITE_ALLOW_COVERING_INDEX_SCAN)
 # define SQLITE_ALLOW_COVERING_INDEX_SCAN 1
-#else
-# if !SQLITE_ALLOW_COVERING_INDEX_SCAN 
+#وإلا
+# إذا !SQLITE_ALLOW_COVERING_INDEX_SCAN 
 #   error "Compile-time disabling of covering index scan using the\
  -DSQLITE_ALLOW_COVERING_INDEX_SCAN=0 option is deprecated.\
- Contact SQLite developers if this is a problem for you, and\
- delete this #error macro to continue with your build."
+ Contact SQLite developers إذا this is a problem لكل you, and\
+ delete this #error macro to استمر with your build."
 # endif
 #endif
 
@@ -218,7 +218,7 @@ const unsigned char sqlite3CtypeMap[256] = {
 #ifndef SQLITE_DEFAULT_LOOKASIDE
 # ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,100  /* 120KB of memory */
-# else
+# وإلا
 #   define SQLITE_DEFAULT_LOOKASIDE 1200,40   /* 48KB of memory */
 # endif
 #endif
@@ -235,7 +235,7 @@ const unsigned char sqlite3CtypeMap[256] = {
 ** The following singleton contains the global configuration for
 ** the SQLite library.
 */
-SQLITE_WSD struct Sqlite3Config sqlite3Config = {
+SQLITE_WSD بنية Sqlite3Config sqlite3Config = {
    SQLITE_DEFAULT_MEMSTATUS,  /* bMemstat */
    1,                         /* bCoreMutex */
    SQLITE_THREADSAFE==1,      /* bFullMutex */
@@ -253,12 +253,12 @@ SQLITE_WSD struct Sqlite3Config sqlite3Config = {
    {0,0,0,0,0,0,0,0},         /* m */
    {0,0,0,0,0,0,0,0,0},       /* mutex */
    {0,0,0,0,0,0,0,0,0,0,0,0,0},/* pcache2 */
-   (void*)0,                  /* pHeap */
+   (فراغ*)0,                  /* pHeap */
    0,                         /* nHeap */
    0, 0,                      /* mnHeap, mxHeap */
    SQLITE_DEFAULT_MMAP_SIZE,  /* szMmap */
    SQLITE_MAX_MMAP_SIZE,      /* mxMmap */
-   (void*)0,                  /* pPage */
+   (فراغ*)0,                  /* pPage */
    0,                         /* szPage */
    SQLITE_DEFAULT_PCACHE_INITSZ, /* nPage */
    0,                         /* mxParserStack */
@@ -314,11 +314,11 @@ FuncDefHash sqlite3BuiltinFunctions;
 ** sqlite3_str object accepts no new text and always returns
 ** an SQLITE_NOMEM error.
 */
-const sqlite3_str sqlite3OomStr = {
+ثابت sqlite3_str sqlite3OomStr = {
    0, 0, 0, 0, 0, SQLITE_NOMEM, 0
 };
 
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
+#إذا defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 /*
 ** Counter used for coverage testing.  Does not come into play for
 ** release builds.
@@ -327,7 +327,7 @@ const sqlite3_str sqlite3OomStr = {
 ** result in TSAN warnings.  But as the variable does not exist in
 ** release builds, that should not be a concern.
 */
-unsigned int sqlite3CoverageCounter;
+unsigned صحيح sqlite3CoverageCounter;
 #endif /* SQLITE_COVERAGE_TEST || SQLITE_DEBUG */
 
 #ifdef VDBE_PROFILE
@@ -357,28 +357,28 @@ sqlite3_uint64 sqlite3NProfileCnt = 0;
 ** and incorrect behavior.
 */
 #ifndef SQLITE_OMIT_WSD
-int sqlite3PendingByte = 0x40000000;
+صحيح sqlite3PendingByte = 0x40000000;
 #endif
 
 /*
 ** Tracing flags set by SQLITE_TESTCTRL_TRACEFLAGS.
 */
-u32 sqlite3TreeTrace = 0;
+u32 sqlite3_بشيا_Trace = 0;
 u32 sqlite3WhereTrace = 0;
 
-#include "opcodes.h"
+#ضمن "opcodes.h"
 /*
 ** Properties of opcodes.  The OPFLG_INITIALIZER macro is
 ** created by mkopcodeh.awk during compilation.  Data is obtained
 ** from the comments following the "case OP_xxxx:" statements in
 ** the vdbe.c file.  
 */
-const unsigned char sqlite3OpcodeProperty[] = OPFLG_INITIALIZER;
+ثابت unsigned حرف sqlite3OpcodeProperty[] = OPFLG_INITIALIZER;
 
 /*
 ** Name of the default collating sequence
 */
-const char sqlite3StrBINARY[] = "BINARY";
+ثابت حرف sqlite3_Str_نبيو[] = "BINARY";
 
 /*
 ** Standard typenames.  These names must match the COLTYPE_* definitions.
@@ -392,8 +392,8 @@ const char sqlite3StrBINARY[] = "BINARY";
 **    sqlite3StdTypeAffinity[]    The affinity associated with each entry
 **                                in sqlite3StdType[].
 */
-const unsigned char sqlite3StdTypeLen[] = { 3, 4, 3, 7, 4, 4 };
-const char sqlite3StdTypeAffinity[] = {
+ثابت unsigned حرف sqlite3StdTypeLen[] = { 3, 4, 3, 7, 4, 4 };
+ثابت حرف sqlite3StdTypeAffinity[] = {
   SQLITE_AFF_NUMERIC,
   SQLITE_AFF_BLOB,
   SQLITE_AFF_INTEGER,
@@ -401,7 +401,7 @@ const char sqlite3StdTypeAffinity[] = {
   SQLITE_AFF_REAL,
   SQLITE_AFF_TEXT
 };
-const char *sqlite3StdType[] = {
+ثابت حرف *sqlite3StdType[] = {
   "ANY",
   "BLOB",
   "INT",
