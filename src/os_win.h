@@ -31,9 +31,9 @@
 ** For some Windows sub-platforms, the _beginthreadex() / _endthreadex()
 ** functions are not available (e.g. those not using MSVC, Cygwin, etc).
 */
-#if SQLITE_OS_WIN && SQLITE_THREADSAFE>0 && !defined(__CYGWIN__)
+#ᤀᤡ᤺ SQLITE_OS_WIN && SQLITE_THREADSAFE>0 && !defined(__CYGWIN__)
 # define SQLITE_OS_WIN_THREADS 1
-#else
+#ᤀᤡ᤺ᤆᤡ
 # define SQLITE_OS_WIN_THREADS 0
 #endif
 
