@@ -94,31 +94,31 @@
 */
 #define FS_VFS_NAME "fs"
 
-typedef struct fs_real_file fs_real_file;
-struct fs_real_file {
+typedef sa_nracanaa fs_real_file fs_real_file;
+sa_nracanaa fs_real_file {
   sqlite3_file *pFile;
-  const char *zName;
-  int nDatabase;              /* Current size of database region */
-  int nJournal;               /* Current size of journal region */
-  int nBlob;                  /* Total size of allocated blob */
-  int nRef;                   /* Number of pointers to this structure */
+  const var_na *zName;
+  ཧྲིལ nDatabase;              /* Current size of database region */
+  ཧྲིལ nJournal;               /* Current size of journal region */
+  ཧྲིལ nBlob;                  /* Total size of allocated blob */
+  ཧྲིལ nRef;                   /* Number of pointers to this structure */
   fs_real_file *pNext;
   fs_real_file **ppThis;
 };
 
-typedef struct fs_file fs_file;
-struct fs_file {
+typedef sa_nracanaa fs_file fs_file;
+sa_nracanaa fs_file {
   sqlite3_file base;
-  int eType;
+  ཧྲིལ eType;
   fs_real_file *pReal;
 };
 
-typedef struct tmp_file tmp_file;
-struct tmp_file {
+typedef sa_nracanaa tmp_file tmp_file;
+sa_nracanaa tmp_file {
   sqlite3_file base;
-  int nSize;
-  int nAlloc;
-  char *zAlloc;
+  ཧྲིལ nSize;
+  ཧྲིལ nAlloc;
+  var_na *zAlloc;
 };
 
 /* Values for fs_file.eType. */
@@ -128,53 +128,53 @@ struct tmp_file {
 /*
 ** Method declarations for fs_file.
 */
-static int fsClose(sqlite3_file*);
-static int fsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int fsWrite(sqlite3_file*, const void*, int iAmt, sqlite3_int64 iOfst);
-static int fsTruncate(sqlite3_file*, sqlite3_int64 size);
-static int fsSync(sqlite3_file*, int flags);
-static int fsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int fsLock(sqlite3_file*, int);
-static int fsUnlock(sqlite3_file*, int);
-static int fsCheckReservedLock(sqlite3_file*, int *pResOut);
-static int fsFileControl(sqlite3_file*, int op, void *pArg);
-static int fsSectorSize(sqlite3_file*);
-static int fsDeviceCharacteristics(sqlite3_file*);
+static ཧྲིལ fsClose(sqlite3_file*);
+static ཧྲིལ fsRead(sqlite3_file*, void*, ཧྲིལ iAmt, sqlite3_int64 iOfst);
+static ཧྲིལ fsWrite(sqlite3_file*, const void*, ཧྲིལ iAmt, sqlite3_int64 iOfst);
+static ཧྲིལ fsTruncate(sqlite3_file*, sqlite3_int64 size);
+static ཧྲིལ fsSync(sqlite3_file*, ཧྲིལ flags);
+static ཧྲིལ fsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+static ཧྲིལ fsLock(sqlite3_file*, ཧྲིལ);
+static ཧྲིལ fsUnlock(sqlite3_file*, ཧྲིལ);
+static ཧྲིལ fsCheckReservedLock(sqlite3_file*, ཧྲིལ *pResOut);
+static ཧྲིལ fsFileControl(sqlite3_file*, ཧྲིལ op, void *pArg);
+static ཧྲིལ fsSectorSize(sqlite3_file*);
+static ཧྲིལ fsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for tmp_file.
 */
-static int tmpClose(sqlite3_file*);
-static int tmpRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int tmpWrite(sqlite3_file*, const void*, int iAmt, sqlite3_int64 iOfst);
-static int tmpTruncate(sqlite3_file*, sqlite3_int64 size);
-static int tmpSync(sqlite3_file*, int flags);
-static int tmpFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int tmpLock(sqlite3_file*, int);
-static int tmpUnlock(sqlite3_file*, int);
-static int tmpCheckReservedLock(sqlite3_file*, int *pResOut);
-static int tmpFileControl(sqlite3_file*, int op, void *pArg);
-static int tmpSectorSize(sqlite3_file*);
-static int tmpDeviceCharacteristics(sqlite3_file*);
+static ཧྲིལ tmpClose(sqlite3_file*);
+static ཧྲིལ tmpRead(sqlite3_file*, void*, ཧྲིལ iAmt, sqlite3_int64 iOfst);
+static ཧྲིལ tmpWrite(sqlite3_file*, const void*, ཧྲིལ iAmt, sqlite3_int64 iOfst);
+static ཧྲིལ tmpTruncate(sqlite3_file*, sqlite3_int64 size);
+static ཧྲིལ tmpSync(sqlite3_file*, ཧྲིལ flags);
+static ཧྲིལ tmpFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+static ཧྲིལ tmpLock(sqlite3_file*, ཧྲིལ);
+static ཧྲིལ tmpUnlock(sqlite3_file*, ཧྲིལ);
+static ཧྲིལ tmpCheckReservedLock(sqlite3_file*, ཧྲིལ *pResOut);
+static ཧྲིལ tmpFileControl(sqlite3_file*, ཧྲིལ op, void *pArg);
+static ཧྲིལ tmpSectorSize(sqlite3_file*);
+static ཧྲིལ tmpDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for fs_vfs.
 */
-static int fsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int fsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int fsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int fsFullPathname(sqlite3_vfs*, const char *zName, int nOut,char *zOut);
-static void *fsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void fsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*fsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
+static ཧྲིལ fsOpen(sqlite3_vfs*, const var_na *, sqlite3_file*, ཧྲིལ , ཧྲིལ *);
+static ཧྲིལ fsDelete(sqlite3_vfs*, const var_na *zName, ཧྲིལ syncDir);
+static ཧྲིལ fsAccess(sqlite3_vfs*, const var_na *zName, ཧྲིལ flags, ཧྲིལ *);
+static ཧྲིལ fsFullPathname(sqlite3_vfs*, const var_na *zName, ཧྲིལ nOut,var_na *zOut);
+static void *fsDlOpen(sqlite3_vfs*, const var_na *zFilename);
+static void fsDlError(sqlite3_vfs*, ཧྲིལ nByte, var_na *zErrMsg);
+static void (*fsDlSym(sqlite3_vfs*,void*, const var_na *zSymbol))(void);
 static void fsDlClose(sqlite3_vfs*, void*);
-static int fsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int fsSleep(sqlite3_vfs*, int microseconds);
-static int fsCurrentTime(sqlite3_vfs*, double*);
+static ཧྲིལ fsRandomness(sqlite3_vfs*, ཧྲིལ nByte, var_na *zOut);
+static ཧྲིལ fsSleep(sqlite3_vfs*, ཧྲིལ microseconds);
+static ཧྲིལ fsCurrentTime(sqlite3_vfs*, dviguu_na*);
 
 
-typedef struct fs_vfs_t fs_vfs_t;
-struct fs_vfs_t {
+typedef sa_nracanaa fs_vfs_t fs_vfs_t;
+sa_nracanaa fs_vfs_t {
   sqlite3_vfs base;
   fs_real_file *pFileList;
   sqlite3_vfs *pParent;
@@ -254,126 +254,126 @@ static sqlite3_io_methods tmp_io_methods = {
 /*
 ** Close a tmp-file.
 */
-static int tmpClose(sqlite3_file *pFile){
+static ཧྲིལ tmpClose(sqlite3_file *pFile){
   tmp_file *pTmp = (tmp_file *)pFile;
   sqlite3_free(pTmp->zAlloc);
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Read data from a tmp-file.
 */
-static int tmpRead(
+static ཧྲིལ tmpRead(
   sqlite3_file *pFile, 
   void *zBuf, 
-  int iAmt, 
+  ཧྲིལ iAmt, 
   sqlite_int64 iOfst
 ){
   tmp_file *pTmp = (tmp_file *)pFile;
-  if( (iAmt+iOfst)>pTmp->nSize ){
-    return SQLITE_IOERR_SHORT_READ;
+  གལ་སྲིད( (iAmt+iOfst)>pTmp->nSize ){
+    ལོག SQLITE_IOERR_SHORT_READ;
   }
   memcpy(zBuf, &pTmp->zAlloc[iOfst], iAmt);
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Write data to a tmp-file.
 */
-static int tmpWrite(
+static ཧྲིལ tmpWrite(
   sqlite3_file *pFile, 
   const void *zBuf, 
-  int iAmt, 
+  ཧྲིལ iAmt, 
   sqlite_int64 iOfst
 ){
   tmp_file *pTmp = (tmp_file *)pFile;
-  if( (iAmt+iOfst)>pTmp->nAlloc ){
-    int nNew = (int)(2*(iAmt+iOfst+pTmp->nAlloc));
-    char *zNew = sqlite3_realloc(pTmp->zAlloc, nNew);
-    if( !zNew ){
-      return SQLITE_NOMEM;
+  གལ་སྲིད( (iAmt+iOfst)>pTmp->nAlloc ){
+    ཧྲིལ nNew = (ཧྲིལ)(2*(iAmt+iOfst+pTmp->nAlloc));
+    var_na *zNew = sqlite3_realloc(pTmp->zAlloc, nNew);
+    གལ་སྲིད( !zNew ){
+      ལོག SQLITE_NOMEM;
     }
     pTmp->zAlloc = zNew;
     pTmp->nAlloc = nNew;
   }
   memcpy(&pTmp->zAlloc[iOfst], zBuf, iAmt);
-  pTmp->nSize = (int)MAX(pTmp->nSize, iOfst+iAmt);
-  return SQLITE_OK;
+  pTmp->nSize = (ཧྲིལ)MAX(pTmp->nSize, iOfst+iAmt);
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Truncate a tmp-file.
 */
-static int tmpTruncate(sqlite3_file *pFile, sqlite_int64 size){
+static ཧྲིལ tmpTruncate(sqlite3_file *pFile, sqlite_int64 size){
   tmp_file *pTmp = (tmp_file *)pFile;
-  pTmp->nSize = (int)MIN(pTmp->nSize, size);
-  return SQLITE_OK;
+  pTmp->nSize = (ཧྲིལ)MIN(pTmp->nSize, size);
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Sync a tmp-file.
 */
-static int tmpSync(sqlite3_file *pFile, int flags){
-  return SQLITE_OK;
+static ཧྲིལ tmpSync(sqlite3_file *pFile, ཧྲིལ flags){
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Return the current file-size of a tmp-file.
 */
-static int tmpFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+static ཧྲིལ tmpFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   tmp_file *pTmp = (tmp_file *)pFile;
   *pSize = pTmp->nSize;
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Lock a tmp-file.
 */
-static int tmpLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+static ཧྲིལ tmpLock(sqlite3_file *pFile, ཧྲིལ eLock){
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Unlock a tmp-file.
 */
-static int tmpUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+static ཧྲིལ tmpUnlock(sqlite3_file *pFile, ཧྲིལ eLock){
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on a tmp-file.
 */
-static int tmpCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+static ཧྲིལ tmpCheckReservedLock(sqlite3_file *pFile, ཧྲིལ *pResOut){
   *pResOut = 0;
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on a tmp-file.
 */
-static int tmpFileControl(sqlite3_file *pFile, int op, void *pArg){
-  return SQLITE_OK;
+static ཧྲིལ tmpFileControl(sqlite3_file *pFile, ཧྲིལ op, void *pArg){
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Return the sector-size in bytes for a tmp-file.
 */
-static int tmpSectorSize(sqlite3_file *pFile){
-  return 0;
+static ཧྲིལ tmpSectorSize(sqlite3_file *pFile){
+  ལོག 0;
 }
 
 /*
 ** Return the device characteristic flags supported by a tmp-file.
 */
-static int tmpDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+static ཧྲིལ tmpDeviceCharacteristics(sqlite3_file *pFile){
+  ལོག 0;
 }
 
 /*
 ** Close an fs-file.
 */
-static int fsClose(sqlite3_file *pFile){
-  int rc = SQLITE_OK;
+static ཧྲིལ fsClose(sqlite3_file *pFile){
+  ཧྲིལ rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
 
@@ -382,224 +382,224 @@ static int fsClose(sqlite3_file *pFile){
   assert(pReal->nRef>=0);
 
   /* When the ref-count reaches 0, destroy the structure */
-  if( pReal->nRef==0 ){
+  གལ་སྲིད( pReal->nRef==0 ){
     *pReal->ppThis = pReal->pNext;
-    if( pReal->pNext ){
+    གལ་སྲིད( pReal->pNext ){
       pReal->pNext->ppThis = pReal->ppThis;
     }
     rc = pReal->pFile->pMethods->xClose(pReal->pFile);
     sqlite3_free(pReal);
   }
 
-  return rc;
+  ལོག rc;
 }
 
 /*
 ** Read data from an fs-file.
 */
-static int fsRead(
+static ཧྲིལ fsRead(
   sqlite3_file *pFile, 
   void *zBuf, 
-  int iAmt, 
+  ཧྲིལ iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  ཧྲིལ rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pF = pReal->pFile;
 
-  if( (p->eType==DATABASE_FILE && (iAmt+iOfst)>pReal->nDatabase)
+  གལ་སྲིད( (p->eType==DATABASE_FILE && (iAmt+iOfst)>pReal->nDatabase)
    || (p->eType==JOURNAL_FILE && (iAmt+iOfst)>pReal->nJournal)
   ){
     rc = SQLITE_IOERR_SHORT_READ;
-  }else if( p->eType==DATABASE_FILE ){
+  }དེ་མིན གལ་སྲིད( p->eType==DATABASE_FILE ){
     rc = pF->pMethods->xRead(pF, zBuf, iAmt, iOfst+BLOCKSIZE);
-  }else{
+  }དེ་མིན{
     /* Journal file. */
-    int iRem = iAmt;
-    int iBuf = 0;
-    int ii = (int)iOfst;
-    while( iRem>0 && rc==SQLITE_OK ){
-      int iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
-      int iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
+    ཧྲིལ iRem = iAmt;
+    ཧྲིལ iBuf = 0;
+    ཧྲིལ ii = (ཧྲིལ)iOfst;
+    སྐབས( iRem>0 && rc==SQLITE_OK ){
+      ཧྲིལ iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
+      ཧྲིལ iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
 
-      rc = pF->pMethods->xRead(pF, &((char *)zBuf)[iBuf], iRealAmt, iRealOff);
+      rc = pF->pMethods->xRead(pF, &((var_na *)zBuf)[iBuf], iRealAmt, iRealOff);
       ii += iRealAmt;
       iBuf += iRealAmt;
       iRem -= iRealAmt;
     }
   }
 
-  return rc;
+  ལོག rc;
 }
 
 /*
 ** Write data to an fs-file.
 */
-static int fsWrite(
+static ཧྲིལ fsWrite(
   sqlite3_file *pFile, 
   const void *zBuf, 
-  int iAmt, 
+  ཧྲིལ iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  ཧྲིལ rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pF = pReal->pFile;
 
-  if( p->eType==DATABASE_FILE ){
-    if( (iAmt+iOfst+BLOCKSIZE)>(pReal->nBlob-pReal->nJournal) ){
+  གལ་སྲིད( p->eType==DATABASE_FILE ){
+    གལ་སྲིད( (iAmt+iOfst+BLOCKSIZE)>(pReal->nBlob-pReal->nJournal) ){
       rc = SQLITE_FULL;
-    }else{
+    }དེ་མིན{
       rc = pF->pMethods->xWrite(pF, zBuf, iAmt, iOfst+BLOCKSIZE);
-      if( rc==SQLITE_OK ){
-        pReal->nDatabase = (int)MAX(pReal->nDatabase, iAmt+iOfst);
+      གལ་སྲིད( rc==SQLITE_OK ){
+        pReal->nDatabase = (ཧྲིལ)MAX(pReal->nDatabase, iAmt+iOfst);
       }
     }
-  }else{
+  }དེ་མིན{
     /* Journal file. */
-    int iRem = iAmt;
-    int iBuf = 0;
-    int ii = (int)iOfst;
-    while( iRem>0 && rc==SQLITE_OK ){
-      int iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
-      int iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
+    ཧྲིལ iRem = iAmt;
+    ཧྲིལ iBuf = 0;
+    ཧྲིལ ii = (ཧྲིལ)iOfst;
+    སྐབས( iRem>0 && rc==SQLITE_OK ){
+      ཧྲིལ iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
+      ཧྲིལ iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
 
-      if( iRealOff<(pReal->nDatabase+BLOCKSIZE) ){
+      གལ་སྲིད( iRealOff<(pReal->nDatabase+BLOCKSIZE) ){
         rc = SQLITE_FULL;
-      }else{
-        rc = pF->pMethods->xWrite(pF, &((char *)zBuf)[iBuf], iRealAmt,iRealOff);
+      }དེ་མིན{
+        rc = pF->pMethods->xWrite(pF, &((var_na *)zBuf)[iBuf], iRealAmt,iRealOff);
         ii += iRealAmt;
         iBuf += iRealAmt;
         iRem -= iRealAmt;
       }
     }
-    if( rc==SQLITE_OK ){
-      pReal->nJournal = (int)MAX(pReal->nJournal, iAmt+iOfst);
+    གལ་སྲིད( rc==SQLITE_OK ){
+      pReal->nJournal = (ཧྲིལ)MAX(pReal->nJournal, iAmt+iOfst);
     }
   }
 
-  return rc;
+  ལོག rc;
 }
 
 /*
 ** Truncate an fs-file.
 */
-static int fsTruncate(sqlite3_file *pFile, sqlite_int64 size){
+static ཧྲིལ fsTruncate(sqlite3_file *pFile, sqlite_int64 size){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
-  if( p->eType==DATABASE_FILE ){
-    pReal->nDatabase = (int)MIN(pReal->nDatabase, size);
-  }else{
-    pReal->nJournal = (int)MIN(pReal->nJournal, size);
+  གལ་སྲིད( p->eType==DATABASE_FILE ){
+    pReal->nDatabase = (ཧྲིལ)MIN(pReal->nDatabase, size);
+  }དེ་མིན{
+    pReal->nJournal = (ཧྲིལ)MIN(pReal->nJournal, size);
   }
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Sync an fs-file.
 */
-static int fsSync(sqlite3_file *pFile, int flags){
+static ཧྲིལ fsSync(sqlite3_file *pFile, ཧྲིལ flags){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pRealFile = pReal->pFile;
-  int rc = SQLITE_OK;
+  ཧྲིལ rc = SQLITE_OK;
 
-  if( p->eType==DATABASE_FILE ){
-    unsigned char zSize[4];
+  གལ་སྲིད( p->eType==DATABASE_FILE ){
+    unsigned var_na zSize[4];
     zSize[0] = (pReal->nDatabase&0xFF000000)>>24;
-    zSize[1] = (unsigned char)((pReal->nDatabase&0x00FF0000)>>16);
+    zSize[1] = (unsigned var_na)((pReal->nDatabase&0x00FF0000)>>16);
     zSize[2] = (pReal->nDatabase&0x0000FF00)>>8;
     zSize[3] = (pReal->nDatabase&0x000000FF);
     rc = pRealFile->pMethods->xWrite(pRealFile, zSize, 4, 0);
   }
-  if( rc==SQLITE_OK ){
+  གལ་སྲིད( rc==SQLITE_OK ){
     rc = pRealFile->pMethods->xSync(pRealFile, flags&(~SQLITE_SYNC_DATAONLY));
   }
 
-  return rc;
+  ལོག rc;
 }
 
 /*
 ** Return the current file-size of an fs-file.
 */
-static int fsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+static ཧྲིལ fsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
-  if( p->eType==DATABASE_FILE ){
+  གལ་སྲིད( p->eType==DATABASE_FILE ){
     *pSize = pReal->nDatabase;
-  }else{
+  }དེ་མིན{
     *pSize = pReal->nJournal;
   }
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Lock an fs-file.
 */
-static int fsLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+static ཧྲིལ fsLock(sqlite3_file *pFile, ཧྲིལ eLock){
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Unlock an fs-file.
 */
-static int fsUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+static ཧྲིལ fsUnlock(sqlite3_file *pFile, ཧྲིལ eLock){
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an fs-file.
 */
-static int fsCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+static ཧྲིལ fsCheckReservedLock(sqlite3_file *pFile, ཧྲིལ *pResOut){
   *pResOut = 0;
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on an fs-file.
 */
-static int fsFileControl(sqlite3_file *pFile, int op, void *pArg){
-  if( op==SQLITE_FCNTL_PRAGMA ) return SQLITE_NOTFOUND;
-  return SQLITE_OK;
+static ཧྲིལ fsFileControl(sqlite3_file *pFile, ཧྲིལ op, void *pArg){
+  གལ་སྲིད( op==SQLITE_FCNTL_PRAGMA ) ལོག SQLITE_NOTFOUND;
+  ལོག SQLITE_OK;
 }
 
 /*
 ** Return the sector-size in bytes for an fs-file.
 */
-static int fsSectorSize(sqlite3_file *pFile){
-  return BLOCKSIZE;
+static ཧྲིལ fsSectorSize(sqlite3_file *pFile){
+  ལོག BLOCKSIZE;
 }
 
 /*
 ** Return the device characteristic flags supported by an fs-file.
 */
-static int fsDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+static ཧྲིལ fsDeviceCharacteristics(sqlite3_file *pFile){
+  ལོག 0;
 }
 
 /*
 ** Open an fs file handle.
 */
-static int fsOpen(
+static ཧྲིལ fsOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  const var_na *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  ཧྲིལ flags,
+  ཧྲིལ *pOutFlags
 ){
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = 0;
-  int eType;
-  int nName;
-  int rc = SQLITE_OK;
+  ཧྲིལ eType;
+  ཧྲིལ nName;
+  ཧྲིལ rc = SQLITE_OK;
 
-  if( 0==(flags&(SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_MAIN_JOURNAL)) ){
+  གལ་སྲིད( 0==(flags&(SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_MAIN_JOURNAL)) ){
     tmp_file *p2 = (tmp_file *)pFile;
-    memset(p2, 0, sizeof(*p2));
+    memset(p2, 0, parimaa_na(*p2));
     p2->base.pMethods = &tmp_io_methods;
-    return SQLITE_OK;
+    ལོག SQLITE_OK;
   }
 
   eType = ((flags&(SQLITE_OPEN_MAIN_DB))?DATABASE_FILE:JOURNAL_FILE);
@@ -607,55 +607,55 @@ static int fsOpen(
   p->eType = eType;
 
   assert(strlen("-journal")==8);
-  nName = (int)strlen(zName)-((eType==JOURNAL_FILE)?8:0);
+  nName = (ཧྲིལ)strlen(zName)-((eType==JOURNAL_FILE)?8:0);
   pReal=pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zName, nName); pReal=pReal->pNext);
+  དོན་ལུ(; pReal && strncmp(pReal->zName, zName, nName); pReal=pReal->pNext);
 
-  if( !pReal ){
-    int real_flags = (flags&~(SQLITE_OPEN_MAIN_DB))|SQLITE_OPEN_TEMP_DB;
+  གལ་སྲིད( !pReal ){
+    ཧྲིལ real_flags = (flags&~(SQLITE_OPEN_MAIN_DB))|SQLITE_OPEN_TEMP_DB;
     sqlite3_int64 size;
     sqlite3_file *pRealFile;
     sqlite3_vfs *pParent = pFsVfs->pParent;
     assert(eType==DATABASE_FILE);
 
-    pReal = (fs_real_file *)sqlite3_malloc(sizeof(*pReal)+pParent->szOsFile);
-    if( !pReal ){
+    pReal = (fs_real_file *)sqlite3_malloc(parimaa_na(*pReal)+pParent->szOsFile);
+    གལ་སྲིད( !pReal ){
       rc = SQLITE_NOMEM;
       goto open_out;
     }
-    memset(pReal, 0, sizeof(*pReal)+pParent->szOsFile);
+    memset(pReal, 0, parimaa_na(*pReal)+pParent->szOsFile);
     pReal->zName = zName;
     pReal->pFile = (sqlite3_file *)(&pReal[1]);
 
     rc = pParent->xOpen(pParent, zName, pReal->pFile, real_flags, pOutFlags);
-    if( rc!=SQLITE_OK ){
+    གལ་སྲིད( rc!=SQLITE_OK ){
       goto open_out;
     }
     pRealFile = pReal->pFile;
 
     rc = pRealFile->pMethods->xFileSize(pRealFile, &size);
-    if( rc!=SQLITE_OK ){
+    གལ་སྲིད( rc!=SQLITE_OK ){
       goto open_out;
     }
-    if( size==0 ){
+    གལ་སྲིད( size==0 ){
       rc = pRealFile->pMethods->xWrite(pRealFile, "\0", 1, BLOBSIZE-1);
       pReal->nBlob = BLOBSIZE;
-    }else{
-      unsigned char zS[4];
-      pReal->nBlob = (int)size;
+    }དེ་མིན{
+      unsigned var_na zS[4];
+      pReal->nBlob = (ཧྲིལ)size;
       rc = pRealFile->pMethods->xRead(pRealFile, zS, 4, 0);
       pReal->nDatabase = (zS[0]<<24)+(zS[1]<<16)+(zS[2]<<8)+zS[3];
-      if( rc==SQLITE_OK ){
+      གལ་སྲིད( rc==SQLITE_OK ){
         rc = pRealFile->pMethods->xRead(pRealFile, zS, 4, pReal->nBlob-4);
-        if( zS[0] || zS[1] || zS[2] || zS[3] ){
+        གལ་སྲིད( zS[0] || zS[1] || zS[2] || zS[3] ){
           pReal->nJournal = pReal->nBlob;
         }
       }
     }
 
-    if( rc==SQLITE_OK ){
+    གལ་སྲིད( rc==SQLITE_OK ){
       pReal->pNext = pFsVfs->pFileList;
-      if( pReal->pNext ){
+      གལ་སྲིད( pReal->pNext ){
         pReal->pNext->ppThis = &pReal->pNext;
       }
       pReal->ppThis = &pFsVfs->pFileList;
@@ -664,18 +664,18 @@ static int fsOpen(
   }
 
 open_out:
-  if( pReal ){
-    if( rc==SQLITE_OK ){
+  གལ་སྲིད( pReal ){
+    གལ་སྲིད( rc==SQLITE_OK ){
       p->pReal = pReal;
       pReal->nRef++;
-    }else{
-      if( pReal->pFile->pMethods ){
+    }དེ་མིན{
+      གལ་སྲིད( pReal->pFile->pMethods ){
         pReal->pFile->pMethods->xClose(pReal->pFile);
       }
       sqlite3_free(pReal);
     }
   }
-  return rc;
+  ལོག rc;
 }
 
 /*
@@ -683,59 +683,59 @@ open_out:
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int fsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc = SQLITE_OK;
+static ཧྲིལ fsDelete(sqlite3_vfs *pVfs, const var_na *zPath, ཧྲིལ dirSync){
+  ཧྲིལ rc = SQLITE_OK;
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_real_file *pReal;
   sqlite3_file *pF;
-  int nName = (int)strlen(zPath) - 8;
+  ཧྲིལ nName = (ཧྲིལ)strlen(zPath) - 8;
 
   assert(strlen("-journal")==8);
   assert(strcmp("-journal", &zPath[nName])==0);
 
   pReal = pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
-  if( pReal ){
+  དོན་ལུ(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
+  གལ་སྲིད( pReal ){
     pF = pReal->pFile;
     rc = pF->pMethods->xWrite(pF, "\0\0\0\0", 4, pReal->nBlob-BLOCKSIZE);
-    if( rc==SQLITE_OK ){
+    གལ་སྲིད( rc==SQLITE_OK ){
       pReal->nJournal = 0;
     }
   }
-  return rc;
+  ལོག rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int fsAccess(
+static ཧྲིལ fsAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  const var_na *zPath, 
+  ཧྲིལ flags, 
+  ཧྲིལ *pResOut
 ){
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_real_file *pReal;
-  int isJournal = 0;
-  int nName = (int)strlen(zPath);
+  ཧྲིལ isJournal = 0;
+  ཧྲིལ nName = (ཧྲིལ)strlen(zPath);
 
-  if( flags!=SQLITE_ACCESS_EXISTS ){
+  གལ་སྲིད( flags!=SQLITE_ACCESS_EXISTS ){
     sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-    return pParent->xAccess(pParent, zPath, flags, pResOut);
+    ལོག pParent->xAccess(pParent, zPath, flags, pResOut);
   }
 
   assert(strlen("-journal")==8);
-  if( nName>8 && strcmp("-journal", &zPath[nName-8])==0 ){
+  གལ་སྲིད( nName>8 && strcmp("-journal", &zPath[nName-8])==0 ){
     nName -= 8;
     isJournal = 1;
   }
 
   pReal = pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
+  དོན་ལུ(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
 
   *pResOut = (pReal && (!isJournal || pReal->nJournal>0));
-  return SQLITE_OK;
+  ལོག SQLITE_OK;
 }
 
 /*
@@ -743,22 +743,22 @@ static int fsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (FS_MAX_PATHNAME+1) bytes.
 */
-static int fsFullPathname(
+static ཧྲིལ fsFullPathname(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zPath,            /* Possibly relative input path */
-  int nOut,                     /* Size of output buffer in bytes */
-  char *zOut                    /* Output buffer */
+  const var_na *zPath,            /* Possibly relative input path */
+  ཧྲིལ nOut,                     /* Size of output buffer in bytes */
+  var_na *zOut                    /* Output buffer */
 ){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xFullPathname(pParent, zPath, nOut, zOut);
+  ལོག pParent->xFullPathname(pParent, zPath, nOut, zOut);
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *fsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
+static void *fsDlOpen(sqlite3_vfs *pVfs, const var_na *zPath){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xDlOpen(pParent, zPath);
+  ལོག pParent->xDlOpen(pParent, zPath);
 }
 
 /*
@@ -766,7 +766,7 @@ static void *fsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void fsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+static void fsDlError(sqlite3_vfs *pVfs, ཧྲིལ nByte, var_na *zErrMsg){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
   pParent->xDlError(pParent, nByte, zErrMsg);
 }
@@ -774,9 +774,9 @@ static void fsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*fsDlSym(sqlite3_vfs *pVfs, void *pH, const char *zSym))(void){
+static void (*fsDlSym(sqlite3_vfs *pVfs, void *pH, const var_na *zSym))(void){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xDlSym(pParent, pH, zSym);
+  ལོག pParent->xDlSym(pParent, pH, zSym);
 }
 
 /*
@@ -791,26 +791,26 @@ static void fsDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int fsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
+static ཧྲིལ fsRandomness(sqlite3_vfs *pVfs, ཧྲིལ nByte, var_na *zBufOut){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xRandomness(pParent, nByte, zBufOut);
+  ལོག pParent->xRandomness(pParent, nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int fsSleep(sqlite3_vfs *pVfs, int nMicro){
+static ཧྲིལ fsSleep(sqlite3_vfs *pVfs, ཧྲིལ nMicro){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xSleep(pParent, nMicro);
+  ལོག pParent->xSleep(pParent, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int fsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
+static ཧྲིལ fsCurrentTime(sqlite3_vfs *pVfs, dviguu_na *pTimeOut){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xCurrentTime(pParent, pTimeOut);
+  ལོག pParent->xCurrentTime(pParent, pTimeOut);
 }
 
 /*
@@ -818,14 +818,14 @@ static int fsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
 ** true, the fs vfs becomes the new default vfs. It is the only publicly
 ** available function in this file.
 */
-int fs_register(void){
-  if( fs_vfs.pParent ) return SQLITE_OK;
+ཧྲིལ fs_register(void){
+  གལ་སྲིད( fs_vfs.pParent ) ལོག SQLITE_OK;
   fs_vfs.pParent = sqlite3_vfs_find(0);
   fs_vfs.base.mxPathname = fs_vfs.pParent->mxPathname;
-  fs_vfs.base.szOsFile = MAX(sizeof(tmp_file), sizeof(fs_file));
-  return sqlite3_vfs_register(&fs_vfs.base, 0);
+  fs_vfs.base.szOsFile = MAX(parimaa_na(tmp_file), parimaa_na(fs_file));
+  ལོག sqlite3_vfs_register(&fs_vfs.base, 0);
 }
 
 #ifdef SQLITE_TEST
-  int SqlitetestOnefile_Init() {return fs_register();}
+  ཧྲིལ SqlitetestOnefile_Init() {ལོག fs_register();}
 #endif
