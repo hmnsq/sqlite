@@ -14,7 +14,7 @@
 ** different device types (by overriding the return values of the 
 ** xDeviceCharacteristics() and xSectorSize() methods).
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#ຖ້າ SQLITE_TEST          /* This file is used for testing only */
 
 #include "sqlite3.h"
 #include "sqliteInt.h"
@@ -30,8 +30,8 @@
 #define DEVSYM_VFS_NAME "devsym"
 #define WRITECRASH_NAME "writecrash"
 
-typedef struct devsym_file devsym_file;
-struct devsym_file {
+typedef sa_nracanaa devsym_file devsym_file;
+sa_nracanaa devsym_file {
   sqlite3_file base;
   sqlite3_file *pReal;
 };
@@ -39,177 +39,177 @@ struct devsym_file {
 /*
 ** Method declarations for devsym_file.
 */
-static int devsymClose(sqlite3_file*);
-static int devsymRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int devsymWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int devsymTruncate(sqlite3_file*, sqlite3_int64 size);
-static int devsymSync(sqlite3_file*, int flags);
-static int devsymFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int devsymLock(sqlite3_file*, int);
-static int devsymUnlock(sqlite3_file*, int);
-static int devsymCheckReservedLock(sqlite3_file*, int *);
-static int devsymFileControl(sqlite3_file*, int op, void *pArg);
-static int devsymSectorSize(sqlite3_file*);
-static int devsymDeviceCharacteristics(sqlite3_file*);
-static int devsymShmLock(sqlite3_file*,int,int,int);
-static int devsymShmMap(sqlite3_file*,int,int,int, void volatile **);
+static ຈຳນວນເຕັມ devsymClose(sqlite3_file*);
+static ຈຳນວນເຕັມ devsymRead(sqlite3_file*, void*, ຈຳນວນເຕັມ iAmt, sqlite3_int64 iOfst);
+static ຈຳນວນເຕັມ devsymWrite(sqlite3_file*,const void*,ຈຳນວນເຕັມ iAmt, sqlite3_int64 iOfst);
+static ຈຳນວນເຕັມ devsymTruncate(sqlite3_file*, sqlite3_int64 size);
+static ຈຳນວນເຕັມ devsymSync(sqlite3_file*, ຈຳນວນເຕັມ flags);
+static ຈຳນວນເຕັມ devsymFileSize(sqlite3_file*, sqlite3_int64 *pSize);
+static ຈຳນວນເຕັມ devsymLock(sqlite3_file*, ຈຳນວນເຕັມ);
+static ຈຳນວນເຕັມ devsymUnlock(sqlite3_file*, ຈຳນວນເຕັມ);
+static ຈຳນວນເຕັມ devsymCheckReservedLock(sqlite3_file*, ຈຳນວນເຕັມ *);
+static ຈຳນວນເຕັມ devsymFileControl(sqlite3_file*, ຈຳນວນເຕັມ op, void *pArg);
+static ຈຳນວນເຕັມ devsymSectorSize(sqlite3_file*);
+static ຈຳນວນເຕັມ devsymDeviceCharacteristics(sqlite3_file*);
+static ຈຳນວນເຕັມ devsymShmLock(sqlite3_file*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
+static ຈຳນວນເຕັມ devsymShmMap(sqlite3_file*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ, void ca_ncala **);
 static void devsymShmBarrier(sqlite3_file*);
-static int devsymShmUnmap(sqlite3_file*,int);
+static ຈຳນວນເຕັມ devsymShmUnmap(sqlite3_file*,ຈຳນວນເຕັມ);
 
 /*
 ** Method declarations for devsym_vfs.
 */
-static int devsymOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int devsymDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int devsymAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int devsymFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
+static ຈຳນວນເຕັມ devsymOpen(sqlite3_vfs*, const var_na *, sqlite3_file*, ຈຳນວນເຕັມ , ຈຳນວນເຕັມ *);
+static ຈຳນວນເຕັມ devsymDelete(sqlite3_vfs*, const var_na *zName, ຈຳນວນເຕັມ syncDir);
+static ຈຳນວນເຕັມ devsymAccess(sqlite3_vfs*, const var_na *zName, ຈຳນວນເຕັມ flags, ຈຳນວນເຕັມ *);
+static ຈຳນວນເຕັມ devsymFullPathname(sqlite3_vfs*, const var_na *zName, ຈຳນວນເຕັມ, var_na *zOut);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-static void *devsymDlOpen(sqlite3_vfs*, const char *zFilename);
-static void devsymDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*devsymDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
+static void *devsymDlOpen(sqlite3_vfs*, const var_na *zFilename);
+static void devsymDlError(sqlite3_vfs*, ຈຳນວນເຕັມ nByte, var_na *zErrMsg);
+static void (*devsymDlSym(sqlite3_vfs*,void*, const var_na *zSymbol))(void);
 static void devsymDlClose(sqlite3_vfs*, void*);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
-static int devsymRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int devsymSleep(sqlite3_vfs*, int microseconds);
-static int devsymCurrentTime(sqlite3_vfs*, double*);
+static ຈຳນວນເຕັມ devsymRandomness(sqlite3_vfs*, ຈຳນວນເຕັມ nByte, var_na *zOut);
+static ຈຳນວນເຕັມ devsymSleep(sqlite3_vfs*, ຈຳນວນເຕັມ microseconds);
+static ຈຳນວນເຕັມ devsymCurrentTime(sqlite3_vfs*, dviguu_na*);
 
-struct DevsymGlobal {
+sa_nracanaa DevsymGlobal {
   sqlite3_vfs *pVfs;
-  int iDeviceChar;
-  int iSectorSize;
-  int nWriteCrash;
+  ຈຳນວນເຕັມ iDeviceChar;
+  ຈຳນວນເຕັມ iSectorSize;
+  ຈຳນວນເຕັມ nWriteCrash;
 };
-struct DevsymGlobal g = {0, 0, 512, 0};
+sa_nracanaa DevsymGlobal g = {0, 0, 512, 0};
 
 /*
 ** Close an devsym-file.
 */
-static int devsymClose(sqlite3_file *pFile){
+static ຈຳນວນເຕັມ devsymClose(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
   sqlite3OsClose(p->pReal);
-  return SQLITE_OK;
+  ສົ່ງຄືນ SQLITE_OK;
 }
 
 /*
 ** Read data from an devsym-file.
 */
-static int devsymRead(
+static ຈຳນວນເຕັມ devsymRead(
   sqlite3_file *pFile, 
   void *zBuf, 
-  int iAmt, 
+  ຈຳນວນເຕັມ iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
+  ສົ່ງຄືນ sqlite3OsRead(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Write data to an devsym-file.
 */
-static int devsymWrite(
+static ຈຳນວນເຕັມ devsymWrite(
   sqlite3_file *pFile, 
   const void *zBuf, 
-  int iAmt, 
+  ຈຳນວນເຕັມ iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
+  ສົ່ງຄືນ sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Truncate an devsym-file.
 */
-static int devsymTruncate(sqlite3_file *pFile, sqlite_int64 size){
+static ຈຳນວນເຕັມ devsymTruncate(sqlite3_file *pFile, sqlite_int64 size){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsTruncate(p->pReal, size);
+  ສົ່ງຄືນ sqlite3OsTruncate(p->pReal, size);
 }
 
 /*
 ** Sync an devsym-file.
 */
-static int devsymSync(sqlite3_file *pFile, int flags){
+static ຈຳນວນເຕັມ devsymSync(sqlite3_file *pFile, ຈຳນວນເຕັມ flags){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsSync(p->pReal, flags);
+  ສົ່ງຄືນ sqlite3OsSync(p->pReal, flags);
 }
 
 /*
 ** Return the current file-size of an devsym-file.
 */
-static int devsymFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+static ຈຳນວນເຕັມ devsymFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsFileSize(p->pReal, pSize);
+  ສົ່ງຄືນ sqlite3OsFileSize(p->pReal, pSize);
 }
 
 /*
 ** Lock an devsym-file.
 */
-static int devsymLock(sqlite3_file *pFile, int eLock){
+static ຈຳນວນເຕັມ devsymLock(sqlite3_file *pFile, ຈຳນວນເຕັມ eLock){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsLock(p->pReal, eLock);
+  ສົ່ງຄືນ sqlite3OsLock(p->pReal, eLock);
 }
 
 /*
 ** Unlock an devsym-file.
 */
-static int devsymUnlock(sqlite3_file *pFile, int eLock){
+static ຈຳນວນເຕັມ devsymUnlock(sqlite3_file *pFile, ຈຳນວນເຕັມ eLock){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsUnlock(p->pReal, eLock);
+  ສົ່ງຄືນ sqlite3OsUnlock(p->pReal, eLock);
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an devsym-file.
 */
-static int devsymCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+static ຈຳນວນເຕັມ devsymCheckReservedLock(sqlite3_file *pFile, ຈຳນວນເຕັມ *pResOut){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsCheckReservedLock(p->pReal, pResOut);
+  ສົ່ງຄືນ sqlite3OsCheckReservedLock(p->pReal, pResOut);
 }
 
 /*
 ** File control method. For custom operations on an devsym-file.
 */
-static int devsymFileControl(sqlite3_file *pFile, int op, void *pArg){
+static ຈຳນວນເຕັມ devsymFileControl(sqlite3_file *pFile, ຈຳນວນເຕັມ op, void *pArg){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsFileControl(p->pReal, op, pArg);
+  ສົ່ງຄືນ sqlite3OsFileControl(p->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an devsym-file.
 */
-static int devsymSectorSize(sqlite3_file *pFile){
-  return g.iSectorSize;
+static ຈຳນວນເຕັມ devsymSectorSize(sqlite3_file *pFile){
+  ສົ່ງຄືນ g.iSectorSize;
 }
 
 /*
 ** Return the device characteristic flags supported by an devsym-file.
 */
-static int devsymDeviceCharacteristics(sqlite3_file *pFile){
-  return g.iDeviceChar;
+static ຈຳນວນເຕັມ devsymDeviceCharacteristics(sqlite3_file *pFile){
+  ສົ່ງຄືນ g.iDeviceChar;
 }
 
 /*
 ** Shared-memory methods are all pass-throughs.
 */
-static int devsymShmLock(sqlite3_file *pFile, int ofst, int n, int flags){
+static ຈຳນວນເຕັມ devsymShmLock(sqlite3_file *pFile, ຈຳນວນເຕັມ ofst, ຈຳນວນເຕັມ n, ຈຳນວນເຕັມ flags){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmLock(p->pReal, ofst, n, flags);
+  ສົ່ງຄືນ p->pReal->pMethods->xShmLock(p->pReal, ofst, n, flags);
 }
-static int devsymShmMap(
+static ຈຳນວນເຕັມ devsymShmMap(
   sqlite3_file *pFile, 
-  int iRegion, 
-  int szRegion, 
-  int isWrite, 
-  void volatile **pp
+  ຈຳນວນເຕັມ iRegion, 
+  ຈຳນວນເຕັມ szRegion, 
+  ຈຳນວນເຕັມ isWrite, 
+  void ca_ncala **pp
 ){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmMap(p->pReal, iRegion, szRegion, isWrite, pp);
+  ສົ່ງຄືນ p->pReal->pMethods->xShmMap(p->pReal, iRegion, szRegion, isWrite, pp);
 }
 static void devsymShmBarrier(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
   p->pReal->pMethods->xShmBarrier(p->pReal);
 }
-static int devsymShmUnmap(sqlite3_file *pFile, int delFlag){
+static ຈຳນວນເຕັມ devsymShmUnmap(sqlite3_file *pFile, ຈຳນວນເຕັມ delFlag){
   devsym_file *p = (devsym_file *)pFile;
-  return p->pReal->pMethods->xShmUnmap(p->pReal, delFlag);
+  ສົ່ງຄືນ p->pReal->pMethods->xShmUnmap(p->pReal, delFlag);
 }
 
 
@@ -217,12 +217,12 @@ static int devsymShmUnmap(sqlite3_file *pFile, int delFlag){
 /*
 ** Open an devsym file handle.
 */
-static int devsymOpen(
+static ຈຳນວນເຕັມ devsymOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  const var_na *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  ຈຳນວນເຕັມ flags,
+  ຈຳນວນເຕັມ *pOutFlags
 ){
 static sqlite3_io_methods devsym_io_methods = {
   2,                                /* iVersion */
@@ -244,14 +244,14 @@ static sqlite3_io_methods devsym_io_methods = {
   devsymShmUnmap                    /* xShmUnmap */
 };
 
-  int rc;
+  ຈຳນວນເຕັມ rc;
   devsym_file *p = (devsym_file *)pFile;
   p->pReal = (sqlite3_file *)&p[1];
   rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
-  if( p->pReal->pMethods ){
+  ຖ້າ( p->pReal->pMethods ){
     pFile->pMethods = &devsym_io_methods;
   }
-  return rc;
+  ສົ່ງຄືນ rc;
 }
 
 /*
@@ -259,21 +259,21 @@ static sqlite3_io_methods devsym_io_methods = {
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int devsymDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  return sqlite3OsDelete(g.pVfs, zPath, dirSync);
+static ຈຳນວນເຕັມ devsymDelete(sqlite3_vfs *pVfs, const var_na *zPath, ຈຳນວນເຕັມ dirSync){
+  ສົ່ງຄືນ sqlite3OsDelete(g.pVfs, zPath, dirSync);
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int devsymAccess(
+static ຈຳນວນເຕັມ devsymAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  const var_na *zPath, 
+  ຈຳນວນເຕັມ flags, 
+  ຈຳນວນເຕັມ *pResOut
 ){
-  return sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
+  ສົ່ງຄືນ sqlite3OsAccess(g.pVfs, zPath, flags, pResOut);
 }
 
 /*
@@ -281,21 +281,21 @@ static int devsymAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (DEVSYM_MAX_PATHNAME+1) bytes.
 */
-static int devsymFullPathname(
+static ຈຳນວນເຕັມ devsymFullPathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  const var_na *zPath, 
+  ຈຳນວນເຕັມ nOut, 
+  var_na *zOut
 ){
-  return sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
+  ສົ່ງຄືນ sqlite3OsFullPathname(g.pVfs, zPath, nOut, zOut);
 }
 
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *devsymDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return sqlite3OsDlOpen(g.pVfs, zPath);
+static void *devsymDlOpen(sqlite3_vfs *pVfs, const var_na *zPath){
+  ສົ່ງຄືນ sqlite3OsDlOpen(g.pVfs, zPath);
 }
 
 /*
@@ -303,15 +303,15 @@ static void *devsymDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void devsymDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+static void devsymDlError(sqlite3_vfs *pVfs, ຈຳນວນເຕັມ nByte, var_na *zErrMsg){
   sqlite3OsDlError(g.pVfs, nByte, zErrMsg);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*devsymDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return sqlite3OsDlSym(g.pVfs, p, zSym);
+static void (*devsymDlSym(sqlite3_vfs *pVfs, void *p, const var_na *zSym))(void){
+  ສົ່ງຄືນ sqlite3OsDlSym(g.pVfs, p, zSym);
 }
 
 /*
@@ -326,67 +326,67 @@ static void devsymDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int devsymRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
+static ຈຳນວນເຕັມ devsymRandomness(sqlite3_vfs *pVfs, ຈຳນວນເຕັມ nByte, var_na *zBufOut){
+  ສົ່ງຄືນ sqlite3OsRandomness(g.pVfs, nByte, zBufOut);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int devsymSleep(sqlite3_vfs *pVfs, int nMicro){
-  return sqlite3OsSleep(g.pVfs, nMicro);
+static ຈຳນວນເຕັມ devsymSleep(sqlite3_vfs *pVfs, ຈຳນວນເຕັມ nMicro){
+  ສົ່ງຄືນ sqlite3OsSleep(g.pVfs, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int devsymCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
+static ຈຳນວນເຕັມ devsymCurrentTime(sqlite3_vfs *pVfs, dviguu_na *pTimeOut){
+  ສົ່ງຄືນ g.pVfs->xCurrentTime(g.pVfs, pTimeOut);
 }
 
 /*
 ** Return the sector-size in bytes for an writecrash-file.
 */
-static int writecrashSectorSize(sqlite3_file *pFile){
+static ຈຳນວນເຕັມ writecrashSectorSize(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsSectorSize(p->pReal);
+  ສົ່ງຄືນ sqlite3OsSectorSize(p->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an writecrash-file.
 */
-static int writecrashDeviceCharacteristics(sqlite3_file *pFile){
+static ຈຳນວນເຕັມ writecrashDeviceCharacteristics(sqlite3_file *pFile){
   devsym_file *p = (devsym_file *)pFile;
-  return sqlite3OsDeviceCharacteristics(p->pReal);
+  ສົ່ງຄືນ sqlite3OsDeviceCharacteristics(p->pReal);
 }
 
 /*
 ** Write data to an writecrash-file.
 */
-static int writecrashWrite(
+static ຈຳນວນເຕັມ writecrashWrite(
   sqlite3_file *pFile, 
   const void *zBuf, 
-  int iAmt, 
+  ຈຳນວນເຕັມ iAmt, 
   sqlite_int64 iOfst
 ){
   devsym_file *p = (devsym_file *)pFile;
-  if( g.nWriteCrash>0 ){
+  ຖ້າ( g.nWriteCrash>0 ){
     g.nWriteCrash--;
-    if( g.nWriteCrash==0 ) abort();
+    ຖ້າ( g.nWriteCrash==0 ) abort();
   }
-  return sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
+  ສົ່ງຄືນ sqlite3OsWrite(p->pReal, zBuf, iAmt, iOfst);
 }
 
 /*
 ** Open an writecrash file handle.
 */
-static int writecrashOpen(
+static ຈຳນວນເຕັມ writecrashOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  const var_na *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  ຈຳນວນເຕັມ flags,
+  ຈຳນວນເຕັມ *pOutFlags
 ){
 static sqlite3_io_methods writecrash_io_methods = {
   2,                                /* iVersion */
@@ -408,19 +408,19 @@ static sqlite3_io_methods writecrash_io_methods = {
   devsymShmUnmap                    /* xShmUnmap */
 };
 
-  int rc;
+  ຈຳນວນເຕັມ rc;
   devsym_file *p = (devsym_file *)pFile;
   p->pReal = (sqlite3_file *)&p[1];
   rc = sqlite3OsOpen(g.pVfs, zName, p->pReal, flags, pOutFlags);
-  if( p->pReal->pMethods ){
+  ຖ້າ( p->pReal->pMethods ){
     pFile->pMethods = &writecrash_io_methods;
   }
-  return rc;
+  ສົ່ງຄືນ rc;
 }
 
 static sqlite3_vfs devsym_vfs = {
   2,                     /* iVersion */
-  sizeof(devsym_file),      /* szOsFile */
+  parimaa_na(devsym_file),      /* szOsFile */
   DEVSYM_MAX_PATHNAME,      /* mxPathname */
   0,                     /* pNext */
   DEVSYM_VFS_NAME,          /* zName */
@@ -434,7 +434,7 @@ static sqlite3_vfs devsym_vfs = {
   devsymDlError,            /* xDlError */
   devsymDlSym,              /* xDlSym */
   devsymDlClose,            /* xDlClose */
-#else
+#ບໍ່ດັ່ງນັ້ນ
   0,                        /* xDlOpen */
   0,                        /* xDlError */
   0,                        /* xDlSym */
@@ -449,7 +449,7 @@ static sqlite3_vfs devsym_vfs = {
 
 static sqlite3_vfs writecrash_vfs = {
   2,                     /* iVersion */
-  sizeof(devsym_file),      /* szOsFile */
+  parimaa_na(devsym_file),      /* szOsFile */
   DEVSYM_MAX_PATHNAME,      /* mxPathname */
   0,                     /* pNext */
   WRITECRASH_NAME,          /* zName */
@@ -463,7 +463,7 @@ static sqlite3_vfs writecrash_vfs = {
   devsymDlError,            /* xDlError */
   devsymDlSym,              /* xDlSym */
   devsymDlClose,            /* xDlClose */
-#else
+#ບໍ່ດັ່ງນັ້ນ
   0,                        /* xDlOpen */
   0,                        /* xDlError */
   0,                        /* xDlSym */
@@ -482,23 +482,23 @@ static sqlite3_vfs writecrash_vfs = {
 ** true, the devsym vfs becomes the new default vfs. It is the only publicly
 ** available function in this file.
 */
-void devsym_register(int iDeviceChar, int iSectorSize){
+void devsym_register(ຈຳນວນເຕັມ iDeviceChar, ຈຳນວນເຕັມ iSectorSize){
 
-  if( g.pVfs==0 ){
+  ຖ້າ( g.pVfs==0 ){
     g.pVfs = sqlite3_vfs_find(0);
     devsym_vfs.szOsFile += g.pVfs->szOsFile;
     writecrash_vfs.szOsFile += g.pVfs->szOsFile;
     sqlite3_vfs_register(&devsym_vfs, 0);
     sqlite3_vfs_register(&writecrash_vfs, 0);
   }
-  if( iDeviceChar>=0 ){
+  ຖ້າ( iDeviceChar>=0 ){
     g.iDeviceChar = iDeviceChar;
-  }else{
+  }ບໍ່ດັ່ງນັ້ນ{
     g.iDeviceChar = 0;
   }
-  if( iSectorSize>=0 ){
+  ຖ້າ( iSectorSize>=0 ){
     g.iSectorSize = iSectorSize;
-  }else{
+  }ບໍ່ດັ່ງນັ້ນ{
     g.iSectorSize = 512;
   }
 }
@@ -511,8 +511,8 @@ void devsym_unregister(){
   g.iSectorSize = 0;
 }
 
-void devsym_crash_on_write(int nWrite){
-  if( g.pVfs==0 ){
+void devsym_crash_on_write(ຈຳນວນເຕັມ nWrite){
+  ຖ້າ( g.pVfs==0 ){
     g.pVfs = sqlite3_vfs_find(0);
     devsym_vfs.szOsFile += g.pVfs->szOsFile;
     writecrash_vfs.szOsFile += g.pVfs->szOsFile;

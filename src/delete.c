@@ -33,22 +33,22 @@ Table *sqlite3SrcListLookup(Parse *pParse, SrcList *pSrc){
   Table *pTab;
   assert( pItem && pSrc->nSrc>=1 );
   pTab = sqlite3LocateTableItem(pParse, 0, pItem);
-  if( pItem->pSTab ) sqlite3DeleteTable(pParse->db, pItem->pSTab);
+  ຖ້າ( pItem->pSTab ) sqlite3DeleteTable(pParse->db, pItem->pSTab);
   pItem->pSTab = pTab;
   pItem->fg.notCte = 1;
-  if( pTab ){
+  ຖ້າ( pTab ){
     pTab->nTabRef++;
-    if( pItem->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pItem) ){
+    ຖ້າ( pItem->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pItem) ){
       pTab = 0;
     }
   }
-  return pTab;
+  ສົ່ງຄືນ pTab;
 }
 
 /* Generate byte-code that will report the number of rows modified
 ** by a DELETE, INSERT, or UPDATE statement.
 */
-void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
+void sqlite3CodeChangeCount(Vdbe *v, ຈຳນວນເຕັມ regCounter, const var_na *zColName){
   sqlite3VdbeAddOp0(v, OP_FkCheck);
   sqlite3VdbeAddOp2(v, OP_ResultRow, regCounter, 1);
   sqlite3VdbeSetNumCols(v, 1);
@@ -74,10 +74,10 @@ void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
 **      defensive mode, and the current sqlite3_prepare()
 **      is for a top-level SQL statement.
 */
-static int vtabIsReadOnly(Parse *pParse, Table *pTab){
+static ຈຳນວນເຕັມ vtabIsReadOnly(Parse *pParse, Table *pTab){
   assert( IsVirtual(pTab) );
-  if( sqlite3GetVTable(pParse->db, pTab)->pMod->pModule->xUpdate==0 ){
-    return 1;
+  ຖ້າ( sqlite3GetVTable(pParse->db, pTab)->pMod->pModule->xUpdate==0 ){
+    ສົ່ງຄືນ 1;
   }
 
   /* Within triggers:
@@ -86,27 +86,27 @@ static int vtabIsReadOnly(Parse *pParse, Table *pTab){
   **   *  Only allow DELETE, INSERT, or UPDATE of non-SQLITE_VTAB_INNOCUOUS
   **      virtual tables if PRAGMA trusted_schema=ON.
   */
-  if( (pParse->pToplevel!=0 || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
+  ຖ້າ( (pParse->pToplevel!=0 || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
    && pTab->u.vtab.p->eVtabRisk >
            ((pParse->db->flags & SQLITE_TrustedSchema)!=0)
   ){
     sqlite3ErrorMsg(pParse, "unsafe use of virtual table \"%s\"",
       pTab->zName);
   }
-  return 0;
+  ສົ່ງຄືນ 0;
 }
-static int tabIsReadOnly(Parse *pParse, Table *pTab){
+static ຈຳນວນເຕັມ tabIsReadOnly(Parse *pParse, Table *pTab){
   sqlite3 *db;
-  if( IsVirtual(pTab) ){
-    return vtabIsReadOnly(pParse, pTab);
+  ຖ້າ( IsVirtual(pTab) ){
+    ສົ່ງຄືນ vtabIsReadOnly(pParse, pTab);
   }
-  if( (pTab->tabFlags & (TF_Readonly|TF_Shadow))==0 ) return 0;
+  ຖ້າ( (pTab->tabFlags & (TF_Readonly|TF_Shadow))==0 ) ສົ່ງຄືນ 0;
   db = pParse->db;
-  if( (pTab->tabFlags & TF_Readonly)!=0 ){
-    return sqlite3WritableSchema(db)==0 && pParse->nested==0;
+  ຖ້າ( (pTab->tabFlags & TF_Readonly)!=0 ){
+    ສົ່ງຄືນ sqlite3WritableSchema(db)==0 && pParse->nested==0;
   }
   assert( pTab->tabFlags & TF_Shadow );
-  return sqlite3ReadOnlyShadowTables(db);
+  ສົ່ງຄືນ sqlite3ReadOnlyShadowTables(db);
 }
 
 /*
@@ -116,24 +116,24 @@ static int tabIsReadOnly(Parse *pParse, Table *pTab){
 ** If pTab is writable but other errors have occurred -> return 1.
 ** If pTab is writable and no prior errors -> return 0;
 */
-int sqlite3IsReadOnly(Parse *pParse, Table *pTab, Trigger *pTrigger){
-  if( tabIsReadOnly(pParse, pTab) ){
+ຈຳນວນເຕັມ sqlite3IsReadOnly(Parse *pParse, Table *pTab, Trigger *pTrigger){
+  ຖ້າ( tabIsReadOnly(pParse, pTab) ){
     sqlite3ErrorMsg(pParse, "table %s may not be modified", pTab->zName);
-    return 1;
+    ສົ່ງຄືນ 1;
   }
 #ifndef SQLITE_OMIT_VIEW
-  if( IsView(pTab)
+  ຖ້າ( IsView(pTab)
    && (pTrigger==0 || (pTrigger->bReturning && pTrigger->pNext==0))
   ){
     sqlite3ErrorMsg(pParse,"cannot modify %s because it is a view",pTab->zName);
-    return 1;
+    ສົ່ງຄືນ 1;
   }
 #endif
-  return 0;
+  ສົ່ງຄືນ 0;
 }
 
 
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+#ຖ້າ !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
 /*
 ** Evaluate a view and store its result in an ephemeral table.  The
 ** pWhere argument is an optional WHERE clause that restricts the
@@ -145,16 +145,16 @@ void sqlite3MaterializeView(
   Expr *pWhere,        /* Optional WHERE clause to be added */
   ExprList *pOrderBy,  /* Optional ORDER BY clause */
   Expr *pLimit,        /* Optional LIMIT clause */
-  int iCur             /* Cursor number for ephemeral table */
+  ຈຳນວນເຕັມ iCur             /* Cursor number for ephemeral table */
 ){
   SelectDest dest;
   Select *pSel;
   SrcList *pFrom;
   sqlite3 *db = pParse->db;
-  int iDb = sqlite3SchemaToIndex(db, pView->pSchema);
+  ຈຳນວນເຕັມ iDb = sqlite3SchemaToIndex(db, pView->pSchema);
   pWhere = sqlite3ExprDup(db, pWhere, 0);
   pFrom = sqlite3SrcListAppend(pParse, 0, 0, 0);
-  if( pFrom ){
+  ຖ້າ( pFrom ){
     assert( pFrom->nSrc==1 );
     pFrom->a[0].zName = sqlite3DbStrDup(db, pView->zName);
     assert( pFrom->a[0].fg.fixedSchema==0 && pFrom->a[0].fg.isSubquery==0 );
@@ -170,7 +170,7 @@ void sqlite3MaterializeView(
 }
 #endif /* !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER) */
 
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
+#ຖ້າ defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Generate an expression tree to implement the WHERE, ORDER BY,
 ** and LIMIT/OFFSET portion of DELETE and UPDATE statements.
@@ -185,7 +185,7 @@ Expr *sqlite3LimitWhere(
   Expr *pWhere,                /* The WHERE clause.  May be null */
   ExprList *pOrderBy,          /* The ORDER BY clause.  May be null */
   Expr *pLimit,                /* The LIMIT clause.  May be null */
-  char *zStmtType              /* Either DELETE or UPDATE.  For err msgs. */
+  var_na *zStmtType              /* Either DELETE or UPDATE.  For err msgs. */
 ){
   sqlite3 *db = pParse->db;
   Expr *pLhs = NULL;           /* LHS of IN(SELECT...) operator */
@@ -197,18 +197,18 @@ Expr *sqlite3LimitWhere(
 
   /* Check that there isn't an ORDER BY without a LIMIT clause.
   */
-  if( pOrderBy && pLimit==0 ) {
+  ຖ້າ( pOrderBy && pLimit==0 ) {
     sqlite3ErrorMsg(pParse, "ORDER BY without LIMIT on %s", zStmtType);
     sqlite3ExprDelete(pParse->db, pWhere);
     sqlite3ExprListDelete(pParse->db, pOrderBy);
-    return 0;
+    ສົ່ງຄືນ 0;
   }
 
   /* We only need to generate a select expression if there
   ** is a limit/offset term to enforce.
   */
-  if( pLimit == 0 ) {
-    return pWhere;
+  ຖ້າ( pLimit == 0 ) {
+    ສົ່ງຄືນ pWhere;
   }
 
   /* Generate a select expression tree to enforce the limit/offset
@@ -221,31 +221,31 @@ Expr *sqlite3LimitWhere(
   */
 
   pTab = pSrc->a[0].pSTab;
-  if( HasRowid(pTab) ){
+  ຖ້າ( HasRowid(pTab) ){
     pLhs = sqlite3PExpr(pParse, TK_ROW, 0, 0);
     pEList = sqlite3ExprListAppend(
         pParse, 0, sqlite3PExpr(pParse, TK_ROW, 0, 0)
     );
-  }else{
+  }ບໍ່ດັ່ງນັ້ນ{
     Index *pPk = sqlite3PrimaryKeyIndex(pTab);
     assert( pPk!=0 );
     assert( pPk->nKeyCol>=1 );
-    if( pPk->nKeyCol==1 ){
-      const char *zName;
+    ຖ້າ( pPk->nKeyCol==1 ){
+      const var_na *zName;
       assert( pPk->aiColumn[0]>=0 && pPk->aiColumn[0]<pTab->nCol );
       zName = pTab->aCol[pPk->aiColumn[0]].zCnName;
       pLhs = sqlite3Expr(db, TK_ID, zName);
       pEList = sqlite3ExprListAppend(pParse, 0, sqlite3Expr(db, TK_ID, zName));
-    }else{
-      int i;
-      for(i=0; i<pPk->nKeyCol; i++){
+    }ບໍ່ດັ່ງນັ້ນ{
+      ຈຳນວນເຕັມ i;
+      ສຳລັບ(i=0; i<pPk->nKeyCol; i++){
         Expr *p;
         assert( pPk->aiColumn[i]>=0 && pPk->aiColumn[i]<pTab->nCol );
         p = sqlite3Expr(db, TK_ID, pTab->aCol[pPk->aiColumn[i]].zCnName);
         pEList = sqlite3ExprListAppend(pParse, pEList, p);
       }
       pLhs = sqlite3PExpr(pParse, TK_VECTOR, 0, 0);
-      if( pLhs ){
+      ຖ້າ( pLhs ){
         pLhs->x.pList = sqlite3ExprListDup(db, pEList, 0);
       }
     }
@@ -256,12 +256,12 @@ Expr *sqlite3LimitWhere(
   pSrc->a[0].pSTab = 0;
   pSelectSrc = sqlite3SrcListDup(db, pSrc, 0);
   pSrc->a[0].pSTab = pTab;
-  if( pSrc->a[0].fg.isIndexedBy ){
+  ຖ້າ( pSrc->a[0].fg.isIndexedBy ){
     assert( pSrc->a[0].fg.isCte==0 );
     pSrc->a[0].u2.pIBIndex = 0;
     pSrc->a[0].fg.isIndexedBy = 0;
     sqlite3DbFree(db, pSrc->a[0].u1.zIndexedBy);
-  }else if( pSrc->a[0].fg.isCte ){
+  }ບໍ່ດັ່ງນັ້ນ ຖ້າ( pSrc->a[0].fg.isCte ){
     pSrc->a[0].u2.pCteUse->nUse++;
   }
 
@@ -273,7 +273,7 @@ Expr *sqlite3LimitWhere(
   /* now generate the new WHERE rowid IN clause for the DELETE/UPDATE */
   pInClause = sqlite3PExpr(pParse, TK_IN, pLhs, 0);
   sqlite3PExprAddSelect(pParse, pInClause, pSelect);
-  return pInClause;
+  ສົ່ງຄືນ pInClause;
 }
 #endif /* defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) */
        /*      && !defined(SQLITE_OMIT_SUBQUERY) */
@@ -294,44 +294,44 @@ void sqlite3DeleteFrom(
 ){
   Vdbe *v;               /* The virtual database engine */
   Table *pTab;           /* The table from which records will be deleted */
-  int i;                 /* Loop counter */
+  ຈຳນວນເຕັມ i;                 /* Loop counter */
   WhereInfo *pWInfo;     /* Information about the WHERE clause */
   Index *pIdx;           /* For looping over indices of the table */
-  int iTabCur;           /* Cursor number for the table */
-  int iDataCur = 0;      /* VDBE cursor for the canonical data source */
-  int iIdxCur = 0;       /* Cursor number of the first index */
-  int nIdx;              /* Number of indices */
+  ຈຳນວນເຕັມ iTabCur;           /* Cursor number for the table */
+  ຈຳນວນເຕັມ iDataCur = 0;      /* VDBE cursor for the canonical data source */
+  ຈຳນວນເຕັມ iIdxCur = 0;       /* Cursor number of the first index */
+  ຈຳນວນເຕັມ nIdx;              /* Number of indices */
   sqlite3 *db;           /* Main database structure */
   AuthContext sContext;  /* Authorization context */
   NameContext sNC;       /* Name context to resolve expressions in */
-  int iDb;               /* Database number */
-  int memCnt = 0;        /* Memory cell used for change counting */
-  int rcauth;            /* Value returned by authorization callback */
-  int eOnePass;          /* ONEPASS_OFF or _SINGLE or _MULTI */
-  int aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
+  ຈຳນວນເຕັມ iDb;               /* Database number */
+  ຈຳນວນເຕັມ memCnt = 0;        /* Memory cell used for change counting */
+  ຈຳນວນເຕັມ rcauth;            /* Value returned by authorization callback */
+  ຈຳນວນເຕັມ eOnePass;          /* ONEPASS_OFF or _SINGLE or _MULTI */
+  ຈຳນວນເຕັມ aiCurOnePass[2];   /* The write cursors opened by WHERE_ONEPASS */
   u8 *aToOpen = 0;       /* Open cursor iTabCur+j if aToOpen[j] is true */
   Index *pPk;            /* The PRIMARY KEY index on the table */
-  int iPk = 0;           /* First of nPk registers holding PRIMARY KEY value */
+  ຈຳນວນເຕັມ iPk = 0;           /* First of nPk registers holding PRIMARY KEY value */
   i16 nPk = 1;           /* Number of columns in the PRIMARY KEY */
-  int iKey;              /* Memory cell holding key of row to be deleted */
+  ຈຳນວນເຕັມ iKey;              /* Memory cell holding key of row to be deleted */
   i16 nKey;              /* Number of memory cells in the row key */
-  int iEphCur = 0;       /* Ephemeral table holding all primary key values */
-  int iRowSet = 0;       /* Register for rowset of rows to delete */
-  int addrBypass = 0;    /* Address of jump over the delete logic */
-  int addrLoop = 0;      /* Top of the delete loop */
-  int addrEphOpen = 0;   /* Instruction to open the Ephemeral table */
-  int bComplex;          /* True if there are triggers or FKs or
+  ຈຳນວນເຕັມ iEphCur = 0;       /* Ephemeral table holding all primary key values */
+  ຈຳນວນເຕັມ iRowSet = 0;       /* Register for rowset of rows to delete */
+  ຈຳນວນເຕັມ addrBypass = 0;    /* Address of jump over the delete logic */
+  ຈຳນວນເຕັມ addrLoop = 0;      /* Top of the delete loop */
+  ຈຳນວນເຕັມ addrEphOpen = 0;   /* Instruction to open the Ephemeral table */
+  ຈຳນວນເຕັມ bComplex;          /* True if there are triggers or FKs or
                          ** subqueries in the WHERE clause */
 
 #ifndef SQLITE_OMIT_TRIGGER
-  int isView;                  /* True if attempting to delete from a view */
+  ຈຳນວນເຕັມ isView;                  /* True if attempting to delete from a view */
   Trigger *pTrigger;           /* List of table triggers, if required */
 #endif
 
-  memset(&sContext, 0, sizeof(sContext));
+  memset(&sContext, 0, parimaa_na(sContext));
   db = pParse->db;
   assert( db->pParse==pParse );
-  if( pParse->nErr ){
+  ຖ້າ( pParse->nErr ){
     goto delete_from_cleanup;
   }
   assert( db->mallocFailed==0 );
@@ -343,7 +343,7 @@ void sqlite3DeleteFrom(
   ** an SrcList* parameter instead of just a Table* parameter.
   */
   pTab = sqlite3SrcListLookup(pParse, pTabList);
-  if( pTab==0 )  goto delete_from_cleanup;
+  ຖ້າ( pTab==0 )  goto delete_from_cleanup;
 
   /* Figure out if we have any triggers and if the table being
   ** deleted from is a view
@@ -351,7 +351,7 @@ void sqlite3DeleteFrom(
 #ifndef SQLITE_OMIT_TRIGGER
   pTrigger = sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0);
   isView = IsView(pTab);
-#else
+#ບໍ່ດັ່ງນັ້ນ
 # define pTrigger 0
 # define isView 0
 #endif
@@ -361,8 +361,8 @@ void sqlite3DeleteFrom(
 # define isView 0
 #endif
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
+#ຖ້າ TREETRACE_ENABLED
+  ຖ້າ( sqlite3TreeTrace & 0x10000 ){
     sqlite3TreeViewLine(0, "In sqlite3Delete() at %s:%d", __FILE__, __LINE__);
     sqlite3TreeViewDelete(pParse->pWith, pTabList, pWhere,
                           pOrderBy, pLimit, pTrigger);
@@ -370,7 +370,7 @@ void sqlite3DeleteFrom(
 #endif
 
 #ifdef SQLITE_ENABLE_UPDATE_DELETE_LIMIT
-  if( !isView ){
+  ຖ້າ( !isView ){
     pWhere = sqlite3LimitWhere(
         pParse, pTabList, pWhere, pOrderBy, pLimit, "DELETE"
     );
@@ -381,11 +381,11 @@ void sqlite3DeleteFrom(
 
   /* If pTab is really a view, make sure it has been initialized.
   */
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
+  ຖ້າ( sqlite3ViewGetColumnNames(pParse, pTab) ){
     goto delete_from_cleanup;
   }
 
-  if( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
+  ຖ້າ( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
     goto delete_from_cleanup;
   }
   iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
@@ -393,7 +393,7 @@ void sqlite3DeleteFrom(
   rcauth = sqlite3AuthCheck(pParse, SQLITE_DELETE, pTab->zName, 0,
                             db->aDb[iDb].zDbSName);
   assert( rcauth==SQLITE_OK || rcauth==SQLITE_DENY || rcauth==SQLITE_IGNORE );
-  if( rcauth==SQLITE_DENY ){
+  ຖ້າ( rcauth==SQLITE_DENY ){
     goto delete_from_cleanup;
   }
   assert(!isView || pTrigger);
@@ -402,30 +402,30 @@ void sqlite3DeleteFrom(
   */
   assert( pTabList->nSrc==1 );
   iTabCur = pTabList->a[0].iCursor = pParse->nTab++;
-  for(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
+  ສຳລັບ(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
     pParse->nTab++;
   }
 
   /* Start the view context
   */
-  if( isView ){
+  ຖ້າ( isView ){
     sqlite3AuthContextPush(pParse, &sContext, pTab->zName);
   }
 
   /* Begin generating code.
   */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ){
+  ຖ້າ( v==0 ){
     goto delete_from_cleanup;
   }
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  ຖ້າ( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
   sqlite3BeginWriteOperation(pParse, bComplex, iDb);
 
   /* If we are trying to delete from a view, realize that view into
   ** an ephemeral table.
   */
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-  if( isView ){
+#ຖ້າ !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+  ຖ້າ( isView ){
     sqlite3MaterializeView(pParse, pTab,
         pWhere, pOrderBy, pLimit, iTabCur
     );
@@ -437,17 +437,17 @@ void sqlite3DeleteFrom(
 
   /* Resolve the column names in the WHERE clause.
   */
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, parimaa_na(sNC));
   sNC.pParse = pParse;
   sNC.pSrcList = pTabList;
-  if( sqlite3ResolveExprNames(&sNC, pWhere) ){
+  ຖ້າ( sqlite3ResolveExprNames(&sNC, pWhere) ){
     goto delete_from_cleanup;
   }
 
   /* Initialize the counter of the number of rows deleted, if
   ** we are counting rows.
   */
-  if( (db->flags & SQLITE_CountRows)!=0
+  ຖ້າ( (db->flags & SQLITE_CountRows)!=0
    && !pParse->nested
    && !pParse->pTriggerTab
    && !pParse->bReturning
@@ -468,7 +468,7 @@ void sqlite3DeleteFrom(
   ** the truncate optimization is disabled and all rows are deleted
   ** individually.
   */
-  if( rcauth==SQLITE_OK
+  ຖ້າ( rcauth==SQLITE_OK
    && pWhere==0
    && !bComplex
    && !IsVirtual(pTab)
@@ -478,31 +478,31 @@ void sqlite3DeleteFrom(
   ){
     assert( !isView );
     sqlite3TableLock(pParse, iDb, pTab->tnum, 1, pTab->zName);
-    if( HasRowid(pTab) ){
+    ຖ້າ( HasRowid(pTab) ){
       sqlite3VdbeAddOp4(v, OP_Clear, pTab->tnum, iDb, memCnt ? memCnt : -1,
                         pTab->zName, P4_STATIC);
     }
-    for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+    ສຳລັບ(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
       assert( pIdx->pSchema==pTab->pSchema );
-      if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
+      ຖ້າ( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
         sqlite3VdbeAddOp3(v, OP_Clear, pIdx->tnum, iDb, memCnt ? memCnt : -1);
-      }else{
+      }ບໍ່ດັ່ງນັ້ນ{
         sqlite3VdbeAddOp2(v, OP_Clear, pIdx->tnum, iDb);
       }
     }
-  }else
+  }ບໍ່ດັ່ງນັ້ນ
 #endif /* SQLITE_OMIT_TRUNCATE_OPTIMIZATION */
   {
     u16 wcf = WHERE_ONEPASS_DESIRED|WHERE_DUPLICATES_OK;
-    if( sNC.ncFlags & NC_Subquery ) bComplex = 1;
+    ຖ້າ( sNC.ncFlags & NC_Subquery ) bComplex = 1;
     wcf |= (bComplex ? 0 : WHERE_ONEPASS_MULTIROW);
-    if( HasRowid(pTab) ){
+    ຖ້າ( HasRowid(pTab) ){
       /* For a rowid table, initialize the RowSet to an empty set */
       pPk = 0;
       assert( nPk==1 );
       iRowSet = ++pParse->nMem;
       sqlite3VdbeAddOp2(v, OP_Null, 0, iRowSet);
-    }else{
+    }ບໍ່ດັ່ງນັ້ນ{
       /* For a WITHOUT ROWID table, create an ephemeral table used to
       ** hold all primary keys for rows to be deleted. */
       pPk = sqlite3PrimaryKeyIndex(pTab);
@@ -524,59 +524,59 @@ void sqlite3DeleteFrom(
     **  ONEPASS_MULTI:  One-pass approach - any number of rows may be deleted.
     */
     pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, 0, 0,0,wcf,iTabCur+1);
-    if( pWInfo==0 ) goto delete_from_cleanup;
+    ຖ້າ( pWInfo==0 ) goto delete_from_cleanup;
     eOnePass = sqlite3WhereOkOnePass(pWInfo, aiCurOnePass);
     assert( IsVirtual(pTab)==0 || eOnePass!=ONEPASS_MULTI );
     assert( IsVirtual(pTab) || bComplex || eOnePass!=ONEPASS_OFF
             || OptimizationDisabled(db, SQLITE_OnePass) );
-    if( eOnePass!=ONEPASS_SINGLE ) sqlite3MultiWrite(pParse);
-    if( sqlite3WhereUsesDeferredSeek(pWInfo) ){
+    ຖ້າ( eOnePass!=ONEPASS_SINGLE ) sqlite3MultiWrite(pParse);
+    ຖ້າ( sqlite3WhereUsesDeferredSeek(pWInfo) ){
       sqlite3VdbeAddOp1(v, OP_FinishSeek, iTabCur);
     }
  
     /* Keep track of the number of rows to be deleted */
-    if( memCnt ){
+    ຖ້າ( memCnt ){
       sqlite3VdbeAddOp2(v, OP_AddImm, memCnt, 1);
     }
  
     /* Extract the rowid or primary key for the current row */
-    if( pPk ){
-      for(i=0; i<nPk; i++){
+    ຖ້າ( pPk ){
+      ສຳລັບ(i=0; i<nPk; i++){
         assert( pPk->aiColumn[i]>=0 );
         sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur,
                                         pPk->aiColumn[i], iPk+i);
       }
       iKey = iPk;
-    }else{
+    }ບໍ່ດັ່ງນັ້ນ{
       iKey = ++pParse->nMem;
       sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur, -1, iKey);
     }
  
-    if( eOnePass!=ONEPASS_OFF ){
+    ຖ້າ( eOnePass!=ONEPASS_OFF ){
       /* For ONEPASS, no need to store the rowid/primary-key. There is only
       ** one, so just keep it in its register(s) and fall through to the
       ** delete code.  */
       nKey = nPk; /* OP_Found will use an unpacked key */
       aToOpen = sqlite3DbMallocRawNN(db, nIdx+2);
-      if( aToOpen==0 ){
+      ຖ້າ( aToOpen==0 ){
         sqlite3WhereEnd(pWInfo);
         goto delete_from_cleanup;
       }
       memset(aToOpen, 1, nIdx+1);
       aToOpen[nIdx+1] = 0;
-      if( aiCurOnePass[0]>=0 ) aToOpen[aiCurOnePass[0]-iTabCur] = 0;
-      if( aiCurOnePass[1]>=0 ) aToOpen[aiCurOnePass[1]-iTabCur] = 0;
-      if( addrEphOpen ) sqlite3VdbeChangeToNoop(v, addrEphOpen);
+      ຖ້າ( aiCurOnePass[0]>=0 ) aToOpen[aiCurOnePass[0]-iTabCur] = 0;
+      ຖ້າ( aiCurOnePass[1]>=0 ) aToOpen[aiCurOnePass[1]-iTabCur] = 0;
+      ຖ້າ( addrEphOpen ) sqlite3VdbeChangeToNoop(v, addrEphOpen);
       addrBypass = sqlite3VdbeMakeLabel(pParse);
-    }else{
-      if( pPk ){
+    }ບໍ່ດັ່ງນັ້ນ{
+      ຖ້າ( pPk ){
         /* Add the PK key for this row to the temporary table */
         iKey = ++pParse->nMem;
         nKey = 0;   /* Zero tells OP_Found to use a composite key */
         sqlite3VdbeAddOp4(v, OP_MakeRecord, iPk, nPk, iKey,
             sqlite3IndexAffinityStr(pParse->db, pPk), nPk);
         sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iEphCur, iKey, iPk, nPk);
-      }else{
+      }ບໍ່ດັ່ງນັ້ນ{
         /* Add the rowid of the row to be deleted to the RowSet */
         nKey = 1;  /* OP_DeferredSeek always uses a single rowid */
         sqlite3VdbeAddOp2(v, OP_RowSetAdd, iRowSet, iKey);
@@ -589,9 +589,9 @@ void sqlite3DeleteFrom(
     ** only effect this statement has is to fire the INSTEAD OF
     ** triggers.
     */
-    if( !isView ){
-      int iAddrOnce = 0;
-      if( eOnePass==ONEPASS_MULTI ){
+    ຖ້າ( !isView ){
+      ຈຳນວນເຕັມ iAddrOnce = 0;
+      ຖ້າ( eOnePass==ONEPASS_MULTI ){
         iAddrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
       }
       testcase( IsVirtual(pTab) );
@@ -599,7 +599,7 @@ void sqlite3DeleteFrom(
                                  iTabCur, aToOpen, &iDataCur, &iIdxCur);
       assert( pPk || IsVirtual(pTab) || iDataCur==iTabCur );
       assert( pPk || IsVirtual(pTab) || iIdxCur==iDataCur+1 );
-      if( eOnePass==ONEPASS_MULTI ){
+      ຖ້າ( eOnePass==ONEPASS_MULTI ){
         sqlite3VdbeJumpHereOrPopInst(v, iAddrOnce);
       }
     }
@@ -607,22 +607,22 @@ void sqlite3DeleteFrom(
     /* Set up a loop over the rowids/primary-keys that were found in the
     ** where-clause loop above.
     */
-    if( eOnePass!=ONEPASS_OFF ){
+    ຖ້າ( eOnePass!=ONEPASS_OFF ){
       assert( nKey==nPk );  /* OP_Found will use an unpacked key */
-      if( !IsVirtual(pTab) && aToOpen[iDataCur-iTabCur] ){
+      ຖ້າ( !IsVirtual(pTab) && aToOpen[iDataCur-iTabCur] ){
         assert( pPk!=0 || IsView(pTab) );
         sqlite3VdbeAddOp4Int(v, OP_NotFound, iDataCur, addrBypass, iKey, nKey);
         VdbeCoverage(v);
       }
-    }else if( pPk ){
+    }ບໍ່ດັ່ງນັ້ນ ຖ້າ( pPk ){
       addrLoop = sqlite3VdbeAddOp1(v, OP_Rewind, iEphCur); VdbeCoverage(v);
-      if( IsVirtual(pTab) ){
+      ຖ້າ( IsVirtual(pTab) ){
         sqlite3VdbeAddOp3(v, OP_Column, iEphCur, 0, iKey);
-      }else{
+      }ບໍ່ດັ່ງນັ້ນ{
         sqlite3VdbeAddOp2(v, OP_RowData, iEphCur, iKey);
       }
       assert( nKey==0 );  /* OP_Found will use a composite key */
-    }else{
+    }ບໍ່ດັ່ງນັ້ນ{
       addrLoop = sqlite3VdbeAddOp3(v, OP_RowSetRead, iRowSet, 0, iKey);
       VdbeCoverage(v);
       assert( nKey==1 );
@@ -630,35 +630,35 @@ void sqlite3DeleteFrom(
  
     /* Delete the row */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( IsVirtual(pTab) ){
-      const char *pVTab = (const char *)sqlite3GetVTable(db, pTab);
+    ຖ້າ( IsVirtual(pTab) ){
+      const var_na *pVTab = (const var_na *)sqlite3GetVTable(db, pTab);
       sqlite3VtabMakeWritable(pParse, pTab);
       assert( eOnePass==ONEPASS_OFF || eOnePass==ONEPASS_SINGLE );
       sqlite3MayAbort(pParse);
-      if( eOnePass==ONEPASS_SINGLE ){
+      ຖ້າ( eOnePass==ONEPASS_SINGLE ){
         sqlite3VdbeAddOp1(v, OP_Close, iTabCur);
-        if( sqlite3IsToplevel(pParse) ){
+        ຖ້າ( sqlite3IsToplevel(pParse) ){
           pParse->isMultiWrite = 0;
         }
       }
       sqlite3VdbeAddOp4(v, OP_VUpdate, 0, 1, iKey, pVTab, P4_VTAB);
       sqlite3VdbeChangeP5(v, OE_Abort);
-    }else
+    }ບໍ່ດັ່ງນັ້ນ
 #endif
     {
-      int count = (pParse->nested==0);    /* True to count changes */
+      ຈຳນວນເຕັມ count = (pParse->nested==0);    /* True to count changes */
       sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
           iKey, nKey, count, OE_Default, eOnePass, aiCurOnePass[1]);
     }
  
     /* End of the loop over all rowids/primary-keys. */
-    if( eOnePass!=ONEPASS_OFF ){
+    ຖ້າ( eOnePass!=ONEPASS_OFF ){
       sqlite3VdbeResolveLabel(v, addrBypass);
       sqlite3WhereEnd(pWInfo);
-    }else if( pPk ){
+    }ບໍ່ດັ່ງນັ້ນ ຖ້າ( pPk ){
       sqlite3VdbeAddOp2(v, OP_Next, iEphCur, addrLoop+1); VdbeCoverage(v);
       sqlite3VdbeJumpHere(v, addrLoop);
-    }else{
+    }ບໍ່ດັ່ງນັ້ນ{
       sqlite3VdbeGoto(v, addrLoop);
       sqlite3VdbeJumpHere(v, addrLoop);
     }    
@@ -668,7 +668,7 @@ void sqlite3DeleteFrom(
   ** maximum rowid counter values recorded while inserting into
   ** autoincrement tables.
   */
-  if( pParse->nested==0 && pParse->pTriggerTab==0 ){
+  ຖ້າ( pParse->nested==0 && pParse->pTriggerTab==0 ){
     sqlite3AutoincrementEnd(pParse);
   }
 
@@ -676,7 +676,7 @@ void sqlite3DeleteFrom(
   ** generating code because of a call to sqlite3NestedParse(), do not
   ** invoke the callback function.
   */
-  if( memCnt ){
+  ຖ້າ( memCnt ){
     sqlite3CodeChangeCount(v, memCnt, "rows deleted");
   }
 
@@ -684,12 +684,12 @@ delete_from_cleanup:
   sqlite3AuthContextPop(&sContext);
   sqlite3SrcListDelete(db, pTabList);
   sqlite3ExprDelete(db, pWhere);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT)
+#ຖ້າ defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT)
   sqlite3ExprListDelete(db, pOrderBy);
   sqlite3ExprDelete(db, pLimit);
 #endif
-  if( aToOpen ) sqlite3DbNNFreeNN(db, aToOpen);
-  return;
+  ຖ້າ( aToOpen ) sqlite3DbNNFreeNN(db, aToOpen);
+  ສົ່ງຄືນ;
 }
 /* Make sure "isView" and other macros defined above are undefined. Otherwise
 ** they may interfere with compilation of other functions in this file
@@ -746,31 +746,31 @@ void sqlite3GenerateRowDelete(
   Parse *pParse,     /* Parsing context */
   Table *pTab,       /* Table containing the row to be deleted */
   Trigger *pTrigger, /* List of triggers to (potentially) fire */
-  int iDataCur,      /* Cursor from which column data is extracted */
-  int iIdxCur,       /* First index cursor */
-  int iPk,           /* First memory cell containing the PRIMARY KEY */
+  ຈຳນວນເຕັມ iDataCur,      /* Cursor from which column data is extracted */
+  ຈຳນວນເຕັມ iIdxCur,       /* First index cursor */
+  ຈຳນວນເຕັມ iPk,           /* First memory cell containing the PRIMARY KEY */
   i16 nPk,           /* Number of PRIMARY KEY memory cells */
   u8 count,          /* If non-zero, increment the row change counter */
   u8 onconf,         /* Default ON CONFLICT policy for triggers */
   u8 eMode,          /* ONEPASS_OFF, _SINGLE, or _MULTI.  See above */
-  int iIdxNoSeek     /* Cursor number of cursor that does not need seeking */
+  ຈຳນວນເຕັມ iIdxNoSeek     /* Cursor number of cursor that does not need seeking */
 ){
   Vdbe *v = pParse->pVdbe;        /* Vdbe */
-  int iOld = 0;                   /* First register in OLD.* array */
-  int iLabel;                     /* Label resolved to end of generated code */
+  ຈຳນວນເຕັມ iOld = 0;                   /* First register in OLD.* array */
+  ຈຳນວນເຕັມ iLabel;                     /* Label resolved to end of generated code */
   u8 opSeek;                      /* Seek opcode */
 
   /* Vdbe is guaranteed to have been allocated by this stage. */
   assert( v );
   VdbeModuleComment((v, "BEGIN: GenRowDel(%d,%d,%d,%d)",
-                         iDataCur, iIdxCur, iPk, (int)nPk));
+                         iDataCur, iIdxCur, iPk, (ຈຳນວນເຕັມ)nPk));
 
   /* Seek cursor iCur to the row to delete. If this row no longer exists
   ** (this can happen if a trigger program has already deleted it), do
   ** not attempt to delete it or fire any DELETE triggers.  */
   iLabel = sqlite3VdbeMakeLabel(pParse);
   opSeek = HasRowid(pTab) ? OP_NotExists : OP_NotFound;
-  if( eMode==ONEPASS_OFF ){
+  ຖ້າ( eMode==ONEPASS_OFF ){
     sqlite3VdbeAddOp4Int(v, opSeek, iDataCur, iLabel, iPk, nPk);
     VdbeCoverageIf(v, opSeek==OP_NotExists);
     VdbeCoverageIf(v, opSeek==OP_NotFound);
@@ -778,10 +778,10 @@ void sqlite3GenerateRowDelete(
 
   /* If there are any triggers to fire, allocate a range of registers to
   ** use for the old.* references in the triggers.  */
-  if( sqlite3FkRequired(pParse, pTab, 0, 0) || pTrigger ){
+  ຖ້າ( sqlite3FkRequired(pParse, pTab, 0, 0) || pTrigger ){
     u32 mask;                     /* Mask of OLD.* columns in use */
-    int iCol;                     /* Iterator used while populating OLD.* */
-    int addrStart;                /* Start of BEFORE trigger programs */
+    ຈຳນວນເຕັມ iCol;                     /* Iterator used while populating OLD.* */
+    ຈຳນວນເຕັມ addrStart;                /* Start of BEFORE trigger programs */
 
     /* TODO: Could use temporary registers here. Also could attempt to
     ** avoid copying the contents of the rowid register.  */
@@ -795,11 +795,11 @@ void sqlite3GenerateRowDelete(
     /* Populate the OLD.* pseudo-table register array. These values will be
     ** used by any BEFORE and AFTER triggers that exist.  */
     sqlite3VdbeAddOp2(v, OP_Copy, iPk, iOld);
-    for(iCol=0; iCol<pTab->nCol; iCol++){
+    ສຳລັບ(iCol=0; iCol<pTab->nCol; iCol++){
       testcase( mask!=0xffffffff && iCol==31 );
       testcase( mask!=0xffffffff && iCol==32 );
-      if( mask==0xffffffff || (iCol<=31 && (mask & MASKBIT32(iCol))!=0) ){
-        int kk = sqlite3TableColumnToStorage(pTab, iCol);
+      ຖ້າ( mask==0xffffffff || (iCol<=31 && (mask & MASKBIT32(iCol))!=0) ){
+        ຈຳນວນເຕັມ kk = sqlite3TableColumnToStorage(pTab, iCol);
         sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, iCol, iOld+kk+1);
       }
     }
@@ -818,7 +818,7 @@ void sqlite3GenerateRowDelete(
     ** Also disable the iIdxNoSeek optimization since the BEFORE trigger
     ** may have moved that cursor.
     */
-    if( addrStart<sqlite3VdbeCurrentAddr(v) ){
+    ຖ້າ( addrStart<sqlite3VdbeCurrentAddr(v) ){
       sqlite3VdbeAddOp4Int(v, opSeek, iDataCur, iLabel, iPk, nPk);
       VdbeCoverageIf(v, opSeek==OP_NotExists);
       VdbeCoverageIf(v, opSeek==OP_NotFound);
@@ -842,20 +842,20 @@ void sqlite3GenerateRowDelete(
   ** the update-hook is not invoked for rows removed by REPLACE, but the
   ** pre-update-hook is.
   */
-  if( !IsView(pTab) ){
+  ຖ້າ( !IsView(pTab) ){
     u8 p5 = 0;
     sqlite3GenerateRowIndexDelete(pParse, pTab, iDataCur, iIdxCur,0,iIdxNoSeek);
     sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, (count?OPFLAG_NCHANGE:0));
-    if( pParse->nested==0 || 0==sqlite3_stricmp(pTab->zName, "sqlite_stat1") ){
-      sqlite3VdbeAppendP4(v, (char*)pTab, P4_TABLE);
+    ຖ້າ( pParse->nested==0 || 0==sqlite3_stricmp(pTab->zName, "sqlite_stat1") ){
+      sqlite3VdbeAppendP4(v, (var_na*)pTab, P4_TABLE);
     }
-    if( eMode!=ONEPASS_OFF ){
+    ຖ້າ( eMode!=ONEPASS_OFF ){
       sqlite3VdbeChangeP5(v, OPFLAG_AUXDELETE);
     }
-    if( iIdxNoSeek>=0 && iIdxNoSeek!=iDataCur ){
+    ຖ້າ( iIdxNoSeek>=0 && iIdxNoSeek!=iDataCur ){
       sqlite3VdbeAddOp1(v, OP_Delete, iIdxNoSeek);
     }
-    if( eMode==ONEPASS_MULTI ) p5 |= OPFLAG_SAVEPOSITION;
+    ຖ້າ( eMode==ONEPASS_MULTI ) p5 |= OPFLAG_SAVEPOSITION;
     sqlite3VdbeChangeP5(v, p5);
   }
 
@@ -865,7 +865,7 @@ void sqlite3GenerateRowDelete(
   sqlite3FkActions(pParse, pTab, 0, iOld, 0, 0);
 
   /* Invoke AFTER DELETE trigger programs. */
-  if( pTrigger ){
+  ຖ້າ( pTrigger ){
     sqlite3CodeRowTrigger(pParse, pTrigger,
         TK_DELETE, 0, TRIGGER_AFTER, pTab, iOld, onconf, iLabel
     );
@@ -899,14 +899,14 @@ void sqlite3GenerateRowDelete(
 void sqlite3GenerateRowIndexDelete(
   Parse *pParse,     /* Parsing and code generating context */
   Table *pTab,       /* Table containing the row to be deleted */
-  int iDataCur,      /* Cursor of table holding data. */
-  int iIdxCur,       /* First index cursor */
-  int *aRegIdx,      /* Only delete if aRegIdx!=0 && aRegIdx[i]>0 */
-  int iIdxNoSeek     /* Do not delete from this cursor */
+  ຈຳນວນເຕັມ iDataCur,      /* Cursor of table holding data. */
+  ຈຳນວນເຕັມ iIdxCur,       /* First index cursor */
+  ຈຳນວນເຕັມ *aRegIdx,      /* Only delete if aRegIdx!=0 && aRegIdx[i]>0 */
+  ຈຳນວນເຕັມ iIdxNoSeek     /* Do not delete from this cursor */
 ){
-  int i;             /* Index loop counter */
-  int r1 = -1;       /* Register holding an index key */
-  int iPartIdxLabel; /* Jump destination for skipping partial index entries */
+  ຈຳນວນເຕັມ i;             /* Index loop counter */
+  ຈຳນວນເຕັມ r1 = -1;       /* Register holding an index key */
+  ຈຳນວນເຕັມ iPartIdxLabel; /* Jump destination for skipping partial index entries */
   Index *pIdx;       /* Current index */
   Index *pPrior = 0; /* Prior index */
   Vdbe *v;           /* The prepared statement under construction */
@@ -914,20 +914,20 @@ void sqlite3GenerateRowIndexDelete(
 
   v = pParse->pVdbe;
   pPk = HasRowid(pTab) ? 0 : sqlite3PrimaryKeyIndex(pTab);
-  for(i=0, pIdx=pTab->pIndex; pIdx; i++, pIdx=pIdx->pNext){
-    int p3 = 0;
+  ສຳລັບ(i=0, pIdx=pTab->pIndex; pIdx; i++, pIdx=pIdx->pNext){
+    ຈຳນວນເຕັມ p3 = 0;
     assert( iIdxCur+i!=iDataCur || pPk==pIdx );
-    if( aRegIdx!=0 && aRegIdx[i]==0 ) continue;
-    if( pIdx==pPk ) continue;
-    if( iIdxCur+i==iIdxNoSeek ) continue;
+    ຖ້າ( aRegIdx!=0 && aRegIdx[i]==0 ) continue;
+    ຖ້າ( pIdx==pPk ) continue;
+    ຖ້າ( iIdxCur+i==iIdxNoSeek ) continue;
     VdbeModuleComment((v, "GenRowIdxDel for %s", pIdx->zName));
     r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 1,
         &iPartIdxLabel, pPrior, r1);
-    if( pIdx->bHasExpr && aRegIdx ){
+    ຖ້າ( pIdx->bHasExpr && aRegIdx ){
       p3 = aRegIdx[i];
     }
     sqlite3VdbeAddOp3(v, OP_IdxDelete, iIdxCur+i, r1, p3);
-    sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
+    sqlite3VdbeChangeP4(v, -1, (const var_na*)pIdx, P4_INDEX);
     sqlite3VdbeChangeP5(v, pIdx->uniqNotNull ? pIdx->nKeyCol : pIdx->nColumn);
     sqlite3ResolvePartIdxLabel(pParse, iPartIdxLabel);
     pPrior = pIdx;
@@ -965,23 +965,23 @@ void sqlite3GenerateRowIndexDelete(
 ** on a table with multiple indices, and especially with the ROWID or
 ** PRIMARY KEY columns of the index.
 */
-int sqlite3GenerateIndexKey(
+ຈຳນວນເຕັມ sqlite3GenerateIndexKey(
   Parse *pParse,       /* Parsing context */
   Index *pIdx,         /* The index for which to generate a key */
-  int iDataCur,        /* Cursor number from which to take column data */
-  int regOut,          /* Put the new key into this register if not 0 */
-  int prefixOnly,      /* Compute only a unique prefix of the key */
-  int *piPartIdxLabel, /* OUT: Jump to this label to skip partial index */
+  ຈຳນວນເຕັມ iDataCur,        /* Cursor number from which to take column data */
+  ຈຳນວນເຕັມ regOut,          /* Put the new key into this register if not 0 */
+  ຈຳນວນເຕັມ prefixOnly,      /* Compute only a unique prefix of the key */
+  ຈຳນວນເຕັມ *piPartIdxLabel, /* OUT: Jump to this label to skip partial index */
   Index *pPrior,       /* Previously generated index key */
-  int regPrior         /* Register holding previous generated key */
+  ຈຳນວນເຕັມ regPrior         /* Register holding previous generated key */
 ){
   Vdbe *v = pParse->pVdbe;
-  int j;
-  int regBase;
-  int nCol;
+  ຈຳນວນເຕັມ j;
+  ຈຳນວນເຕັມ regBase;
+  ຈຳນວນເຕັມ nCol;
 
-  if( piPartIdxLabel ){
-    if( pIdx->pPartIdxWhere ){
+  ຖ້າ( piPartIdxLabel ){
+    ຖ້າ( pIdx->pPartIdxWhere ){
       *piPartIdxLabel = sqlite3VdbeMakeLabel(pParse);
       pParse->iSelfTab = iDataCur + 1;
       sqlite3ExprIfFalseDup(pParse, pIdx->pPartIdxWhere, *piPartIdxLabel,
@@ -989,16 +989,16 @@ int sqlite3GenerateIndexKey(
       pParse->iSelfTab = 0;
       pPrior = 0; /* Ticket a9efb42811fa41ee 2019-11-02;
                   ** pPartIdxWhere may have corrupted regPrior registers */
-    }else{
+    }ບໍ່ດັ່ງນັ້ນ{
       *piPartIdxLabel = 0;
     }
   }
   nCol = (prefixOnly && pIdx->uniqNotNull) ? pIdx->nKeyCol : pIdx->nColumn;
   regBase = sqlite3GetTempRange(pParse, nCol);
-  if( pPrior && (regBase!=regPrior || pPrior->pPartIdxWhere) ) pPrior = 0;
-  for(j=0; j<nCol; j++){
-    int iTabCol;
-    if( pPrior
+  ຖ້າ( pPrior && (regBase!=regPrior || pPrior->pPartIdxWhere) ) pPrior = 0;
+  ສຳລັບ(j=0; j<nCol; j++){
+    ຈຳນວນເຕັມ iTabCol;
+    ຖ້າ( pPrior
      && pPrior->aiColumn[j]==pIdx->aiColumn[j]
      && pPrior->aiColumn[j]!=XN_EXPR
     ){
@@ -1006,7 +1006,7 @@ int sqlite3GenerateIndexKey(
       continue;
     }
     sqlite3ExprCodeLoadIndexColumn(pParse, pIdx, iDataCur, j, regBase+j);
-    if( (iTabCol = pIdx->aiColumn[j])>=0 
+    ຖ້າ( (iTabCol = pIdx->aiColumn[j])>=0 
      && (pIdx->pTable->aCol[iTabCol].colFlags & COLFLAG_VIRTUAL)==0
     ){
       /* If the column affinity is REAL but the number is an integer, then it
@@ -1018,11 +1018,11 @@ int sqlite3GenerateIndexKey(
       sqlite3VdbeDeletePriorOpcode(v, OP_RealAffinity);
     }
   }
-  if( regOut ){
+  ຖ້າ( regOut ){
     sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase, nCol, regOut);
   }
   sqlite3ReleaseTempRange(pParse, regBase, nCol);
-  return regBase;
+  ສົ່ງຄືນ regBase;
 }
 
 /*
@@ -1030,8 +1030,8 @@ int sqlite3GenerateIndexKey(
 ** because it was a partial index, then this routine should be called to
 ** resolve that label.
 */
-void sqlite3ResolvePartIdxLabel(Parse *pParse, int iLabel){
-  if( iLabel ){
+void sqlite3ResolvePartIdxLabel(Parse *pParse, ຈຳນວນເຕັມ iLabel){
+  ຖ້າ( iLabel ){
     sqlite3VdbeResolveLabel(pParse->pVdbe, iLabel);
   }
 }

@@ -29,365 +29,365 @@
 ** versions of SQLite will not be able to load each other's shared
 ** libraries!
 */
-struct sqlite3_api_routines {
-  void * (*aggregate_context)(sqlite3_context*,int nBytes);
-  int  (*aggregate_count)(sqlite3_context*);
-  int  (*bind_blob)(sqlite3_stmt*,int,const void*,int n,void(*)(void*));
-  int  (*bind_double)(sqlite3_stmt*,int,double);
-  int  (*bind_int)(sqlite3_stmt*,int,int);
-  int  (*bind_int64)(sqlite3_stmt*,int,sqlite_int64);
-  int  (*bind_null)(sqlite3_stmt*,int);
-  int  (*bind_parameter_count)(sqlite3_stmt*);
-  int  (*bind_parameter_index)(sqlite3_stmt*,const char*zName);
-  const char * (*bind_parameter_name)(sqlite3_stmt*,int);
-  int  (*bind_text)(sqlite3_stmt*,int,const char*,int n,void(*)(void*));
-  int  (*bind_text16)(sqlite3_stmt*,int,const void*,int,void(*)(void*));
-  int  (*bind_value)(sqlite3_stmt*,int,const sqlite3_value*);
-  int  (*busy_handler)(sqlite3*,int(*)(void*,int),void*);
-  int  (*busy_timeout)(sqlite3*,int ms);
-  int  (*changes)(sqlite3*);
-  int  (*close)(sqlite3*);
-  int  (*collation_needed)(sqlite3*,void*,void(*)(void*,sqlite3*,
-                           int eTextRep,const char*));
-  int  (*collation_needed16)(sqlite3*,void*,void(*)(void*,sqlite3*,
-                             int eTextRep,const void*));
-  const void * (*column_blob)(sqlite3_stmt*,int iCol);
-  int  (*column_bytes)(sqlite3_stmt*,int iCol);
-  int  (*column_bytes16)(sqlite3_stmt*,int iCol);
-  int  (*column_count)(sqlite3_stmt*pStmt);
-  const char * (*column_database_name)(sqlite3_stmt*,int);
-  const void * (*column_database_name16)(sqlite3_stmt*,int);
-  const char * (*column_decltype)(sqlite3_stmt*,int i);
-  const void * (*column_decltype16)(sqlite3_stmt*,int);
-  double  (*column_double)(sqlite3_stmt*,int iCol);
-  int  (*column_int)(sqlite3_stmt*,int iCol);
-  sqlite_int64  (*column_int64)(sqlite3_stmt*,int iCol);
-  const char * (*column_name)(sqlite3_stmt*,int);
-  const void * (*column_name16)(sqlite3_stmt*,int);
-  const char * (*column_origin_name)(sqlite3_stmt*,int);
-  const void * (*column_origin_name16)(sqlite3_stmt*,int);
-  const char * (*column_table_name)(sqlite3_stmt*,int);
-  const void * (*column_table_name16)(sqlite3_stmt*,int);
-  const unsigned char * (*column_text)(sqlite3_stmt*,int iCol);
-  const void * (*column_text16)(sqlite3_stmt*,int iCol);
-  int  (*column_type)(sqlite3_stmt*,int iCol);
-  sqlite3_value* (*column_value)(sqlite3_stmt*,int iCol);
-  void * (*commit_hook)(sqlite3*,int(*)(void*),void*);
-  int  (*complete)(const char*sql);
-  int  (*complete16)(const void*sql);
-  int  (*create_collation)(sqlite3*,const char*,int,void*,
-                           int(*)(void*,int,const void*,int,const void*));
-  int  (*create_collation16)(sqlite3*,const void*,int,void*,
-                             int(*)(void*,int,const void*,int,const void*));
-  int  (*create_function)(sqlite3*,const char*,int,int,void*,
-                          void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                          void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+sa_nracanaa sqlite3_api_routines {
+  void * (*aggregate_context)(sqlite3_context*,ຈຳນວນເຕັມ nBytes);
+  ຈຳນວນເຕັມ  (*aggregate_count)(sqlite3_context*);
+  ຈຳນວນເຕັມ  (*bind_blob)(sqlite3_stmt*,ຈຳນວນເຕັມ,const void*,ຈຳນວນເຕັມ n,void(*)(void*));
+  ຈຳນວນເຕັມ  (*bind_double)(sqlite3_stmt*,ຈຳນວນເຕັມ,dviguu_na);
+  ຈຳນວນເຕັມ  (*bind_int)(sqlite3_stmt*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ  (*bind_int64)(sqlite3_stmt*,ຈຳນວນເຕັມ,sqlite_int64);
+  ຈຳນວນເຕັມ  (*bind_null)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ  (*bind_parameter_count)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ  (*bind_parameter_index)(sqlite3_stmt*,const var_na*zName);
+  const var_na * (*bind_parameter_name)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ  (*bind_text)(sqlite3_stmt*,ຈຳນວນເຕັມ,const var_na*,ຈຳນວນເຕັມ n,void(*)(void*));
+  ຈຳນວນເຕັມ  (*bind_text16)(sqlite3_stmt*,ຈຳນວນເຕັມ,const void*,ຈຳນວນເຕັມ,void(*)(void*));
+  ຈຳນວນເຕັມ  (*bind_value)(sqlite3_stmt*,ຈຳນວນເຕັມ,const sqlite3_value*);
+  ຈຳນວນເຕັມ  (*busy_handler)(sqlite3*,ຈຳນວນເຕັມ(*)(void*,ຈຳນວນເຕັມ),void*);
+  ຈຳນວນເຕັມ  (*busy_timeout)(sqlite3*,ຈຳນວນເຕັມ ms);
+  ຈຳນວນເຕັມ  (*changes)(sqlite3*);
+  ຈຳນວນເຕັມ  (*close)(sqlite3*);
+  ຈຳນວນເຕັມ  (*collation_needed)(sqlite3*,void*,void(*)(void*,sqlite3*,
+                           ຈຳນວນເຕັມ eTextRep,const var_na*));
+  ຈຳນວນເຕັມ  (*collation_needed16)(sqlite3*,void*,void(*)(void*,sqlite3*,
+                             ຈຳນວນເຕັມ eTextRep,const void*));
+  const void * (*column_blob)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  ຈຳນວນເຕັມ  (*column_bytes)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  ຈຳນວນເຕັມ  (*column_bytes16)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  ຈຳນວນເຕັມ  (*column_count)(sqlite3_stmt*pStmt);
+  const var_na * (*column_database_name)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const void * (*column_database_name16)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const var_na * (*column_decltype)(sqlite3_stmt*,ຈຳນວນເຕັມ i);
+  const void * (*column_decltype16)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  dviguu_na  (*column_double)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  ຈຳນວນເຕັມ  (*column_int)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  sqlite_int64  (*column_int64)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  const var_na * (*column_name)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const void * (*column_name16)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const var_na * (*column_origin_name)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const void * (*column_origin_name16)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const var_na * (*column_table_name)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const void * (*column_table_name16)(sqlite3_stmt*,ຈຳນວນເຕັມ);
+  const unsigned var_na * (*column_text)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  const void * (*column_text16)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  ຈຳນວນເຕັມ  (*column_type)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  sqlite3_value* (*column_value)(sqlite3_stmt*,ຈຳນວນເຕັມ iCol);
+  void * (*commit_hook)(sqlite3*,ຈຳນວນເຕັມ(*)(void*),void*);
+  ຈຳນວນເຕັມ  (*complete)(const var_na*sql);
+  ຈຳນວນເຕັມ  (*complete16)(const void*sql);
+  ຈຳນວນເຕັມ  (*create_collation)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,void*,
+                           ຈຳນວນເຕັມ(*)(void*,ຈຳນວນເຕັມ,const void*,ຈຳນວນເຕັມ,const void*));
+  ຈຳນວນເຕັມ  (*create_collation16)(sqlite3*,const void*,ຈຳນວນເຕັມ,void*,
+                             ຈຳນວນເຕັມ(*)(void*,ຈຳນວນເຕັມ,const void*,ຈຳນວນເຕັມ,const void*));
+  ຈຳນວນເຕັມ  (*create_function)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,void*,
+                          void (*xFunc)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
+                          void (*xStep)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
                           void (*xFinal)(sqlite3_context*));
-  int  (*create_function16)(sqlite3*,const void*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+  ຈຳນວນເຕັມ  (*create_function16)(sqlite3*,const void*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,void*,
+                            void (*xFunc)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
+                            void (*xStep)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
                             void (*xFinal)(sqlite3_context*));
-  int (*create_module)(sqlite3*,const char*,const sqlite3_module*,void*);
-  int  (*data_count)(sqlite3_stmt*pStmt);
+  ຈຳນວນເຕັມ (*create_module)(sqlite3*,const var_na*,const sqlite3_module*,void*);
+  ຈຳນວນເຕັມ  (*data_count)(sqlite3_stmt*pStmt);
   sqlite3 * (*db_handle)(sqlite3_stmt*);
-  int (*declare_vtab)(sqlite3*,const char*);
-  int  (*enable_shared_cache)(int);
-  int  (*errcode)(sqlite3*db);
-  const char * (*errmsg)(sqlite3*);
+  ຈຳນວນເຕັມ (*declare_vtab)(sqlite3*,const var_na*);
+  ຈຳນວນເຕັມ  (*enable_shared_cache)(ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ  (*errcode)(sqlite3*db);
+  const var_na * (*errmsg)(sqlite3*);
   const void * (*errmsg16)(sqlite3*);
-  int  (*exec)(sqlite3*,const char*,sqlite3_callback,void*,char**);
-  int  (*expired)(sqlite3_stmt*);
-  int  (*finalize)(sqlite3_stmt*pStmt);
+  ຈຳນວນເຕັມ  (*exec)(sqlite3*,const var_na*,sqlite3_callback,void*,var_na**);
+  ຈຳນວນເຕັມ  (*expired)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ  (*finalize)(sqlite3_stmt*pStmt);
   void  (*free)(void*);
-  void  (*free_table)(char**result);
-  int  (*get_autocommit)(sqlite3*);
-  void * (*get_auxdata)(sqlite3_context*,int);
-  int  (*get_table)(sqlite3*,const char*,char***,int*,int*,char**);
-  int  (*global_recover)(void);
+  void  (*free_table)(var_na**result);
+  ຈຳນວນເຕັມ  (*get_autocommit)(sqlite3*);
+  void * (*get_auxdata)(sqlite3_context*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ  (*get_table)(sqlite3*,const var_na*,var_na***,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ*,var_na**);
+  ຈຳນວນເຕັມ  (*global_recover)(void);
   void  (*interruptx)(sqlite3*);
   sqlite_int64  (*last_insert_rowid)(sqlite3*);
-  const char * (*libversion)(void);
-  int  (*libversion_number)(void);
-  void *(*malloc)(int);
-  char *(SQLITE_CDECL*mprintf)(const char*,...);
-  int  (*open)(const char*,sqlite3**);
-  int  (*open16)(const void*,sqlite3**);
-  int  (*prepare)(sqlite3*,const char*,int,sqlite3_stmt**,const char**);
-  int  (*prepare16)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);
-  void * (*profile)(sqlite3*,void(*)(void*,const char*,sqlite_uint64),void*);
-  void  (*progress_handler)(sqlite3*,int,int(*)(void*),void*);
-  void *(*realloc)(void*,int);
-  int  (*reset)(sqlite3_stmt*pStmt);
-  void  (*result_blob)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_double)(sqlite3_context*,double);
-  void  (*result_error)(sqlite3_context*,const char*,int);
-  void  (*result_error16)(sqlite3_context*,const void*,int);
-  void  (*result_int)(sqlite3_context*,int);
+  const var_na * (*libversion)(void);
+  ຈຳນວນເຕັມ  (*libversion_number)(void);
+  void *(*malloc)(ຈຳນວນເຕັມ);
+  var_na *(SQLITE_CDECL*mprintf)(const var_na*,...);
+  ຈຳນວນເຕັມ  (*open)(const var_na*,sqlite3**);
+  ຈຳນວນເຕັມ  (*open16)(const void*,sqlite3**);
+  ຈຳນວນເຕັມ  (*prepare)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,sqlite3_stmt**,const var_na**);
+  ຈຳນວນເຕັມ  (*prepare16)(sqlite3*,const void*,ຈຳນວນເຕັມ,sqlite3_stmt**,const void**);
+  void * (*profile)(sqlite3*,void(*)(void*,const var_na*,sqlite_uint64),void*);
+  void  (*progress_handler)(sqlite3*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ(*)(void*),void*);
+  void *(*realloc)(void*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ  (*reset)(sqlite3_stmt*pStmt);
+  void  (*result_blob)(sqlite3_context*,const void*,ຈຳນວນເຕັມ,void(*)(void*));
+  void  (*result_double)(sqlite3_context*,dviguu_na);
+  void  (*result_error)(sqlite3_context*,const var_na*,ຈຳນວນເຕັມ);
+  void  (*result_error16)(sqlite3_context*,const void*,ຈຳນວນເຕັມ);
+  void  (*result_int)(sqlite3_context*,ຈຳນວນເຕັມ);
   void  (*result_int64)(sqlite3_context*,sqlite_int64);
   void  (*result_null)(sqlite3_context*);
-  void  (*result_text)(sqlite3_context*,const char*,int,void(*)(void*));
-  void  (*result_text16)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_text16be)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_text16le)(sqlite3_context*,const void*,int,void(*)(void*));
+  void  (*result_text)(sqlite3_context*,const var_na*,ຈຳນວນເຕັມ,void(*)(void*));
+  void  (*result_text16)(sqlite3_context*,const void*,ຈຳນວນເຕັມ,void(*)(void*));
+  void  (*result_text16be)(sqlite3_context*,const void*,ຈຳນວນເຕັມ,void(*)(void*));
+  void  (*result_text16le)(sqlite3_context*,const void*,ຈຳນວນເຕັມ,void(*)(void*));
   void  (*result_value)(sqlite3_context*,sqlite3_value*);
   void *(*rollback_hook)(sqlite3*,void(*)(void*),void*);
-  int  (*set_authorizer)(sqlite3*,int(*)(void*,int,const char*,const char*,
-                         const char*,const char*),void*);
-  void  (*set_auxdata)(sqlite3_context*,int,void*,void (*)(void*));
-  char *(SQLITE_CDECL*xsnprintf)(int,char*,const char*,...);
-  int  (*step)(sqlite3_stmt*);
-  int  (*table_column_metadata)(sqlite3*,const char*,const char*,const char*,
-                                char const**,char const**,int*,int*,int*);
+  ຈຳນວນເຕັມ  (*set_authorizer)(sqlite3*,ຈຳນວນເຕັມ(*)(void*,ຈຳນວນເຕັມ,const var_na*,const var_na*,
+                         const var_na*,const var_na*),void*);
+  void  (*set_auxdata)(sqlite3_context*,ຈຳນວນເຕັມ,void*,void (*)(void*));
+  var_na *(SQLITE_CDECL*xsnprintf)(ຈຳນວນເຕັມ,var_na*,const var_na*,...);
+  ຈຳນວນເຕັມ  (*step)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ  (*table_column_metadata)(sqlite3*,const var_na*,const var_na*,const var_na*,
+                                var_na const**,var_na const**,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ*);
   void  (*thread_cleanup)(void);
-  int  (*total_changes)(sqlite3*);
-  void * (*trace)(sqlite3*,void(*xTrace)(void*,const char*),void*);
-  int  (*transfer_bindings)(sqlite3_stmt*,sqlite3_stmt*);
-  void * (*update_hook)(sqlite3*,void(*)(void*,int ,char const*,char const*,
+  ຈຳນວນເຕັມ  (*total_changes)(sqlite3*);
+  void * (*trace)(sqlite3*,void(*xTrace)(void*,const var_na*),void*);
+  ຈຳນວນເຕັມ  (*transfer_bindings)(sqlite3_stmt*,sqlite3_stmt*);
+  void * (*update_hook)(sqlite3*,void(*)(void*,ຈຳນວນເຕັມ ,var_na const*,var_na const*,
                                          sqlite_int64),void*);
   void * (*user_data)(sqlite3_context*);
   const void * (*value_blob)(sqlite3_value*);
-  int  (*value_bytes)(sqlite3_value*);
-  int  (*value_bytes16)(sqlite3_value*);
-  double  (*value_double)(sqlite3_value*);
-  int  (*value_int)(sqlite3_value*);
+  ຈຳນວນເຕັມ  (*value_bytes)(sqlite3_value*);
+  ຈຳນວນເຕັມ  (*value_bytes16)(sqlite3_value*);
+  dviguu_na  (*value_double)(sqlite3_value*);
+  ຈຳນວນເຕັມ  (*value_int)(sqlite3_value*);
   sqlite_int64  (*value_int64)(sqlite3_value*);
-  int  (*value_numeric_type)(sqlite3_value*);
-  const unsigned char * (*value_text)(sqlite3_value*);
+  ຈຳນວນເຕັມ  (*value_numeric_type)(sqlite3_value*);
+  const unsigned var_na * (*value_text)(sqlite3_value*);
   const void * (*value_text16)(sqlite3_value*);
   const void * (*value_text16be)(sqlite3_value*);
   const void * (*value_text16le)(sqlite3_value*);
-  int  (*value_type)(sqlite3_value*);
-  char *(*vmprintf)(const char*,va_list);
+  ຈຳນວນເຕັມ  (*value_type)(sqlite3_value*);
+  var_na *(*vmprintf)(const var_na*,va_list);
   /* Added ??? */
-  int (*overload_function)(sqlite3*, const char *zFuncName, int nArg);
+  ຈຳນວນເຕັມ (*overload_function)(sqlite3*, const var_na *zFuncName, ຈຳນວນເຕັມ nArg);
   /* Added by 3.3.13 */
-  int (*prepare_v2)(sqlite3*,const char*,int,sqlite3_stmt**,const char**);
-  int (*prepare16_v2)(sqlite3*,const void*,int,sqlite3_stmt**,const void**);
-  int (*clear_bindings)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ (*prepare_v2)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,sqlite3_stmt**,const var_na**);
+  ຈຳນວນເຕັມ (*prepare16_v2)(sqlite3*,const void*,ຈຳນວນເຕັມ,sqlite3_stmt**,const void**);
+  ຈຳນວນເຕັມ (*clear_bindings)(sqlite3_stmt*);
   /* Added by 3.4.1 */
-  int (*create_module_v2)(sqlite3*,const char*,const sqlite3_module*,void*,
+  ຈຳນວນເຕັມ (*create_module_v2)(sqlite3*,const var_na*,const sqlite3_module*,void*,
                           void (*xDestroy)(void *));
   /* Added by 3.5.0 */
-  int (*bind_zeroblob)(sqlite3_stmt*,int,int);
-  int (*blob_bytes)(sqlite3_blob*);
-  int (*blob_close)(sqlite3_blob*);
-  int (*blob_open)(sqlite3*,const char*,const char*,const char*,sqlite3_int64,
-                   int,sqlite3_blob**);
-  int (*blob_read)(sqlite3_blob*,void*,int,int);
-  int (*blob_write)(sqlite3_blob*,const void*,int,int);
-  int (*create_collation_v2)(sqlite3*,const char*,int,void*,
-                             int(*)(void*,int,const void*,int,const void*),
+  ຈຳນວນເຕັມ (*bind_zeroblob)(sqlite3_stmt*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*blob_bytes)(sqlite3_blob*);
+  ຈຳນວນເຕັມ (*blob_close)(sqlite3_blob*);
+  ຈຳນວນເຕັມ (*blob_open)(sqlite3*,const var_na*,const var_na*,const var_na*,sqlite3_int64,
+                   ຈຳນວນເຕັມ,sqlite3_blob**);
+  ຈຳນວນເຕັມ (*blob_read)(sqlite3_blob*,void*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*blob_write)(sqlite3_blob*,const void*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*create_collation_v2)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,void*,
+                             ຈຳນວນເຕັມ(*)(void*,ຈຳນວນເຕັມ,const void*,ຈຳນວນເຕັມ,const void*),
                              void(*)(void*));
-  int (*file_control)(sqlite3*,const char*,int,void*);
-  sqlite3_int64 (*memory_highwater)(int);
+  ຈຳນວນເຕັມ (*file_control)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,void*);
+  sqlite3_int64 (*memory_highwater)(ຈຳນວນເຕັມ);
   sqlite3_int64 (*memory_used)(void);
-  sqlite3_mutex *(*mutex_alloc)(int);
+  sqlite3_mutex *(*mutex_alloc)(ຈຳນວນເຕັມ);
   void (*mutex_enter)(sqlite3_mutex*);
   void (*mutex_free)(sqlite3_mutex*);
   void (*mutex_leave)(sqlite3_mutex*);
-  int (*mutex_try)(sqlite3_mutex*);
-  int (*open_v2)(const char*,sqlite3**,int,const char*);
-  int (*release_memory)(int);
+  ຈຳນວນເຕັມ (*mutex_try)(sqlite3_mutex*);
+  ຈຳນວນເຕັມ (*open_v2)(const var_na*,sqlite3**,ຈຳນວນເຕັມ,const var_na*);
+  ຈຳນວນເຕັມ (*release_memory)(ຈຳນວນເຕັມ);
   void (*result_error_nomem)(sqlite3_context*);
   void (*result_error_toobig)(sqlite3_context*);
-  int (*sleep)(int);
-  void (*soft_heap_limit)(int);
-  sqlite3_vfs *(*vfs_find)(const char*);
-  int (*vfs_register)(sqlite3_vfs*,int);
-  int (*vfs_unregister)(sqlite3_vfs*);
-  int (*xthreadsafe)(void);
-  void (*result_zeroblob)(sqlite3_context*,int);
-  void (*result_error_code)(sqlite3_context*,int);
-  int (SQLITE_CDECL*test_control)(int, ...);
-  void (*randomness)(int,void*);
+  ຈຳນວນເຕັມ (*sleep)(ຈຳນວນເຕັມ);
+  void (*soft_heap_limit)(ຈຳນວນເຕັມ);
+  sqlite3_vfs *(*vfs_find)(const var_na*);
+  ຈຳນວນເຕັມ (*vfs_register)(sqlite3_vfs*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*vfs_unregister)(sqlite3_vfs*);
+  ຈຳນວນເຕັມ (*xthreadsafe)(void);
+  void (*result_zeroblob)(sqlite3_context*,ຈຳນວນເຕັມ);
+  void (*result_error_code)(sqlite3_context*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (SQLITE_CDECL*test_control)(ຈຳນວນເຕັມ, ...);
+  void (*randomness)(ຈຳນວນເຕັມ,void*);
   sqlite3 *(*context_db_handle)(sqlite3_context*);
-  int (*extended_result_codes)(sqlite3*,int);
-  int (*limit)(sqlite3*,int,int);
+  ຈຳນວນເຕັມ (*extended_result_codes)(sqlite3*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*limit)(sqlite3*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
   sqlite3_stmt *(*next_stmt)(sqlite3*,sqlite3_stmt*);
-  const char *(*sql)(sqlite3_stmt*);
-  int (*status)(int,int*,int*,int);
-  int (*backup_finish)(sqlite3_backup*);
-  sqlite3_backup *(*backup_init)(sqlite3*,const char*,sqlite3*,const char*);
-  int (*backup_pagecount)(sqlite3_backup*);
-  int (*backup_remaining)(sqlite3_backup*);
-  int (*backup_step)(sqlite3_backup*,int);
-  const char *(*compileoption_get)(int);
-  int (*compileoption_used)(const char*);
-  int (*create_function_v2)(sqlite3*,const char*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+  const var_na *(*sql)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ (*status)(ຈຳນວນເຕັມ,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*backup_finish)(sqlite3_backup*);
+  sqlite3_backup *(*backup_init)(sqlite3*,const var_na*,sqlite3*,const var_na*);
+  ຈຳນວນເຕັມ (*backup_pagecount)(sqlite3_backup*);
+  ຈຳນວນເຕັມ (*backup_remaining)(sqlite3_backup*);
+  ຈຳນວນເຕັມ (*backup_step)(sqlite3_backup*,ຈຳນວນເຕັມ);
+  const var_na *(*compileoption_get)(ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*compileoption_used)(const var_na*);
+  ຈຳນວນເຕັມ (*create_function_v2)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,void*,
+                            void (*xFunc)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
+                            void (*xStep)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
                             void (*xFinal)(sqlite3_context*),
                             void(*xDestroy)(void*));
-  int (SQLITE_CDECL*db_config)(sqlite3*,int,...);
+  ຈຳນວນເຕັມ (SQLITE_CDECL*db_config)(sqlite3*,ຈຳນວນເຕັມ,...);
   sqlite3_mutex *(*db_mutex)(sqlite3*);
-  int (*db_status)(sqlite3*,int,int*,int*,int);
-  int (*extended_errcode)(sqlite3*);
-  void (SQLITE_CDECL*log)(int,const char*,...);
+  ຈຳນວນເຕັມ (*db_status)(sqlite3*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*extended_errcode)(sqlite3*);
+  void (SQLITE_CDECL*log)(ຈຳນວນເຕັມ,const var_na*,...);
   sqlite3_int64 (*soft_heap_limit64)(sqlite3_int64);
-  const char *(*sourceid)(void);
-  int (*stmt_status)(sqlite3_stmt*,int,int);
-  int (*strnicmp)(const char*,const char*,int);
-  int (*unlock_notify)(sqlite3*,void(*)(void**,int),void*);
-  int (*wal_autocheckpoint)(sqlite3*,int);
-  int (*wal_checkpoint)(sqlite3*,const char*);
-  void *(*wal_hook)(sqlite3*,int(*)(void*,sqlite3*,const char*,int),void*);
-  int (*blob_reopen)(sqlite3_blob*,sqlite3_int64);
-  int (SQLITE_CDECL*vtab_config)(sqlite3*,int op,...);
-  int (*vtab_on_conflict)(sqlite3*);
+  const var_na *(*sourceid)(void);
+  ຈຳນວນເຕັມ (*stmt_status)(sqlite3_stmt*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*strnicmp)(const var_na*,const var_na*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*unlock_notify)(sqlite3*,void(*)(void**,ຈຳນວນເຕັມ),void*);
+  ຈຳນວນເຕັມ (*wal_autocheckpoint)(sqlite3*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*wal_checkpoint)(sqlite3*,const var_na*);
+  void *(*wal_hook)(sqlite3*,ຈຳນວນເຕັມ(*)(void*,sqlite3*,const var_na*,ຈຳນວນເຕັມ),void*);
+  ຈຳນວນເຕັມ (*blob_reopen)(sqlite3_blob*,sqlite3_int64);
+  ຈຳນວນເຕັມ (SQLITE_CDECL*vtab_config)(sqlite3*,ຈຳນວນເຕັມ op,...);
+  ຈຳນວນເຕັມ (*vtab_on_conflict)(sqlite3*);
   /* Version 3.7.16 and later */
-  int (*close_v2)(sqlite3*);
-  const char *(*db_filename)(sqlite3*,const char*);
-  int (*db_readonly)(sqlite3*,const char*);
-  int (*db_release_memory)(sqlite3*);
-  const char *(*errstr)(int);
-  int (*stmt_busy)(sqlite3_stmt*);
-  int (*stmt_readonly)(sqlite3_stmt*);
-  int (*stricmp)(const char*,const char*);
-  int (*uri_boolean)(const char*,const char*,int);
-  sqlite3_int64 (*uri_int64)(const char*,const char*,sqlite3_int64);
-  const char *(*uri_parameter)(const char*,const char*);
-  char *(*xvsnprintf)(int,char*,const char*,va_list);
-  int (*wal_checkpoint_v2)(sqlite3*,const char*,int,int*,int*);
+  ຈຳນວນເຕັມ (*close_v2)(sqlite3*);
+  const var_na *(*db_filename)(sqlite3*,const var_na*);
+  ຈຳນວນເຕັມ (*db_readonly)(sqlite3*,const var_na*);
+  ຈຳນວນເຕັມ (*db_release_memory)(sqlite3*);
+  const var_na *(*errstr)(ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*stmt_busy)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ (*stmt_readonly)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ (*stricmp)(const var_na*,const var_na*);
+  ຈຳນວນເຕັມ (*uri_boolean)(const var_na*,const var_na*,ຈຳນວນເຕັມ);
+  sqlite3_int64 (*uri_int64)(const var_na*,const var_na*,sqlite3_int64);
+  const var_na *(*uri_parameter)(const var_na*,const var_na*);
+  var_na *(*xvsnprintf)(ຈຳນວນເຕັມ,var_na*,const var_na*,va_list);
+  ຈຳນວນເຕັມ (*wal_checkpoint_v2)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ*,ຈຳນວນເຕັມ*);
   /* Version 3.8.7 and later */
-  int (*auto_extension)(void(*)(void));
-  int (*bind_blob64)(sqlite3_stmt*,int,const void*,sqlite3_uint64,
+  ຈຳນວນເຕັມ (*auto_extension)(void(*)(void));
+  ຈຳນວນເຕັມ (*bind_blob64)(sqlite3_stmt*,ຈຳນວນເຕັມ,const void*,sqlite3_uint64,
                      void(*)(void*));
-  int (*bind_text64)(sqlite3_stmt*,int,const char*,sqlite3_uint64,
-                      void(*)(void*),unsigned char);
-  int (*cancel_auto_extension)(void(*)(void));
-  int (*load_extension)(sqlite3*,const char*,const char*,char**);
+  ຈຳນວນເຕັມ (*bind_text64)(sqlite3_stmt*,ຈຳນວນເຕັມ,const var_na*,sqlite3_uint64,
+                      void(*)(void*),unsigned var_na);
+  ຈຳນວນເຕັມ (*cancel_auto_extension)(void(*)(void));
+  ຈຳນວນເຕັມ (*load_extension)(sqlite3*,const var_na*,const var_na*,var_na**);
   void *(*malloc64)(sqlite3_uint64);
   sqlite3_uint64 (*msize)(void*);
   void *(*realloc64)(void*,sqlite3_uint64);
   void (*reset_auto_extension)(void);
   void (*result_blob64)(sqlite3_context*,const void*,sqlite3_uint64,
                         void(*)(void*));
-  void (*result_text64)(sqlite3_context*,const char*,sqlite3_uint64,
-                         void(*)(void*), unsigned char);
-  int (*strglob)(const char*,const char*);
+  void (*result_text64)(sqlite3_context*,const var_na*,sqlite3_uint64,
+                         void(*)(void*), unsigned var_na);
+  ຈຳນວນເຕັມ (*strglob)(const var_na*,const var_na*);
   /* Version 3.8.11 and later */
   sqlite3_value *(*value_dup)(const sqlite3_value*);
   void (*value_free)(sqlite3_value*);
-  int (*result_zeroblob64)(sqlite3_context*,sqlite3_uint64);
-  int (*bind_zeroblob64)(sqlite3_stmt*, int, sqlite3_uint64);
+  ຈຳນວນເຕັມ (*result_zeroblob64)(sqlite3_context*,sqlite3_uint64);
+  ຈຳນວນເຕັມ (*bind_zeroblob64)(sqlite3_stmt*, ຈຳນວນເຕັມ, sqlite3_uint64);
   /* Version 3.9.0 and later */
-  unsigned int (*value_subtype)(sqlite3_value*);
-  void (*result_subtype)(sqlite3_context*,unsigned int);
+  unsigned ຈຳນວນເຕັມ (*value_subtype)(sqlite3_value*);
+  void (*result_subtype)(sqlite3_context*,unsigned ຈຳນວນເຕັມ);
   /* Version 3.10.0 and later */
-  int (*status64)(int,sqlite3_int64*,sqlite3_int64*,int);
-  int (*strlike)(const char*,const char*,unsigned int);
-  int (*db_cacheflush)(sqlite3*);
+  ຈຳນວນເຕັມ (*status64)(ຈຳນວນເຕັມ,sqlite3_int64*,sqlite3_int64*,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*strlike)(const var_na*,const var_na*,unsigned ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*db_cacheflush)(sqlite3*);
   /* Version 3.12.0 and later */
-  int (*system_errno)(sqlite3*);
+  ຈຳນວນເຕັມ (*system_errno)(sqlite3*);
   /* Version 3.14.0 and later */
-  int (*trace_v2)(sqlite3*,unsigned,int(*)(unsigned,void*,void*,void*),void*);
-  char *(*expanded_sql)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ (*trace_v2)(sqlite3*,unsigned,ຈຳນວນເຕັມ(*)(unsigned,void*,void*,void*),void*);
+  var_na *(*expanded_sql)(sqlite3_stmt*);
   /* Version 3.18.0 and later */
   void (*set_last_insert_rowid)(sqlite3*,sqlite3_int64);
   /* Version 3.20.0 and later */
-  int (*prepare_v3)(sqlite3*,const char*,int,unsigned int,
-                    sqlite3_stmt**,const char**);
-  int (*prepare16_v3)(sqlite3*,const void*,int,unsigned int,
+  ຈຳນວນເຕັມ (*prepare_v3)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,unsigned ຈຳນວນເຕັມ,
+                    sqlite3_stmt**,const var_na**);
+  ຈຳນວນເຕັມ (*prepare16_v3)(sqlite3*,const void*,ຈຳນວນເຕັມ,unsigned ຈຳນວນເຕັມ,
                       sqlite3_stmt**,const void**);
-  int (*bind_pointer)(sqlite3_stmt*,int,void*,const char*,void(*)(void*));
-  void (*result_pointer)(sqlite3_context*,void*,const char*,void(*)(void*));
-  void *(*value_pointer)(sqlite3_value*,const char*);
-  int (*vtab_nochange)(sqlite3_context*);
-  int (*value_nochange)(sqlite3_value*);
-  const char *(*vtab_collation)(sqlite3_index_info*,int);
+  ຈຳນວນເຕັມ (*bind_pointer)(sqlite3_stmt*,ຈຳນວນເຕັມ,void*,const var_na*,void(*)(void*));
+  void (*result_pointer)(sqlite3_context*,void*,const var_na*,void(*)(void*));
+  void *(*value_pointer)(sqlite3_value*,const var_na*);
+  ຈຳນວນເຕັມ (*vtab_nochange)(sqlite3_context*);
+  ຈຳນວນເຕັມ (*value_nochange)(sqlite3_value*);
+  const var_na *(*vtab_collation)(sqlite3_index_info*,ຈຳນວນເຕັມ);
   /* Version 3.24.0 and later */
-  int (*keyword_count)(void);
-  int (*keyword_name)(int,const char**,int*);
-  int (*keyword_check)(const char*,int);
+  ຈຳນວນເຕັມ (*keyword_count)(void);
+  ຈຳນວນເຕັມ (*keyword_name)(ຈຳນວນເຕັມ,const var_na**,ຈຳນວນເຕັມ*);
+  ຈຳນວນເຕັມ (*keyword_check)(const var_na*,ຈຳນວນເຕັມ);
   sqlite3_str *(*str_new)(sqlite3*);
-  char *(*str_finish)(sqlite3_str*);
-  void (SQLITE_CDECL*str_appendf)(sqlite3_str*, const char *zFormat, ...);
-  void (*str_vappendf)(sqlite3_str*, const char *zFormat, va_list);
-  void (*str_append)(sqlite3_str*, const char *zIn, int N);
-  void (*str_appendall)(sqlite3_str*, const char *zIn);
-  void (*str_appendchar)(sqlite3_str*, int N, char C);
+  var_na *(*str_finish)(sqlite3_str*);
+  void (SQLITE_CDECL*str_appendf)(sqlite3_str*, const var_na *zFormat, ...);
+  void (*str_vappendf)(sqlite3_str*, const var_na *zFormat, va_list);
+  void (*str_append)(sqlite3_str*, const var_na *zIn, ຈຳນວນເຕັມ N);
+  void (*str_appendall)(sqlite3_str*, const var_na *zIn);
+  void (*str_appendchar)(sqlite3_str*, ຈຳນວນເຕັມ N, var_na C);
   void (*str_reset)(sqlite3_str*);
-  int (*str_errcode)(sqlite3_str*);
-  int (*str_length)(sqlite3_str*);
-  char *(*str_value)(sqlite3_str*);
+  ຈຳນວນເຕັມ (*str_errcode)(sqlite3_str*);
+  ຈຳນວນເຕັມ (*str_length)(sqlite3_str*);
+  var_na *(*str_value)(sqlite3_str*);
   /* Version 3.25.0 and later */
-  int (*create_window_function)(sqlite3*,const char*,int,int,void*,
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+  ຈຳນວນເຕັມ (*create_window_function)(sqlite3*,const var_na*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,void*,
+                            void (*xStep)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
                             void (*xFinal)(sqlite3_context*),
                             void (*xValue)(sqlite3_context*),
-                            void (*xInv)(sqlite3_context*,int,sqlite3_value**),
+                            void (*xInv)(sqlite3_context*,ຈຳນວນເຕັມ,sqlite3_value**),
                             void(*xDestroy)(void*));
   /* Version 3.26.0 and later */
-  const char *(*normalized_sql)(sqlite3_stmt*);
+  const var_na *(*normalized_sql)(sqlite3_stmt*);
   /* Version 3.28.0 and later */
-  int (*stmt_isexplain)(sqlite3_stmt*);
-  int (*value_frombind)(sqlite3_value*);
+  ຈຳນວນເຕັມ (*stmt_isexplain)(sqlite3_stmt*);
+  ຈຳນວນເຕັມ (*value_frombind)(sqlite3_value*);
   /* Version 3.30.0 and later */
-  int (*drop_modules)(sqlite3*,const char**);
+  ຈຳນວນເຕັມ (*drop_modules)(sqlite3*,const var_na**);
   /* Version 3.31.0 and later */
   sqlite3_int64 (*hard_heap_limit64)(sqlite3_int64);
-  const char *(*uri_key)(const char*,int);
-  const char *(*filename_database)(const char*);
-  const char *(*filename_journal)(const char*);
-  const char *(*filename_wal)(const char*);
+  const var_na *(*uri_key)(const var_na*,ຈຳນວນເຕັມ);
+  const var_na *(*filename_database)(const var_na*);
+  const var_na *(*filename_journal)(const var_na*);
+  const var_na *(*filename_wal)(const var_na*);
   /* Version 3.32.0 and later */
-  const char *(*create_filename)(const char*,const char*,const char*,
-                           int,const char**);
-  void (*free_filename)(const char*);
-  sqlite3_file *(*database_file_object)(const char*);
+  const var_na *(*create_filename)(const var_na*,const var_na*,const var_na*,
+                           ຈຳນວນເຕັມ,const var_na**);
+  void (*free_filename)(const var_na*);
+  sqlite3_file *(*database_file_object)(const var_na*);
   /* Version 3.34.0 and later */
-  int (*txn_state)(sqlite3*,const char*);
+  ຈຳນວນເຕັມ (*txn_state)(sqlite3*,const var_na*);
   /* Version 3.36.1 and later */
   sqlite3_int64 (*changes64)(sqlite3*);
   sqlite3_int64 (*total_changes64)(sqlite3*);
   /* Version 3.37.0 and later */
-  int (*autovacuum_pages)(sqlite3*,
-     unsigned int(*)(void*,const char*,unsigned int,unsigned int,unsigned int),
+  ຈຳນວນເຕັມ (*autovacuum_pages)(sqlite3*,
+     unsigned ຈຳນວນເຕັມ(*)(void*,const var_na*,unsigned ຈຳນວນເຕັມ,unsigned ຈຳນວນເຕັມ,unsigned ຈຳນວນເຕັມ),
      void*, void(*)(void*));
   /* Version 3.38.0 and later */
-  int (*error_offset)(sqlite3*);
-  int (*vtab_rhs_value)(sqlite3_index_info*,int,sqlite3_value**);
-  int (*vtab_distinct)(sqlite3_index_info*);
-  int (*vtab_in)(sqlite3_index_info*,int,int);
-  int (*vtab_in_first)(sqlite3_value*,sqlite3_value**);
-  int (*vtab_in_next)(sqlite3_value*,sqlite3_value**);
+  ຈຳນວນເຕັມ (*error_offset)(sqlite3*);
+  ຈຳນວນເຕັມ (*vtab_rhs_value)(sqlite3_index_info*,ຈຳນວນເຕັມ,sqlite3_value**);
+  ຈຳນວນເຕັມ (*vtab_distinct)(sqlite3_index_info*);
+  ຈຳນວນເຕັມ (*vtab_in)(sqlite3_index_info*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
+  ຈຳນວນເຕັມ (*vtab_in_first)(sqlite3_value*,sqlite3_value**);
+  ຈຳນວນເຕັມ (*vtab_in_next)(sqlite3_value*,sqlite3_value**);
   /* Version 3.39.0 and later */
-  int (*deserialize)(sqlite3*,const char*,unsigned char*,
+  ຈຳນວນເຕັມ (*deserialize)(sqlite3*,const var_na*,unsigned var_na*,
                      sqlite3_int64,sqlite3_int64,unsigned);
-  unsigned char *(*serialize)(sqlite3*,const char *,sqlite3_int64*,
-                              unsigned int);
-  const char *(*db_name)(sqlite3*,int);
+  unsigned var_na *(*serialize)(sqlite3*,const var_na *,sqlite3_int64*,
+                              unsigned ຈຳນວນເຕັມ);
+  const var_na *(*db_name)(sqlite3*,ຈຳນວນເຕັມ);
   /* Version 3.40.0 and later */
-  int (*value_encoding)(sqlite3_value*);
+  ຈຳນວນເຕັມ (*value_encoding)(sqlite3_value*);
   /* Version 3.41.0 and later */
-  int (*is_interrupted)(sqlite3*);
+  ຈຳນວນເຕັມ (*is_interrupted)(sqlite3*);
   /* Version 3.43.0 and later */
-  int (*stmt_explain)(sqlite3_stmt*,int);
+  ຈຳນວນເຕັມ (*stmt_explain)(sqlite3_stmt*,ຈຳນວນເຕັມ);
   /* Version 3.44.0 and later */
-  void *(*get_clientdata)(sqlite3*,const char*);
-  int (*set_clientdata)(sqlite3*, const char*, void*, void(*)(void*));
+  void *(*get_clientdata)(sqlite3*,const var_na*);
+  ຈຳນວນເຕັມ (*set_clientdata)(sqlite3*, const var_na*, void*, void(*)(void*));
   /* Version 3.50.0 and later */
-  int (*setlk_timeout)(sqlite3*,int,int);
+  ຈຳນວນເຕັມ (*setlk_timeout)(sqlite3*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ);
   /* Version 3.51.0 and later */
-  int (*set_errmsg)(sqlite3*,int,const char*);
-  int (*db_status64)(sqlite3*,int,sqlite3_int64*,sqlite3_int64*,int);
+  ຈຳນວນເຕັມ (*set_errmsg)(sqlite3*,ຈຳນວນເຕັມ,const var_na*);
+  ຈຳນວນເຕັມ (*db_status64)(sqlite3*,ຈຳນວນເຕັມ,sqlite3_int64*,sqlite3_int64*,ຈຳນວນເຕັມ);
   /* Version 3.52.0 and later */
-  void (*str_truncate)(sqlite3_str*,int);
+  void (*str_truncate)(sqlite3_str*,ຈຳນວນເຕັມ);
   void (*str_free)(sqlite3_str*);
-  int (*carray_bind)(sqlite3_stmt*,int,void*,int,int,void(*)(void*));
-  int (*carray_bind_v2)(sqlite3_stmt*,int,void*,int,int,void(*)(void*),void*);
+  ຈຳນວນເຕັມ (*carray_bind)(sqlite3_stmt*,ຈຳນວນເຕັມ,void*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,void(*)(void*));
+  ຈຳນວນເຕັມ (*carray_bind_v2)(sqlite3_stmt*,ຈຳນວນເຕັມ,void*,ຈຳນວນເຕັມ,ຈຳນວນເຕັມ,void(*)(void*),void*);
   /* Version 3.54.0 and later */
-  sqlite3_int64 (*incomplete)(const char*);
-  void (*result_str)(sqlite3_context*,sqlite3_str*,int);
+  sqlite3_int64 (*incomplete)(const var_na*);
+  void (*result_str)(sqlite3_context*,sqlite3_str*,ຈຳນວນເຕັມ);
 };
 
 /*
 ** This is the function signature used for all extension entry points.  It
 ** is also defined in the file "loadext.c".
 */
-typedef int (*sqlite3_loadext_entry)(
+typedef ຈຳນວນເຕັມ (*sqlite3_loadext_entry)(
   sqlite3 *db,                       /* Handle to the database. */
-  char **pzErrMsg,                   /* Used to set error string on failure. */
+  var_na **pzErrMsg,                   /* Used to set error string on failure. */
   const sqlite3_api_routines *pThunk /* Extension API function pointers. */
 );
 
@@ -402,7 +402,7 @@ typedef int (*sqlite3_loadext_entry)(
 ** the API.  So the redefinition macros are only valid if the
 ** SQLITE_CORE macros is undefined.
 */
-#if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
+#ຖ້າ !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
 #define sqlite3_aggregate_context      sqlite3_api->aggregate_context
 #ifndef SQLITE_OMIT_DEPRECATED
 #define sqlite3_aggregate_count        sqlite3_api->aggregate_count
@@ -727,14 +727,14 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_str             sqlite3_api->result_str
 #endif /* !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION) */
 
-#if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
+#ຖ້າ !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
   /* This case when the file really is being compiled as a loadable 
   ** extension */
 # define SQLITE_EXTENSION_INIT1     const sqlite3_api_routines *sqlite3_api=0;
 # define SQLITE_EXTENSION_INIT2(v)  sqlite3_api=v;
 # define SQLITE_EXTENSION_INIT3     \
     extern const sqlite3_api_routines *sqlite3_api;
-#else
+#ບໍ່ດັ່ງນັ້ນ
   /* This case when the file is being statically linked into the 
   ** application */
 # define SQLITE_EXTENSION_INIT1     /*no-op*/

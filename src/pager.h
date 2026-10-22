@@ -35,12 +35,12 @@ typedef u32 Pgno;
 /*
 ** Each open file is managed by a separate instance of the "Pager" structure.
 */
-typedef struct Pager Pager;
+typedef sa_nracanaa Pager Pager;
 
 /*
 ** Handle type for pages.
 */
-typedef struct PgHdr DbPage;
+typedef sa_nracanaa PgHdr DbPage;
 
 /*
 ** Page number PAGER_SJ_PGNO is never used in an SQLite database (it is
@@ -130,37 +130,37 @@ typedef struct PgHdr DbPage;
 */
 
 /* Open and close a Pager connection. */ 
-int sqlite3PagerOpen(
+ຈຳນວນເຕັມ sqlite3PagerOpen(
   sqlite3_vfs*,
   Pager **ppPager,
-  const char*,
-  int,
-  int,
-  int,
+  const var_na*,
+  ຈຳນວນເຕັມ,
+  ຈຳນວນເຕັມ,
+  ຈຳນວນເຕັມ,
   void(*)(DbPage*)
 );
-int sqlite3PagerClose(Pager *pPager, sqlite3*);
-int sqlite3PagerReadFileheader(Pager*, int, unsigned char*);
+ຈຳນວນເຕັມ sqlite3PagerClose(Pager *pPager, sqlite3*);
+ຈຳນວນເຕັມ sqlite3PagerReadFileheader(Pager*, ຈຳນວນເຕັມ, unsigned var_na*);
 
 /* Functions used to configure a Pager object. */
-void sqlite3PagerSetBusyHandler(Pager*, int(*)(void *), void *);
-int sqlite3PagerSetPagesize(Pager*, u32*, int);
+void sqlite3PagerSetBusyHandler(Pager*, ຈຳນວນເຕັມ(*)(void *), void *);
+ຈຳນວນເຕັມ sqlite3PagerSetPagesize(Pager*, u32*, ຈຳນວນເຕັມ);
 Pgno sqlite3PagerMaxPageCount(Pager*, Pgno);
-void sqlite3PagerSetCachesize(Pager*, int);
-int sqlite3PagerSetSpillsize(Pager*, int);
+void sqlite3PagerSetCachesize(Pager*, ຈຳນວນເຕັມ);
+ຈຳນວນເຕັມ sqlite3PagerSetSpillsize(Pager*, ຈຳນວນເຕັມ);
 void sqlite3PagerSetMmapLimit(Pager *, sqlite3_int64);
 void sqlite3PagerShrink(Pager*);
 void sqlite3PagerSetFlags(Pager*,unsigned);
-int sqlite3PagerLockingMode(Pager *, int);
-int sqlite3PagerSetJournalMode(Pager *, int);
-int sqlite3PagerGetJournalMode(Pager*);
-int sqlite3PagerOkToChangeJournalMode(Pager*);
+ຈຳນວນເຕັມ sqlite3PagerLockingMode(Pager *, ຈຳນວນເຕັມ);
+ຈຳນວນເຕັມ sqlite3PagerSetJournalMode(Pager *, ຈຳນວນເຕັມ);
+ຈຳນວນເຕັມ sqlite3PagerGetJournalMode(Pager*);
+ຈຳນວນເຕັມ sqlite3PagerOkToChangeJournalMode(Pager*);
 i64 sqlite3PagerJournalSizeLimit(Pager *, i64);
 sqlite3_backup **sqlite3PagerBackupPtr(Pager*);
-int sqlite3PagerFlush(Pager*);
+ຈຳນວນເຕັມ sqlite3PagerFlush(Pager*);
 
 /* Functions used to obtain and release page references. */ 
-int sqlite3PagerGet(Pager *pPager, Pgno pgno, DbPage **ppPage, int clrFlag);
+ຈຳນວນເຕັມ sqlite3PagerGet(Pager *pPager, Pgno pgno, DbPage **ppPage, ຈຳນວນເຕັມ clrFlag);
 DbPage *sqlite3PagerLookup(Pager *pPager, Pgno pgno);
 void sqlite3PagerRef(DbPage*);
 void sqlite3PagerUnref(DbPage*);
@@ -168,73 +168,73 @@ void sqlite3PagerUnrefNotNull(DbPage*);
 void sqlite3PagerUnrefPageOne(DbPage*);
 
 /* Operations on page references. */
-int sqlite3PagerWrite(DbPage*);
+ຈຳນວນເຕັມ sqlite3PagerWrite(DbPage*);
 void sqlite3PagerDontWrite(DbPage*);
-int sqlite3PagerMovepage(Pager*,DbPage*,Pgno,int);
-int sqlite3PagerPageRefcount(DbPage*);
+ຈຳນວນເຕັມ sqlite3PagerMovepage(Pager*,DbPage*,Pgno,ຈຳນວນເຕັມ);
+ຈຳນວນເຕັມ sqlite3PagerPageRefcount(DbPage*);
 void *sqlite3PagerGetData(DbPage *); 
 void *sqlite3PagerGetExtra(DbPage *); 
 
 /* Functions used to manage pager transactions and savepoints. */
-void sqlite3PagerPagecount(Pager*, int*);
-int sqlite3PagerBegin(Pager*, int exFlag, int);
-int sqlite3PagerCommitPhaseOne(Pager*,const char *zSuper, int);
-int sqlite3PagerExclusiveLock(Pager*);
-int sqlite3PagerSync(Pager *pPager, const char *zSuper);
-int sqlite3PagerCommitPhaseTwo(Pager*);
-int sqlite3PagerRollback(Pager*);
-int sqlite3PagerOpenSavepoint(Pager *pPager, int n);
-int sqlite3PagerSavepoint(Pager *pPager, int op, int iSavepoint);
-int sqlite3PagerSharedLock(Pager *pPager);
+void sqlite3PagerPagecount(Pager*, ຈຳນວນເຕັມ*);
+ຈຳນວນເຕັມ sqlite3PagerBegin(Pager*, ຈຳນວນເຕັມ exFlag, ຈຳນວນເຕັມ);
+ຈຳນວນເຕັມ sqlite3PagerCommitPhaseOne(Pager*,const var_na *zSuper, ຈຳນວນເຕັມ);
+ຈຳນວນເຕັມ sqlite3PagerExclusiveLock(Pager*);
+ຈຳນວນເຕັມ sqlite3PagerSync(Pager *pPager, const var_na *zSuper);
+ຈຳນວນເຕັມ sqlite3PagerCommitPhaseTwo(Pager*);
+ຈຳນວນເຕັມ sqlite3PagerRollback(Pager*);
+ຈຳນວນເຕັມ sqlite3PagerOpenSavepoint(Pager *pPager, ຈຳນວນເຕັມ n);
+ຈຳນວນເຕັມ sqlite3PagerSavepoint(Pager *pPager, ຈຳນວນເຕັມ op, ຈຳນວນເຕັມ iSavepoint);
+ຈຳນວນເຕັມ sqlite3PagerSharedLock(Pager *pPager);
 
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3PagerCheckpoint(Pager *pPager, sqlite3*, int, int*, int*);
-  int sqlite3PagerWalSupported(Pager *pPager);
-  int sqlite3PagerWalCallback(Pager *pPager);
-  int sqlite3PagerOpenWal(Pager *pPager, int *pisOpen);
-  int sqlite3PagerCloseWal(Pager *pPager, sqlite3*);
+  ຈຳນວນເຕັມ sqlite3PagerCheckpoint(Pager *pPager, sqlite3*, ຈຳນວນເຕັມ, ຈຳນວນເຕັມ*, ຈຳນວນເຕັມ*);
+  ຈຳນວນເຕັມ sqlite3PagerWalSupported(Pager *pPager);
+  ຈຳນວນເຕັມ sqlite3PagerWalCallback(Pager *pPager);
+  ຈຳນວນເຕັມ sqlite3PagerOpenWal(Pager *pPager, ຈຳນວນເຕັມ *pisOpen);
+  ຈຳນວນເຕັມ sqlite3PagerCloseWal(Pager *pPager, sqlite3*);
 # ifdef SQLITE_ENABLE_SNAPSHOT
-  int sqlite3PagerSnapshotGet(Pager*, sqlite3_snapshot **ppSnapshot);
-  int sqlite3PagerSnapshotOpen(Pager*, sqlite3_snapshot *pSnapshot);
-  int sqlite3PagerSnapshotRecover(Pager *pPager);
-  int sqlite3PagerSnapshotCheck(Pager *pPager, sqlite3_snapshot *pSnapshot);
+  ຈຳນວນເຕັມ sqlite3PagerSnapshotGet(Pager*, sqlite3_snapshot **ppSnapshot);
+  ຈຳນວນເຕັມ sqlite3PagerSnapshotOpen(Pager*, sqlite3_snapshot *pSnapshot);
+  ຈຳນວນເຕັມ sqlite3PagerSnapshotRecover(Pager *pPager);
+  ຈຳນວນເຕັມ sqlite3PagerSnapshotCheck(Pager *pPager, sqlite3_snapshot *pSnapshot);
   void sqlite3PagerSnapshotUnlock(Pager *pPager);
 # endif
 #endif
 
-#if !defined(SQLITE_OMIT_WAL) && defined(SQLITE_ENABLE_SETLK_TIMEOUT)
-  int sqlite3PagerWalWriteLock(Pager*, int);
+#ຖ້າ !defined(SQLITE_OMIT_WAL) && defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+  ຈຳນວນເຕັມ sqlite3PagerWalWriteLock(Pager*, ຈຳນວນເຕັມ);
   void sqlite3PagerWalDb(Pager*, sqlite3*);
-#else
+#ບໍ່ດັ່ງນັ້ນ
 # define sqlite3PagerWalWriteLock(y,z) SQLITE_OK
 # define sqlite3PagerWalDb(x,y)
 #endif
 
 #ifdef SQLITE_DIRECT_OVERFLOW_READ
-  int sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno);
+  ຈຳນວນເຕັມ sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno);
 #endif
 
 #ifdef SQLITE_ENABLE_ZIPVFS
-  int sqlite3PagerWalFramesize(Pager *pPager);
+  ຈຳນວນເຕັມ sqlite3PagerWalFramesize(Pager *pPager);
 #endif
 
 /* Functions used to query pager state and configuration. */
 u8 sqlite3PagerIsreadonly(Pager*);
 u32 sqlite3PagerDataVersion(Pager*);
 #ifdef SQLITE_DEBUG
-  int sqlite3PagerRefcount(Pager*);
+  ຈຳນວນເຕັມ sqlite3PagerRefcount(Pager*);
 #endif
-int sqlite3PagerMemUsed(Pager*);
-const char *sqlite3PagerFilename(const Pager*, int);
+ຈຳນວນເຕັມ sqlite3PagerMemUsed(Pager*);
+const var_na *sqlite3PagerFilename(const Pager*, ຈຳນວນເຕັມ);
 sqlite3_vfs *sqlite3PagerVfs(Pager*);
 sqlite3_file *sqlite3PagerFile(Pager*);
 sqlite3_file *sqlite3PagerJrnlFile(Pager*);
-const char *sqlite3PagerJournalname(Pager*);
+const var_na *sqlite3PagerJournalname(Pager*);
 void *sqlite3PagerTempSpace(Pager*);
-int sqlite3PagerIsMemdb(Pager*);
-void sqlite3PagerCacheStat(Pager *, int, int, u64*);
+ຈຳນວນເຕັມ sqlite3PagerIsMemdb(Pager*);
+void sqlite3PagerCacheStat(Pager *, ຈຳນວນເຕັມ, ຈຳນວນເຕັມ, u64*);
 void sqlite3PagerClearCache(Pager*);
-int sqlite3SectorSize(sqlite3_file *);
+ຈຳນວນເຕັມ sqlite3SectorSize(sqlite3_file *);
 
 /* Functions used to truncate the database file. */
 void sqlite3PagerTruncateImage(Pager*,Pgno);
@@ -242,25 +242,25 @@ void sqlite3PagerTruncateImage(Pager*,Pgno);
 void sqlite3PagerRekey(DbPage*, Pgno, u16);
 
 /* Functions to support testing and debugging. */
-#if !defined(NDEBUG) || defined(SQLITE_TEST)
+#ຖ້າ !defined(NDEBUG) || defined(SQLITE_TEST)
   Pgno sqlite3PagerPagenumber(DbPage*);
-  int sqlite3PagerIswriteable(DbPage*);
+  ຈຳນວນເຕັມ sqlite3PagerIswriteable(DbPage*);
 #endif
 #ifdef SQLITE_TEST
-  int *sqlite3PagerStats(Pager*);
+  ຈຳນວນເຕັມ *sqlite3PagerStats(Pager*);
   void sqlite3PagerRefdump(Pager*);
   void disable_simulated_io_errors(void);
   void enable_simulated_io_errors(void);
-#else
+#ບໍ່ດັ່ງນັ້ນ
 # define disable_simulated_io_errors()
 # define enable_simulated_io_errors()
 #endif
 
-#if defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
-int sqlite3PagerWalSystemErrno(Pager*);
+#ຖ້າ defined(SQLITE_USE_SEH) && !defined(SQLITE_OMIT_WAL)
+ຈຳນວນເຕັມ sqlite3PagerWalSystemErrno(Pager*);
 #endif
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+#ຖ້າ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
   void sqlite3PagerWalStat(Pager*,sqlite3_str*);
 #endif
 
