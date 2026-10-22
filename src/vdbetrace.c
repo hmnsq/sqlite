@@ -27,22 +27,22 @@
 ** the total number of bytes in the text.
 */
 static i64 findNextHostParameter(const char *zSql, i64 *pnToken){
-  int tokenType;
+  целое tokenType;
   i64 nTotal = 0;
   i64 n;
 
   *pnToken = 0;
-  while( zSql[0] ){
+  пока( zSql[0] ){
     n = sqlite3GetToken((u8*)zSql, &tokenType);
     assert( n>0 && tokenType!=TK_ILLEGAL );
-    if( tokenType==TK_VARIABLE ){
+    если( tokenType==TK_VARIABLE ){
       *pnToken = n;
       break;
     }
     nTotal += n;
     zSql += n;
   }
-  return nTotal;
+  вернуть nTotal;
 }
 
 /*
@@ -74,11 +74,11 @@ char *sqlite3VdbeExpandSql(
   const char *zRawSql      /* Raw text of the SQL statement */
 ){
   sqlite3 *db;             /* The database connection */
-  int idx = 0;             /* Index of a host parameter */
-  int nextIndex = 1;       /* Index of next ? host parameter */
+  целое idx = 0;             /* Index of a host parameter */
+  целое nextIndex = 1;       /* Index of next ? host parameter */
   i64 n;                   /* Length of a token prefix */
   i64 nToken;              /* Length of the parameter token */
-  int i;                   /* Loop counter */
+  целое i;                   /* Loop counter */
   Mem *pVar;               /* Value of a host parameter */
   StrAccum out;            /* Accumulate the output here */
 #ifndef SQLITE_OMIT_UTF16
@@ -87,32 +87,32 @@ char *sqlite3VdbeExpandSql(
 
   db = p->db;
   sqlite3StrAccumInit(&out, 0, 0, 0, db->aLimit[SQLITE_LIMIT_LENGTH]);
-  if( db->nVdbeExec>1 ){
-    while( *zRawSql ){
+  если( db->nVdbeExec>1 ){
+    пока( *zRawSql ){
       const char *zStart = zRawSql;
-      while( *(zRawSql++)!='\n' && *zRawSql );
+      пока( *(zRawSql++)!='\n' && *zRawSql );
       sqlite3_str_append(&out, "-- ", 3);
       assert( (zRawSql - zStart) > 0 );
-      sqlite3_str_append(&out, zStart, (int)(zRawSql-zStart));
+      sqlite3_str_append(&out, zStart, (целое)(zRawSql-zStart));
     }
-  }else if( p->nVar==0 ){
+  }иначе если( p->nVar==0 ){
     sqlite3_str_append(&out, zRawSql, sqlite3Strlen30(zRawSql));
-  }else{
-    while( zRawSql[0] ){
+  }иначе{
+    пока( zRawSql[0] ){
       n = findNextHostParameter(zRawSql, &nToken);
       assert( n>0 );
       sqlite3_str_append(&out, zRawSql, n);
       zRawSql += n;
       assert( zRawSql[0] || nToken==0 );
-      if( nToken==0 ) break;
-      if( zRawSql[0]=='?' ){
-        if( nToken>1 ){
+      если( nToken==0 ) break;
+      если( zRawSql[0]=='?' ){
+        если( nToken>1 ){
           assert( sqlite3Isdigit(zRawSql[1]) );
           sqlite3GetInt32(&zRawSql[1], &idx);
-        }else{
+        }иначе{
           idx = nextIndex;
         }
-      }else{
+      }иначе{
         assert( zRawSql[0]==':' || zRawSql[0]=='$' ||
                 zRawSql[0]=='@' || zRawSql[0]=='#' );
         testcase( zRawSql[0]==':' );
@@ -126,21 +126,21 @@ char *sqlite3VdbeExpandSql(
       nextIndex = MAX(idx + 1, nextIndex);
       assert( idx>0 && idx<=p->nVar );
       pVar = &p->aVar[idx-1];
-      if( pVar->flags & MEM_Null ){
+      если( pVar->flags & MEM_Null ){
         sqlite3_str_append(&out, "NULL", 4);
-      }else if( pVar->flags & (MEM_Int|MEM_IntReal) ){
+      }иначе если( pVar->flags & (MEM_Int|MEM_IntReal) ){
         sqlite3_str_appendf(&out, "%lld", pVar->u.i);
-      }else if( pVar->flags & MEM_Real ){
+      }иначе если( pVar->flags & MEM_Real ){
         sqlite3_str_appendf(&out, "%!.15g", pVar->u.r);
-      }else if( pVar->flags & MEM_Str ){
-        int nOut;  /* Number of bytes of the string text to include in output */
+      }иначе если( pVar->flags & MEM_Str ){
+        целое nOut;  /* Number of bytes of the string text to include in output */
 #ifndef SQLITE_OMIT_UTF16
         u8 enc = ENC(db);
-        if( enc!=SQLITE_UTF8 ){
+        если( enc!=SQLITE_UTF8 ){
           memset(&utf8, 0, sizeof(utf8));
           utf8.db = db;
           sqlite3VdbeMemSetStr(&utf8, pVar->z, pVar->n, enc, SQLITE_STATIC);
-          if( SQLITE_NOMEM==sqlite3VdbeChangeEncoding(&utf8, SQLITE_UTF8) ){
+          если( SQLITE_NOMEM==sqlite3VdbeChangeEncoding(&utf8, SQLITE_UTF8) ){
             out.accError = SQLITE_NOMEM;
             out.nAlloc = 0;
           }
@@ -149,44 +149,44 @@ char *sqlite3VdbeExpandSql(
 #endif
         nOut = pVar->n;
 #ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut>SQLITE_TRACE_SIZE_LIMIT ){
+        если( nOut>SQLITE_TRACE_SIZE_LIMIT ){
           nOut = SQLITE_TRACE_SIZE_LIMIT;
-          while( nOut<pVar->n && (pVar->z[nOut]&0xc0)==0x80 ){ nOut++; }
+          пока( nOut<pVar->n && (pVar->z[nOut]&0xc0)==0x80 ){ nOut++; }
         }
 #endif    
         sqlite3_str_appendf(&out, "'%.*q'", nOut, pVar->z);
 #ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut<pVar->n ){
+        если( nOut<pVar->n ){
           sqlite3_str_appendf(&out, "/*+%d bytes*/", pVar->n-nOut);
         }
 #endif
 #ifndef SQLITE_OMIT_UTF16
-        if( enc!=SQLITE_UTF8 ) sqlite3VdbeMemRelease(&utf8);
+        если( enc!=SQLITE_UTF8 ) sqlite3VdbeMemRelease(&utf8);
 #endif
-      }else if( pVar->flags & MEM_Zero ){
+      }иначе если( pVar->flags & MEM_Zero ){
         sqlite3_str_appendf(&out, "zeroblob(%d)", pVar->u.nZero);
-      }else{
-        int nOut;  /* Number of bytes of the blob to include in output */
+      }иначе{
+        целое nOut;  /* Number of bytes of the blob to include in output */
         assert( pVar->flags & MEM_Blob );
         sqlite3_str_append(&out, "x'", 2);
         nOut = pVar->n;
 #ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut>SQLITE_TRACE_SIZE_LIMIT ) nOut = SQLITE_TRACE_SIZE_LIMIT;
+        если( nOut>SQLITE_TRACE_SIZE_LIMIT ) nOut = SQLITE_TRACE_SIZE_LIMIT;
 #endif
-        for(i=0; i<nOut; i++){
+        для(i=0; i<nOut; i++){
           sqlite3_str_appendf(&out, "%02x", pVar->z[i]&0xff);
         }
         sqlite3_str_append(&out, "'", 1);
 #ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut<pVar->n ){
+        если( nOut<pVar->n ){
           sqlite3_str_appendf(&out, "/*+%d bytes*/", pVar->n-nOut);
         }
 #endif
       }
     }
   }
-  if( out.accError ) sqlite3_str_reset(&out);
-  return sqlite3StrAccumFinish(&out);
+  если( out.accError ) sqlite3_str_reset(&out);
+  вернуть sqlite3StrAccumFinish(&out);
 }
 
 #endif /* #ifndef SQLITE_OMIT_TRACE */

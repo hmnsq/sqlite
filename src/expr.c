@@ -15,15 +15,15 @@
 #include "sqliteInt.h"
 
 /* Forward declarations */
-static void exprCodeBetween(Parse*,Expr*,int,void(*)(Parse*,Expr*,int,int),int);
-static int exprCodeVector(Parse *pParse, Expr *p, int *piToFree);
+static void exprCodeBetween(Parse*,Expr*,целое,void(*)(Parse*,Expr*,целое,целое),целое);
+static целое exprCodeVector(Parse *pParse, Expr *p, целое *piToFree);
 
 /*
 ** Return the affinity character for a single column of a table.
 */
-char sqlite3TableColumnAffinity(const Table *pTab, int iCol){
-  if( iCol<0 || NEVER(iCol>=pTab->nCol) ) return SQLITE_AFF_INTEGER;
-  return pTab->aCol[iCol].affinity;
+char sqlite3TableColumnAffinity(const Table *pTab, целое iCol){
+  если( iCol<0 || NEVER(iCol>=pTab->nCol) ) вернуть SQLITE_AFF_INTEGER;
+  вернуть pTab->aCol[iCol].affinity;
 }
 
 /*
@@ -43,43 +43,43 @@ char sqlite3TableColumnAffinity(const Table *pTab, int iCol){
 ** SELECT * FROM t1 WHERE (select a from t1);
 */
 char sqlite3ExprAffinity(const Expr *pExpr){
-  int op;
+  целое op;
   op = pExpr->op;
-  while( 1 /* exit-by-break */ ){
-    if( op==TK_COLUMN || (op==TK_AGG_COLUMN && pExpr->y.pTab!=0) ){
+  пока( 1 /* exit-by-break */ ){
+    если( op==TK_COLUMN || (op==TK_AGG_COLUMN && pExpr->y.pTab!=0) ){
       assert( ExprUseYTab(pExpr) );
       assert( pExpr->y.pTab!=0 );
-      return sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
+      вернуть sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
     }
-    if( op==TK_SELECT ){
+    если( op==TK_SELECT ){
       assert( ExprUseXSelect(pExpr) );
       assert( pExpr->x.pSelect!=0 );
       assert( pExpr->x.pSelect->pEList!=0 );
       assert( pExpr->x.pSelect->pEList->a[0].pExpr!=0 );
-      return sqlite3ExprAffinity(pExpr->x.pSelect->pEList->a[0].pExpr);
+      вернуть sqlite3ExprAffinity(pExpr->x.pSelect->pEList->a[0].pExpr);
     }
 #ifndef SQLITE_OMIT_CAST
-    if( op==TK_CAST ){
+    если( op==TK_CAST ){
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      return sqlite3AffinityType(pExpr->u.zToken, 0);
+      вернуть sqlite3AffinityType(pExpr->u.zToken, 0);
     }
 #endif
-    if( op==TK_SELECT_COLUMN ){
+    если( op==TK_SELECT_COLUMN ){
       assert( pExpr->pLeft!=0 && ExprUseXSelect(pExpr->pLeft) );
       assert( pExpr->iColumn < pExpr->iTable );
       assert( pExpr->iColumn >= 0 );
       assert( pExpr->iTable==pExpr->pLeft->x.pSelect->pEList->nExpr );
-      return sqlite3ExprAffinity(
+      вернуть sqlite3ExprAffinity(
           pExpr->pLeft->x.pSelect->pEList->a[pExpr->iColumn].pExpr
       );
     }
-    if( op==TK_VECTOR
+    если( op==TK_VECTOR
      || (op==TK_FUNCTION && pExpr->affExpr==SQLITE_AFF_DEFER)
     ){
       assert( ExprUseXList(pExpr) );
-      return sqlite3ExprAffinity(pExpr->x.pList->a[0].pExpr);
+      вернуть sqlite3ExprAffinity(pExpr->x.pList->a[0].pExpr);
     }
-    if( ExprHasProperty(pExpr, EP_Skip|EP_IfNullRow) ){
+    если( ExprHasProperty(pExpr, EP_Skip|EP_IfNullRow) ){
       assert( pExpr->op==TK_COLLATE
            || pExpr->op==TK_IF_NULL_ROW
            || (pExpr->op==TK_REGISTER && pExpr->op2==TK_IF_NULL_ROW) );
@@ -87,11 +87,11 @@ char sqlite3ExprAffinity(const Expr *pExpr){
       op = pExpr->op;
       continue;
     }
-    if( op!=TK_REGISTER ) break;
+    если( op!=TK_REGISTER ) break;
     op = pExpr->op2;
-    if( NEVER( op==TK_REGISTER ) ) break;
+    если( NEVER( op==TK_REGISTER ) ) break;
   }
-  return pExpr->affExpr;
+  вернуть pExpr->affExpr;
 }
 
 /*
@@ -104,8 +104,8 @@ char sqlite3ExprAffinity(const Expr *pExpr){
 **
 ** If the expression must return NULL, then 0x00 is returned.
 */
-int sqlite3ExprDataType(const Expr *pExpr){
-  while( pExpr ){
+целое sqlite3ExprDataType(const Expr *pExpr){
+  пока( pExpr ){
     switch( pExpr->op ){
       case TK_COLLATE:
       case TK_IF_NULL_ROW:
@@ -118,18 +118,18 @@ int sqlite3ExprDataType(const Expr *pExpr){
         break;
       }
       case TK_STRING: {
-        return 0x02;
+        вернуть 0x02;
       }
       case TK_BLOB: {
-        return 0x04;
+        вернуть 0x04;
       }
       case TK_CONCAT: {
-        return 0x06;
+        вернуть 0x06;
       }
       case TK_VARIABLE:
       case TK_AGG_FUNCTION:
       case TK_FUNCTION: {
-        return 0x07;
+        вернуть 0x07;
       }
       case TK_COLUMN:
       case TK_AGG_COLUMN:
@@ -137,31 +137,31 @@ int sqlite3ExprDataType(const Expr *pExpr){
       case TK_CAST:
       case TK_SELECT_COLUMN:
       case TK_VECTOR:  {
-        int aff = sqlite3ExprAffinity(pExpr);
-        if( aff>=SQLITE_AFF_NUMERIC ) return 0x05;
-        if( aff==SQLITE_AFF_TEXT )    return 0x06;
-        return 0x07;
+        целое aff = sqlite3ExprAffinity(pExpr);
+        если( aff>=SQLITE_AFF_NUMERIC ) вернуть 0x05;
+        если( aff==SQLITE_AFF_TEXT )    вернуть 0x06;
+        вернуть 0x07;
       }
       case TK_CASE: {
-        int res = 0;
-        int ii;
+        целое res = 0;
+        целое ii;
         ExprList *pList = pExpr->x.pList;
         assert( ExprUseXList(pExpr) && pList!=0 );
         assert( pList->nExpr > 0);
-        for(ii=1; ii<pList->nExpr; ii+=2){
+        для(ii=1; ii<pList->nExpr; ii+=2){
           res |= sqlite3ExprDataType(pList->a[ii].pExpr);
         }
-        if( pList->nExpr % 2 ){
+        если( pList->nExpr % 2 ){
           res |= sqlite3ExprDataType(pList->a[pList->nExpr-1].pExpr);
         }
-        return res;
+        вернуть res;
       }
       default: {
-        return 0x01;
+        вернуть 0x01;
       }
     } /* End of switch(op) */
   } /* End of while(pExpr) */
-  return 0x00;
+  вернуть 0x00;
 }
 
 /*
@@ -176,15 +176,15 @@ Expr *sqlite3ExprAddCollateToken(
   Parse *pParse,           /* Parsing context */
   Expr *pExpr,             /* Add the "COLLATE" clause to this expression */
   const Token *pCollName,  /* Name of collating sequence */
-  int dequote              /* True to dequote pCollName */
+  целое dequote              /* True to dequote pCollName */
 ){
-  if( pCollName->n>0 && pParse->nErr==0 ){
+  если( pCollName->n>0 && pParse->nErr==0 ){
     Expr *pNew = sqlite3ExprAlloc(pParse->db, TK_COLLATE, pCollName, dequote);
     assert( pExpr!=0 );
-    if( pNew ){
+    если( pNew ){
       pNew->pLeft = pExpr;
       pNew->flags |= EP_Collate|EP_Skip;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#если SQLITE_MAX_EXPR_DEPTH>0
       pNew->nHeight = pExpr->nHeight+1;
       sqlite3ExprCheckHeight(pParse, pNew->nHeight);
       testcase( pParse->nErr>0 );
@@ -192,7 +192,7 @@ Expr *sqlite3ExprAddCollateToken(
       pExpr = pNew;
     }
   }
-  return pExpr;
+  вернуть pExpr;
 }
 Expr *sqlite3ExprAddCollateString(
   Parse *pParse,        /* Parsing context */
@@ -202,18 +202,18 @@ Expr *sqlite3ExprAddCollateString(
   Token s;
   assert( zC!=0 );
   sqlite3TokenInit(&s, (char*)zC);
-  return sqlite3ExprAddCollateToken(pParse, pExpr, &s, 0);
+  вернуть sqlite3ExprAddCollateToken(pParse, pExpr, &s, 0);
 }
 
 /*
 ** Skip over any TK_COLLATE operators.
 */
 Expr *sqlite3ExprSkipCollate(Expr *pExpr){
-  while( pExpr && ExprHasProperty(pExpr, EP_Skip) ){
+  пока( pExpr && ExprHasProperty(pExpr, EP_Skip) ){
     assert( pExpr->op==TK_COLLATE );
     pExpr = pExpr->pLeft;
   }  
-  return pExpr;
+  вернуть pExpr;
 }
 
 /*
@@ -222,19 +222,19 @@ Expr *sqlite3ExprSkipCollate(Expr *pExpr){
 ** expression.
 */
 Expr *sqlite3ExprSkipCollateAndLikely(Expr *pExpr){
-  while( pExpr && ExprHasProperty(pExpr, EP_Skip|EP_Unlikely) ){
-    if( ExprHasProperty(pExpr, EP_Unlikely) ){
+  пока( pExpr && ExprHasProperty(pExpr, EP_Skip|EP_Unlikely) ){
+    если( ExprHasProperty(pExpr, EP_Unlikely) ){
       assert( ExprUseXList(pExpr) );
       assert( pExpr->x.pList->nExpr>0 );
       assert( pExpr->op==TK_FUNCTION );
       pExpr = pExpr->x.pList->a[0].pExpr;
-    }else if( pExpr->op==TK_COLLATE ){
+    }иначе если( pExpr->op==TK_COLLATE ){
       pExpr = pExpr->pLeft;
-    }else{
+    }иначе{
       break;
     }
   }  
-  return pExpr;
+  вернуть pExpr;
 }
 
 /*
@@ -255,48 +255,48 @@ CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr){
   sqlite3 *db = pParse->db;
   CollSeq *pColl = 0;
   const Expr *p = pExpr;
-  while( p ){
-    int op = p->op;
-    if( op==TK_REGISTER ) op = p->op2;
-    if( (op==TK_AGG_COLUMN && p->y.pTab!=0)
+  пока( p ){
+    целое op = p->op;
+    если( op==TK_REGISTER ) op = p->op2;
+    если( (op==TK_AGG_COLUMN && p->y.pTab!=0)
      || op==TK_COLUMN || op==TK_TRIGGER
     ){
-      int j;
+      целое j;
       assert( ExprUseYTab(p) );
       assert( p->y.pTab!=0 );
-      if( (j = p->iColumn)>=0 ){
+      если( (j = p->iColumn)>=0 ){
         const char *zColl = sqlite3ColumnColl(&p->y.pTab->aCol[j]);
         pColl = sqlite3FindCollSeq(db, ENC(db), zColl, 0);
       }
       break;
     }
-    if( op==TK_CAST || op==TK_UPLUS ){
+    если( op==TK_CAST || op==TK_UPLUS ){
       p = p->pLeft;
       continue;
     }
-    if( op==TK_VECTOR
+    если( op==TK_VECTOR
      || (op==TK_FUNCTION && p->affExpr==SQLITE_AFF_DEFER)
     ){
       assert( ExprUseXList(p) );
       p = p->x.pList->a[0].pExpr;
       continue;
     }
-    if( op==TK_COLLATE ){
+    если( op==TK_COLLATE ){
       assert( !ExprHasProperty(p, EP_IntValue) );
       pColl = sqlite3GetCollSeq(pParse, ENC(db), 0, p->u.zToken);
       break;
     }
-    if( p->flags & EP_Collate ){
-      if( p->pLeft && (p->pLeft->flags & EP_Collate)!=0 ){
+    если( p->flags & EP_Collate ){
+      если( p->pLeft && (p->pLeft->flags & EP_Collate)!=0 ){
         p = p->pLeft;
-      }else{
+      }иначе{
         Expr *pNext  = p->pRight;
         /* The Expr.x union is never used at the same time as Expr.pRight */
         assert( !ExprUseXList(p) || p->x.pList==0 || p->pRight==0 );
-        if( ExprUseXList(p) && p->x.pList!=0 && !db->mallocFailed ){
-          int i;
-          for(i=0; i<p->x.pList->nExpr; i++){
-            if( ExprHasProperty(p->x.pList->a[i].pExpr, EP_Collate) ){
+        если( ExprUseXList(p) && p->x.pList!=0 && !db->mallocFailed ){
+          целое i;
+          для(i=0; i<p->x.pList->nExpr; i++){
+            если( ExprHasProperty(p->x.pList->a[i].pExpr, EP_Collate) ){
               pNext = p->x.pList->a[i].pExpr;
               break;
             }
@@ -304,14 +304,14 @@ CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr){
         }
         p = pNext;
       }
-    }else{
+    }иначе{
       break;
     }
   }
-  if( sqlite3CheckCollSeq(pParse, pColl) ){
+  если( sqlite3CheckCollSeq(pParse, pColl) ){
     pColl = 0;
   }
-  return pColl;
+  вернуть pColl;
 }
 
 /*
@@ -326,20 +326,20 @@ CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr){
 */
 CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr){
   CollSeq *p = sqlite3ExprCollSeq(pParse, pExpr);
-  if( p==0 ) p = pParse->db->pDfltColl;
+  если( p==0 ) p = pParse->db->pDfltColl;
   assert( p!=0 );
-  return p;
+  вернуть p;
 }
 
 /*
 ** Return TRUE if the two expressions have equivalent collating sequences.
 */
-int sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
+целое sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
   CollSeq *pColl1 = sqlite3ExprNNCollSeq(pParse, pE1);
   CollSeq *pColl2 = sqlite3ExprNNCollSeq(pParse, pE2);
   assert( (pColl1==pColl2) ==
           (sqlite3_stricmp(pColl1->zName,pColl2->zName)==0) );
-  return pColl1==pColl2;
+  вернуть pColl1==pColl2;
 }
 
 /*
@@ -349,19 +349,19 @@ int sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
 */
 char sqlite3CompareAffinity(const Expr *pExpr, char aff2){
   char aff1 = sqlite3ExprAffinity(pExpr);
-  if( aff1>SQLITE_AFF_NONE && aff2>SQLITE_AFF_NONE ){
+  если( aff1>SQLITE_AFF_NONE && aff2>SQLITE_AFF_NONE ){
     /* Both sides of the comparison are columns. If one has numeric
     ** affinity, use that. Otherwise use no affinity.
     */
-    if( sqlite3IsNumericAffinity(aff1) || sqlite3IsNumericAffinity(aff2) ){
-      return SQLITE_AFF_NUMERIC;
-    }else{
-      return SQLITE_AFF_BLOB;
+    если( sqlite3IsNumericAffinity(aff1) || sqlite3IsNumericAffinity(aff2) ){
+      вернуть SQLITE_AFF_NUMERIC;
+    }иначе{
+      вернуть SQLITE_AFF_BLOB;
     }
-  }else{
+  }иначе{
     /* One side is a column, the other is not. Use the columns affinity. */
     assert( aff1<=SQLITE_AFF_NONE || aff2<=SQLITE_AFF_NONE );
-    return (aff1<=SQLITE_AFF_NONE ? aff2 : aff1) | SQLITE_AFF_NONE;
+    вернуть (aff1<=SQLITE_AFF_NONE ? aff2 : aff1) | SQLITE_AFF_NONE;
   }
 }
 
@@ -377,12 +377,12 @@ static char comparisonAffinity(const Expr *pExpr){
   assert( pExpr->pLeft );
   assert( !ExprUseXSelect(pExpr) );
   aff = sqlite3ExprAffinity(pExpr->pLeft);
-  if( pExpr->pRight ){
+  если( pExpr->pRight ){
     aff = sqlite3CompareAffinity(pExpr->pRight, aff);
-  }else if( aff==0 ){
+  }иначе если( aff==0 ){
     aff = SQLITE_AFF_BLOB;
   }
-  return aff;
+  вернуть aff;
 }
 
 /*
@@ -391,15 +391,15 @@ static char comparisonAffinity(const Expr *pExpr){
 ** if the index with affinity idx_affinity may be used to implement
 ** the comparison in pExpr.
 */
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity){
+целое sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity){
   char aff = comparisonAffinity(pExpr);
-  if( aff<SQLITE_AFF_TEXT ){
-    return 1;
+  если( aff<SQLITE_AFF_TEXT ){
+    вернуть 1;
   }
-  if( aff==SQLITE_AFF_TEXT ){
-    return idx_affinity==SQLITE_AFF_TEXT;
+  если( aff==SQLITE_AFF_TEXT ){
+    вернуть idx_affinity==SQLITE_AFF_TEXT;
   }
-  return sqlite3IsNumericAffinity(idx_affinity);
+  вернуть sqlite3IsNumericAffinity(idx_affinity);
 }
 
 /*
@@ -409,11 +409,11 @@ int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity){
 static u8 binaryCompareP5(
   const Expr *pExpr1,   /* Left operand */
   const Expr *pExpr2,   /* Right operand */
-  int jumpIfNull        /* Extra flags added to P5 */
+  целое jumpIfNull        /* Extra flags added to P5 */
 ){
   u8 aff = (char)sqlite3ExprAffinity(pExpr2);
   aff = (u8)sqlite3CompareAffinity(pExpr1, aff) | (u8)jumpIfNull;
-  return aff;
+  вернуть aff;
 }
 
 /*
@@ -435,17 +435,17 @@ CollSeq *sqlite3BinaryCompareCollSeq(
 ){
   CollSeq *pColl;
   assert( pLeft );
-  if( pLeft->flags & EP_Collate ){
+  если( pLeft->flags & EP_Collate ){
     pColl = sqlite3ExprCollSeq(pParse, pLeft);
-  }else if( pRight && (pRight->flags & EP_Collate)!=0 ){
+  }иначе если( pRight && (pRight->flags & EP_Collate)!=0 ){
     pColl = sqlite3ExprCollSeq(pParse, pRight);
-  }else{
+  }иначе{
     pColl = sqlite3ExprCollSeq(pParse, pLeft);
-    if( !pColl ){
+    если( !pColl ){
       pColl = sqlite3ExprCollSeq(pParse, pRight);
     }
   }
-  return pColl;
+  вернуть pColl;
 }
 
 /* Expression p is a comparison operator.  Return a collation sequence
@@ -457,41 +457,41 @@ CollSeq *sqlite3BinaryCompareCollSeq(
 ** correct collating sequence is found.
 */
 CollSeq *sqlite3ExprCompareCollSeq(Parse *pParse, const Expr *p){
-  if( ExprHasProperty(p, EP_Commuted) ){
-    return sqlite3BinaryCompareCollSeq(pParse, p->pRight, p->pLeft);
-  }else{
-    return sqlite3BinaryCompareCollSeq(pParse, p->pLeft, p->pRight);
+  если( ExprHasProperty(p, EP_Commuted) ){
+    вернуть sqlite3BinaryCompareCollSeq(pParse, p->pRight, p->pLeft);
+  }иначе{
+    вернуть sqlite3BinaryCompareCollSeq(pParse, p->pLeft, p->pRight);
   }
 }
 
 /*
 ** Generate code for a comparison operator.
 */
-static int codeCompare(
+static целое codeCompare(
   Parse *pParse,    /* The parsing (and code generating) context */
   Expr *pLeft,      /* The left operand */
   Expr *pRight,     /* The right operand */
-  int opcode,       /* The comparison opcode */
-  int in1, int in2, /* Register holding operands */
-  int dest,         /* Jump here if true.  */
-  int jumpIfNull,   /* If true, jump if either operand is NULL */
-  int isCommuted    /* The comparison has been commuted */
+  целое opcode,       /* The comparison opcode */
+  целое in1, целое in2, /* Register holding operands */
+  целое dest,         /* Jump here if true.  */
+  целое jumpIfNull,   /* If true, jump if either operand is NULL */
+  целое isCommuted    /* The comparison has been commuted */
 ){
-  int p5;
-  int addr;
+  целое p5;
+  целое addr;
   CollSeq *p4;
 
-  if( pParse->nErr ) return 0;
-  if( isCommuted ){
+  если( pParse->nErr ) вернуть 0;
+  если( isCommuted ){
     p4 = sqlite3BinaryCompareCollSeq(pParse, pRight, pLeft);
-  }else{
+  }иначе{
     p4 = sqlite3BinaryCompareCollSeq(pParse, pLeft, pRight);
   }
   p5 = binaryCompareP5(pLeft, pRight, jumpIfNull);
   addr = sqlite3VdbeAddOp4(pParse->pVdbe, opcode, in2, dest, in1,
                            (void*)p4, P4_COLLSEQ);
   sqlite3VdbeChangeP5(pParse->pVdbe, (u16)p5);
-  return addr;
+  вернуть addr;
 }
 
 /*
@@ -503,8 +503,8 @@ static int codeCompare(
 ** But a TK_SELECT might be either a vector or a scalar. It is only
 ** considered a vector if it has two or more result columns.
 */
-int sqlite3ExprIsVector(const Expr *pExpr){
-  return sqlite3ExprVectorSize(pExpr)>1;
+целое sqlite3ExprIsVector(const Expr *pExpr){
+  вернуть sqlite3ExprVectorSize(pExpr)>1;
 }
 
 /*
@@ -513,17 +513,17 @@ int sqlite3ExprIsVector(const Expr *pExpr){
 ** is a sub-select, return the number of columns in the sub-select. For
 ** any other type of expression, return 1.
 */
-int sqlite3ExprVectorSize(const Expr *pExpr){
+целое sqlite3ExprVectorSize(const Expr *pExpr){
   u8 op = pExpr->op;
-  if( op==TK_REGISTER ) op = pExpr->op2;
-  if( op==TK_VECTOR ){
+  если( op==TK_REGISTER ) op = pExpr->op2;
+  если( op==TK_VECTOR ){
     assert( ExprUseXList(pExpr) );
-    return pExpr->x.pList->nExpr;
-  }else if( op==TK_SELECT ){
+    вернуть pExpr->x.pList->nExpr;
+  }иначе если( op==TK_SELECT ){
     assert( ExprUseXSelect(pExpr) );
-    return pExpr->x.pSelect->pEList->nExpr;
-  }else{
-    return 1;
+    вернуть pExpr->x.pSelect->pEList->nExpr;
+  }иначе{
+    вернуть 1;
   }
 }
 
@@ -542,19 +542,19 @@ int sqlite3ExprVectorSize(const Expr *pExpr){
 ** not be ready for evaluation because the table cursor has not yet
 ** been positioned.
 */
-Expr *sqlite3VectorFieldSubexpr(Expr *pVector, int i){
+Expr *sqlite3VectorFieldSubexpr(Expr *pVector, целое i){
   assert( i<sqlite3ExprVectorSize(pVector) || pVector->op==TK_ERROR );
-  if( sqlite3ExprIsVector(pVector) ){
+  если( sqlite3ExprIsVector(pVector) ){
     assert( pVector->op2==0 || pVector->op==TK_REGISTER );
-    if( pVector->op==TK_SELECT || pVector->op2==TK_SELECT ){
+    если( pVector->op==TK_SELECT || pVector->op2==TK_SELECT ){
       assert( ExprUseXSelect(pVector) );
-      return pVector->x.pSelect->pEList->a[i].pExpr;
-    }else{
+      вернуть pVector->x.pSelect->pEList->a[i].pExpr;
+    }иначе{
       assert( ExprUseXList(pVector) );
-      return pVector->x.pList->a[i].pExpr;
+      вернуть pVector->x.pList->a[i].pExpr;
     }
   }
-  return pVector;
+  вернуть pVector;
 }
 
 /*
@@ -581,11 +581,11 @@ Expr *sqlite3VectorFieldSubexpr(Expr *pVector, int i){
 Expr *sqlite3ExprForVectorField(
   Parse *pParse,       /* Parsing context */
   Expr *pVector,       /* The vector.  List of expressions or a sub-SELECT */
-  int iField,          /* Which column of the vector to return */
-  int nField           /* Total number of columns in the vector */
+  целое iField,          /* Which column of the vector to return */
+  целое nField           /* Total number of columns in the vector */
 ){
   Expr *pRet;
-  if( pVector->op==TK_SELECT ){
+  если( pVector->op==TK_SELECT ){
     assert( ExprUseXSelect(pVector) );
     /* The TK_SELECT_COLUMN Expr node:
     **
@@ -604,27 +604,27 @@ Expr *sqlite3ExprForVectorField(
     ** will own the pVector.
     */
     pRet = sqlite3PExpr(pParse, TK_SELECT_COLUMN, 0, 0);
-    if( pRet ){
+    если( pRet ){
       ExprSetProperty(pRet, EP_FullSize);
       pRet->iTable = nField;
       pRet->iColumn = iField;
       pRet->pLeft = pVector;
     }
-  }else{
-    if( pVector->op==TK_VECTOR ){
+  }иначе{
+    если( pVector->op==TK_VECTOR ){
       Expr **ppVector;
       assert( ExprUseXList(pVector) );
       ppVector = &pVector->x.pList->a[iField].pExpr;
       pVector = *ppVector;
-      if( IN_RENAME_OBJECT ){
+      если( IN_RENAME_OBJECT ){
         /* This must be a vector UPDATE inside a trigger */
         *ppVector = 0;
-        return pVector;
+        вернуть pVector;
       }
     }
     pRet = sqlite3ExprDup(pParse->db, pVector, 0);
   }
-  return pRet;
+  вернуть pRet;
 }
 
 /*
@@ -635,14 +635,14 @@ Expr *sqlite3ExprForVectorField(
 **
 ** If pExpr is not a TK_SELECT expression, return 0.
 */
-static int exprCodeSubselect(Parse *pParse, Expr *pExpr){
-  int reg = 0;
+static целое exprCodeSubselect(Parse *pParse, Expr *pExpr){
+  целое reg = 0;
 #ifndef SQLITE_OMIT_SUBQUERY
-  if( pExpr->op==TK_SELECT ){
+  если( pExpr->op==TK_SELECT ){
     reg = sqlite3CodeSubselect(pParse, pExpr);
   }
 #endif
-  return reg;
+  вернуть reg;
 }
 
 /*
@@ -663,22 +663,22 @@ static int exprCodeSubselect(Parse *pParse, Expr *pExpr){
 ** Before returning, output parameter (*ppExpr) is set to point to the
 ** Expr object corresponding to element iElem of the vector.
 */
-static int exprVectorRegister(
+static целое exprVectorRegister(
   Parse *pParse,                  /* Parse context */
   Expr *pVector,                  /* Vector to extract element from */
-  int iField,                     /* Field to extract from pVector */
-  int regSelect,                  /* First in array of registers */
+  целое iField,                     /* Field to extract from pVector */
+  целое regSelect,                  /* First in array of registers */
   Expr *pTmp,                     /* Temporary space */
   Expr **ppExpr,                  /* OUT: Expression element */
-  int *pRegFree                   /* OUT: Temp register to free */
+  целое *pRegFree                   /* OUT: Temp register to free */
 ){
   u8 op = pVector->op;
   assert( op==TK_VECTOR || op==TK_REGISTER || op==TK_SELECT || op==TK_ERROR );
-  if( op==TK_REGISTER ){
+  если( op==TK_REGISTER ){
     *ppExpr = sqlite3VectorFieldSubexpr(pVector, iField);
-    return pVector->iTable+iField;
+    вернуть pVector->iTable+iField;
   }
-  if( op==TK_SELECT ){
+  если( op==TK_SELECT ){
     assert( ExprUseXSelect(pVector) );
     /* Use the temporary expression node to wrap expression iField of the
     ** sub-select in a TK_SELECT_COLUMN node. This causes the caller to
@@ -690,14 +690,14 @@ static int exprVectorRegister(
     pTmp->iColumn = iField;
     pTmp->iTable = pVector->x.pSelect->pEList->nExpr;
     *ppExpr = pTmp;
-    return regSelect+iField;
+    вернуть regSelect+iField;
   }
-  if( op==TK_VECTOR ){
+  если( op==TK_VECTOR ){
     assert( ExprUseXList(pVector) );
     *ppExpr = pVector->x.pList->a[iField].pExpr;
-    return sqlite3ExprCodeTemp(pParse, *ppExpr, pRegFree);
+    вернуть sqlite3ExprCodeTemp(pParse, *ppExpr, pRegFree);
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
@@ -714,27 +714,27 @@ static int exprVectorRegister(
 static void codeVectorCompare(
   Parse *pParse,        /* Code generator context */
   Expr *pExpr,          /* The comparison operation */
-  int dest,             /* Write results into this register */
+  целое dest,             /* Write results into this register */
   u8 op,                /* Comparison operator */
   u8 p5                 /* SQLITE_NULLEQ or zero */
 ){
   Vdbe *v = pParse->pVdbe;
   Expr *pLeft = pExpr->pLeft;
   Expr *pRight = pExpr->pRight;
-  int nLeft = sqlite3ExprVectorSize(pLeft);
-  int i;
-  int regLeft = 0;
-  int regRight = 0;
+  целое nLeft = sqlite3ExprVectorSize(pLeft);
+  целое i;
+  целое regLeft = 0;
+  целое regRight = 0;
   u8 opx = op;
-  int addrCmp = 0;
-  int addrDone = sqlite3VdbeMakeLabel(pParse);
-  int isCommuted = ExprHasProperty(pExpr,EP_Commuted);
+  целое addrCmp = 0;
+  целое addrDone = sqlite3VdbeMakeLabel(pParse);
+  целое isCommuted = ExprHasProperty(pExpr,EP_Commuted);
 
   assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
-  if( pParse->nErr ) return;
-  if( nLeft!=sqlite3ExprVectorSize(pRight) ){
+  если( pParse->nErr ) вернуть;
+  если( nLeft!=sqlite3ExprVectorSize(pRight) ){
     sqlite3ErrorMsg(pParse, "row value misused");
-    return;
+    вернуть;
   }
   assert( pExpr->op==TK_EQ || pExpr->op==TK_NE
        || pExpr->op==TK_IS || pExpr->op==TK_ISNOT
@@ -746,21 +746,21 @@ static void codeVectorCompare(
   assert( p5==0 || pExpr->op!=op );
   assert( p5==SQLITE_NULLEQ || pExpr->op==op );
 
-  if( op==TK_LE ) opx = TK_LT;
-  if( op==TK_GE ) opx = TK_GT;
-  if( op==TK_NE ) opx = TK_EQ;
+  если( op==TK_LE ) opx = TK_LT;
+  если( op==TK_GE ) opx = TK_GT;
+  если( op==TK_NE ) opx = TK_EQ;
 
   regLeft = exprCodeSubselect(pParse, pLeft);
   regRight = exprCodeSubselect(pParse, pRight);
 
   sqlite3VdbeAddOp2(v, OP_Integer, 1, dest);
-  for(i=0; 1 /*Loop exits by "break"*/; i++){
-    int regFree1 = 0, regFree2 = 0;
+  для(i=0; 1 /*Loop exits by "break"*/; i++){
+    целое regFree1 = 0, regFree2 = 0;
     Expr *pL = 0, *pR = 0;
     Expr tmp1, tmp2;
-    int r1, r2;
+    целое r1, r2;
     assert( i>=0 && i<nLeft );
-    if( addrCmp ) sqlite3VdbeJumpHere(v, addrCmp);
+    если( addrCmp ) sqlite3VdbeJumpHere(v, addrCmp);
     r1 = exprVectorRegister(pParse, pLeft, i, regLeft, &tmp1, &pL, &regFree1);
     r2 = exprVectorRegister(pParse, pRight, i, regRight, &tmp2, &pR, &regFree2);
     addrCmp = sqlite3VdbeCurrentAddr(v);
@@ -773,50 +773,50 @@ static void codeVectorCompare(
     testcase(op==OP_Ne); VdbeCoverageIf(v,op==OP_Ne);
     sqlite3ReleaseTempReg(pParse, regFree1);
     sqlite3ReleaseTempReg(pParse, regFree2);
-    if( (opx==TK_LT || opx==TK_GT) && i<nLeft-1 ){
+    если( (opx==TK_LT || opx==TK_GT) && i<nLeft-1 ){
       addrCmp = sqlite3VdbeAddOp0(v, OP_ElseEq);
       testcase(opx==TK_LT); VdbeCoverageIf(v,opx==TK_LT);
       testcase(opx==TK_GT); VdbeCoverageIf(v,opx==TK_GT);
     }
-    if( p5==SQLITE_NULLEQ ){
+    если( p5==SQLITE_NULLEQ ){
       sqlite3VdbeAddOp2(v, OP_Integer, 0, dest);
-    }else{
+    }иначе{
       sqlite3VdbeAddOp3(v, OP_ZeroOrNull, r1, dest, r2);
     }
-    if( i==nLeft-1 ){
+    если( i==nLeft-1 ){
       break;
     }
-    if( opx==TK_EQ ){
+    если( opx==TK_EQ ){
       sqlite3VdbeAddOp2(v, OP_NotNull, dest, addrDone); VdbeCoverage(v);
-    }else{
+    }иначе{
       assert( op==TK_LT || op==TK_GT || op==TK_LE || op==TK_GE );
       sqlite3VdbeAddOp2(v, OP_Goto, 0, addrDone);
-      if( i==nLeft-2 ) opx = op;
+      если( i==nLeft-2 ) opx = op;
     }
   }
   sqlite3VdbeJumpHere(v, addrCmp);
   sqlite3VdbeResolveLabel(v, addrDone);
-  if( op==TK_NE ){
+  если( op==TK_NE ){
     sqlite3VdbeAddOp2(v, OP_Not, dest, dest);
   }
 }
 
-#if SQLITE_MAX_EXPR_DEPTH>0
+#если SQLITE_MAX_EXPR_DEPTH>0
 /*
 ** Check that argument nHeight is less than or equal to the maximum
 ** expression depth allowed. If it is not, leave an error message in
 ** pParse.
 */
-int sqlite3ExprCheckHeight(Parse *pParse, int nHeight){
-  int rc = SQLITE_OK;
-  int mxHeight = pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH];
-  if( nHeight>mxHeight ){
+целое sqlite3ExprCheckHeight(Parse *pParse, целое nHeight){
+  целое rc = SQLITE_OK;
+  целое mxHeight = pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH];
+  если( nHeight>mxHeight ){
     sqlite3ErrorMsg(pParse,
        "Expression tree is too large (maximum depth %d)", mxHeight
     );
     rc = SQLITE_ERROR;
   }
-  return rc;
+  вернуть rc;
 }
 
 /* The following three functions, heightOfExpr(), heightOfExprList()
@@ -828,24 +828,24 @@ int sqlite3ExprCheckHeight(Parse *pParse, int nHeight){
 ** to by pnHeight, the second parameter, then set *pnHeight to that
 ** value.
 */
-static void heightOfExpr(const Expr *p, int *pnHeight){
-  if( p ){
-    if( p->nHeight>*pnHeight ){
+static void heightOfExpr(const Expr *p, целое *pnHeight){
+  если( p ){
+    если( p->nHeight>*pnHeight ){
       *pnHeight = p->nHeight;
     }
   }
 }
-static void heightOfExprList(const ExprList *p, int *pnHeight){
-  if( p ){
-    int i;
-    for(i=0; i<p->nExpr; i++){
+static void heightOfExprList(const ExprList *p, целое *pnHeight){
+  если( p ){
+    целое i;
+    для(i=0; i<p->nExpr; i++){
       heightOfExpr(p->a[i].pExpr, pnHeight);
     }
   }
 }
-static void heightOfSelect(const Select *pSelect, int *pnHeight){
+static void heightOfSelect(const Select *pSelect, целое *pnHeight){
   const Select *p;
-  for(p=pSelect; p; p=p->pPrior){
+  для(p=pSelect; p; p=p->pPrior){
     heightOfExpr(p->pWhere, pnHeight);
     heightOfExpr(p->pHaving, pnHeight);
     heightOfExpr(p->pLimit, pnHeight);
@@ -866,13 +866,13 @@ static void heightOfSelect(const Select *pSelect, int *pnHeight){
 ** if appropriate.
 */
 static void exprSetHeight(Expr *p){
-  int nHeight = p->pLeft ? p->pLeft->nHeight : 0;
-  if( NEVER(p->pRight) && p->pRight->nHeight>nHeight ){
+  целое nHeight = p->pLeft ? p->pLeft->nHeight : 0;
+  если( NEVER(p->pRight) && p->pRight->nHeight>nHeight ){
     nHeight = p->pRight->nHeight;
   }
-  if( ExprUseXSelect(p) ){
+  если( ExprUseXSelect(p) ){
     heightOfSelect(p->x.pSelect, &nHeight);
-  }else if( p->x.pList ){
+  }иначе если( p->x.pList ){
     heightOfExprList(p->x.pList, &nHeight);
     p->flags |= EP_Propagate & sqlite3ExprListFlags(p->x.pList);
   }
@@ -888,7 +888,7 @@ static void exprSetHeight(Expr *p){
 ** Expr.flags.
 */
 void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
-  if( pParse->nErr ) return;
+  если( pParse->nErr ) вернуть;
   exprSetHeight(p);
   sqlite3ExprCheckHeight(pParse, p->nHeight);
 }
@@ -897,19 +897,19 @@ void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
 ** Return the maximum height of any expression tree referenced
 ** by the select statement passed as an argument.
 */
-int sqlite3SelectExprHeight(const Select *p){
-  int nHeight = 0;
+целое sqlite3SelectExprHeight(const Select *p){
+  целое nHeight = 0;
   heightOfSelect(p, &nHeight);
-  return nHeight;
+  вернуть nHeight;
 }
-#else /* ABOVE:  Height enforcement enabled.  BELOW: Height enforcement off */
+#иначе /* ABOVE:  Height enforcement enabled.  BELOW: Height enforcement off */
 /*
 ** Propagate all EP_Propagate flags from the Expr.x.pList into
 ** Expr.flags.
 */
 void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
-  if( pParse->nErr ) return;
-  if( p && ExprUseXList(p) && p->x.pList ){
+  если( pParse->nErr ) вернуть;
+  если( p && ExprUseXList(p) && p->x.pList ){
     p->flags |= EP_Propagate & sqlite3ExprListFlags(p->x.pList);
   }
 }
@@ -919,9 +919,9 @@ void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
 /*
 ** Set the error offset for an Expr node, if possible.
 */
-void sqlite3ExprSetErrorOffset(Expr *pExpr, int iOfst){
-  if( pExpr==0 ) return;
-  if( NEVER(ExprUseWJoin(pExpr)) ) return;
+void sqlite3ExprSetErrorOffset(Expr *pExpr, целое iOfst){
+  если( pExpr==0 ) вернуть;
+  если( NEVER(ExprUseWJoin(pExpr)) ) вернуть;
   pExpr->w.iOfst = iOfst;
 }
 
@@ -948,34 +948,34 @@ void sqlite3ExprSetErrorOffset(Expr *pExpr, int iOfst){
 */
 Expr *sqlite3ExprAlloc(
   sqlite3 *db,            /* Handle for sqlite3DbMallocRawNN() */
-  int op,                 /* Expression opcode */
+  целое op,                 /* Expression opcode */
   const Token *pToken,    /* Token argument.  Might be NULL */
-  int dequote             /* True to dequote */
+  целое dequote             /* True to dequote */
 ){
   Expr *pNew;
-  int nExtra = pToken ? pToken->n+1 : 0;
+  целое nExtra = pToken ? pToken->n+1 : 0;
 
   assert( db!=0 );
   pNew = sqlite3DbMallocRawNN(db, sizeof(Expr)+nExtra);
-  if( pNew ){
+  если( pNew ){
     memset(pNew, 0, sizeof(Expr));
     pNew->op = (u8)op;
     pNew->iAgg = -1;
-    if( nExtra ){
+    если( nExtra ){
       assert( pToken!=0 );
       pNew->u.zToken = (char*)&pNew[1];
       assert( pToken->z!=0 || pToken->n==0 );
-      if( pToken->n ) memcpy(pNew->u.zToken, pToken->z, pToken->n);
+      если( pToken->n ) memcpy(pNew->u.zToken, pToken->z, pToken->n);
       pNew->u.zToken[pToken->n] = 0;
-      if( dequote && sqlite3Isquote(pNew->u.zToken[0]) ){
+      если( dequote && sqlite3Isquote(pNew->u.zToken[0]) ){
         sqlite3DequoteExpr(pNew);
       }
     }
-#if SQLITE_MAX_EXPR_DEPTH>0
+#если SQLITE_MAX_EXPR_DEPTH>0
     pNew->nHeight = 1;
 #endif 
   }
-  return pNew;
+  вернуть pNew;
 }
 
 /*
@@ -984,31 +984,31 @@ Expr *sqlite3ExprAlloc(
 */
 Expr *sqlite3Expr(
   sqlite3 *db,            /* Handle for sqlite3DbMallocZero() (may be null) */
-  int op,                 /* Expression opcode */
+  целое op,                 /* Expression opcode */
   const char *zToken      /* Token argument.  Might be NULL */
 ){
   Token x;
   x.z = zToken;
   x.n = sqlite3Strlen30(zToken);
-  return sqlite3ExprAlloc(db, op, &x, 0);
+  вернуть sqlite3ExprAlloc(db, op, &x, 0);
 }
 
 /*
 ** Allocate an expression for a 32-bit signed integer literal.
 */
-Expr *sqlite3ExprInt32(sqlite3 *db, int iVal){
+Expr *sqlite3ExprInt32(sqlite3 *db, целое iVal){
   Expr *pNew = sqlite3DbMallocRawNN(db, sizeof(Expr));
-  if( pNew ){
+  если( pNew ){
     memset(pNew, 0, sizeof(Expr));
     pNew->op = TK_INTEGER;
     pNew->iAgg = -1;
     pNew->flags = EP_IntValue|EP_Leaf|(iVal?EP_IsTrue:EP_IsFalse);
     pNew->u.iValue = iVal;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#если SQLITE_MAX_EXPR_DEPTH>0
     pNew->nHeight = 1;
 #endif 
   }
-  return pNew;
+  вернуть pNew;
 }
 
 /*
@@ -1023,27 +1023,27 @@ void sqlite3ExprAttachSubtrees(
   Expr *pLeft,
   Expr *pRight
 ){
-  if( pRoot==0 ){
+  если( pRoot==0 ){
     assert( db->mallocFailed );
     sqlite3ExprDelete(db, pLeft);
     sqlite3ExprDelete(db, pRight);
-  }else{
+  }иначе{
     assert( ExprUseXList(pRoot) );
     assert( pRoot->x.pSelect==0 );
-    if( pRight ){
+    если( pRight ){
       pRoot->pRight = pRight;
       pRoot->flags |= EP_Propagate & pRight->flags;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#если SQLITE_MAX_EXPR_DEPTH>0
       pRoot->nHeight = pRight->nHeight+1;
-    }else{
+    }иначе{
       pRoot->nHeight = 1;
 #endif
     }
-    if( pLeft ){
+    если( pLeft ){
       pRoot->pLeft = pLeft;
       pRoot->flags |= EP_Propagate & pLeft->flags;
-#if SQLITE_MAX_EXPR_DEPTH>0
-      if( pLeft->nHeight>=pRoot->nHeight ){
+#если SQLITE_MAX_EXPR_DEPTH>0
+      если( pLeft->nHeight>=pRoot->nHeight ){
         pRoot->nHeight = pLeft->nHeight+1;
       }
 #endif
@@ -1060,23 +1060,23 @@ void sqlite3ExprAttachSubtrees(
 */
 Expr *sqlite3PExpr(
   Parse *pParse,          /* Parsing context */
-  int op,                 /* Expression opcode */
+  целое op,                 /* Expression opcode */
   Expr *pLeft,            /* Left operand */
   Expr *pRight            /* Right operand */
 ){
   Expr *p;
   p = sqlite3DbMallocRawNN(pParse->db, sizeof(Expr));
-  if( p ){
+  если( p ){
     memset(p, 0, sizeof(Expr));
     p->op = op & 0xff;
     p->iAgg = -1;
     sqlite3ExprAttachSubtrees(pParse->db, p, pLeft, pRight);
     sqlite3ExprCheckHeight(pParse, p->nHeight);
-  }else{
+  }иначе{
     sqlite3ExprDelete(pParse->db, pLeft);
     sqlite3ExprDelete(pParse->db, pRight);
   }
-  return p;
+  вернуть p;
 }
 
 /*
@@ -1084,11 +1084,11 @@ Expr *sqlite3PExpr(
 ** do a memory allocation failure) then delete the pSelect object.
 */
 void sqlite3PExprAddSelect(Parse *pParse, Expr *pExpr, Select *pSelect){
-  if( pExpr ){
+  если( pExpr ){
     pExpr->x.pSelect = pSelect;
     ExprSetProperty(pExpr, EP_xIsSelect|EP_Subquery);
     sqlite3ExprSetHeightAndFlags(pParse, pExpr);
-  }else{
+  }иначе{
     assert( pParse->db->mallocFailed );
     sqlite3SelectDelete(pParse->db, pSelect);
   }
@@ -1113,21 +1113,21 @@ void sqlite3PExprAddSelect(Parse *pParse, Expr *pExpr, Select *pSelect){
 ** This is used as part of processing IN(...) expressions with a list
 ** of vectors on the RHS. e.g. "... IN ((1,2), (3,4), (5,6))".
 */
-Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
-  int ii;
+Select *sqlite3ExprListToValues(Parse *pParse, целое nElem, ExprList *pEList){
+  целое ii;
   Select *pRet = 0;
   assert( nElem>1 );
-  for(ii=0; ii<pEList->nExpr; ii++){
+  для(ii=0; ii<pEList->nExpr; ii++){
     Select *pSel;
     Expr *pExpr = pEList->a[ii].pExpr;
-    int nExprElem;
-    if( pExpr->op==TK_VECTOR ){
+    целое nExprElem;
+    если( pExpr->op==TK_VECTOR ){
       assert( ExprUseXList(pExpr) );
       nExprElem = pExpr->x.pList->nExpr;
-    }else{
+    }иначе{
       nExprElem = 1;
     }
-    if( nExprElem!=nElem ){
+    если( nExprElem!=nElem ){
       sqlite3ErrorMsg(pParse, "IN(...) element has %d term%s - expected %d",
           nExprElem, nExprElem>1?"s":"", nElem
       );
@@ -1136,8 +1136,8 @@ Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
     assert( ExprUseXList(pExpr) );
     pSel = sqlite3SelectNew(pParse, pExpr->x.pList, 0, 0, 0, 0, 0, SF_Values,0);
     pExpr->x.pList = 0;
-    if( pSel ){
-      if( pRet ){
+    если( pSel ){
+      если( pRet ){
         pSel->op = TK_ALL;
         pSel->pPrior = pRet;
       }
@@ -1145,11 +1145,11 @@ Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
     }
   }
 
-  if( pRet && pRet->pPrior ){
+  если( pRet && pRet->pPrior ){
     pRet->selFlags |= SF_MultiValue;
   }
   sqlite3ExprListDelete(pParse->db, pEList);
-  return pRet;
+  вернуть pRet;
 }
 
 /*
@@ -1162,23 +1162,23 @@ Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
 */
 Expr *sqlite3ExprAnd(Parse *pParse, Expr *pLeft, Expr *pRight){
   sqlite3 *db = pParse->db;
-  if( pLeft==0  ){
-    return pRight;
-  }else if( pRight==0 ){
-    return pLeft;
-  }else{
+  если( pLeft==0  ){
+    вернуть pRight;
+  }иначе если( pRight==0 ){
+    вернуть pLeft;
+  }иначе{
     u32 f = pLeft->flags | pRight->flags;
-    if( (f&(EP_OuterON|EP_InnerON|EP_IsFalse|EP_HasFunc))==EP_IsFalse
+    если( (f&(EP_OuterON|EP_InnerON|EP_IsFalse|EP_HasFunc))==EP_IsFalse
      && !IN_RENAME_OBJECT
     ){
       Expr *p;
       sqlite3ExprDeferredDelete(pParse, pLeft);
       sqlite3ExprDeferredDelete(pParse, pRight);
       p = sqlite3ExprInt32(db, 0);
-      if( p ) p->op2 = 1;
-      return p;
-    }else{
-      return sqlite3PExpr(pParse, TK_AND, pLeft, pRight);
+      если( p ) p->op2 = 1;
+      вернуть p;
+    }иначе{
+      вернуть sqlite3PExpr(pParse, TK_AND, pLeft, pRight);
     }
   }
 }
@@ -1191,19 +1191,19 @@ Expr *sqlite3ExprFunction(
   Parse *pParse,        /* Parsing context */
   ExprList *pList,      /* Argument list */
   const Token *pToken,  /* Name of the function */
-  int eDistinct         /* SF_Distinct or SF_ALL or 0 */
+  целое eDistinct         /* SF_Distinct or SF_ALL or 0 */
 ){
   Expr *pNew;
   sqlite3 *db = pParse->db;
   assert( pToken );
   pNew = sqlite3ExprAlloc(db, TK_FUNCTION, pToken, 1);
-  if( pNew==0 ){
+  если( pNew==0 ){
     sqlite3ExprListDelete(db, pList); /* Avoid memory leak when malloc fails */
-    return 0;
+    вернуть 0;
   }
   assert( !ExprHasProperty(pNew, EP_InnerON|EP_OuterON) );
-  pNew->w.iOfst = (int)(pToken->z - pParse->zTail);
-  if( pList
+  pNew->w.iOfst = (целое)(pToken->z - pParse->zTail);
+  если( pList
    && pList->nExpr > pParse->db->aLimit[SQLITE_LIMIT_FUNCTION_ARG]
    && !pParse->nested
   ){
@@ -1213,8 +1213,8 @@ Expr *sqlite3ExprFunction(
   ExprSetProperty(pNew, EP_HasFunc);
   assert( ExprUseXList(pNew) );
   sqlite3ExprSetHeightAndFlags(pParse, pNew);
-  if( eDistinct==SF_Distinct ) ExprSetProperty(pNew, EP_Distinct);
-  return pNew;
+  если( eDistinct==SF_Distinct ) ExprSetProperty(pNew, EP_Distinct);
+  вернуть pNew;
 }
 
 /*
@@ -1244,38 +1244,38 @@ void sqlite3ExprAddFunctionOrderBy(
 ){
   Expr *pOB;
   sqlite3 *db = pParse->db;
-  if( NEVER(pOrderBy==0) ){
+  если( NEVER(pOrderBy==0) ){
     assert( db->mallocFailed );
-    return;
+    вернуть;
   }
-  if( pExpr==0 ){
+  если( pExpr==0 ){
     assert( db->mallocFailed );
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    вернуть;
   }
   assert( pExpr->op==TK_FUNCTION );
   assert( pExpr->pLeft==0 );
   assert( ExprUseXList(pExpr) );
-  if( pExpr->x.pList==0 || NEVER(pExpr->x.pList->nExpr==0) ){
+  если( pExpr->x.pList==0 || NEVER(pExpr->x.pList->nExpr==0) ){
     /* Ignore ORDER BY on zero-argument aggregates */
     sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric, pOrderBy);
-    return;
+    вернуть;
   }
-  if( IsWindowFunc(pExpr) ){
+  если( IsWindowFunc(pExpr) ){
     sqlite3ExprOrderByAggregateError(pParse, pExpr);
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    вернуть;
   }
-  if( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+  если( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
     sqlite3ErrorMsg(pParse, "too many terms in ORDER BY clause");
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    вернуть;
   }
 
   pOB = sqlite3ExprAlloc(db, TK_ORDER, 0, 0);
-  if( pOB==0 ){
+  если( pOB==0 ){
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    вернуть;
   }
   pOB->x.pList = pOrderBy;
   assert( ExprUseXList(pOB) );
@@ -1301,10 +1301,10 @@ void sqlite3ExprFunctionUsable(
 ){
   assert( !IN_RENAME_OBJECT );
   assert( (pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE))!=0 );
-  if( ExprHasProperty(pExpr, EP_FromDDL) 
+  если( ExprHasProperty(pExpr, EP_FromDDL) 
    || pParse->prepFlags & SQLITE_PREPARE_FROM_DDL
   ){
-    if( (pDef->funcFlags & SQLITE_FUNC_DIRECT)!=0
+    если( (pDef->funcFlags & SQLITE_FUNC_DIRECT)!=0
      || (pParse->db->flags & SQLITE_TrustedSchema)==0
     ){
       /* Functions prohibited in triggers and views if:
@@ -1340,68 +1340,68 @@ void sqlite3ExprAssignVarNumber(Parse *pParse, Expr *pExpr, u32 n){
   const char *z;
   ynVar x;
 
-  if( pExpr==0 ) return;
+  если( pExpr==0 ) вернуть;
   assert( !ExprHasProperty(pExpr, EP_IntValue|EP_Reduced|EP_TokenOnly) );
   z = pExpr->u.zToken;
   assert( z!=0 );
   assert( z[0]!=0 );
   assert( n==(u32)sqlite3Strlen30(z) );
-  if( z[1]==0 ){
+  если( z[1]==0 ){
     /* Wildcard of the form "?".  Assign the next variable number */
     assert( z[0]=='?' );
     x = (ynVar)(++pParse->nVar);
-  }else{
-    int doAdd = 0;
-    if( z[0]=='?' ){
+  }иначе{
+    целое doAdd = 0;
+    если( z[0]=='?' ){
       /* Wildcard of the form "?nnn".  Convert "nnn" to an integer and
       ** use it as the variable number */
       i64 i;
-      int bOk;
-      if( n==2 ){ /*OPTIMIZATION-IF-TRUE*/
+      целое bOk;
+      если( n==2 ){ /*OPTIMIZATION-IF-TRUE*/
         i = z[1]-'0';  /* The common case of ?N for a single digit N */
         bOk = 1;
-      }else{
+      }иначе{
         bOk = 0==sqlite3Atoi64(&z[1], &i, n-1, SQLITE_UTF8);
       }
       testcase( i==0 );
       testcase( i==1 );
       testcase( i==db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER]-1 );
       testcase( i==db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] );
-      if( bOk==0 || i<1 || i>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
+      если( bOk==0 || i<1 || i>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
         sqlite3ErrorMsg(pParse, "variable number must be between ?1 and ?%d",
             db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER]);
         sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
-        return;
+        вернуть;
       }
       x = (ynVar)i;
-      if( x>pParse->nVar ){
-        pParse->nVar = (int)x;
+      если( x>pParse->nVar ){
+        pParse->nVar = (целое)x;
         doAdd = 1;
-      }else if( x<SQLITE_VNBMC*64 ){
+      }иначе если( x<SQLITE_VNBMC*64 ){
         doAdd = (pParse->aVnbmc[x>>6] & MASKBIT64(x&63))==0;
-      }else if( sqlite3VListNumToName(pParse->pVList, x)==0 ){
+      }иначе если( sqlite3VListNumToName(pParse->pVList, x)==0 ){
         doAdd = 1;
       }
-    }else{
+    }иначе{
       /* Wildcards like ":aaa", "$aaa" or "@aaa".  Reuse the same variable
       ** number as the prior appearance of the same name, or if the name
       ** has never appeared before, reuse the same variable number
       */
       x = (ynVar)sqlite3VListNameToNum(pParse->pVList, z, n);
-      if( x==0 ){
+      если( x==0 ){
         x = (ynVar)(++pParse->nVar);
         doAdd = 1;
       }
     }
-    if( doAdd ){
+    если( doAdd ){
       pParse->pVList = sqlite3VListAdd(db, pParse->pVList, z, n, x);
-      if( pParse->pVList!=0 && x<SQLITE_VNBMC*64 ){
+      если( pParse->pVList!=0 && x<SQLITE_VNBMC*64 ){
         pParse->aVnbmc[x>>6] |= MASKBIT64(x&63);
       }
     }
   }
   pExpr->iColumn = x;
-  if( x>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
+  если( x>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
     sqlite3ErrorMsg(pParse, "too many SQL variables");
     sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
   }
@@ -1419,64 +1419,64 @@ exprDeleteRestart:
   assert( !ExprUseYWin(p) || p->y.pWin!=0 || db->mallocFailed );
   assert( p->op!=TK_FUNCTION || !ExprUseYSub(p) );
 #ifdef SQLITE_DEBUG
-  if( ExprHasProperty(p, EP_Leaf) && !ExprHasProperty(p, EP_TokenOnly) ){
+  если( ExprHasProperty(p, EP_Leaf) && !ExprHasProperty(p, EP_TokenOnly) ){
     assert( p->pLeft==0 );
     assert( p->pRight==0 );
     assert( !ExprUseXSelect(p) || p->x.pSelect==0 );
     assert( !ExprUseXList(p) || p->x.pList==0 );
   }
 #endif
-  if( !ExprHasProperty(p, (EP_TokenOnly|EP_Leaf)) ){
+  если( !ExprHasProperty(p, (EP_TokenOnly|EP_Leaf)) ){
     /* The Expr.x union is never used at the same time as Expr.pRight */
     assert( (ExprUseXList(p) && p->x.pList==0) || p->pRight==0 );
-    if( p->pRight ){
+    если( p->pRight ){
       assert( !ExprHasProperty(p, EP_WinFunc) );
       sqlite3ExprDeleteNN(db, p->pRight);
-    }else if( ExprUseXSelect(p) ){
+    }иначе если( ExprUseXSelect(p) ){
       assert( !ExprHasProperty(p, EP_WinFunc) );
       sqlite3SelectDelete(db, p->x.pSelect);
-    }else{
+    }иначе{
       sqlite3ExprListDelete(db, p->x.pList);
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(p, EP_WinFunc) ){
+      если( ExprHasProperty(p, EP_WinFunc) ){
         sqlite3WindowDelete(db, p->y.pWin);
       }
 #endif
     }
-    if( p->pLeft && p->op!=TK_SELECT_COLUMN ){
+    если( p->pLeft && p->op!=TK_SELECT_COLUMN ){
       Expr *pLeft = p->pLeft;
-      if( !ExprHasProperty(p, EP_Static)
+      если( !ExprHasProperty(p, EP_Static)
        && !ExprHasProperty(pLeft, EP_Static)
       ){
         /* Avoid unnecessary recursion on unary operators */
         sqlite3DbNNFreeNN(db, p);
         p = pLeft;
         goto exprDeleteRestart;
-      }else{
+      }иначе{
         sqlite3ExprDeleteNN(db, pLeft);
       }
     }
   }
-  if( !ExprHasProperty(p, EP_Static) ){
+  если( !ExprHasProperty(p, EP_Static) ){
     sqlite3DbNNFreeNN(db, p);
   }
 }
 void sqlite3ExprDelete(sqlite3 *db, Expr *p){
-  if( p ) sqlite3ExprDeleteNN(db, p);
+  если( p ) sqlite3ExprDeleteNN(db, p);
 }
 void sqlite3ExprDeleteGeneric(sqlite3 *db, void *p){
-  if( ALWAYS(p) ) sqlite3ExprDeleteNN(db, (Expr*)p);
+  если( ALWAYS(p) ) sqlite3ExprDeleteNN(db, (Expr*)p);
 }
 
 /*
 ** Clear both elements of an OnOrUsing object
 */
 void sqlite3ClearOnOrUsing(sqlite3 *db, OnOrUsing *p){
-  if( p==0 ){
+  если( p==0 ){
     /* Nothing to clear */
-  }else if( p->pOn ){
+  }иначе если( p->pOn ){
     sqlite3ExprDeleteNN(db, p->pOn);
-  }else if( p->pUsing ){
+  }иначе если( p->pUsing ){
     sqlite3IdListDelete(db, p->pUsing);
   }
 }
@@ -1491,16 +1491,16 @@ void sqlite3ClearOnOrUsing(sqlite3 *db, OnOrUsing *p){
 ** Return 0 if the delete was successfully deferred.  Return non-zero
 ** if the delete happened immediately because of an OOM.
 */
-int sqlite3ExprDeferredDelete(Parse *pParse, Expr *pExpr){
-  return 0==sqlite3ParserAddCleanup(pParse, sqlite3ExprDeleteGeneric, pExpr);
+целое sqlite3ExprDeferredDelete(Parse *pParse, Expr *pExpr){
+  вернуть 0==sqlite3ParserAddCleanup(pParse, sqlite3ExprDeleteGeneric, pExpr);
 }
 
 /* Invoke sqlite3RenameExprUnmap() and sqlite3ExprDelete() on the
 ** expression.
 */
 void sqlite3ExprUnmapAndDelete(Parse *pParse, Expr *p){
-  if( p ){
-    if( IN_RENAME_OBJECT ){
+  если( p ){
+    если( IN_RENAME_OBJECT ){
       sqlite3RenameExprUnmap(pParse, p);
     }
     sqlite3ExprDeleteNN(pParse->db, p);
@@ -1512,10 +1512,10 @@ void sqlite3ExprUnmapAndDelete(Parse *pParse, Expr *p){
 ** passed as the first argument. This is always one of EXPR_FULLSIZE,
 ** EXPR_REDUCEDSIZE or EXPR_TOKENONLYSIZE.
 */
-static int exprStructSize(const Expr *p){
-  if( ExprHasProperty(p, EP_TokenOnly) ) return EXPR_TOKENONLYSIZE;
-  if( ExprHasProperty(p, EP_Reduced) ) return EXPR_REDUCEDSIZE;
-  return EXPR_FULLSIZE;
+static целое exprStructSize(const Expr *p){
+  если( ExprHasProperty(p, EP_TokenOnly) ) вернуть EXPR_TOKENONLYSIZE;
+  если( ExprHasProperty(p, EP_Reduced) ) вернуть EXPR_REDUCEDSIZE;
+  вернуть EXPR_FULLSIZE;
 }
 
 /*
@@ -1552,25 +1552,25 @@ static int exprStructSize(const Expr *p){
 ** of dupedExprStructSize() contain multiple assert() statements that attempt
 ** to enforce this constraint.
 */
-static int dupedExprStructSize(const Expr *p, int flags){
-  int nSize;
+static целое dupedExprStructSize(const Expr *p, целое flags){
+  целое nSize;
   assert( flags==EXPRDUP_REDUCE || flags==0 ); /* Only one flag value allowed */
   assert( EXPR_FULLSIZE<=0xfff );
   assert( (0xfff & (EP_Reduced|EP_TokenOnly))==0 );
-  if( 0==flags || ExprHasProperty(p, EP_FullSize) ){
+  если( 0==flags || ExprHasProperty(p, EP_FullSize) ){
     nSize = EXPR_FULLSIZE;
-  }else{
+  }иначе{
     assert( !ExprHasProperty(p, EP_TokenOnly|EP_Reduced) );
     assert( !ExprHasProperty(p, EP_OuterON) );
     assert( !ExprHasVVAProperty(p, EP_NoReduce) );
-    if( p->pLeft || p->x.pList ){
+    если( p->pLeft || p->x.pList ){
       nSize = EXPR_REDUCEDSIZE | EP_Reduced;
-    }else{
+    }иначе{
       assert( p->pRight==0 );
       nSize = EXPR_TOKENONLYSIZE | EP_TokenOnly;
     }
   }
-  return nSize;
+  вернуть nSize;
 }
 
 /*
@@ -1578,12 +1578,12 @@ static int dupedExprStructSize(const Expr *p, int flags){
 ** of the Expr structure and a copy of the Expr.u.zToken string (if that
 ** string is defined.)
 */
-static int dupedExprNodeSize(const Expr *p, int flags){
-  int nByte = dupedExprStructSize(p, flags) & 0xfff;
-  if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+static целое dupedExprNodeSize(const Expr *p, целое flags){
+  целое nByte = dupedExprStructSize(p, flags) & 0xfff;
+  если( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
     nByte += sqlite3Strlen30NN(p->u.zToken)+1;
   }
-  return ROUND8(nByte);
+  вернуть ROUND8(nByte);
 }
 
 /*
@@ -1597,14 +1597,14 @@ static int dupedExprNodeSize(const Expr *p, int flags){
 ** tree formed by Expr.pLeft and Expr.pRight, but not any other
 ** substructure such as Expr.x.pList, Expr.x.pSelect, and Expr.y.pWin.
 */
-static int dupedExprSize(const Expr *p){
-  int nByte;
+static целое dupedExprSize(const Expr *p){
+  целое nByte;
   assert( p!=0 );
   nByte = dupedExprNodeSize(p, EXPRDUP_REDUCE);
-  if( p->pLeft ) nByte += dupedExprSize(p->pLeft);
-  if( p->pRight ) nByte += dupedExprSize(p->pRight);
+  если( p->pLeft ) nByte += dupedExprSize(p->pLeft);
+  если( p->pRight ) nByte += dupedExprSize(p->pRight);
   assert( nByte==ROUND8(nByte) );
-  return nByte;
+  вернуть nByte;
 }
 
 /*
@@ -1632,13 +1632,13 @@ struct EdupBuf {
 static Expr *exprDup(
   sqlite3 *db,          /* Database connection (for memory allocation) */
   const Expr *p,        /* Expr tree to be duplicated */
-  int dupFlags,         /* EXPRDUP_REDUCE for compression.  0 if not */
+  целое dupFlags,         /* EXPRDUP_REDUCE for compression.  0 if not */
   EdupBuf *pEdupBuf     /* Preallocated storage space, or NULL */
 ){
   Expr *pNew;           /* Value to return */
   EdupBuf sEdupBuf;     /* Memory space from which to build Expr object */
   u32 staticFlag;       /* EP_Static if space not obtained from malloc */
-  int nToken = -1;       /* Space needed for p->u.zToken.  -1 means unknown */
+  целое nToken = -1;       /* Space needed for p->u.zToken.  -1 means unknown */
 
   assert( db!=0 );
   assert( p );
@@ -1646,7 +1646,7 @@ static Expr *exprDup(
   assert( pEdupBuf==0 || dupFlags==EXPRDUP_REDUCE );
 
   /* Figure out where to write the new Expr structure. */
-  if( pEdupBuf ){
+  если( pEdupBuf ){
     sEdupBuf.zAlloc = pEdupBuf->zAlloc;
 #ifdef SQLITE_DEBUG
     sEdupBuf.zEnd = pEdupBuf->zEnd;
@@ -1654,14 +1654,14 @@ static Expr *exprDup(
     staticFlag = EP_Static;
     assert( sEdupBuf.zAlloc!=0 );
     assert( dupFlags==EXPRDUP_REDUCE );
-  }else{
-    int nAlloc;
-    if( dupFlags ){
+  }иначе{
+    целое nAlloc;
+    если( dupFlags ){
       nAlloc = dupedExprSize(p);
-    }else if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+    }иначе если( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
       nToken = sqlite3Strlen30NN(p->u.zToken)+1;
       nAlloc = ROUND8(EXPR_FULLSIZE + nToken);
-    }else{
+    }иначе{
       nToken = 0;
       nAlloc = ROUND8(EXPR_FULLSIZE);
     }
@@ -1676,31 +1676,31 @@ static Expr *exprDup(
   pNew = (Expr *)sEdupBuf.zAlloc;
   assert( EIGHT_BYTE_ALIGNMENT(pNew) );
 
-  if( pNew ){
+  если( pNew ){
     /* Set nNewSize to the size allocated for the structure pointed to
     ** by pNew. This is either EXPR_FULLSIZE, EXPR_REDUCEDSIZE or
     ** EXPR_TOKENONLYSIZE. nToken is set to the number of bytes consumed
     ** by the copy of the p->u.zToken string (if any).
     */
     const unsigned nStructSize = dupedExprStructSize(p, dupFlags);
-    int nNewSize = nStructSize & 0xfff;
-    if( nToken<0 ){
-      if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+    целое nNewSize = nStructSize & 0xfff;
+    если( nToken<0 ){
+      если( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
         nToken = sqlite3Strlen30(p->u.zToken) + 1;
-      }else{
+      }иначе{
         nToken = 0;
       }
     }
-    if( dupFlags ){
-      assert( (int)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >= nNewSize+nToken );
+    если( dupFlags ){
+      assert( (целое)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >= nNewSize+nToken );
       assert( ExprHasProperty(p, EP_Reduced)==0 );
       memcpy(sEdupBuf.zAlloc, p, nNewSize);
-    }else{
+    }иначе{
       u32 nSize = (u32)exprStructSize(p);
-      assert( (int)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >=
-                                                   (int)EXPR_FULLSIZE+nToken );
+      assert( (целое)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >=
+                                                   (целое)EXPR_FULLSIZE+nToken );
       memcpy(sEdupBuf.zAlloc, p, nSize);
-      if( nSize<EXPR_FULLSIZE ){
+      если( nSize<EXPR_FULLSIZE ){
         memset(&sEdupBuf.zAlloc[nSize], 0, EXPR_FULLSIZE-nSize);
       }
       nNewSize = EXPR_FULLSIZE;
@@ -1711,65 +1711,65 @@ static Expr *exprDup(
     pNew->flags |= nStructSize & (EP_Reduced|EP_TokenOnly);
     pNew->flags |= staticFlag;
     ExprClearVVAProperties(pNew);
-    if( dupFlags ){
+    если( dupFlags ){
       ExprSetVVAProperty(pNew, EP_Immutable);
     }
 
     /* Copy the p->u.zToken string, if any. */
     assert( nToken>=0 );
-    if( nToken>0 ){
+    если( nToken>0 ){
       char *zToken = pNew->u.zToken = (char*)&sEdupBuf.zAlloc[nNewSize];
       memcpy(zToken, p->u.zToken, nToken);
       nNewSize += nToken;
     }
     sEdupBuf.zAlloc += ROUND8(nNewSize);
 
-    if( ((p->flags|pNew->flags)&(EP_TokenOnly|EP_Leaf))==0 ){
+    если( ((p->flags|pNew->flags)&(EP_TokenOnly|EP_Leaf))==0 ){
 
       /* Fill in the pNew->x.pSelect or pNew->x.pList member. */
-      if( ExprUseXSelect(p) ){
+      если( ExprUseXSelect(p) ){
         pNew->x.pSelect = sqlite3SelectDup(db, p->x.pSelect, dupFlags);
-      }else{
+      }иначе{
         pNew->x.pList = sqlite3ExprListDup(db, p->x.pList,
                            p->op!=TK_ORDER ? dupFlags : 0);
       }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(p, EP_WinFunc) ){
+      если( ExprHasProperty(p, EP_WinFunc) ){
         pNew->y.pWin = sqlite3WindowDup(db, pNew, p->y.pWin);
         assert( ExprHasProperty(pNew, EP_WinFunc) );
       }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
       /* Fill in pNew->pLeft and pNew->pRight. */
-      if( dupFlags ){
-        if( p->op==TK_SELECT_COLUMN ){
+      если( dupFlags ){
+        если( p->op==TK_SELECT_COLUMN ){
           pNew->pLeft = p->pLeft;
           assert( p->pRight==0 
                || p->pRight==p->pLeft
                || ExprHasProperty(p->pLeft, EP_Subquery) );
-        }else{
+        }иначе{
           pNew->pLeft = p->pLeft ?
                       exprDup(db, p->pLeft, EXPRDUP_REDUCE, &sEdupBuf) : 0;
         }
         pNew->pRight = p->pRight ?
                        exprDup(db, p->pRight, EXPRDUP_REDUCE, &sEdupBuf) : 0;
-      }else{
-        if( p->op==TK_SELECT_COLUMN ){
+      }иначе{
+        если( p->op==TK_SELECT_COLUMN ){
           pNew->pLeft = p->pLeft;
           assert( p->pRight==0 
                || p->pRight==p->pLeft
                || ExprHasProperty(p->pLeft, EP_Subquery) );
-        }else{
+        }иначе{
           pNew->pLeft = sqlite3ExprDup(db, p->pLeft, 0);
         }
         pNew->pRight = sqlite3ExprDup(db, p->pRight, 0);
       }
     }
   }
-  if( pEdupBuf ) memcpy(pEdupBuf, &sEdupBuf, sizeof(sEdupBuf));
+  если( pEdupBuf ) memcpy(pEdupBuf, &sEdupBuf, sizeof(sEdupBuf));
   assert( sEdupBuf.zAlloc <= sEdupBuf.zEnd );
-  return pNew;
+  вернуть pNew;
 }
 
 /*
@@ -1780,13 +1780,13 @@ static Expr *exprDup(
 #ifndef SQLITE_OMIT_CTE
 With *sqlite3WithDup(sqlite3 *db, With *p){
   With *pRet = 0;
-  if( p ){
+  если( p ){
     sqlite3_int64 nByte = SZ_WITH(p->nCte);
     pRet = sqlite3DbMallocZero(db, nByte);
-    if( pRet ){
-      int i;
+    если( pRet ){
+      целое i;
       pRet->nCte = p->nCte;
-      for(i=0; i<p->nCte; i++){
+      для(i=0; i<p->nCte; i++){
         pRet->a[i].pSelect = sqlite3SelectDup(db, p->a[i].pSelect, 0);
         pRet->a[i].pCols = sqlite3ExprListDup(db, p->a[i].pCols, 0);
         pRet->a[i].zName = sqlite3DbStrDup(db, p->a[i].zName);
@@ -1794,9 +1794,9 @@ With *sqlite3WithDup(sqlite3 *db, With *p){
       }
     }
   }
-  return pRet;
+  вернуть pRet;
 }
-#else
+#иначе
 # define sqlite3WithDup(x,y) 0
 #endif
 
@@ -1807,8 +1807,8 @@ With *sqlite3WithDup(sqlite3 *db, With *p){
 ** an a newly duplicated SELECT statement and gather all of the Window
 ** objects found there, assembling them onto the linked list at Select->pWin.
 */
-static int gatherSelectWindowsCallback(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_FUNCTION && ExprHasProperty(pExpr, EP_WinFunc) ){
+static целое gatherSelectWindowsCallback(Walker *pWalker, Expr *pExpr){
+  если( pExpr->op==TK_FUNCTION && ExprHasProperty(pExpr, EP_WinFunc) ){
     Select *pSelect = pWalker->u.pSelect;
     Window *pWin = pExpr->y.pWin;
     assert( pWin );
@@ -1816,10 +1816,10 @@ static int gatherSelectWindowsCallback(Walker *pWalker, Expr *pExpr){
     assert( pWin->ppThis==0 );
     sqlite3WindowLink(pSelect, pWin);
   }
-  return WRC_Continue;
+  вернуть WRC_Continue;
 }
-static int gatherSelectWindowsSelectCallback(Walker *pWalker, Select *p){
-  return p==pWalker->u.pSelect ? WRC_Continue : WRC_Prune;
+static целое gatherSelectWindowsSelectCallback(Walker *pWalker, Select *p){
+  вернуть p==pWalker->u.pSelect ? WRC_Continue : WRC_Prune;
 }
 static void gatherSelectWindows(Select *p){
   Walker w;
@@ -1850,39 +1850,39 @@ static void gatherSelectWindows(Select *p){
 ** truncated version of the usual Expr structure that will be stored as
 ** part of the in-memory representation of the database schema.
 */
-Expr *sqlite3ExprDup(sqlite3 *db, const Expr *p, int flags){
+Expr *sqlite3ExprDup(sqlite3 *db, const Expr *p, целое flags){
   assert( flags==0 || flags==EXPRDUP_REDUCE );
-  return p ? exprDup(db, p, flags, 0) : 0;
+  вернуть p ? exprDup(db, p, flags, 0) : 0;
 }
-ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
+ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, целое flags){
   ExprList *pNew;
   struct ExprList_item *pItem;
   const struct ExprList_item *pOldItem;
-  int i;
+  целое i;
   Expr *pPriorSelectColOld = 0;
   Expr *pPriorSelectColNew = 0;
   assert( db!=0 );
-  if( p==0 ) return 0;
+  если( p==0 ) вернуть 0;
   pNew = sqlite3DbMallocRawNN(db, sqlite3DbMallocSize(db, p));
-  if( pNew==0 ) return 0;
+  если( pNew==0 ) вернуть 0;
   pNew->nExpr = p->nExpr;
   pNew->nAlloc = p->nAlloc;
   pItem = pNew->a;
   pOldItem = p->a;
-  for(i=0; i<p->nExpr; i++, pItem++, pOldItem++){
+  для(i=0; i<p->nExpr; i++, pItem++, pOldItem++){
     Expr *pOldExpr = pOldItem->pExpr;
     Expr *pNewExpr;
     pItem->pExpr = sqlite3ExprDup(db, pOldExpr, flags);
-    if( pOldExpr
+    если( pOldExpr
      && pOldExpr->op==TK_SELECT_COLUMN
      && (pNewExpr = pItem->pExpr)!=0
     ){
-      if( pNewExpr->pRight ){
+      если( pNewExpr->pRight ){
         pPriorSelectColOld = pOldExpr->pRight;
         pPriorSelectColNew = pNewExpr->pRight;
         pNewExpr->pLeft = pNewExpr->pRight;
-      }else{
-        if( pOldExpr->pLeft!=pPriorSelectColOld ){
+      }иначе{
+        если( pOldExpr->pLeft!=pPriorSelectColOld ){
           pPriorSelectColOld = pOldExpr->pLeft;
           pPriorSelectColNew = sqlite3ExprDup(db, pPriorSelectColOld, flags);
           pNewExpr->pRight = pPriorSelectColNew;
@@ -1894,7 +1894,7 @@ ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
     pItem->fg = pOldItem->fg;
     pItem->u = pOldItem->u;
   }
-  return pNew;
+  вернуть pNew;
 }
 
 /*
@@ -1903,95 +1903,95 @@ ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
 ** sqlite3SelectDup(), can be called. sqlite3SelectDup() is sometimes
 ** called with a NULL argument.
 */
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER) \
+#если !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER) \
  || !defined(SQLITE_OMIT_SUBQUERY)
-SrcList *sqlite3SrcListDup(sqlite3 *db, const SrcList *p, int flags){
+SrcList *sqlite3SrcListDup(sqlite3 *db, const SrcList *p, целое flags){
   SrcList *pNew;
-  int i;
+  целое i;
   assert( db!=0 );
-  if( p==0 ) return 0;
+  если( p==0 ) вернуть 0;
   pNew = sqlite3DbMallocRawNN(db, SZ_SRCLIST(p->nSrc) );
-  if( pNew==0 ) return 0;
+  если( pNew==0 ) вернуть 0;
   pNew->nSrc = pNew->nAlloc = p->nSrc;
-  for(i=0; i<p->nSrc; i++){
+  для(i=0; i<p->nSrc; i++){
     SrcItem *pNewItem = &pNew->a[i];
     const SrcItem *pOldItem = &p->a[i];
     Table *pTab;
     pNewItem->fg = pOldItem->fg;
-    if( pOldItem->fg.isSubquery ){
+    если( pOldItem->fg.isSubquery ){
       Subquery *pNewSubq = sqlite3DbMallocRaw(db, sizeof(Subquery));
-      if( pNewSubq==0 ){
+      если( pNewSubq==0 ){
         assert( db->mallocFailed );
         pNewItem->fg.isSubquery = 0;
-      }else{
+      }иначе{
         memcpy(pNewSubq, pOldItem->u4.pSubq, sizeof(*pNewSubq));
         pNewSubq->pSelect = sqlite3SelectDup(db, pNewSubq->pSelect, flags);
-        if( pNewSubq->pSelect==0 ){
+        если( pNewSubq->pSelect==0 ){
           sqlite3DbFree(db, pNewSubq);
           pNewSubq = 0;
           pNewItem->fg.isSubquery = 0;
         }
       }
       pNewItem->u4.pSubq = pNewSubq;
-    }else if( pOldItem->fg.fixedSchema ){
+    }иначе если( pOldItem->fg.fixedSchema ){
       pNewItem->u4.pSchema = pOldItem->u4.pSchema;
-    }else{
+    }иначе{
       pNewItem->u4.zDatabase = sqlite3DbStrDup(db, pOldItem->u4.zDatabase);
     }
     pNewItem->zName = sqlite3DbStrDup(db, pOldItem->zName);
     pNewItem->zAlias = sqlite3DbStrDup(db, pOldItem->zAlias);
     pNewItem->iCursor = pOldItem->iCursor;
-    if( pNewItem->fg.isIndexedBy ){
+    если( pNewItem->fg.isIndexedBy ){
       pNewItem->u1.zIndexedBy = sqlite3DbStrDup(db, pOldItem->u1.zIndexedBy);
-    }else if( pNewItem->fg.isTabFunc ){
+    }иначе если( pNewItem->fg.isTabFunc ){
       pNewItem->u1.pFuncArg =
           sqlite3ExprListDup(db, pOldItem->u1.pFuncArg, flags);
-    }else{
+    }иначе{
       pNewItem->u1.nRow = pOldItem->u1.nRow;
     }
     pNewItem->u2 = pOldItem->u2;
-    if( pNewItem->fg.isCte ){
+    если( pNewItem->fg.isCte ){
       pNewItem->u2.pCteUse->nUse++;
     }
     pTab = pNewItem->pSTab = pOldItem->pSTab;
-    if( pTab ){
+    если( pTab ){
       pTab->nTabRef++;
     }
-    if( pOldItem->fg.isUsing ){
+    если( pOldItem->fg.isUsing ){
       assert( pNewItem->fg.isUsing );
       pNewItem->u3.pUsing = sqlite3IdListDup(db, pOldItem->u3.pUsing);
-    }else{
+    }иначе{
       pNewItem->u3.pOn = sqlite3ExprDup(db, pOldItem->u3.pOn, flags);
     }
     pNewItem->colUsed = pOldItem->colUsed;
   }
-  return pNew;
+  вернуть pNew;
 }
 IdList *sqlite3IdListDup(sqlite3 *db, const IdList *p){
   IdList *pNew;
-  int i;
+  целое i;
   assert( db!=0 );
-  if( p==0 ) return 0;
+  если( p==0 ) вернуть 0;
   pNew = sqlite3DbMallocRawNN(db, SZ_IDLIST(p->nId));
-  if( pNew==0 ) return 0;
+  если( pNew==0 ) вернуть 0;
   pNew->nId = p->nId;
-  for(i=0; i<p->nId; i++){
+  для(i=0; i<p->nId; i++){
     struct IdList_item *pNewItem = &pNew->a[i];
     const struct IdList_item *pOldItem = &p->a[i];
     pNewItem->zName = sqlite3DbStrDup(db, pOldItem->zName);
   }
-  return pNew;
+  вернуть pNew;
 }
-Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, int flags){
+Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, целое flags){
   Select *pRet = 0;
   Select *pNext = 0;
   Select **pp = &pRet;
   const Select *p;
 
   assert( db!=0 );
-  for(p=pDup; p; p=p->pPrior){
+  для(p=pDup; p; p=p->pPrior){
     Select *pNew = sqlite3DbMallocRawNN(db, sizeof(*p) );
-    if( pNew==0 ) break;
+    если( pNew==0 ) break;
     pNew->pEList = sqlite3ExprListDup(db, p->pEList, flags);
     pNew->pSrc = sqlite3SrcListDup(db, p->pSrc, flags);
     pNew->pWhere = sqlite3ExprDup(db, p->pWhere, flags);
@@ -2010,10 +2010,10 @@ Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, int flags){
 #ifndef SQLITE_OMIT_WINDOWFUNC
     pNew->pWin = 0;
     pNew->pWinDefn = sqlite3WindowListDup(db, p->pWinDefn);
-    if( p->pWin && db->mallocFailed==0 ) gatherSelectWindows(pNew);
+    если( p->pWin && db->mallocFailed==0 ) gatherSelectWindows(pNew);
 #endif
     pNew->selId = p->selId;
-    if( db->mallocFailed ){
+    если( db->mallocFailed ){
       /* Any prior OOM might have left the Select object incomplete.
       ** Delete the whole thing rather than allow an incomplete Select
       ** to be used by the code generator. */
@@ -2025,12 +2025,12 @@ Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, int flags){
     pp = &pNew->pPrior;
     pNext = pNew;
   }
-  return pRet;
+  вернуть pRet;
 }
-#else
-Select *sqlite3SelectDup(sqlite3 *db, const Select *p, int flags){
+#иначе
+Select *sqlite3SelectDup(sqlite3 *db, const Select *p, целое flags){
   assert( p==0 );
-  return 0;
+  вернуть 0;
 }
 #endif
 
@@ -2055,16 +2055,16 @@ SQLITE_NOINLINE ExprList *sqlite3ExprListAppendNew(
   ExprList *pList;
 
   pList = sqlite3DbMallocRawNN(db, SZ_EXPRLIST(4));
-  if( pList==0 ){
+  если( pList==0 ){
     sqlite3ExprDelete(db, pExpr);
-    return 0;
+    вернуть 0;
   }
   pList->nAlloc = 4;
   pList->nExpr = 1;
   pItem = &pList->a[0];
   *pItem = zeroItem;
   pItem->pExpr = pExpr;
-  return pList;
+  вернуть pList;
 }
 SQLITE_NOINLINE ExprList *sqlite3ExprListAppendGrow(
   sqlite3 *db,            /* Database handle.  Used for memory allocation */
@@ -2075,17 +2075,17 @@ SQLITE_NOINLINE ExprList *sqlite3ExprListAppendGrow(
   ExprList *pNew;
   pList->nAlloc *= 2;
   pNew = sqlite3DbRealloc(db, pList, SZ_EXPRLIST(pList->nAlloc));
-  if( pNew==0 ){
+  если( pNew==0 ){
     sqlite3ExprListDelete(db, pList);
     sqlite3ExprDelete(db, pExpr);
-    return 0;
-  }else{
+    вернуть 0;
+  }иначе{
     pList = pNew;
   }
   pItem = &pList->a[pList->nExpr++];
   *pItem = zeroItem;
   pItem->pExpr = pExpr;
-  return pList;
+  вернуть pList;
 }
 ExprList *sqlite3ExprListAppend(
   Parse *pParse,          /* Parsing context */
@@ -2093,16 +2093,16 @@ ExprList *sqlite3ExprListAppend(
   Expr *pExpr             /* Expression to be appended. Might be NULL */
 ){
   struct ExprList_item *pItem;
-  if( pList==0 ){
-    return sqlite3ExprListAppendNew(pParse->db,pExpr);
+  если( pList==0 ){
+    вернуть sqlite3ExprListAppendNew(pParse->db,pExpr);
   }
-  if( pList->nAlloc<pList->nExpr+1 ){
-    return sqlite3ExprListAppendGrow(pParse->db,pList,pExpr);
+  если( pList->nAlloc<pList->nExpr+1 ){
+    вернуть sqlite3ExprListAppendGrow(pParse->db,pList,pExpr);
   }
   pItem = &pList->a[pList->nExpr++];
   *pItem = zeroItem;
   pItem->pExpr = pExpr;
-  return pList;
+  вернуть pList;
 }
 
 /*
@@ -2123,38 +2123,38 @@ ExprList *sqlite3ExprListAppendVector(
   Expr *pExpr            /* Vector expression to be appended. Might be NULL */
 ){
   sqlite3 *db = pParse->db;
-  int n;
-  int i;
-  int iFirst = pList ? pList->nExpr : 0;
+  целое n;
+  целое i;
+  целое iFirst = pList ? pList->nExpr : 0;
   /* pColumns can only be NULL due to an OOM but an OOM will cause an
   ** exit prior to this routine being invoked */
-  if( NEVER(pColumns==0) ) goto vector_append_error;
-  if( pExpr==0 ) goto vector_append_error;
+  если( NEVER(pColumns==0) ) goto vector_append_error;
+  если( pExpr==0 ) goto vector_append_error;
 
   /* If the RHS is a vector, then we can immediately check to see that
   ** the size of the RHS and LHS match.  But if the RHS is a SELECT,
   ** wildcards ("*") in the result set of the SELECT must be expanded before
   ** we can do the size check, so defer the size check until code generation.
   */
-  if( pExpr->op!=TK_SELECT && pColumns->nId!=(n=sqlite3ExprVectorSize(pExpr)) ){
+  если( pExpr->op!=TK_SELECT && pColumns->nId!=(n=sqlite3ExprVectorSize(pExpr)) ){
     sqlite3ErrorMsg(pParse, "%d columns assigned %d values",
                     pColumns->nId, n);
     goto vector_append_error;
   }
 
-  for(i=0; i<pColumns->nId; i++){
+  для(i=0; i<pColumns->nId; i++){
     Expr *pSubExpr = sqlite3ExprForVectorField(pParse, pExpr, i, pColumns->nId);
     assert( pSubExpr!=0 || db->mallocFailed );
-    if( pSubExpr==0 ) continue;
+    если( pSubExpr==0 ) continue;
     pList = sqlite3ExprListAppend(pParse, pList, pSubExpr);
-    if( pList ){
+    если( pList ){
       assert( pList->nExpr==iFirst+i+1 );
       pList->a[pList->nExpr-1].zEName = pColumns->a[i].zName;
       pColumns->a[i].zName = 0;
     }
   }
 
-  if( !db->mallocFailed && pExpr->op==TK_SELECT && ALWAYS(pList!=0) ){
+  если( !db->mallocFailed && pExpr->op==TK_SELECT && ALWAYS(pList!=0) ){
     Expr *pFirst = pList->a[iFirst].pExpr;
     assert( pFirst!=0 );
     assert( pFirst->op==TK_SELECT_COLUMN );
@@ -2172,15 +2172,15 @@ ExprList *sqlite3ExprListAppendVector(
 vector_append_error:
   sqlite3ExprUnmapAndDelete(pParse, pExpr);
   sqlite3IdListDelete(db, pColumns);
-  return pList;
+  вернуть pList;
 }
 
 /*
 ** Set the sort order for the last element on the given ExprList.
 */
-void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls){
+void sqlite3ExprListSetSortOrder(ExprList *p, целое iSortOrder, целое eNulls){
   struct ExprList_item *pItem;
-  if( p==0 ) return;
+  если( p==0 ) вернуть;
   assert( p->nExpr>0 );
 
   assert( SQLITE_SO_UNDEFINED<0 && SQLITE_SO_ASC==0 && SQLITE_SO_DESC>0 );
@@ -2195,14 +2195,14 @@ void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls){
 
   pItem = &p->a[p->nExpr-1];
   assert( pItem->fg.bNulls==0 );
-  if( iSortOrder==SQLITE_SO_UNDEFINED ){
+  если( iSortOrder==SQLITE_SO_UNDEFINED ){
     iSortOrder = SQLITE_SO_ASC;
   }
   pItem->fg.sortFlags = (u8)iSortOrder;
 
-  if( eNulls!=SQLITE_SO_UNDEFINED ){
+  если( eNulls!=SQLITE_SO_UNDEFINED ){
     pItem->fg.bNulls = 1;
-    if( iSortOrder!=eNulls ){
+    если( iSortOrder!=eNulls ){
       pItem->fg.sortFlags |= KEYINFO_ORDER_BIGNULL;
     }
   }
@@ -2220,23 +2220,23 @@ void sqlite3ExprListSetName(
   Parse *pParse,          /* Parsing context */
   ExprList *pList,        /* List to which to add the span. */
   const Token *pName,     /* Name to be added */
-  int dequote             /* True to cause the name to be dequoted */
+  целое dequote             /* True to cause the name to be dequoted */
 ){
   assert( pList!=0 || pParse->db->mallocFailed!=0 );
   assert( pParse->eParseMode!=PARSE_MODE_UNMAP || dequote==0 );
-  if( pList ){
+  если( pList ){
     struct ExprList_item *pItem;
     assert( pList->nExpr>0 );
     pItem = &pList->a[pList->nExpr-1];
     assert( pItem->zEName==0 );
     assert( pItem->fg.eEName==ENAME_NAME );
     pItem->zEName = sqlite3DbStrNDup(pParse->db, pName->z, pName->n);
-    if( dequote ){
+    если( dequote ){
       /* If dequote==0, then pName->z does not point to part of a DDL
       ** statement handled by the parser. And so no token need be added
       ** to the token-map.  */
       sqlite3Dequote(pItem->zEName);
-      if( IN_RENAME_OBJECT ){
+      если( IN_RENAME_OBJECT ){
         sqlite3RenameTokenMap(pParse, (const void*)pItem->zEName, pName);
       }
     }
@@ -2259,10 +2259,10 @@ void sqlite3ExprListSetSpan(
 ){
   sqlite3 *db = pParse->db;
   assert( pList!=0 || db->mallocFailed!=0 );
-  if( pList ){
+  если( pList ){
     struct ExprList_item *pItem = &pList->a[pList->nExpr-1];
     assert( pList->nExpr>0 );
-    if( pItem->zEName==0 ){
+    если( pItem->zEName==0 ){
       pItem->zEName = sqlite3DbSpanDup(db, zStart, zEnd);
       pItem->fg.eEName = ENAME_SPAN;
     }
@@ -2278,10 +2278,10 @@ void sqlite3ExprListCheckLength(
   ExprList *pEList,
   const char *zObject
 ){
-  int mx = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
+  целое mx = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
   testcase( pEList && pEList->nExpr==mx );
   testcase( pEList && pEList->nExpr==mx+1 );
-  if( pEList && pEList->nExpr>mx ){
+  если( pEList && pEList->nExpr>mx ){
     sqlite3ErrorMsg(pParse, "too many columns in %s", zObject);
   }
 }
@@ -2290,22 +2290,22 @@ void sqlite3ExprListCheckLength(
 ** Delete an entire expression list.
 */
 static SQLITE_NOINLINE void exprListDeleteNN(sqlite3 *db, ExprList *pList){
-  int i = pList->nExpr;
+  целое i = pList->nExpr;
   struct ExprList_item *pItem =  pList->a;
   assert( pList->nExpr>0 );
   assert( db!=0 );
   do{
     sqlite3ExprDelete(db, pItem->pExpr);
-    if( pItem->zEName ) sqlite3DbNNFreeNN(db, pItem->zEName);
+    если( pItem->zEName ) sqlite3DbNNFreeNN(db, pItem->zEName);
     pItem++;
-  }while( --i>0 );
+  }пока( --i>0 );
   sqlite3DbNNFreeNN(db, pList);
 }
 void sqlite3ExprListDelete(sqlite3 *db, ExprList *pList){
-  if( pList ) exprListDeleteNN(db, pList);
+  если( pList ) exprListDeleteNN(db, pList);
 }
 void sqlite3ExprListDeleteGeneric(sqlite3 *db, void *pList){
-  if( ALWAYS(pList) ) exprListDeleteNN(db, (ExprList*)pList);
+  если( ALWAYS(pList) ) exprListDeleteNN(db, (ExprList*)pList);
 }
 
 /*
@@ -2313,15 +2313,15 @@ void sqlite3ExprListDeleteGeneric(sqlite3 *db, void *pList){
 ** ExprList.
 */
 u32 sqlite3ExprListFlags(const ExprList *pList){
-  int i;
+  целое i;
   u32 m = 0;
   assert( pList!=0 );
-  for(i=0; i<pList->nExpr; i++){
+  для(i=0; i<pList->nExpr; i++){
      Expr *pExpr = pList->a[i].pExpr;
      assert( pExpr!=0 );
      m |= pExpr->flags;
   }
-  return m;
+  вернуть m;
 }
 
 /*
@@ -2331,10 +2331,10 @@ u32 sqlite3ExprListFlags(const ExprList *pList){
 **
 ** This callback is used by multiple expression walkers.
 */
-int sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
+целое sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
   UNUSED_PARAMETER(NotUsed);
   pWalker->eCode = 0;
-  return WRC_Abort;
+  вернуть WRC_Abort;
 }
 
 /*
@@ -2346,9 +2346,9 @@ int sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
 **         anything else                  0
 */
 u32 sqlite3IsTrueOrFalse(const char *zIn){
-  if( sqlite3StrICmp(zIn, "true")==0  ) return EP_IsTrue;
-  if( sqlite3StrICmp(zIn, "false")==0 ) return EP_IsFalse;
-  return 0;
+  если( sqlite3StrICmp(zIn, "true")==0  ) вернуть EP_IsTrue;
+  если( sqlite3StrICmp(zIn, "false")==0 ) вернуть EP_IsFalse;
+  вернуть 0;
 }
 
 
@@ -2357,30 +2357,30 @@ u32 sqlite3IsTrueOrFalse(const char *zIn){
 ** then convert it into an TK_TRUEFALSE term.  Return non-zero if
 ** the conversion happened, and zero if the expression is unaltered.
 */
-int sqlite3ExprIdToTrueFalse(Expr *pExpr){
+целое sqlite3ExprIdToTrueFalse(Expr *pExpr){
   u32 v;
   assert( pExpr->op==TK_ID || pExpr->op==TK_STRING );
-  if( !ExprHasProperty(pExpr, EP_Quoted|EP_IntValue)
+  если( !ExprHasProperty(pExpr, EP_Quoted|EP_IntValue)
    && (v = sqlite3IsTrueOrFalse(pExpr->u.zToken))!=0
   ){
     pExpr->op = TK_TRUEFALSE;
     ExprSetProperty(pExpr, v);
-    return 1;
+    вернуть 1;
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
 ** The argument must be a TK_TRUEFALSE Expr node.  Return 1 if it is TRUE
 ** and 0 if it is FALSE.
 */
-int sqlite3ExprTruthValue(const Expr *pExpr){
+целое sqlite3ExprTruthValue(const Expr *pExpr){
   pExpr = sqlite3ExprSkipCollateAndLikely((Expr*)pExpr);
   assert( pExpr->op==TK_TRUEFALSE );
   assert( !ExprHasProperty(pExpr, EP_IntValue) );
   assert( sqlite3StrICmp(pExpr->u.zToken,"true")==0
        || sqlite3StrICmp(pExpr->u.zToken,"false")==0 );
-  return pExpr->u.zToken[4]==0;
+  вернуть pExpr->u.zToken[4]==0;
 }
 
 /*
@@ -2398,16 +2398,16 @@ int sqlite3ExprTruthValue(const Expr *pExpr){
 */
 Expr *sqlite3ExprSimplifiedAndOr(Expr *pExpr){
   assert( pExpr!=0 );
-  if( pExpr->op==TK_AND || pExpr->op==TK_OR ){
+  если( pExpr->op==TK_AND || pExpr->op==TK_OR ){
     Expr *pRight = sqlite3ExprSimplifiedAndOr(pExpr->pRight);
     Expr *pLeft = sqlite3ExprSimplifiedAndOr(pExpr->pLeft);
-    if( ExprAlwaysTrue(pLeft) || ExprAlwaysFalse(pRight) ){
+    если( ExprAlwaysTrue(pLeft) || ExprAlwaysFalse(pRight) ){
       pExpr = pExpr->op==TK_AND ? pRight : pLeft;
-    }else if( ExprAlwaysTrue(pRight) || ExprAlwaysFalse(pLeft) ){
+    }иначе если( ExprAlwaysTrue(pRight) || ExprAlwaysFalse(pLeft) ){
       pExpr = pExpr->op==TK_AND ? pLeft : pRight;
     }
   }
-  return pExpr;
+  вернуть pExpr;
 }
 
 /*
@@ -2418,13 +2418,13 @@ Expr *sqlite3ExprSimplifiedAndOr(Expr *pExpr){
 ** the left operand contains a subquery and the right does not, then it
 ** might be more efficient to compute the right operand first.
 */
-static int exprEvalRhsFirst(Expr *pExpr){
-  if( ExprHasProperty(pExpr->pLeft, EP_Subquery)
+static целое exprEvalRhsFirst(Expr *pExpr){
+  если( ExprHasProperty(pExpr->pLeft, EP_Subquery)
    && !ExprHasProperty(pExpr->pRight, EP_Subquery)
   ){
-    return 1;
-  }else{
-    return 0;
+    вернуть 1;
+  }иначе{
+    вернуть 0;
   }
 }
 
@@ -2440,16 +2440,16 @@ static int exprEvalRhsFirst(Expr *pExpr){
 **
 ** If no optimization opportunities exist, return 0.
 */
-static int exprComputeOperands(
+static целое exprComputeOperands(
   Parse *pParse,     /* Parsing context */
   Expr *pExpr,       /* The comparison expression */
-  int *pR1,          /* OUT: Register holding the left operand */
-  int *pR2,          /* OUT: Register holding the right operand */
-  int *pFree1,       /* OUT: Temp register to free if not zero */
-  int *pFree2        /* OUT: Another temp register to free if not zero */
+  целое *pR1,          /* OUT: Register holding the left operand */
+  целое *pR2,          /* OUT: Register holding the right operand */
+  целое *pFree1,       /* OUT: Temp register to free if not zero */
+  целое *pFree2        /* OUT: Another temp register to free if not zero */
 ){
-  int addrIsNull;
-  int r1, r2;
+  целое addrIsNull;
+  целое r1, r2;
   Vdbe *v = pParse->pVdbe;
 
   assert( v!=0 );
@@ -2459,23 +2459,23 @@ static int exprComputeOperands(
   ** then compute the right operand first and do an IsNull jump if the
   ** right operand evalutes to NULL.
   */
-  if( exprEvalRhsFirst(pExpr) && sqlite3ExprCanBeNull(pExpr->pRight) ){
+  если( exprEvalRhsFirst(pExpr) && sqlite3ExprCanBeNull(pExpr->pRight) ){
     r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, pFree2);
     addrIsNull = sqlite3VdbeAddOp1(v, OP_IsNull, r2);
     VdbeComment((v, "skip left operand"));
     VdbeCoverage(v);
-  }else{
+  }иначе{
     r2 = 0; /* Silence a false-positive uninit-var warning in MSVC */
     addrIsNull = 0;
   }
   r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, pFree1);
-  if( addrIsNull==0 ){
+  если( addrIsNull==0 ){
     /*
     ** If the right operand contains a subquery and the left operand does not
     ** and the left operand might be NULL, then do an IsNull check
     ** check on the left operand before computing the right operand.
     */
-    if( ExprHasProperty(pExpr->pRight, EP_Subquery)
+    если( ExprHasProperty(pExpr->pRight, EP_Subquery)
      && sqlite3ExprCanBeNull(pExpr->pLeft)
     ){
       addrIsNull = sqlite3VdbeAddOp1(v, OP_IsNull, r1);
@@ -2486,7 +2486,7 @@ static int exprComputeOperands(
   }
   *pR1 = r1;
   *pR2 = r2;
-  return addrIsNull;
+  вернуть addrIsNull;
 }
 
 /*
@@ -2505,36 +2505,36 @@ static int exprComputeOperands(
 **
 ** Called as a service subroutine from exprNodeIsConstant().
 */
-static SQLITE_NOINLINE int exprNodeIsConstantFunction(
+static SQLITE_NOINLINE целое exprNodeIsConstantFunction(
   Walker *pWalker,
   Expr *pExpr
 ){
-  int n;             /* Number of arguments */
+  целое n;             /* Number of arguments */
   ExprList *pList;   /* List of arguments */
   FuncDef *pDef;     /* The function */
   sqlite3 *db;       /* The database */
 
   assert( pExpr->op==TK_FUNCTION );
-  if( ExprHasProperty(pExpr, EP_TokenOnly)
+  если( ExprHasProperty(pExpr, EP_TokenOnly)
    || (pList = pExpr->x.pList)==0
   ){;
     n = 0;
-  }else{
+  }иначе{
     n = pList->nExpr;
     sqlite3WalkExprList(pWalker, pList);
-    if( pWalker->eCode==0 ) return WRC_Abort;
+    если( pWalker->eCode==0 ) вернуть WRC_Abort;
   }
   db = pWalker->pParse->db;
   pDef = sqlite3FindFunction(db, pExpr->u.zToken, n, ENC(db), 0);
-  if( pDef==0
+  если( pDef==0
    || pDef->xFinalize!=0
    || (pDef->funcFlags & (SQLITE_FUNC_CONSTANT|SQLITE_FUNC_SLOCHNG))==0
    || NEVER(ExprHasProperty(pExpr, EP_WinFunc))
   ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    вернуть WRC_Abort;
   }
-  return WRC_Prune;
+  вернуть WRC_Prune;
 }
 
 
@@ -2565,44 +2565,44 @@ static SQLITE_NOINLINE int exprNodeIsConstantFunction(
 ** of SQLite to be parsed by newer versions of SQLite without raising a
 ** malformed schema error.
 */
-static int exprNodeIsConstant(Walker *pWalker, Expr *pExpr){
+static целое exprNodeIsConstant(Walker *pWalker, Expr *pExpr){
   assert( pWalker->eCode>0 );
 
   /* If pWalker->eCode is 2 then any term of the expression that comes from
   ** the ON or USING clauses of an outer join disqualifies the expression
   ** from being considered constant. */
-  if( pWalker->eCode==2 && ExprHasProperty(pExpr, EP_OuterON) ){
+  если( pWalker->eCode==2 && ExprHasProperty(pExpr, EP_OuterON) ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    вернуть WRC_Abort;
   }
 
   switch( pExpr->op ){
     case TK_FUNCTION:
-      if( ExprHasProperty(pExpr, EP_WinFunc) ){
+      если( ExprHasProperty(pExpr, EP_WinFunc) ){
         pWalker->eCode = 0;  /* Window functions are never constant */
-        return WRC_Abort;
-      }else if( pWalker->eCode>=4 && pWalker->eCode<=5 ){
+        вернуть WRC_Abort;
+      }иначе если( pWalker->eCode>=4 && pWalker->eCode<=5 ){
         /* Functions used within a CREATE TABLE statement are constant as
         ** long as all of their arguments are constant */
-        if( pWalker->eCode==5 ) ExprSetProperty(pExpr, EP_FromDDL);
-        return WRC_Continue;
-      }else if( ExprHasProperty(pExpr,EP_ConstFunc) ){
+        если( pWalker->eCode==5 ) ExprSetProperty(pExpr, EP_FromDDL);
+        вернуть WRC_Continue;
+      }иначе если( ExprHasProperty(pExpr,EP_ConstFunc) ){
         /* Functions marked with EP_ConstFunc are constant as long as 
         ** all their arugments are constant and they are not window functions */
-        return WRC_Continue;
-      }else if( pWalker->pParse ){
+        вернуть WRC_Continue;
+      }иначе если( pWalker->pParse ){
         /* Functions are constant if they have SQLITE_FUNC_CONSTANT or
         ** SQLITE_FUNC_SLOCHNG and if all arguments are constant */
-        return exprNodeIsConstantFunction(pWalker, pExpr);
-      }else{
+        вернуть exprNodeIsConstantFunction(pWalker, pExpr);
+      }иначе{
         pWalker->eCode = 0;  /* Function call is not constant */
-        return WRC_Abort;
+        вернуть WRC_Abort;
       }
     case TK_ID:
       /* Convert "true" or "false" in a DEFAULT clause into the
       ** appropriate TK_TRUEFALSE operator */
-      if( sqlite3ExprIdToTrueFalse(pExpr) ){
-        return WRC_Prune;
+      если( sqlite3ExprIdToTrueFalse(pExpr) ){
+        вернуть WRC_Prune;
       }
       /* no break */ deliberate_fall_through
     case TK_COLUMN:
@@ -2612,11 +2612,11 @@ static int exprNodeIsConstant(Walker *pWalker, Expr *pExpr){
       testcase( pExpr->op==TK_COLUMN );
       testcase( pExpr->op==TK_AGG_FUNCTION );
       testcase( pExpr->op==TK_AGG_COLUMN );
-      if( ExprHasProperty(pExpr, EP_FixedCol) && pWalker->eCode!=2 ){
-        return WRC_Continue;
+      если( ExprHasProperty(pExpr, EP_FixedCol) && pWalker->eCode!=2 ){
+        вернуть WRC_Continue;
       }
-      if( pWalker->eCode==3 && pExpr->iTable==pWalker->u.iCur ){
-        return WRC_Continue;
+      если( pWalker->eCode==3 && pExpr->iTable==pWalker->u.iCur ){
+        вернуть WRC_Continue;
       }
       /* no break */ deliberate_fall_through
     case TK_IF_NULL_ROW:
@@ -2628,34 +2628,34 @@ static int exprNodeIsConstant(Walker *pWalker, Expr *pExpr){
       testcase( pExpr->op==TK_DOT );
       testcase( pExpr->op==TK_RAISE );
       pWalker->eCode = 0;
-      return WRC_Abort;
+      вернуть WRC_Abort;
     case TK_IS:
     case TK_ISNOT:
-      if( pWalker->eCode==6 ){
+      если( pWalker->eCode==6 ){
         pWalker->eCode = 0;
-        return WRC_Abort;
+        вернуть WRC_Abort;
       }
-      return WRC_Continue;
+      вернуть WRC_Continue;
     case TK_VARIABLE:
-      if( pWalker->eCode==5 ){
+      если( pWalker->eCode==5 ){
         /* Silently convert bound parameters that appear inside of CREATE
         ** statements into a NULL when parsing the CREATE statement text out
         ** of the sqlite_schema table */
         pExpr->op = TK_NULL;
-      }else if( pWalker->eCode==4 ){
+      }иначе если( pWalker->eCode==4 ){
         /* A bound parameter in a CREATE statement that originates from
         ** sqlite3_prepare() causes an error */
         pWalker->eCode = 0;
-        return WRC_Abort;
+        вернуть WRC_Abort;
       }
       /* no break */ deliberate_fall_through
     default:
       testcase( pExpr->op==TK_SELECT ); /* sqlite3SelectWalkFail() disallows */
       testcase( pExpr->op==TK_EXISTS ); /* sqlite3SelectWalkFail() disallows */
-      return WRC_Continue;
+      вернуть WRC_Continue;
   }
 }
-static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
+static целое exprIsConst(Parse *pParse, Expr *p, целое initFlag){
   Walker w;
   w.eCode = initFlag;
   w.pParse = pParse;
@@ -2665,7 +2665,7 @@ static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
   w.xSelectCallback2 = sqlite3SelectWalkAssert2;
 #endif
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  вернуть w.eCode;
 }
 
 /*
@@ -2682,8 +2682,8 @@ static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
 ** not NULL, then a function call might be constant, depending on the
 ** function and on its parameters.
 */
-int sqlite3ExprIsConstant(Parse *pParse, Expr *p){
-  return exprIsConst(pParse, p, 1);
+целое sqlite3ExprIsConstant(Parse *pParse, Expr *p){
+  вернуть exprIsConst(pParse, p, 1);
 }
 
 /*
@@ -2693,13 +2693,13 @@ int sqlite3ExprIsConstant(Parse *pParse, Expr *p){
 ** like "x IS TRUE" need to be transformed to TK_TRUTH expression nodes,
 ** which happens at the same time as column name resolution.
 */
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs){
-  const int iInit = bNoIs ? 6 : 1;
-  int ii;
-  for(ii=0; ii<pList->nExpr; ii++){
-    if( 0==exprIsConst(pParse, pList->a[ii].pExpr, iInit) ) return 0;
+целое sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, целое bNoIs){
+  const целое iInit = bNoIs ? 6 : 1;
+  целое ii;
+  для(ii=0; ii<pList->nExpr; ii++){
+    если( 0==exprIsConst(pParse, pList->a[ii].pExpr, iInit) ) вернуть 0;
   }
-  return 1;
+  вернуть 1;
 }
 
 /*
@@ -2715,8 +2715,8 @@ int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs){
 ** can be added to the pParse->pConstExpr list and evaluated once when
 ** the prepared statement starts up.  See sqlite3ExprCodeRunJustOnce().
 */
-static int sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
-  return exprIsConst(pParse, p, 2);
+static целое sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
+  вернуть exprIsConst(pParse, p, 2);
 }
 
 /*
@@ -2725,14 +2725,14 @@ static int sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
 ** constant as long as they are uncorrelated - meaning that they do not
 ** contain any terms from outer contexts.
 */
-static int exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
+static целое exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
   assert( pSelect!=0 );
   assert( pWalker->eCode==3 || pWalker->eCode==0 );
-  if( (pSelect->selFlags & SF_Correlated)!=0 ){
+  если( (pSelect->selFlags & SF_Correlated)!=0 ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    вернуть WRC_Abort;
   }
-  return WRC_Prune;
+  вернуть WRC_Prune;
 }
 
 /*
@@ -2744,14 +2744,14 @@ static int exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
 ** Consider uncorrelated subqueries to be constants if the bAllowSubq
 ** parameter is true.
 */
-int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
+целое sqlite3ExprIsTableConstant(Expr *p, целое iCur, целое bAllowSubq){
   Walker w;
   w.eCode = 3;
   w.pParse = 0;
   w.xExprCallback = exprNodeIsConstant;
-  if( bAllowSubq ){
+  если( bAllowSubq ){
     w.xSelectCallback = exprSelectWalkTableConstant;
-  }else{
+  }иначе{
     w.xSelectCallback = sqlite3SelectWalkFail;
 #ifdef SQLITE_DEBUG
     w.xSelectCallback2 = sqlite3SelectWalkAssert2;
@@ -2759,7 +2759,7 @@ int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
   }
   w.u.iCur = iCur;
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  вернуть w.eCode;
 }
 
 /*
@@ -2806,66 +2806,66 @@ int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
 **       which leads to incorrect answers.  See also restriction (9)
 **       on push-down.
 */
-int sqlite3ExprIsSingleTableConstraint(
+целое sqlite3ExprIsSingleTableConstraint(
   Expr *pExpr,                 /* The constraint */
   const SrcList *pSrcList,     /* Complete FROM clause */
-  int iSrc,                    /* Which element of pSrcList to use */
-  int bAllowSubq               /* Allow non-correlated subqueries */
+  целое iSrc,                    /* Which element of pSrcList to use */
+  целое bAllowSubq               /* Allow non-correlated subqueries */
 ){
   const SrcItem *pSrc = &pSrcList->a[iSrc];
-  if( pSrc->fg.jointype & JT_LTORJ ){
-    return 0;  /* rule (3) */
+  если( pSrc->fg.jointype & JT_LTORJ ){
+    вернуть 0;  /* rule (3) */
   }
-  if( pSrc->fg.jointype & JT_LEFT ){
-    if( !ExprHasProperty(pExpr, EP_OuterON) ) return 0;   /* rule (4a) */
-    if( pExpr->w.iJoin!=pSrc->iCursor ) return 0;         /* rule (4b) */
-  }else{
-    if( ExprHasProperty(pExpr, EP_OuterON) ) return 0;    /* rule (5) */
+  если( pSrc->fg.jointype & JT_LEFT ){
+    если( !ExprHasProperty(pExpr, EP_OuterON) ) вернуть 0;   /* rule (4a) */
+    если( pExpr->w.iJoin!=pSrc->iCursor ) вернуть 0;         /* rule (4b) */
+  }иначе{
+    если( ExprHasProperty(pExpr, EP_OuterON) ) вернуть 0;    /* rule (5) */
   }
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)  /* (6a) */
+  если( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)  /* (6a) */
    && (pSrcList->a[0].fg.jointype & JT_LTORJ)!=0     /* Fast pre-test of (6b) */
   ){
-    int jj;
-    for(jj=0; jj<iSrc; jj++){
-      if( pExpr->w.iJoin==pSrcList->a[jj].iCursor ){
-        if( (pSrcList->a[jj].fg.jointype & JT_LTORJ)!=0 ){
-          return 0;  /* restriction (6) */
+    целое jj;
+    для(jj=0; jj<iSrc; jj++){
+      если( pExpr->w.iJoin==pSrcList->a[jj].iCursor ){
+        если( (pSrcList->a[jj].fg.jointype & JT_LTORJ)!=0 ){
+          вернуть 0;  /* restriction (6) */
         }
         break;
       }
     }
   }
   /* Rules (1), (2a), and (2b) handled by the following: */
-  return sqlite3ExprIsTableConstant(pExpr, pSrc->iCursor, bAllowSubq);
+  вернуть sqlite3ExprIsTableConstant(pExpr, pSrc->iCursor, bAllowSubq);
 }
 
 
 /*
 ** sqlite3WalkExpr() callback used by sqlite3ExprIsConstantOrGroupBy().
 */
-static int exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
+static целое exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
   ExprList *pGroupBy = pWalker->u.pGroupBy;
-  int i;
+  целое i;
 
   /* Check if pExpr is identical to any GROUP BY term. If so, consider
   ** it constant.  */
-  for(i=0; i<pGroupBy->nExpr; i++){
+  для(i=0; i<pGroupBy->nExpr; i++){
     Expr *p = pGroupBy->a[i].pExpr;
-    if( sqlite3ExprCompare(0, pExpr, p, -1)<2 ){
+    если( sqlite3ExprCompare(0, pExpr, p, -1)<2 ){
       CollSeq *pColl = sqlite3ExprNNCollSeq(pWalker->pParse, p);
-      if( sqlite3IsBinary(pColl) ){
-        return WRC_Prune;
+      если( sqlite3IsBinary(pColl) ){
+        вернуть WRC_Prune;
       }
     }
   }
 
   /* Check if pExpr is a sub-select. If so, consider it variable. */
-  if( ExprUseXSelect(pExpr) ){
+  если( ExprUseXSelect(pExpr) ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    вернуть WRC_Abort;
   }
 
-  return exprNodeIsConstant(pWalker, pExpr);
+  вернуть exprNodeIsConstant(pWalker, pExpr);
 }
 
 /*
@@ -2887,7 +2887,7 @@ static int exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
 ** optimization, so we take the easy way out and simply require the
 ** GROUP BY to use the BINARY collating sequence.
 */
-int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
+целое sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
   Walker w;
   w.eCode = 1;
   w.xExprCallback = exprNodeIsConstantOrGroupBy;
@@ -2895,7 +2895,7 @@ int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
   w.u.pGroupBy = pGroupBy;
   w.pParse = pParse;
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  вернуть w.eCode;
 }
 
 /*
@@ -2919,16 +2919,16 @@ int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
 ** is considered a variable but a single-quoted string (ex: 'abc') is
 ** a constant.
 */
-int sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit){
+целое sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit){
   assert( isInit==0 || isInit==1 );
-  return exprIsConst(0, p, 4+isInit);
+  вернуть exprIsConst(0, p, 4+isInit);
 }
 
 /*
 ** Walk an expression tree.  Return 1 if the expression contains a
 ** subquery of some kind.  Return 0 if there are no subqueries.
 */
-int sqlite3ExprContainsSubquery(Expr *p){
+целое sqlite3ExprContainsSubquery(Expr *p){
   Walker w;
   w.eCode = 1;
   w.xExprCallback = sqlite3ExprWalkNoop;
@@ -2937,7 +2937,7 @@ int sqlite3ExprContainsSubquery(Expr *p){
   w.xSelectCallback2 = sqlite3SelectWalkAssert2;
 #endif
   sqlite3WalkExpr(&w, p);
-  return w.eCode==0;
+  вернуть w.eCode==0;
 }
 
 /*
@@ -2981,54 +2981,54 @@ int sqlite3ExprContainsSubquery(Expr *p){
 **                    change move the variable value to or from an integer 0
 **                    or 1.
 */
-int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse, int bRSI){
-  int iSign = 1;   /* Either +1 or -1. */
-  while( 1/*exit-by-break*/ ){
-    if( NEVER(p==0) ) return 0;
-    if( ExprUseUValue(p) ){
+целое sqlite3ExprIsInteger(const Expr *p, целое *pValue, Parse *pParse, целое bRSI){
+  целое iSign = 1;   /* Either +1 or -1. */
+  пока( 1/*exit-by-break*/ ){
+    если( NEVER(p==0) ) вернуть 0;
+    если( ExprUseUValue(p) ){
       assert( p->op==TK_INTEGER );
       *pValue = p->u.iValue*iSign;
-      if( bRSI && pParse==0 && p->op2 ){
-        return 0;
+      если( bRSI && pParse==0 && p->op2 ){
+        вернуть 0;
       }
-      return 1;
+      вернуть 1;
     }
-    if( p->op==TK_UPLUS ){
+    если( p->op==TK_UPLUS ){
       p = p->pLeft;
       pParse = 0;
       continue;
     }
-    if( p->op==TK_UMINUS ){
+    если( p->op==TK_UMINUS ){
       iSign = -iSign;
       p = p->pLeft;
       pParse = 0;
       continue;
     }
-    if( p->op==TK_VARIABLE && pParse!=0 ){
+    если( p->op==TK_VARIABLE && pParse!=0 ){
       sqlite3_value *pVal; /* The variable */
-      int rc = 0;          /* 1 if successful, 0 if failed */
+      целое rc = 0;          /* 1 if successful, 0 if failed */
       assert( iSign==1 );
-      if( NEVER(pParse->pVdbe==0) ) break;
-      if( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) break;
+      если( NEVER(pParse->pVdbe==0) ) break;
+      если( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) break;
       pVal = sqlite3VdbeGetBoundValue(pParse->pReprepare, p->iColumn,
                                       SQLITE_AFF_BLOB);
-      if( pVal ){
+      если( pVal ){
         i64 vv;
-        if( sqlite3_value_type(pVal)==SQLITE_INTEGER
+        если( sqlite3_value_type(pVal)==SQLITE_INTEGER
          && (vv = sqlite3_value_int64(pVal))>=0
          && vv<=0x7fffffff
         ){
-          *pValue = (int)vv;
+          *pValue = (целое)vv;
           rc = 1;       
         }
         sqlite3ValueFree(pVal);
       }
       sqlite3VdbeReprepareOnBind(pParse->pVdbe, p->iColumn, bRSI);
-      return rc;
+      вернуть rc;
     }
     break;
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
@@ -3045,24 +3045,24 @@ int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse, int bRSI){
 ** will likely result in an incorrect answer.  So when in doubt, return
 ** TRUE.
 */
-int sqlite3ExprCanBeNull(const Expr *p){
+целое sqlite3ExprCanBeNull(const Expr *p){
   u8 op;
   assert( p!=0 );
-  while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+  пока( p->op==TK_UPLUS || p->op==TK_UMINUS ){
     p = p->pLeft;
     assert( p!=0 );
   }
   op = p->op;
-  if( op==TK_REGISTER ) op = p->op2;
+  если( op==TK_REGISTER ) op = p->op2;
   switch( op ){
     case TK_INTEGER:
     case TK_STRING:
     case TK_FLOAT:
     case TK_BLOB:
-      return 0;
+      вернуть 0;
     case TK_COLUMN:
       assert( ExprUseYTab(p) );
-      return ExprHasProperty(p, EP_CanBeNull)
+      вернуть ExprHasProperty(p, EP_CanBeNull)
           || NEVER(p->y.pTab==0) /* Reference to column of index on expr */
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
           || (p->iColumn==XN_ROWID && IsView(p->y.pTab))
@@ -3072,7 +3072,7 @@ int sqlite3ExprCanBeNull(const Expr *p){
               && ALWAYS(p->iColumn<p->y.pTab->nCol)
               && p->y.pTab->aCol[p->iColumn].notNull==0);
     default:
-      return 1;
+      вернуть 1;
   }
 }
 
@@ -3086,35 +3086,35 @@ int sqlite3ExprCanBeNull(const Expr *p){
 ** is harmless.  A false positive, however, can result in the wrong
 ** answer.
 */
-int sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){
+целое sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){
   u8 op;
-  int unaryMinus = 0;
-  if( aff==SQLITE_AFF_BLOB ) return 1;
-  while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
-    if( p->op==TK_UMINUS ) unaryMinus = 1;
+  целое unaryMinus = 0;
+  если( aff==SQLITE_AFF_BLOB ) вернуть 1;
+  пока( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+    если( p->op==TK_UMINUS ) unaryMinus = 1;
     p = p->pLeft;
   }
   op = p->op;
-  if( op==TK_REGISTER ) op = p->op2;
+  если( op==TK_REGISTER ) op = p->op2;
   switch( op ){
     case TK_INTEGER: {
-      return aff>=SQLITE_AFF_NUMERIC;
+      вернуть aff>=SQLITE_AFF_NUMERIC;
     }
     case TK_FLOAT: {
-      return aff>=SQLITE_AFF_NUMERIC;
+      вернуть aff>=SQLITE_AFF_NUMERIC;
     }
     case TK_STRING: {
-      return !unaryMinus && aff==SQLITE_AFF_TEXT;
+      вернуть !unaryMinus && aff==SQLITE_AFF_TEXT;
     }
     case TK_BLOB: {
-      return !unaryMinus;
+      вернуть !unaryMinus;
     }
     case TK_COLUMN: {
       assert( p->iTable>=0 );  /* p cannot be part of a CHECK constraint */
-      return aff>=SQLITE_AFF_NUMERIC && p->iColumn<0;
+      вернуть aff>=SQLITE_AFF_NUMERIC && p->iColumn<0;
     }
     default: {
-      return 0;
+      вернуть 0;
     }
   }
 }
@@ -3122,11 +3122,11 @@ int sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){
 /*
 ** Return TRUE if the given string is a row-id column name.
 */
-int sqlite3IsRowid(const char *z){
-  if( sqlite3StrICmp(z, "_ROWID_")==0 ) return 1;
-  if( sqlite3StrICmp(z, "ROWID")==0 ) return 1;
-  if( sqlite3StrICmp(z, "OID")==0 ) return 1;
-  return 0;
+целое sqlite3IsRowid(const char *z){
+  если( sqlite3StrICmp(z, "_ROWID_")==0 ) вернуть 1;
+  если( sqlite3StrICmp(z, "ROWID")==0 ) вернуть 1;
+  если( sqlite3StrICmp(z, "OID")==0 ) вернуть 1;
+  вернуть 0;
 }
 
 /*
@@ -3136,12 +3136,12 @@ int sqlite3IsRowid(const char *z){
 */
 const char *sqlite3RowidAlias(Table *pTab){
   const char *azOpt[] = {"_ROWID_", "ROWID", "OID"};
-  int ii;
+  целое ii;
   assert( VisibleRowid(pTab) );
-  for(ii=0; ii<ArraySize(azOpt); ii++){
-    if( sqlite3ColumnIndex(pTab, azOpt[ii])<0 ) return azOpt[ii];
+  для(ii=0; ii<ArraySize(azOpt); ii++){
+    если( sqlite3ColumnIndex(pTab, azOpt[ii])<0 ) вернуть azOpt[ii];
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
@@ -3157,34 +3157,34 @@ static Select *isCandidateForInOpt(const Expr *pX){
   SrcList *pSrc;
   ExprList *pEList;
   Table *pTab;
-  int i;
-  if( !ExprUseXSelect(pX) ) return 0;                 /* Not a subquery */
-  if( ExprHasProperty(pX, EP_VarSelect)  ) return 0;  /* Correlated subq */
+  целое i;
+  если( !ExprUseXSelect(pX) ) вернуть 0;                 /* Not a subquery */
+  если( ExprHasProperty(pX, EP_VarSelect)  ) вернуть 0;  /* Correlated subq */
   p = pX->x.pSelect;
-  if( p->pPrior ) return 0;              /* Not a compound SELECT */
-  if( p->selFlags & SF_Aggregate ){
-    return 0; /* No GROUP BY keyword or aggregate functions */
+  если( p->pPrior ) вернуть 0;              /* Not a compound SELECT */
+  если( p->selFlags & SF_Aggregate ){
+    вернуть 0; /* No GROUP BY keyword or aggregate functions */
   }
   assert( p->pGroupBy==0 );              /* Has no GROUP BY clause */
-  if( p->pLimit ) return 0;              /* Has no LIMIT clause */
-  if( p->pWhere ) return 0;              /* Has no WHERE clause */
+  если( p->pLimit ) вернуть 0;              /* Has no LIMIT clause */
+  если( p->pWhere ) вернуть 0;              /* Has no WHERE clause */
   pSrc = p->pSrc;
   assert( pSrc!=0 );
-  if( pSrc->nSrc!=1 ) return 0;          /* Single term in FROM clause */
-  if( pSrc->a[0].fg.isSubquery) return 0;/* FROM is not a subquery or view */
+  если( pSrc->nSrc!=1 ) вернуть 0;          /* Single term in FROM clause */
+  если( pSrc->a[0].fg.isSubquery) вернуть 0;/* FROM is not a subquery or view */
   pTab = pSrc->a[0].pSTab;
   assert( pTab!=0 );
   assert( !IsView(pTab)  );              /* FROM clause is not a view */
-  if( IsVirtual(pTab) ) return 0;        /* FROM clause not a virtual table */
+  если( IsVirtual(pTab) ) вернуть 0;        /* FROM clause not a virtual table */
   pEList = p->pEList;
   assert( pEList!=0 );
   /* All SELECT results must be columns. */
-  for(i=0; i<pEList->nExpr; i++){
+  для(i=0; i<pEList->nExpr; i++){
     Expr *pRes = pEList->a[i].pExpr;
-    if( pRes->op!=TK_COLUMN ) return 0;
+    если( pRes->op!=TK_COLUMN ) вернуть 0;
     assert( pRes->iTable==pSrc->a[0].iCursor );  /* Not a correlated subquery */
   }
-  return p;
+  вернуть p;
 }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -3197,16 +3197,16 @@ static Select *isCandidateForInOpt(const Expr *pX){
 */
 static void sqlite3SetHasNullFlag(
   Vdbe *v,           /* Write new code into this statement under construction */
-  int iCur,          /* Cursor for the index */
-  int regHasNull,    /* Register in which to store hasNull flag */
-  int eSortOrder     /* SQLITE_SO_ASC or SQLITE_SO_DESC */
+  целое iCur,          /* Cursor for the index */
+  целое regHasNull,    /* Register in which to store hasNull flag */
+  целое eSortOrder     /* SQLITE_SO_ASC or SQLITE_SO_DESC */
 ){
-  int addr1;
-  int op;
+  целое addr1;
+  целое op;
   sqlite3VdbeAddOp2(v, OP_Integer, 0, regHasNull);
-  if( eSortOrder==SQLITE_SO_ASC ){
+  если( eSortOrder==SQLITE_SO_ASC ){
     op = OP_Rewind;
-  }else{
+  }иначе{
     op = OP_Last;
   }
   addr1 = sqlite3VdbeAddOp1(v, op, iCur); VdbeCoverage(v);
@@ -3223,15 +3223,15 @@ static void sqlite3SetHasNullFlag(
 ** The argument is an IN operator with a list (not a subquery) on the
 ** right-hand side.  Return TRUE if that list is constant.
 */
-static int sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
+static целое sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
   Expr *pLHS;
-  int res;
+  целое res;
   assert( !ExprHasProperty(pIn, EP_xIsSelect) );
   pLHS = pIn->pLeft;
   pIn->pLeft = 0;
   res = sqlite3ExprIsConstant(pParse, pIn);
   pIn->pLeft = pLHS;
-  return res;
+  вернуть res;
 }
 #endif
 
@@ -3319,18 +3319,18 @@ static int sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
 ** then aiMap[] is populated with {2, 0, 1}.
 */
 #ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3FindInIndex(
+целое sqlite3FindInIndex(
   Parse *pParse,             /* Parsing context */
   Expr *pX,                  /* The IN expression */
   u32 inFlags,               /* IN_INDEX_LOOP, _MEMBERSHIP, and/or _NOOP_OK */
-  int *prRhsHasNull,         /* Register holding NULL status.  See notes */
-  int *aiMap,                /* Mapping from Index fields to RHS fields */
-  int *piTab                 /* OUT: index to use */
+  целое *prRhsHasNull,         /* Register holding NULL status.  See notes */
+  целое *aiMap,                /* Mapping from Index fields to RHS fields */
+  целое *piTab                 /* OUT: index to use */
 ){
   Select *p;                            /* SELECT to the right of IN operator */
-  int eType = 0;                        /* Type of RHS table. IN_INDEX_* */
-  int iTab;                             /* Cursor of the RHS table */
-  int mustBeUnique;                     /* True if RHS must be unique */
+  целое eType = 0;                        /* Type of RHS table. IN_INDEX_* */
+  целое iTab;                             /* Cursor of the RHS table */
+  целое mustBeUnique;                     /* True if RHS must be unique */
   Vdbe *v = sqlite3GetVdbe(pParse);     /* Virtual machine being coded */
 
   assert( pX->op==TK_IN );
@@ -3342,13 +3342,13 @@ int sqlite3FindInIndex(
   ** or not NULL is actually possible (it may not be, for example, due
   ** to NOT NULL constraints in the schema). If no NULL values are possible,
   ** set prRhsHasNull to 0 before continuing.  */
-  if( prRhsHasNull && ExprUseXSelect(pX) ){
-    int i;
+  если( prRhsHasNull && ExprUseXSelect(pX) ){
+    целое i;
     ExprList *pEList = pX->x.pSelect->pEList;
-    for(i=0; i<pEList->nExpr; i++){
-      if( sqlite3ExprCanBeNull(pEList->a[i].pExpr) ) break;
+    для(i=0; i<pEList->nExpr; i++){
+      если( sqlite3ExprCanBeNull(pEList->a[i].pExpr) ) break;
     }
-    if( i==pEList->nExpr ){
+    если( i==pEList->nExpr ){
       prRhsHasNull = 0;
     }
   }
@@ -3356,12 +3356,12 @@ int sqlite3FindInIndex(
   /* Check to see if an existing table or index can be used to
   ** satisfy the query.  This is preferable to generating a new
   ** ephemeral table.  */
-  if( pParse->nErr==0 && (p = isCandidateForInOpt(pX))!=0 ){
+  если( pParse->nErr==0 && (p = isCandidateForInOpt(pX))!=0 ){
     sqlite3 *db = pParse->db;              /* Database connection */
     Table *pTab;                           /* Table <table>. */
-    int iDb;                               /* Database idx for pTab */
+    целое iDb;                               /* Database idx for pTab */
     ExprList *pEList = p->pEList;
-    int nExpr = pEList->nExpr;
+    целое nExpr = pEList->nExpr;
 
     assert( p->pEList!=0 );             /* Because of isCandidateForInOpt(p) */
     assert( p->pEList->a[0].pExpr!=0 ); /* Because of isCandidateForInOpt(p) */
@@ -3375,9 +3375,9 @@ int sqlite3FindInIndex(
     sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
 
     assert(v);  /* sqlite3GetVdbe() has always been previously called */
-    if( nExpr==1 && pEList->a[0].pExpr->iColumn<0 ){
+    если( nExpr==1 && pEList->a[0].pExpr->iColumn<0 ){
       /* The "x IN (SELECT rowid FROM table)" case */
-      int iAddr = sqlite3VdbeAddOp0(v, OP_Once);
+      целое iAddr = sqlite3VdbeAddOp0(v, OP_Once);
       VdbeCoverage(v);
 
       sqlite3OpenTable(pParse, iTab, iDb, pTab, OP_OpenRead);
@@ -3385,18 +3385,18 @@ int sqlite3FindInIndex(
       ExplainQueryPlan((pParse, 0,
             "USING ROWID SEARCH ON TABLE %s FOR IN-OPERATOR",pTab->zName));
       sqlite3VdbeJumpHere(v, iAddr);
-    }else{
+    }иначе{
       Index *pIdx;                         /* Iterator variable */
-      int affinity_ok = 1;
-      int i;
+      целое affinity_ok = 1;
+      целое i;
 
       /* Check that the affinity that will be used to perform each
       ** comparison is the same as the affinity of each column in table
       ** on the RHS of the IN operator.  If it not, it is not possible to
       ** use any index of the RHS table.  */
-      for(i=0; i<nExpr && affinity_ok; i++){
+      для(i=0; i<nExpr && affinity_ok; i++){
         Expr *pLhs = sqlite3VectorFieldSubexpr(pX->pLeft, i);
-        int iCol = pEList->a[i].pExpr->iColumn;
+        целое iCol = pEList->a[i].pExpr->iColumn;
         char idxaff = sqlite3TableColumnAffinity(pTab,iCol); /* RHS table */
         char cmpaff = sqlite3CompareAffinity(pLhs, idxaff);
         testcase( cmpaff==SQLITE_AFF_BLOB );
@@ -3416,20 +3416,20 @@ int sqlite3FindInIndex(
         }
       }
 
-      if( affinity_ok ){
+      если( affinity_ok ){
         /* Search for an existing index that will work for this IN operator */
-        for(pIdx=pTab->pIndex; pIdx && eType==0; pIdx=pIdx->pNext){
+        для(pIdx=pTab->pIndex; pIdx && eType==0; pIdx=pIdx->pNext){
           Bitmask colUsed;      /* Columns of the index used */
           Bitmask mCol;         /* Mask for the current column */
-          if( pIdx->nColumn<nExpr ) continue;
-          if( pIdx->pPartIdxWhere!=0 ) continue;
+          если( pIdx->nColumn<nExpr ) continue;
+          если( pIdx->pPartIdxWhere!=0 ) continue;
           /* Maximum nColumn is BMS-2, not BMS-1, so that we can compute
           ** BITMASK(nExpr) without overflowing */
           testcase( pIdx->nColumn==BMS-2 );
           testcase( pIdx->nColumn==BMS-1 );
-          if( pIdx->nColumn>=BMS-1 ) continue;
-          if( mustBeUnique ){
-            if( pIdx->nKeyCol>nExpr
+          если( pIdx->nColumn>=BMS-1 ) continue;
+          если( mustBeUnique ){
+            если( pIdx->nKeyCol>nExpr
              ||(pIdx->nColumn>nExpr && !IsUniqueIndex(pIdx))
             ){
               continue;  /* This index is not unique over the IN RHS columns */
@@ -3437,32 +3437,32 @@ int sqlite3FindInIndex(
           }
  
           colUsed = 0;   /* Columns of index used so far */
-          for(i=0; i<nExpr; i++){
+          для(i=0; i<nExpr; i++){
             Expr *pLhs = sqlite3VectorFieldSubexpr(pX->pLeft, i);
             Expr *pRhs = pEList->a[i].pExpr;
             CollSeq *pReq = sqlite3BinaryCompareCollSeq(pParse, pLhs, pRhs);
-            int j;
+            целое j;
  
-            for(j=0; j<nExpr; j++){
-              if( pIdx->aiColumn[j]!=pRhs->iColumn ) continue;
+            для(j=0; j<nExpr; j++){
+              если( pIdx->aiColumn[j]!=pRhs->iColumn ) continue;
               assert( pIdx->azColl[j] );
-              if( pReq!=0 && sqlite3StrICmp(pReq->zName, pIdx->azColl[j])!=0 ){
+              если( pReq!=0 && sqlite3StrICmp(pReq->zName, pIdx->azColl[j])!=0 ){
                 continue;
               }
               break;
             }
-            if( j==nExpr ) break;
+            если( j==nExpr ) break;
             mCol = MASKBIT(j);
-            if( mCol & colUsed ) break; /* Each column used only once */
+            если( mCol & colUsed ) break; /* Each column used only once */
             colUsed |= mCol;
-            if( aiMap ) aiMap[i] = j;
+            если( aiMap ) aiMap[i] = j;
           }
  
           assert( nExpr>0 && nExpr<BMS );
           assert( i==nExpr || colUsed!=(MASKBIT(nExpr)-1) );
-          if( colUsed==(MASKBIT(nExpr)-1) ){
+          если( colUsed==(MASKBIT(nExpr)-1) ){
             /* If we reach this point, that means the index pIdx is usable */
-            int iAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+            целое iAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
             ExplainQueryPlan((pParse, 0,
                               "USING INDEX %s FOR IN-OPERATOR",pIdx->zName));
             sqlite3VdbeAddOp3(v, OP_OpenRead, iTab, pIdx->tnum, iDb);
@@ -3471,14 +3471,14 @@ int sqlite3FindInIndex(
             assert( IN_INDEX_INDEX_DESC == IN_INDEX_INDEX_ASC+1 );
             eType = IN_INDEX_INDEX_ASC + pIdx->aSortOrder[0];
  
-            if( prRhsHasNull ){
+            если( prRhsHasNull ){
 #ifdef SQLITE_ENABLE_COLUMN_USED_MASK
               u64 mask = (1<<nExpr)-1;
               sqlite3VdbeAddOp3(v, OP_ColumnsUsed,
                                 iTab, LOWER32(mask), UPPER32(mask));
 #endif
               *prRhsHasNull = ++pParse->nMem;
-              if( nExpr==1 ){
+              если( nExpr==1 ){
                 sqlite3SetHasNullFlag(v, iTab, *prRhsHasNull,
                                       pIdx->aSortOrder[0]);
               }
@@ -3497,7 +3497,7 @@ int sqlite3FindInIndex(
   ** then it is not worth creating an ephemeral table to evaluate
   ** the IN operator so return IN_INDEX_NOOP.
   */
-  if( eType==0
+  если( eType==0
    && (inFlags & IN_INDEX_NOOP_OK)
    && ExprUseXList(pX)
    && (!sqlite3InRhsIsConstant(pParse,pX) || pX->x.pList->nExpr<=2)
@@ -3507,40 +3507,40 @@ int sqlite3FindInIndex(
     eType = IN_INDEX_NOOP;
   }
 
-  if( eType==0 ){
+  если( eType==0 ){
     /* Could not find an existing table or index to use as the RHS b-tree.
     ** We will have to generate an ephemeral table to do the job.
     */
     u32 savedNQueryLoop = pParse->nQueryLoop;
-    int rMayHaveNull = 0;
-    int bloomOk = (inFlags & IN_INDEX_MEMBERSHIP)!=0;
+    целое rMayHaveNull = 0;
+    целое bloomOk = (inFlags & IN_INDEX_MEMBERSHIP)!=0;
     eType = IN_INDEX_EPH;
-    if( inFlags & IN_INDEX_LOOP ){
+    если( inFlags & IN_INDEX_LOOP ){
       pParse->nQueryLoop = 0;
-    }else if( prRhsHasNull ){
+    }иначе если( prRhsHasNull ){
       *prRhsHasNull = rMayHaveNull = ++pParse->nMem;
     }
     assert( pX->op==TK_IN );
-    if( !bloomOk
+    если( !bloomOk
      && ExprUseXSelect(pX)
      && (pX->x.pSelect->selFlags & SF_ClonedRhsIn)!=0
     ){
       bloomOk = 1;
     }
     sqlite3CodeRhsOfIN(pParse, pX, iTab, bloomOk);
-    if( rMayHaveNull ){
+    если( rMayHaveNull ){
       sqlite3SetHasNullFlag(v, iTab, rMayHaveNull, SQLITE_SO_ASC);
     }
     pParse->nQueryLoop = savedNQueryLoop;
   }
 
-  if( aiMap && eType!=IN_INDEX_INDEX_ASC && eType!=IN_INDEX_INDEX_DESC ){
-    int i, n;
+  если( aiMap && eType!=IN_INDEX_INDEX_ASC && eType!=IN_INDEX_INDEX_DESC ){
+    целое i, n;
     n = sqlite3ExprVectorSize(pX->pLeft);
-    for(i=0; i<n; i++) aiMap[i] = i;
+    для(i=0; i<n; i++) aiMap[i] = i;
   }
   *piTab = iTab;
-  return eType;
+  вернуть eType;
 }
 #endif
 
@@ -3555,26 +3555,26 @@ int sqlite3FindInIndex(
 */
 static char *exprINAffinity(Parse *pParse, const Expr *pExpr){
   Expr *pLeft = pExpr->pLeft;
-  int nVal = sqlite3ExprVectorSize(pLeft);
+  целое nVal = sqlite3ExprVectorSize(pLeft);
   Select *pSelect = ExprUseXSelect(pExpr) ? pExpr->x.pSelect : 0;
   char *zRet;
 
   assert( pExpr->op==TK_IN );
   zRet = sqlite3DbMallocRaw(pParse->db, 1+(i64)nVal);
-  if( zRet ){
-    int i;
-    for(i=0; i<nVal; i++){
+  если( zRet ){
+    целое i;
+    для(i=0; i<nVal; i++){
       Expr *pA = sqlite3VectorFieldSubexpr(pLeft, i);
       char a = sqlite3ExprAffinity(pA);
-      if( pSelect ){
+      если( pSelect ){
         zRet[i] = sqlite3CompareAffinity(pSelect->pEList->a[i].pExpr, a);
-      }else{
+      }иначе{
         zRet[i] = a;
       }
     }
     zRet[nVal] = '\0';
   }
-  return zRet;
+  вернуть zRet;
 }
 #endif
 
@@ -3585,8 +3585,8 @@ static char *exprINAffinity(Parse *pParse, const Expr *pExpr){
 **
 **   "sub-select returns N columns - expected M"
 */  
-void sqlite3SubselectError(Parse *pParse, int nActual, int nExpect){
-  if( pParse->nErr==0 ){
+void sqlite3SubselectError(Parse *pParse, целое nActual, целое nExpect){
+  если( pParse->nErr==0 ){
     const char *zFmt = "sub-select returns %d columns - expected %d";
     sqlite3ErrorMsg(pParse, zFmt, nActual, nExpect);
   }
@@ -3606,9 +3606,9 @@ void sqlite3SubselectError(Parse *pParse, int nActual, int nExpect){
 */  
 void sqlite3VectorErrorMsg(Parse *pParse, Expr *pExpr){
 #ifndef SQLITE_OMIT_SUBQUERY
-  if( ExprUseXSelect(pExpr) ){
+  если( ExprUseXSelect(pExpr) ){
     sqlite3SubselectError(pParse, pExpr->x.pSelect->pEList->nExpr, 1);
-  }else
+  }иначе
 #endif
   {
     sqlite3ErrorMsg(pParse, "row value misused");
@@ -3621,7 +3621,7 @@ void sqlite3VectorErrorMsg(Parse *pParse, Expr *pExpr){
 ** that is compatible with pExpr.  If found, add the y.sub values
 ** to pExpr and return true.  If not found, return false.
 */
-static int findCompatibleInRhsSubrtn(
+static целое findCompatibleInRhsSubrtn(
   Parse *pParse,          /* Parsing context */
   Expr *pExpr,            /* IN operator with RHS that we want to reuse */
   SubrtnSig *pNewSig      /* Signature for the IN operator */
@@ -3630,8 +3630,8 @@ static int findCompatibleInRhsSubrtn(
   SubrtnSig *pSig;
   Vdbe *v;
 
-  if( pNewSig==0 ) return 0;
-  if( (pParse->mSubrtnSig & (1<<(pNewSig->selId&7)))==0 ) return 0;
+  если( pNewSig==0 ) вернуть 0;
+  если( (pParse->mSubrtnSig & (1<<(pNewSig->selId&7)))==0 ) вернуть 0;
   assert( pExpr->op==TK_IN );
   assert( !ExprUseYSub(pExpr) );
   assert( ExprUseXSelect(pExpr) );
@@ -3641,21 +3641,21 @@ static int findCompatibleInRhsSubrtn(
   assert( v!=0 );
   pOp = sqlite3VdbeGetOp(v, 1);
   pEnd = sqlite3VdbeGetLastOp(v);
-  for(; pOp<pEnd; pOp++){
-    if( pOp->p4type!=P4_SUBRTNSIG ) continue;
+  для(; pOp<pEnd; pOp++){
+    если( pOp->p4type!=P4_SUBRTNSIG ) continue;
     assert( pOp->opcode==OP_BeginSubrtn );
     pSig = pOp->p4.pSubrtnSig;
     assert( pSig!=0 );
-    if( !pSig->bComplete ) continue;
-    if( pNewSig->selId!=pSig->selId ) continue;
-    if( strcmp(pNewSig->zAff,pSig->zAff)!=0 ) continue;
+    если( !pSig->bComplete ) continue;
+    если( pNewSig->selId!=pSig->selId ) continue;
+    если( strcmp(pNewSig->zAff,pSig->zAff)!=0 ) continue;
     pExpr->y.sub.iAddr = pSig->iAddr;
     pExpr->y.sub.regReturn = pSig->regReturn;
     pExpr->iTable = pSig->iTable;
     ExprSetProperty(pExpr, EP_Subrtn);
-    return 1;
+    вернуть 1;
   }
-  return 0;
+  вернуть 0;
 }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -3685,14 +3685,14 @@ static int findCompatibleInRhsSubrtn(
 void sqlite3CodeRhsOfIN(
   Parse *pParse,          /* Parsing context */
   Expr *pExpr,            /* The IN operator */
-  int iTab,               /* Use this cursor number */
-  int allowBloom          /* True to allow the use of a Bloom filter */
+  целое iTab,               /* Use this cursor number */
+  целое allowBloom          /* True to allow the use of a Bloom filter */
 ){
-  int addrOnce = 0;           /* Address of the OP_Once instruction at top */
-  int addr;                   /* Address of OP_OpenEphemeral instruction */
+  целое addrOnce = 0;           /* Address of the OP_Once instruction at top */
+  целое addr;                   /* Address of OP_OpenEphemeral instruction */
   Expr *pLeft;                /* the LHS of the IN operator */
   KeyInfo *pKeyInfo = 0;      /* Key information */
-  int nVal;                   /* Size of vector pLeft */
+  целое nVal;                   /* Size of vector pLeft */
   Vdbe *v;                    /* The prepared statement under construction */
   SubrtnSig *pSig = 0;        /* Signature for this subroutine */
 
@@ -3709,16 +3709,16 @@ void sqlite3CodeRhsOfIN(
   ** If all of the above are false, then we can compute the RHS just once
   ** and reuse it many names.
   */
-  if( !ExprHasProperty(pExpr, EP_VarSelect) && pParse->iSelfTab==0 ){
+  если( !ExprHasProperty(pExpr, EP_VarSelect) && pParse->iSelfTab==0 ){
     /* Reuse of the RHS is allowed
     **
     ** Compute a signature for the RHS of the IN operator to facility
     ** finding and reusing prior instances of the same IN operator.
     */
     assert( !ExprUseXSelect(pExpr) || pExpr->x.pSelect!=0 );
-    if( ExprUseXSelect(pExpr) && (pExpr->x.pSelect->selFlags & SF_All)==0 ){
+    если( ExprUseXSelect(pExpr) && (pExpr->x.pSelect->selFlags & SF_All)==0 ){
       pSig = sqlite3DbMallocRawNN(pParse->db, sizeof(pSig[0]));
-      if( pSig ){
+      если( pSig ){
         pSig->selId = pExpr->x.pSelect->selId;
         pSig->zAff = exprINAffinity(pParse, pExpr);
       }
@@ -3728,11 +3728,11 @@ void sqlite3CodeRhsOfIN(
     ** this IN operator.  If there is, then make use of that prior
     ** materialization rather than recomputing it.
     */
-    if( ExprHasProperty(pExpr, EP_Subrtn) 
+    если( ExprHasProperty(pExpr, EP_Subrtn) 
      || findCompatibleInRhsSubrtn(pParse, pExpr, pSig)
     ){
       addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
-      if( ExprUseXSelect(pExpr) ){
+      если( ExprUseXSelect(pExpr) ){
         ExplainQueryPlan((pParse, 0, "REUSE LIST SUBQUERY %d",
               pExpr->x.pSelect->selId));
       }
@@ -3742,11 +3742,11 @@ void sqlite3CodeRhsOfIN(
       assert( iTab!=pExpr->iTable );
       sqlite3VdbeAddOp2(v, OP_OpenDup, iTab, pExpr->iTable);
       sqlite3VdbeJumpHere(v, addrOnce);
-      if( pSig ){
+      если( pSig ){
         sqlite3DbFree(pParse->db, pSig->zAff);
         sqlite3DbFree(pParse->db, pSig);
       }
-      return;
+      вернуть;
     }
 
     /* Begin coding the subroutine */
@@ -3756,7 +3756,7 @@ void sqlite3CodeRhsOfIN(
     pExpr->y.sub.regReturn = ++pParse->nMem;
     pExpr->y.sub.iAddr =
       sqlite3VdbeAddOp2(v, OP_BeginSubrtn, 0, pExpr->y.sub.regReturn) + 1;
-    if( pSig ){
+    если( pSig ){
       pSig->bComplete = 0;
       pSig->iAddr = pExpr->y.sub.iAddr;
       pSig->regReturn = pExpr->y.sub.regReturn;
@@ -3777,17 +3777,17 @@ void sqlite3CodeRhsOfIN(
   pExpr->iTable = iTab;
   addr = sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pExpr->iTable, nVal);
 #ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
-  if( ExprUseXSelect(pExpr) ){
+  если( ExprUseXSelect(pExpr) ){
     VdbeComment((v, "Result of SELECT %u", pExpr->x.pSelect->selId));
-  }else{
+  }иначе{
     VdbeComment((v, "RHS of IN operator"));
   }
 #endif
   pKeyInfo = sqlite3KeyInfoAlloc(pParse->db, nVal, 1);
   assert( pKeyInfo!=0 || pParse->nErr );
-  if( pKeyInfo==0 ) return;
+  если( pKeyInfo==0 ) вернуть;
 
-  if( ExprUseXSelect(pExpr) ){
+  если( ExprUseXSelect(pExpr) ){
     /* Case 1:     expr IN (SELECT ...)
     **
     ** Generate code to write the results of the select into the temporary
@@ -3801,33 +3801,33 @@ void sqlite3CodeRhsOfIN(
     ));
     /* If the LHS and RHS of the IN operator do not match, that
     ** error will have been caught long before we reach this point. */
-    if( ALWAYS(pEList->nExpr==nVal) ){
+    если( ALWAYS(pEList->nExpr==nVal) ){
       Select *pCopy;
       SelectDest dest;
-      int i;
-      int rc;
-      int addrBloom = 0;
+      целое i;
+      целое rc;
+      целое addrBloom = 0;
       sqlite3SelectDestInit(&dest, SRT_Set, iTab);
       dest.zAffSdst = exprINAffinity(pParse, pExpr);
       pSelect->iLimit = 0;
       assert( pEList!=0 );
       assert( pEList->nExpr>0 );
       assert( sqlite3KeyInfoIsWriteable(pKeyInfo) );
-      for(i=0; i<nVal; i++){
+      для(i=0; i<nVal; i++){
         Expr *p = sqlite3VectorFieldSubexpr(pLeft, i);
         CollSeq *pColl;
         pKeyInfo->aColl[i] = pColl = sqlite3BinaryCompareCollSeq(
             pParse, p, pEList->a[i].pExpr
         );
-        if( !sqlite3IsBinary(pColl) ){
+        если( !sqlite3IsBinary(pColl) ){
           allowBloom = 0;  /* tag-202607231411 */
         }
       }
-      if( addrOnce
+      если( addrOnce
        && allowBloom
        && OptimizationEnabled(pParse->db, SQLITE_BloomFilter)
       ){
-        int regBloom = ++pParse->nMem;
+        целое regBloom = ++pParse->nMem;
         addrBloom = sqlite3VdbeAddOp2(v, OP_Blob, 10000, regBloom);
         VdbeComment((v, "Bloom filter"));
         dest.iSDParm2 = regBloom;
@@ -3839,21 +3839,21 @@ void sqlite3CodeRhsOfIN(
       rc = pParse->db->mallocFailed ? 1 :sqlite3Select(pParse, pCopy, &dest);
       sqlite3SelectDelete(pParse->db, pCopy);
       sqlite3DbFree(pParse->db, dest.zAffSdst);
-      if( addrBloom ){
+      если( addrBloom ){
         /* Remember that location of the Bloom filter in the P3 operand
         ** of the OP_Once that began this subroutine. tag-202407032019 */
         sqlite3VdbeGetOp(v, addrOnce)->p3 = dest.iSDParm2;
-        if( dest.iSDParm2==0 ){
+        если( dest.iSDParm2==0 ){
           /* If the Bloom filter won't actually be used, keep it small */
           sqlite3VdbeGetOp(v, addrBloom)->p1 = 10;
         }
       }
-      if( rc ){
+      если( rc ){
         sqlite3KeyInfoUnref(pKeyInfo);
-        return;
+        вернуть;
       }
     }
-  }else if( ALWAYS(pExpr->x.pList!=0) ){
+  }иначе если( ALWAYS(pExpr->x.pList!=0) ){
     /* Case 2:     expr IN (exprlist)
     **
     ** For each expression, build an index key from the evaluation and
@@ -3862,14 +3862,14 @@ void sqlite3CodeRhsOfIN(
     ** a column, use numeric affinity.
     */
     char affinity;            /* Affinity of the LHS of the IN */
-    int i;
+    целое i;
     ExprList *pList = pExpr->x.pList;
     struct ExprList_item *pItem;
-    int r1, r2;
+    целое r1, r2;
     affinity = sqlite3ExprAffinity(pLeft);
-    if( affinity<=SQLITE_AFF_NONE ){
+    если( affinity<=SQLITE_AFF_NONE ){
       affinity = SQLITE_AFF_BLOB;
-    }else if( affinity==SQLITE_AFF_REAL ){
+    }иначе если( affinity==SQLITE_AFF_REAL ){
       affinity = SQLITE_AFF_NUMERIC;
     }
     assert( pKeyInfo!=0 );
@@ -3879,7 +3879,7 @@ void sqlite3CodeRhsOfIN(
     /* Loop through each expression in <exprlist>. */
     r1 = sqlite3GetTempReg(pParse);
     r2 = sqlite3GetTempReg(pParse);
-    for(i=pList->nExpr, pItem=pList->a; i>0; i--, pItem++){
+    для(i=pList->nExpr, pItem=pList->a; i>0; i--, pItem++){
       Expr *pE2 = pItem->pExpr;
 
       /* If the expression is not constant then we will need to
@@ -3887,7 +3887,7 @@ void sqlite3CodeRhsOfIN(
       ** this code only executes once.  Because for a non-constant
       ** expression we need to rerun this code each time.
       */
-      if( addrOnce && !sqlite3ExprIsConstant(pParse, pE2) ){
+      если( addrOnce && !sqlite3ExprIsConstant(pParse, pE2) ){
         sqlite3VdbeChangeToNoop(v, addrOnce-1);
         sqlite3VdbeChangeToNoop(v, addrOnce);
         ExprClearProperty(pExpr, EP_Subrtn);
@@ -3902,11 +3902,11 @@ void sqlite3CodeRhsOfIN(
     sqlite3ReleaseTempReg(pParse, r1);
     sqlite3ReleaseTempReg(pParse, r2);
   }
-  if( pSig ) pSig->bComplete = 1;
-  if( pKeyInfo ){
+  если( pSig ) pSig->bComplete = 1;
+  если( pKeyInfo ){
     sqlite3VdbeChangeP4(v, addr, (void *)pKeyInfo, P4_KEYINFO);
   }
-  if( addrOnce ){
+  если( addrOnce ){
     sqlite3VdbeAddOp1(v, OP_NullRow, iTab);
     sqlite3VdbeJumpHere(v, addrOnce);
     /* Subroutine return */
@@ -3936,20 +3936,20 @@ void sqlite3CodeRhsOfIN(
 ** Return 0 if an error occurs.
 */
 #ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
-  int addrOnce = 0;           /* Address of OP_Once at top of subroutine */
-  int rReg = 0;               /* Register storing resulting */
+целое sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
+  целое addrOnce = 0;           /* Address of OP_Once at top of subroutine */
+  целое rReg = 0;               /* Register storing resulting */
   Select *pSel;               /* SELECT statement to encode */
   SelectDest dest;            /* How to deal with SELECT result */
-  int nReg;                   /* Registers to allocate */
+  целое nReg;                   /* Registers to allocate */
   Expr *pLimit;               /* New limit expression */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrExplain;            /* Address of OP_Explain instruction */
+  целое addrExplain;            /* Address of OP_Explain instruction */
 #endif
 
   Vdbe *v = pParse->pVdbe;
   assert( v!=0 );
-  if( pParse->nErr ) return 0;
+  если( pParse->nErr ) вернуть 0;
   testcase( pExpr->op==TK_EXISTS );
   testcase( pExpr->op==TK_SELECT );
   assert( pExpr->op==TK_EXISTS || pExpr->op==TK_SELECT );
@@ -3958,12 +3958,12 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
 
   /* If this routine has already been coded, then invoke it as a
   ** subroutine. */
-  if( ExprHasProperty(pExpr, EP_Subrtn) ){
+  если( ExprHasProperty(pExpr, EP_Subrtn) ){
     ExplainQueryPlan((pParse, 0, "REUSE SUBQUERY %d", pSel->selId));
     assert( ExprUseYSub(pExpr) );
     sqlite3VdbeAddOp2(v, OP_Gosub, pExpr->y.sub.regReturn,
                       pExpr->y.sub.iAddr);
-    return pExpr->iTable;
+    вернуть pExpr->iTable;
   }
 
   /* Begin coding the subroutine */
@@ -3984,7 +3984,7 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
   ** If all of the above are false, then we can run this code just once
   ** save the results, and reuse the same result on subsequent invocations.
   */
-  if( !ExprHasProperty(pExpr, EP_VarSelect) ){
+  если( !ExprHasProperty(pExpr, EP_VarSelect) ){
     addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
   }
  
@@ -4004,9 +4004,9 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
   nReg = pExpr->op==TK_SELECT ? pSel->pEList->nExpr : 1;
   sqlite3SelectDestInit(&dest, 0, pParse->nMem+1);
   pParse->nMem += nReg;
-  if( pExpr->op==TK_SELECT ){
+  если( pExpr->op==TK_SELECT ){
     dest.eDest = SRT_Mem;
-    if( (pSel->selFlags&SF_Distinct) && pSel->pLimit && pSel->pLimit->pRight ){
+    если( (pSel->selFlags&SF_Distinct) && pSel->pLimit && pSel->pLimit->pRight ){
       /* If there is both a DISTINCT and an OFFSET clause, then allocate
       ** a separate dest.iSdst array for sqlite3Select() and other
       ** routines to populate. In this case results will be copied over
@@ -4017,28 +4017,28 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
       ** excluded by OFFSET.  */ 
       dest.iSdst = pParse->nMem+1;
       pParse->nMem += nReg;
-    }else{
+    }иначе{
       dest.iSdst = dest.iSDParm;
     }
     dest.nSdst = nReg;
     sqlite3VdbeAddOp3(v, OP_Null, 0, dest.iSDParm, pParse->nMem);
     VdbeComment((v, "Init subquery result"));
-  }else{
+  }иначе{
     dest.eDest = SRT_Exists;
     sqlite3VdbeAddOp2(v, OP_Integer, 0, dest.iSDParm);
     VdbeComment((v, "Init EXISTS result"));
   }
-  if( pSel->pLimit ){
+  если( pSel->pLimit ){
     /* The subquery already has a limit.  If the pre-existing limit X is 
     ** not already integer value 1 or 0, then make the new limit X<>0 so that
     ** the new limit is either 1 or 0 */
     Expr *pLeft = pSel->pLimit->pLeft;
-    if( ExprHasProperty(pLeft, EP_IntValue)==0
+    если( ExprHasProperty(pLeft, EP_IntValue)==0
      || (pLeft->u.iValue!=1 && pLeft->u.iValue!=0)
     ){
       sqlite3 *db = pParse->db;
       pLimit = sqlite3ExprInt32(db, 0);
-      if( pLimit ){
+      если( pLimit ){
         pLimit->affExpr = SQLITE_AFF_NUMERIC;
         pLimit = sqlite3PExpr(pParse, TK_NE,
             sqlite3ExprDup(db, pLeft, 0), pLimit);
@@ -4046,25 +4046,25 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
       sqlite3ExprDeferredDelete(pParse, pLeft);
       pSel->pLimit->pLeft = pLimit;
     }
-  }else{
+  }иначе{
     /* If there is no pre-existing limit add a limit of 1 */
     pLimit = sqlite3ExprInt32(pParse->db, 1);
     pSel->pLimit = sqlite3PExpr(pParse, TK_LIMIT, pLimit, 0);
   }
   pSel->iLimit = 0;
-  if( sqlite3Select(pParse, pSel, &dest) ){
+  если( sqlite3Select(pParse, pSel, &dest) ){
     pExpr->op2 = pExpr->op;
     pExpr->op = TK_ERROR;
-    return 0;
+    вернуть 0;
   }
   pExpr->iTable = rReg = dest.iSDParm;
   ExprSetVVAProperty(pExpr, EP_NoReduce);
-  if( addrOnce ){
+  если( addrOnce ){
     sqlite3VdbeJumpHere(v, addrOnce);
   }
   sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
 
-  if( dest.eDest==SRT_Mem 
+  если( dest.eDest==SRT_Mem 
    && sqlite3ExprCanReturnSubtype(pParse, pSel->pEList->a[0].pExpr) 
   ){
     sqlite3VdbeAddOp1(v, OP_ClrSubtype, rReg);
@@ -4078,7 +4078,7 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
                     pExpr->y.sub.iAddr, 1);
   VdbeCoverage(v);
   sqlite3ClearTempRegCache(pParse);
-  return rReg;
+  вернуть rReg;
 }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -4089,18 +4089,18 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
 ** columns as the vector on the LHS. Or, if the RHS of the IN() is not
 ** a sub-query, that the LHS is a vector of size 1.
 */
-int sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
-  int nVector = sqlite3ExprVectorSize(pIn->pLeft);
-  if( ExprUseXSelect(pIn) && !pParse->db->mallocFailed ){
-    if( nVector!=pIn->x.pSelect->pEList->nExpr ){
+целое sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
+  целое nVector = sqlite3ExprVectorSize(pIn->pLeft);
+  если( ExprUseXSelect(pIn) && !pParse->db->mallocFailed ){
+    если( nVector!=pIn->x.pSelect->pEList->nExpr ){
       sqlite3SubselectError(pParse, pIn->x.pSelect->pEList->nExpr, nVector);
-      return 1;
+      вернуть 1;
     }
-  }else if( nVector!=1 ){
+  }иначе если( nVector!=1 ){
     sqlite3VectorErrorMsg(pParse, pIn->pLeft);
-    return 1;
+    вернуть 1;
   }
-  return 0;
+  вернуть 0;
 }
 #endif
 
@@ -4133,34 +4133,34 @@ int sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
 static void sqlite3ExprCodeIN(
   Parse *pParse,        /* Parsing and code generating context */
   Expr *pExpr,          /* The IN expression */
-  int destIfFalse,      /* Jump here if LHS is not contained in the RHS */
-  int destIfNull        /* Jump here if the results are unknown due to NULLs */
+  целое destIfFalse,      /* Jump here if LHS is not contained in the RHS */
+  целое destIfNull        /* Jump here if the results are unknown due to NULLs */
 ){
-  int rRhsHasNull = 0;  /* Register that is true if RHS contains NULL values */
-  int eType;            /* Type of the RHS */
-  int rLhs;             /* Register(s) holding the LHS values */
+  целое rRhsHasNull = 0;  /* Register that is true if RHS contains NULL values */
+  целое eType;            /* Type of the RHS */
+  целое rLhs;             /* Register(s) holding the LHS values */
   Vdbe *v;              /* Statement under construction */
-  int *aiMap = 0;       /* Map from vector field to index column */
+  целое *aiMap = 0;       /* Map from vector field to index column */
   char *zAff = 0;       /* Affinity string for comparisons */
-  int nVector;          /* Size of vectors for this IN operator */
-  int iDummy;           /* Dummy parameter to exprCodeVector() */
+  целое nVector;          /* Size of vectors for this IN operator */
+  целое iDummy;           /* Dummy parameter to exprCodeVector() */
   Expr *pLeft;          /* The LHS of the IN operator */
-  int i;                /* loop counter */
-  int destStep2;        /* Where to jump when NULLs seen in step 2 */
-  int destStep6 = 0;    /* Start of code for Step 6 */
-  int addrTruthOp;      /* Address of opcode that determines the IN is true */
-  int destNotNull;      /* Jump here if a comparison is not true in step 6 */
-  int addrTop;          /* Top of the step-6 loop */
-  int iTab = 0;         /* Index to use */
+  целое i;                /* loop counter */
+  целое destStep2;        /* Where to jump when NULLs seen in step 2 */
+  целое destStep6 = 0;    /* Start of code for Step 6 */
+  целое addrTruthOp;      /* Address of opcode that determines the IN is true */
+  целое destNotNull;      /* Jump here if a comparison is not true in step 6 */
+  целое addrTop;          /* Top of the step-6 loop */
+  целое iTab = 0;         /* Index to use */
   u8 okConstFactor = pParse->okConstFactor;
 
   assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
   pLeft = pExpr->pLeft;
-  if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
+  если( sqlite3ExprCheckIN(pParse, pExpr) ) вернуть;
   zAff = exprINAffinity(pParse, pExpr);
   nVector = sqlite3ExprVectorSize(pExpr->pLeft);
-  aiMap = (int*)sqlite3DbMallocZero(pParse->db, nVector*sizeof(int));
-  if( pParse->db->mallocFailed ) goto sqlite3ExprCodeIN_oom_error;
+  aiMap = (целое*)sqlite3DbMallocZero(pParse->db, nVector*sizeof(целое));
+  если( pParse->db->mallocFailed ) goto sqlite3ExprCodeIN_oom_error;
 
   /* Attempt to compute the RHS. After this step, if anything other than
   ** IN_INDEX_NOOP is returned, the table opened with cursor iTab
@@ -4180,9 +4180,9 @@ static void sqlite3ExprCodeIN(
 #ifdef SQLITE_DEBUG
   /* Confirm that aiMap[] contains nVector integer values between 0 and
   ** nVector-1. */
-  for(i=0; i<nVector; i++){
-    int j, cnt;
-    for(cnt=j=0; j<nVector; j++) if( aiMap[j]==i ) cnt++;
+  для(i=0; i<nVector; i++){
+    целое j, cnt;
+    для(cnt=j=0; j<nVector; j++) если( aiMap[j]==i ) cnt++;
     assert( cnt==1 );
   }
 #endif
@@ -4210,29 +4210,29 @@ static void sqlite3ExprCodeIN(
   **
   ** This is step (1) in the in-operator.md optimized algorithm.
   */
-  if( eType==IN_INDEX_NOOP ){
+  если( eType==IN_INDEX_NOOP ){
     ExprList *pList;
     CollSeq *pColl;
-    int labelOk = sqlite3VdbeMakeLabel(pParse);
-    int r2, regToFree;
-    int regCkNull = 0;
-    int ii;
+    целое labelOk = sqlite3VdbeMakeLabel(pParse);
+    целое r2, regToFree;
+    целое regCkNull = 0;
+    целое ii;
     assert( nVector==1 );
     assert( ExprUseXList(pExpr) );
     pList = pExpr->x.pList;
     pColl = sqlite3ExprCollSeq(pParse, pExpr->pLeft);
-    if( destIfNull!=destIfFalse ){
+    если( destIfNull!=destIfFalse ){
       regCkNull = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp3(v, OP_BitAnd, rLhs, rLhs, regCkNull);
     }
-    for(ii=0; ii<pList->nExpr; ii++){
+    для(ii=0; ii<pList->nExpr; ii++){
       r2 = sqlite3ExprCodeTemp(pParse, pList->a[ii].pExpr, &regToFree);
-      if( regCkNull && sqlite3ExprCanBeNull(pList->a[ii].pExpr) ){
+      если( regCkNull && sqlite3ExprCanBeNull(pList->a[ii].pExpr) ){
         sqlite3VdbeAddOp3(v, OP_BitAnd, regCkNull, r2, regCkNull);
       }
       sqlite3ReleaseTempReg(pParse, regToFree);
-      if( ii<pList->nExpr-1 || destIfNull!=destIfFalse ){
-        int op = rLhs!=r2 ? OP_Eq : OP_NotNull;
+      если( ii<pList->nExpr-1 || destIfNull!=destIfFalse ){
+        целое op = rLhs!=r2 ? OP_Eq : OP_NotNull;
         sqlite3VdbeAddOp4(v, op, rLhs, labelOk, r2,
                           (void*)pColl, P4_COLLSEQ);
         VdbeCoverageIf(v, ii<pList->nExpr-1 && op==OP_Eq);
@@ -4240,8 +4240,8 @@ static void sqlite3ExprCodeIN(
         VdbeCoverageIf(v, ii<pList->nExpr-1 && op==OP_NotNull);
         VdbeCoverageIf(v, ii==pList->nExpr-1 && op==OP_NotNull);
         sqlite3VdbeChangeP5(v, zAff[0]);
-      }else{
-        int op = rLhs!=r2 ? OP_Ne : OP_IsNull;
+      }иначе{
+        целое op = rLhs!=r2 ? OP_Ne : OP_IsNull;
         assert( destIfNull==destIfFalse );
         sqlite3VdbeAddOp4(v, op, rLhs, destIfFalse, r2,
                           (void*)pColl, P4_COLLSEQ);
@@ -4250,7 +4250,7 @@ static void sqlite3ExprCodeIN(
         sqlite3VdbeChangeP5(v, zAff[0] | SQLITE_JUMPIFNULL);
       }
     }
-    if( regCkNull ){
+    если( regCkNull ){
       sqlite3VdbeAddOp2(v, OP_IsNull, regCkNull, destIfNull); VdbeCoverage(v);
       sqlite3VdbeGoto(v, destIfFalse);
     }
@@ -4259,33 +4259,33 @@ static void sqlite3ExprCodeIN(
     goto sqlite3ExprCodeIN_finished;
   }
 
-  if( eType!=IN_INDEX_ROWID ){
+  если( eType!=IN_INDEX_ROWID ){
     /* If this IN operator will use an index, then the order of columns in the
     ** vector might be different from the order in the index.  In that case,
     ** we need to reorder the LHS values to be in index order.  Run Affinity
     ** before reordering the columns, so that the affinity is correct.
     */
-    if( nVector==1 ){
+    если( nVector==1 ){
       char aff = zAff[0];
-      if( aff>=SQLITE_AFF_TEXT && aff!=sqlite3ExprAffinity(pLeft) ){
+      если( aff>=SQLITE_AFF_TEXT && aff!=sqlite3ExprAffinity(pLeft) ){
         /* The OP_Affinity below may change the value. In this case, create a
         ** copy of rLhs to run OP_Affinity on, in case the original register
         ** is used again (e.g. if it is TK_AGG_COLUMN).  */
-        int rTmp = sqlite3GetTempReg(pParse);
+        целое rTmp = sqlite3GetTempReg(pParse);
         sqlite3VdbeAddOp3(v, OP_Copy, rLhs, rTmp, 0);
         rLhs = rTmp;
         sqlite3VdbeAddOp4(v, OP_Affinity, rLhs, 1, 0, zAff, 1);
       }
-    }else{
+    }иначе{
       sqlite3VdbeAddOp4(v, OP_Affinity, rLhs, nVector, 0, zAff, nVector);
     }
 
-    for(i=0; i<nVector && aiMap[i]==i; i++){} /* Are LHS fields reordered? */
-    if( i!=nVector ){
+    для(i=0; i<nVector && aiMap[i]==i; i++){} /* Are LHS fields reordered? */
+    если( i!=nVector ){
       /* Need to reorder the LHS fields according to aiMap */
-      int rLhsOrig = rLhs;
+      целое rLhsOrig = rLhs;
       rLhs = sqlite3GetTempRange(pParse, nVector);
-      for(i=0; i<nVector; i++){
+      для(i=0; i<nVector; i++){
         testcase( aiMap[i]!=i );
         sqlite3VdbeAddOp3(v, OP_Copy, rLhsOrig+i, rLhs+aiMap[i], 0);
       }
@@ -4297,15 +4297,15 @@ static void sqlite3ExprCodeIN(
   ** LHS does contain NULLs then the result must be either FALSE or NULL.
   ** We will then skip the binary search of the RHS.
   */
-  if( destIfNull==destIfFalse ){
+  если( destIfNull==destIfFalse ){
     destStep2 = destIfFalse;
-  }else{
+  }иначе{
     destStep2 = destStep6 = sqlite3VdbeMakeLabel(pParse);
   }
-  for(i=0; i<nVector; i++){
+  для(i=0; i<nVector; i++){
     Expr *p = sqlite3VectorFieldSubexpr(pExpr->pLeft, i);
-    if( pParse->nErr ) goto sqlite3ExprCodeIN_oom_error;
-    if( sqlite3ExprCanBeNull(p) ){
+    если( pParse->nErr ) goto sqlite3ExprCodeIN_oom_error;
+    если( sqlite3ExprCanBeNull(p) ){
       testcase( aiMap[i]!=i );
       sqlite3VdbeAddOp2(v, OP_IsNull, rLhs+aiMap[i], destStep2);
       VdbeCoverage(v);
@@ -4316,7 +4316,7 @@ static void sqlite3ExprCodeIN(
   ** of the RHS using the LHS as a probe.  If found, the result is
   ** true.
   */
-  if( eType==IN_INDEX_ROWID ){
+  если( eType==IN_INDEX_ROWID ){
     /* In this case, the RHS is the ROWID of table b-tree and so we also
     ** know that the RHS is non-NULL.  Hence, we combine steps 3 and 4
     ** into a single opcode. */
@@ -4324,13 +4324,13 @@ static void sqlite3ExprCodeIN(
     sqlite3VdbeAddOp3(v, OP_SeekRowid, iTab, destIfFalse, rLhs);
     VdbeCoverage(v);
     addrTruthOp = sqlite3VdbeAddOp0(v, OP_Goto);  /* Return True */
-  }else{
-    if( destIfFalse==destIfNull ){
+  }иначе{
+    если( destIfFalse==destIfNull ){
       /* Combine Step 3 and Step 5 into a single opcode */
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
+      если( ExprHasProperty(pExpr, EP_Subrtn) ){
         const VdbeOp *pOp = sqlite3VdbeGetOp(v, pExpr->y.sub.iAddr);
         assert( pOp->opcode==OP_Once || pParse->nErr );
-        if( pOp->p3>0 ){  /* tag-202407032019 */
+        если( pOp->p3>0 ){  /* tag-202407032019 */
           assert( OptimizationEnabled(pParse->db, SQLITE_BloomFilter)
                  || pParse->nErr );
           sqlite3VdbeAddOp4Int(v, OP_Filter, pOp->p3, destIfFalse,
@@ -4349,7 +4349,7 @@ static void sqlite3ExprCodeIN(
   /* Step 4.  If the RHS is known to be non-NULL and we did not find
   ** an match on the search above, then the result must be FALSE.
   */
-  if( rRhsHasNull && nVector==1 ){
+  если( rRhsHasNull && nVector==1 ){
     sqlite3VdbeAddOp2(v, OP_NotNull, rRhsHasNull, destIfFalse);
     VdbeCoverage(v);
   }
@@ -4357,7 +4357,7 @@ static void sqlite3ExprCodeIN(
   /* Step 5.  If we do not care about the difference between NULL and
   ** FALSE, then just return false.
   */
-  if( destIfFalse==destIfNull ) sqlite3VdbeGoto(v, destIfFalse);
+  если( destIfFalse==destIfNull ) sqlite3VdbeGoto(v, destIfFalse);
 
   /* Step 6: Loop through rows of the RHS.  Compare each row to the LHS.
   ** If any comparison is NULL, then the result is NULL.  If all
@@ -4366,31 +4366,31 @@ static void sqlite3ExprCodeIN(
   ** For a scalar LHS, it is sufficient to check just the first row
   ** of the RHS.
   */
-  if( destStep6 ) sqlite3VdbeResolveLabel(v, destStep6);
-  if( eType==IN_INDEX_INDEX_DESC ){
+  если( destStep6 ) sqlite3VdbeResolveLabel(v, destStep6);
+  если( eType==IN_INDEX_INDEX_DESC ){
     addrTop = sqlite3VdbeAddOp2(v, OP_Last, iTab, destIfFalse);
-  }else{
+  }иначе{
     testcase( eType==IN_INDEX_EPH );
     testcase( eType==IN_INDEX_ROWID );
     addrTop = sqlite3VdbeAddOp2(v, OP_Rewind, iTab, destIfFalse);
   }
   VdbeCoverage(v);
-  if( nVector>1 ){
+  если( nVector>1 ){
     destNotNull = sqlite3VdbeMakeLabel(pParse);
-  }else{
+  }иначе{
     /* For nVector==1, combine steps 6 and 7 by immediately returning
     ** FALSE if the first comparison is not NULL */
     destNotNull = destIfFalse;
   }
-  for(i=0; i<nVector; i++){
+  для(i=0; i<nVector; i++){
     Expr *p;
     CollSeq *pColl;
-    int r3 = sqlite3GetTempReg(pParse);
+    целое r3 = sqlite3GetTempReg(pParse);
     p = sqlite3VectorFieldSubexpr(pLeft, i);
-    if( ExprUseXSelect(pExpr) ){
+    если( ExprUseXSelect(pExpr) ){
       Expr *pRhs = pExpr->x.pSelect->pEList->a[i].pExpr;
       pColl = sqlite3BinaryCompareCollSeq(pParse, p, pRhs);
-    }else{
+    }иначе{
       /* If the RHS of the IN(...) expression are scalar expressions, do
       ** not consider their collation sequences. The documentation says
       ** "The collating sequence used for expressions of the form "x IN (y, z,
@@ -4405,7 +4405,7 @@ static void sqlite3ExprCodeIN(
     sqlite3ReleaseTempReg(pParse, r3);
   }
   sqlite3VdbeAddOp2(v, OP_Goto, 0, destIfNull);
-  if( nVector>1 ){
+  если( nVector>1 ){
     sqlite3VdbeResolveLabel(v, destNotNull);
     sqlite3VdbeAddOp2(v, OP_Next, iTab, addrTop+1);
     VdbeCoverage(v);
@@ -4435,12 +4435,12 @@ sqlite3ExprCodeIN_oom_error:
 ** z[n] character is guaranteed to be something that does not look
 ** like the continuation of the number.
 */
-static void codeReal(Vdbe *v, const char *z, int negateFlag, int iMem){
-  if( ALWAYS(z!=0) ){
+static void codeReal(Vdbe *v, const char *z, целое negateFlag, целое iMem){
+  если( ALWAYS(z!=0) ){
     double value;
     sqlite3AtoF(z, &value);
     assert( !sqlite3IsNaN(value) ); /* The new AtoF never returns NaN */
-    if( negateFlag ) value = -value;
+    если( negateFlag ) value = -value;
     sqlite3VdbeAddDouble(v, iMem, value);
   }
 }
@@ -4453,35 +4453,35 @@ static void codeReal(Vdbe *v, const char *z, int negateFlag, int iMem){
 **
 ** Expr.u.zToken is always UTF8 and zero-terminated.
 */
-static void codeInteger(Parse *pParse, Expr *pExpr, int negFlag, int iMem){
+static void codeInteger(Parse *pParse, Expr *pExpr, целое negFlag, целое iMem){
   Vdbe *v = pParse->pVdbe;
-  if( pExpr->flags & EP_IntValue ){
-    int i = pExpr->u.iValue;
+  если( pExpr->flags & EP_IntValue ){
+    целое i = pExpr->u.iValue;
     assert( i>=0 );
-    if( negFlag ) i = -i;
+    если( negFlag ) i = -i;
     sqlite3VdbeAddOp2(v, OP_Integer, i, iMem);
-  }else{
-    int c;
+  }иначе{
+    целое c;
     i64 value;
     const char *z = pExpr->u.zToken;
     assert( z!=0 );
     c = sqlite3DecOrHexToI64(z, &value);
-    if( (c==3 && !negFlag) || (c==2) || (negFlag && value==SMALLEST_INT64)){
+    если( (c==3 && !negFlag) || (c==2) || (negFlag && value==SMALLEST_INT64)){
 #ifdef SQLITE_OMIT_FLOATING_POINT
       sqlite3ErrorMsg(pParse, "oversized integer: %s%#T", negFlag?"-":"",pExpr);
-#else
+#иначе
 #ifndef SQLITE_OMIT_HEX_INTEGER
-      if( sqlite3_strnicmp(z,"0x",2)==0 ){
+      если( sqlite3_strnicmp(z,"0x",2)==0 ){
         sqlite3ErrorMsg(pParse, "hex literal too big: %s%#T",
                         negFlag?"-":"",pExpr);
-      }else
+      }иначе
 #endif
       {
         codeReal(v, z, negFlag, iMem);
       }
 #endif
-    }else{
-      if( negFlag ){ value = c==3 ? SMALLEST_INT64 : -value; }
+    }иначе{
+      если( negFlag ){ value = c==3 ? SMALLEST_INT64 : -value; }
       sqlite3VdbeAddInt64(v, iMem, value);
     }
   }
@@ -4494,18 +4494,18 @@ static void codeInteger(Parse *pParse, Expr *pExpr, int negFlag, int iMem){
 void sqlite3ExprCodeLoadIndexColumn(
   Parse *pParse,  /* The parsing context */
   Index *pIdx,    /* The index whose column is to be loaded */
-  int iTabCur,    /* Cursor pointing to a table row */
-  int iIdxCol,    /* The column of the index to be loaded */
-  int regOut      /* Store the index column value in this register */
+  целое iTabCur,    /* Cursor pointing to a table row */
+  целое iIdxCol,    /* The column of the index to be loaded */
+  целое regOut      /* Store the index column value in this register */
 ){
   i16 iTabCol = pIdx->aiColumn[iIdxCol];
-  if( iTabCol==XN_EXPR ){
+  если( iTabCol==XN_EXPR ){
     assert( pIdx->aColExpr );
     assert( pIdx->aColExpr->nExpr>iIdxCol );
     pParse->iSelfTab = iTabCur + 1;
     sqlite3ExprCodeCopy(pParse, pIdx->aColExpr->a[iIdxCol].pExpr, regOut);
     pParse->iSelfTab = 0;
-  }else{
+  }иначе{
     sqlite3ExprCodeGetColumnOfTable(pParse->pVdbe, pIdx->pTable, iTabCur,
                                     iTabCol, regOut);
   }
@@ -4520,29 +4520,29 @@ void sqlite3ExprCodeGeneratedColumn(
   Parse *pParse,     /* Parsing context */
   Table *pTab,       /* Table containing the generated column */
   Column *pCol,      /* The generated column */
-  int regOut         /* Put the result in this register */
+  целое regOut         /* Put the result in this register */
 ){
-  int iAddr;
+  целое iAddr;
   Vdbe *v = pParse->pVdbe;
-  int nErr = pParse->nErr;
+  целое nErr = pParse->nErr;
   assert( v!=0 );
   assert( pParse->iSelfTab!=0 );
-  if( pParse->iSelfTab>0 ){
+  если( pParse->iSelfTab>0 ){
     iAddr = sqlite3VdbeAddOp3(v, OP_IfNullRow, pParse->iSelfTab-1, 0, regOut);
-  }else{
+  }иначе{
     iAddr = 0;
   }
   sqlite3ExprCodeCopy(pParse, sqlite3ColumnExpr(pTab,pCol), regOut);
-  if( (pCol->colFlags & COLFLAG_VIRTUAL)!=0
+  если( (pCol->colFlags & COLFLAG_VIRTUAL)!=0
    && (pTab->tabFlags & TF_Strict)!=0
   ){
-    int p3 = 2+(int)(pCol - pTab->aCol);
+    целое p3 = 2+(целое)(pCol - pTab->aCol);
     sqlite3VdbeAddOp4(v, OP_TypeCheck, regOut, 1, p3, (char*)pTab, P4_TABLE);
-  }else if( pCol->affinity>=SQLITE_AFF_TEXT ){
+  }иначе если( pCol->affinity>=SQLITE_AFF_TEXT ){
     sqlite3VdbeAddOp4(v, OP_Affinity, regOut, 1, 0, &pCol->affinity, 1);
   }
-  if( iAddr ) sqlite3VdbeJumpHere(v, iAddr);
-  if( pParse->nErr>nErr ) pParse->db->errByteOffset = -1;
+  если( iAddr ) sqlite3VdbeJumpHere(v, iAddr);
+  если( pParse->nErr>nErr ) pParse->db->errByteOffset = -1;
 }
 #endif /* SQLITE_OMIT_GENERATED_COLUMNS */
 
@@ -4552,43 +4552,43 @@ void sqlite3ExprCodeGeneratedColumn(
 void sqlite3ExprCodeGetColumnOfTable(
   Vdbe *v,        /* Parsing context */
   Table *pTab,    /* The table containing the value */
-  int iTabCur,    /* The table cursor.  Or the PK cursor for WITHOUT ROWID */
-  int iCol,       /* Index of the column to extract */
-  int regOut      /* Extract the value into this register */
+  целое iTabCur,    /* The table cursor.  Or the PK cursor for WITHOUT ROWID */
+  целое iCol,       /* Index of the column to extract */
+  целое regOut      /* Extract the value into this register */
 ){
   Column *pCol;
   assert( v!=0 );
   assert( pTab!=0 );
   assert( iCol!=XN_EXPR );
-  if( iCol<0 || iCol==pTab->iPKey ){
+  если( iCol<0 || iCol==pTab->iPKey ){
     sqlite3VdbeAddOp2(v, OP_Rowid, iTabCur, regOut);
     VdbeComment((v, "%s.rowid", pTab->zName));
- }else{
-    int x;
-    if( IsVirtual(pTab) ){
+ }иначе{
+    целое x;
+    если( IsVirtual(pTab) ){
       x = iCol;
       sqlite3VdbeAddOp3(v, OP_VColumn, iTabCur, x, regOut);
-      return;
+      вернуть;
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-    }else if( (pCol = &pTab->aCol[iCol])->colFlags & COLFLAG_VIRTUAL ){
+    }иначе если( (pCol = &pTab->aCol[iCol])->colFlags & COLFLAG_VIRTUAL ){
       Parse *pParse = sqlite3VdbeParser(v);
-      if( pCol->colFlags & COLFLAG_BUSY ){
+      если( pCol->colFlags & COLFLAG_BUSY ){
         sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"",
                         pCol->zCnName);
-      }else{
-        int savedSelfTab = pParse->iSelfTab;
+      }иначе{
+        целое savedSelfTab = pParse->iSelfTab;
         pCol->colFlags |= COLFLAG_BUSY;
         pParse->iSelfTab = iTabCur+1;
         sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, regOut);
         pParse->iSelfTab = savedSelfTab;
         pCol->colFlags &= ~COLFLAG_BUSY;
       }
-      return;
+      вернуть;
 #endif
-    }else if( !HasRowid(pTab) ){
+    }иначе если( !HasRowid(pTab) ){
       testcase( iCol!=sqlite3TableColumnToStorage(pTab, iCol) );
       x = sqlite3TableColumnToIndex(sqlite3PrimaryKeyIndex(pTab), iCol);
-    }else{
+    }иначе{
       x = sqlite3TableColumnToStorage(pTab,iCol);
       testcase( x!=iCol );
     }
@@ -4604,31 +4604,31 @@ void sqlite3ExprCodeGetColumnOfTable(
 ** There must be an open cursor to pTab in iTable when this routine
 ** is called.  If iColumn<0 then code is generated that extracts the rowid.
 */
-int sqlite3ExprCodeGetColumn(
+целое sqlite3ExprCodeGetColumn(
   Parse *pParse,   /* Parsing and code generating context */
   Table *pTab,     /* Description of the table we are reading from */
-  int iColumn,     /* Index of the table column */
-  int iTable,      /* The cursor pointing to the table */
-  int iReg,        /* Store results here */
+  целое iColumn,     /* Index of the table column */
+  целое iTable,      /* The cursor pointing to the table */
+  целое iReg,        /* Store results here */
   u8 p5            /* P5 value for OP_Column + FLAGS */
 ){
   assert( pParse->pVdbe!=0 );
   assert( (p5 & (OPFLAG_NOCHNG|OPFLAG_TYPEOFARG|OPFLAG_LENGTHARG))==p5 );
   assert( IsVirtual(pTab) || (p5 & OPFLAG_NOCHNG)==0 );
   sqlite3ExprCodeGetColumnOfTable(pParse->pVdbe, pTab, iTable, iColumn, iReg);
-  if( p5 ){
+  если( p5 ){
     VdbeOp *pOp = sqlite3VdbeGetLastOp(pParse->pVdbe);
-    if( pOp->opcode==OP_Column ) pOp->p5 = p5;
-    if( pOp->opcode==OP_VColumn ) pOp->p5 = (p5 & OPFLAG_NOCHNG);
+    если( pOp->opcode==OP_Column ) pOp->p5 = p5;
+    если( pOp->opcode==OP_VColumn ) pOp->p5 = (p5 & OPFLAG_NOCHNG);
   }
-  return iReg;
+  вернуть iReg;
 }
 
 /*
 ** Generate code to move content from registers iFrom...iFrom+nReg-1
 ** over to iTo..iTo+nReg-1.
 */
-void sqlite3ExprCodeMove(Parse *pParse, int iFrom, int iTo, int nReg){
+void sqlite3ExprCodeMove(Parse *pParse, целое iFrom, целое iTo, целое nReg){
   sqlite3VdbeAddOp3(pParse->pVdbe, OP_Move, iFrom, iTo, nReg);
 }
 
@@ -4637,12 +4637,12 @@ void sqlite3ExprCodeMove(Parse *pParse, int iFrom, int iTo, int nReg){
 ** register iReg.  The caller must ensure that iReg already contains
 ** the correct value for the expression.
 */
-void sqlite3ExprToRegister(Expr *pExpr, int iReg){
+void sqlite3ExprToRegister(Expr *pExpr, целое iReg){
   Expr *p = sqlite3ExprSkipCollateAndLikely(pExpr);
-  if( NEVER(p==0) ) return;
-  if( p->op==TK_REGISTER ){
+  если( NEVER(p==0) ) вернуть;
+  если( p->op==TK_REGISTER ){
     assert( p->iTable==iReg );
-  }else{
+  }иначе{
     p->op2 = p->op;
     p->op = TK_REGISTER;
     p->iTable = iReg;
@@ -4660,30 +4660,30 @@ void sqlite3ExprToRegister(Expr *pExpr, int iReg){
 ** is not a temporary or if the expression is a vector set *piFreeable
 ** to 0.
 */
-static int exprCodeVector(Parse *pParse, Expr *p, int *piFreeable){
-  int iResult;
-  int nResult = sqlite3ExprVectorSize(p);
-  if( nResult==1 ){
+static целое exprCodeVector(Parse *pParse, Expr *p, целое *piFreeable){
+  целое iResult;
+  целое nResult = sqlite3ExprVectorSize(p);
+  если( nResult==1 ){
     iResult = sqlite3ExprCodeTemp(pParse, p, piFreeable);
-  }else{
+  }иначе{
     *piFreeable = 0;
-    if( p->op==TK_SELECT ){
-#if SQLITE_OMIT_SUBQUERY
+    если( p->op==TK_SELECT ){
+#если SQLITE_OMIT_SUBQUERY
       iResult = 0;
-#else
+#иначе
       iResult = sqlite3CodeSubselect(pParse, p);
 #endif
-    }else{
-      int i;
+    }иначе{
+      целое i;
       iResult = pParse->nMem+1;
       pParse->nMem += nResult;
       assert( ExprUseXList(p) );
-      for(i=0; i<nResult; i++){
+      для(i=0; i<nResult; i++){
         sqlite3ExprCodeFactorable(pParse, p->x.pList->a[i].pExpr, i+iResult);
       }
     }
   }
-  return iResult;
+  вернуть iResult;
 }
 
 /*
@@ -4691,7 +4691,7 @@ static int exprCodeVector(Parse *pParse, Expr *p, int *piFreeable){
 ** so that a subsequent copy will not be merged into this one.
 */
 static void setDoNotMergeFlagOnCopy(Vdbe *v){
-  if( sqlite3VdbeGetLastOp(v)->opcode==OP_Copy ){
+  если( sqlite3VdbeGetLastOp(v)->opcode==OP_Copy ){
     sqlite3VdbeChangeP5(v, 1);  /* Tag trailing OP_Copy as not mergeable */
   }
 }
@@ -4700,13 +4700,13 @@ static void setDoNotMergeFlagOnCopy(Vdbe *v){
 ** Generate code to implement special SQL functions that are implemented
 ** in-line rather than by using the usual callbacks.
 */
-static int exprCodeInlineFunction(
+static целое exprCodeInlineFunction(
   Parse *pParse,        /* Parsing context */
   ExprList *pFarg,      /* List of function arguments */
-  int iFuncId,          /* Function ID.  One of the INTFUNC_... values */
-  int target            /* Store function result in this register */
+  целое iFuncId,          /* Function ID.  One of the INTFUNC_... values */
+  целое target            /* Store function result in this register */
 ){
-  int nFarg;
+  целое nFarg;
   Vdbe *v = pParse->pVdbe;
   assert( v!=0 );
   assert( pFarg!=0 );
@@ -4718,11 +4718,11 @@ static int exprCodeInlineFunction(
       ** IFNULL() functions.  This avoids unnecessary evaluation of
       ** arguments past the first non-NULL argument.
       */
-      int endCoalesce = sqlite3VdbeMakeLabel(pParse);
-      int i;
+      целое endCoalesce = sqlite3VdbeMakeLabel(pParse);
+      целое i;
       assert( nFarg>=2 );
       sqlite3ExprCode(pParse, pFarg->a[0].pExpr, target);
-      for(i=1; i<nFarg; i++){
+      для(i=1; i<nFarg; i++){
         sqlite3VdbeAddOp2(v, OP_NotNull, target, endCoalesce);
         VdbeCoverage(v);
         sqlite3ExprCode(pParse, pFarg->a[i].pExpr, target);
@@ -4736,14 +4736,14 @@ static int exprCodeInlineFunction(
       memset(&caseExpr, 0, sizeof(caseExpr));
       caseExpr.op = TK_CASE;
       caseExpr.x.pList = pFarg;
-      return sqlite3ExprCodeTarget(pParse, &caseExpr, target);
+      вернуть sqlite3ExprCodeTarget(pParse, &caseExpr, target);
     }
 #ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
     case INLINEFUNC_sqlite_offset: {
       Expr *pArg = pFarg->a[0].pExpr;
-      if( pArg->op==TK_COLUMN && pArg->iTable>=0 ){
+      если( pArg->op==TK_COLUMN && pArg->iTable>=0 ){
         sqlite3VdbeAddOp3(v, OP_Offset, pArg->iTable, pArg->iColumn, target);
-      }else{
+      }иначе{
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       }
       break;
@@ -4762,7 +4762,7 @@ static int exprCodeInlineFunction(
   ** Test-only SQL functions that are only usable if enabled
   ** via SQLITE_TESTCTRL_INTERNAL_FUNCTIONS
   */
-#if !defined(SQLITE_UNTESTABLE)
+#если !defined(SQLITE_UNTESTABLE)
     case INLINEFUNC_expr_compare: {
       /* Compare two expressions using sqlite3ExprCompare() */
       assert( nFarg==2 );
@@ -4786,11 +4786,11 @@ static int exprCodeInlineFunction(
       Expr *pA1;
       assert( nFarg==2 );
       pA1 = pFarg->a[1].pExpr;
-      if( pA1->op==TK_COLUMN ){
+      если( pA1->op==TK_COLUMN ){
         sqlite3VdbeAddOp2(v, OP_Integer,
            sqlite3ExprImpliesNonNullRow(pFarg->a[0].pExpr,pA1->iTable,1),
            target);
-      }else{
+      }иначе{
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       }
       break;
@@ -4814,7 +4814,7 @@ static int exprCodeInlineFunction(
     }
 #endif /* !defined(SQLITE_UNTESTABLE) */
   }
-  return target;
+  вернуть target;
 }
 
 /*
@@ -4840,32 +4840,32 @@ static int exprCodeInlineFunction(
 ** In all cases 1 through 5, the expression might also return a subtype
 ** if any operand can return a subtype.
 */
-static int exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
-  int n;
+static целое exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
+  целое n;
   FuncDef *pDef;
   sqlite3 *db;
-  if( pExpr->op==TK_CASE || pExpr->op==TK_UPLUS 
+  если( pExpr->op==TK_CASE || pExpr->op==TK_UPLUS 
    || pExpr->op==TK_COLLATE || pExpr->op==TK_CAST 
   ){
-    return WRC_Continue;
+    вернуть WRC_Continue;
   }
-  if( pExpr->op!=TK_FUNCTION && pExpr->op!=TK_AGG_FUNCTION ){
-    return WRC_Prune;
+  если( pExpr->op!=TK_FUNCTION && pExpr->op!=TK_AGG_FUNCTION ){
+    вернуть WRC_Prune;
   }
   assert( ExprUseXList(pExpr) );
   db = pWalker->pParse->db;
   n = pExpr->x.pList ? pExpr->x.pList->nExpr : 0;
   pDef = sqlite3FindFunction(db, pExpr->u.zToken, n, ENC(db), 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-  if( pDef==0 ) return WRC_Continue;
-#else
+  если( pDef==0 ) вернуть WRC_Continue;
+#иначе
   assert( pDef!=0 );
 #endif
-  if( (pDef->funcFlags & SQLITE_RESULT_SUBTYPE)!=0 ){
+  если( (pDef->funcFlags & SQLITE_RESULT_SUBTYPE)!=0 ){
     pWalker->eCode = 1;
-    return WRC_Abort;
+    вернуть WRC_Abort;
   }
-  return WRC_Continue;
+  вернуть WRC_Continue;
 }
 
 /*
@@ -4876,13 +4876,13 @@ static int exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
 ** are acceptable as they only disable an optimization.  False negatives,
 ** on the other hand, can lead to incorrect answers.
 */
-int sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
+целое sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
   Walker w;
   memset(&w, 0, sizeof(w));
   w.pParse = pParse;
   w.xExprCallback = exprNodeCanReturnSubtype;
   sqlite3WalkExpr(&w, pExpr);
-  return w.eCode;
+  вернуть w.eCode;
 }
 
 
@@ -4892,25 +4892,25 @@ int sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
 ** return the register into which the value has been read.  If pExpr is
 ** not an indexed expression, then return negative.
 */
-static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
+static SQLITE_NOINLINE целое sqlite3IndexedExprLookup(
   Parse *pParse,   /* The parsing context */
   Expr *pExpr,     /* The expression to potentially bypass */
-  int target       /* Where to store the result of the expression */
+  целое target       /* Where to store the result of the expression */
 ){
   IndexedExpr *p;
   Vdbe *v;
-  for(p=pParse->pIdxEpr; p; p=p->pIENext){
+  для(p=pParse->pIdxEpr; p; p=p->pIENext){
     u8 exprAff;
-    int iDataCur = p->iDataCur;
-    if( iDataCur<0 ) continue;
-    if( pParse->iSelfTab ){
-      if( p->iDataCur!=pParse->iSelfTab-1 ) continue;
+    целое iDataCur = p->iDataCur;
+    если( iDataCur<0 ) continue;
+    если( pParse->iSelfTab ){
+      если( p->iDataCur!=pParse->iSelfTab-1 ) continue;
       iDataCur = -1;
     }
-    if( sqlite3ExprCompare(0, pExpr, p->pExpr, iDataCur)!=0 ) continue;
+    если( sqlite3ExprCompare(0, pExpr, p->pExpr, iDataCur)!=0 ) continue;
     assert( p->aff>=SQLITE_AFF_BLOB && p->aff<=SQLITE_AFF_NUMERIC );
     exprAff = sqlite3ExprAffinity(pExpr);
-    if( (exprAff<=SQLITE_AFF_BLOB && p->aff!=SQLITE_AFF_BLOB)
+    если( (exprAff<=SQLITE_AFF_BLOB && p->aff!=SQLITE_AFF_BLOB)
      || (exprAff==SQLITE_AFF_TEXT && p->aff!=SQLITE_AFF_TEXT)
      || (exprAff>=SQLITE_AFF_NUMERIC && p->aff!=SQLITE_AFF_NUMERIC)
     ){
@@ -4923,7 +4923,7 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
     ** value taken from an expression index if they are themselves an
     ** argument to another scalar function or aggregate. 
     ** https://sqlite.org/forum/forumpost/68d284c86b082c3e */
-    if( ExprHasProperty(pExpr, EP_SubtArg)
+    если( ExprHasProperty(pExpr, EP_SubtArg)
      && sqlite3ExprCanReturnSubtype(pParse, pExpr) 
     ){
       continue;
@@ -4931,7 +4931,7 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
 
     v = pParse->pVdbe;
     assert( v!=0 );
-    if( p->bMaybeNullRow || sqlite3ExprIsConstant(pParse, pExpr) ){
+    если( p->bMaybeNullRow || sqlite3ExprIsConstant(pParse, pExpr) ){
       /* The value of pExpr should be computed from the original expression,
       ** not from the index, if either:
       **
@@ -4941,7 +4941,7 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
       **         use an index value outside of the loop that positions the
       **         index.  (Bug 2026-10-11T19:26:40Z).
       */
-      int addr = sqlite3VdbeCurrentAddr(v);
+      целое addr = sqlite3VdbeCurrentAddr(v);
       sqlite3VdbeAddOp3(v, OP_IfNullRow, p->iIdxCur, addr+3, target);
       VdbeCoverage(v);
       sqlite3VdbeAddOp3(v, OP_Column, p->iIdxCur, p->iIdxCol, target);
@@ -4952,13 +4952,13 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
       sqlite3ExprCode(pParse, pExpr, target);
       pParse->pIdxEpr = p;
       sqlite3VdbeJumpHere(v, addr+2);
-    }else{
+    }иначе{
       sqlite3VdbeAddOp3(v, OP_Column, p->iIdxCur, p->iIdxCol, target);
       VdbeComment((v, "%s expr-column %d", p->zIdxName, p->iIdxCol));
     }
-    return target;
+    вернуть target;
   }
-  return -1;  /* Not found */
+  вернуть -1;  /* Not found */
 }
 
 
@@ -4972,33 +4972,33 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
 ** Or, if the TK_COLUMN cannot be replaced by a constant, zero is 
 ** returned.
 */
-static int exprPartidxExprLookup(Parse *pParse, Expr *pExpr, int iTarget){
+static целое exprPartidxExprLookup(Parse *pParse, Expr *pExpr, целое iTarget){
   IndexedExpr *p;
-  for(p=pParse->pIdxPartExpr; p; p=p->pIENext){
-    if( pExpr->iColumn==p->iIdxCol && pExpr->iTable==p->iDataCur ){
+  для(p=pParse->pIdxPartExpr; p; p=p->pIENext){
+    если( pExpr->iColumn==p->iIdxCol && pExpr->iTable==p->iDataCur ){
       Vdbe *v = pParse->pVdbe;
-      int addr = 0;
-      int ret;
+      целое addr = 0;
+      целое ret;
 
-      if( p->bMaybeNullRow ){
+      если( p->bMaybeNullRow ){
         addr = sqlite3VdbeAddOp1(v, OP_IfNullRow, p->iIdxCur);
       }
       ret = sqlite3ExprCodeTarget(pParse, p->pExpr, iTarget);
       sqlite3VdbeAddOp4(pParse->pVdbe, OP_Affinity, ret, 1, 0,
                         (const char*)&p->aff, 1);
-      if( sqlite3ExprCanReturnSubtype(pParse, p->pExpr) ){
+      если( sqlite3ExprCanReturnSubtype(pParse, p->pExpr) ){
         /* If the expression value may have a sub-type, clear it. Values
         ** read from columns do not have subtypes. */
         sqlite3VdbeAddOp1(pParse->pVdbe, OP_ClrSubtype, ret);
       }
-      if( addr ){
+      если( addr ){
         sqlite3VdbeJumpHere(v, addr);
         sqlite3VdbeChangeP3(v, addr, ret);
       }
-      return ret;
+      вернуть ret;
     }
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
@@ -5011,17 +5011,17 @@ static int exprPartidxExprLookup(Parse *pParse, Expr *pExpr, int iTarget){
 ** If it does, then write the number of that temporary register
 ** into *pTmpReg.  If not, leave *pTmpReg unchanged.
 */
-static SQLITE_NOINLINE int exprCodeTargetAndOr(
+static SQLITE_NOINLINE целое exprCodeTargetAndOr(
   Parse *pParse,     /* Parsing context */
   Expr *pExpr,       /* AND or OR expression to be coded */
-  int target,        /* Put result in this register, guaranteed */
-  int *pTmpReg       /* Write a temporary register here */
+  целое target,        /* Put result in this register, guaranteed */
+  целое *pTmpReg       /* Write a temporary register here */
 ){
-  int op;            /* The opcode.  TK_AND or TK_OR */
-  int skipOp;        /* Opcode for the branch that skips one operand */
-  int addrSkip;      /* Branch instruction that skips one of the operands */
-  int regSS = 0;     /* Register holding computed operand when other omitted */
-  int r1, r2;        /* Registers for left and right operands, respectively */
+  целое op;            /* The opcode.  TK_AND or TK_OR */
+  целое skipOp;        /* Opcode for the branch that skips one operand */
+  целое addrSkip;      /* Branch instruction that skips one of the operands */
+  целое regSS = 0;     /* Register holding computed operand when other omitted */
+  целое r1, r2;        /* Registers for left and right operands, respectively */
   Expr *pAlt;        /* Alternative, simplified expression */
   Vdbe *v;           /* statement being coded */
 
@@ -5033,13 +5033,13 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
   assert( pParse->pVdbe!=0 );
   v = pParse->pVdbe;
   pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-  if( pAlt!=pExpr ){
+  если( pAlt!=pExpr ){
     r1 = sqlite3ExprCodeTarget(pParse, pAlt, target);
     sqlite3VdbeAddOp3(v, OP_And, r1, r1, target);
-    return target;
+    вернуть target;
   }
   skipOp = op==TK_AND ? OP_IfNot : OP_If;
-  if( exprEvalRhsFirst(pExpr) ){
+  если( exprEvalRhsFirst(pExpr) ){
     /* Compute the right operand first.  Skip the computation of the left
     ** operand if the right operand fully determines the result */
     r2 = regSS = sqlite3ExprCodeTarget(pParse, pExpr->pRight, target);
@@ -5047,10 +5047,10 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
     VdbeComment((v, "skip left operand"));
     VdbeCoverage(v); 
     r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, pTmpReg);
-  }else{
+  }иначе{
     /* Compute the left operand first */
     r1 = sqlite3ExprCodeTarget(pParse, pExpr->pLeft, target);
-    if( ExprHasProperty(pExpr->pRight, EP_Subquery) ){
+    если( ExprHasProperty(pExpr->pRight, EP_Subquery) ){
       /* Skip over the computation of the right operand if the right
       ** operand is a subquery and the left operand completely determines
       ** the result */
@@ -5058,20 +5058,20 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
       addrSkip = sqlite3VdbeAddOp1(v, skipOp, r1);
       VdbeComment((v, "skip right operand"));
       VdbeCoverage(v);
-    }else{
+    }иначе{
       addrSkip = regSS = 0;
     }
     r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, pTmpReg);
   }
   sqlite3VdbeAddOp3(v, op, r2, r1, target);
   testcase( (*pTmpReg)==0 );
-  if( addrSkip ){
+  если( addrSkip ){
     sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
     sqlite3VdbeJumpHere(v, addrSkip);
     sqlite3VdbeAddOp3(v, OP_Or, regSS, regSS, target);
     VdbeComment((v, "short-circut value"));
   }
-  return target;
+  вернуть target;
 }
 
 
@@ -5087,28 +5087,28 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
 ** must check the return code and move the results to the desired
 ** register.
 */
-int sqlite3ExprCodeTarget(Parse *pParse, Expr *pExpr, int target){
+целое sqlite3ExprCodeTarget(Parse *pParse, Expr *pExpr, целое target){
   Vdbe *v = pParse->pVdbe;  /* The VM under construction */
-  int op;                   /* The opcode being coded */
-  int inReg = target;       /* Results stored in register inReg */
-  int regFree1 = 0;         /* If non-zero free this temporary register */
-  int regFree2 = 0;         /* If non-zero free this temporary register */
-  int r1, r2;               /* Various register numbers */
+  целое op;                   /* The opcode being coded */
+  целое inReg = target;       /* Results stored in register inReg */
+  целое regFree1 = 0;         /* If non-zero free this temporary register */
+  целое regFree2 = 0;         /* If non-zero free this temporary register */
+  целое r1, r2;               /* Various register numbers */
   Expr tempX;               /* Temporary expression node */
-  int p5 = 0;
+  целое p5 = 0;
 
   assert( target>0 && target<=pParse->nMem );
   assert( v!=0 );
 
 expr_code_doover:
-  if( pExpr==0 ){
+  если( pExpr==0 ){
     op = TK_NULL;
-  }else if( pParse->pIdxEpr!=0
+  }иначе если( pParse->pIdxEpr!=0
    && !ExprHasProperty(pExpr, EP_Leaf)
    && (r1 = sqlite3IndexedExprLookup(pParse, pExpr, target))>=0
   ){
-    return r1;
-  }else{
+    вернуть r1;
+  }иначе{
     assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
     op = pExpr->op;
   }
@@ -5119,7 +5119,7 @@ expr_code_doover:
       struct AggInfo_col *pCol;
       assert( pAggInfo!=0 );
       assert( pExpr->iAgg>=0 );
-      if( pExpr->iAgg>=pAggInfo->nColumn ){
+      если( pExpr->iAgg>=pAggInfo->nColumn ){
         /* Happens when the left table of a RIGHT JOIN is null and
         ** is using an expression index */
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
@@ -5132,59 +5132,59 @@ expr_code_doover:
         break;
       }
       pCol = &pAggInfo->aCol[pExpr->iAgg];
-      if( !pAggInfo->directMode ){
-        return AggInfoColumnReg(pAggInfo, pExpr->iAgg);
-      }else if( pAggInfo->useSortingIdx ){
+      если( !pAggInfo->directMode ){
+        вернуть AggInfoColumnReg(pAggInfo, pExpr->iAgg);
+      }иначе если( pAggInfo->useSortingIdx ){
         Table *pTab = pCol->pTab;
         sqlite3VdbeAddOp3(v, OP_Column, pAggInfo->sortingIdxPTab,
                               pCol->iSorterColumn, target);
-        if( pTab==0 ){
+        если( pTab==0 ){
           /* No comment added */
-        }else if( pCol->iColumn<0 ){
+        }иначе если( pCol->iColumn<0 ){
           VdbeComment((v,"%s.rowid",pTab->zName));
-        }else{
+        }иначе{
           VdbeComment((v,"%s.%s",
               pTab->zName, pTab->aCol[pCol->iColumn].zCnName));
-          if( pTab->aCol[pCol->iColumn].affinity==SQLITE_AFF_REAL ){
+          если( pTab->aCol[pCol->iColumn].affinity==SQLITE_AFF_REAL ){
             sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
           }
         }
-        return target;
-      }else if( pExpr->y.pTab==0 ){
+        вернуть target;
+      }иначе если( pExpr->y.pTab==0 ){
         /* This case happens when the argument to an aggregate function
         ** is rewritten by aggregateConvertIndexedExprRefToColumn() */
         sqlite3VdbeAddOp3(v, OP_Column, pExpr->iTable, pExpr->iColumn, target);
-        return target;
+        вернуть target;
       }
       /* Otherwise, fall thru into the TK_COLUMN case */
       /* no break */ deliberate_fall_through
     }
     case TK_COLUMN: {
-      int iTab = pExpr->iTable;
-      int iReg;
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
+      целое iTab = pExpr->iTable;
+      целое iReg;
+      если( ExprHasProperty(pExpr, EP_FixedCol) ){
         /* This COLUMN expression is really a constant due to WHERE clause
         ** constraints, and that constant is coded by the pExpr->pLeft
         ** expression.  However, make sure the constant has the correct
         ** datatype by applying the Affinity of the table column to the
         ** constant.
         */
-        int aff;
+        целое aff;
         iReg = sqlite3ExprCodeTarget(pParse, pExpr->pLeft,target);
         assert( ExprUseYTab(pExpr) );
         assert( pExpr->y.pTab!=0 );
         aff = sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
-        if( aff>SQLITE_AFF_BLOB ){
+        если( aff>SQLITE_AFF_BLOB ){
           static const char zAff[] = "B\000C\000D\000E\000F";
           assert( SQLITE_AFF_BLOB=='A' );
           assert( SQLITE_AFF_TEXT=='B' );
           sqlite3VdbeAddOp4(v, OP_Affinity, iReg, 1, 0,
                             &zAff[(aff-'B')*2], P4_STATIC);
         }
-        return iReg;
+        вернуть iReg;
       }
-      if( iTab<0 ){
-        if( pParse->iSelfTab<0 ){
+      если( iTab<0 ){
+        если( pParse->iSelfTab<0 ){
           /* Other columns in the same row for CHECK constraints or
           ** generated columns or for inserting into partial index.
           ** The row is unpacked into registers beginning at
@@ -5193,84 +5193,84 @@ expr_code_doover:
           */
           Column *pCol;
           Table *pTab;
-          int iSrc;
-          int iCol = pExpr->iColumn;
+          целое iSrc;
+          целое iCol = pExpr->iColumn;
           assert( ExprUseYTab(pExpr) );
           pTab = pExpr->y.pTab;
           assert( pTab!=0 );
           assert( iCol>=XN_ROWID );
           assert( iCol<pTab->nCol );
-          if( iCol<0 ){
-            return -1-pParse->iSelfTab;
+          если( iCol<0 ){
+            вернуть -1-pParse->iSelfTab;
           }
           pCol = pTab->aCol + iCol;
           testcase( iCol!=sqlite3TableColumnToStorage(pTab,iCol) );
           iSrc = sqlite3TableColumnToStorage(pTab, iCol) - pParse->iSelfTab;
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-          if( pCol->colFlags & COLFLAG_GENERATED ){
-            if( pCol->colFlags & COLFLAG_BUSY ){
+          если( pCol->colFlags & COLFLAG_GENERATED ){
+            если( pCol->colFlags & COLFLAG_BUSY ){
               sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"",
                               pCol->zCnName);
-              return 0;
+              вернуть 0;
             }
             pCol->colFlags |= COLFLAG_BUSY;
-            if( pCol->colFlags & COLFLAG_NOTAVAIL ){
+            если( pCol->colFlags & COLFLAG_NOTAVAIL ){
               sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, iSrc);
             }
             pCol->colFlags &= ~(COLFLAG_BUSY|COLFLAG_NOTAVAIL);
-            return iSrc;
-          }else
+            вернуть iSrc;
+          }иначе
 #endif /* SQLITE_OMIT_GENERATED_COLUMNS */
-          if( pCol->affinity==SQLITE_AFF_REAL ){
+          если( pCol->affinity==SQLITE_AFF_REAL ){
             sqlite3VdbeAddOp2(v, OP_SCopy, iSrc, target);
             sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
-            return target;
-          }else{
-            return iSrc;
+            вернуть target;
+          }иначе{
+            вернуть iSrc;
           }
-        }else{
+        }иначе{
           /* Coding an expression that is part of an index where column names
           ** in the index refer to the table to which the index belongs */
           iTab = pParse->iSelfTab - 1;
         }
       }
-      else if( pParse->pIdxPartExpr 
+      иначе если( pParse->pIdxPartExpr 
        && 0!=(r1 = exprPartidxExprLookup(pParse, pExpr, target))
       ){
-        return r1;
+        вернуть r1;
       }
       assert( ExprUseYTab(pExpr) );
       assert( pExpr->y.pTab!=0 );
       iReg = sqlite3ExprCodeGetColumn(pParse, pExpr->y.pTab,
                                pExpr->iColumn, iTab, target,
                                pExpr->op2);
-      return iReg;
+      вернуть iReg;
     }
     case TK_INTEGER: {
       codeInteger(pParse, pExpr, 0, target);
-      return target;
+      вернуть target;
     }
     case TK_TRUEFALSE: {
       sqlite3VdbeAddOp2(v, OP_Integer, sqlite3ExprTruthValue(pExpr), target);
-      return target;
+      вернуть target;
     }
 #ifndef SQLITE_OMIT_FLOATING_POINT
     case TK_FLOAT: {
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       codeReal(v, pExpr->u.zToken, 0, target);
-      return target;
+      вернуть target;
     }
 #endif
     case TK_STRING: {
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       sqlite3VdbeLoadString(v, target, pExpr->u.zToken);
-      return target;
+      вернуть target;
     }
     case TK_NULLS: {
       /* Set a range of registers to NULL.  pExpr->y.nReg registers starting
       ** with target */
       sqlite3VdbeAddOp3(v, OP_Null, 0, target, target + pExpr->y.nReg - 1);
-      return target;
+      вернуть target;
     }
     default: {
       /* Make NULL the default case so that if a bug causes an illegal
@@ -5279,11 +5279,11 @@ expr_code_doover:
       ** to the attention of the developers. */
       assert( op==TK_NULL || op==TK_ERROR || pParse->db->mallocFailed );
       sqlite3VdbeAddOp2(v, OP_Null, 0, target);
-      return target;
+      вернуть target;
     }
 #ifndef SQLITE_OMIT_BLOB_LITERAL
     case TK_BLOB: {
-      int n;
+      целое n;
       const char *z;
       char *zBlob;
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
@@ -5294,7 +5294,7 @@ expr_code_doover:
       assert( z[n]=='\'' );
       zBlob = sqlite3HexToBlob(sqlite3VdbeDb(v), z, n);
       sqlite3VdbeAddOp4(v, OP_Blob, n/2, target, 0, zBlob, P4_DYNAMIC);
-      return target;
+      вернуть target;
     }
 #endif
     case TK_VARIABLE: {
@@ -5302,10 +5302,10 @@ expr_code_doover:
       assert( pExpr->u.zToken!=0 );
       assert( pExpr->u.zToken[0]!=0 );
       sqlite3VdbeAddOp2(v, OP_Variable, pExpr->iColumn, target);
-      return target;
+      вернуть target;
     }
     case TK_REGISTER: {
-      return pExpr->iTable;
+      вернуть pExpr->iTable;
     }
 #ifndef SQLITE_OMIT_CAST
     case TK_CAST: {
@@ -5315,7 +5315,7 @@ expr_code_doover:
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       sqlite3VdbeAddOp2(v, OP_Cast, target,
                         sqlite3AffinityType(pExpr->u.zToken, 0));
-      return inReg;
+      вернуть inReg;
     }
 #endif /* SQLITE_OMIT_CAST */
     case TK_IS:
@@ -5330,14 +5330,14 @@ expr_code_doover:
     case TK_NE:
     case TK_EQ: {
       Expr *pLeft = pExpr->pLeft;
-      int addrIsNull = 0;
-      if( sqlite3ExprIsVector(pLeft) ){
+      целое addrIsNull = 0;
+      если( sqlite3ExprIsVector(pLeft) ){
         codeVectorCompare(pParse, pExpr, target, op, p5);
-      }else{
-        if( ExprHasProperty(pExpr, EP_Subquery) && p5!=SQLITE_NULLEQ ){
+      }иначе{
+        если( ExprHasProperty(pExpr, EP_Subquery) && p5!=SQLITE_NULLEQ ){
           addrIsNull = exprComputeOperands(pParse, pExpr,
                                      &r1, &r2, &regFree1, &regFree2);
-        }else{
+        }иначе{
           r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
           r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         }
@@ -5351,11 +5351,11 @@ expr_code_doover:
         assert(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
         assert(TK_EQ==OP_Eq); testcase(op==OP_Eq); VdbeCoverageIf(v,op==OP_Eq);
         assert(TK_NE==OP_Ne); testcase(op==OP_Ne); VdbeCoverageIf(v,op==OP_Ne);
-        if( p5==SQLITE_NULLEQ ){
+        если( p5==SQLITE_NULLEQ ){
           sqlite3VdbeAddOp2(v, OP_Integer, 0, inReg);
-        }else{
+        }иначе{
           sqlite3VdbeAddOp3(v, OP_ZeroOrNull, r1, inReg, r2);
-          if( addrIsNull ){
+          если( addrIsNull ){
             sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
             sqlite3VdbeJumpHere(v, addrIsNull);
             sqlite3VdbeAddOp2(v, OP_Null, 0, inReg);
@@ -5381,7 +5381,7 @@ expr_code_doover:
     case TK_LSHIFT:
     case TK_RSHIFT:
     case TK_CONCAT: {
-      int addrIsNull;
+      целое addrIsNull;
       assert( TK_PLUS==OP_Add );           testcase( op==TK_PLUS );
       assert( TK_MINUS==OP_Subtract );     testcase( op==TK_MINUS );
       assert( TK_REM==OP_Remainder );      testcase( op==TK_REM );
@@ -5391,10 +5391,10 @@ expr_code_doover:
       assert( TK_LSHIFT==OP_ShiftLeft );   testcase( op==TK_LSHIFT );
       assert( TK_RSHIFT==OP_ShiftRight );  testcase( op==TK_RSHIFT );
       assert( TK_CONCAT==OP_Concat );      testcase( op==TK_CONCAT );
-      if( ExprHasProperty(pExpr, EP_Subquery) ){
+      если( ExprHasProperty(pExpr, EP_Subquery) ){
         addrIsNull = exprComputeOperands(pParse, pExpr,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
+      }иначе{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         addrIsNull = 0;
@@ -5402,7 +5402,7 @@ expr_code_doover:
       sqlite3VdbeAddOp3(v, op, r2, r1, target);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
+      если( addrIsNull ){
         sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
         sqlite3VdbeJumpHere(v, addrIsNull);
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
@@ -5413,16 +5413,16 @@ expr_code_doover:
     case TK_UMINUS: {
       Expr *pLeft = pExpr->pLeft;
       assert( pLeft );
-      if( pLeft->op==TK_INTEGER ){
+      если( pLeft->op==TK_INTEGER ){
         codeInteger(pParse, pLeft, 1, target);
-        return target;
+        вернуть target;
 #ifndef SQLITE_OMIT_FLOATING_POINT
-      }else if( pLeft->op==TK_FLOAT ){
+      }иначе если( pLeft->op==TK_FLOAT ){
         assert( !ExprHasProperty(pExpr, EP_IntValue) );
         codeReal(v, pLeft->u.zToken, 1, target);
-        return target;
+        вернуть target;
 #endif
-      }else{
+      }иначе{
         tempX.op = TK_INTEGER;
         tempX.flags = EP_IntValue|EP_TokenOnly;
         tempX.u.iValue = 0;
@@ -5444,8 +5444,8 @@ expr_code_doover:
       break;
     }
     case TK_TRUTH: {
-      int isTrue;    /* IS TRUE or IS NOT TRUE */
-      int bNormal;   /* IS TRUE or IS FALSE */
+      целое isTrue;    /* IS TRUE or IS NOT TRUE */
+      целое bNormal;   /* IS TRUE or IS FALSE */
       r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
       testcase( regFree1==0 );
       isTrue = sqlite3ExprTruthValue(pExpr->pRight);
@@ -5457,7 +5457,7 @@ expr_code_doover:
     }
     case TK_ISNULL:
     case TK_NOTNULL: {
-      int addr;
+      целое addr;
       assert( TK_ISNULL==OP_IsNull );   testcase( op==TK_ISNULL );
       assert( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
       sqlite3VdbeAddOp2(v, OP_Integer, 1, target);
@@ -5472,40 +5472,40 @@ expr_code_doover:
     }
     case TK_AGG_FUNCTION: {
       AggInfo *pInfo = pExpr->pAggInfo;
-      if( pInfo==0
+      если( pInfo==0
        || NEVER(pExpr->iAgg<0)
        || NEVER(pExpr->iAgg>=pInfo->nFunc)
       ){
         assert( !ExprHasProperty(pExpr, EP_IntValue) );
         sqlite3ErrorMsg(pParse, "misuse of aggregate: %#T()", pExpr);
-      }else{
-        return AggInfoFuncReg(pInfo, pExpr->iAgg);
+      }иначе{
+        вернуть AggInfoFuncReg(pInfo, pExpr->iAgg);
       }
       break;
     }
     case TK_FUNCTION: {
       ExprList *pFarg;       /* List of function arguments */
-      int nFarg;             /* Number of function arguments */
+      целое nFarg;             /* Number of function arguments */
       FuncDef *pDef;         /* The function definition object */
       const char *zId;       /* The function name */
       u32 constMask = 0;     /* Mask of function arguments that are constant */
-      int i;                 /* Loop counter */
+      целое i;                 /* Loop counter */
       sqlite3 *db = pParse->db;  /* The database connection */
       u8 enc = ENC(db);      /* The text encoding used by this database */
       CollSeq *pColl = 0;    /* A collating sequence */
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(pExpr, EP_WinFunc) ){
-        return pExpr->y.pWin->regResult;
+      если( ExprHasProperty(pExpr, EP_WinFunc) ){
+        вернуть pExpr->y.pWin->regResult;
       }
 #endif
 
-      if( ConstFactorOk(pParse)
+      если( ConstFactorOk(pParse)
        && sqlite3ExprIsConstantNotJoin(pParse,pExpr)
       ){
         /* SQL functions can be expensive. So try to avoid running them
         ** multiple times if we know they always give the same result */
-        return sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
+        вернуть sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
       }
       assert( !ExprHasProperty(pExpr, EP_TokenOnly) );
       assert( ExprUseXList(pExpr) );
@@ -5515,11 +5515,11 @@ expr_code_doover:
       zId = pExpr->u.zToken;
       pDef = sqlite3FindFunction(db, zId, nFarg, enc, 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-      if( pDef==0 && pParse->explain ){
+      если( pDef==0 && pParse->explain ){
         pDef = sqlite3FindFunction(db, "unknown", nFarg, enc, 0);
       }
 #endif
-      if( pDef==0
+      если( pDef==0
        || pDef->xFinalize!=0
        || ((pDef->funcFlags & SQLITE_FUNC_INTERNAL)!=0 &&
            !pParse->nested &&
@@ -5528,29 +5528,29 @@ expr_code_doover:
         sqlite3ErrorMsg(pParse, "unknown function: %#T()", pExpr);
         break;
       }
-      if( (pDef->funcFlags & SQLITE_FUNC_INLINE)!=0 && ALWAYS(pFarg!=0) ){
+      если( (pDef->funcFlags & SQLITE_FUNC_INLINE)!=0 && ALWAYS(pFarg!=0) ){
         assert( (pDef->funcFlags & SQLITE_FUNC_UNSAFE)==0 );
         assert( (pDef->funcFlags & SQLITE_FUNC_DIRECT)==0 );
-        return exprCodeInlineFunction(pParse, pFarg,
+        вернуть exprCodeInlineFunction(pParse, pFarg,
              SQLITE_PTR_TO_INT(pDef->pUserData), target);
-      }else if( pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE) ){
+      }иначе если( pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE) ){
         sqlite3ExprFunctionUsable(pParse, pExpr, pDef);
       }
 
-      for(i=0; i<nFarg; i++){
-        if( i<32 && sqlite3ExprIsConstant(pParse, pFarg->a[i].pExpr) ){
+      для(i=0; i<nFarg; i++){
+        если( i<32 && sqlite3ExprIsConstant(pParse, pFarg->a[i].pExpr) ){
           testcase( i==31 );
           constMask |= MASKBIT32(i);
         }
-        if( (pDef->funcFlags & SQLITE_FUNC_NEEDCOLL)!=0 && !pColl ){
+        если( (pDef->funcFlags & SQLITE_FUNC_NEEDCOLL)!=0 && !pColl ){
           pColl = sqlite3ExprCollSeq(pParse, pFarg->a[i].pExpr);
         }
       }
-      if( pFarg ){
-        if( constMask ){
+      если( pFarg ){
+        если( constMask ){
           r1 = pParse->nMem+1;
           pParse->nMem += nFarg;
-        }else{
+        }иначе{
           r1 = sqlite3GetTempRange(pParse, nFarg);
         }
 
@@ -5559,12 +5559,12 @@ expr_code_doover:
         ** or OPFLAG_TYPEOFARG or OPFLAG_BYTELENARG respectively, to avoid
         ** unnecessary data loading.
         */
-        if( (pDef->funcFlags & (SQLITE_FUNC_LENGTH|SQLITE_FUNC_TYPEOF))!=0 ){
+        если( (pDef->funcFlags & (SQLITE_FUNC_LENGTH|SQLITE_FUNC_TYPEOF))!=0 ){
           u8 exprOp;
           assert( nFarg==1 );
           assert( pFarg->a[0].pExpr!=0 );
           exprOp = pFarg->a[0].pExpr->op;
-          if( exprOp==TK_COLUMN || exprOp==TK_AGG_COLUMN ){
+          если( exprOp==TK_COLUMN || exprOp==TK_AGG_COLUMN ){
             assert( SQLITE_FUNC_LENGTH==OPFLAG_LENGTHARG );
             assert( SQLITE_FUNC_TYPEOF==OPFLAG_TYPEOFARG );
             assert( SQLITE_FUNC_BYTELEN==OPFLAG_BYTELENARG );
@@ -5577,7 +5577,7 @@ expr_code_doover:
         }
 
         sqlite3ExprCodeExprList(pParse, pFarg, r1, 0, SQLITE_ECEL_FACTOR);
-      }else{
+      }иначе{
         r1 = 0;
       }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
@@ -5593,70 +5593,70 @@ expr_code_doover:
       ** "glob(B,A).  We want to use the A in "A glob B" to test
       ** for function overloading.  But we use the B term in "glob(B,A)".
       */
-      if( nFarg>=2 && ExprHasProperty(pExpr, EP_InfixFunc) ){
+      если( nFarg>=2 && ExprHasProperty(pExpr, EP_InfixFunc) ){
         pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[1].pExpr);
-      }else if( nFarg>0 ){
+      }иначе если( nFarg>0 ){
         pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[0].pExpr);
       }
 #endif
-      if( pDef->funcFlags & SQLITE_FUNC_NEEDCOLL ){
-        if( !pColl ) pColl = db->pDfltColl;
+      если( pDef->funcFlags & SQLITE_FUNC_NEEDCOLL ){
+        если( !pColl ) pColl = db->pDfltColl;
         sqlite3VdbeAddOp4(v, OP_CollSeq, 0, 0, 0, (char *)pColl, P4_COLLSEQ);
       }
       sqlite3VdbeAddFunctionCall(pParse, constMask, r1, target, nFarg,
                                  pDef, pExpr->op2);
-      if( nFarg ){
-        if( constMask==0 ){
+      если( nFarg ){
+        если( constMask==0 ){
           sqlite3ReleaseTempRange(pParse, r1, nFarg);
-        }else{
+        }иначе{
           sqlite3VdbeReleaseRegisters(pParse, r1, nFarg, constMask, 1);
         }
       }
-      return target;
+      вернуть target;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
     case TK_EXISTS:
     case TK_SELECT: {
-      int nCol;
+      целое nCol;
       testcase( op==TK_EXISTS );
       testcase( op==TK_SELECT );
-      if( pParse->db->mallocFailed ){
-        return 0;
-      }else if( op==TK_SELECT
+      если( pParse->db->mallocFailed ){
+        вернуть 0;
+      }иначе если( op==TK_SELECT
              && ALWAYS( ExprUseXSelect(pExpr) )
              && (nCol = pExpr->x.pSelect->pEList->nExpr)!=1
       ){
         sqlite3SubselectError(pParse, nCol, 1);
-      }else{
-        return sqlite3CodeSubselect(pParse, pExpr);
+      }иначе{
+        вернуть sqlite3CodeSubselect(pParse, pExpr);
       }
       break;
     }
     case TK_SELECT_COLUMN: {
-      int n;
+      целое n;
       Expr *pLeft = pExpr->pLeft;
-      if( pLeft->iTable==0 || pParse->withinRJSubrtn > pLeft->op2 ){
+      если( pLeft->iTable==0 || pParse->withinRJSubrtn > pLeft->op2 ){
         pLeft->iTable = sqlite3CodeSubselect(pParse, pLeft);
         pLeft->op2 = pParse->withinRJSubrtn;
       }
       assert( pLeft->op==TK_SELECT || pLeft->op==TK_ERROR );
       n = sqlite3ExprVectorSize(pLeft);
-      if( pExpr->iTable!=n ){
+      если( pExpr->iTable!=n ){
         sqlite3ErrorMsg(pParse, "%d columns assigned %d values",
                                 pExpr->iTable, n);
       }
-      return pLeft->iTable + pExpr->iColumn;
+      вернуть pLeft->iTable + pExpr->iColumn;
     }
     case TK_IN: {
-      int destIfFalse = sqlite3VdbeMakeLabel(pParse);
-      int destIfNull = sqlite3VdbeMakeLabel(pParse);
+      целое destIfFalse = sqlite3VdbeMakeLabel(pParse);
+      целое destIfNull = sqlite3VdbeMakeLabel(pParse);
       sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       sqlite3ExprCodeIN(pParse, pExpr, destIfFalse, destIfNull);
       sqlite3VdbeAddOp2(v, OP_Integer, 1, target);
       sqlite3VdbeResolveLabel(v, destIfFalse);
       sqlite3VdbeAddOp2(v, OP_AddImm, target, 0);
       sqlite3VdbeResolveLabel(v, destIfNull);
-      return target;
+      вернуть target;
     }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -5674,10 +5674,10 @@ expr_code_doover:
     */
     case TK_BETWEEN: {
       exprCodeBetween(pParse, pExpr, target, 0, 0);
-      return target;
+      вернуть target;
     }
     case TK_COLLATE: {
-      if( !ExprHasProperty(pExpr, EP_Collate) ){
+      если( !ExprHasProperty(pExpr, EP_Collate) ){
         /* A TK_COLLATE Expr node without the EP_Collate tag is a so-called
         ** "SOFT-COLLATE" that is added to constraints that are pushed down
         ** from outer queries into sub-queries by the WHERE-clause push-down
@@ -5687,8 +5687,8 @@ expr_code_doover:
         assert( pExpr->pLeft );
         sqlite3ExprCode(pParse, pExpr->pLeft, target);
         sqlite3VdbeAddOp1(v, OP_ClrSubtype, target);
-        return target;
-      }else{
+        вернуть target;
+      }иначе{
         pExpr = pExpr->pLeft;
         goto expr_code_doover; /* 2018-04-28: Prevent deep recursion. */
       }
@@ -5726,8 +5726,8 @@ expr_code_doover:
       **   p1==2   ->    old.b         p1==5   ->    new.b      
       */
       Table *pTab;
-      int iCol;
-      int p1;
+      целое iCol;
+      целое p1;
 
       assert( ExprUseYTab(pExpr) );
       pTab = pExpr->y.pTab;
@@ -5752,7 +5752,7 @@ expr_code_doover:
       **
       ** EVIDENCE-OF: R-60985-57662 SQLite will convert the value back to
       ** floating point when extracting it from the record.  */
-      if( iCol>=0 && pTab->aCol[iCol].affinity==SQLITE_AFF_REAL ){
+      если( iCol>=0 && pTab->aCol[iCol].affinity==SQLITE_AFF_REAL ){
         sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
       }
 #endif
@@ -5771,16 +5771,16 @@ expr_code_doover:
     ** on a LEFT JOIN NULL row.
     */
     case TK_IF_NULL_ROW: {
-      int addrINR;
+      целое addrINR;
       u8 okConstFactor = pParse->okConstFactor;
       AggInfo *pAggInfo = pExpr->pAggInfo;
-      if( pAggInfo ){
+      если( pAggInfo ){
         assert( pExpr->iAgg>=0 && pExpr->iAgg<pAggInfo->nColumn );
-        if( !pAggInfo->directMode ){
+        если( !pAggInfo->directMode ){
           inReg = AggInfoColumnReg(pAggInfo, pExpr->iAgg);
           break;
         }
-        if( pExpr->pAggInfo->useSortingIdx ){
+        если( pExpr->pAggInfo->useSortingIdx ){
           sqlite3VdbeAddOp3(v, OP_Column, pAggInfo->sortingIdxPTab,
                             pAggInfo->aCol[pExpr->iAgg].iSorterColumn,
                             target);
@@ -5826,10 +5826,10 @@ expr_code_doover:
     ** no ELSE term, NULL.
     */
     case TK_CASE: {
-      int endLabel;                     /* GOTO label for end of CASE stmt */
-      int nextCase;                     /* GOTO label for next WHEN clause */
-      int nExpr;                        /* 2x number of WHEN terms */
-      int i;                            /* Loop counter */
+      целое endLabel;                     /* GOTO label for end of CASE stmt */
+      целое nextCase;                     /* GOTO label for next WHEN clause */
+      целое nExpr;                        /* 2x number of WHEN terms */
+      целое i;                            /* Loop counter */
       ExprList *pEList;                 /* List of WHEN terms */
       struct ExprList_item *aListelem;  /* Array of WHEN terms */
       Expr opCompare;                   /* The X==Ei expression */
@@ -5844,9 +5844,9 @@ expr_code_doover:
       aListelem = pEList->a;
       nExpr = pEList->nExpr;
       endLabel = sqlite3VdbeMakeLabel(pParse);
-      if( (pX = pExpr->pLeft)!=0 ){
+      если( (pX = pExpr->pLeft)!=0 ){
         pDel = sqlite3ExprDup(db, pX, 0);
-        if( db->mallocFailed ){
+        если( db->mallocFailed ){
           sqlite3ExprDelete(db, pDel);
           break;
         }
@@ -5863,11 +5863,11 @@ expr_code_doover:
         ** purposes and possibly overwritten.  */
         regFree1 = 0;
       }
-      for(i=0; i<nExpr-1; i=i+2){
-        if( pX ){
+      для(i=0; i<nExpr-1; i=i+2){
+        если( pX ){
           assert( pTest!=0 );
           opCompare.pRight = aListelem[i].pExpr;
-        }else{
+        }иначе{
           pTest = aListelem[i].pExpr;
         }
         nextCase = sqlite3VdbeMakeLabel(pParse);
@@ -5878,9 +5878,9 @@ expr_code_doover:
         sqlite3VdbeGoto(v, endLabel);
         sqlite3VdbeResolveLabel(v, nextCase);
       }
-      if( (nExpr&1)!=0 ){
+      если( (nExpr&1)!=0 ){
         sqlite3ExprCode(pParse, pEList->a[nExpr-1].pExpr, target);
-      }else{
+      }иначе{
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       }
       sqlite3ExprDelete(db, pDel);
@@ -5895,19 +5895,19 @@ expr_code_doover:
            || pExpr->affExpr==OE_Fail
            || pExpr->affExpr==OE_Ignore
       );
-      if( !pParse->pTriggerTab && !pParse->nested ){
+      если( !pParse->pTriggerTab && !pParse->nested ){
         sqlite3ErrorMsg(pParse,
                        "RAISE() may only be used within a trigger-program");
-        return 0;
+        вернуть 0;
       }
-      if( pExpr->affExpr==OE_Abort ){
+      если( pExpr->affExpr==OE_Abort ){
         sqlite3MayAbort(pParse);
       }
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->affExpr==OE_Ignore ){
+      если( pExpr->affExpr==OE_Ignore ){
         sqlite3VdbeAddOp2(v, OP_Halt, SQLITE_OK, OE_Ignore);
         VdbeCoverage(v);
-      }else{
+      }иначе{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         sqlite3VdbeAddOp3(v, OP_Halt, 
              pParse->pTriggerTab ? SQLITE_CONSTRAINT_TRIGGER : SQLITE_ERROR,
@@ -5919,7 +5919,7 @@ expr_code_doover:
   }
   sqlite3ReleaseTempReg(pParse, regFree1);
   sqlite3ReleaseTempReg(pParse, regFree2);
-  return inReg;
+  вернуть inReg;
 }
 
 /*
@@ -5939,51 +5939,51 @@ expr_code_doover:
 ** are factored out into the initialization section at the end of the
 ** prepared statement.
 */
-int sqlite3ExprCodeRunJustOnce(
+целое sqlite3ExprCodeRunJustOnce(
   Parse *pParse,    /* Parsing context */
   Expr *pExpr,      /* The expression to code when the VDBE initializes */
-  int regDest       /* Store the value in this register */
+  целое regDest       /* Store the value in this register */
 ){
   ExprList *p;
   assert( ConstFactorOk(pParse) );
   assert( regDest!=0 );
   p = pParse->pConstExpr;
-  if( regDest<0 && p ){
+  если( regDest<0 && p ){
     struct ExprList_item *pItem;
-    int i;
-    for(pItem=p->a, i=p->nExpr; i>0; pItem++, i--){
-      if( pItem->fg.reusable
+    целое i;
+    для(pItem=p->a, i=p->nExpr; i>0; pItem++, i--){
+      если( pItem->fg.reusable
        && sqlite3ExprCompare(0,pItem->pExpr,pExpr,-1)==0
       ){
-        return pItem->u.iConstExprReg;
+        вернуть pItem->u.iConstExprReg;
       }
     }
   }
   pExpr = sqlite3ExprDup(pParse->db, pExpr, 0);
-  if( pExpr!=0 && ExprHasProperty(pExpr, EP_HasFunc) ){
+  если( pExpr!=0 && ExprHasProperty(pExpr, EP_HasFunc) ){
     Vdbe *v = pParse->pVdbe;
-    int addr;
+    целое addr;
     assert( v );
     addr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
     pParse->okConstFactor = 0;
-    if( !pParse->db->mallocFailed ){
-      if( regDest<0 ) regDest = ++pParse->nMem;
+    если( !pParse->db->mallocFailed ){
+      если( regDest<0 ) regDest = ++pParse->nMem;
       sqlite3ExprCode(pParse, pExpr, regDest);
     }
     pParse->okConstFactor = 1;
     sqlite3ExprDelete(pParse->db, pExpr);
     sqlite3VdbeJumpHere(v, addr);
-  }else{
+  }иначе{
     p = sqlite3ExprListAppend(pParse, p, pExpr);
-    if( p ){
+    если( p ){
        struct ExprList_item *pItem = &p->a[p->nExpr-1];
        pItem->fg.reusable = regDest<0;
-       if( regDest<0 ) regDest = ++pParse->nMem;
+       если( regDest<0 ) regDest = ++pParse->nMem;
        pItem->u.iConstExprReg = regDest;
     }
     pParse->pConstExpr = p;
   }
-  return regDest;
+  вернуть regDest;
 }
 
 /*
@@ -5992,8 +5992,8 @@ int sqlite3ExprCodeRunJustOnce(
 */
 SQLITE_NOINLINE void sqlite3ExprNullRegisterRange(
   Parse *pParse,   /* Parsing context */
-  int iReg,        /* First register to set to NULL */
-  int nReg         /* Number of sequential registers to NULL out */
+  целое iReg,        /* First register to set to NULL */
+  целое nReg         /* Number of sequential registers to NULL out */
 ){
   u8 okConstFactor = pParse->okConstFactor;
   Expr t;
@@ -6018,27 +6018,27 @@ SQLITE_NOINLINE void sqlite3ExprNullRegisterRange(
 ** code to fill the register in the initialization section of the
 ** VDBE program, in order to factor it out of the evaluation loop.
 */
-int sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, int *pReg){
-  int r2;
+целое sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, целое *pReg){
+  целое r2;
   pExpr = sqlite3ExprSkipCollateAndLikely(pExpr);
-  if( ConstFactorOk(pParse)
+  если( ConstFactorOk(pParse)
    && ALWAYS(pExpr!=0)
    && pExpr->op!=TK_REGISTER
    && sqlite3ExprIsConstantNotJoin(pParse, pExpr)
   ){
     *pReg  = 0;
     r2 = sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
-  }else{
-    int r1 = sqlite3GetTempReg(pParse);
+  }иначе{
+    целое r1 = sqlite3GetTempReg(pParse);
     r2 = sqlite3ExprCodeTarget(pParse, pExpr, r1);
-    if( r2==r1 ){
+    если( r2==r1 ){
       *pReg = r1;
-    }else{
+    }иначе{
       sqlite3ReleaseTempReg(pParse, r1);
       *pReg = 0;
     }
   }
-  return r2;
+  вернуть r2;
 }
 
 /*
@@ -6046,23 +6046,23 @@ int sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, int *pReg){
 ** results in register target.  The results are guaranteed to appear
 ** in register target.
 */
-void sqlite3ExprCode(Parse *pParse, Expr *pExpr, int target){
-  int inReg;
+void sqlite3ExprCode(Parse *pParse, Expr *pExpr, целое target){
+  целое inReg;
 
   assert( pExpr==0 || !ExprHasVVAProperty(pExpr,EP_Immutable) );
   assert( target>0 && target<=pParse->nMem );
   assert( pParse->pVdbe!=0 || pParse->db->mallocFailed );
-  if( pParse->pVdbe==0 ) return;
+  если( pParse->pVdbe==0 ) вернуть;
   inReg = sqlite3ExprCodeTarget(pParse, pExpr, target);
-  if( inReg!=target ){
+  если( inReg!=target ){
     u8 op;
     Expr *pX = sqlite3ExprSkipCollateAndLikely(pExpr);
     testcase( pX!=pExpr );
-    if( ALWAYS(pX)
+    если( ALWAYS(pX)
      && (ExprHasProperty(pX,EP_Subquery) || pX->op==TK_REGISTER)
     ){
       op = OP_Copy;
-    }else{
+    }иначе{
       op = OP_SCopy;
     }
     sqlite3VdbeAddOp2(pParse->pVdbe, op, inReg, target);
@@ -6074,10 +6074,10 @@ void sqlite3ExprCode(Parse *pParse, Expr *pExpr, int target){
 ** sqlite3ExprCode().  This routine works just like sqlite3ExprCode()
 ** except that the input expression is guaranteed to be unchanged.
 */
-void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, int target){
+void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, целое target){
   sqlite3 *db = pParse->db;
   pExpr = sqlite3ExprDup(db, pExpr, 0);
-  if( !db->mallocFailed ) sqlite3ExprCode(pParse, pExpr, target);
+  если( !db->mallocFailed ) sqlite3ExprCode(pParse, pExpr, target);
   sqlite3ExprDelete(db, pExpr);
 }
 
@@ -6087,10 +6087,10 @@ void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, int target){
 ** in register target.  If the expression is constant, then this routine
 ** might choose to code the expression at initialization time.
 */
-void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, int target){
-  if( pParse->okConstFactor && sqlite3ExprIsConstantNotJoin(pParse,pExpr) ){
+void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, целое target){
+  если( pParse->okConstFactor && sqlite3ExprIsConstantNotJoin(pParse,pExpr) ){
     sqlite3ExprCodeRunJustOnce(pParse, pExpr, target);
-  }else{
+  }иначе{
     sqlite3ExprCodeCopy(pParse, pExpr, target);
   }
 }
@@ -6115,59 +6115,59 @@ void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, int target){
 ** If SQLITE_ECEL_OMITREF is also set, then the values with u.x.iOrderByCol>0
 ** are simply omitted rather than being copied from srcReg.
 */
-int sqlite3ExprCodeExprList(
+целое sqlite3ExprCodeExprList(
   Parse *pParse,     /* Parsing context */
   ExprList *pList,   /* The expression list to be coded */
-  int target,        /* Where to write results */
-  int srcReg,        /* Source registers if SQLITE_ECEL_REF */
+  целое target,        /* Where to write results */
+  целое srcReg,        /* Source registers if SQLITE_ECEL_REF */
   u8 flags           /* SQLITE_ECEL_* flags */
 ){
   struct ExprList_item *pItem;
-  int i, j, n;
+  целое i, j, n;
   u8 copyOp = (flags & SQLITE_ECEL_DUP) ? OP_Copy : OP_SCopy;
   Vdbe *v = pParse->pVdbe;
   assert( pList!=0 );
   assert( target>0 );
   assert( pParse->pVdbe!=0 );  /* Never gets this far otherwise */
   n = pList->nExpr;
-  if( !ConstFactorOk(pParse) ) flags &= ~SQLITE_ECEL_FACTOR;
-  for(pItem=pList->a, i=0; i<n; i++, pItem++){
+  если( !ConstFactorOk(pParse) ) flags &= ~SQLITE_ECEL_FACTOR;
+  для(pItem=pList->a, i=0; i<n; i++, pItem++){
     Expr *pExpr = pItem->pExpr;
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( pItem->fg.bSorterRef ){
+    если( pItem->fg.bSorterRef ){
       i--;
       n--;
-    }else
+    }иначе
 #endif
-    if( (flags & SQLITE_ECEL_REF)!=0 && (j = pItem->u.x.iOrderByCol)>0 ){
-      if( flags & SQLITE_ECEL_OMITREF ){
+    если( (flags & SQLITE_ECEL_REF)!=0 && (j = pItem->u.x.iOrderByCol)>0 ){
+      если( flags & SQLITE_ECEL_OMITREF ){
         i--;
         n--;
-      }else{
+      }иначе{
         sqlite3VdbeAddOp2(v, copyOp, j+srcReg-1, target+i);
       }
-    }else if( (flags & SQLITE_ECEL_FACTOR)!=0
+    }иначе если( (flags & SQLITE_ECEL_FACTOR)!=0
            && sqlite3ExprIsConstantNotJoin(pParse,pExpr)
     ){
       sqlite3ExprCodeRunJustOnce(pParse, pExpr, target+i);
-    }else{
-      int inReg = sqlite3ExprCodeTarget(pParse, pExpr, target+i);
-      if( inReg!=target+i ){
+    }иначе{
+      целое inReg = sqlite3ExprCodeTarget(pParse, pExpr, target+i);
+      если( inReg!=target+i ){
         VdbeOp *pOp;
-        if( copyOp==OP_Copy
+        если( copyOp==OP_Copy
          && (pOp=sqlite3VdbeGetLastOp(v))->opcode==OP_Copy
          && pOp->p1+pOp->p3+1==inReg
          && pOp->p2+pOp->p3+1==target+i
          && pOp->p5==0  /* The do-not-merge flag must be clear */
         ){
           pOp->p3++;
-        }else{
+        }иначе{
           sqlite3VdbeAddOp2(v, copyOp, inReg, target+i);
         }
       }
     }
   }
-  return n;
+  вернуть n;
 }
 
 /*
@@ -6193,14 +6193,14 @@ int sqlite3ExprCodeExprList(
 static void exprCodeBetween(
   Parse *pParse,    /* Parsing and code generating context */
   Expr *pExpr,      /* The BETWEEN expression */
-  int dest,         /* Jump destination or storage location */
-  void (*xJump)(Parse*,Expr*,int,int), /* Action to take */
-  int jumpIfNull    /* Take the jump if the BETWEEN is NULL */
+  целое dest,         /* Jump destination or storage location */
+  void (*xJump)(Parse*,Expr*,целое,целое), /* Action to take */
+  целое jumpIfNull    /* Take the jump if the BETWEEN is NULL */
 ){
   Expr exprAnd;     /* The AND operator in  x>=y AND x<=z  */
   Expr compLeft;    /* The  x>=y  term */
   Expr compRight;   /* The  x<=z  term */
-  int regFree1 = 0; /* Temporary use register */
+  целое regFree1 = 0; /* Temporary use register */
   Expr *pDel = 0;
   sqlite3 *db = pParse->db;
 
@@ -6210,7 +6210,7 @@ static void exprCodeBetween(
 
   assert( ExprUseXList(pExpr) );
   pDel = sqlite3ExprDup(db, pExpr->pLeft, 0);
-  if( db->mallocFailed==0 ){
+  если( db->mallocFailed==0 ){
     exprAnd.op = TK_AND;
     exprAnd.pLeft = &compLeft;
     exprAnd.pRight = &compRight;
@@ -6221,9 +6221,9 @@ static void exprCodeBetween(
     compRight.pLeft = pDel;
     compRight.pRight = pExpr->x.pList->a[1].pExpr;
     sqlite3ExprToRegister(pDel, exprCodeVector(pParse, pDel, &regFree1));
-    if( xJump ){
+    если( xJump ){
       xJump(pParse, &exprAnd, dest, jumpIfNull);
-    }else{
+    }иначе{
       /* Mark the expression is being from the ON or USING clause of a join
       ** so that the sqlite3ExprCodeTarget() routine will not attempt to move
       ** it into the Parse.pConstExpr list.  We should use a new bit for this,
@@ -6262,41 +6262,41 @@ static void exprCodeBetween(
 ** the make process cause these values to align.  Assert()s in the code
 ** below verify that the numbers are aligned correctly.
 */
-void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
+void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, целое dest, целое jumpIfNull){
   Vdbe *v = pParse->pVdbe;
-  int op = 0;
-  int regFree1 = 0;
-  int regFree2 = 0;
-  int r1, r2;
+  целое op = 0;
+  целое regFree1 = 0;
+  целое regFree2 = 0;
+  целое r1, r2;
 
   assert( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
-  if( NEVER(v==0) )     return;  /* Existence of VDBE checked by caller */
-  if( NEVER(pExpr==0) ) return;  /* No way this can happen */
+  если( NEVER(v==0) )     вернуть;  /* Existence of VDBE checked by caller */
+  если( NEVER(pExpr==0) ) вернуть;  /* No way this can happen */
   assert( !ExprHasVVAProperty(pExpr, EP_Immutable) );
   op = pExpr->op;
   switch( op ){
     case TK_AND:
     case TK_OR: {
       Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-      if( pAlt!=pExpr ){
+      если( pAlt!=pExpr ){
         sqlite3ExprIfTrue(pParse, pAlt, dest, jumpIfNull);
-      }else{
+      }иначе{
         Expr *pFirst, *pSecond;
-        if( exprEvalRhsFirst(pExpr) ){
+        если( exprEvalRhsFirst(pExpr) ){
           pFirst = pExpr->pRight;
           pSecond = pExpr->pLeft;
-        }else{
+        }иначе{
           pFirst = pExpr->pLeft;
           pSecond = pExpr->pRight;
         }
-        if( op==TK_AND ){
-          int d2 = sqlite3VdbeMakeLabel(pParse);
+        если( op==TK_AND ){
+          целое d2 = sqlite3VdbeMakeLabel(pParse);
           testcase( jumpIfNull==0 );
           sqlite3ExprIfFalse(pParse, pFirst, d2,
                              jumpIfNull^SQLITE_JUMPIFNULL);
           sqlite3ExprIfTrue(pParse, pSecond, dest, jumpIfNull);
           sqlite3VdbeResolveLabel(v, d2);
-        }else{
+        }иначе{
           testcase( jumpIfNull==0 );
           sqlite3ExprIfTrue(pParse, pFirst, dest, jumpIfNull);
           sqlite3ExprIfTrue(pParse, pSecond, dest, jumpIfNull);
@@ -6310,17 +6310,17 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
       break;
     }
     case TK_TRUTH: {
-      int isNot;      /* IS NOT TRUE or IS NOT FALSE */
-      int isTrue;     /* IS TRUE or IS NOT TRUE */
+      целое isNot;      /* IS NOT TRUE or IS NOT FALSE */
+      целое isTrue;     /* IS TRUE or IS NOT TRUE */
       testcase( jumpIfNull==0 );
       isNot = pExpr->op2==TK_ISNOT;
       isTrue = sqlite3ExprTruthValue(pExpr->pRight);
       testcase( isTrue && isNot );
       testcase( !isTrue && isNot );
-      if( isTrue ^ isNot ){
+      если( isTrue ^ isNot ){
         sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest,
                           isNot ? SQLITE_JUMPIFNULL : 0);
-      }else{
+      }иначе{
         sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest,
                            isNot ? SQLITE_JUMPIFNULL : 0);
       }
@@ -6339,12 +6339,12 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
     case TK_GE:
     case TK_NE:
     case TK_EQ: {
-      int addrIsNull;
-      if( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
-      if( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
+      целое addrIsNull;
+      если( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
+      если( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
         addrIsNull = exprComputeOperands(pParse, pExpr,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
+      }иначе{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         addrIsNull = 0;
@@ -6363,10 +6363,10 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull!=SQLITE_NULLEQ);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
-        if( jumpIfNull ){
+      если( addrIsNull ){
+        если( jumpIfNull ){
           sqlite3VdbeChangeP2(v, addrIsNull, dest);
-        }else{
+        }иначе{
           sqlite3VdbeJumpHere(v, addrIsNull);
         }
       }
@@ -6378,7 +6378,7 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
       assert( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
       r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
       assert( regFree1==0 || regFree1==r1 );
-      if( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
+      если( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
       sqlite3VdbeAddOp2(v, op, r1, dest);
       VdbeCoverageIf(v, op==TK_ISNULL);
       VdbeCoverageIf(v, op==TK_NOTNULL);
@@ -6391,8 +6391,8 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
     }
 #ifndef SQLITE_OMIT_SUBQUERY
     case TK_IN: {
-      int destIfFalse = sqlite3VdbeMakeLabel(pParse);
-      int destIfNull = jumpIfNull ? dest : destIfFalse;
+      целое destIfFalse = sqlite3VdbeMakeLabel(pParse);
+      целое destIfNull = jumpIfNull ? dest : destIfFalse;
       sqlite3ExprCodeIN(pParse, pExpr, destIfFalse, destIfNull);
       sqlite3VdbeGoto(v, dest);
       sqlite3VdbeResolveLabel(v, destIfFalse);
@@ -6401,11 +6401,11 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 #endif
     default: {
     default_expr:
-      if( ExprAlwaysTrue(pExpr) ){
+      если( ExprAlwaysTrue(pExpr) ){
         sqlite3VdbeGoto(v, dest);
-      }else if( ExprAlwaysFalse(pExpr) ){
+      }иначе если( ExprAlwaysFalse(pExpr) ){
         /* No-op */
-      }else{
+      }иначе{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr, &regFree1);
         sqlite3VdbeAddOp3(v, OP_If, r1, dest, jumpIfNull!=0);
         VdbeCoverage(v);
@@ -6428,16 +6428,16 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 ** jump if jumpIfNull is SQLITE_JUMPIFNULL or fall through if jumpIfNull
 ** is 0.
 */
-void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
+void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, целое dest, целое jumpIfNull){
   Vdbe *v = pParse->pVdbe;
-  int op = 0;
-  int regFree1 = 0;
-  int regFree2 = 0;
-  int r1, r2;
+  целое op = 0;
+  целое regFree1 = 0;
+  целое regFree2 = 0;
+  целое r1, r2;
 
   assert( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
-  if( NEVER(v==0) ) return; /* Existence of VDBE checked by caller */
-  if( pExpr==0 )    return;
+  если( NEVER(v==0) ) вернуть; /* Existence of VDBE checked by caller */
+  если( pExpr==0 )    вернуть;
   assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
 
   /* The value of pExpr->op and op are related as follows:
@@ -6475,23 +6475,23 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
     case TK_AND:
     case TK_OR: {
       Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-      if( pAlt!=pExpr ){
+      если( pAlt!=pExpr ){
         sqlite3ExprIfFalse(pParse, pAlt, dest, jumpIfNull);
-      }else{
+      }иначе{
         Expr *pFirst, *pSecond;
-        if( exprEvalRhsFirst(pExpr) ){
+        если( exprEvalRhsFirst(pExpr) ){
           pFirst = pExpr->pRight;
           pSecond = pExpr->pLeft;
-        }else{
+        }иначе{
           pFirst = pExpr->pLeft;
           pSecond = pExpr->pRight;
         }
-        if( pExpr->op==TK_AND ){
+        если( pExpr->op==TK_AND ){
           testcase( jumpIfNull==0 );
           sqlite3ExprIfFalse(pParse, pFirst, dest, jumpIfNull);
           sqlite3ExprIfFalse(pParse, pSecond, dest, jumpIfNull);
-        }else{
-          int d2 = sqlite3VdbeMakeLabel(pParse);
+        }иначе{
+          целое d2 = sqlite3VdbeMakeLabel(pParse);
           testcase( jumpIfNull==0 );
           sqlite3ExprIfTrue(pParse, pFirst, d2,
                             jumpIfNull^SQLITE_JUMPIFNULL);
@@ -6507,19 +6507,19 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
       break;
     }
     case TK_TRUTH: {
-      int isNot;   /* IS NOT TRUE or IS NOT FALSE */
-      int isTrue;  /* IS TRUE or IS NOT TRUE */
+      целое isNot;   /* IS NOT TRUE or IS NOT FALSE */
+      целое isTrue;  /* IS TRUE or IS NOT TRUE */
       testcase( jumpIfNull==0 );
       isNot = pExpr->op2==TK_ISNOT;
       isTrue = sqlite3ExprTruthValue(pExpr->pRight);
       testcase( isTrue && isNot );
       testcase( !isTrue && isNot );
-      if( isTrue ^ isNot ){
+      если( isTrue ^ isNot ){
         /* IS TRUE and IS NOT FALSE */
         sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest,
                            isNot ? 0 : SQLITE_JUMPIFNULL);
 
-      }else{
+      }иначе{
         /* IS FALSE and IS NOT TRUE */
         sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest,
                           isNot ? 0 : SQLITE_JUMPIFNULL);
@@ -6539,12 +6539,12 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
     case TK_GE:
     case TK_NE:
     case TK_EQ: {
-      int addrIsNull;
-      if( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
-      if( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
+      целое addrIsNull;
+      если( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
+      если( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
         addrIsNull = exprComputeOperands(pParse, pExpr,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
+      }иначе{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         addrIsNull = 0;
@@ -6563,10 +6563,10 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull==SQLITE_NULLEQ);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
-        if( jumpIfNull ){
+      если( addrIsNull ){
+        если( jumpIfNull ){
           sqlite3VdbeChangeP2(v, addrIsNull, dest);
-        }else{
+        }иначе{
           sqlite3VdbeJumpHere(v, addrIsNull);
         }
       }
@@ -6576,7 +6576,7 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
     case TK_NOTNULL: {
       r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
       assert( regFree1==0 || regFree1==r1 );
-      if( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
+      если( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
       sqlite3VdbeAddOp2(v, op, r1, dest);
       testcase( op==TK_ISNULL );   VdbeCoverageIf(v, op==TK_ISNULL);
       testcase( op==TK_NOTNULL );  VdbeCoverageIf(v, op==TK_NOTNULL);
@@ -6589,10 +6589,10 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
     }
 #ifndef SQLITE_OMIT_SUBQUERY
     case TK_IN: {
-      if( jumpIfNull ){
+      если( jumpIfNull ){
         sqlite3ExprCodeIN(pParse, pExpr, dest, dest);
-      }else{
-        int destIfNull = sqlite3VdbeMakeLabel(pParse);
+      }иначе{
+        целое destIfNull = sqlite3VdbeMakeLabel(pParse);
         sqlite3ExprCodeIN(pParse, pExpr, dest, destIfNull);
         sqlite3VdbeResolveLabel(v, destIfNull);
       }
@@ -6601,11 +6601,11 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 #endif
     default: {
     default_expr:
-      if( ExprAlwaysFalse(pExpr) ){
+      если( ExprAlwaysFalse(pExpr) ){
         sqlite3VdbeGoto(v, dest);
-      }else if( ExprAlwaysTrue(pExpr) ){
+      }иначе если( ExprAlwaysTrue(pExpr) ){
         /* no-op */
-      }else{
+      }иначе{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr, &regFree1);
         sqlite3VdbeAddOp3(v, OP_IfNot, r1, dest, jumpIfNull!=0);
         VdbeCoverage(v);
@@ -6624,10 +6624,10 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 ** code generation, and that copy is deleted after code generation. This
 ** ensures that the original pExpr is unchanged.
 */
-void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, int dest,int jumpIfNull){
+void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, целое dest,целое jumpIfNull){
   sqlite3 *db = pParse->db;
   Expr *pCopy = sqlite3ExprDup(db, pExpr, 0);
-  if( db->mallocFailed==0 ){
+  если( db->mallocFailed==0 ){
     sqlite3ExprIfFalse(pParse, pCopy, dest, jumpIfNull);
   }
   sqlite3ExprDelete(db, pCopy);
@@ -6649,26 +6649,26 @@ void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, int dest,int jumpIfNull){
 ** If the SQLITE_EnableQPSG flag is set on the database connection, then
 ** this routine always returns false.
 */
-static SQLITE_NOINLINE int exprCompareVariable(
+static SQLITE_NOINLINE целое exprCompareVariable(
   const Parse *pParse,
   const Expr *pVar,
   const Expr *pExpr
 ){
-  int res = 2;
-  int iVar;
+  целое res = 2;
+  целое iVar;
   sqlite3_value *pL, *pR = 0;
  
-  if( pExpr->op==TK_VARIABLE && pVar->iColumn==pExpr->iColumn ){
-    return 0;
+  если( pExpr->op==TK_VARIABLE && pVar->iColumn==pExpr->iColumn ){
+    вернуть 0;
   }
-  if( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) return 2;
+  если( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) вернуть 2;
   sqlite3ValueFromExpr(pParse->db, pExpr, SQLITE_UTF8, SQLITE_AFF_BLOB, &pR);
-  if( pR ){
+  если( pR ){
     iVar = pVar->iColumn;
     sqlite3VdbeReprepareOnBind(pParse->pVdbe, iVar, 0);
     pL = sqlite3VdbeGetBoundValue(pParse->pReprepare, iVar, SQLITE_AFF_BLOB);
-    if( pL ){
-      if( sqlite3_value_type(pL)==SQLITE_TEXT ){
+    если( pL ){
+      если( sqlite3_value_type(pL)==SQLITE_TEXT ){
         sqlite3_value_text(pL); /* Make sure the encoding is UTF-8 */
       }
       res = sqlite3MemCompare(pL, pR, 0) ? 2 : 0;
@@ -6676,7 +6676,7 @@ static SQLITE_NOINLINE int exprCompareVariable(
     sqlite3ValueFree(pR);
     sqlite3ValueFree(pL);
   }
-  return res;
+  вернуть res;
 }
 
 /*
@@ -6706,90 +6706,90 @@ static SQLITE_NOINLINE int exprCompareVariable(
 ** literals in pB.  The pParse->pVdbe->expmask bitmask is updated for
 ** each variable referenced.
 */
-int sqlite3ExprCompare(
+целое sqlite3ExprCompare(
   const Parse *pParse,
   const Expr *pA,
   const Expr *pB,
-  int iTab
+  целое iTab
 ){
   u32 combinedFlags;
-  if( pA==0 || pB==0 ){
-    return pB==pA ? 0 : 2;
+  если( pA==0 || pB==0 ){
+    вернуть pB==pA ? 0 : 2;
   }
-  if( pParse && pA->op==TK_VARIABLE ){
-    return exprCompareVariable(pParse, pA, pB);
+  если( pParse && pA->op==TK_VARIABLE ){
+    вернуть exprCompareVariable(pParse, pA, pB);
   }
   combinedFlags = pA->flags | pB->flags;
-  if( combinedFlags & EP_IntValue ){
-    if( (pA->flags&pB->flags&EP_IntValue)!=0 && pA->u.iValue==pB->u.iValue ){
-      return 0;
+  если( combinedFlags & EP_IntValue ){
+    если( (pA->flags&pB->flags&EP_IntValue)!=0 && pA->u.iValue==pB->u.iValue ){
+      вернуть 0;
     }
-    return 2;
+    вернуть 2;
   }
-  if( pA->op!=pB->op || pA->op==TK_RAISE ){
-    if( pA->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA->pLeft,pB,iTab)<2 ){
-      return 1;
+  если( pA->op!=pB->op || pA->op==TK_RAISE ){
+    если( pA->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA->pLeft,pB,iTab)<2 ){
+      вернуть 1;
     }
-    if( pB->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA,pB->pLeft,iTab)<2 ){
-      return 1;
+    если( pB->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA,pB->pLeft,iTab)<2 ){
+      вернуть 1;
     }
-    if( pA->op==TK_AGG_COLUMN && pB->op==TK_COLUMN
+    если( pA->op==TK_AGG_COLUMN && pB->op==TK_COLUMN
      && pB->iTable<0 && pA->iTable==iTab
     ){
       /* fall through */
-    }else{
-      return 2;
+    }иначе{
+      вернуть 2;
     }
   }
   assert( !ExprHasProperty(pA, EP_IntValue) );
   assert( !ExprHasProperty(pB, EP_IntValue) );
-  if( pA->u.zToken ){
-    if( pA->op==TK_FUNCTION || pA->op==TK_AGG_FUNCTION ){
-      if( sqlite3StrICmp(pA->u.zToken,pB->u.zToken)!=0 ) return 2;
+  если( pA->u.zToken ){
+    если( pA->op==TK_FUNCTION || pA->op==TK_AGG_FUNCTION ){
+      если( sqlite3StrICmp(pA->u.zToken,pB->u.zToken)!=0 ) вернуть 2;
 #ifndef SQLITE_OMIT_WINDOWFUNC
       assert( pA->op==pB->op );
-      if( ExprHasProperty(pA,EP_WinFunc)!=ExprHasProperty(pB,EP_WinFunc) ){
-        return 2;
+      если( ExprHasProperty(pA,EP_WinFunc)!=ExprHasProperty(pB,EP_WinFunc) ){
+        вернуть 2;
       }
-      if( ExprHasProperty(pA,EP_WinFunc) ){
-        if( sqlite3WindowCompare(pParse, pA->y.pWin, pB->y.pWin, 1)!=0 ){
-          return 2;
+      если( ExprHasProperty(pA,EP_WinFunc) ){
+        если( sqlite3WindowCompare(pParse, pA->y.pWin, pB->y.pWin, 1)!=0 ){
+          вернуть 2;
         }
       }
 #endif
-    }else if( pA->op==TK_NULL ){
-      return 0;
-    }else if( pA->op==TK_COLLATE ){
-      if( sqlite3_stricmp(pA->u.zToken,pB->u.zToken)!=0 ) return 2;
-    }else
-    if( pB->u.zToken!=0
+    }иначе если( pA->op==TK_NULL ){
+      вернуть 0;
+    }иначе если( pA->op==TK_COLLATE ){
+      если( sqlite3_stricmp(pA->u.zToken,pB->u.zToken)!=0 ) вернуть 2;
+    }иначе
+    если( pB->u.zToken!=0
      && pA->op!=TK_COLUMN
      && pA->op!=TK_AGG_COLUMN
      && strcmp(pA->u.zToken,pB->u.zToken)!=0
     ){
-      return 2;
+      вернуть 2;
     }
   }
-  if( (pA->flags & (EP_Distinct|EP_Commuted))
-     != (pB->flags & (EP_Distinct|EP_Commuted)) ) return 2;
-  if( ALWAYS((combinedFlags & EP_TokenOnly)==0) ){
-    if( combinedFlags & EP_xIsSelect ) return 2;
-    if( (combinedFlags & EP_FixedCol)==0
-     && sqlite3ExprCompare(pParse, pA->pLeft, pB->pLeft, iTab) ) return 2;
-    if( sqlite3ExprCompare(pParse, pA->pRight, pB->pRight, iTab) ) return 2;
-    if( sqlite3ExprListCompare(pA->x.pList, pB->x.pList, iTab) ) return 2;
-    if( pA->op!=TK_STRING
+  если( (pA->flags & (EP_Distinct|EP_Commuted))
+     != (pB->flags & (EP_Distinct|EP_Commuted)) ) вернуть 2;
+  если( ALWAYS((combinedFlags & EP_TokenOnly)==0) ){
+    если( combinedFlags & EP_xIsSelect ) вернуть 2;
+    если( (combinedFlags & EP_FixedCol)==0
+     && sqlite3ExprCompare(pParse, pA->pLeft, pB->pLeft, iTab) ) вернуть 2;
+    если( sqlite3ExprCompare(pParse, pA->pRight, pB->pRight, iTab) ) вернуть 2;
+    если( sqlite3ExprListCompare(pA->x.pList, pB->x.pList, iTab) ) вернуть 2;
+    если( pA->op!=TK_STRING
      && pA->op!=TK_TRUEFALSE
      && ALWAYS((combinedFlags & EP_Reduced)==0)
     ){
-      if( pA->iColumn!=pB->iColumn ) return 2;
-      if( pA->op2!=pB->op2 && pA->op==TK_TRUTH ) return 2;
-      if( pA->op!=TK_IN && pA->iTable!=pB->iTable && pA->iTable!=iTab ){
-        return 2;
+      если( pA->iColumn!=pB->iColumn ) вернуть 2;
+      если( pA->op2!=pB->op2 && pA->op==TK_TRUTH ) вернуть 2;
+      если( pA->op!=TK_IN && pA->iTable!=pB->iTable && pA->iTable!=iTab ){
+        вернуть 2;
       }
     }
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
@@ -6808,27 +6808,27 @@ int sqlite3ExprCompare(
 ** Two NULL pointers are considered to be the same.  But a NULL pointer
 ** always differs from a non-NULL pointer.
 */
-int sqlite3ExprListCompare(const ExprList *pA, const ExprList *pB, int iTab){
-  int i;
-  if( pA==0 && pB==0 ) return 0;
-  if( pA==0 || pB==0 ) return 1;
-  if( pA->nExpr!=pB->nExpr ) return 1;
-  for(i=0; i<pA->nExpr; i++){
-    int res;
+целое sqlite3ExprListCompare(const ExprList *pA, const ExprList *pB, целое iTab){
+  целое i;
+  если( pA==0 && pB==0 ) вернуть 0;
+  если( pA==0 || pB==0 ) вернуть 1;
+  если( pA->nExpr!=pB->nExpr ) вернуть 1;
+  для(i=0; i<pA->nExpr; i++){
+    целое res;
     Expr *pExprA = pA->a[i].pExpr;
     Expr *pExprB = pB->a[i].pExpr;
-    if( pA->a[i].fg.sortFlags!=pB->a[i].fg.sortFlags ) return 1;
-    if( (res = sqlite3ExprCompare(0, pExprA, pExprB, iTab)) ) return res;
+    если( pA->a[i].fg.sortFlags!=pB->a[i].fg.sortFlags ) вернуть 1;
+    если( (res = sqlite3ExprCompare(0, pExprA, pExprB, iTab)) ) вернуть res;
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
 ** Like sqlite3ExprCompare() except COLLATE operators at the top-level
 ** are ignored.
 */
-int sqlite3ExprCompareSkip(Expr *pA,Expr *pB, int iTab){
-  return sqlite3ExprCompare(0,
+целое sqlite3ExprCompareSkip(Expr *pA,Expr *pB, целое iTab){
+  вернуть sqlite3ExprCompare(0,
              sqlite3ExprSkipCollate(pA),
              sqlite3ExprSkipCollate(pB),
              iTab);
@@ -6840,23 +6840,23 @@ int sqlite3ExprCompareSkip(Expr *pA,Expr *pB, int iTab){
 ** Or if seenNot is true, return non-zero if Expr p can only be
 ** non-NULL if pNN is not NULL
 */
-static int exprImpliesNotNull(
+static целое exprImpliesNotNull(
   const Parse *pParse,/* Parsing context */
   const Expr *p,      /* The expression to be checked */
   const Expr *pNN,    /* The expression that is NOT NULL */
-  int iTab,           /* Table being evaluated */
-  int seenNot         /* Return true only if p can be any non-NULL value */
+  целое iTab,           /* Table being evaluated */
+  целое seenNot         /* Return true only if p can be any non-NULL value */
 ){
   assert( p );
   assert( pNN );
-  if( sqlite3ExprCompare(pParse, p, pNN, iTab)==0 ){
-    return pNN->op!=TK_NULL;
+  если( sqlite3ExprCompare(pParse, p, pNN, iTab)==0 ){
+    вернуть pNN->op!=TK_NULL;
   }
   switch( p->op ){
     case TK_IN: {
-      if( seenNot && ExprHasProperty(p, EP_xIsSelect) ) return 0;
+      если( seenNot && ExprHasProperty(p, EP_xIsSelect) ) вернуть 0;
       assert( ExprUseXSelect(p) || (p->x.pList!=0 && p->x.pList->nExpr>0) );
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+      вернуть exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
     case TK_BETWEEN: {
       ExprList *pList;
@@ -6864,13 +6864,13 @@ static int exprImpliesNotNull(
       pList = p->x.pList;
       assert( pList!=0 );
       assert( pList->nExpr==2 );
-      if( seenNot ) return 0;
-      if( exprImpliesNotNull(pParse, pList->a[0].pExpr, pNN, iTab, 1)
+      если( seenNot ) вернуть 0;
+      если( exprImpliesNotNull(pParse, pList->a[0].pExpr, pNN, iTab, 1)
        || exprImpliesNotNull(pParse, pList->a[1].pExpr, pNN, iTab, 1)
       ){
-        return 1;
+        вернуть 1;
       }
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+      вернуть exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
     case TK_EQ:
     case TK_NE:
@@ -6890,39 +6890,39 @@ static int exprImpliesNotNull(
     case TK_REM:
     case TK_BITAND:
     case TK_SLASH: {
-      if( exprImpliesNotNull(pParse, p->pRight, pNN, iTab, seenNot) ) return 1;
+      если( exprImpliesNotNull(pParse, p->pRight, pNN, iTab, seenNot) ) вернуть 1;
       /* no break */ deliberate_fall_through
     }
     case TK_SPAN:
     case TK_COLLATE:
     case TK_UPLUS:
     case TK_UMINUS: {
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, seenNot);
+      вернуть exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, seenNot);
     }
     case TK_TRUTH: {
-      if( seenNot ) return 0;
-      if( p->op2!=TK_IS ) return 0;
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+      если( seenNot ) вернуть 0;
+      если( p->op2!=TK_IS ) вернуть 0;
+      вернуть exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
     case TK_BITNOT:
     case TK_NOT: {
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+      вернуть exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
   }
-  return 0;
+  вернуть 0;
 }
 
 /*
 ** Return true if the boolean value of the expression is always either
 ** FALSE or NULL.
 */
-static int sqlite3ExprIsNotTrue(Expr *pExpr){
-  int v;
-  if( pExpr->op==TK_NULL ) return 1;
-  if( pExpr->op==TK_TRUEFALSE && sqlite3ExprTruthValue(pExpr)==0 ) return 1;
+static целое sqlite3ExprIsNotTrue(Expr *pExpr){
+  целое v;
+  если( pExpr->op==TK_NULL ) вернуть 1;
+  если( pExpr->op==TK_TRUEFALSE && sqlite3ExprTruthValue(pExpr)==0 ) вернуть 1;
   v = 1;
-  if( sqlite3ExprIsInteger(pExpr, &v, 0, 0) && v==0 ) return 1;
-  return 0;
+  если( sqlite3ExprIsInteger(pExpr, &v, 0, 0) && v==0 ) вернуть 1;
+  вернуть 0;
 }
 
 /*
@@ -6935,31 +6935,31 @@ static int sqlite3ExprIsNotTrue(Expr *pExpr){
 **    iif(x,y,NULL)
 **    iif(x,y,false)
 */
-static int sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
+static целое sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
   ExprList *pList;
-  if( pExpr->op==TK_FUNCTION ){
+  если( pExpr->op==TK_FUNCTION ){
     const char *z = pExpr->u.zToken;
     FuncDef *pDef;
-    if( (z[0]!='i' && z[0]!='I') ) return 0;
-    if( pExpr->x.pList==0 ) return 0;
+    если( (z[0]!='i' && z[0]!='I') ) вернуть 0;
+    если( pExpr->x.pList==0 ) вернуть 0;
     pDef = sqlite3FindFunction(db, z, pExpr->x.pList->nExpr, ENC(db), 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-    if( pDef==0 ) return 0;
-#else
-    if( NEVER(pDef==0) ) return 0;
+    если( pDef==0 ) вернуть 0;
+#иначе
+    если( NEVER(pDef==0) ) вернуть 0;
 #endif
-    if( (pDef->funcFlags & SQLITE_FUNC_INLINE)==0 ) return 0;
-    if( SQLITE_PTR_TO_INT(pDef->pUserData)!=INLINEFUNC_iif ) return 0;
-  }else if( pExpr->op==TK_CASE ){
-    if( pExpr->pLeft!=0 ) return 0;
-  }else{
-    return 0;
+    если( (pDef->funcFlags & SQLITE_FUNC_INLINE)==0 ) вернуть 0;
+    если( SQLITE_PTR_TO_INT(pDef->pUserData)!=INLINEFUNC_iif ) вернуть 0;
+  }иначе если( pExpr->op==TK_CASE ){
+    если( pExpr->pLeft!=0 ) вернуть 0;
+  }иначе{
+    вернуть 0;
   }
   pList = pExpr->x.pList;
   assert( pList!=0 );
-  if( pList->nExpr==2 ) return 1;
-  if( pList->nExpr==3 && sqlite3ExprIsNotTrue(pList->a[2].pExpr) ) return 1;
-  return 0;
+  если( pList->nExpr==2 ) вернуть 1;
+  если( pList->nExpr==3 && sqlite3ExprIsNotTrue(pList->a[2].pExpr) ) вернуть 1;
+  вернуть 0;
 }
 
 /*
@@ -6989,30 +6989,30 @@ static int sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
 ** improvement.  Returning false might cause a performance reduction, but
 ** it will always give the correct answer and is hence always safe.
 */
-int sqlite3ExprImpliesExpr(
+целое sqlite3ExprImpliesExpr(
   const Parse *pParse,
   const Expr *pE1,
   const Expr *pE2,
-  int iTab
+  целое iTab
 ){
-  if( sqlite3ExprCompare(pParse, pE1, pE2, iTab)==0 ){
-    return 1;
+  если( sqlite3ExprCompare(pParse, pE1, pE2, iTab)==0 ){
+    вернуть 1;
   }
-  if( pE2->op==TK_OR
+  если( pE2->op==TK_OR
    && (sqlite3ExprImpliesExpr(pParse, pE1, pE2->pLeft, iTab)
              || sqlite3ExprImpliesExpr(pParse, pE1, pE2->pRight, iTab) )
   ){
-    return 1;
+    вернуть 1;
   }
-  if( pE2->op==TK_NOTNULL
+  если( pE2->op==TK_NOTNULL
    && exprImpliesNotNull(pParse, pE1, pE2->pLeft, iTab, 0)
   ){
-    return 1;
+    вернуть 1;
   }
-  if( sqlite3ExprIsIIF(pParse->db, pE1) ){
-    return sqlite3ExprImpliesExpr(pParse,pE1->x.pList->a[0].pExpr,pE2,iTab);
+  если( sqlite3ExprIsIIF(pParse->db, pE1) ){
+    вернуть sqlite3ExprImpliesExpr(pParse,pE1->x.pList->a[0].pExpr,pE2,iTab);
   }
-  return 0;
+  вернуть 0;
 }
 
 /* This is a helper function to impliesNotNullRow().  In this routine,
@@ -7020,9 +7020,9 @@ int sqlite3ExprImpliesExpr(
 ** separately have the implies-not-null-row property.
 */
 static void bothImplyNotNullRow(Walker *pWalker, Expr *pE1, Expr *pE2){
-  if( pWalker->eCode==0 ){
+  если( pWalker->eCode==0 ){
     sqlite3WalkExpr(pWalker, pE1);
-    if( pWalker->eCode ){
+    если( pWalker->eCode ){
       pWalker->eCode = 0;
       sqlite3WalkExpr(pWalker, pE2);
     }
@@ -7042,17 +7042,17 @@ static void bothImplyNotNullRow(Walker *pWalker, Expr *pE1, Expr *pE2){
 ** pWalker->eCode to 1 when it should not be) are deadly, but false-negatives
 ** (never setting pWalker->eCode) is a harmless missed optimization.
 */
-static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
+static целое impliesNotNullRow(Walker *pWalker, Expr *pExpr){
   testcase( pExpr->op==TK_AGG_COLUMN );
   testcase( pExpr->op==TK_AGG_FUNCTION );
-  if( ExprHasProperty(pExpr, EP_OuterON) ) return WRC_Prune;
-  if( ExprHasProperty(pExpr, EP_InnerON) && pWalker->mWFlags ){
+  если( ExprHasProperty(pExpr, EP_OuterON) ) вернуть WRC_Prune;
+  если( ExprHasProperty(pExpr, EP_InnerON) && pWalker->mWFlags ){
     /* If iCur is used in an inner-join ON clause to the left of a
     ** RIGHT JOIN, that does *not* mean that the table must be non-null.
     ** But it is difficult to check for that condition precisely.
     ** To keep things simple, any use of iCur from any inner-join is
     ** ignored while attempting to simplify a RIGHT JOIN. */
-    return WRC_Prune;
+    вернуть WRC_Prune;
   }
   switch( pExpr->op ){
     case TK_ISNOT:
@@ -7071,14 +7071,14 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       testcase( pExpr->op==TK_FUNCTION );
       testcase( pExpr->op==TK_TRUTH );
       testcase( pExpr->op==TK_CASE );
-      return WRC_Prune;
+      вернуть WRC_Prune;
 
     case TK_COLUMN:
-      if( pWalker->u.iCur==pExpr->iTable ){
+      если( pWalker->u.iCur==pExpr->iTable ){
         pWalker->eCode = 1;
-        return WRC_Abort;
+        вернуть WRC_Abort;
       }
-      return WRC_Prune;
+      вернуть WRC_Prune;
 
     case TK_OR:
     case TK_AND:
@@ -7092,17 +7092,17 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       testcase( pExpr->op==TK_OR );
       testcase( pExpr->op==TK_AND );
       bothImplyNotNullRow(pWalker, pExpr->pLeft, pExpr->pRight);
-      return WRC_Prune;
+      вернуть WRC_Prune;
        
     case TK_IN:
       /* Beware of "x NOT IN ()" and "x NOT IN (SELECT 1 WHERE false)",
       ** both of which can be true.  But apart from these cases, if
       ** the left-hand side of the IN is NULL then the IN itself will be
       ** NULL. */
-      if( ExprUseXList(pExpr) && ALWAYS(pExpr->x.pList->nExpr>0) ){
+      если( ExprUseXList(pExpr) && ALWAYS(pExpr->x.pList->nExpr>0) ){
         sqlite3WalkExpr(pWalker, pExpr->pLeft);
       }
-      return WRC_Prune;
+      вернуть WRC_Prune;
 
     case TK_BETWEEN:
       /* In "x NOT BETWEEN y AND z" either x must be non-null-row or else
@@ -7112,7 +7112,7 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       sqlite3WalkExpr(pWalker, pExpr->pLeft);
       bothImplyNotNullRow(pWalker, pExpr->x.pList->a[0].pExpr,
                                    pExpr->x.pList->a[1].pExpr);
-      return WRC_Prune;
+      вернуть WRC_Prune;
 
     /* Virtual tables are allowed to use constraints like x=NULL.  So
     ** a term of the form x=y does not prove that y is not null if x
@@ -7135,19 +7135,19 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       ** impliesNotNullRow() test */
       assert( pLeft->op!=TK_COLUMN || ExprUseYTab(pLeft) );
       assert( pRight->op!=TK_COLUMN || ExprUseYTab(pRight) );
-      if( (pLeft->op==TK_COLUMN
+      если( (pLeft->op==TK_COLUMN
            && ALWAYS(pLeft->y.pTab!=0)
            && IsVirtual(pLeft->y.pTab))
        || (pRight->op==TK_COLUMN
            && ALWAYS(pRight->y.pTab!=0)
            && IsVirtual(pRight->y.pTab))
       ){
-        return WRC_Prune;
+        вернуть WRC_Prune;
       }
       /* no break */ deliberate_fall_through
     }
     default:
-      return WRC_Continue;
+      вернуть WRC_Continue;
   }
 }
 
@@ -7173,15 +7173,15 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
 ** be non-NULL, then the LEFT JOIN can be safely converted into an
 ** ordinary join.
 */
-int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
+целое sqlite3ExprImpliesNonNullRow(Expr *p, целое iTab, целое isRJ){
   Walker w;
   p = sqlite3ExprSkipCollateAndLikely(p);
-  if( p==0 ) return 0;
-  if( p->op==TK_NOTNULL ){
+  если( p==0 ) вернуть 0;
+  если( p->op==TK_NOTNULL ){
     p = p->pLeft;
-  }else{
-    while( p->op==TK_AND ){
-      if( sqlite3ExprImpliesNonNullRow(p->pLeft, iTab, isRJ) ) return 1;
+  }иначе{
+    пока( p->op==TK_AND ){
+      если( sqlite3ExprImpliesNonNullRow(p->pLeft, iTab, isRJ) ) вернуть 1;
       p = p->pRight;
     }
   }
@@ -7192,7 +7192,7 @@ int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
   w.mWFlags = isRJ!=0;
   w.u.iCur = iTab;
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  вернуть w.eCode;
 }
 
 /*
@@ -7204,7 +7204,7 @@ int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
 */
 struct IdxCover {
   Index *pIdx;     /* The index to be tested for coverage */
-  int iCur;        /* Cursor number for the table corresponding to the index */
+  целое iCur;        /* Cursor number for the table corresponding to the index */
 };
 
 /*
@@ -7212,15 +7212,15 @@ struct IdxCover {
 ** pWalker->u.pIdxCover->iCur can be satisfied using the index
 ** pWalker->u.pIdxCover->pIdx.
 */
-static int exprIdxCover(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN
+static целое exprIdxCover(Walker *pWalker, Expr *pExpr){
+  если( pExpr->op==TK_COLUMN
    && pExpr->iTable==pWalker->u.pIdxCover->iCur
    && sqlite3TableColumnToIndex(pWalker->u.pIdxCover->pIdx, pExpr->iColumn)<0
   ){
     pWalker->eCode = 1;
-    return WRC_Abort;
+    вернуть WRC_Abort;
   }
-  return WRC_Continue;
+  вернуть WRC_Continue;
 }
 
 /*
@@ -7233,9 +7233,9 @@ static int exprIdxCover(Walker *pWalker, Expr *pExpr){
 ** evaluated using only the index and without having to lookup the
 ** corresponding table entry.
 */
-int sqlite3ExprCoveredByIndex(
+целое sqlite3ExprCoveredByIndex(
   Expr *pExpr,        /* The index to be tested */
-  int iCur,           /* The cursor number for the corresponding table */
+  целое iCur,           /* The cursor number for the corresponding table */
   Index *pIdx         /* The index that might be used for coverage */
 ){
   Walker w;
@@ -7246,7 +7246,7 @@ int sqlite3ExprCoveredByIndex(
   w.xExprCallback = exprIdxCover;
   w.u.pIdxCover = &xcov;
   sqlite3WalkExpr(&w, pExpr);
-  return !w.eCode;
+  вернуть !w.eCode;
 }
 
 
@@ -7257,7 +7257,7 @@ struct RefSrcList {
   sqlite3 *db;         /* Database connection used for sqlite3DbRealloc() */
   SrcList *pRef;       /* Looking for references to these tables */
   i64 nExclude;        /* Number of tables to exclude from the search */
-  int *aiExclude;      /* Cursor IDs for tables to exclude from the search */
+  целое *aiExclude;      /* Cursor IDs for tables to exclude from the search */
 };
 
 /*
@@ -7268,30 +7268,30 @@ struct RefSrcList {
 **
 ** When leaving the subquery, remove those entries from the exclude list.
 */
-static int selectRefEnter(Walker *pWalker, Select *pSelect){
+static целое selectRefEnter(Walker *pWalker, Select *pSelect){
   struct RefSrcList *p = pWalker->u.pRefSrcList;
   SrcList *pSrc = pSelect->pSrc;
   i64 i, j;
-  int *piNew;
-  if( pSrc->nSrc==0 ) return WRC_Continue;
+  целое *piNew;
+  если( pSrc->nSrc==0 ) вернуть WRC_Continue;
   j = p->nExclude;
   p->nExclude += pSrc->nSrc;
-  piNew = sqlite3DbRealloc(p->db, p->aiExclude, p->nExclude*sizeof(int));
-  if( piNew==0 ){
+  piNew = sqlite3DbRealloc(p->db, p->aiExclude, p->nExclude*sizeof(целое));
+  если( piNew==0 ){
     p->nExclude = 0;
-    return WRC_Abort;
-  }else{
+    вернуть WRC_Abort;
+  }иначе{
     p->aiExclude = piNew;
   }
-  for(i=0; i<pSrc->nSrc; i++, j++){
+  для(i=0; i<pSrc->nSrc; i++, j++){
      p->aiExclude[j] = pSrc->a[i].iCursor;
   }
-  return WRC_Continue;
+  вернуть WRC_Continue;
 }
 static void selectRefLeave(Walker *pWalker, Select *pSelect){
   struct RefSrcList *p = pWalker->u.pRefSrcList;
   SrcList *pSrc = pSelect->pSrc;
-  if( p->nExclude ){
+  если( p->nExclude ){
     assert( p->nExclude>=pSrc->nSrc );
     p->nExclude -= pSrc->nSrc;
   }
@@ -7305,26 +7305,26 @@ static void selectRefLeave(Walker *pWalker, Select *pSelect){
 ** Set the 0x02 bit of pWalker->eCode if there is a reference to a
 ** table is in neither RefSrcList.pRef nor RefSrcList.aiExclude.
 */
-static int exprRefToSrcList(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN
+static целое exprRefToSrcList(Walker *pWalker, Expr *pExpr){
+  если( pExpr->op==TK_COLUMN
    || pExpr->op==TK_AGG_COLUMN
   ){
-    int i;
+    целое i;
     struct RefSrcList *p = pWalker->u.pRefSrcList;
     SrcList *pSrc = p->pRef;
-    int nSrc = pSrc ? pSrc->nSrc : 0;
-    for(i=0; i<nSrc; i++){
-      if( pExpr->iTable==pSrc->a[i].iCursor ){
+    целое nSrc = pSrc ? pSrc->nSrc : 0;
+    для(i=0; i<nSrc; i++){
+      если( pExpr->iTable==pSrc->a[i].iCursor ){
         pWalker->eCode |= 1;
-        return WRC_Continue;
+        вернуть WRC_Continue;
       }
     }
-    for(i=0; i<p->nExclude && p->aiExclude[i]!=pExpr->iTable; i++){}
-    if( i>=p->nExclude ){
+    для(i=0; i<p->nExclude && p->aiExclude[i]!=pExpr->iTable; i++){}
+    если( i>=p->nExclude ){
       pWalker->eCode |= 2;
     }
   }
-  return WRC_Continue;
+  вернуть WRC_Continue;
 }
 
 /*
@@ -7342,7 +7342,7 @@ static int exprRefToSrcList(Walker *pWalker, Expr *pExpr){
 ** As currently used, pExpr is always an aggregate function call.  That
 ** fact is exploited for efficiency.
 */
-int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
+целое sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
   Walker w;
   struct RefSrcList x;
   assert( pParse->db!=0 );
@@ -7357,24 +7357,24 @@ int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
   assert( pExpr->op==TK_AGG_FUNCTION );
   assert( ExprUseXList(pExpr) );
   sqlite3WalkExprList(&w, pExpr->x.pList);
-  if( pExpr->pLeft ){
+  если( pExpr->pLeft ){
     assert( pExpr->pLeft->op==TK_ORDER );
     assert( ExprUseXList(pExpr->pLeft) );
     assert( pExpr->pLeft->x.pList!=0 );
     sqlite3WalkExprList(&w, pExpr->pLeft->x.pList);
   }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( ExprHasProperty(pExpr, EP_WinFunc) ){
+  если( ExprHasProperty(pExpr, EP_WinFunc) ){
     sqlite3WalkExpr(&w, pExpr->y.pWin->pFilter);
   }
 #endif
-  if( x.aiExclude ) sqlite3DbNNFreeNN(pParse->db, x.aiExclude);
-  if( w.eCode & 0x01 ){
-    return 1;
-  }else if( w.eCode ){
-    return 0;
-  }else{
-    return -1;
+  если( x.aiExclude ) sqlite3DbNNFreeNN(pParse->db, x.aiExclude);
+  если( w.eCode & 0x01 ){
+    вернуть 1;
+  }иначе если( w.eCode ){
+    вернуть 0;
+  }иначе{
+    вернуть -1;
   }
 }
 
@@ -7389,37 +7389,37 @@ int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
 ** The copy is scheduled for deletion using the sqlite3ExprDeferredDelete()
 ** which builds on the sqlite3ParserAddCleanup() mechanism.
 */
-static int agginfoPersistExprCb(Walker *pWalker, Expr *pExpr){
-  if( ALWAYS(!ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced))
+static целое agginfoPersistExprCb(Walker *pWalker, Expr *pExpr){
+  если( ALWAYS(!ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced))
    && pExpr->pAggInfo!=0
   ){
     AggInfo *pAggInfo = pExpr->pAggInfo;
-    int iAgg = pExpr->iAgg;
+    целое iAgg = pExpr->iAgg;
     Parse *pParse = pWalker->pParse;
     sqlite3 *db = pParse->db;
     assert( iAgg>=0 );
-    if( pExpr->op!=TK_AGG_FUNCTION ){
-      if( iAgg<pAggInfo->nColumn
+    если( pExpr->op!=TK_AGG_FUNCTION ){
+      если( iAgg<pAggInfo->nColumn
        && pAggInfo->aCol[iAgg].pCExpr==pExpr
       ){
         pExpr = sqlite3ExprDup(db, pExpr, 0);
-        if( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
+        если( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
           pAggInfo->aCol[iAgg].pCExpr = pExpr;
         }
       }
-    }else{
+    }иначе{
       assert( pExpr->op==TK_AGG_FUNCTION );
-      if( ALWAYS(iAgg<pAggInfo->nFunc)
+      если( ALWAYS(iAgg<pAggInfo->nFunc)
        && pAggInfo->aFunc[iAgg].pFExpr==pExpr
       ){
         pExpr = sqlite3ExprDup(db, pExpr, 0);
-        if( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
+        если( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
           pAggInfo->aFunc[iAgg].pFExpr = pExpr;
         }
       }
     }
   }
-  return WRC_Continue;
+  вернуть WRC_Continue;
 }
 
 /*
@@ -7437,8 +7437,8 @@ void sqlite3AggInfoPersistWalkerInit(Walker *pWalker, Parse *pParse){
 ** Add a new element to the pAggInfo->aCol[] array.  Return the index of
 ** the new element.  Return a negative number if malloc fails.
 */
-static int addAggInfoColumn(sqlite3 *db, AggInfo *pInfo){
-  int i;
+static целое addAggInfoColumn(sqlite3 *db, AggInfo *pInfo){
+  целое i;
   pInfo->aCol = sqlite3ArrayAllocate(
        db,
        pInfo->aCol,
@@ -7446,15 +7446,15 @@ static int addAggInfoColumn(sqlite3 *db, AggInfo *pInfo){
        &pInfo->nColumn,
        &i
   );
-  return i;
+  вернуть i;
 }   
 
 /*
 ** Add a new element to the pAggInfo->aFunc[] array.  Return the index of
 ** the new element.  Return a negative number if malloc fails.
 */
-static int addAggInfoFunc(sqlite3 *db, AggInfo *pInfo){
-  int i;
+static целое addAggInfoFunc(sqlite3 *db, AggInfo *pInfo){
+  целое i;
   pInfo->aFunc = sqlite3ArrayAllocate(
        db,
        pInfo->aFunc,
@@ -7462,7 +7462,7 @@ static int addAggInfoFunc(sqlite3 *db, AggInfo *pInfo){
        &pInfo->nFunc,
        &i
   );
-  return i;
+  вернуть i;
 }
 
 /*
@@ -7478,15 +7478,15 @@ static void findOrCreateAggInfoColumn(
   Expr *pExpr          /* Expr describing the column to find or insert */
 ){
   struct AggInfo_col *pCol;
-  int k;
-  int mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
+  целое k;
+  целое mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
 
   assert( mxTerm <= SMXV(i16) );
   assert( pAggInfo->iFirstReg==0 );
   pCol = pAggInfo->aCol;
-  for(k=0; k<pAggInfo->nColumn; k++, pCol++){
-    if( pCol->pCExpr==pExpr ) return;
-    if( pCol->iTable==pExpr->iTable
+  для(k=0; k<pAggInfo->nColumn; k++, pCol++){
+    если( pCol->pCExpr==pExpr ) вернуть;
+    если( pCol->iTable==pExpr->iTable
      && pCol->iColumn==pExpr->iColumn
      && pExpr->op!=TK_IF_NULL_ROW
     ){
@@ -7494,12 +7494,12 @@ static void findOrCreateAggInfoColumn(
     }
   }
   k = addAggInfoColumn(pParse->db, pAggInfo);
-  if( k<0 ){
+  если( k<0 ){
     /* OOM on resize */
     assert( pParse->db->mallocFailed );
-    return;
+    вернуть;
   }
-  if( k>mxTerm ){
+  если( k>mxTerm ){
     sqlite3ErrorMsg(pParse, "more than %d aggregate terms", mxTerm);
     k = mxTerm;
   }
@@ -7510,14 +7510,14 @@ static void findOrCreateAggInfoColumn(
   pCol->iColumn = pExpr->iColumn;
   pCol->iSorterColumn = -1;
   pCol->pCExpr = pExpr;
-  if( pAggInfo->pGroupBy && pExpr->op!=TK_IF_NULL_ROW ){
-    int j, n;
+  если( pAggInfo->pGroupBy && pExpr->op!=TK_IF_NULL_ROW ){
+    целое j, n;
     ExprList *pGB = pAggInfo->pGroupBy;
     struct ExprList_item *pTerm = pGB->a;
     n = pGB->nExpr;
-    for(j=0; j<n; j++, pTerm++){
+    для(j=0; j<n; j++, pTerm++){
       Expr *pE = pTerm->pExpr;
-      if( pE->op==TK_COLUMN
+      если( pE->op==TK_COLUMN
        && pE->iTable==pExpr->iTable
        && pE->iColumn==pExpr->iColumn
       ){
@@ -7526,14 +7526,14 @@ static void findOrCreateAggInfoColumn(
       }
     }
   }
-  if( pCol->iSorterColumn<0 ){
+  если( pCol->iSorterColumn<0 ){
     pCol->iSorterColumn = pAggInfo->nSortingColumn++;
   }
 fix_up_expr:
   ExprSetVVAProperty(pExpr, EP_NoReduce);
   assert( pExpr->pAggInfo==0 || pExpr->pAggInfo==pAggInfo );
   pExpr->pAggInfo = pAggInfo;
-  if( pExpr->op==TK_COLUMN ){
+  если( pExpr->op==TK_COLUMN ){
     pExpr->op = TK_AGG_COLUMN;
   }
   assert( k <= SMXV(pExpr->iAgg) );
@@ -7545,8 +7545,8 @@ fix_up_expr:
 ** implement sqlite3ExprAnalyzeAggregates().  See sqlite3ExprAnalyzeAggregates
 ** for additional information.
 */
-static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
-  int i;
+static целое analyzeAggregate(Walker *pWalker, Expr *pExpr){
+  целое i;
   NameContext *pNC = pWalker->u.pNC;
   Parse *pParse = pNC->pParse;
   SrcList *pSrcList = pNC->pSrcList;
@@ -7559,24 +7559,24 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
       IndexedExpr *pIEpr;
       Expr tmp;
       assert( pParse->iSelfTab==0 );
-      if( (pNC->ncFlags & NC_InAggFunc)==0 ) break;
-      if( pParse->pIdxEpr==0 ) break;
-      for(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
-        int iDataCur = pIEpr->iDataCur;
-        if( iDataCur<0 ) continue;
-        if( sqlite3ExprCompare(0, pExpr, pIEpr->pExpr, iDataCur)==0 ) break;
+      если( (pNC->ncFlags & NC_InAggFunc)==0 ) break;
+      если( pParse->pIdxEpr==0 ) break;
+      для(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
+        целое iDataCur = pIEpr->iDataCur;
+        если( iDataCur<0 ) continue;
+        если( sqlite3ExprCompare(0, pExpr, pIEpr->pExpr, iDataCur)==0 ) break;
       }
-      if( pIEpr==0 ) break;
-      if( NEVER(!ExprUseYTab(pExpr)) ) break;
-      for(i=0; i<pSrcList->nSrc; i++){
-         if( pSrcList->a[i].iCursor==pIEpr->iDataCur ){
+      если( pIEpr==0 ) break;
+      если( NEVER(!ExprUseYTab(pExpr)) ) break;
+      для(i=0; i<pSrcList->nSrc; i++){
+         если( pSrcList->a[i].iCursor==pIEpr->iDataCur ){
            testcase( i>0 );
            break;
          }
       }
-      if( i>=pSrcList->nSrc ) break;
-      if( NEVER(pExpr->pAggInfo!=0) ) break; /* Resolved by outer context */
-      if( pParse->nErr ){ return WRC_Abort; }
+      если( i>=pSrcList->nSrc ) break;
+      если( NEVER(pExpr->pAggInfo!=0) ) break; /* Resolved by outer context */
+      если( pParse->nErr ){ вернуть WRC_Abort; }
 
       /* If we reach this point, it means that expression pExpr can be
       ** translated into a reference to an index column as described by
@@ -7587,13 +7587,13 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
       tmp.iTable = pIEpr->iIdxCur;
       tmp.iColumn = pIEpr->iIdxCol;
       findOrCreateAggInfoColumn(pParse, pAggInfo, &tmp);
-      if( pParse->nErr ){ return WRC_Abort; }
+      если( pParse->nErr ){ вернуть WRC_Abort; }
       assert( pAggInfo->aCol!=0 );
       assert( tmp.iAgg<pAggInfo->nColumn );
       pAggInfo->aCol[tmp.iAgg].pCExpr = pExpr;
       pExpr->pAggInfo = pAggInfo;
       pExpr->iAgg = tmp.iAgg;
-      return WRC_Prune;
+      вернуть WRC_Prune;
     }
     case TK_IF_NULL_ROW:
     case TK_AGG_COLUMN:
@@ -7603,20 +7603,20 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
       testcase( pExpr->op==TK_IF_NULL_ROW );
       /* Check to see if the column is in one of the tables in the FROM
       ** clause of the aggregate query */
-      if( ALWAYS(pSrcList!=0) ){
+      если( ALWAYS(pSrcList!=0) ){
         SrcItem *pItem = pSrcList->a;
-        for(i=0; i<pSrcList->nSrc; i++, pItem++){
+        для(i=0; i<pSrcList->nSrc; i++, pItem++){
           assert( !ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced) );
-          if( pExpr->iTable==pItem->iCursor ){
+          если( pExpr->iTable==pItem->iCursor ){
             findOrCreateAggInfoColumn(pParse, pAggInfo, pExpr);
             break;
           } /* endif pExpr->iTable==pItem->iCursor */
         } /* end loop over pSrcList */
       }
-      return WRC_Continue;
+      вернуть WRC_Continue;
     }
     case TK_AGG_FUNCTION: {
-      if( (pNC->ncFlags & NC_InAggFunc)==0
+      если( (pNC->ncFlags & NC_InAggFunc)==0
        && pWalker->walkerDepth==pExpr->op2
        && pExpr->pAggInfo==0
       ){
@@ -7624,25 +7624,25 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
         ** function that is already in the pAggInfo structure
         */
         struct AggInfo_func *pItem = pAggInfo->aFunc;
-        int mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
+        целое mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
         assert( mxTerm <= SMXV(i16) );
-        for(i=0; i<pAggInfo->nFunc; i++, pItem++){
-          if( NEVER(pItem->pFExpr==pExpr) ) break;
-          if( sqlite3ExprCompare(0, pItem->pFExpr, pExpr, -1)==0 ){
+        для(i=0; i<pAggInfo->nFunc; i++, pItem++){
+          если( NEVER(pItem->pFExpr==pExpr) ) break;
+          если( sqlite3ExprCompare(0, pItem->pFExpr, pExpr, -1)==0 ){
             break;
           }
         }
-        if( i>mxTerm ){
+        если( i>mxTerm ){
           sqlite3ErrorMsg(pParse, "more than %d aggregate terms", mxTerm);
           i = mxTerm;
           assert( i<pAggInfo->nFunc );
-        }else if( i>=pAggInfo->nFunc ){
+        }иначе если( i>=pAggInfo->nFunc ){
           /* pExpr is original.  Make a new entry in pAggInfo->aFunc[]
           */
           u8 enc = ENC(pParse->db);
           i = addAggInfoFunc(pParse->db, pAggInfo);
-          if( i>=0 ){
-            int nArg;
+          если( i>=0 ){
+            целое nArg;
             assert( !ExprHasProperty(pExpr, EP_xIsSelect) );
             pItem = &pAggInfo->aFunc[i];
             pItem->pFExpr = pExpr;
@@ -7651,7 +7651,7 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
             pItem->pFunc = sqlite3FindFunction(pParse->db,
                                          pExpr->u.zToken, nArg, enc, 0);
             assert( pItem->bOBUnique==0 );
-            if( pExpr->pLeft
+            если( pExpr->pLeft
              && (pItem->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL)==0
             ){
               /* The NEEDCOLL test above causes any ORDER BY clause on
@@ -7664,24 +7664,24 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
               pOBList = pExpr->pLeft->x.pList;
               assert( pOBList->nExpr>0 );
               assert( pItem->bOBUnique==0 );
-              if( pOBList->nExpr==1
+              если( pOBList->nExpr==1
                && nArg==1
                && sqlite3ExprCompare(0,pOBList->a[0].pExpr,
                                pExpr->x.pList->a[0].pExpr,-1)==0
               ){
                 pItem->bOBPayload = 0;
                 pItem->bOBUnique = ExprHasProperty(pExpr, EP_Distinct);
-              }else{
+              }иначе{
                 pItem->bOBPayload = 1;
               }
               pItem->bUseSubtype =
                     (pItem->pFunc->funcFlags & SQLITE_SUBTYPE)!=0;
-            }else{
+            }иначе{
               pItem->iOBTab = -1;
             }
-            if( ExprHasProperty(pExpr, EP_Distinct) && !pItem->bOBUnique ){
+            если( ExprHasProperty(pExpr, EP_Distinct) && !pItem->bOBUnique ){
               pItem->iDistinct = pParse->nTab++;
-            }else{
+            }иначе{
               pItem->iDistinct = -1;
             }
           }
@@ -7693,13 +7693,13 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
         assert( i <= SMXV(pExpr->iAgg) );
         pExpr->iAgg = (i16)i;
         pExpr->pAggInfo = pAggInfo;
-        return WRC_Prune;
-      }else{
-        return WRC_Continue;
+        вернуть WRC_Prune;
+      }иначе{
+        вернуть WRC_Continue;
       }
     }
   }
-  return WRC_Continue;
+  вернуть WRC_Continue;
 }
 
 /*
@@ -7731,9 +7731,9 @@ void sqlite3ExprAnalyzeAggregates(NameContext *pNC, Expr *pExpr){
 */
 void sqlite3ExprAnalyzeAggList(NameContext *pNC, ExprList *pList){
   struct ExprList_item *pItem;
-  int i;
-  if( pList ){
-    for(pItem=pList->a, i=0; i<pList->nExpr; i++, pItem++){
+  целое i;
+  если( pList ){
+    для(pItem=pList->a, i=0; i<pList->nExpr; i++, pItem++){
       sqlite3ExprAnalyzeAggregates(pNC, pItem->pExpr);
     }
   }
@@ -7742,28 +7742,28 @@ void sqlite3ExprAnalyzeAggList(NameContext *pNC, ExprList *pList){
 /*
 ** Allocate a single new register for use to hold some intermediate result.
 */
-int sqlite3GetTempReg(Parse *pParse){
-  if( pParse->nTempReg==0 ){
-    return ++pParse->nMem;
+целое sqlite3GetTempReg(Parse *pParse){
+  если( pParse->nTempReg==0 ){
+    вернуть ++pParse->nMem;
   }
-  return pParse->aTempReg[--pParse->nTempReg];
+  вернуть pParse->aTempReg[--pParse->nTempReg];
 }
 
 /*
 ** Deallocate a register, making available for reuse for some other
 ** purpose.
 */
-void sqlite3ReleaseTempReg(Parse *pParse, int iReg){
-  if( iReg ){
+void sqlite3ReleaseTempReg(Parse *pParse, целое iReg){
+  если( iReg ){
 #ifdef SQLITE_DEBUG
     /* Verify that iReg is not already on the unused register list */
-    int kk;
-    for(kk=0; kk<pParse->nTempReg; kk++){
+    целое kk;
+    для(kk=0; kk<pParse->nTempReg; kk++){
       assert( pParse->aTempReg[kk]!=iReg );
     }
 #endif
     sqlite3VdbeReleaseRegisters(pParse, iReg, 1, 0, 0);
-    if( pParse->nTempReg<ArraySize(pParse->aTempReg) ){
+    если( pParse->nTempReg<ArraySize(pParse->aTempReg) ){
       pParse->aTempReg[pParse->nTempReg++] = iReg;
     }
   }
@@ -7772,27 +7772,27 @@ void sqlite3ReleaseTempReg(Parse *pParse, int iReg){
 /*
 ** Allocate or deallocate a block of nReg consecutive registers.
 */
-int sqlite3GetTempRange(Parse *pParse, int nReg){
-  int i, n;
-  if( nReg==1 ) return sqlite3GetTempReg(pParse);
+целое sqlite3GetTempRange(Parse *pParse, целое nReg){
+  целое i, n;
+  если( nReg==1 ) вернуть sqlite3GetTempReg(pParse);
   i = pParse->iRangeReg;
   n = pParse->nRangeReg;
-  if( nReg<=n ){
+  если( nReg<=n ){
     pParse->iRangeReg += nReg;
     pParse->nRangeReg -= nReg;
-  }else{
+  }иначе{
     i = pParse->nMem+1;
     pParse->nMem += nReg;
   }
-  return i;
+  вернуть i;
 }
-void sqlite3ReleaseTempRange(Parse *pParse, int iReg, int nReg){
-  if( nReg==1 ){
+void sqlite3ReleaseTempRange(Parse *pParse, целое iReg, целое nReg){
+  если( nReg==1 ){
     sqlite3ReleaseTempReg(pParse, iReg);
-    return;
+    вернуть;
   }
   sqlite3VdbeReleaseRegisters(pParse, iReg, nReg, 0, 0);
-  if( nReg>pParse->nRangeReg ){
+  если( nReg>pParse->nRangeReg ){
     pParse->nRangeReg = nReg;
     pParse->iRangeReg = iReg;
   }
@@ -7815,30 +7815,30 @@ void sqlite3ClearTempRegCache(Parse *pParse){
 ** Make sure sufficient registers have been allocated so that
 ** iReg is a valid register number.
 */
-void sqlite3TouchRegister(Parse *pParse, int iReg){
-  if( pParse->nMem<iReg ) pParse->nMem = iReg;
+void sqlite3TouchRegister(Parse *pParse, целое iReg){
+  если( pParse->nMem<iReg ) pParse->nMem = iReg;
 }
 
-#if defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
+#если defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
 /*
 ** Return the latest reusable register in the set of all registers.
 ** The value returned is no less than iMin.  If any register iMin or
 ** greater is in permanent use, then return one more than that last
 ** permanent register.
 */
-int sqlite3FirstAvailableRegister(Parse *pParse, int iMin){
+целое sqlite3FirstAvailableRegister(Parse *pParse, целое iMin){
   const ExprList *pList = pParse->pConstExpr;
-  if( pList ){
-    int i;
-    for(i=0; i<pList->nExpr; i++){
-      if( pList->a[i].u.iConstExprReg>=iMin ){
+  если( pList ){
+    целое i;
+    для(i=0; i<pList->nExpr; i++){
+      если( pList->a[i].u.iConstExprReg>=iMin ){
         iMin = pList->a[i].u.iConstExprReg + 1;
       }
     }
   }
   pParse->nTempReg = 0;
   pParse->nRangeReg = 0;
-  return iMin;
+  вернуть iMin;
 }
 #endif /* SQLITE_ENABLE_STAT4 || SQLITE_DEBUG */
 
@@ -7848,27 +7848,27 @@ int sqlite3FirstAvailableRegister(Parse *pParse, int iMin){
 ** statements.
 */
 #ifdef SQLITE_DEBUG
-int sqlite3NoTempsInRange(Parse *pParse, int iFirst, int iLast){
-  int i;
-  if( pParse->nRangeReg>0
+целое sqlite3NoTempsInRange(Parse *pParse, целое iFirst, целое iLast){
+  целое i;
+  если( pParse->nRangeReg>0
    && pParse->iRangeReg+pParse->nRangeReg > iFirst
    && pParse->iRangeReg <= iLast
   ){
-     return 0;
+     вернуть 0;
   }
-  for(i=0; i<pParse->nTempReg; i++){
-    if( pParse->aTempReg[i]>=iFirst && pParse->aTempReg[i]<=iLast ){
-      return 0;
+  для(i=0; i<pParse->nTempReg; i++){
+    если( pParse->aTempReg[i]>=iFirst && pParse->aTempReg[i]<=iLast ){
+      вернуть 0;
     }
   }
-  if( pParse->pConstExpr ){
+  если( pParse->pConstExpr ){
     ExprList *pList = pParse->pConstExpr;
-    for(i=0; i<pList->nExpr; i++){
-      int iReg = pList->a[i].u.iConstExprReg;
-      if( iReg==0 ) continue;
-      if( iReg>=iFirst && iReg<=iLast ) return 0;
+    для(i=0; i<pList->nExpr; i++){
+      целое iReg = pList->a[i].u.iConstExprReg;
+      если( iReg==0 ) continue;
+      если( iReg>=iFirst && iReg<=iLast ) вернуть 0;
     }
   }
-  return 1;
+  вернуть 1;
 }
 #endif /* SQLITE_DEBUG */

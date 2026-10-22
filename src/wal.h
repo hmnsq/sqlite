@@ -46,7 +46,7 @@
 # define sqlite3WalFindFrame(x,y,z)              0
 # define sqlite3WalFile(x)                       0
 # undef SQLITE_USE_SEH
-#else
+#иначе
 
 #define WAL_SAVEPOINT_NDATA 4
 
@@ -56,8 +56,8 @@
 typedef struct Wal Wal;
 
 /* Open and close a connection to a write-ahead log. */
-int sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, const char *, int, i64, Wal**);
-int sqlite3WalClose(Wal *pWal, sqlite3*, int sync_flags, int, u8 *);
+целое sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, const char *, целое, i64, Wal**);
+целое sqlite3WalClose(Wal *pWal, sqlite3*, целое sync_flags, целое, u8 *);
 
 /* Set the limiting size of a WAL file. */
 void sqlite3WalLimit(Wal*, i64);
@@ -69,22 +69,22 @@ void sqlite3WalLimit(Wal*, i64);
 ** write to or checkpoint the WAL.  sqlite3WalCloseSnapshot() closes the
 ** transaction and releases the lock.
 */
-int sqlite3WalBeginReadTransaction(Wal *pWal, int *);
+целое sqlite3WalBeginReadTransaction(Wal *pWal, целое *);
 void sqlite3WalEndReadTransaction(Wal *pWal);
 
 /* Read a page from the write-ahead log, if it is present. */
-int sqlite3WalFindFrame(Wal *, Pgno, u32 *);
-int sqlite3WalReadFrame(Wal *, u32, int, u8 *);
+целое sqlite3WalFindFrame(Wal *, Pgno, u32 *);
+целое sqlite3WalReadFrame(Wal *, u32, целое, u8 *);
 
 /* If the WAL is not empty, return the size of the database. */
 Pgno sqlite3WalDbsize(Wal *pWal);
 
 /* Obtain or release the WRITER lock. */
-int sqlite3WalBeginWriteTransaction(Wal *pWal);
-int sqlite3WalEndWriteTransaction(Wal *pWal);
+целое sqlite3WalBeginWriteTransaction(Wal *pWal);
+целое sqlite3WalEndWriteTransaction(Wal *pWal);
 
 /* Undo any frames written (but not committed) to the log */
-int sqlite3WalUndo(Wal *pWal, int (*xUndo)(void *, Pgno), void *pUndoCtx);
+целое sqlite3WalUndo(Wal *pWal, целое (*xUndo)(void *, Pgno), void *pUndoCtx);
 
 /* Return an integer that records the current (uncommitted) write
 ** position in the WAL */
@@ -92,23 +92,23 @@ void sqlite3WalSavepoint(Wal *pWal, u32 *aWalData);
 
 /* Move the write position of the WAL back to iFrame.  Called in
 ** response to a ROLLBACK TO command. */
-int sqlite3WalSavepointUndo(Wal *pWal, u32 *aWalData);
+целое sqlite3WalSavepointUndo(Wal *pWal, u32 *aWalData);
 
 /* Write a frame or frames to the log. */
-int sqlite3WalFrames(Wal *pWal, int, PgHdr *, Pgno, int, int);
+целое sqlite3WalFrames(Wal *pWal, целое, PgHdr *, Pgno, целое, целое);
 
 /* Copy pages from the log to the database file */ 
-int sqlite3WalCheckpoint(
+целое sqlite3WalCheckpoint(
   Wal *pWal,                      /* Write-ahead log connection */
   sqlite3 *db,                    /* Check this handle's interrupt flag */
-  int eMode,                      /* One of PASSIVE, FULL and RESTART */
-  int (*xBusy)(void*),            /* Function to call when busy */
+  целое eMode,                      /* One of PASSIVE, FULL and RESTART */
+  целое (*xBusy)(void*),            /* Function to call when busy */
   void *pBusyArg,                 /* Context argument for xBusyHandler */
-  int sync_flags,                 /* Flags to sync db file with (or 0) */
-  int nBuf,                       /* Size of buffer nBuf */
+  целое sync_flags,                 /* Flags to sync db file with (or 0) */
+  целое nBuf,                       /* Size of buffer nBuf */
   u8 *zBuf,                       /* Temporary buffer to use */
-  int *pnLog,                     /* OUT: Number of frames in WAL */
-  int *pnCkpt                     /* OUT: Number of backfilled frames in WAL */
+  целое *pnLog,                     /* OUT: Number of frames in WAL */
+  целое *pnCkpt                     /* OUT: Number of backfilled frames in WAL */
 );
 
 /* Return the value to pass to a sqlite3_wal_hook callback, the
@@ -116,24 +116,24 @@ int sqlite3WalCheckpoint(
 ** sqlite3WalCallback() was called.  If no commits have occurred since
 ** the last call, then return 0.
 */
-int sqlite3WalCallback(Wal *pWal);
+целое sqlite3WalCallback(Wal *pWal);
 
 /* Tell the wal layer that an EXCLUSIVE lock has been obtained (or released)
 ** by the pager layer on the database file.
 */
-int sqlite3WalExclusiveMode(Wal *pWal, int op);
+целое sqlite3WalExclusiveMode(Wal *pWal, целое op);
 
 /* Return true if the argument is non-NULL and the WAL module is using
 ** heap-memory for the wal-index. Otherwise, if the argument is NULL or the
 ** WAL module is using shared-memory, return false. 
 */
-int sqlite3WalHeapMemory(Wal *pWal);
+целое sqlite3WalHeapMemory(Wal *pWal);
 
 #ifdef SQLITE_ENABLE_SNAPSHOT
-int sqlite3WalSnapshotGet(Wal *pWal, sqlite3_snapshot **ppSnapshot);
+целое sqlite3WalSnapshotGet(Wal *pWal, sqlite3_snapshot **ppSnapshot);
 void sqlite3WalSnapshotOpen(Wal *pWal, sqlite3_snapshot *pSnapshot);
-int sqlite3WalSnapshotRecover(Wal *pWal);
-int sqlite3WalSnapshotCheck(Wal *pWal, sqlite3_snapshot *pSnapshot);
+целое sqlite3WalSnapshotRecover(Wal *pWal);
+целое sqlite3WalSnapshotCheck(Wal *pWal, sqlite3_snapshot *pSnapshot);
 void sqlite3WalSnapshotUnlock(Wal *pWal);
 #endif
 
@@ -141,22 +141,22 @@ void sqlite3WalSnapshotUnlock(Wal *pWal);
 /* If the WAL file is not empty, return the number of bytes of content
 ** stored in each frame (i.e. the db page-size when the WAL was created).
 */
-int sqlite3WalFramesize(Wal *pWal);
+целое sqlite3WalFramesize(Wal *pWal);
 #endif
 
 /* Return the sqlite3_file object for the WAL file */
 sqlite3_file *sqlite3WalFile(Wal *pWal);
 
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-int sqlite3WalWriteLock(Wal *pWal, int bLock);
+целое sqlite3WalWriteLock(Wal *pWal, целое bLock);
 void sqlite3WalDb(Wal *pWal, sqlite3 *db);
 #endif
 
 #ifdef SQLITE_USE_SEH
-int sqlite3WalSystemErrno(Wal*);
+целое sqlite3WalSystemErrno(Wal*);
 #endif
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
+#если defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_WALSTAT)
   void sqlite3WalStat(Wal*,sqlite3_str*);
 #endif
 
