@@ -79,7 +79,7 @@ extern "C" {
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once
 ** during start-up.
 */
-extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefault);
+extern පූර්ණ_සංඛ්‍යා sqlite3_multiplex_initialize(const var_na *zOrigVfsName, පූර්ණ_සංඛ්‍යා makeDefault);
 
 /*
 ** CAPI: Shutdown the multiplex system - sqlite3_multiplex_shutdown()
@@ -90,7 +90,7 @@ extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefaul
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once while
 ** shutting down in order to free all remaining multiplex groups.
 */
-extern int sqlite3_multiplex_shutdown(int eForce);
+extern පූර්ණ_සංඛ්‍යා sqlite3_multiplex_shutdown(පූර්ණ_සංඛ්‍යා eForce);
 
 #ifdef __cplusplus
 }  /* End of the 'extern "C"' block */

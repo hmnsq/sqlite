@@ -17,7 +17,7 @@
 */
 #include "btreeInt.h"
 #ifndef SQLITE_OMIT_SHARED_CACHE
-#if SQLITE_THREADSAFE
+#නම් SQLITE_THREADSAFE
 
 /*
 ** Obtain the BtShared mutex associated with B-Tree handle p. Also,
@@ -90,9 +90,9 @@ void sqlite3BtreeEnter(Btree *p){
   ** should already be set correctly. */
   assert( (p->locked==0 && p->sharable) || p->pBt->db==p->db );
 
-  if( !p->sharable ) return;
+  නම්( !p->sharable ) ආපසු;
   p->wantToLock++;
-  if( p->locked ) return;
+  නම්( p->locked ) ආපසු;
   btreeLockCarefully(p);
 }
 
@@ -109,10 +109,10 @@ static void SQLITE_NOINLINE btreeLockCarefully(Btree *p){
   ** want without having to go through the ascending lock
   ** procedure that follows.  Just be sure not to block.
   */
-  if( sqlite3_mutex_try(p->pBt->mutex)==SQLITE_OK ){
+  නම්( sqlite3_mutex_try(p->pBt->mutex)==SQLITE_OK ){
     p->pBt->db = p->db;
     p->locked = 1;
-    return;
+    ආපසු;
   }
 
   /* To avoid deadlock, first release all locks with a larger
@@ -120,17 +120,17 @@ static void SQLITE_NOINLINE btreeLockCarefully(Btree *p){
   ** the other BtShared locks that we used to hold in ascending
   ** order.
   */
-  for(pLater=p->pNext; pLater; pLater=pLater->pNext){
+  සඳහා(pLater=p->pNext; pLater; pLater=pLater->pNext){
     assert( pLater->sharable );
     assert( pLater->pNext==0 || pLater->pNext->pBt>pLater->pBt );
     assert( !pLater->locked || pLater->wantToLock>0 );
-    if( pLater->locked ){
+    නම්( pLater->locked ){
       unlockBtreeMutex(pLater);
     }
   }
   lockBtreeMutex(p);
-  for(pLater=p->pNext; pLater; pLater=pLater->pNext){
-    if( pLater->wantToLock ){
+  සඳහා(pLater=p->pNext; pLater; pLater=pLater->pNext){
+    නම්( pLater->wantToLock ){
       lockBtreeMutex(pLater);
     }
   }
@@ -142,10 +142,10 @@ static void SQLITE_NOINLINE btreeLockCarefully(Btree *p){
 */
 void sqlite3BtreeLeave(Btree *p){
   assert( sqlite3_mutex_held(p->db->mutex) );
-  if( p->sharable ){
+  නම්( p->sharable ){
     assert( p->wantToLock>0 );
     p->wantToLock--;
-    if( p->wantToLock==0 ){
+    නම්( p->wantToLock==0 ){
       unlockBtreeMutex(p);
     }
   }
@@ -158,13 +158,13 @@ void sqlite3BtreeLeave(Btree *p){
 **
 ** This routine is used only from within assert() statements.
 */
-int sqlite3BtreeHoldsMutex(Btree *p){
+පූර්ණ_සංඛ්‍යා sqlite3BtreeHoldsMutex(Btree *p){
   assert( p->sharable==0 || p->locked==0 || p->wantToLock>0 );
   assert( p->sharable==0 || p->locked==0 || p->db==p->pBt->db );
   assert( p->sharable==0 || p->locked==0 || sqlite3_mutex_held(p->pBt->mutex) );
   assert( p->sharable==0 || p->locked==0 || sqlite3_mutex_held(p->db->mutex) );
 
-  return (p->sharable==0 || p->locked);
+  ආපසු (p->sharable==0 || p->locked);
 }
 #endif
 
@@ -184,13 +184,13 @@ int sqlite3BtreeHoldsMutex(Btree *p){
 ** at the same instant.
 */
 static void SQLITE_NOINLINE btreeEnterAll(sqlite3 *db){
-  int i;
+  පූර්ණ_සංඛ්‍යා i;
   u8 skipOk = 1;
   Btree *p;
   assert( sqlite3_mutex_held(db->mutex) );
-  for(i=0; i<db->nDb; i++){
+  සඳහා(i=0; i<db->nDb; i++){
     p = db->aDb[i].pBt;
-    if( p && p->sharable ){
+    නම්( p && p->sharable ){
       sqlite3BtreeEnter(p);
       skipOk = 0;
     }
@@ -198,19 +198,19 @@ static void SQLITE_NOINLINE btreeEnterAll(sqlite3 *db){
   db->noSharedCache = skipOk;
 }
 void sqlite3BtreeEnterAll(sqlite3 *db){
-  if( db->noSharedCache==0 ) btreeEnterAll(db);
+  නම්( db->noSharedCache==0 ) btreeEnterAll(db);
 }
 static void SQLITE_NOINLINE btreeLeaveAll(sqlite3 *db){
-  int i;
+  පූර්ණ_සංඛ්‍යා i;
   Btree *p;
   assert( sqlite3_mutex_held(db->mutex) );
-  for(i=0; i<db->nDb; i++){
+  සඳහා(i=0; i<db->nDb; i++){
     p = db->aDb[i].pBt;
-    if( p ) sqlite3BtreeLeave(p);
+    නම්( p ) sqlite3BtreeLeave(p);
   }
 }
 void sqlite3BtreeLeaveAll(sqlite3 *db){
-  if( db->noSharedCache==0 ) btreeLeaveAll(db);
+  නම්( db->noSharedCache==0 ) btreeLeaveAll(db);
 }
 
 #ifndef NDEBUG
@@ -220,20 +220,20 @@ void sqlite3BtreeLeaveAll(sqlite3 *db){
 **
 ** This routine is used inside assert() statements only.
 */
-int sqlite3BtreeHoldsAllMutexes(sqlite3 *db){
-  int i;
-  if( !sqlite3_mutex_held(db->mutex) ){
-    return 0;
+පූර්ණ_සංඛ්‍යා sqlite3BtreeHoldsAllMutexes(sqlite3 *db){
+  පූර්ණ_සංඛ්‍යා i;
+  නම්( !sqlite3_mutex_held(db->mutex) ){
+    ආපසු 0;
   }
-  for(i=0; i<db->nDb; i++){
+  සඳහා(i=0; i<db->nDb; i++){
     Btree *p;
     p = db->aDb[i].pBt;
-    if( p && p->sharable &&
+    නම්( p && p->sharable &&
          (p->wantToLock==0 || !sqlite3_mutex_held(p->pBt->mutex)) ){
-      return 0;
+      ආපසු 0;
     }
   }
-  return 1;
+  ආපසු 1;
 }
 #endif /* NDEBUG */
 
@@ -249,21 +249,21 @@ int sqlite3BtreeHoldsAllMutexes(sqlite3 *db){
 ** If pSchema is not NULL, then iDb is computed from pSchema and
 ** db using sqlite3SchemaToIndex().
 */
-int sqlite3SchemaMutexHeld(sqlite3 *db, int iDb, Schema *pSchema){
+පූර්ණ_සංඛ්‍යා sqlite3SchemaMutexHeld(sqlite3 *db, පූර්ණ_සංඛ්‍යා iDb, Schema *pSchema){
   Btree *p;
   assert( db!=0 );
-  if( db->pVfs==0 && db->nDb==0 ) return 1;
-  if( pSchema ) iDb = sqlite3SchemaToIndex(db, pSchema);
+  නම්( db->pVfs==0 && db->nDb==0 ) ආපසු 1;
+  නම්( pSchema ) iDb = sqlite3SchemaToIndex(db, pSchema);
   assert( iDb>=0 && iDb<db->nDb );
-  if( !sqlite3_mutex_held(db->mutex) ) return 0;
-  if( iDb==1 ) return 1;
+  නම්( !sqlite3_mutex_held(db->mutex) ) ආපසු 0;
+  නම්( iDb==1 ) ආපසු 1;
   p = db->aDb[iDb].pBt;
   assert( p!=0 );
-  return p->sharable==0 || p->locked==1;
+  ආපසු p->sharable==0 || p->locked==1;
 }
 #endif /* NDEBUG */
 
-#else /* SQLITE_THREADSAFE>0 above.  SQLITE_THREADSAFE==0 below */
+#නැතහොත් /* SQLITE_THREADSAFE>0 above.  SQLITE_THREADSAFE==0 below */
 /*
 ** The following are special cases for mutex enter routines for use
 ** in single threaded applications that use shared cache.  Except for
@@ -278,16 +278,16 @@ void sqlite3BtreeEnter(Btree *p){
   p->pBt->db = p->db;
 }
 void sqlite3BtreeEnterAll(sqlite3 *db){
-  int i;
+  පූර්ණ_සංඛ්‍යා i;
   u8 skipOk = 1;
   /* As in the threadsafe build: set db->noSharedCache when no attached
   ** Btree is sharable, so that schema and table-lock checks are skipped */
-  if( db->noSharedCache ) return;
-  for(i=0; i<db->nDb; i++){
+  නම්( db->noSharedCache ) ආපසු;
+  සඳහා(i=0; i<db->nDb; i++){
     Btree *p = db->aDb[i].pBt;
-    if( p ){
+    නම්( p ){
       p->pBt->db = p->db;
-      if( p->sharable ) skipOk = 0;
+      නම්( p->sharable ) skipOk = 0;
     }
   }
   db->noSharedCache = skipOk;
@@ -305,7 +305,7 @@ void sqlite3BtreeEnterAll(sqlite3 *db){
 void sqlite3BtreeEnterCursor(BtCursor *pCur){
   sqlite3BtreeEnter(pCur->pBtree);
 }
-# if SQLITE_THREADSAFE
+# නම් SQLITE_THREADSAFE
 void sqlite3BtreeLeaveCursor(BtCursor *pCur){
   sqlite3BtreeLeave(pCur->pBtree);
 }

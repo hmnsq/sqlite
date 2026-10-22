@@ -67,20 +67,20 @@
 ** Setting the auth function to NULL disables this hook.  The default
 ** setting of the auth function is NULL.
 */
-int sqlite3_set_authorizer(
+පූර්ණ_සංඛ්‍යා sqlite3_set_authorizer(
   sqlite3 *db,
-  int (*xAuth)(void*,int,const char*,const char*,const char*,const char*),
+  පූර්ණ_සංඛ්‍යා (*xAuth)(void*,පූර්ණ_සංඛ්‍යා,const var_na*,const var_na*,const var_na*,const var_na*),
   void *pArg
 ){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  නම්( !sqlite3SafetyCheckOk(db) ) ආපසු SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
   db->xAuth = (sqlite3_xauth)xAuth;
   db->pAuthArg = pArg;
   sqlite3ExpirePreparedStatements(db, 1);
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  ආපසු SQLITE_OK;
 }
 
 /*
@@ -101,27 +101,27 @@ static void sqliteAuthBadReturnCode(Parse *pParse){
 ** to an SQL NULL expression. Otherwise, if pExpr is NULL, then SQLITE_IGNORE
 ** is treated as SQLITE_DENY. In this case an error is left in pParse.
 */
-int sqlite3AuthReadCol(
+පූර්ණ_සංඛ්‍යා sqlite3AuthReadCol(
   Parse *pParse,                  /* The parser context */
-  const char *zTab,               /* Table name */
-  const char *zCol,               /* Column name */
-  int iDb                         /* Index of containing database. */
+  const var_na *zTab,               /* Table name */
+  const var_na *zCol,               /* Column name */
+  පූර්ණ_සංඛ්‍යා iDb                         /* Index of containing database. */
 ){
   sqlite3 *db = pParse->db;          /* Database handle */
-  char *zDb = db->aDb[iDb].zDbSName; /* Schema name of attached database */
-  int rc;                            /* Auth callback return code */
+  var_na *zDb = db->aDb[iDb].zDbSName; /* Schema name of attached database */
+  පූර්ණ_සංඛ්‍යා rc;                            /* Auth callback return code */
 
-  if( db->init.busy ) return SQLITE_OK;
+  නම්( db->init.busy ) ආපසු SQLITE_OK;
   rc = db->xAuth(db->pAuthArg, SQLITE_READ, zTab,zCol,zDb,pParse->zAuthContext);
-  if( rc==SQLITE_DENY ){
-    char *z = sqlite3_mprintf("%s.%s", zTab, zCol);
-    if( db->nDb>2 || iDb!=0 ) z = sqlite3_mprintf("%s.%z", zDb, z);
+  නම්( rc==SQLITE_DENY ){
+    var_na *z = sqlite3_mprintf("%s.%s", zTab, zCol);
+    නම්( db->nDb>2 || iDb!=0 ) z = sqlite3_mprintf("%s.%z", zDb, z);
     sqlite3ErrorMsg(pParse, "access to %z is prohibited", z);
     pParse->rc = SQLITE_AUTH;
-  }else if( rc!=SQLITE_IGNORE && rc!=SQLITE_OK ){
+  }නැතහොත් නම්( rc!=SQLITE_IGNORE && rc!=SQLITE_OK ){
     sqliteAuthBadReturnCode(pParse);
   }
-  return rc;
+  ආපසු rc;
 }
 
 /*
@@ -140,46 +140,46 @@ void sqlite3AuthRead(
   SrcList *pTabList     /* All table that pExpr might refer to */
 ){
   Table *pTab = 0;      /* The table being read */
-  const char *zCol;     /* Name of the column of the table */
-  int iSrc;             /* Index in pTabList->a[] of table being read */
-  int iDb;              /* The index of the database the expression refers to */
-  int iCol;             /* Index of column in table */
+  const var_na *zCol;     /* Name of the column of the table */
+  පූර්ණ_සංඛ්‍යා iSrc;             /* Index in pTabList->a[] of table being read */
+  පූර්ණ_සංඛ්‍යා iDb;              /* The index of the database the expression refers to */
+  පූර්ණ_සංඛ්‍යා iCol;             /* Index of column in table */
 
   assert( pExpr->op==TK_COLUMN || pExpr->op==TK_TRIGGER );
   assert( !IN_RENAME_OBJECT );
   assert( pParse->db->xAuth!=0 );
   iDb = sqlite3SchemaToIndex(pParse->db, pSchema);
-  if( iDb<0 ){
+  නම්( iDb<0 ){
     /* An attempt to read a column out of a subquery or other
     ** temporary table. */
-    return;
+    ආපසු;
   }
 
-  if( pExpr->op==TK_TRIGGER ){
+  නම්( pExpr->op==TK_TRIGGER ){
     pTab = pParse->pTriggerTab;
-  }else{
+  }නැතහොත්{
     assert( pTabList );
-    for(iSrc=0; iSrc<pTabList->nSrc; iSrc++){
-      if( pExpr->iTable==pTabList->a[iSrc].iCursor ){
+    සඳහා(iSrc=0; iSrc<pTabList->nSrc; iSrc++){
+      නම්( pExpr->iTable==pTabList->a[iSrc].iCursor ){
         pTab = pTabList->a[iSrc].pSTab;
-        break;
+        bha_nga;
       }
     }
   }
   iCol = pExpr->iColumn;
-  if( pTab==0 ) return;
+  නම්( pTab==0 ) ආපසු;
 
-  if( iCol>=0 ){
+  නම්( iCol>=0 ){
     assert( iCol<pTab->nCol );
     zCol = pTab->aCol[iCol].zCnName;
-  }else if( pTab->iPKey>=0 ){
+  }නැතහොත් නම්( pTab->iPKey>=0 ){
     assert( pTab->iPKey<pTab->nCol );
     zCol = pTab->aCol[pTab->iPKey].zCnName;
-  }else{
+  }නැතහොත්{
     zCol = "ROWID";
   }
   assert( iDb>=0 && iDb<pParse->db->nDb );
-  if( SQLITE_IGNORE==sqlite3AuthReadCol(pParse, pTab->zName, zCol, iDb) ){
+  නම්( SQLITE_IGNORE==sqlite3AuthReadCol(pParse, pTab->zName, zCol, iDb) ){
     pExpr->op = TK_NULL;
   }
 }
@@ -196,22 +196,22 @@ void sqlite3AuthRead(
 ** as a result) in the uncommon case where an authorization check is
 ** actually needed.
 */
-static int SQLITE_NOINLINE realAuthCheck(
+static පූර්ණ_සංඛ්‍යා SQLITE_NOINLINE realAuthCheck(
   Parse *pParse,
-  int code,
-  const char *zArg1,
-  const char *zArg2,
-  const char *zArg3
+  පූර්ණ_සංඛ්‍යා code,
+  const var_na *zArg1,
+  const var_na *zArg2,
+  const var_na *zArg3
 ){
   sqlite3 *db = pParse->db;
-  int rc;
+  පූර්ණ_සංඛ්‍යා rc;
 
   /* Don't do any authorization checks if the database is initializing
   ** or if the parser is being invoked from within sqlite3_declare_vtab.
   */
   assert( !IN_RENAME_OBJECT || db->xAuth==0 );
-  if( IN_SPECIAL_PARSE ){
-    return SQLITE_OK;
+  නම්( IN_SPECIAL_PARSE ){
+    ආපසු SQLITE_OK;
   }
 
   /* EVIDENCE-OF: R-43249-19882 The third through sixth parameters to the
@@ -226,26 +226,26 @@ static int SQLITE_NOINLINE realAuthCheck(
   testcase( pParse->zAuthContext==0 );
 
   rc = db->xAuth(db->pAuthArg,code,zArg1,zArg2,zArg3,pParse->zAuthContext);
-  if( rc==SQLITE_DENY ){
+  නම්( rc==SQLITE_DENY ){
     sqlite3ErrorMsg(pParse, "not authorized");
     pParse->rc = SQLITE_AUTH;
-  }else if( rc!=SQLITE_OK && rc!=SQLITE_IGNORE ){
+  }නැතහොත් නම්( rc!=SQLITE_OK && rc!=SQLITE_IGNORE ){
     rc = SQLITE_DENY;
     sqliteAuthBadReturnCode(pParse);
   }
-  return rc;
+  ආපසු rc;
 }
-int sqlite3AuthCheck(
+පූර්ණ_සංඛ්‍යා sqlite3AuthCheck(
   Parse *pParse,
-  int code,
-  const char *zArg1,
-  const char *zArg2,
-  const char *zArg3
+  පූර්ණ_සංඛ්‍යා code,
+  const var_na *zArg1,
+  const var_na *zArg2,
+  const var_na *zArg3
 ){
-  if( pParse->db->xAuth!=0 && pParse->db->init.busy==0 ){
-    return realAuthCheck(pParse,code,zArg1,zArg2,zArg3);
-  }else{
-    return SQLITE_OK;
+  නම්( pParse->db->xAuth!=0 && pParse->db->init.busy==0 ){
+    ආපසු realAuthCheck(pParse,code,zArg1,zArg2,zArg3);
+  }නැතහොත්{
+    ආපසු SQLITE_OK;
   }
 }
 
@@ -257,7 +257,7 @@ int sqlite3AuthCheck(
 void sqlite3AuthContextPush(
   Parse *pParse,
   AuthContext *pContext, 
-  const char *zContext
+  const var_na *zContext
 ){
   assert( pParse );
   pContext->pParse = pParse;
@@ -270,7 +270,7 @@ void sqlite3AuthContextPush(
 ** by sqlite3AuthContextPush
 */
 void sqlite3AuthContextPop(AuthContext *pContext){
-  if( pContext->pParse ){
+  නම්( pContext->pParse ){
     pContext->pParse->zAuthContext = pContext->zAuthContext;
     pContext->pParse = 0;
   }

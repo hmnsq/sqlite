@@ -16,8 +16,8 @@
 #define SQLITE_HASH_H
 
 /* Forward declarations of structures. */
-typedef struct Hash Hash;
-typedef struct HashElem HashElem;
+typedef sa_nracanaa Hash Hash;
+typedef sa_nracanaa HashElem HashElem;
 
 /* A complete hash table is an instance of the following structure.
 ** The internals of this structure are intended to be opaque -- client
@@ -40,12 +40,12 @@ typedef struct HashElem HashElem;
 ** in the table, it is faster to do a linear search than to manage
 ** the hash table.
 */
-struct Hash {
-  unsigned int htsize;      /* Number of buckets in the hash table */
-  unsigned int count;       /* Number of entries in this table */
+sa_nracanaa Hash {
+  unsigned පූර්ණ_සංඛ්‍යා htsize;      /* Number of buckets in the hash table */
+  unsigned පූර්ණ_සංඛ්‍යා count;       /* Number of entries in this table */
   HashElem *first;          /* The first element of the array */
-  struct _ht {              /* the hash table */
-    unsigned int count;        /* Number of entries with this hash */
+  sa_nracanaa _ht {              /* the hash table */
+    unsigned පූර්ණ_සංඛ්‍යා count;        /* Number of entries with this hash */
     HashElem *chain;           /* Pointer to first entry with this hash */
   } *ht;
 };
@@ -56,19 +56,19 @@ struct Hash {
 ** Again, this structure is intended to be opaque, but it can't really
 ** be opaque because it is used by macros.
 */
-struct HashElem {
+sa_nracanaa HashElem {
   HashElem *next, *prev;       /* Next and previous elements in the table */
   void *data;                  /* Data associated with this element */
-  const char *pKey;            /* Key associated with this element */
-  unsigned int h;              /* hash for pKey */
+  const var_na *pKey;            /* Key associated with this element */
+  unsigned පූර්ණ_සංඛ්‍යා h;              /* hash for pKey */
 };
 
 /*
 ** Access routines.  To delete, insert a NULL pointer.
 */
 void sqlite3HashInit(Hash*);
-void *sqlite3HashInsert(Hash*, const char *pKey, void *pData);
-void *sqlite3HashFind(const Hash*, const char *pKey);
+void *sqlite3HashInsert(Hash*, const var_na *pKey, void *pData);
+void *sqlite3HashFind(const Hash*, const var_na *pKey);
 void sqlite3HashClear(Hash*);
 
 /*
