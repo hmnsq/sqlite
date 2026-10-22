@@ -18,41 +18,41 @@
 **   sqlite3demo_superunlock()
 */
 
-#include "sqlite3.h"
-#include <string.h>               /* memset(), strlen() */
-#include <assert.h>               /* assert() */
+#अन्तर्भाव "sqlite3.h"
+#अन्तर्भाव <string.h>               /* memset(), strlen() */
+#अन्तर्भाव <assert.h>               /* assert() */
 
 /*
 ** A structure to collect a busy-handler callback and argument and a count
 ** of the number of times it has been invoked.
 */
-struct SuperlockBusy {
-  int (*xBusy)(void*,int);        /* Pointer to busy-handler function */
-  void *pBusyArg;                 /* First arg to pass to xBusy */
-  int nBusy;                      /* Number of times xBusy has been invoked */
+संरचना SuperlockBusy {
+  पूर्णाङ्क (*xBusy)(शून्य*,पूर्णाङ्क);        /* Pointer to busy-handler function */
+  शून्य *pBusyArg;                 /* First arg to pass to xBusy */
+  पूर्णाङ्क nBusy;                      /* Number of times xBusy has been invoked */
 };
-typedef struct SuperlockBusy SuperlockBusy;
+प्रकारनिर्देश संरचना SuperlockBusy SuperlockBusy;
 
 /*
 ** An instance of the following structure is allocated for each active
 ** superlock. The opaque handle returned by sqlite3demo_superlock() is
 ** actually a pointer to an instance of this structure.
 */
-struct Superlock {
+संरचना Superlock {
   sqlite3 *db;                    /* Database handle used to lock db */
-  int bWal;                       /* True if db is a WAL database */
+  पूर्णाङ्क bWal;                       /* True if db is a WAL database */
 };
-typedef struct Superlock Superlock;
+प्रकारनिर्देश संरचना Superlock Superlock;
 
 /*
 ** The pCtx pointer passed to this function is actually a pointer to a
 ** SuperlockBusy structure. Invoke the busy-handler function encapsulated
 ** by the structure and return the result.
 */
-static int superlockBusyHandler(void *pCtx, int UNUSED){
+स्थिर पूर्णाङ्क superlockBusyHandler(शून्य *pCtx, पूर्णाङ्क UNUSED){
   SuperlockBusy *pBusy = (SuperlockBusy *)pCtx;
-  if( pBusy->xBusy==0 ) return 0;
-  return pBusy->xBusy(pBusy->pBusyArg, pBusy->nBusy++);
+  यदि( pBusy->xBusy==0 ) प्रत्यागम 0;
+  प्रत्यागम pBusy->xBusy(pBusy->pBusyArg, pBusy->nBusy++);
 }
 
 /*
@@ -64,22 +64,22 @@ static int superlockBusyHandler(void *pCtx, int UNUSED){
 ** If an error occurs, return an SQLite error code. The value of *pbWal
 ** is undefined in this case.
 */
-static int superlockIsWal(Superlock *pLock){
-  int rc;                         /* Return Code */
+स्थिर पूर्णाङ्क superlockIsWal(Superlock *pLock){
+  पूर्णाङ्क rc;                         /* Return Code */
   sqlite3_stmt *pStmt;            /* Compiled PRAGMA journal_mode statement */
 
   rc = sqlite3_prepare(pLock->db, "PRAGMA main.journal_mode", -1, &pStmt, 0);
-  if( rc!=SQLITE_OK ) return rc;
+  यदि( rc!=SQLITE_OK ) प्रत्यागम rc;
 
   pLock->bWal = 0;
-  if( SQLITE_ROW==sqlite3_step(pStmt) ){
-    const char *zMode = (const char *)sqlite3_column_text(pStmt, 0);
-    if( zMode && strlen(zMode)==3 && sqlite3_strnicmp("wal", zMode, 3)==0 ){
+  यदि( SQLITE_ROW==sqlite3_step(pStmt) ){
+    ध्रुव वर्ण *zMode = (ध्रुव वर्ण *)sqlite3_column_text(pStmt, 0);
+    यदि( zMode && strlen(zMode)==3 && sqlite3_strnicmp("wal", zMode, 3)==0 ){
       pLock->bWal = 1;
     }
   }
 
-  return sqlite3_finalize(pStmt);
+  प्रत्यागम sqlite3_finalize(pStmt);
 }
 
 /*
@@ -88,41 +88,41 @@ static int superlockIsWal(Superlock *pLock){
 ** the busy-handler until either it is obtained or the busy-handler
 ** callback returns 0.
 */
-static int superlockShmLock(
+स्थिर पूर्णाङ्क superlockShmLock(
   sqlite3_file *fd,               /* Database file handle */
-  int idx,                        /* Offset of shm-lock to obtain */
-  int nByte,                      /* Number of consective bytes to lock */
+  पूर्णाङ्क idx,                        /* Offset of shm-lock to obtain */
+  पूर्णाङ्क nByte,                      /* Number of consective bytes to lock */
   SuperlockBusy *pBusy            /* Busy-handler wrapper object */
 ){
-  int rc;
-  int (*xShmLock)(sqlite3_file*, int, int, int) = fd->pMethods->xShmLock;
-  do {
+  पूर्णाङ्क rc;
+  पूर्णाङ्क (*xShmLock)(sqlite3_file*, पूर्णाङ्क, पूर्णाङ्क, पूर्णाङ्क) = fd->pMethods->xShmLock;
+  कुरु {
     rc = xShmLock(fd, idx, nByte, SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE);
-  }while( rc==SQLITE_BUSY && superlockBusyHandler((void *)pBusy, 0) );
-  return rc;
+  }यावत्( rc==SQLITE_BUSY && superlockBusyHandler((शून्य *)pBusy, 0) );
+  प्रत्यागम rc;
 }
 
 /*
 ** Obtain the extra locks on the database file required for WAL databases.
 ** Invoke the supplied busy-handler as required.
 */
-static int superlockWalLock(
+स्थिर पूर्णाङ्क superlockWalLock(
   sqlite3 *db,                    /* Database handle open on WAL database */
   SuperlockBusy *pBusy            /* Busy handler wrapper object */
 ){
-  int rc;                         /* Return code */
+  पूर्णाङ्क rc;                         /* Return code */
   sqlite3_file *fd = 0;           /* Main database file handle */
-  void volatile *p = 0;           /* Pointer to first page of shared memory */
+  शून्य चञ्चल *p = 0;           /* Pointer to first page of shared memory */
 
   /* Obtain a pointer to the sqlite3_file object open on the main db file. */
-  rc = sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, (void *)&fd);
-  if( rc!=SQLITE_OK ) return rc;
+  rc = sqlite3_file_control(db, "main", SQLITE_FCNTL_FILE_POINTER, (शून्य *)&fd);
+  यदि( rc!=SQLITE_OK ) प्रत्यागम rc;
 
   /* Obtain the "recovery" lock. Normally, this lock is only obtained by
   ** clients running database recovery.  
   */
   rc = superlockShmLock(fd, 2, 1, pBusy);
-  if( rc!=SQLITE_OK ) return rc;
+  यदि( rc!=SQLITE_OK ) प्रत्यागम rc;
 
   /* Zero the start of the first shared-memory page. This means that any
   ** clients that open read or write transactions from this point on will
@@ -132,15 +132,15 @@ static int superlockWalLock(
   ** same reason.
   */
   rc = fd->pMethods->xShmMap(fd, 0, 32*1024, 1, &p);
-  if( rc!=SQLITE_OK ) return rc;
-  memset((void *)p, 0, 32);
+  यदि( rc!=SQLITE_OK ) प्रत्यागम rc;
+  memset((शून्य *)p, 0, 32);
 
   /* Obtain exclusive locks on all the "read-lock" slots. Once these locks
   ** are held, it is guaranteed that there are no active reader, writer or 
   ** checkpointer clients.
   */
   rc = superlockShmLock(fd, 3, SQLITE_SHM_NLOCK-3, pBusy);
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
@@ -148,14 +148,14 @@ static int superlockWalLock(
 ** this function must have been obtained from a successful call to
 ** sqlite3demo_superlock().
 */
-void sqlite3demo_superunlock(void *pLock){
+शून्य sqlite3demo_superunlock(शून्य *pLock){
   Superlock *p = (Superlock *)pLock;
-  if( p->bWal ){
-    int rc;                         /* Return code */
-    int flags = SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE;
+  यदि( p->bWal ){
+    पूर्णाङ्क rc;                         /* Return code */
+    पूर्णाङ्क flags = SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE;
     sqlite3_file *fd = 0;
-    rc = sqlite3_file_control(p->db, "main", SQLITE_FCNTL_FILE_POINTER, (void *)&fd);
-    if( rc==SQLITE_OK ){
+    rc = sqlite3_file_control(p->db, "main", SQLITE_FCNTL_FILE_POINTER, (शून्य *)&fd);
+    यदि( rc==SQLITE_OK ){
       fd->pMethods->xShmLock(fd, 2, 1, flags);
       fd->pMethods->xShmLock(fd, 3, SQLITE_SHM_NLOCK-3, flags);
     }
@@ -179,20 +179,20 @@ void sqlite3demo_superunlock(void *pLock){
 ** until either the lock can be obtained or the busy-handler function returns
 ** 0 (indicating "give up").
 */
-int sqlite3demo_superlock(
-  const char *zPath,              /* Path to database file to lock */
-  const char *zVfs,               /* VFS to use to access database file */
-  int (*xBusy)(void*,int),        /* Busy handler callback */
-  void *pBusyArg,                 /* Context arg for busy handler */
-  void **ppLock                   /* OUT: Context to pass to superunlock() */
+पूर्णाङ्क sqlite3demo_superlock(
+  ध्रुव वर्ण *zPath,              /* Path to database file to lock */
+  ध्रुव वर्ण *zVfs,               /* VFS to use to access database file */
+  पूर्णाङ्क (*xBusy)(शून्य*,पूर्णाङ्क),        /* Busy handler callback */
+  शून्य *pBusyArg,                 /* Context arg for busy handler */
+  शून्य **ppLock                   /* OUT: Context to pass to superunlock() */
 ){
   SuperlockBusy busy = {0, 0, 0}; /* Busy handler wrapper object */
-  int rc;                         /* Return code */
+  पूर्णाङ्क rc;                         /* Return code */
   Superlock *pLock;
 
-  pLock = sqlite3_malloc(sizeof(Superlock));
-  if( !pLock ) return SQLITE_NOMEM;
-  memset(pLock, 0, sizeof(Superlock));
+  pLock = sqlite3_malloc(परिमाण(Superlock));
+  यदि( !pLock ) प्रत्यागम SQLITE_NOMEM;
+  memset(pLock, 0, परिमाण(Superlock));
 
   /* Open a database handle on the file to superlock. */
   rc = sqlite3_open_v2(
@@ -212,10 +212,10 @@ int sqlite3demo_superlock(
   ** this call to sqlite3demo_superlock(), including any made during the
   ** "BEGIN EXCLUSIVE".
   */
-  if( rc==SQLITE_OK ){
+  यदि( rc==SQLITE_OK ){
     busy.xBusy = xBusy;
     busy.pBusyArg = pBusyArg;
-    sqlite3_busy_handler(pLock->db, superlockBusyHandler, (void *)&busy);
+    sqlite3_busy_handler(pLock->db, superlockBusyHandler, (शून्य *)&busy);
     rc = sqlite3_exec(pLock->db, "BEGIN EXCLUSIVE", 0, 0, 0);
   }
 
@@ -228,23 +228,23 @@ int sqlite3demo_superlock(
   ** to drop the WAL read and write locks currently held. Otherwise, the
   ** new WAL locks may conflict with the old.
   */
-  if( rc==SQLITE_OK ){
-    if( SQLITE_OK==(rc = superlockIsWal(pLock)) && pLock->bWal ){
+  यदि( rc==SQLITE_OK ){
+    यदि( SQLITE_OK==(rc = superlockIsWal(pLock)) && pLock->bWal ){
       rc = sqlite3_exec(pLock->db, "COMMIT", 0, 0, 0);
-      if( rc==SQLITE_OK ){
+      यदि( rc==SQLITE_OK ){
         rc = superlockWalLock(pLock->db, &busy);
       }
     }
   }
 
-  if( rc!=SQLITE_OK ){
+  यदि( rc!=SQLITE_OK ){
     sqlite3demo_superunlock(pLock);
     *ppLock = 0;
-  }else{
+  }अन्यथा{
     *ppLock = pLock;
   }
 
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
@@ -256,101 +256,101 @@ int sqlite3demo_superlock(
 
 #ifdef SQLITE_TEST
 
-#include "tclsqlite.h"
+#अन्तर्भाव "tclsqlite.h"
 
-struct InterpAndScript {
+संरचना InterpAndScript {
   Tcl_Interp *interp;
   Tcl_Obj *pScript;
 };
-typedef struct InterpAndScript InterpAndScript;
+प्रकारनिर्देश संरचना InterpAndScript InterpAndScript;
 
-static void SQLITE_TCLAPI superunlock_del(ClientData cd){
-  sqlite3demo_superunlock((void *)cd);
+स्थिर शून्य SQLITE_TCLAPI superunlock_del(ClientData cd){
+  sqlite3demo_superunlock((शून्य *)cd);
 }
 
-static int SQLITE_TCLAPI superunlock_cmd(
+स्थिर पूर्णाङ्क SQLITE_TCLAPI superunlock_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  यदि( objc!=1 ){
+    Tcl_Wrong_अंक_Args(interp, 1, objv, "");
+    प्रत्यागम TCL_ERROR;
   }
   Tcl_DeleteCommand(interp, Tcl_GetString(objv[0]));
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
-static int superlock_busy(void *pCtx, int nBusy){
+स्थिर पूर्णाङ्क superlock_busy(शून्य *pCtx, पूर्णाङ्क nBusy){
   InterpAndScript *p = (InterpAndScript *)pCtx;
   Tcl_Obj *pEval;                 /* Script to evaluate */
-  int iVal = 0;                   /* Value to return */
+  पूर्णाङ्क iVal = 0;                   /* Value to return */
 
   pEval = Tcl_DuplicateObj(p->pScript);
-  Tcl_IncrRefCount(pEval);
+  Tcl_Incr_Ref_गिनती(pEval);
   Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewIntObj(nBusy));
   Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
   Tcl_GetIntFromObj(p->interp, Tcl_GetObjResult(p->interp), &iVal);
-  Tcl_DecrRefCount(pEval);
+  Tcl_Decr_Ref_गिनती(pEval);
 
-  return iVal;
+  प्रत्यागम iVal;
 }
 
 /*
 ** Tclcmd: sqlite3demo_superlock CMDNAME PATH VFS BUSY-HANDLER-SCRIPT
 */
-static int SQLITE_TCLAPI superlock_cmd(
+स्थिर पूर्णाङ्क SQLITE_TCLAPI superlock_cmd(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-  void *pLock;                    /* Lock context */
-  char *zPath;
-  char *zVfs = 0;
+  शून्य *pLock;                    /* Lock context */
+  वर्ण *zPath;
+  वर्ण *zVfs = 0;
   InterpAndScript busy = {0, 0};
-  int (*xBusy)(void*,int) = 0;    /* Busy handler callback */
-  int rc;                         /* Return code from sqlite3demo_superlock() */
+  पूर्णाङ्क (*xBusy)(शून्य*,पूर्णाङ्क) = 0;    /* Busy handler callback */
+  पूर्णाङ्क rc;                         /* Return code from sqlite3demo_superlock() */
 
-  if( objc<3 || objc>5 ){
-    Tcl_WrongNumArgs(
+  यदि( objc<3 || objc>5 ){
+    Tcl_Wrong_अंक_Args(
         interp, 1, objv, "CMDNAME PATH ?VFS? ?BUSY-HANDLER-SCRIPT?");
-    return TCL_ERROR;
+    प्रत्यागम TCL_ERROR;
   }
 
   zPath = Tcl_GetString(objv[2]);
 
-  if( objc>3 ){
+  यदि( objc>3 ){
     zVfs = Tcl_GetString(objv[3]);
-    if( strlen(zVfs)==0 ) zVfs = 0;
+    यदि( strlen(zVfs)==0 ) zVfs = 0;
   }
-  if( objc>4 ){
+  यदि( objc>4 ){
     busy.interp = interp;
     busy.pScript = objv[4];
     xBusy = superlock_busy;
   }
 
   rc = sqlite3demo_superlock(zPath, zVfs, xBusy, &busy, &pLock);
-  assert( rc==SQLITE_OK || pLock==0 );
-  assert( rc!=SQLITE_OK || pLock!=0 );
+  प्रतिज्ञा( rc==SQLITE_OK || pLock==0 );
+  प्रतिज्ञा( rc!=SQLITE_OK || pLock!=0 );
 
-  if( rc!=SQLITE_OK ){
-    extern const char *sqlite3ErrStr(int);
+  यदि( rc!=SQLITE_OK ){
+    बाह्य ध्रुव वर्ण *sqlite3ErrStr(पूर्णाङ्क);
     Tcl_ResetResult(interp);
-    Tcl_AppendResult(interp, sqlite3ErrStr(rc), NULL);
-    return TCL_ERROR;
+    Tcl_AppendResult(interp, sqlite3ErrStr(rc), रिक्त);
+    प्रत्यागम TCL_ERROR;
   }
 
   Tcl_CreateObjCommand(
       interp, Tcl_GetString(objv[1]), superunlock_cmd, pLock, superunlock_del
   );
   Tcl_SetObjResult(interp, objv[1]);
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
-int SqliteSuperlock_Init(Tcl_Interp *interp){
+पूर्णाङ्क SqliteSuperlock_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "sqlite3demo_superlock", superlock_cmd, 0, 0);
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 #endif

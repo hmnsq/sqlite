@@ -11,7 +11,7 @@
 *************************************************************************
 ** This file contains code used to implement the ATTACH and DETACH commands.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
 #ifndef SQLITE_OMIT_ATTACH
 /*
@@ -32,25 +32,25 @@
 **
 ** will fail because neither abc or def can be resolved.
 */
-static int resolveAttachExpr(NameContext *pName, Expr *pExpr)
+स्थिर पूर्णाङ्क resolve_Attach_व्यंजक(NameContext *pName, व्यंजक *p_व्यंजक)
 {
-  int rc = SQLITE_OK;
-  if( pExpr ){
-    if( pExpr->op!=TK_ID ){
-      rc = sqlite3ResolveExprNames(pName, pExpr);
-    }else{
-      pExpr->op = TK_STRING;
+  पूर्णाङ्क rc = SQLITE_OK;
+  यदि( p_व्यंजक ){
+    यदि( p_व्यंजक->op!=TK_ID ){
+      rc = sqlite3_Resolve_व्यंजक_Names(pName, p_व्यंजक);
+    }अन्यथा{
+      p_व्यंजक->op = TK_STRING;
     }
   }
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
 ** Return true if zName points to a name that may be used to refer to
 ** database iDb attached to handle db.
 */
-int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName){
-  return (
+पूर्णाङ्क sqlite3DbIsNamed(sqlite3 *db, पूर्णाङ्क iDb, ध्रुव वर्ण *zName){
+  प्रत्यागम (
       sqlite3StrICmp(db->aDb[iDb].zDbSName, zName)==0
    || (iDb==0 && sqlite3StrICmp("main", zName)==0)
   );
@@ -60,13 +60,13 @@ int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName){
 ** If any TEMP triggers reference schema pSchema, move those triggers to
 ** reference the TEMP schema itself.
 */
-static void detachTempTriggers(sqlite3 *db, Schema *pSchema){
+स्थिर शून्य detachTempTriggers(sqlite3 *db, Schema *pSchema){
   HashElem *pEntry;
-  assert( db->aDb[1].pSchema );
+  प्रतिज्ञा( db->aDb[1].pSchema );
   pEntry = sqliteHashFirst(&db->aDb[1].pSchema->trigHash);
-  while( pEntry ){
+  यावत्( pEntry ){
     Trigger *pTrig = (Trigger*)sqliteHashData(pEntry);
-    if( pTrig->pTabSchema==pSchema ){
+    यदि( pTrig->pTabSchema==pSchema ){
       pTrig->pTabSchema = pTrig->pSchema;
     }
     pEntry = sqliteHashNext(pEntry);
@@ -88,57 +88,57 @@ static void detachTempTriggers(sqlite3 *db, Schema *pSchema){
 ** new database, close the database on db->init.iDb and reopen it as an
 ** empty MemDB.
 */
-static void attachFunc(
+स्थिर शून्य attachFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  पूर्णाङ्क NotUsed,
+  sqlite3_मूल्य **argv
 ){
-  int i;
-  int rc = 0;
+  पूर्णाङ्क i;
+  पूर्णाङ्क rc = 0;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zName;
-  const char *zFile;
-  char *zPath = 0;
-  char *zErr = 0;
-  unsigned int flags;
+  ध्रुव वर्ण *zName;
+  ध्रुव वर्ण *zFile;
+  वर्ण *zPath = 0;
+  वर्ण *zErr = 0;
+  unsigned पूर्णाङ्क flags;
   Db *aNew;                 /* New array of Db pointers */
   Db *pNew = 0;             /* Db object for the newly attached database */
-  char *zErrDyn = 0;
+  वर्ण *zErrDyn = 0;
   sqlite3_vfs *pVfs;
 
   UNUSED_PARAMETER(NotUsed);
-  zFile = (const char *)sqlite3_value_text(argv[0]);
-  zName = (const char *)sqlite3_value_text(argv[1]);
-  if( zFile==0 ) zFile = "";
-  if( zName==0 ) zName = "";
+  zFile = (ध्रुव वर्ण *)sqlite3_मूल्य_text(argv[0]);
+  zName = (ध्रुव वर्ण *)sqlite3_मूल्य_text(argv[1]);
+  यदि( zFile==0 ) zFile = "";
+  यदि( zName==0 ) zName = "";
 
 #ifndef SQLITE_OMIT_DESERIALIZE
 # define REOPEN_AS_MEMDB(db)  (db->init.reopenMemdb)
-#else
+#अन्यथा
 # define REOPEN_AS_MEMDB(db)  (0)
 #endif
 
-  if( REOPEN_AS_MEMDB(db) ){
+  यदि( REOPEN_AS_MEMDB(db) ){
     /* This is not a real ATTACH.  Instead, this routine is being called
     ** from sqlite3_deserialize() to close database db->init.iDb and
     ** reopen it as a MemDB */
     Btree *pNewBt = 0;
 
     pNew = &db->aDb[db->init.iDb];
-    assert( pNew->pBt!=0 );
-    if( sqlite3BtreeTxnState(pNew->pBt)!=SQLITE_TXN_NONE
+    प्रतिज्ञा( pNew->pBt!=0 );
+    यदि( sqlite3BtreeTxnState(pNew->pBt)!=SQLITE_TXN_NONE
      || sqlite3BtreeIsInBackup(pNew->pBt)
     ){
       rc = SQLITE_BUSY;
-      goto attach_error;
+      गच्छ attach_error;
     }
 
     pVfs = sqlite3_vfs_find("memdb");
-    if( pVfs==0 ) return;
+    यदि( pVfs==0 ) प्रत्यागम;
     rc = sqlite3BtreeOpen(pVfs, "x\0", db, &pNewBt, 0, SQLITE_OPEN_MAIN_DB);
-    if( rc==SQLITE_OK ){
+    यदि( rc==SQLITE_OK ){
       Schema *pNewSchema = sqlite3SchemaGet(db, pNewBt);
-      if( pNewSchema ){
+      यदि( pNewSchema ){
         /* Both the Btree and the new Schema were allocated successfully.
         ** Close the old db and update the aDb[] slot with the new memdb
         ** values.  */
@@ -146,19 +146,19 @@ static void attachFunc(
         sqlite3BtreeClose(pNew->pBt);
         pNew->pBt = pNewBt;
         pNew->pSchema = pNewSchema;
-        if( db->init.iDb==0 ){
+        यदि( db->init.iDb==0 ){
           /* Clear all eponymous virtual table instances, as they are holding
           ** pointers to the schema object just freed by sqlite3BtreeClose() */
           sqlite3VtabEponymousTableClearAll(db);
         }
         sqlite3ExpirePreparedStatements(db, 1);
-      }else{
+      }अन्यथा{
         sqlite3BtreeClose(pNewBt);
         rc = SQLITE_NOMEM;
       }
     }
-    if( rc ) goto attach_error;
-  }else{
+    यदि( rc ) गच्छ attach_error;
+  }अन्यथा{
     /* This is a real ATTACH
     **
     ** Check for the following errors:
@@ -167,34 +167,34 @@ static void attachFunc(
     **     * Transaction currently open
     **     * Specified database name already being used.
     */
-    if( db->nDb>=db->aLimit[SQLITE_LIMIT_ATTACHED]+2 ){
+    यदि( db->nDb>=db->aLimit[SQLITE_LIMIT_ATTACHED]+2 ){
       zErrDyn = sqlite3MPrintf(db, "too many attached databases - max %d", 
         db->aLimit[SQLITE_LIMIT_ATTACHED]
       );
-      goto attach_error;
+      गच्छ attach_error;
     }
-    for(i=0; i<db->nDb; i++){
-      assert( zName );
-      if( sqlite3DbIsNamed(db, i, zName) ){
+    प्रति(i=0; i<db->nDb; i++){
+      प्रतिज्ञा( zName );
+      यदि( sqlite3DbIsNamed(db, i, zName) ){
         zErrDyn = sqlite3MPrintf(db, "database %s is already in use", zName);
-        goto attach_error;
+        गच्छ attach_error;
       }
     }
   
     /* Allocate the new entry in the db->aDb[] array and initialize the schema
     ** hash tables.
     */
-    if( db->aDb==db->aDbStatic ){
-      aNew = sqlite3DbMallocRawNN(db, sizeof(db->aDb[0])*3 );
-      if( aNew==0 ) return;
-      memcpy(aNew, db->aDb, sizeof(db->aDb[0])*2);
-    }else{
-      aNew = sqlite3DbRealloc(db, db->aDb, sizeof(db->aDb[0])*(1+(i64)db->nDb));
-      if( aNew==0 ) return;
+    यदि( db->aDb==db->aDbStatic ){
+      aNew = sqlite3DbMallocRawNN(db, परिमाण(db->aDb[0])*3 );
+      यदि( aNew==0 ) प्रत्यागम;
+      memcpy(aNew, db->aDb, परिमाण(db->aDb[0])*2);
+    }अन्यथा{
+      aNew = sqlite3DbRealloc(db, db->aDb, परिमाण(db->aDb[0])*(1+(i64)db->nDb));
+      यदि( aNew==0 ) प्रत्यागम;
     }
     db->aDb = aNew;
     pNew = &db->aDb[db->nDb];
-    memset(pNew, 0, sizeof(*pNew));
+    memset(pNew, 0, परिमाण(*pNew));
   
     /* Open the database file. If the btree is successfully opened, use
     ** it to obtain the database schema. At this point the schema may
@@ -202,34 +202,34 @@ static void attachFunc(
     */
     flags = db->openFlags;
     rc = sqlite3ParseUri(db->pVfs->zName, zFile, &flags, &pVfs, &zPath, &zErr);
-    if( rc!=SQLITE_OK ){
-      if( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
+    यदि( rc!=SQLITE_OK ){
+      यदि( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
       sqlite3_result_error(context, zErr, -1);
       sqlite3_free(zErr);
-      return;
+      प्रत्यागम;
     }
-    if( (db->flags & SQLITE_AttachWrite)==0 ){
+    यदि( (db->flags & SQLITE_AttachWrite)==0 ){
       flags &= ~(SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE);
       flags |= SQLITE_OPEN_READONLY;
-    }else if( (db->flags & SQLITE_AttachCreate)==0 ){
+    }अन्यथा यदि( (db->flags & SQLITE_AttachCreate)==0 ){
       flags &= ~SQLITE_OPEN_CREATE;
     }
-    assert( pVfs );
+    प्रतिज्ञा( pVfs );
     flags |= SQLITE_OPEN_MAIN_DB;
     rc = sqlite3BtreeOpen(pVfs, zPath, db, &pNew->pBt, 0, flags);
     db->nDb++;
     pNew->zDbSName = sqlite3DbStrDup(db, zName);
   }
   db->noSharedCache = 0;
-  if( rc==SQLITE_CONSTRAINT ){
+  यदि( rc==SQLITE_CONSTRAINT ){
     rc = SQLITE_ERROR;
     zErrDyn = sqlite3MPrintf(db, "database is already attached");
-  }else if( rc==SQLITE_OK ){
+  }अन्यथा यदि( rc==SQLITE_OK ){
     Pager *pPager;
     pNew->pSchema = sqlite3SchemaGet(db, pNew->pBt);
-    if( !pNew->pSchema ){
+    यदि( !pNew->pSchema ){
       rc = SQLITE_NOMEM_BKPT;
-    }else if( pNew->pSchema->file_format && pNew->pSchema->enc!=ENC(db) ){
+    }अन्यथा यदि( pNew->pSchema->file_format && pNew->pSchema->enc!=ENC(db) ){
       zErrDyn = sqlite3MPrintf(db, 
         "attached databases must use the same text encoding as main database");
       rc = SQLITE_ERROR;
@@ -246,7 +246,7 @@ static void attachFunc(
     sqlite3BtreeLeave(pNew->pBt);
   }
   pNew->safety_level = SQLITE_DEFAULT_SYNCHRONOUS+1;
-  if( rc==SQLITE_OK && pNew->zDbSName==0 ){
+  यदि( rc==SQLITE_OK && pNew->zDbSName==0 ){
     rc = SQLITE_NOMEM_BKPT;
   }
   sqlite3_free_filename( zPath );
@@ -256,54 +256,54 @@ static void attachFunc(
   ** remove the entry from the db->aDb[] array. i.e. put everything back the
   ** way we found it.
   */
-  if( rc==SQLITE_OK ){
+  यदि( rc==SQLITE_OK ){
     sqlite3BtreeEnterAll(db);
     db->init.iDb = 0;
     db->mDbFlags &= ~(DBFLAG_SchemaKnownOk);
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    if( db->setlkFlags & SQLITE_SETLK_BLOCK_ON_CONNECT ){
-      int val = 1;
+    यदि( db->setlkFlags & SQLITE_SETLK_BLOCK_ON_CONNECT ){
+      पूर्णाङ्क val = 1;
       sqlite3_file *fd = sqlite3PagerFile(sqlite3BtreePager(pNew->pBt));
       sqlite3OsFileControlHint(fd, SQLITE_FCNTL_BLOCK_ON_CONNECT, &val);
     }
 #endif
-    if( !REOPEN_AS_MEMDB(db) ){
+    यदि( !REOPEN_AS_MEMDB(db) ){
       rc = sqlite3Init(db, &zErrDyn);
     }
     sqlite3BtreeLeaveAll(db);
-    assert( zErrDyn==0 || rc!=SQLITE_OK );
+    प्रतिज्ञा( zErrDyn==0 || rc!=SQLITE_OK );
   }
-  if( rc ){
-    if( ALWAYS(!REOPEN_AS_MEMDB(db)) ){
-      int iDb = db->nDb - 1;
-      assert( iDb>=2 );
-      if( db->aDb[iDb].pBt ){
+  यदि( rc ){
+    यदि( ALWAYS(!REOPEN_AS_MEMDB(db)) ){
+      पूर्णाङ्क iDb = db->nDb - 1;
+      प्रतिज्ञा( iDb>=2 );
+      यदि( db->aDb[iDb].pBt ){
         sqlite3BtreeClose(db->aDb[iDb].pBt);
         db->aDb[iDb].pBt = 0;
         db->aDb[iDb].pSchema = 0;
       }
       sqlite3ResetAllSchemasOfConnection(db);
       db->nDb = iDb;
-      if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+      यदि( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
         sqlite3OomFault(db);
         sqlite3DbFree(db, zErrDyn);
         zErrDyn = sqlite3MPrintf(db, "out of memory");
-      }else if( zErrDyn==0 ){
+      }अन्यथा यदि( zErrDyn==0 ){
         zErrDyn = sqlite3MPrintf(db, "unable to open database: %s", zFile);
       }
     }
-    goto attach_error;
+    गच्छ attach_error;
   }
   
-  return;
+  प्रत्यागम;
 
 attach_error:
   /* Return an error if we get here */
-  if( zErrDyn ){
+  यदि( zErrDyn ){
     sqlite3_result_error(context, zErrDyn, -1);
     sqlite3DbFree(db, zErrDyn);
   }
-  if( rc ) sqlite3_result_error_code(context, rc);
+  यदि( rc ) sqlite3_result_error_code(context, rc);
 }
 
 /*
@@ -314,39 +314,39 @@ attach_error:
 **
 **     SELECT sqlite_detach(x)
 */
-static void detachFunc(
+स्थिर शून्य detachFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  पूर्णाङ्क NotUsed,
+  sqlite3_मूल्य **argv
 ){
-  const char *zName = (const char *)sqlite3_value_text(argv[0]);
+  ध्रुव वर्ण *zName = (ध्रुव वर्ण *)sqlite3_मूल्य_text(argv[0]);
   sqlite3 *db = sqlite3_context_db_handle(context);
-  int i;
+  पूर्णाङ्क i;
   Db *pDb = 0;
-  char zErr[128];
+  वर्ण zErr[128];
 
   UNUSED_PARAMETER(NotUsed);
 
-  if( zName==0 ) zName = "";
-  for(i=0; i<db->nDb; i++){
+  यदि( zName==0 ) zName = "";
+  प्रति(i=0; i<db->nDb; i++){
     pDb = &db->aDb[i];
-    if( pDb->pBt==0 ) continue;
-    if( sqlite3DbIsNamed(db, i, zName) ) break;
+    यदि( pDb->pBt==0 ) अनुवर्त;
+    यदि( sqlite3DbIsNamed(db, i, zName) ) भङ्ग;
   }
 
-  if( i>=db->nDb ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "no such database: %s", zName);
-    goto detach_error;
+  यदि( i>=db->nDb ){
+    sqlite3_snprintf(परिमाण(zErr),zErr, "no such database: %s", zName);
+    गच्छ detach_error;
   }
-  if( i<2 ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "cannot detach database %s", zName);
-    goto detach_error;
+  यदि( i<2 ){
+    sqlite3_snprintf(परिमाण(zErr),zErr, "cannot detach database %s", zName);
+    गच्छ detach_error;
   }
-  if( sqlite3BtreeTxnState(pDb->pBt)!=SQLITE_TXN_NONE
+  यदि( sqlite3BtreeTxnState(pDb->pBt)!=SQLITE_TXN_NONE
    || sqlite3BtreeIsInBackup(pDb->pBt)
   ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "database %s is locked", zName);
-    goto detach_error;
+    sqlite3_snprintf(परिमाण(zErr),zErr, "database %s is locked", zName);
+    गच्छ detach_error;
   }
 
   detachTempTriggers(db, pDb->pSchema);
@@ -354,7 +354,7 @@ static void detachFunc(
   pDb->pBt = 0;
   pDb->pSchema = 0;
   sqlite3CollapseDatabaseArray(db);
-  return;
+  प्रत्यागम;
 
 detach_error:
   sqlite3_result_error(context, zErr, -1);
@@ -364,47 +364,47 @@ detach_error:
 ** This procedure generates VDBE code for a single invocation of either the
 ** sqlite_detach() or sqlite_attach() SQL user functions.
 */
-static void codeAttach(
+स्थिर शून्य codeAttach(
   Parse *pParse,       /* The parser context */
-  int type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
-  FuncDef const *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
-  Expr *pAuthArg,      /* Expression to pass to authorization callback */
-  Expr *pFilename,     /* Name of database file */
-  Expr *pDbname,       /* Name of the database to use internally */
-  Expr *pKey           /* Database key for encryption extension */
+  पूर्णाङ्क type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
+  FuncDef ध्रुव *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
+  व्यंजक *pAuthArg,      /* Expression to pass to authorization callback */
+  व्यंजक *pFilename,     /* Name of database file */
+  व्यंजक *pDbname,       /* Name of the database to use internally */
+  व्यंजक *p_कुंजी           /* Database key for encryption extension */
 ){
-  int rc;
+  पूर्णाङ्क rc;
   NameContext sName;
   Vdbe *v;
   sqlite3* db = pParse->db;
-  int regArgs;
+  पूर्णाङ्क regArgs;
 
-  if( SQLITE_OK!=sqlite3ReadSchema(pParse) ) goto attach_end;
+  यदि( SQLITE_OK!=sqlite3ReadSchema(pParse) ) गच्छ attach_end;
 
-  if( pParse->nErr ) goto attach_end;
-  memset(&sName, 0, sizeof(NameContext));
+  यदि( pParse->nErr ) गच्छ attach_end;
+  memset(&sName, 0, परिमाण(NameContext));
   sName.pParse = pParse;
 
-  if( 
-      SQLITE_OK!=resolveAttachExpr(&sName, pFilename) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pDbname) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pKey)
+  यदि( 
+      SQLITE_OK!=resolve_Attach_व्यंजक(&sName, pFilename) ||
+      SQLITE_OK!=resolve_Attach_व्यंजक(&sName, pDbname) ||
+      SQLITE_OK!=resolve_Attach_व्यंजक(&sName, p_कुंजी)
   ){
-    goto attach_end;
+    गच्छ attach_end;
   }
 
 #ifndef SQLITE_OMIT_AUTHORIZATION
-  if( ALWAYS(pAuthArg) ){
-    char *zAuthArg;
-    if( pAuthArg->op==TK_STRING ){
-      assert( !ExprHasProperty(pAuthArg, EP_IntValue) );
+  यदि( ALWAYS(pAuthArg) ){
+    वर्ण *zAuthArg;
+    यदि( pAuthArg->op==TK_STRING ){
+      प्रतिज्ञा( !व्यंजक_Has_Property(pAuthArg, EP_Int_मूल्य) );
       zAuthArg = pAuthArg->u.zToken;
-    }else{
+    }अन्यथा{
       zAuthArg = 0;
     }
     rc = sqlite3AuthCheck(pParse, type, zAuthArg, 0, 0);
-    if(rc!=SQLITE_OK ){
-      goto attach_end;
+    यदि(rc!=SQLITE_OK ){
+      गच्छ attach_end;
     }
   }
 #endif /* SQLITE_OMIT_AUTHORIZATION */
@@ -412,12 +412,12 @@ static void codeAttach(
 
   v = sqlite3GetVdbe(pParse);
   regArgs = sqlite3GetTempRange(pParse, 4);
-  sqlite3ExprCode(pParse, pFilename, regArgs);
-  sqlite3ExprCode(pParse, pDbname, regArgs+1);
-  sqlite3ExprCode(pParse, pKey, regArgs+2);
+  sqlite3_व्यंजक_Code(pParse, pFilename, regArgs);
+  sqlite3_व्यंजक_Code(pParse, pDbname, regArgs+1);
+  sqlite3_व्यंजक_Code(pParse, p_कुंजी, regArgs+2);
 
-  assert( v || db->mallocFailed );
-  if( v ){
+  प्रतिज्ञा( v || db->mallocFailed );
+  यदि( v ){
     sqlite3VdbeAddFunctionCall(pParse, 0, regArgs+3-pFunc->nArg, regArgs+3,
                                pFunc->nArg, pFunc, 0);
     /* Code an OP_Expire. For an ATTACH statement, set P1 to true (expire this
@@ -428,9 +428,9 @@ static void codeAttach(
   }
   
 attach_end:
-  sqlite3ExprDelete(db, pFilename);
-  sqlite3ExprDelete(db, pDbname);
-  sqlite3ExprDelete(db, pKey);
+  sqlite3_व्यंजक_Delete(db, pFilename);
+  sqlite3_व्यंजक_Delete(db, pDbname);
+  sqlite3_व्यंजक_Delete(db, p_कुंजी);
 }
 
 /*
@@ -438,8 +438,8 @@ attach_end:
 **
 **     DETACH pDbname
 */
-void sqlite3Detach(Parse *pParse, Expr *pDbname){
-  static const FuncDef detach_func = {
+शून्य sqlite3Detach(Parse *pParse, व्यंजक *pDbname){
+  स्थिर ध्रुव FuncDef detach_func = {
     1,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -458,8 +458,8 @@ void sqlite3Detach(Parse *pParse, Expr *pDbname){
 **
 **     ATTACH p AS pDbname KEY pKey
 */
-void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
-  static const FuncDef attach_func = {
+शून्य sqlite3Attach(Parse *pParse, व्यंजक *p, व्यंजक *pDbname, व्यंजक *p_कुंजी){
+  स्थिर ध्रुव FuncDef attach_func = {
     3,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -470,47 +470,47 @@ void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
     "sqlite_attach",  /* zName */
     {0}
   };
-  codeAttach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, pKey);
+  codeAttach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, p_कुंजी);
 }
 #endif /* SQLITE_OMIT_ATTACH */
 
 /*
 ** Expression callback used by sqlite3FixAAAA() routines.
 */
-static int fixExprCb(Walker *p, Expr *pExpr){
+स्थिर पूर्णाङ्क fix_व्यंजक_Cb(Walker *p, व्यंजक *p_व्यंजक){
   DbFixer *pFix = p->u.pFix;
-  if( !pFix->bTemp ) ExprSetProperty(pExpr, EP_FromDDL);
-  if( pExpr->op==TK_VARIABLE ){
-    if( pFix->pParse->db->init.busy ){
-      pExpr->op = TK_NULL;
-    }else{
-      sqlite3ErrorMsg(pFix->pParse, "%s cannot use variables", pFix->zType);
-      return WRC_Abort;
+  यदि( !pFix->bTemp ) व्यंजक_Set_Property(p_व्यंजक, EP_FromDDL);
+  यदि( p_व्यंजक->op==TK_VARIABLE ){
+    यदि( pFix->pParse->db->init.busy ){
+      p_व्यंजक->op = TK_NULL;
+    }अन्यथा{
+      sqlite3_Error_संदेश(pFix->pParse, "%s cannot use variables", pFix->zType);
+      प्रत्यागम WRC_Abort;
     }
   }
-  return WRC_Continue;
+  प्रत्यागम WRC_Continue;
 }
 
 /*
 ** Select callback used by sqlite3FixAAAA() routines.
 */
-static int fixSelectCb(Walker *p, Select *pSelect){
+स्थिर पूर्णाङ्क fixSelectCb(Walker *p, Select *pSelect){
   DbFixer *pFix = p->u.pFix;
-  int i;
+  पूर्णाङ्क i;
   SrcItem *pItem;
   sqlite3 *db = pFix->pParse->db;
-  int iDb = sqlite3FindDbName(db, pFix->zDb);
+  पूर्णाङ्क iDb = sqlite3FindDbName(db, pFix->zDb);
   SrcList *pList = pSelect->pSrc;
 
-  if( NEVER(pList==0) ) return WRC_Continue;
-  for(i=0, pItem=pList->a; i<pList->nSrc; i++, pItem++){
-    if( pFix->bTemp==0 && pItem->fg.isSubquery==0 ){
-      if( pItem->fg.fixedSchema==0 && pItem->u4.zDatabase!=0 ){
-        if( iDb!=sqlite3FindDbName(db, pItem->u4.zDatabase) ){
-          sqlite3ErrorMsg(pFix->pParse,
+  यदि( NEVER(pList==0) ) प्रत्यागम WRC_Continue;
+  प्रति(i=0, pItem=pList->a; i<pList->nSrc; i++, pItem++){
+    यदि( pFix->bTemp==0 && pItem->fg.isSubquery==0 ){
+      यदि( pItem->fg.fixedSchema==0 && pItem->u4.zDatabase!=0 ){
+        यदि( iDb!=sqlite3FindDbName(db, pItem->u4.zDatabase) ){
+          sqlite3_Error_संदेश(pFix->pParse,
               "%s %T cannot reference objects in database %s",
               pFix->zType, pFix->pName, pItem->u4.zDatabase);
-          return WRC_Abort;
+          प्रत्यागम WRC_Abort;
         }
         sqlite3DbFree(db, pItem->u4.zDatabase);
         pItem->fg.notCte = 1;
@@ -520,37 +520,37 @@ static int fixSelectCb(Walker *p, Select *pSelect){
       pItem->fg.fromDDL = 1;
       pItem->fg.fixedSchema = 1;
     }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
-    if( pList->a[i].fg.isUsing==0
-     && sqlite3WalkExpr(&pFix->w, pList->a[i].u3.pOn)
+#यदि !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
+    यदि( pList->a[i].fg.isUsing==0
+     && sqlite3_Walk_व्यंजक(&pFix->w, pList->a[i].u3.pOn)
     ){
-      return WRC_Abort;
+      प्रत्यागम WRC_Abort;
     }
 #endif
   }
-  if( pSelect->pWith ){
-    for(i=0; i<pSelect->pWith->nCte; i++){
-      if( sqlite3WalkSelect(p, pSelect->pWith->a[i].pSelect) ){
-        return WRC_Abort;
+  यदि( pSelect->pWith ){
+    प्रति(i=0; i<pSelect->pWith->nCte; i++){
+      यदि( sqlite3WalkSelect(p, pSelect->pWith->a[i].pSelect) ){
+        प्रत्यागम WRC_Abort;
       }
     }
   }
-  return WRC_Continue;
+  प्रत्यागम WRC_Continue;
 }
 
 /*
 ** Initialize a DbFixer structure.  This routine must be called prior
 ** to passing the structure to one of the sqliteFixAAAA() routines below.
 */
-void sqlite3FixInit(
+शून्य sqlite3FixInit(
   DbFixer *pFix,      /* The fixer to be initialized */
   Parse *pParse,      /* Error messages will be written here */
-  int iDb,            /* This is the database that must be used */
-  const char *zType,  /* "view", "trigger", or "index" */
-  const Token *pName  /* Name of the view, trigger, or index */
+  पूर्णाङ्क iDb,            /* This is the database that must be used */
+  ध्रुव वर्ण *zType,  /* "view", "trigger", or "index" */
+  ध्रुव Token *pName  /* Name of the view, trigger, or index */
 ){
   sqlite3 *db = pParse->db;
-  assert( db->nDb>iDb );
+  प्रतिज्ञा( db->nDb>iDb );
   pFix->pParse = pParse;
   pFix->zDb = db->aDb[iDb].zDbSName;
   pFix->pSchema = db->aDb[iDb].pSchema;
@@ -558,7 +558,7 @@ void sqlite3FixInit(
   pFix->pName = pName;
   pFix->bTemp = (iDb==1);
   pFix->w.pParse = pParse;
-  pFix->w.xExprCallback = fixExprCb;
+  pFix->w.x_व्यंजक_Callback = fix_व्यंजक_Cb;
   pFix->w.xSelectCallback = fixSelectCb;
   pFix->w.xSelectCallback2 = sqlite3WalkWinDefnDummyCallback;
   pFix->w.walkerDepth = 0;
@@ -580,57 +580,57 @@ void sqlite3FixInit(
 ** pParse->zErrMsg and these routines return non-zero.  If everything
 ** checks out, these routines return 0.
 */
-int sqlite3FixSrcList(
+पूर्णाङ्क sqlite3FixSrcList(
   DbFixer *pFix,       /* Context of the fixation */
   SrcList *pList       /* The Source list to check and modify */
 ){
-  int res = 0;
-  if( pList ){
+  पूर्णाङ्क res = 0;
+  यदि( pList ){
     Select s; 
-    memset(&s, 0, sizeof(s));
+    memset(&s, 0, परिमाण(s));
     s.pSrc = pList;
     res = sqlite3WalkSelect(&pFix->w, &s);
   }
-  return res;
+  प्रत्यागम res;
 }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
-int sqlite3FixSelect(
+#यदि !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
+पूर्णाङ्क sqlite3FixSelect(
   DbFixer *pFix,       /* Context of the fixation */
   Select *pSelect      /* The SELECT statement to be fixed to one database */
 ){
-  return sqlite3WalkSelect(&pFix->w, pSelect);
+  प्रत्यागम sqlite3WalkSelect(&pFix->w, pSelect);
 }
-int sqlite3FixExpr(
+पूर्णाङ्क sqlite3_Fix_व्यंजक(
   DbFixer *pFix,     /* Context of the fixation */
-  Expr *pExpr        /* The expression to be fixed to one database */
+  व्यंजक *p_व्यंजक        /* The expression to be fixed to one database */
 ){
-  return sqlite3WalkExpr(&pFix->w, pExpr);
+  प्रत्यागम sqlite3_Walk_व्यंजक(&pFix->w, p_व्यंजक);
 }
 #endif
 
 #ifndef SQLITE_OMIT_TRIGGER
-int sqlite3FixTriggerStep(
+पूर्णाङ्क sqlite3FixTriggerStep(
   DbFixer *pFix,     /* Context of the fixation */
   TriggerStep *pStep /* The trigger step be fixed to one database */
 ){
-  while( pStep ){
-    if( sqlite3WalkSelect(&pFix->w, pStep->pSelect)
-     || sqlite3WalkExpr(&pFix->w, pStep->pWhere) 
-     || sqlite3WalkExprList(&pFix->w, pStep->pExprList)
+  यावत्( pStep ){
+    यदि( sqlite3WalkSelect(&pFix->w, pStep->pSelect)
+     || sqlite3_Walk_व्यंजक(&pFix->w, pStep->pWhere) 
+     || sqlite3_Walk_व्यंजक_List(&pFix->w, pStep->p_व्यंजक_List)
      || sqlite3FixSrcList(pFix, pStep->pSrc)
     ){
-      return 1;
+      प्रत्यागम 1;
     }
 #ifndef SQLITE_OMIT_UPSERT
     {
       Upsert *pUp;
-      for(pUp=pStep->pUpsert; pUp; pUp=pUp->pNextUpsert){
-        if( sqlite3WalkExprList(&pFix->w, pUp->pUpsertTarget)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertTargetWhere)
-         || sqlite3WalkExprList(&pFix->w, pUp->pUpsertSet)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertWhere)
+      प्रति(pUp=pStep->pUpsert; pUp; pUp=pUp->pNextUpsert){
+        यदि( sqlite3_Walk_व्यंजक_List(&pFix->w, pUp->pUpsertTarget)
+         || sqlite3_Walk_व्यंजक(&pFix->w, pUp->pUpsertTargetWhere)
+         || sqlite3_Walk_व्यंजक_List(&pFix->w, pUp->pUpsertSet)
+         || sqlite3_Walk_व्यंजक(&pFix->w, pUp->pUpsertWhere)
         ){
-          return 1;
+          प्रत्यागम 1;
         }
       }
     }
@@ -638,6 +638,6 @@ int sqlite3FixTriggerStep(
     pStep = pStep->pNext;
   }
 
-  return 0;
+  प्रत्यागम 0;
 }
 #endif
