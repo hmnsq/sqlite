@@ -15,15 +15,15 @@
 #include "sqliteInt.h"
 
 /* Forward declarations */
-static void exprCodeBetween(Parse*,Expr*,int,void(*)(Parse*,Expr*,int,int),int);
-static int exprCodeVector(Parse *pParse, Expr *p, int *piToFree);
+static void exprCodeBetween(Parse*,Expr*,จำนวนเต็ม,void(*)(Parse*,Expr*,จำนวนเต็ม,จำนวนเต็ม),จำนวนเต็ม);
+static จำนวนเต็ม exprCodeVector(Parse *pParse, Expr *p, จำนวนเต็ม *piToFree);
 
 /*
 ** Return the affinity character for a single column of a table.
 */
-char sqlite3TableColumnAffinity(const Table *pTab, int iCol){
-  if( iCol<0 || NEVER(iCol>=pTab->nCol) ) return SQLITE_AFF_INTEGER;
-  return pTab->aCol[iCol].affinity;
+var_na sqlite3TableColumnAffinity(const Table *pTab, จำนวนเต็ม iCol){
+  ถ้า( iCol<0 || NEVER(iCol>=pTab->nCol) ) คืน SQLITE_AFF_INTEGER;
+  คืน pTab->aCol[iCol].affinity;
 }
 
 /*
@@ -42,44 +42,44 @@ char sqlite3TableColumnAffinity(const Table *pTab, int iCol){
 ** SELECT a AS b FROM t1 WHERE b;
 ** SELECT * FROM t1 WHERE (select a from t1);
 */
-char sqlite3ExprAffinity(const Expr *pExpr){
-  int op;
+var_na sqlite3ExprAffinity(const Expr *pExpr){
+  จำนวนเต็ม op;
   op = pExpr->op;
-  while( 1 /* exit-by-break */ ){
-    if( op==TK_COLUMN || (op==TK_AGG_COLUMN && pExpr->y.pTab!=0) ){
+  ขณะ( 1 /* exit-by-break */ ){
+    ถ้า( op==TK_COLUMN || (op==TK_AGG_COLUMN && pExpr->y.pTab!=0) ){
       assert( ExprUseYTab(pExpr) );
       assert( pExpr->y.pTab!=0 );
-      return sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
+      คืน sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
     }
-    if( op==TK_SELECT ){
+    ถ้า( op==TK_SELECT ){
       assert( ExprUseXSelect(pExpr) );
       assert( pExpr->x.pSelect!=0 );
       assert( pExpr->x.pSelect->pEList!=0 );
       assert( pExpr->x.pSelect->pEList->a[0].pExpr!=0 );
-      return sqlite3ExprAffinity(pExpr->x.pSelect->pEList->a[0].pExpr);
+      คืน sqlite3ExprAffinity(pExpr->x.pSelect->pEList->a[0].pExpr);
     }
 #ifndef SQLITE_OMIT_CAST
-    if( op==TK_CAST ){
+    ถ้า( op==TK_CAST ){
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      return sqlite3AffinityType(pExpr->u.zToken, 0);
+      คืน sqlite3AffinityType(pExpr->u.zToken, 0);
     }
 #endif
-    if( op==TK_SELECT_COLUMN ){
+    ถ้า( op==TK_SELECT_COLUMN ){
       assert( pExpr->pLeft!=0 && ExprUseXSelect(pExpr->pLeft) );
       assert( pExpr->iColumn < pExpr->iTable );
       assert( pExpr->iColumn >= 0 );
       assert( pExpr->iTable==pExpr->pLeft->x.pSelect->pEList->nExpr );
-      return sqlite3ExprAffinity(
+      คืน sqlite3ExprAffinity(
           pExpr->pLeft->x.pSelect->pEList->a[pExpr->iColumn].pExpr
       );
     }
-    if( op==TK_VECTOR
+    ถ้า( op==TK_VECTOR
      || (op==TK_FUNCTION && pExpr->affExpr==SQLITE_AFF_DEFER)
     ){
       assert( ExprUseXList(pExpr) );
-      return sqlite3ExprAffinity(pExpr->x.pList->a[0].pExpr);
+      คืน sqlite3ExprAffinity(pExpr->x.pList->a[0].pExpr);
     }
-    if( ExprHasProperty(pExpr, EP_Skip|EP_IfNullRow) ){
+    ถ้า( ExprHasProperty(pExpr, EP_Skip|EP_IfNullRow) ){
       assert( pExpr->op==TK_COLLATE
            || pExpr->op==TK_IF_NULL_ROW
            || (pExpr->op==TK_REGISTER && pExpr->op2==TK_IF_NULL_ROW) );
@@ -87,11 +87,11 @@ char sqlite3ExprAffinity(const Expr *pExpr){
       op = pExpr->op;
       continue;
     }
-    if( op!=TK_REGISTER ) break;
+    ถ้า( op!=TK_REGISTER ) bha_nga;
     op = pExpr->op2;
-    if( NEVER( op==TK_REGISTER ) ) break;
+    ถ้า( NEVER( op==TK_REGISTER ) ) bha_nga;
   }
-  return pExpr->affExpr;
+  คืน pExpr->affExpr;
 }
 
 /*
@@ -104,64 +104,64 @@ char sqlite3ExprAffinity(const Expr *pExpr){
 **
 ** If the expression must return NULL, then 0x00 is returned.
 */
-int sqlite3ExprDataType(const Expr *pExpr){
-  while( pExpr ){
+จำนวนเต็ม sqlite3ExprDataType(const Expr *pExpr){
+  ขณะ( pExpr ){
     switch( pExpr->op ){
-      case TK_COLLATE:
-      case TK_IF_NULL_ROW:
-      case TK_UPLUS:  {
+      pak_sa TK_COLLATE:
+      pak_sa TK_IF_NULL_ROW:
+      pak_sa TK_UPLUS:  {
         pExpr = pExpr->pLeft;
-        break;
+        bha_nga;
       }
-      case TK_NULL: {
+      pak_sa TK_NULL: {
         pExpr = 0;
-        break;
+        bha_nga;
       }
-      case TK_STRING: {
-        return 0x02;
+      pak_sa TK_STRING: {
+        คืน 0x02;
       }
-      case TK_BLOB: {
-        return 0x04;
+      pak_sa TK_BLOB: {
+        คืน 0x04;
       }
-      case TK_CONCAT: {
-        return 0x06;
+      pak_sa TK_CONCAT: {
+        คืน 0x06;
       }
-      case TK_VARIABLE:
-      case TK_AGG_FUNCTION:
-      case TK_FUNCTION: {
-        return 0x07;
+      pak_sa TK_VARIABLE:
+      pak_sa TK_AGG_FUNCTION:
+      pak_sa TK_FUNCTION: {
+        คืน 0x07;
       }
-      case TK_COLUMN:
-      case TK_AGG_COLUMN:
-      case TK_SELECT:
-      case TK_CAST:
-      case TK_SELECT_COLUMN:
-      case TK_VECTOR:  {
-        int aff = sqlite3ExprAffinity(pExpr);
-        if( aff>=SQLITE_AFF_NUMERIC ) return 0x05;
-        if( aff==SQLITE_AFF_TEXT )    return 0x06;
-        return 0x07;
+      pak_sa TK_COLUMN:
+      pak_sa TK_AGG_COLUMN:
+      pak_sa TK_SELECT:
+      pak_sa TK_CAST:
+      pak_sa TK_SELECT_COLUMN:
+      pak_sa TK_VECTOR:  {
+        จำนวนเต็ม aff = sqlite3ExprAffinity(pExpr);
+        ถ้า( aff>=SQLITE_AFF_NUMERIC ) คืน 0x05;
+        ถ้า( aff==SQLITE_AFF_TEXT )    คืน 0x06;
+        คืน 0x07;
       }
-      case TK_CASE: {
-        int res = 0;
-        int ii;
+      pak_sa TK_CASE: {
+        จำนวนเต็ม res = 0;
+        จำนวนเต็ม ii;
         ExprList *pList = pExpr->x.pList;
         assert( ExprUseXList(pExpr) && pList!=0 );
         assert( pList->nExpr > 0);
-        for(ii=1; ii<pList->nExpr; ii+=2){
+        สำหรับ(ii=1; ii<pList->nExpr; ii+=2){
           res |= sqlite3ExprDataType(pList->a[ii].pExpr);
         }
-        if( pList->nExpr % 2 ){
+        ถ้า( pList->nExpr % 2 ){
           res |= sqlite3ExprDataType(pList->a[pList->nExpr-1].pExpr);
         }
-        return res;
+        คืน res;
       }
       default: {
-        return 0x01;
+        คืน 0x01;
       }
     } /* End of switch(op) */
   } /* End of while(pExpr) */
-  return 0x00;
+  คืน 0x00;
 }
 
 /*
@@ -176,15 +176,15 @@ Expr *sqlite3ExprAddCollateToken(
   Parse *pParse,           /* Parsing context */
   Expr *pExpr,             /* Add the "COLLATE" clause to this expression */
   const Token *pCollName,  /* Name of collating sequence */
-  int dequote              /* True to dequote pCollName */
+  จำนวนเต็ม dequote              /* True to dequote pCollName */
 ){
-  if( pCollName->n>0 && pParse->nErr==0 ){
+  ถ้า( pCollName->n>0 && pParse->nErr==0 ){
     Expr *pNew = sqlite3ExprAlloc(pParse->db, TK_COLLATE, pCollName, dequote);
     assert( pExpr!=0 );
-    if( pNew ){
+    ถ้า( pNew ){
       pNew->pLeft = pExpr;
       pNew->flags |= EP_Collate|EP_Skip;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ถ้า SQLITE_MAX_EXPR_DEPTH>0
       pNew->nHeight = pExpr->nHeight+1;
       sqlite3ExprCheckHeight(pParse, pNew->nHeight);
       testcase( pParse->nErr>0 );
@@ -192,28 +192,28 @@ Expr *sqlite3ExprAddCollateToken(
       pExpr = pNew;
     }
   }
-  return pExpr;
+  คืน pExpr;
 }
 Expr *sqlite3ExprAddCollateString(
   Parse *pParse,        /* Parsing context */
   Expr *pExpr,          /* Add the "COLLATE" clause to this expression */
-  const char *zC        /* The collating sequence name */
+  const var_na *zC        /* The collating sequence name */
 ){
   Token s;
   assert( zC!=0 );
-  sqlite3TokenInit(&s, (char*)zC);
-  return sqlite3ExprAddCollateToken(pParse, pExpr, &s, 0);
+  sqlite3TokenInit(&s, (var_na*)zC);
+  คืน sqlite3ExprAddCollateToken(pParse, pExpr, &s, 0);
 }
 
 /*
 ** Skip over any TK_COLLATE operators.
 */
 Expr *sqlite3ExprSkipCollate(Expr *pExpr){
-  while( pExpr && ExprHasProperty(pExpr, EP_Skip) ){
+  ขณะ( pExpr && ExprHasProperty(pExpr, EP_Skip) ){
     assert( pExpr->op==TK_COLLATE );
     pExpr = pExpr->pLeft;
   }  
-  return pExpr;
+  คืน pExpr;
 }
 
 /*
@@ -222,19 +222,19 @@ Expr *sqlite3ExprSkipCollate(Expr *pExpr){
 ** expression.
 */
 Expr *sqlite3ExprSkipCollateAndLikely(Expr *pExpr){
-  while( pExpr && ExprHasProperty(pExpr, EP_Skip|EP_Unlikely) ){
-    if( ExprHasProperty(pExpr, EP_Unlikely) ){
+  ขณะ( pExpr && ExprHasProperty(pExpr, EP_Skip|EP_Unlikely) ){
+    ถ้า( ExprHasProperty(pExpr, EP_Unlikely) ){
       assert( ExprUseXList(pExpr) );
       assert( pExpr->x.pList->nExpr>0 );
       assert( pExpr->op==TK_FUNCTION );
       pExpr = pExpr->x.pList->a[0].pExpr;
-    }else if( pExpr->op==TK_COLLATE ){
+    }มิฉะนั้น ถ้า( pExpr->op==TK_COLLATE ){
       pExpr = pExpr->pLeft;
-    }else{
-      break;
+    }มิฉะนั้น{
+      bha_nga;
     }
   }  
-  return pExpr;
+  คืน pExpr;
 }
 
 /*
@@ -255,63 +255,63 @@ CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr){
   sqlite3 *db = pParse->db;
   CollSeq *pColl = 0;
   const Expr *p = pExpr;
-  while( p ){
-    int op = p->op;
-    if( op==TK_REGISTER ) op = p->op2;
-    if( (op==TK_AGG_COLUMN && p->y.pTab!=0)
+  ขณะ( p ){
+    จำนวนเต็ม op = p->op;
+    ถ้า( op==TK_REGISTER ) op = p->op2;
+    ถ้า( (op==TK_AGG_COLUMN && p->y.pTab!=0)
      || op==TK_COLUMN || op==TK_TRIGGER
     ){
-      int j;
+      จำนวนเต็ม j;
       assert( ExprUseYTab(p) );
       assert( p->y.pTab!=0 );
-      if( (j = p->iColumn)>=0 ){
-        const char *zColl = sqlite3ColumnColl(&p->y.pTab->aCol[j]);
+      ถ้า( (j = p->iColumn)>=0 ){
+        const var_na *zColl = sqlite3ColumnColl(&p->y.pTab->aCol[j]);
         pColl = sqlite3FindCollSeq(db, ENC(db), zColl, 0);
       }
-      break;
+      bha_nga;
     }
-    if( op==TK_CAST || op==TK_UPLUS ){
+    ถ้า( op==TK_CAST || op==TK_UPLUS ){
       p = p->pLeft;
       continue;
     }
-    if( op==TK_VECTOR
+    ถ้า( op==TK_VECTOR
      || (op==TK_FUNCTION && p->affExpr==SQLITE_AFF_DEFER)
     ){
       assert( ExprUseXList(p) );
       p = p->x.pList->a[0].pExpr;
       continue;
     }
-    if( op==TK_COLLATE ){
+    ถ้า( op==TK_COLLATE ){
       assert( !ExprHasProperty(p, EP_IntValue) );
       pColl = sqlite3GetCollSeq(pParse, ENC(db), 0, p->u.zToken);
-      break;
+      bha_nga;
     }
-    if( p->flags & EP_Collate ){
-      if( p->pLeft && (p->pLeft->flags & EP_Collate)!=0 ){
+    ถ้า( p->flags & EP_Collate ){
+      ถ้า( p->pLeft && (p->pLeft->flags & EP_Collate)!=0 ){
         p = p->pLeft;
-      }else{
+      }มิฉะนั้น{
         Expr *pNext  = p->pRight;
         /* The Expr.x union is never used at the same time as Expr.pRight */
         assert( !ExprUseXList(p) || p->x.pList==0 || p->pRight==0 );
-        if( ExprUseXList(p) && p->x.pList!=0 && !db->mallocFailed ){
-          int i;
-          for(i=0; i<p->x.pList->nExpr; i++){
-            if( ExprHasProperty(p->x.pList->a[i].pExpr, EP_Collate) ){
+        ถ้า( ExprUseXList(p) && p->x.pList!=0 && !db->mallocFailed ){
+          จำนวนเต็ม i;
+          สำหรับ(i=0; i<p->x.pList->nExpr; i++){
+            ถ้า( ExprHasProperty(p->x.pList->a[i].pExpr, EP_Collate) ){
               pNext = p->x.pList->a[i].pExpr;
-              break;
+              bha_nga;
             }
           }
         }
         p = pNext;
       }
-    }else{
-      break;
+    }มิฉะนั้น{
+      bha_nga;
     }
   }
-  if( sqlite3CheckCollSeq(pParse, pColl) ){
+  ถ้า( sqlite3CheckCollSeq(pParse, pColl) ){
     pColl = 0;
   }
-  return pColl;
+  คืน pColl;
 }
 
 /*
@@ -326,20 +326,20 @@ CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr){
 */
 CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr){
   CollSeq *p = sqlite3ExprCollSeq(pParse, pExpr);
-  if( p==0 ) p = pParse->db->pDfltColl;
+  ถ้า( p==0 ) p = pParse->db->pDfltColl;
   assert( p!=0 );
-  return p;
+  คืน p;
 }
 
 /*
 ** Return TRUE if the two expressions have equivalent collating sequences.
 */
-int sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
+จำนวนเต็ม sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
   CollSeq *pColl1 = sqlite3ExprNNCollSeq(pParse, pE1);
   CollSeq *pColl2 = sqlite3ExprNNCollSeq(pParse, pE2);
   assert( (pColl1==pColl2) ==
           (sqlite3_stricmp(pColl1->zName,pColl2->zName)==0) );
-  return pColl1==pColl2;
+  คืน pColl1==pColl2;
 }
 
 /*
@@ -347,21 +347,21 @@ int sqlite3ExprCollSeqMatch(Parse *pParse, const Expr *pE1, const Expr *pE2){
 ** type affinity of the other operand.  This routine returns the
 ** type affinity that should be used for the comparison operator.
 */
-char sqlite3CompareAffinity(const Expr *pExpr, char aff2){
-  char aff1 = sqlite3ExprAffinity(pExpr);
-  if( aff1>SQLITE_AFF_NONE && aff2>SQLITE_AFF_NONE ){
+var_na sqlite3CompareAffinity(const Expr *pExpr, var_na aff2){
+  var_na aff1 = sqlite3ExprAffinity(pExpr);
+  ถ้า( aff1>SQLITE_AFF_NONE && aff2>SQLITE_AFF_NONE ){
     /* Both sides of the comparison are columns. If one has numeric
     ** affinity, use that. Otherwise use no affinity.
     */
-    if( sqlite3IsNumericAffinity(aff1) || sqlite3IsNumericAffinity(aff2) ){
-      return SQLITE_AFF_NUMERIC;
-    }else{
-      return SQLITE_AFF_BLOB;
+    ถ้า( sqlite3IsNumericAffinity(aff1) || sqlite3IsNumericAffinity(aff2) ){
+      คืน SQLITE_AFF_NUMERIC;
+    }มิฉะนั้น{
+      คืน SQLITE_AFF_BLOB;
     }
-  }else{
+  }มิฉะนั้น{
     /* One side is a column, the other is not. Use the columns affinity. */
     assert( aff1<=SQLITE_AFF_NONE || aff2<=SQLITE_AFF_NONE );
-    return (aff1<=SQLITE_AFF_NONE ? aff2 : aff1) | SQLITE_AFF_NONE;
+    คืน (aff1<=SQLITE_AFF_NONE ? aff2 : aff1) | SQLITE_AFF_NONE;
   }
 }
 
@@ -369,20 +369,20 @@ char sqlite3CompareAffinity(const Expr *pExpr, char aff2){
 ** pExpr is a comparison operator.  Return the type affinity that should
 ** be applied to both operands prior to doing the comparison.
 */
-static char comparisonAffinity(const Expr *pExpr){
-  char aff;
+static var_na comparisonAffinity(const Expr *pExpr){
+  var_na aff;
   assert( pExpr->op==TK_EQ || pExpr->op==TK_IN || pExpr->op==TK_LT ||
           pExpr->op==TK_GT || pExpr->op==TK_GE || pExpr->op==TK_LE ||
           pExpr->op==TK_NE || pExpr->op==TK_IS || pExpr->op==TK_ISNOT );
   assert( pExpr->pLeft );
   assert( !ExprUseXSelect(pExpr) );
   aff = sqlite3ExprAffinity(pExpr->pLeft);
-  if( pExpr->pRight ){
+  ถ้า( pExpr->pRight ){
     aff = sqlite3CompareAffinity(pExpr->pRight, aff);
-  }else if( aff==0 ){
+  }มิฉะนั้น ถ้า( aff==0 ){
     aff = SQLITE_AFF_BLOB;
   }
-  return aff;
+  คืน aff;
 }
 
 /*
@@ -391,15 +391,15 @@ static char comparisonAffinity(const Expr *pExpr){
 ** if the index with affinity idx_affinity may be used to implement
 ** the comparison in pExpr.
 */
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity){
-  char aff = comparisonAffinity(pExpr);
-  if( aff<SQLITE_AFF_TEXT ){
-    return 1;
+จำนวนเต็ม sqlite3IndexAffinityOk(const Expr *pExpr, var_na idx_affinity){
+  var_na aff = comparisonAffinity(pExpr);
+  ถ้า( aff<SQLITE_AFF_TEXT ){
+    คืน 1;
   }
-  if( aff==SQLITE_AFF_TEXT ){
-    return idx_affinity==SQLITE_AFF_TEXT;
+  ถ้า( aff==SQLITE_AFF_TEXT ){
+    คืน idx_affinity==SQLITE_AFF_TEXT;
   }
-  return sqlite3IsNumericAffinity(idx_affinity);
+  คืน sqlite3IsNumericAffinity(idx_affinity);
 }
 
 /*
@@ -409,11 +409,11 @@ int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity){
 static u8 binaryCompareP5(
   const Expr *pExpr1,   /* Left operand */
   const Expr *pExpr2,   /* Right operand */
-  int jumpIfNull        /* Extra flags added to P5 */
+  จำนวนเต็ม jumpIfNull        /* Extra flags added to P5 */
 ){
-  u8 aff = (char)sqlite3ExprAffinity(pExpr2);
+  u8 aff = (var_na)sqlite3ExprAffinity(pExpr2);
   aff = (u8)sqlite3CompareAffinity(pExpr1, aff) | (u8)jumpIfNull;
-  return aff;
+  คืน aff;
 }
 
 /*
@@ -435,17 +435,17 @@ CollSeq *sqlite3BinaryCompareCollSeq(
 ){
   CollSeq *pColl;
   assert( pLeft );
-  if( pLeft->flags & EP_Collate ){
+  ถ้า( pLeft->flags & EP_Collate ){
     pColl = sqlite3ExprCollSeq(pParse, pLeft);
-  }else if( pRight && (pRight->flags & EP_Collate)!=0 ){
+  }มิฉะนั้น ถ้า( pRight && (pRight->flags & EP_Collate)!=0 ){
     pColl = sqlite3ExprCollSeq(pParse, pRight);
-  }else{
+  }มิฉะนั้น{
     pColl = sqlite3ExprCollSeq(pParse, pLeft);
-    if( !pColl ){
+    ถ้า( !pColl ){
       pColl = sqlite3ExprCollSeq(pParse, pRight);
     }
   }
-  return pColl;
+  คืน pColl;
 }
 
 /* Expression p is a comparison operator.  Return a collation sequence
@@ -457,41 +457,41 @@ CollSeq *sqlite3BinaryCompareCollSeq(
 ** correct collating sequence is found.
 */
 CollSeq *sqlite3ExprCompareCollSeq(Parse *pParse, const Expr *p){
-  if( ExprHasProperty(p, EP_Commuted) ){
-    return sqlite3BinaryCompareCollSeq(pParse, p->pRight, p->pLeft);
-  }else{
-    return sqlite3BinaryCompareCollSeq(pParse, p->pLeft, p->pRight);
+  ถ้า( ExprHasProperty(p, EP_Commuted) ){
+    คืน sqlite3BinaryCompareCollSeq(pParse, p->pRight, p->pLeft);
+  }มิฉะนั้น{
+    คืน sqlite3BinaryCompareCollSeq(pParse, p->pLeft, p->pRight);
   }
 }
 
 /*
 ** Generate code for a comparison operator.
 */
-static int codeCompare(
+static จำนวนเต็ม codeCompare(
   Parse *pParse,    /* The parsing (and code generating) context */
   Expr *pLeft,      /* The left operand */
   Expr *pRight,     /* The right operand */
-  int opcode,       /* The comparison opcode */
-  int in1, int in2, /* Register holding operands */
-  int dest,         /* Jump here if true.  */
-  int jumpIfNull,   /* If true, jump if either operand is NULL */
-  int isCommuted    /* The comparison has been commuted */
+  จำนวนเต็ม opcode,       /* The comparison opcode */
+  จำนวนเต็ม in1, จำนวนเต็ม in2, /* Register holding operands */
+  จำนวนเต็ม dest,         /* Jump here if true.  */
+  จำนวนเต็ม jumpIfNull,   /* If true, jump if either operand is NULL */
+  จำนวนเต็ม isCommuted    /* The comparison has been commuted */
 ){
-  int p5;
-  int addr;
+  จำนวนเต็ม p5;
+  จำนวนเต็ม addr;
   CollSeq *p4;
 
-  if( pParse->nErr ) return 0;
-  if( isCommuted ){
+  ถ้า( pParse->nErr ) คืน 0;
+  ถ้า( isCommuted ){
     p4 = sqlite3BinaryCompareCollSeq(pParse, pRight, pLeft);
-  }else{
+  }มิฉะนั้น{
     p4 = sqlite3BinaryCompareCollSeq(pParse, pLeft, pRight);
   }
   p5 = binaryCompareP5(pLeft, pRight, jumpIfNull);
   addr = sqlite3VdbeAddOp4(pParse->pVdbe, opcode, in2, dest, in1,
                            (void*)p4, P4_COLLSEQ);
   sqlite3VdbeChangeP5(pParse->pVdbe, (u16)p5);
-  return addr;
+  คืน addr;
 }
 
 /*
@@ -503,8 +503,8 @@ static int codeCompare(
 ** But a TK_SELECT might be either a vector or a scalar. It is only
 ** considered a vector if it has two or more result columns.
 */
-int sqlite3ExprIsVector(const Expr *pExpr){
-  return sqlite3ExprVectorSize(pExpr)>1;
+จำนวนเต็ม sqlite3ExprIsVector(const Expr *pExpr){
+  คืน sqlite3ExprVectorSize(pExpr)>1;
 }
 
 /*
@@ -513,17 +513,17 @@ int sqlite3ExprIsVector(const Expr *pExpr){
 ** is a sub-select, return the number of columns in the sub-select. For
 ** any other type of expression, return 1.
 */
-int sqlite3ExprVectorSize(const Expr *pExpr){
+จำนวนเต็ม sqlite3ExprVectorSize(const Expr *pExpr){
   u8 op = pExpr->op;
-  if( op==TK_REGISTER ) op = pExpr->op2;
-  if( op==TK_VECTOR ){
+  ถ้า( op==TK_REGISTER ) op = pExpr->op2;
+  ถ้า( op==TK_VECTOR ){
     assert( ExprUseXList(pExpr) );
-    return pExpr->x.pList->nExpr;
-  }else if( op==TK_SELECT ){
+    คืน pExpr->x.pList->nExpr;
+  }มิฉะนั้น ถ้า( op==TK_SELECT ){
     assert( ExprUseXSelect(pExpr) );
-    return pExpr->x.pSelect->pEList->nExpr;
-  }else{
-    return 1;
+    คืน pExpr->x.pSelect->pEList->nExpr;
+  }มิฉะนั้น{
+    คืน 1;
   }
 }
 
@@ -542,19 +542,19 @@ int sqlite3ExprVectorSize(const Expr *pExpr){
 ** not be ready for evaluation because the table cursor has not yet
 ** been positioned.
 */
-Expr *sqlite3VectorFieldSubexpr(Expr *pVector, int i){
+Expr *sqlite3VectorFieldSubexpr(Expr *pVector, จำนวนเต็ม i){
   assert( i<sqlite3ExprVectorSize(pVector) || pVector->op==TK_ERROR );
-  if( sqlite3ExprIsVector(pVector) ){
+  ถ้า( sqlite3ExprIsVector(pVector) ){
     assert( pVector->op2==0 || pVector->op==TK_REGISTER );
-    if( pVector->op==TK_SELECT || pVector->op2==TK_SELECT ){
+    ถ้า( pVector->op==TK_SELECT || pVector->op2==TK_SELECT ){
       assert( ExprUseXSelect(pVector) );
-      return pVector->x.pSelect->pEList->a[i].pExpr;
-    }else{
+      คืน pVector->x.pSelect->pEList->a[i].pExpr;
+    }มิฉะนั้น{
       assert( ExprUseXList(pVector) );
-      return pVector->x.pList->a[i].pExpr;
+      คืน pVector->x.pList->a[i].pExpr;
     }
   }
-  return pVector;
+  คืน pVector;
 }
 
 /*
@@ -581,11 +581,11 @@ Expr *sqlite3VectorFieldSubexpr(Expr *pVector, int i){
 Expr *sqlite3ExprForVectorField(
   Parse *pParse,       /* Parsing context */
   Expr *pVector,       /* The vector.  List of expressions or a sub-SELECT */
-  int iField,          /* Which column of the vector to return */
-  int nField           /* Total number of columns in the vector */
+  จำนวนเต็ม iField,          /* Which column of the vector to return */
+  จำนวนเต็ม nField           /* Total number of columns in the vector */
 ){
   Expr *pRet;
-  if( pVector->op==TK_SELECT ){
+  ถ้า( pVector->op==TK_SELECT ){
     assert( ExprUseXSelect(pVector) );
     /* The TK_SELECT_COLUMN Expr node:
     **
@@ -604,27 +604,27 @@ Expr *sqlite3ExprForVectorField(
     ** will own the pVector.
     */
     pRet = sqlite3PExpr(pParse, TK_SELECT_COLUMN, 0, 0);
-    if( pRet ){
+    ถ้า( pRet ){
       ExprSetProperty(pRet, EP_FullSize);
       pRet->iTable = nField;
       pRet->iColumn = iField;
       pRet->pLeft = pVector;
     }
-  }else{
-    if( pVector->op==TK_VECTOR ){
+  }มิฉะนั้น{
+    ถ้า( pVector->op==TK_VECTOR ){
       Expr **ppVector;
       assert( ExprUseXList(pVector) );
       ppVector = &pVector->x.pList->a[iField].pExpr;
       pVector = *ppVector;
-      if( IN_RENAME_OBJECT ){
+      ถ้า( IN_RENAME_OBJECT ){
         /* This must be a vector UPDATE inside a trigger */
         *ppVector = 0;
-        return pVector;
+        คืน pVector;
       }
     }
     pRet = sqlite3ExprDup(pParse->db, pVector, 0);
   }
-  return pRet;
+  คืน pRet;
 }
 
 /*
@@ -635,14 +635,14 @@ Expr *sqlite3ExprForVectorField(
 **
 ** If pExpr is not a TK_SELECT expression, return 0.
 */
-static int exprCodeSubselect(Parse *pParse, Expr *pExpr){
-  int reg = 0;
+static จำนวนเต็ม exprCodeSubselect(Parse *pParse, Expr *pExpr){
+  จำนวนเต็ม reg = 0;
 #ifndef SQLITE_OMIT_SUBQUERY
-  if( pExpr->op==TK_SELECT ){
+  ถ้า( pExpr->op==TK_SELECT ){
     reg = sqlite3CodeSubselect(pParse, pExpr);
   }
 #endif
-  return reg;
+  คืน reg;
 }
 
 /*
@@ -663,41 +663,41 @@ static int exprCodeSubselect(Parse *pParse, Expr *pExpr){
 ** Before returning, output parameter (*ppExpr) is set to point to the
 ** Expr object corresponding to element iElem of the vector.
 */
-static int exprVectorRegister(
+static จำนวนเต็ม exprVectorRegister(
   Parse *pParse,                  /* Parse context */
   Expr *pVector,                  /* Vector to extract element from */
-  int iField,                     /* Field to extract from pVector */
-  int regSelect,                  /* First in array of registers */
+  จำนวนเต็ม iField,                     /* Field to extract from pVector */
+  จำนวนเต็ม regSelect,                  /* First in array of registers */
   Expr *pTmp,                     /* Temporary space */
   Expr **ppExpr,                  /* OUT: Expression element */
-  int *pRegFree                   /* OUT: Temp register to free */
+  จำนวนเต็ม *pRegFree                   /* OUT: Temp register to free */
 ){
   u8 op = pVector->op;
   assert( op==TK_VECTOR || op==TK_REGISTER || op==TK_SELECT || op==TK_ERROR );
-  if( op==TK_REGISTER ){
+  ถ้า( op==TK_REGISTER ){
     *ppExpr = sqlite3VectorFieldSubexpr(pVector, iField);
-    return pVector->iTable+iField;
+    คืน pVector->iTable+iField;
   }
-  if( op==TK_SELECT ){
+  ถ้า( op==TK_SELECT ){
     assert( ExprUseXSelect(pVector) );
     /* Use the temporary expression node to wrap expression iField of the
     ** sub-select in a TK_SELECT_COLUMN node. This causes the caller to
     ** use the affinity of the expression in any comparison, but not the
     ** collation sequence.  */
-    memset(pTmp, 0, sizeof(Expr));
+    memset(pTmp, 0, parimaa_na(Expr));
     pTmp->op = TK_SELECT_COLUMN;
     pTmp->pLeft = pVector;
     pTmp->iColumn = iField;
     pTmp->iTable = pVector->x.pSelect->pEList->nExpr;
     *ppExpr = pTmp;
-    return regSelect+iField;
+    คืน regSelect+iField;
   }
-  if( op==TK_VECTOR ){
+  ถ้า( op==TK_VECTOR ){
     assert( ExprUseXList(pVector) );
     *ppExpr = pVector->x.pList->a[iField].pExpr;
-    return sqlite3ExprCodeTemp(pParse, *ppExpr, pRegFree);
+    คืน sqlite3ExprCodeTemp(pParse, *ppExpr, pRegFree);
   }
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -714,27 +714,27 @@ static int exprVectorRegister(
 static void codeVectorCompare(
   Parse *pParse,        /* Code generator context */
   Expr *pExpr,          /* The comparison operation */
-  int dest,             /* Write results into this register */
+  จำนวนเต็ม dest,             /* Write results into this register */
   u8 op,                /* Comparison operator */
   u8 p5                 /* SQLITE_NULLEQ or zero */
 ){
   Vdbe *v = pParse->pVdbe;
   Expr *pLeft = pExpr->pLeft;
   Expr *pRight = pExpr->pRight;
-  int nLeft = sqlite3ExprVectorSize(pLeft);
-  int i;
-  int regLeft = 0;
-  int regRight = 0;
+  จำนวนเต็ม nLeft = sqlite3ExprVectorSize(pLeft);
+  จำนวนเต็ม i;
+  จำนวนเต็ม regLeft = 0;
+  จำนวนเต็ม regRight = 0;
   u8 opx = op;
-  int addrCmp = 0;
-  int addrDone = sqlite3VdbeMakeLabel(pParse);
-  int isCommuted = ExprHasProperty(pExpr,EP_Commuted);
+  จำนวนเต็ม addrCmp = 0;
+  จำนวนเต็ม addrDone = sqlite3VdbeMakeLabel(pParse);
+  จำนวนเต็ม isCommuted = ExprHasProperty(pExpr,EP_Commuted);
 
   assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
-  if( pParse->nErr ) return;
-  if( nLeft!=sqlite3ExprVectorSize(pRight) ){
+  ถ้า( pParse->nErr ) คืน;
+  ถ้า( nLeft!=sqlite3ExprVectorSize(pRight) ){
     sqlite3ErrorMsg(pParse, "row value misused");
-    return;
+    คืน;
   }
   assert( pExpr->op==TK_EQ || pExpr->op==TK_NE
        || pExpr->op==TK_IS || pExpr->op==TK_ISNOT
@@ -746,21 +746,21 @@ static void codeVectorCompare(
   assert( p5==0 || pExpr->op!=op );
   assert( p5==SQLITE_NULLEQ || pExpr->op==op );
 
-  if( op==TK_LE ) opx = TK_LT;
-  if( op==TK_GE ) opx = TK_GT;
-  if( op==TK_NE ) opx = TK_EQ;
+  ถ้า( op==TK_LE ) opx = TK_LT;
+  ถ้า( op==TK_GE ) opx = TK_GT;
+  ถ้า( op==TK_NE ) opx = TK_EQ;
 
   regLeft = exprCodeSubselect(pParse, pLeft);
   regRight = exprCodeSubselect(pParse, pRight);
 
   sqlite3VdbeAddOp2(v, OP_Integer, 1, dest);
-  for(i=0; 1 /*Loop exits by "break"*/; i++){
-    int regFree1 = 0, regFree2 = 0;
+  สำหรับ(i=0; 1 /*Loop exits by "break"*/; i++){
+    จำนวนเต็ม regFree1 = 0, regFree2 = 0;
     Expr *pL = 0, *pR = 0;
     Expr tmp1, tmp2;
-    int r1, r2;
+    จำนวนเต็ม r1, r2;
     assert( i>=0 && i<nLeft );
-    if( addrCmp ) sqlite3VdbeJumpHere(v, addrCmp);
+    ถ้า( addrCmp ) sqlite3VdbeJumpHere(v, addrCmp);
     r1 = exprVectorRegister(pParse, pLeft, i, regLeft, &tmp1, &pL, &regFree1);
     r2 = exprVectorRegister(pParse, pRight, i, regRight, &tmp2, &pR, &regFree2);
     addrCmp = sqlite3VdbeCurrentAddr(v);
@@ -773,50 +773,50 @@ static void codeVectorCompare(
     testcase(op==OP_Ne); VdbeCoverageIf(v,op==OP_Ne);
     sqlite3ReleaseTempReg(pParse, regFree1);
     sqlite3ReleaseTempReg(pParse, regFree2);
-    if( (opx==TK_LT || opx==TK_GT) && i<nLeft-1 ){
+    ถ้า( (opx==TK_LT || opx==TK_GT) && i<nLeft-1 ){
       addrCmp = sqlite3VdbeAddOp0(v, OP_ElseEq);
       testcase(opx==TK_LT); VdbeCoverageIf(v,opx==TK_LT);
       testcase(opx==TK_GT); VdbeCoverageIf(v,opx==TK_GT);
     }
-    if( p5==SQLITE_NULLEQ ){
+    ถ้า( p5==SQLITE_NULLEQ ){
       sqlite3VdbeAddOp2(v, OP_Integer, 0, dest);
-    }else{
+    }มิฉะนั้น{
       sqlite3VdbeAddOp3(v, OP_ZeroOrNull, r1, dest, r2);
     }
-    if( i==nLeft-1 ){
-      break;
+    ถ้า( i==nLeft-1 ){
+      bha_nga;
     }
-    if( opx==TK_EQ ){
+    ถ้า( opx==TK_EQ ){
       sqlite3VdbeAddOp2(v, OP_NotNull, dest, addrDone); VdbeCoverage(v);
-    }else{
+    }มิฉะนั้น{
       assert( op==TK_LT || op==TK_GT || op==TK_LE || op==TK_GE );
       sqlite3VdbeAddOp2(v, OP_Goto, 0, addrDone);
-      if( i==nLeft-2 ) opx = op;
+      ถ้า( i==nLeft-2 ) opx = op;
     }
   }
   sqlite3VdbeJumpHere(v, addrCmp);
   sqlite3VdbeResolveLabel(v, addrDone);
-  if( op==TK_NE ){
+  ถ้า( op==TK_NE ){
     sqlite3VdbeAddOp2(v, OP_Not, dest, dest);
   }
 }
 
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ถ้า SQLITE_MAX_EXPR_DEPTH>0
 /*
 ** Check that argument nHeight is less than or equal to the maximum
 ** expression depth allowed. If it is not, leave an error message in
 ** pParse.
 */
-int sqlite3ExprCheckHeight(Parse *pParse, int nHeight){
-  int rc = SQLITE_OK;
-  int mxHeight = pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH];
-  if( nHeight>mxHeight ){
+จำนวนเต็ม sqlite3ExprCheckHeight(Parse *pParse, จำนวนเต็ม nHeight){
+  จำนวนเต็ม rc = SQLITE_OK;
+  จำนวนเต็ม mxHeight = pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH];
+  ถ้า( nHeight>mxHeight ){
     sqlite3ErrorMsg(pParse,
        "Expression tree is too large (maximum depth %d)", mxHeight
     );
     rc = SQLITE_ERROR;
   }
-  return rc;
+  คืน rc;
 }
 
 /* The following three functions, heightOfExpr(), heightOfExprList()
@@ -828,24 +828,24 @@ int sqlite3ExprCheckHeight(Parse *pParse, int nHeight){
 ** to by pnHeight, the second parameter, then set *pnHeight to that
 ** value.
 */
-static void heightOfExpr(const Expr *p, int *pnHeight){
-  if( p ){
-    if( p->nHeight>*pnHeight ){
+static void heightOfExpr(const Expr *p, จำนวนเต็ม *pnHeight){
+  ถ้า( p ){
+    ถ้า( p->nHeight>*pnHeight ){
       *pnHeight = p->nHeight;
     }
   }
 }
-static void heightOfExprList(const ExprList *p, int *pnHeight){
-  if( p ){
-    int i;
-    for(i=0; i<p->nExpr; i++){
+static void heightOfExprList(const ExprList *p, จำนวนเต็ม *pnHeight){
+  ถ้า( p ){
+    จำนวนเต็ม i;
+    สำหรับ(i=0; i<p->nExpr; i++){
       heightOfExpr(p->a[i].pExpr, pnHeight);
     }
   }
 }
-static void heightOfSelect(const Select *pSelect, int *pnHeight){
+static void heightOfSelect(const Select *pSelect, จำนวนเต็ม *pnHeight){
   const Select *p;
-  for(p=pSelect; p; p=p->pPrior){
+  สำหรับ(p=pSelect; p; p=p->pPrior){
     heightOfExpr(p->pWhere, pnHeight);
     heightOfExpr(p->pHaving, pnHeight);
     heightOfExpr(p->pLimit, pnHeight);
@@ -866,13 +866,13 @@ static void heightOfSelect(const Select *pSelect, int *pnHeight){
 ** if appropriate.
 */
 static void exprSetHeight(Expr *p){
-  int nHeight = p->pLeft ? p->pLeft->nHeight : 0;
-  if( NEVER(p->pRight) && p->pRight->nHeight>nHeight ){
+  จำนวนเต็ม nHeight = p->pLeft ? p->pLeft->nHeight : 0;
+  ถ้า( NEVER(p->pRight) && p->pRight->nHeight>nHeight ){
     nHeight = p->pRight->nHeight;
   }
-  if( ExprUseXSelect(p) ){
+  ถ้า( ExprUseXSelect(p) ){
     heightOfSelect(p->x.pSelect, &nHeight);
-  }else if( p->x.pList ){
+  }มิฉะนั้น ถ้า( p->x.pList ){
     heightOfExprList(p->x.pList, &nHeight);
     p->flags |= EP_Propagate & sqlite3ExprListFlags(p->x.pList);
   }
@@ -888,7 +888,7 @@ static void exprSetHeight(Expr *p){
 ** Expr.flags.
 */
 void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
-  if( pParse->nErr ) return;
+  ถ้า( pParse->nErr ) คืน;
   exprSetHeight(p);
   sqlite3ExprCheckHeight(pParse, p->nHeight);
 }
@@ -897,19 +897,19 @@ void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
 ** Return the maximum height of any expression tree referenced
 ** by the select statement passed as an argument.
 */
-int sqlite3SelectExprHeight(const Select *p){
-  int nHeight = 0;
+จำนวนเต็ม sqlite3SelectExprHeight(const Select *p){
+  จำนวนเต็ม nHeight = 0;
   heightOfSelect(p, &nHeight);
-  return nHeight;
+  คืน nHeight;
 }
-#else /* ABOVE:  Height enforcement enabled.  BELOW: Height enforcement off */
+#มิฉะนั้น /* ABOVE:  Height enforcement enabled.  BELOW: Height enforcement off */
 /*
 ** Propagate all EP_Propagate flags from the Expr.x.pList into
 ** Expr.flags.
 */
 void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
-  if( pParse->nErr ) return;
-  if( p && ExprUseXList(p) && p->x.pList ){
+  ถ้า( pParse->nErr ) คืน;
+  ถ้า( p && ExprUseXList(p) && p->x.pList ){
     p->flags |= EP_Propagate & sqlite3ExprListFlags(p->x.pList);
   }
 }
@@ -919,9 +919,9 @@ void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p){
 /*
 ** Set the error offset for an Expr node, if possible.
 */
-void sqlite3ExprSetErrorOffset(Expr *pExpr, int iOfst){
-  if( pExpr==0 ) return;
-  if( NEVER(ExprUseWJoin(pExpr)) ) return;
+void sqlite3ExprSetErrorOffset(Expr *pExpr, จำนวนเต็ม iOfst){
+  ถ้า( pExpr==0 ) คืน;
+  ถ้า( NEVER(ExprUseWJoin(pExpr)) ) คืน;
   pExpr->w.iOfst = iOfst;
 }
 
@@ -948,34 +948,34 @@ void sqlite3ExprSetErrorOffset(Expr *pExpr, int iOfst){
 */
 Expr *sqlite3ExprAlloc(
   sqlite3 *db,            /* Handle for sqlite3DbMallocRawNN() */
-  int op,                 /* Expression opcode */
+  จำนวนเต็ม op,                 /* Expression opcode */
   const Token *pToken,    /* Token argument.  Might be NULL */
-  int dequote             /* True to dequote */
+  จำนวนเต็ม dequote             /* True to dequote */
 ){
   Expr *pNew;
-  int nExtra = pToken ? pToken->n+1 : 0;
+  จำนวนเต็ม nExtra = pToken ? pToken->n+1 : 0;
 
   assert( db!=0 );
-  pNew = sqlite3DbMallocRawNN(db, sizeof(Expr)+nExtra);
-  if( pNew ){
-    memset(pNew, 0, sizeof(Expr));
+  pNew = sqlite3DbMallocRawNN(db, parimaa_na(Expr)+nExtra);
+  ถ้า( pNew ){
+    memset(pNew, 0, parimaa_na(Expr));
     pNew->op = (u8)op;
     pNew->iAgg = -1;
-    if( nExtra ){
+    ถ้า( nExtra ){
       assert( pToken!=0 );
-      pNew->u.zToken = (char*)&pNew[1];
+      pNew->u.zToken = (var_na*)&pNew[1];
       assert( pToken->z!=0 || pToken->n==0 );
-      if( pToken->n ) memcpy(pNew->u.zToken, pToken->z, pToken->n);
+      ถ้า( pToken->n ) memcpy(pNew->u.zToken, pToken->z, pToken->n);
       pNew->u.zToken[pToken->n] = 0;
-      if( dequote && sqlite3Isquote(pNew->u.zToken[0]) ){
+      ถ้า( dequote && sqlite3Isquote(pNew->u.zToken[0]) ){
         sqlite3DequoteExpr(pNew);
       }
     }
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ถ้า SQLITE_MAX_EXPR_DEPTH>0
     pNew->nHeight = 1;
 #endif 
   }
-  return pNew;
+  คืน pNew;
 }
 
 /*
@@ -984,31 +984,31 @@ Expr *sqlite3ExprAlloc(
 */
 Expr *sqlite3Expr(
   sqlite3 *db,            /* Handle for sqlite3DbMallocZero() (may be null) */
-  int op,                 /* Expression opcode */
-  const char *zToken      /* Token argument.  Might be NULL */
+  จำนวนเต็ม op,                 /* Expression opcode */
+  const var_na *zToken      /* Token argument.  Might be NULL */
 ){
   Token x;
   x.z = zToken;
   x.n = sqlite3Strlen30(zToken);
-  return sqlite3ExprAlloc(db, op, &x, 0);
+  คืน sqlite3ExprAlloc(db, op, &x, 0);
 }
 
 /*
 ** Allocate an expression for a 32-bit signed integer literal.
 */
-Expr *sqlite3ExprInt32(sqlite3 *db, int iVal){
-  Expr *pNew = sqlite3DbMallocRawNN(db, sizeof(Expr));
-  if( pNew ){
-    memset(pNew, 0, sizeof(Expr));
+Expr *sqlite3ExprInt32(sqlite3 *db, จำนวนเต็ม iVal){
+  Expr *pNew = sqlite3DbMallocRawNN(db, parimaa_na(Expr));
+  ถ้า( pNew ){
+    memset(pNew, 0, parimaa_na(Expr));
     pNew->op = TK_INTEGER;
     pNew->iAgg = -1;
     pNew->flags = EP_IntValue|EP_Leaf|(iVal?EP_IsTrue:EP_IsFalse);
     pNew->u.iValue = iVal;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ถ้า SQLITE_MAX_EXPR_DEPTH>0
     pNew->nHeight = 1;
 #endif 
   }
-  return pNew;
+  คืน pNew;
 }
 
 /*
@@ -1023,27 +1023,27 @@ void sqlite3ExprAttachSubtrees(
   Expr *pLeft,
   Expr *pRight
 ){
-  if( pRoot==0 ){
+  ถ้า( pRoot==0 ){
     assert( db->mallocFailed );
     sqlite3ExprDelete(db, pLeft);
     sqlite3ExprDelete(db, pRight);
-  }else{
+  }มิฉะนั้น{
     assert( ExprUseXList(pRoot) );
     assert( pRoot->x.pSelect==0 );
-    if( pRight ){
+    ถ้า( pRight ){
       pRoot->pRight = pRight;
       pRoot->flags |= EP_Propagate & pRight->flags;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ถ้า SQLITE_MAX_EXPR_DEPTH>0
       pRoot->nHeight = pRight->nHeight+1;
-    }else{
+    }มิฉะนั้น{
       pRoot->nHeight = 1;
 #endif
     }
-    if( pLeft ){
+    ถ้า( pLeft ){
       pRoot->pLeft = pLeft;
       pRoot->flags |= EP_Propagate & pLeft->flags;
-#if SQLITE_MAX_EXPR_DEPTH>0
-      if( pLeft->nHeight>=pRoot->nHeight ){
+#ถ้า SQLITE_MAX_EXPR_DEPTH>0
+      ถ้า( pLeft->nHeight>=pRoot->nHeight ){
         pRoot->nHeight = pLeft->nHeight+1;
       }
 #endif
@@ -1060,23 +1060,23 @@ void sqlite3ExprAttachSubtrees(
 */
 Expr *sqlite3PExpr(
   Parse *pParse,          /* Parsing context */
-  int op,                 /* Expression opcode */
+  จำนวนเต็ม op,                 /* Expression opcode */
   Expr *pLeft,            /* Left operand */
   Expr *pRight            /* Right operand */
 ){
   Expr *p;
-  p = sqlite3DbMallocRawNN(pParse->db, sizeof(Expr));
-  if( p ){
-    memset(p, 0, sizeof(Expr));
+  p = sqlite3DbMallocRawNN(pParse->db, parimaa_na(Expr));
+  ถ้า( p ){
+    memset(p, 0, parimaa_na(Expr));
     p->op = op & 0xff;
     p->iAgg = -1;
     sqlite3ExprAttachSubtrees(pParse->db, p, pLeft, pRight);
     sqlite3ExprCheckHeight(pParse, p->nHeight);
-  }else{
+  }มิฉะนั้น{
     sqlite3ExprDelete(pParse->db, pLeft);
     sqlite3ExprDelete(pParse->db, pRight);
   }
-  return p;
+  คืน p;
 }
 
 /*
@@ -1084,11 +1084,11 @@ Expr *sqlite3PExpr(
 ** do a memory allocation failure) then delete the pSelect object.
 */
 void sqlite3PExprAddSelect(Parse *pParse, Expr *pExpr, Select *pSelect){
-  if( pExpr ){
+  ถ้า( pExpr ){
     pExpr->x.pSelect = pSelect;
     ExprSetProperty(pExpr, EP_xIsSelect|EP_Subquery);
     sqlite3ExprSetHeightAndFlags(pParse, pExpr);
-  }else{
+  }มิฉะนั้น{
     assert( pParse->db->mallocFailed );
     sqlite3SelectDelete(pParse->db, pSelect);
   }
@@ -1113,31 +1113,31 @@ void sqlite3PExprAddSelect(Parse *pParse, Expr *pExpr, Select *pSelect){
 ** This is used as part of processing IN(...) expressions with a list
 ** of vectors on the RHS. e.g. "... IN ((1,2), (3,4), (5,6))".
 */
-Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
-  int ii;
+Select *sqlite3ExprListToValues(Parse *pParse, จำนวนเต็ม nElem, ExprList *pEList){
+  จำนวนเต็ม ii;
   Select *pRet = 0;
   assert( nElem>1 );
-  for(ii=0; ii<pEList->nExpr; ii++){
+  สำหรับ(ii=0; ii<pEList->nExpr; ii++){
     Select *pSel;
     Expr *pExpr = pEList->a[ii].pExpr;
-    int nExprElem;
-    if( pExpr->op==TK_VECTOR ){
+    จำนวนเต็ม nExprElem;
+    ถ้า( pExpr->op==TK_VECTOR ){
       assert( ExprUseXList(pExpr) );
       nExprElem = pExpr->x.pList->nExpr;
-    }else{
+    }มิฉะนั้น{
       nExprElem = 1;
     }
-    if( nExprElem!=nElem ){
+    ถ้า( nExprElem!=nElem ){
       sqlite3ErrorMsg(pParse, "IN(...) element has %d term%s - expected %d",
           nExprElem, nExprElem>1?"s":"", nElem
       );
-      break;
+      bha_nga;
     }
     assert( ExprUseXList(pExpr) );
     pSel = sqlite3SelectNew(pParse, pExpr->x.pList, 0, 0, 0, 0, 0, SF_Values,0);
     pExpr->x.pList = 0;
-    if( pSel ){
-      if( pRet ){
+    ถ้า( pSel ){
+      ถ้า( pRet ){
         pSel->op = TK_ALL;
         pSel->pPrior = pRet;
       }
@@ -1145,11 +1145,11 @@ Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
     }
   }
 
-  if( pRet && pRet->pPrior ){
+  ถ้า( pRet && pRet->pPrior ){
     pRet->selFlags |= SF_MultiValue;
   }
   sqlite3ExprListDelete(pParse->db, pEList);
-  return pRet;
+  คืน pRet;
 }
 
 /*
@@ -1162,23 +1162,23 @@ Select *sqlite3ExprListToValues(Parse *pParse, int nElem, ExprList *pEList){
 */
 Expr *sqlite3ExprAnd(Parse *pParse, Expr *pLeft, Expr *pRight){
   sqlite3 *db = pParse->db;
-  if( pLeft==0  ){
-    return pRight;
-  }else if( pRight==0 ){
-    return pLeft;
-  }else{
+  ถ้า( pLeft==0  ){
+    คืน pRight;
+  }มิฉะนั้น ถ้า( pRight==0 ){
+    คืน pLeft;
+  }มิฉะนั้น{
     u32 f = pLeft->flags | pRight->flags;
-    if( (f&(EP_OuterON|EP_InnerON|EP_IsFalse|EP_HasFunc))==EP_IsFalse
+    ถ้า( (f&(EP_OuterON|EP_InnerON|EP_IsFalse|EP_HasFunc))==EP_IsFalse
      && !IN_RENAME_OBJECT
     ){
       Expr *p;
       sqlite3ExprDeferredDelete(pParse, pLeft);
       sqlite3ExprDeferredDelete(pParse, pRight);
       p = sqlite3ExprInt32(db, 0);
-      if( p ) p->op2 = 1;
-      return p;
-    }else{
-      return sqlite3PExpr(pParse, TK_AND, pLeft, pRight);
+      ถ้า( p ) p->op2 = 1;
+      คืน p;
+    }มิฉะนั้น{
+      คืน sqlite3PExpr(pParse, TK_AND, pLeft, pRight);
     }
   }
 }
@@ -1191,19 +1191,19 @@ Expr *sqlite3ExprFunction(
   Parse *pParse,        /* Parsing context */
   ExprList *pList,      /* Argument list */
   const Token *pToken,  /* Name of the function */
-  int eDistinct         /* SF_Distinct or SF_ALL or 0 */
+  จำนวนเต็ม eDistinct         /* SF_Distinct or SF_ALL or 0 */
 ){
   Expr *pNew;
   sqlite3 *db = pParse->db;
   assert( pToken );
   pNew = sqlite3ExprAlloc(db, TK_FUNCTION, pToken, 1);
-  if( pNew==0 ){
+  ถ้า( pNew==0 ){
     sqlite3ExprListDelete(db, pList); /* Avoid memory leak when malloc fails */
-    return 0;
+    คืน 0;
   }
   assert( !ExprHasProperty(pNew, EP_InnerON|EP_OuterON) );
-  pNew->w.iOfst = (int)(pToken->z - pParse->zTail);
-  if( pList
+  pNew->w.iOfst = (จำนวนเต็ม)(pToken->z - pParse->zTail);
+  ถ้า( pList
    && pList->nExpr > pParse->db->aLimit[SQLITE_LIMIT_FUNCTION_ARG]
    && !pParse->nested
   ){
@@ -1213,8 +1213,8 @@ Expr *sqlite3ExprFunction(
   ExprSetProperty(pNew, EP_HasFunc);
   assert( ExprUseXList(pNew) );
   sqlite3ExprSetHeightAndFlags(pParse, pNew);
-  if( eDistinct==SF_Distinct ) ExprSetProperty(pNew, EP_Distinct);
-  return pNew;
+  ถ้า( eDistinct==SF_Distinct ) ExprSetProperty(pNew, EP_Distinct);
+  คืน pNew;
 }
 
 /*
@@ -1244,38 +1244,38 @@ void sqlite3ExprAddFunctionOrderBy(
 ){
   Expr *pOB;
   sqlite3 *db = pParse->db;
-  if( NEVER(pOrderBy==0) ){
+  ถ้า( NEVER(pOrderBy==0) ){
     assert( db->mallocFailed );
-    return;
+    คืน;
   }
-  if( pExpr==0 ){
+  ถ้า( pExpr==0 ){
     assert( db->mallocFailed );
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    คืน;
   }
   assert( pExpr->op==TK_FUNCTION );
   assert( pExpr->pLeft==0 );
   assert( ExprUseXList(pExpr) );
-  if( pExpr->x.pList==0 || NEVER(pExpr->x.pList->nExpr==0) ){
+  ถ้า( pExpr->x.pList==0 || NEVER(pExpr->x.pList->nExpr==0) ){
     /* Ignore ORDER BY on zero-argument aggregates */
     sqlite3ParserAddCleanup(pParse, sqlite3ExprListDeleteGeneric, pOrderBy);
-    return;
+    คืน;
   }
-  if( IsWindowFunc(pExpr) ){
+  ถ้า( IsWindowFunc(pExpr) ){
     sqlite3ExprOrderByAggregateError(pParse, pExpr);
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    คืน;
   }
-  if( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+  ถ้า( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
     sqlite3ErrorMsg(pParse, "too many terms in ORDER BY clause");
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    คืน;
   }
 
   pOB = sqlite3ExprAlloc(db, TK_ORDER, 0, 0);
-  if( pOB==0 ){
+  ถ้า( pOB==0 ){
     sqlite3ExprListDelete(db, pOrderBy);
-    return;
+    คืน;
   }
   pOB->x.pList = pOrderBy;
   assert( ExprUseXList(pOB) );
@@ -1301,10 +1301,10 @@ void sqlite3ExprFunctionUsable(
 ){
   assert( !IN_RENAME_OBJECT );
   assert( (pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE))!=0 );
-  if( ExprHasProperty(pExpr, EP_FromDDL) 
+  ถ้า( ExprHasProperty(pExpr, EP_FromDDL) 
    || pParse->prepFlags & SQLITE_PREPARE_FROM_DDL
   ){
-    if( (pDef->funcFlags & SQLITE_FUNC_DIRECT)!=0
+    ถ้า( (pDef->funcFlags & SQLITE_FUNC_DIRECT)!=0
      || (pParse->db->flags & SQLITE_TrustedSchema)==0
     ){
       /* Functions prohibited in triggers and views if:
@@ -1337,71 +1337,71 @@ void sqlite3ExprFunctionUsable(
 */
 void sqlite3ExprAssignVarNumber(Parse *pParse, Expr *pExpr, u32 n){
   sqlite3 *db = pParse->db;
-  const char *z;
+  const var_na *z;
   ynVar x;
 
-  if( pExpr==0 ) return;
+  ถ้า( pExpr==0 ) คืน;
   assert( !ExprHasProperty(pExpr, EP_IntValue|EP_Reduced|EP_TokenOnly) );
   z = pExpr->u.zToken;
   assert( z!=0 );
   assert( z[0]!=0 );
   assert( n==(u32)sqlite3Strlen30(z) );
-  if( z[1]==0 ){
+  ถ้า( z[1]==0 ){
     /* Wildcard of the form "?".  Assign the next variable number */
     assert( z[0]=='?' );
     x = (ynVar)(++pParse->nVar);
-  }else{
-    int doAdd = 0;
-    if( z[0]=='?' ){
+  }มิฉะนั้น{
+    จำนวนเต็ม doAdd = 0;
+    ถ้า( z[0]=='?' ){
       /* Wildcard of the form "?nnn".  Convert "nnn" to an integer and
       ** use it as the variable number */
       i64 i;
-      int bOk;
-      if( n==2 ){ /*OPTIMIZATION-IF-TRUE*/
+      จำนวนเต็ม bOk;
+      ถ้า( n==2 ){ /*OPTIMIZATION-IF-TRUE*/
         i = z[1]-'0';  /* The common case of ?N for a single digit N */
         bOk = 1;
-      }else{
+      }มิฉะนั้น{
         bOk = 0==sqlite3Atoi64(&z[1], &i, n-1, SQLITE_UTF8);
       }
       testcase( i==0 );
       testcase( i==1 );
       testcase( i==db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER]-1 );
       testcase( i==db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] );
-      if( bOk==0 || i<1 || i>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
+      ถ้า( bOk==0 || i<1 || i>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
         sqlite3ErrorMsg(pParse, "variable number must be between ?1 and ?%d",
             db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER]);
         sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
-        return;
+        คืน;
       }
       x = (ynVar)i;
-      if( x>pParse->nVar ){
-        pParse->nVar = (int)x;
+      ถ้า( x>pParse->nVar ){
+        pParse->nVar = (จำนวนเต็ม)x;
         doAdd = 1;
-      }else if( x<SQLITE_VNBMC*64 ){
+      }มิฉะนั้น ถ้า( x<SQLITE_VNBMC*64 ){
         doAdd = (pParse->aVnbmc[x>>6] & MASKBIT64(x&63))==0;
-      }else if( sqlite3VListNumToName(pParse->pVList, x)==0 ){
+      }มิฉะนั้น ถ้า( sqlite3VListNumToName(pParse->pVList, x)==0 ){
         doAdd = 1;
       }
-    }else{
+    }มิฉะนั้น{
       /* Wildcards like ":aaa", "$aaa" or "@aaa".  Reuse the same variable
       ** number as the prior appearance of the same name, or if the name
       ** has never appeared before, reuse the same variable number
       */
       x = (ynVar)sqlite3VListNameToNum(pParse->pVList, z, n);
-      if( x==0 ){
+      ถ้า( x==0 ){
         x = (ynVar)(++pParse->nVar);
         doAdd = 1;
       }
     }
-    if( doAdd ){
+    ถ้า( doAdd ){
       pParse->pVList = sqlite3VListAdd(db, pParse->pVList, z, n, x);
-      if( pParse->pVList!=0 && x<SQLITE_VNBMC*64 ){
+      ถ้า( pParse->pVList!=0 && x<SQLITE_VNBMC*64 ){
         pParse->aVnbmc[x>>6] |= MASKBIT64(x&63);
       }
     }
   }
   pExpr->iColumn = x;
-  if( x>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
+  ถ้า( x>db->aLimit[SQLITE_LIMIT_VARIABLE_NUMBER] ){
     sqlite3ErrorMsg(pParse, "too many SQL variables");
     sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
   }
@@ -1419,64 +1419,64 @@ exprDeleteRestart:
   assert( !ExprUseYWin(p) || p->y.pWin!=0 || db->mallocFailed );
   assert( p->op!=TK_FUNCTION || !ExprUseYSub(p) );
 #ifdef SQLITE_DEBUG
-  if( ExprHasProperty(p, EP_Leaf) && !ExprHasProperty(p, EP_TokenOnly) ){
+  ถ้า( ExprHasProperty(p, EP_Leaf) && !ExprHasProperty(p, EP_TokenOnly) ){
     assert( p->pLeft==0 );
     assert( p->pRight==0 );
     assert( !ExprUseXSelect(p) || p->x.pSelect==0 );
     assert( !ExprUseXList(p) || p->x.pList==0 );
   }
 #endif
-  if( !ExprHasProperty(p, (EP_TokenOnly|EP_Leaf)) ){
+  ถ้า( !ExprHasProperty(p, (EP_TokenOnly|EP_Leaf)) ){
     /* The Expr.x union is never used at the same time as Expr.pRight */
     assert( (ExprUseXList(p) && p->x.pList==0) || p->pRight==0 );
-    if( p->pRight ){
+    ถ้า( p->pRight ){
       assert( !ExprHasProperty(p, EP_WinFunc) );
       sqlite3ExprDeleteNN(db, p->pRight);
-    }else if( ExprUseXSelect(p) ){
+    }มิฉะนั้น ถ้า( ExprUseXSelect(p) ){
       assert( !ExprHasProperty(p, EP_WinFunc) );
       sqlite3SelectDelete(db, p->x.pSelect);
-    }else{
+    }มิฉะนั้น{
       sqlite3ExprListDelete(db, p->x.pList);
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(p, EP_WinFunc) ){
+      ถ้า( ExprHasProperty(p, EP_WinFunc) ){
         sqlite3WindowDelete(db, p->y.pWin);
       }
 #endif
     }
-    if( p->pLeft && p->op!=TK_SELECT_COLUMN ){
+    ถ้า( p->pLeft && p->op!=TK_SELECT_COLUMN ){
       Expr *pLeft = p->pLeft;
-      if( !ExprHasProperty(p, EP_Static)
+      ถ้า( !ExprHasProperty(p, EP_Static)
        && !ExprHasProperty(pLeft, EP_Static)
       ){
         /* Avoid unnecessary recursion on unary operators */
         sqlite3DbNNFreeNN(db, p);
         p = pLeft;
         goto exprDeleteRestart;
-      }else{
+      }มิฉะนั้น{
         sqlite3ExprDeleteNN(db, pLeft);
       }
     }
   }
-  if( !ExprHasProperty(p, EP_Static) ){
+  ถ้า( !ExprHasProperty(p, EP_Static) ){
     sqlite3DbNNFreeNN(db, p);
   }
 }
 void sqlite3ExprDelete(sqlite3 *db, Expr *p){
-  if( p ) sqlite3ExprDeleteNN(db, p);
+  ถ้า( p ) sqlite3ExprDeleteNN(db, p);
 }
 void sqlite3ExprDeleteGeneric(sqlite3 *db, void *p){
-  if( ALWAYS(p) ) sqlite3ExprDeleteNN(db, (Expr*)p);
+  ถ้า( ALWAYS(p) ) sqlite3ExprDeleteNN(db, (Expr*)p);
 }
 
 /*
 ** Clear both elements of an OnOrUsing object
 */
 void sqlite3ClearOnOrUsing(sqlite3 *db, OnOrUsing *p){
-  if( p==0 ){
+  ถ้า( p==0 ){
     /* Nothing to clear */
-  }else if( p->pOn ){
+  }มิฉะนั้น ถ้า( p->pOn ){
     sqlite3ExprDeleteNN(db, p->pOn);
-  }else if( p->pUsing ){
+  }มิฉะนั้น ถ้า( p->pUsing ){
     sqlite3IdListDelete(db, p->pUsing);
   }
 }
@@ -1491,16 +1491,16 @@ void sqlite3ClearOnOrUsing(sqlite3 *db, OnOrUsing *p){
 ** Return 0 if the delete was successfully deferred.  Return non-zero
 ** if the delete happened immediately because of an OOM.
 */
-int sqlite3ExprDeferredDelete(Parse *pParse, Expr *pExpr){
-  return 0==sqlite3ParserAddCleanup(pParse, sqlite3ExprDeleteGeneric, pExpr);
+จำนวนเต็ม sqlite3ExprDeferredDelete(Parse *pParse, Expr *pExpr){
+  คืน 0==sqlite3ParserAddCleanup(pParse, sqlite3ExprDeleteGeneric, pExpr);
 }
 
 /* Invoke sqlite3RenameExprUnmap() and sqlite3ExprDelete() on the
 ** expression.
 */
 void sqlite3ExprUnmapAndDelete(Parse *pParse, Expr *p){
-  if( p ){
-    if( IN_RENAME_OBJECT ){
+  ถ้า( p ){
+    ถ้า( IN_RENAME_OBJECT ){
       sqlite3RenameExprUnmap(pParse, p);
     }
     sqlite3ExprDeleteNN(pParse->db, p);
@@ -1512,10 +1512,10 @@ void sqlite3ExprUnmapAndDelete(Parse *pParse, Expr *p){
 ** passed as the first argument. This is always one of EXPR_FULLSIZE,
 ** EXPR_REDUCEDSIZE or EXPR_TOKENONLYSIZE.
 */
-static int exprStructSize(const Expr *p){
-  if( ExprHasProperty(p, EP_TokenOnly) ) return EXPR_TOKENONLYSIZE;
-  if( ExprHasProperty(p, EP_Reduced) ) return EXPR_REDUCEDSIZE;
-  return EXPR_FULLSIZE;
+static จำนวนเต็ม exprStructSize(const Expr *p){
+  ถ้า( ExprHasProperty(p, EP_TokenOnly) ) คืน EXPR_TOKENONLYSIZE;
+  ถ้า( ExprHasProperty(p, EP_Reduced) ) คืน EXPR_REDUCEDSIZE;
+  คืน EXPR_FULLSIZE;
 }
 
 /*
@@ -1552,25 +1552,25 @@ static int exprStructSize(const Expr *p){
 ** of dupedExprStructSize() contain multiple assert() statements that attempt
 ** to enforce this constraint.
 */
-static int dupedExprStructSize(const Expr *p, int flags){
-  int nSize;
+static จำนวนเต็ม dupedExprStructSize(const Expr *p, จำนวนเต็ม flags){
+  จำนวนเต็ม nSize;
   assert( flags==EXPRDUP_REDUCE || flags==0 ); /* Only one flag value allowed */
   assert( EXPR_FULLSIZE<=0xfff );
   assert( (0xfff & (EP_Reduced|EP_TokenOnly))==0 );
-  if( 0==flags || ExprHasProperty(p, EP_FullSize) ){
+  ถ้า( 0==flags || ExprHasProperty(p, EP_FullSize) ){
     nSize = EXPR_FULLSIZE;
-  }else{
+  }มิฉะนั้น{
     assert( !ExprHasProperty(p, EP_TokenOnly|EP_Reduced) );
     assert( !ExprHasProperty(p, EP_OuterON) );
     assert( !ExprHasVVAProperty(p, EP_NoReduce) );
-    if( p->pLeft || p->x.pList ){
+    ถ้า( p->pLeft || p->x.pList ){
       nSize = EXPR_REDUCEDSIZE | EP_Reduced;
-    }else{
+    }มิฉะนั้น{
       assert( p->pRight==0 );
       nSize = EXPR_TOKENONLYSIZE | EP_TokenOnly;
     }
   }
-  return nSize;
+  คืน nSize;
 }
 
 /*
@@ -1578,12 +1578,12 @@ static int dupedExprStructSize(const Expr *p, int flags){
 ** of the Expr structure and a copy of the Expr.u.zToken string (if that
 ** string is defined.)
 */
-static int dupedExprNodeSize(const Expr *p, int flags){
-  int nByte = dupedExprStructSize(p, flags) & 0xfff;
-  if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+static จำนวนเต็ม dupedExprNodeSize(const Expr *p, จำนวนเต็ม flags){
+  จำนวนเต็ม nByte = dupedExprStructSize(p, flags) & 0xfff;
+  ถ้า( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
     nByte += sqlite3Strlen30NN(p->u.zToken)+1;
   }
-  return ROUND8(nByte);
+  คืน ROUND8(nByte);
 }
 
 /*
@@ -1597,14 +1597,14 @@ static int dupedExprNodeSize(const Expr *p, int flags){
 ** tree formed by Expr.pLeft and Expr.pRight, but not any other
 ** substructure such as Expr.x.pList, Expr.x.pSelect, and Expr.y.pWin.
 */
-static int dupedExprSize(const Expr *p){
-  int nByte;
+static จำนวนเต็ม dupedExprSize(const Expr *p){
+  จำนวนเต็ม nByte;
   assert( p!=0 );
   nByte = dupedExprNodeSize(p, EXPRDUP_REDUCE);
-  if( p->pLeft ) nByte += dupedExprSize(p->pLeft);
-  if( p->pRight ) nByte += dupedExprSize(p->pRight);
+  ถ้า( p->pLeft ) nByte += dupedExprSize(p->pLeft);
+  ถ้า( p->pRight ) nByte += dupedExprSize(p->pRight);
   assert( nByte==ROUND8(nByte) );
-  return nByte;
+  คืน nByte;
 }
 
 /*
@@ -1615,8 +1615,8 @@ static int dupedExprSize(const Expr *p){
 ** of the structure down into exprDup() so that they decendents can have
 ** access to that memory.
 */
-typedef struct EdupBuf EdupBuf;
-struct EdupBuf {
+typedef sa_nracanaa EdupBuf EdupBuf;
+sa_nracanaa EdupBuf {
   u8 *zAlloc;          /* Memory space available for storage */
 #ifdef SQLITE_DEBUG
   u8 *zEnd;            /* First byte past the end of memory */
@@ -1632,13 +1632,13 @@ struct EdupBuf {
 static Expr *exprDup(
   sqlite3 *db,          /* Database connection (for memory allocation) */
   const Expr *p,        /* Expr tree to be duplicated */
-  int dupFlags,         /* EXPRDUP_REDUCE for compression.  0 if not */
+  จำนวนเต็ม dupFlags,         /* EXPRDUP_REDUCE for compression.  0 if not */
   EdupBuf *pEdupBuf     /* Preallocated storage space, or NULL */
 ){
   Expr *pNew;           /* Value to return */
   EdupBuf sEdupBuf;     /* Memory space from which to build Expr object */
   u32 staticFlag;       /* EP_Static if space not obtained from malloc */
-  int nToken = -1;       /* Space needed for p->u.zToken.  -1 means unknown */
+  จำนวนเต็ม nToken = -1;       /* Space needed for p->u.zToken.  -1 means unknown */
 
   assert( db!=0 );
   assert( p );
@@ -1646,7 +1646,7 @@ static Expr *exprDup(
   assert( pEdupBuf==0 || dupFlags==EXPRDUP_REDUCE );
 
   /* Figure out where to write the new Expr structure. */
-  if( pEdupBuf ){
+  ถ้า( pEdupBuf ){
     sEdupBuf.zAlloc = pEdupBuf->zAlloc;
 #ifdef SQLITE_DEBUG
     sEdupBuf.zEnd = pEdupBuf->zEnd;
@@ -1654,14 +1654,14 @@ static Expr *exprDup(
     staticFlag = EP_Static;
     assert( sEdupBuf.zAlloc!=0 );
     assert( dupFlags==EXPRDUP_REDUCE );
-  }else{
-    int nAlloc;
-    if( dupFlags ){
+  }มิฉะนั้น{
+    จำนวนเต็ม nAlloc;
+    ถ้า( dupFlags ){
       nAlloc = dupedExprSize(p);
-    }else if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+    }มิฉะนั้น ถ้า( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
       nToken = sqlite3Strlen30NN(p->u.zToken)+1;
       nAlloc = ROUND8(EXPR_FULLSIZE + nToken);
-    }else{
+    }มิฉะนั้น{
       nToken = 0;
       nAlloc = ROUND8(EXPR_FULLSIZE);
     }
@@ -1676,31 +1676,31 @@ static Expr *exprDup(
   pNew = (Expr *)sEdupBuf.zAlloc;
   assert( EIGHT_BYTE_ALIGNMENT(pNew) );
 
-  if( pNew ){
+  ถ้า( pNew ){
     /* Set nNewSize to the size allocated for the structure pointed to
     ** by pNew. This is either EXPR_FULLSIZE, EXPR_REDUCEDSIZE or
     ** EXPR_TOKENONLYSIZE. nToken is set to the number of bytes consumed
     ** by the copy of the p->u.zToken string (if any).
     */
     const unsigned nStructSize = dupedExprStructSize(p, dupFlags);
-    int nNewSize = nStructSize & 0xfff;
-    if( nToken<0 ){
-      if( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
+    จำนวนเต็ม nNewSize = nStructSize & 0xfff;
+    ถ้า( nToken<0 ){
+      ถ้า( !ExprHasProperty(p, EP_IntValue) && p->u.zToken ){
         nToken = sqlite3Strlen30(p->u.zToken) + 1;
-      }else{
+      }มิฉะนั้น{
         nToken = 0;
       }
     }
-    if( dupFlags ){
-      assert( (int)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >= nNewSize+nToken );
+    ถ้า( dupFlags ){
+      assert( (จำนวนเต็ม)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >= nNewSize+nToken );
       assert( ExprHasProperty(p, EP_Reduced)==0 );
       memcpy(sEdupBuf.zAlloc, p, nNewSize);
-    }else{
+    }มิฉะนั้น{
       u32 nSize = (u32)exprStructSize(p);
-      assert( (int)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >=
-                                                   (int)EXPR_FULLSIZE+nToken );
+      assert( (จำนวนเต็ม)(sEdupBuf.zEnd - sEdupBuf.zAlloc) >=
+                                                   (จำนวนเต็ม)EXPR_FULLSIZE+nToken );
       memcpy(sEdupBuf.zAlloc, p, nSize);
-      if( nSize<EXPR_FULLSIZE ){
+      ถ้า( nSize<EXPR_FULLSIZE ){
         memset(&sEdupBuf.zAlloc[nSize], 0, EXPR_FULLSIZE-nSize);
       }
       nNewSize = EXPR_FULLSIZE;
@@ -1711,65 +1711,65 @@ static Expr *exprDup(
     pNew->flags |= nStructSize & (EP_Reduced|EP_TokenOnly);
     pNew->flags |= staticFlag;
     ExprClearVVAProperties(pNew);
-    if( dupFlags ){
+    ถ้า( dupFlags ){
       ExprSetVVAProperty(pNew, EP_Immutable);
     }
 
     /* Copy the p->u.zToken string, if any. */
     assert( nToken>=0 );
-    if( nToken>0 ){
-      char *zToken = pNew->u.zToken = (char*)&sEdupBuf.zAlloc[nNewSize];
+    ถ้า( nToken>0 ){
+      var_na *zToken = pNew->u.zToken = (var_na*)&sEdupBuf.zAlloc[nNewSize];
       memcpy(zToken, p->u.zToken, nToken);
       nNewSize += nToken;
     }
     sEdupBuf.zAlloc += ROUND8(nNewSize);
 
-    if( ((p->flags|pNew->flags)&(EP_TokenOnly|EP_Leaf))==0 ){
+    ถ้า( ((p->flags|pNew->flags)&(EP_TokenOnly|EP_Leaf))==0 ){
 
       /* Fill in the pNew->x.pSelect or pNew->x.pList member. */
-      if( ExprUseXSelect(p) ){
+      ถ้า( ExprUseXSelect(p) ){
         pNew->x.pSelect = sqlite3SelectDup(db, p->x.pSelect, dupFlags);
-      }else{
+      }มิฉะนั้น{
         pNew->x.pList = sqlite3ExprListDup(db, p->x.pList,
                            p->op!=TK_ORDER ? dupFlags : 0);
       }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(p, EP_WinFunc) ){
+      ถ้า( ExprHasProperty(p, EP_WinFunc) ){
         pNew->y.pWin = sqlite3WindowDup(db, pNew, p->y.pWin);
         assert( ExprHasProperty(pNew, EP_WinFunc) );
       }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
       /* Fill in pNew->pLeft and pNew->pRight. */
-      if( dupFlags ){
-        if( p->op==TK_SELECT_COLUMN ){
+      ถ้า( dupFlags ){
+        ถ้า( p->op==TK_SELECT_COLUMN ){
           pNew->pLeft = p->pLeft;
           assert( p->pRight==0 
                || p->pRight==p->pLeft
                || ExprHasProperty(p->pLeft, EP_Subquery) );
-        }else{
+        }มิฉะนั้น{
           pNew->pLeft = p->pLeft ?
                       exprDup(db, p->pLeft, EXPRDUP_REDUCE, &sEdupBuf) : 0;
         }
         pNew->pRight = p->pRight ?
                        exprDup(db, p->pRight, EXPRDUP_REDUCE, &sEdupBuf) : 0;
-      }else{
-        if( p->op==TK_SELECT_COLUMN ){
+      }มิฉะนั้น{
+        ถ้า( p->op==TK_SELECT_COLUMN ){
           pNew->pLeft = p->pLeft;
           assert( p->pRight==0 
                || p->pRight==p->pLeft
                || ExprHasProperty(p->pLeft, EP_Subquery) );
-        }else{
+        }มิฉะนั้น{
           pNew->pLeft = sqlite3ExprDup(db, p->pLeft, 0);
         }
         pNew->pRight = sqlite3ExprDup(db, p->pRight, 0);
       }
     }
   }
-  if( pEdupBuf ) memcpy(pEdupBuf, &sEdupBuf, sizeof(sEdupBuf));
+  ถ้า( pEdupBuf ) memcpy(pEdupBuf, &sEdupBuf, parimaa_na(sEdupBuf));
   assert( sEdupBuf.zAlloc <= sEdupBuf.zEnd );
-  return pNew;
+  คืน pNew;
 }
 
 /*
@@ -1780,13 +1780,13 @@ static Expr *exprDup(
 #ifndef SQLITE_OMIT_CTE
 With *sqlite3WithDup(sqlite3 *db, With *p){
   With *pRet = 0;
-  if( p ){
+  ถ้า( p ){
     sqlite3_int64 nByte = SZ_WITH(p->nCte);
     pRet = sqlite3DbMallocZero(db, nByte);
-    if( pRet ){
-      int i;
+    ถ้า( pRet ){
+      จำนวนเต็ม i;
       pRet->nCte = p->nCte;
-      for(i=0; i<p->nCte; i++){
+      สำหรับ(i=0; i<p->nCte; i++){
         pRet->a[i].pSelect = sqlite3SelectDup(db, p->a[i].pSelect, 0);
         pRet->a[i].pCols = sqlite3ExprListDup(db, p->a[i].pCols, 0);
         pRet->a[i].zName = sqlite3DbStrDup(db, p->a[i].zName);
@@ -1794,9 +1794,9 @@ With *sqlite3WithDup(sqlite3 *db, With *p){
       }
     }
   }
-  return pRet;
+  คืน pRet;
 }
-#else
+#มิฉะนั้น
 # define sqlite3WithDup(x,y) 0
 #endif
 
@@ -1807,8 +1807,8 @@ With *sqlite3WithDup(sqlite3 *db, With *p){
 ** an a newly duplicated SELECT statement and gather all of the Window
 ** objects found there, assembling them onto the linked list at Select->pWin.
 */
-static int gatherSelectWindowsCallback(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_FUNCTION && ExprHasProperty(pExpr, EP_WinFunc) ){
+static จำนวนเต็ม gatherSelectWindowsCallback(Walker *pWalker, Expr *pExpr){
+  ถ้า( pExpr->op==TK_FUNCTION && ExprHasProperty(pExpr, EP_WinFunc) ){
     Select *pSelect = pWalker->u.pSelect;
     Window *pWin = pExpr->y.pWin;
     assert( pWin );
@@ -1816,10 +1816,10 @@ static int gatherSelectWindowsCallback(Walker *pWalker, Expr *pExpr){
     assert( pWin->ppThis==0 );
     sqlite3WindowLink(pSelect, pWin);
   }
-  return WRC_Continue;
+  คืน WRC_Continue;
 }
-static int gatherSelectWindowsSelectCallback(Walker *pWalker, Select *p){
-  return p==pWalker->u.pSelect ? WRC_Continue : WRC_Prune;
+static จำนวนเต็ม gatherSelectWindowsSelectCallback(Walker *pWalker, Select *p){
+  คืน p==pWalker->u.pSelect ? WRC_Continue : WRC_Prune;
 }
 static void gatherSelectWindows(Select *p){
   Walker w;
@@ -1850,39 +1850,39 @@ static void gatherSelectWindows(Select *p){
 ** truncated version of the usual Expr structure that will be stored as
 ** part of the in-memory representation of the database schema.
 */
-Expr *sqlite3ExprDup(sqlite3 *db, const Expr *p, int flags){
+Expr *sqlite3ExprDup(sqlite3 *db, const Expr *p, จำนวนเต็ม flags){
   assert( flags==0 || flags==EXPRDUP_REDUCE );
-  return p ? exprDup(db, p, flags, 0) : 0;
+  คืน p ? exprDup(db, p, flags, 0) : 0;
 }
-ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
+ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, จำนวนเต็ม flags){
   ExprList *pNew;
-  struct ExprList_item *pItem;
-  const struct ExprList_item *pOldItem;
-  int i;
+  sa_nracanaa ExprList_item *pItem;
+  const sa_nracanaa ExprList_item *pOldItem;
+  จำนวนเต็ม i;
   Expr *pPriorSelectColOld = 0;
   Expr *pPriorSelectColNew = 0;
   assert( db!=0 );
-  if( p==0 ) return 0;
+  ถ้า( p==0 ) คืน 0;
   pNew = sqlite3DbMallocRawNN(db, sqlite3DbMallocSize(db, p));
-  if( pNew==0 ) return 0;
+  ถ้า( pNew==0 ) คืน 0;
   pNew->nExpr = p->nExpr;
   pNew->nAlloc = p->nAlloc;
   pItem = pNew->a;
   pOldItem = p->a;
-  for(i=0; i<p->nExpr; i++, pItem++, pOldItem++){
+  สำหรับ(i=0; i<p->nExpr; i++, pItem++, pOldItem++){
     Expr *pOldExpr = pOldItem->pExpr;
     Expr *pNewExpr;
     pItem->pExpr = sqlite3ExprDup(db, pOldExpr, flags);
-    if( pOldExpr
+    ถ้า( pOldExpr
      && pOldExpr->op==TK_SELECT_COLUMN
      && (pNewExpr = pItem->pExpr)!=0
     ){
-      if( pNewExpr->pRight ){
+      ถ้า( pNewExpr->pRight ){
         pPriorSelectColOld = pOldExpr->pRight;
         pPriorSelectColNew = pNewExpr->pRight;
         pNewExpr->pLeft = pNewExpr->pRight;
-      }else{
-        if( pOldExpr->pLeft!=pPriorSelectColOld ){
+      }มิฉะนั้น{
+        ถ้า( pOldExpr->pLeft!=pPriorSelectColOld ){
           pPriorSelectColOld = pOldExpr->pLeft;
           pPriorSelectColNew = sqlite3ExprDup(db, pPriorSelectColOld, flags);
           pNewExpr->pRight = pPriorSelectColNew;
@@ -1894,7 +1894,7 @@ ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
     pItem->fg = pOldItem->fg;
     pItem->u = pOldItem->u;
   }
-  return pNew;
+  คืน pNew;
 }
 
 /*
@@ -1903,95 +1903,95 @@ ExprList *sqlite3ExprListDup(sqlite3 *db, const ExprList *p, int flags){
 ** sqlite3SelectDup(), can be called. sqlite3SelectDup() is sometimes
 ** called with a NULL argument.
 */
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER) \
+#ถ้า !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER) \
  || !defined(SQLITE_OMIT_SUBQUERY)
-SrcList *sqlite3SrcListDup(sqlite3 *db, const SrcList *p, int flags){
+SrcList *sqlite3SrcListDup(sqlite3 *db, const SrcList *p, จำนวนเต็ม flags){
   SrcList *pNew;
-  int i;
+  จำนวนเต็ม i;
   assert( db!=0 );
-  if( p==0 ) return 0;
+  ถ้า( p==0 ) คืน 0;
   pNew = sqlite3DbMallocRawNN(db, SZ_SRCLIST(p->nSrc) );
-  if( pNew==0 ) return 0;
+  ถ้า( pNew==0 ) คืน 0;
   pNew->nSrc = pNew->nAlloc = p->nSrc;
-  for(i=0; i<p->nSrc; i++){
+  สำหรับ(i=0; i<p->nSrc; i++){
     SrcItem *pNewItem = &pNew->a[i];
     const SrcItem *pOldItem = &p->a[i];
     Table *pTab;
     pNewItem->fg = pOldItem->fg;
-    if( pOldItem->fg.isSubquery ){
-      Subquery *pNewSubq = sqlite3DbMallocRaw(db, sizeof(Subquery));
-      if( pNewSubq==0 ){
+    ถ้า( pOldItem->fg.isSubquery ){
+      Subquery *pNewSubq = sqlite3DbMallocRaw(db, parimaa_na(Subquery));
+      ถ้า( pNewSubq==0 ){
         assert( db->mallocFailed );
         pNewItem->fg.isSubquery = 0;
-      }else{
-        memcpy(pNewSubq, pOldItem->u4.pSubq, sizeof(*pNewSubq));
+      }มิฉะนั้น{
+        memcpy(pNewSubq, pOldItem->u4.pSubq, parimaa_na(*pNewSubq));
         pNewSubq->pSelect = sqlite3SelectDup(db, pNewSubq->pSelect, flags);
-        if( pNewSubq->pSelect==0 ){
+        ถ้า( pNewSubq->pSelect==0 ){
           sqlite3DbFree(db, pNewSubq);
           pNewSubq = 0;
           pNewItem->fg.isSubquery = 0;
         }
       }
       pNewItem->u4.pSubq = pNewSubq;
-    }else if( pOldItem->fg.fixedSchema ){
+    }มิฉะนั้น ถ้า( pOldItem->fg.fixedSchema ){
       pNewItem->u4.pSchema = pOldItem->u4.pSchema;
-    }else{
+    }มิฉะนั้น{
       pNewItem->u4.zDatabase = sqlite3DbStrDup(db, pOldItem->u4.zDatabase);
     }
     pNewItem->zName = sqlite3DbStrDup(db, pOldItem->zName);
     pNewItem->zAlias = sqlite3DbStrDup(db, pOldItem->zAlias);
     pNewItem->iCursor = pOldItem->iCursor;
-    if( pNewItem->fg.isIndexedBy ){
+    ถ้า( pNewItem->fg.isIndexedBy ){
       pNewItem->u1.zIndexedBy = sqlite3DbStrDup(db, pOldItem->u1.zIndexedBy);
-    }else if( pNewItem->fg.isTabFunc ){
+    }มิฉะนั้น ถ้า( pNewItem->fg.isTabFunc ){
       pNewItem->u1.pFuncArg =
           sqlite3ExprListDup(db, pOldItem->u1.pFuncArg, flags);
-    }else{
+    }มิฉะนั้น{
       pNewItem->u1.nRow = pOldItem->u1.nRow;
     }
     pNewItem->u2 = pOldItem->u2;
-    if( pNewItem->fg.isCte ){
+    ถ้า( pNewItem->fg.isCte ){
       pNewItem->u2.pCteUse->nUse++;
     }
     pTab = pNewItem->pSTab = pOldItem->pSTab;
-    if( pTab ){
+    ถ้า( pTab ){
       pTab->nTabRef++;
     }
-    if( pOldItem->fg.isUsing ){
+    ถ้า( pOldItem->fg.isUsing ){
       assert( pNewItem->fg.isUsing );
       pNewItem->u3.pUsing = sqlite3IdListDup(db, pOldItem->u3.pUsing);
-    }else{
+    }มิฉะนั้น{
       pNewItem->u3.pOn = sqlite3ExprDup(db, pOldItem->u3.pOn, flags);
     }
     pNewItem->colUsed = pOldItem->colUsed;
   }
-  return pNew;
+  คืน pNew;
 }
 IdList *sqlite3IdListDup(sqlite3 *db, const IdList *p){
   IdList *pNew;
-  int i;
+  จำนวนเต็ม i;
   assert( db!=0 );
-  if( p==0 ) return 0;
+  ถ้า( p==0 ) คืน 0;
   pNew = sqlite3DbMallocRawNN(db, SZ_IDLIST(p->nId));
-  if( pNew==0 ) return 0;
+  ถ้า( pNew==0 ) คืน 0;
   pNew->nId = p->nId;
-  for(i=0; i<p->nId; i++){
-    struct IdList_item *pNewItem = &pNew->a[i];
-    const struct IdList_item *pOldItem = &p->a[i];
+  สำหรับ(i=0; i<p->nId; i++){
+    sa_nracanaa IdList_item *pNewItem = &pNew->a[i];
+    const sa_nracanaa IdList_item *pOldItem = &p->a[i];
     pNewItem->zName = sqlite3DbStrDup(db, pOldItem->zName);
   }
-  return pNew;
+  คืน pNew;
 }
-Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, int flags){
+Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, จำนวนเต็ม flags){
   Select *pRet = 0;
   Select *pNext = 0;
   Select **pp = &pRet;
   const Select *p;
 
   assert( db!=0 );
-  for(p=pDup; p; p=p->pPrior){
-    Select *pNew = sqlite3DbMallocRawNN(db, sizeof(*p) );
-    if( pNew==0 ) break;
+  สำหรับ(p=pDup; p; p=p->pPrior){
+    Select *pNew = sqlite3DbMallocRawNN(db, parimaa_na(*p) );
+    ถ้า( pNew==0 ) bha_nga;
     pNew->pEList = sqlite3ExprListDup(db, p->pEList, flags);
     pNew->pSrc = sqlite3SrcListDup(db, p->pSrc, flags);
     pNew->pWhere = sqlite3ExprDup(db, p->pWhere, flags);
@@ -2010,27 +2010,27 @@ Select *sqlite3SelectDup(sqlite3 *db, const Select *pDup, int flags){
 #ifndef SQLITE_OMIT_WINDOWFUNC
     pNew->pWin = 0;
     pNew->pWinDefn = sqlite3WindowListDup(db, p->pWinDefn);
-    if( p->pWin && db->mallocFailed==0 ) gatherSelectWindows(pNew);
+    ถ้า( p->pWin && db->mallocFailed==0 ) gatherSelectWindows(pNew);
 #endif
     pNew->selId = p->selId;
-    if( db->mallocFailed ){
+    ถ้า( db->mallocFailed ){
       /* Any prior OOM might have left the Select object incomplete.
       ** Delete the whole thing rather than allow an incomplete Select
       ** to be used by the code generator. */
       pNew->pNext = 0;
       sqlite3SelectDelete(db, pNew);
-      break;
+      bha_nga;
     }
     *pp = pNew;
     pp = &pNew->pPrior;
     pNext = pNew;
   }
-  return pRet;
+  คืน pRet;
 }
-#else
-Select *sqlite3SelectDup(sqlite3 *db, const Select *p, int flags){
+#มิฉะนั้น
+Select *sqlite3SelectDup(sqlite3 *db, const Select *p, จำนวนเต็ม flags){
   assert( p==0 );
-  return 0;
+  คืน 0;
 }
 #endif
 
@@ -2046,63 +2046,63 @@ Select *sqlite3SelectDup(sqlite3 *db, const Select *p, int flags){
 ** NULL is returned.  If non-NULL is returned, then it is guaranteed
 ** that the new entry was successfully appended.
 */
-static const struct ExprList_item zeroItem = {0};
+static const sa_nracanaa ExprList_item zeroItem = {0};
 SQLITE_NOINLINE ExprList *sqlite3ExprListAppendNew(
   sqlite3 *db,            /* Database handle.  Used for memory allocation */
   Expr *pExpr             /* Expression to be appended. Might be NULL */
 ){
-  struct ExprList_item *pItem;
+  sa_nracanaa ExprList_item *pItem;
   ExprList *pList;
 
   pList = sqlite3DbMallocRawNN(db, SZ_EXPRLIST(4));
-  if( pList==0 ){
+  ถ้า( pList==0 ){
     sqlite3ExprDelete(db, pExpr);
-    return 0;
+    คืน 0;
   }
   pList->nAlloc = 4;
   pList->nExpr = 1;
   pItem = &pList->a[0];
   *pItem = zeroItem;
   pItem->pExpr = pExpr;
-  return pList;
+  คืน pList;
 }
 SQLITE_NOINLINE ExprList *sqlite3ExprListAppendGrow(
   sqlite3 *db,            /* Database handle.  Used for memory allocation */
   ExprList *pList,        /* List to which to append. Might be NULL */
   Expr *pExpr             /* Expression to be appended. Might be NULL */
 ){
-  struct ExprList_item *pItem;
+  sa_nracanaa ExprList_item *pItem;
   ExprList *pNew;
   pList->nAlloc *= 2;
   pNew = sqlite3DbRealloc(db, pList, SZ_EXPRLIST(pList->nAlloc));
-  if( pNew==0 ){
+  ถ้า( pNew==0 ){
     sqlite3ExprListDelete(db, pList);
     sqlite3ExprDelete(db, pExpr);
-    return 0;
-  }else{
+    คืน 0;
+  }มิฉะนั้น{
     pList = pNew;
   }
   pItem = &pList->a[pList->nExpr++];
   *pItem = zeroItem;
   pItem->pExpr = pExpr;
-  return pList;
+  คืน pList;
 }
 ExprList *sqlite3ExprListAppend(
   Parse *pParse,          /* Parsing context */
   ExprList *pList,        /* List to which to append. Might be NULL */
   Expr *pExpr             /* Expression to be appended. Might be NULL */
 ){
-  struct ExprList_item *pItem;
-  if( pList==0 ){
-    return sqlite3ExprListAppendNew(pParse->db,pExpr);
+  sa_nracanaa ExprList_item *pItem;
+  ถ้า( pList==0 ){
+    คืน sqlite3ExprListAppendNew(pParse->db,pExpr);
   }
-  if( pList->nAlloc<pList->nExpr+1 ){
-    return sqlite3ExprListAppendGrow(pParse->db,pList,pExpr);
+  ถ้า( pList->nAlloc<pList->nExpr+1 ){
+    คืน sqlite3ExprListAppendGrow(pParse->db,pList,pExpr);
   }
   pItem = &pList->a[pList->nExpr++];
   *pItem = zeroItem;
   pItem->pExpr = pExpr;
-  return pList;
+  คืน pList;
 }
 
 /*
@@ -2123,38 +2123,38 @@ ExprList *sqlite3ExprListAppendVector(
   Expr *pExpr            /* Vector expression to be appended. Might be NULL */
 ){
   sqlite3 *db = pParse->db;
-  int n;
-  int i;
-  int iFirst = pList ? pList->nExpr : 0;
+  จำนวนเต็ม n;
+  จำนวนเต็ม i;
+  จำนวนเต็ม iFirst = pList ? pList->nExpr : 0;
   /* pColumns can only be NULL due to an OOM but an OOM will cause an
   ** exit prior to this routine being invoked */
-  if( NEVER(pColumns==0) ) goto vector_append_error;
-  if( pExpr==0 ) goto vector_append_error;
+  ถ้า( NEVER(pColumns==0) ) goto vector_append_error;
+  ถ้า( pExpr==0 ) goto vector_append_error;
 
   /* If the RHS is a vector, then we can immediately check to see that
   ** the size of the RHS and LHS match.  But if the RHS is a SELECT,
   ** wildcards ("*") in the result set of the SELECT must be expanded before
   ** we can do the size check, so defer the size check until code generation.
   */
-  if( pExpr->op!=TK_SELECT && pColumns->nId!=(n=sqlite3ExprVectorSize(pExpr)) ){
+  ถ้า( pExpr->op!=TK_SELECT && pColumns->nId!=(n=sqlite3ExprVectorSize(pExpr)) ){
     sqlite3ErrorMsg(pParse, "%d columns assigned %d values",
                     pColumns->nId, n);
     goto vector_append_error;
   }
 
-  for(i=0; i<pColumns->nId; i++){
+  สำหรับ(i=0; i<pColumns->nId; i++){
     Expr *pSubExpr = sqlite3ExprForVectorField(pParse, pExpr, i, pColumns->nId);
     assert( pSubExpr!=0 || db->mallocFailed );
-    if( pSubExpr==0 ) continue;
+    ถ้า( pSubExpr==0 ) continue;
     pList = sqlite3ExprListAppend(pParse, pList, pSubExpr);
-    if( pList ){
+    ถ้า( pList ){
       assert( pList->nExpr==iFirst+i+1 );
       pList->a[pList->nExpr-1].zEName = pColumns->a[i].zName;
       pColumns->a[i].zName = 0;
     }
   }
 
-  if( !db->mallocFailed && pExpr->op==TK_SELECT && ALWAYS(pList!=0) ){
+  ถ้า( !db->mallocFailed && pExpr->op==TK_SELECT && ALWAYS(pList!=0) ){
     Expr *pFirst = pList->a[iFirst].pExpr;
     assert( pFirst!=0 );
     assert( pFirst->op==TK_SELECT_COLUMN );
@@ -2172,15 +2172,15 @@ ExprList *sqlite3ExprListAppendVector(
 vector_append_error:
   sqlite3ExprUnmapAndDelete(pParse, pExpr);
   sqlite3IdListDelete(db, pColumns);
-  return pList;
+  คืน pList;
 }
 
 /*
 ** Set the sort order for the last element on the given ExprList.
 */
-void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls){
-  struct ExprList_item *pItem;
-  if( p==0 ) return;
+void sqlite3ExprListSetSortOrder(ExprList *p, จำนวนเต็ม iSortOrder, จำนวนเต็ม eNulls){
+  sa_nracanaa ExprList_item *pItem;
+  ถ้า( p==0 ) คืน;
   assert( p->nExpr>0 );
 
   assert( SQLITE_SO_UNDEFINED<0 && SQLITE_SO_ASC==0 && SQLITE_SO_DESC>0 );
@@ -2195,14 +2195,14 @@ void sqlite3ExprListSetSortOrder(ExprList *p, int iSortOrder, int eNulls){
 
   pItem = &p->a[p->nExpr-1];
   assert( pItem->fg.bNulls==0 );
-  if( iSortOrder==SQLITE_SO_UNDEFINED ){
+  ถ้า( iSortOrder==SQLITE_SO_UNDEFINED ){
     iSortOrder = SQLITE_SO_ASC;
   }
   pItem->fg.sortFlags = (u8)iSortOrder;
 
-  if( eNulls!=SQLITE_SO_UNDEFINED ){
+  ถ้า( eNulls!=SQLITE_SO_UNDEFINED ){
     pItem->fg.bNulls = 1;
-    if( iSortOrder!=eNulls ){
+    ถ้า( iSortOrder!=eNulls ){
       pItem->fg.sortFlags |= KEYINFO_ORDER_BIGNULL;
     }
   }
@@ -2220,23 +2220,23 @@ void sqlite3ExprListSetName(
   Parse *pParse,          /* Parsing context */
   ExprList *pList,        /* List to which to add the span. */
   const Token *pName,     /* Name to be added */
-  int dequote             /* True to cause the name to be dequoted */
+  จำนวนเต็ม dequote             /* True to cause the name to be dequoted */
 ){
   assert( pList!=0 || pParse->db->mallocFailed!=0 );
   assert( pParse->eParseMode!=PARSE_MODE_UNMAP || dequote==0 );
-  if( pList ){
-    struct ExprList_item *pItem;
+  ถ้า( pList ){
+    sa_nracanaa ExprList_item *pItem;
     assert( pList->nExpr>0 );
     pItem = &pList->a[pList->nExpr-1];
     assert( pItem->zEName==0 );
     assert( pItem->fg.eEName==ENAME_NAME );
     pItem->zEName = sqlite3DbStrNDup(pParse->db, pName->z, pName->n);
-    if( dequote ){
+    ถ้า( dequote ){
       /* If dequote==0, then pName->z does not point to part of a DDL
       ** statement handled by the parser. And so no token need be added
       ** to the token-map.  */
       sqlite3Dequote(pItem->zEName);
-      if( IN_RENAME_OBJECT ){
+      ถ้า( IN_RENAME_OBJECT ){
         sqlite3RenameTokenMap(pParse, (const void*)pItem->zEName, pName);
       }
     }
@@ -2254,15 +2254,15 @@ void sqlite3ExprListSetName(
 void sqlite3ExprListSetSpan(
   Parse *pParse,          /* Parsing context */
   ExprList *pList,        /* List to which to add the span. */
-  const char *zStart,     /* Start of the span */
-  const char *zEnd        /* End of the span */
+  const var_na *zStart,     /* Start of the span */
+  const var_na *zEnd        /* End of the span */
 ){
   sqlite3 *db = pParse->db;
   assert( pList!=0 || db->mallocFailed!=0 );
-  if( pList ){
-    struct ExprList_item *pItem = &pList->a[pList->nExpr-1];
+  ถ้า( pList ){
+    sa_nracanaa ExprList_item *pItem = &pList->a[pList->nExpr-1];
     assert( pList->nExpr>0 );
-    if( pItem->zEName==0 ){
+    ถ้า( pItem->zEName==0 ){
       pItem->zEName = sqlite3DbSpanDup(db, zStart, zEnd);
       pItem->fg.eEName = ENAME_SPAN;
     }
@@ -2276,12 +2276,12 @@ void sqlite3ExprListSetSpan(
 void sqlite3ExprListCheckLength(
   Parse *pParse,
   ExprList *pEList,
-  const char *zObject
+  const var_na *zObject
 ){
-  int mx = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
+  จำนวนเต็ม mx = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
   testcase( pEList && pEList->nExpr==mx );
   testcase( pEList && pEList->nExpr==mx+1 );
-  if( pEList && pEList->nExpr>mx ){
+  ถ้า( pEList && pEList->nExpr>mx ){
     sqlite3ErrorMsg(pParse, "too many columns in %s", zObject);
   }
 }
@@ -2290,22 +2290,22 @@ void sqlite3ExprListCheckLength(
 ** Delete an entire expression list.
 */
 static SQLITE_NOINLINE void exprListDeleteNN(sqlite3 *db, ExprList *pList){
-  int i = pList->nExpr;
-  struct ExprList_item *pItem =  pList->a;
+  จำนวนเต็ม i = pList->nExpr;
+  sa_nracanaa ExprList_item *pItem =  pList->a;
   assert( pList->nExpr>0 );
   assert( db!=0 );
   do{
     sqlite3ExprDelete(db, pItem->pExpr);
-    if( pItem->zEName ) sqlite3DbNNFreeNN(db, pItem->zEName);
+    ถ้า( pItem->zEName ) sqlite3DbNNFreeNN(db, pItem->zEName);
     pItem++;
-  }while( --i>0 );
+  }ขณะ( --i>0 );
   sqlite3DbNNFreeNN(db, pList);
 }
 void sqlite3ExprListDelete(sqlite3 *db, ExprList *pList){
-  if( pList ) exprListDeleteNN(db, pList);
+  ถ้า( pList ) exprListDeleteNN(db, pList);
 }
 void sqlite3ExprListDeleteGeneric(sqlite3 *db, void *pList){
-  if( ALWAYS(pList) ) exprListDeleteNN(db, (ExprList*)pList);
+  ถ้า( ALWAYS(pList) ) exprListDeleteNN(db, (ExprList*)pList);
 }
 
 /*
@@ -2313,15 +2313,15 @@ void sqlite3ExprListDeleteGeneric(sqlite3 *db, void *pList){
 ** ExprList.
 */
 u32 sqlite3ExprListFlags(const ExprList *pList){
-  int i;
+  จำนวนเต็ม i;
   u32 m = 0;
   assert( pList!=0 );
-  for(i=0; i<pList->nExpr; i++){
+  สำหรับ(i=0; i<pList->nExpr; i++){
      Expr *pExpr = pList->a[i].pExpr;
      assert( pExpr!=0 );
      m |= pExpr->flags;
   }
-  return m;
+  คืน m;
 }
 
 /*
@@ -2331,10 +2331,10 @@ u32 sqlite3ExprListFlags(const ExprList *pList){
 **
 ** This callback is used by multiple expression walkers.
 */
-int sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
+จำนวนเต็ม sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
   UNUSED_PARAMETER(NotUsed);
   pWalker->eCode = 0;
-  return WRC_Abort;
+  คืน WRC_Abort;
 }
 
 /*
@@ -2345,10 +2345,10 @@ int sqlite3SelectWalkFail(Walker *pWalker, Select *NotUsed){
 **         "false"                        EP_IsFalse
 **         anything else                  0
 */
-u32 sqlite3IsTrueOrFalse(const char *zIn){
-  if( sqlite3StrICmp(zIn, "true")==0  ) return EP_IsTrue;
-  if( sqlite3StrICmp(zIn, "false")==0 ) return EP_IsFalse;
-  return 0;
+u32 sqlite3IsTrueOrFalse(const var_na *zIn){
+  ถ้า( sqlite3StrICmp(zIn, "true")==0  ) คืน EP_IsTrue;
+  ถ้า( sqlite3StrICmp(zIn, "false")==0 ) คืน EP_IsFalse;
+  คืน 0;
 }
 
 
@@ -2357,30 +2357,30 @@ u32 sqlite3IsTrueOrFalse(const char *zIn){
 ** then convert it into an TK_TRUEFALSE term.  Return non-zero if
 ** the conversion happened, and zero if the expression is unaltered.
 */
-int sqlite3ExprIdToTrueFalse(Expr *pExpr){
+จำนวนเต็ม sqlite3ExprIdToTrueFalse(Expr *pExpr){
   u32 v;
   assert( pExpr->op==TK_ID || pExpr->op==TK_STRING );
-  if( !ExprHasProperty(pExpr, EP_Quoted|EP_IntValue)
+  ถ้า( !ExprHasProperty(pExpr, EP_Quoted|EP_IntValue)
    && (v = sqlite3IsTrueOrFalse(pExpr->u.zToken))!=0
   ){
     pExpr->op = TK_TRUEFALSE;
     ExprSetProperty(pExpr, v);
-    return 1;
+    คืน 1;
   }
-  return 0;
+  คืน 0;
 }
 
 /*
 ** The argument must be a TK_TRUEFALSE Expr node.  Return 1 if it is TRUE
 ** and 0 if it is FALSE.
 */
-int sqlite3ExprTruthValue(const Expr *pExpr){
+จำนวนเต็ม sqlite3ExprTruthValue(const Expr *pExpr){
   pExpr = sqlite3ExprSkipCollateAndLikely((Expr*)pExpr);
   assert( pExpr->op==TK_TRUEFALSE );
   assert( !ExprHasProperty(pExpr, EP_IntValue) );
   assert( sqlite3StrICmp(pExpr->u.zToken,"true")==0
        || sqlite3StrICmp(pExpr->u.zToken,"false")==0 );
-  return pExpr->u.zToken[4]==0;
+  คืน pExpr->u.zToken[4]==0;
 }
 
 /*
@@ -2398,16 +2398,16 @@ int sqlite3ExprTruthValue(const Expr *pExpr){
 */
 Expr *sqlite3ExprSimplifiedAndOr(Expr *pExpr){
   assert( pExpr!=0 );
-  if( pExpr->op==TK_AND || pExpr->op==TK_OR ){
+  ถ้า( pExpr->op==TK_AND || pExpr->op==TK_OR ){
     Expr *pRight = sqlite3ExprSimplifiedAndOr(pExpr->pRight);
     Expr *pLeft = sqlite3ExprSimplifiedAndOr(pExpr->pLeft);
-    if( ExprAlwaysTrue(pLeft) || ExprAlwaysFalse(pRight) ){
+    ถ้า( ExprAlwaysTrue(pLeft) || ExprAlwaysFalse(pRight) ){
       pExpr = pExpr->op==TK_AND ? pRight : pLeft;
-    }else if( ExprAlwaysTrue(pRight) || ExprAlwaysFalse(pLeft) ){
+    }มิฉะนั้น ถ้า( ExprAlwaysTrue(pRight) || ExprAlwaysFalse(pLeft) ){
       pExpr = pExpr->op==TK_AND ? pLeft : pRight;
     }
   }
-  return pExpr;
+  คืน pExpr;
 }
 
 /*
@@ -2418,13 +2418,13 @@ Expr *sqlite3ExprSimplifiedAndOr(Expr *pExpr){
 ** the left operand contains a subquery and the right does not, then it
 ** might be more efficient to compute the right operand first.
 */
-static int exprEvalRhsFirst(Expr *pExpr){
-  if( ExprHasProperty(pExpr->pLeft, EP_Subquery)
+static จำนวนเต็ม exprEvalRhsFirst(Expr *pExpr){
+  ถ้า( ExprHasProperty(pExpr->pLeft, EP_Subquery)
    && !ExprHasProperty(pExpr->pRight, EP_Subquery)
   ){
-    return 1;
-  }else{
-    return 0;
+    คืน 1;
+  }มิฉะนั้น{
+    คืน 0;
   }
 }
 
@@ -2440,16 +2440,16 @@ static int exprEvalRhsFirst(Expr *pExpr){
 **
 ** If no optimization opportunities exist, return 0.
 */
-static int exprComputeOperands(
+static จำนวนเต็ม exprComputeOperands(
   Parse *pParse,     /* Parsing context */
   Expr *pExpr,       /* The comparison expression */
-  int *pR1,          /* OUT: Register holding the left operand */
-  int *pR2,          /* OUT: Register holding the right operand */
-  int *pFree1,       /* OUT: Temp register to free if not zero */
-  int *pFree2        /* OUT: Another temp register to free if not zero */
+  จำนวนเต็ม *pR1,          /* OUT: Register holding the left operand */
+  จำนวนเต็ม *pR2,          /* OUT: Register holding the right operand */
+  จำนวนเต็ม *pFree1,       /* OUT: Temp register to free if not zero */
+  จำนวนเต็ม *pFree2        /* OUT: Another temp register to free if not zero */
 ){
-  int addrIsNull;
-  int r1, r2;
+  จำนวนเต็ม addrIsNull;
+  จำนวนเต็ม r1, r2;
   Vdbe *v = pParse->pVdbe;
 
   assert( v!=0 );
@@ -2459,23 +2459,23 @@ static int exprComputeOperands(
   ** then compute the right operand first and do an IsNull jump if the
   ** right operand evalutes to NULL.
   */
-  if( exprEvalRhsFirst(pExpr) && sqlite3ExprCanBeNull(pExpr->pRight) ){
+  ถ้า( exprEvalRhsFirst(pExpr) && sqlite3ExprCanBeNull(pExpr->pRight) ){
     r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, pFree2);
     addrIsNull = sqlite3VdbeAddOp1(v, OP_IsNull, r2);
     VdbeComment((v, "skip left operand"));
     VdbeCoverage(v);
-  }else{
+  }มิฉะนั้น{
     r2 = 0; /* Silence a false-positive uninit-var warning in MSVC */
     addrIsNull = 0;
   }
   r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, pFree1);
-  if( addrIsNull==0 ){
+  ถ้า( addrIsNull==0 ){
     /*
     ** If the right operand contains a subquery and the left operand does not
     ** and the left operand might be NULL, then do an IsNull check
     ** check on the left operand before computing the right operand.
     */
-    if( ExprHasProperty(pExpr->pRight, EP_Subquery)
+    ถ้า( ExprHasProperty(pExpr->pRight, EP_Subquery)
      && sqlite3ExprCanBeNull(pExpr->pLeft)
     ){
       addrIsNull = sqlite3VdbeAddOp1(v, OP_IsNull, r1);
@@ -2486,7 +2486,7 @@ static int exprComputeOperands(
   }
   *pR1 = r1;
   *pR2 = r2;
-  return addrIsNull;
+  คืน addrIsNull;
 }
 
 /*
@@ -2505,36 +2505,36 @@ static int exprComputeOperands(
 **
 ** Called as a service subroutine from exprNodeIsConstant().
 */
-static SQLITE_NOINLINE int exprNodeIsConstantFunction(
+static SQLITE_NOINLINE จำนวนเต็ม exprNodeIsConstantFunction(
   Walker *pWalker,
   Expr *pExpr
 ){
-  int n;             /* Number of arguments */
+  จำนวนเต็ม n;             /* Number of arguments */
   ExprList *pList;   /* List of arguments */
   FuncDef *pDef;     /* The function */
   sqlite3 *db;       /* The database */
 
   assert( pExpr->op==TK_FUNCTION );
-  if( ExprHasProperty(pExpr, EP_TokenOnly)
+  ถ้า( ExprHasProperty(pExpr, EP_TokenOnly)
    || (pList = pExpr->x.pList)==0
   ){;
     n = 0;
-  }else{
+  }มิฉะนั้น{
     n = pList->nExpr;
     sqlite3WalkExprList(pWalker, pList);
-    if( pWalker->eCode==0 ) return WRC_Abort;
+    ถ้า( pWalker->eCode==0 ) คืน WRC_Abort;
   }
   db = pWalker->pParse->db;
   pDef = sqlite3FindFunction(db, pExpr->u.zToken, n, ENC(db), 0);
-  if( pDef==0
+  ถ้า( pDef==0
    || pDef->xFinalize!=0
    || (pDef->funcFlags & (SQLITE_FUNC_CONSTANT|SQLITE_FUNC_SLOCHNG))==0
    || NEVER(ExprHasProperty(pExpr, EP_WinFunc))
   ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    คืน WRC_Abort;
   }
-  return WRC_Prune;
+  คืน WRC_Prune;
 }
 
 
@@ -2565,97 +2565,97 @@ static SQLITE_NOINLINE int exprNodeIsConstantFunction(
 ** of SQLite to be parsed by newer versions of SQLite without raising a
 ** malformed schema error.
 */
-static int exprNodeIsConstant(Walker *pWalker, Expr *pExpr){
+static จำนวนเต็ม exprNodeIsConstant(Walker *pWalker, Expr *pExpr){
   assert( pWalker->eCode>0 );
 
   /* If pWalker->eCode is 2 then any term of the expression that comes from
   ** the ON or USING clauses of an outer join disqualifies the expression
   ** from being considered constant. */
-  if( pWalker->eCode==2 && ExprHasProperty(pExpr, EP_OuterON) ){
+  ถ้า( pWalker->eCode==2 && ExprHasProperty(pExpr, EP_OuterON) ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    คืน WRC_Abort;
   }
 
   switch( pExpr->op ){
-    case TK_FUNCTION:
-      if( ExprHasProperty(pExpr, EP_WinFunc) ){
+    pak_sa TK_FUNCTION:
+      ถ้า( ExprHasProperty(pExpr, EP_WinFunc) ){
         pWalker->eCode = 0;  /* Window functions are never constant */
-        return WRC_Abort;
-      }else if( pWalker->eCode>=4 && pWalker->eCode<=5 ){
+        คืน WRC_Abort;
+      }มิฉะนั้น ถ้า( pWalker->eCode>=4 && pWalker->eCode<=5 ){
         /* Functions used within a CREATE TABLE statement are constant as
         ** long as all of their arguments are constant */
-        if( pWalker->eCode==5 ) ExprSetProperty(pExpr, EP_FromDDL);
-        return WRC_Continue;
-      }else if( ExprHasProperty(pExpr,EP_ConstFunc) ){
+        ถ้า( pWalker->eCode==5 ) ExprSetProperty(pExpr, EP_FromDDL);
+        คืน WRC_Continue;
+      }มิฉะนั้น ถ้า( ExprHasProperty(pExpr,EP_ConstFunc) ){
         /* Functions marked with EP_ConstFunc are constant as long as 
         ** all their arugments are constant and they are not window functions */
-        return WRC_Continue;
-      }else if( pWalker->pParse ){
+        คืน WRC_Continue;
+      }มิฉะนั้น ถ้า( pWalker->pParse ){
         /* Functions are constant if they have SQLITE_FUNC_CONSTANT or
         ** SQLITE_FUNC_SLOCHNG and if all arguments are constant */
-        return exprNodeIsConstantFunction(pWalker, pExpr);
-      }else{
+        คืน exprNodeIsConstantFunction(pWalker, pExpr);
+      }มิฉะนั้น{
         pWalker->eCode = 0;  /* Function call is not constant */
-        return WRC_Abort;
+        คืน WRC_Abort;
       }
-    case TK_ID:
+    pak_sa TK_ID:
       /* Convert "true" or "false" in a DEFAULT clause into the
       ** appropriate TK_TRUEFALSE operator */
-      if( sqlite3ExprIdToTrueFalse(pExpr) ){
-        return WRC_Prune;
+      ถ้า( sqlite3ExprIdToTrueFalse(pExpr) ){
+        คืน WRC_Prune;
       }
       /* no break */ deliberate_fall_through
-    case TK_COLUMN:
-    case TK_AGG_FUNCTION:
-    case TK_AGG_COLUMN:
+    pak_sa TK_COLUMN:
+    pak_sa TK_AGG_FUNCTION:
+    pak_sa TK_AGG_COLUMN:
       testcase( pExpr->op==TK_ID );
       testcase( pExpr->op==TK_COLUMN );
       testcase( pExpr->op==TK_AGG_FUNCTION );
       testcase( pExpr->op==TK_AGG_COLUMN );
-      if( ExprHasProperty(pExpr, EP_FixedCol) && pWalker->eCode!=2 ){
-        return WRC_Continue;
+      ถ้า( ExprHasProperty(pExpr, EP_FixedCol) && pWalker->eCode!=2 ){
+        คืน WRC_Continue;
       }
-      if( pWalker->eCode==3 && pExpr->iTable==pWalker->u.iCur ){
-        return WRC_Continue;
+      ถ้า( pWalker->eCode==3 && pExpr->iTable==pWalker->u.iCur ){
+        คืน WRC_Continue;
       }
       /* no break */ deliberate_fall_through
-    case TK_IF_NULL_ROW:
-    case TK_REGISTER:
-    case TK_DOT:
-    case TK_RAISE:
+    pak_sa TK_IF_NULL_ROW:
+    pak_sa TK_REGISTER:
+    pak_sa TK_DOT:
+    pak_sa TK_RAISE:
       testcase( pExpr->op==TK_REGISTER );
       testcase( pExpr->op==TK_IF_NULL_ROW );
       testcase( pExpr->op==TK_DOT );
       testcase( pExpr->op==TK_RAISE );
       pWalker->eCode = 0;
-      return WRC_Abort;
-    case TK_IS:
-    case TK_ISNOT:
-      if( pWalker->eCode==6 ){
+      คืน WRC_Abort;
+    pak_sa TK_IS:
+    pak_sa TK_ISNOT:
+      ถ้า( pWalker->eCode==6 ){
         pWalker->eCode = 0;
-        return WRC_Abort;
+        คืน WRC_Abort;
       }
-      return WRC_Continue;
-    case TK_VARIABLE:
-      if( pWalker->eCode==5 ){
+      คืน WRC_Continue;
+    pak_sa TK_VARIABLE:
+      ถ้า( pWalker->eCode==5 ){
         /* Silently convert bound parameters that appear inside of CREATE
         ** statements into a NULL when parsing the CREATE statement text out
         ** of the sqlite_schema table */
         pExpr->op = TK_NULL;
-      }else if( pWalker->eCode==4 ){
+      }มิฉะนั้น ถ้า( pWalker->eCode==4 ){
         /* A bound parameter in a CREATE statement that originates from
         ** sqlite3_prepare() causes an error */
         pWalker->eCode = 0;
-        return WRC_Abort;
+        คืน WRC_Abort;
       }
       /* no break */ deliberate_fall_through
     default:
       testcase( pExpr->op==TK_SELECT ); /* sqlite3SelectWalkFail() disallows */
       testcase( pExpr->op==TK_EXISTS ); /* sqlite3SelectWalkFail() disallows */
-      return WRC_Continue;
+      คืน WRC_Continue;
   }
 }
-static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
+static จำนวนเต็ม exprIsConst(Parse *pParse, Expr *p, จำนวนเต็ม initFlag){
   Walker w;
   w.eCode = initFlag;
   w.pParse = pParse;
@@ -2665,7 +2665,7 @@ static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
   w.xSelectCallback2 = sqlite3SelectWalkAssert2;
 #endif
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  คืน w.eCode;
 }
 
 /*
@@ -2682,8 +2682,8 @@ static int exprIsConst(Parse *pParse, Expr *p, int initFlag){
 ** not NULL, then a function call might be constant, depending on the
 ** function and on its parameters.
 */
-int sqlite3ExprIsConstant(Parse *pParse, Expr *p){
-  return exprIsConst(pParse, p, 1);
+จำนวนเต็ม sqlite3ExprIsConstant(Parse *pParse, Expr *p){
+  คืน exprIsConst(pParse, p, 1);
 }
 
 /*
@@ -2693,13 +2693,13 @@ int sqlite3ExprIsConstant(Parse *pParse, Expr *p){
 ** like "x IS TRUE" need to be transformed to TK_TRUTH expression nodes,
 ** which happens at the same time as column name resolution.
 */
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs){
-  const int iInit = bNoIs ? 6 : 1;
-  int ii;
-  for(ii=0; ii<pList->nExpr; ii++){
-    if( 0==exprIsConst(pParse, pList->a[ii].pExpr, iInit) ) return 0;
+จำนวนเต็ม sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, จำนวนเต็ม bNoIs){
+  const จำนวนเต็ม iInit = bNoIs ? 6 : 1;
+  จำนวนเต็ม ii;
+  สำหรับ(ii=0; ii<pList->nExpr; ii++){
+    ถ้า( 0==exprIsConst(pParse, pList->a[ii].pExpr, iInit) ) คืน 0;
   }
-  return 1;
+  คืน 1;
 }
 
 /*
@@ -2715,8 +2715,8 @@ int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs){
 ** can be added to the pParse->pConstExpr list and evaluated once when
 ** the prepared statement starts up.  See sqlite3ExprCodeRunJustOnce().
 */
-static int sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
-  return exprIsConst(pParse, p, 2);
+static จำนวนเต็ม sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
+  คืน exprIsConst(pParse, p, 2);
 }
 
 /*
@@ -2725,14 +2725,14 @@ static int sqlite3ExprIsConstantNotJoin(Parse *pParse, Expr *p){
 ** constant as long as they are uncorrelated - meaning that they do not
 ** contain any terms from outer contexts.
 */
-static int exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
+static จำนวนเต็ม exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
   assert( pSelect!=0 );
   assert( pWalker->eCode==3 || pWalker->eCode==0 );
-  if( (pSelect->selFlags & SF_Correlated)!=0 ){
+  ถ้า( (pSelect->selFlags & SF_Correlated)!=0 ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    คืน WRC_Abort;
   }
-  return WRC_Prune;
+  คืน WRC_Prune;
 }
 
 /*
@@ -2744,14 +2744,14 @@ static int exprSelectWalkTableConstant(Walker *pWalker, Select *pSelect){
 ** Consider uncorrelated subqueries to be constants if the bAllowSubq
 ** parameter is true.
 */
-int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
+จำนวนเต็ม sqlite3ExprIsTableConstant(Expr *p, จำนวนเต็ม iCur, จำนวนเต็ม bAllowSubq){
   Walker w;
   w.eCode = 3;
   w.pParse = 0;
   w.xExprCallback = exprNodeIsConstant;
-  if( bAllowSubq ){
+  ถ้า( bAllowSubq ){
     w.xSelectCallback = exprSelectWalkTableConstant;
-  }else{
+  }มิฉะนั้น{
     w.xSelectCallback = sqlite3SelectWalkFail;
 #ifdef SQLITE_DEBUG
     w.xSelectCallback2 = sqlite3SelectWalkAssert2;
@@ -2759,7 +2759,7 @@ int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
   }
   w.u.iCur = iCur;
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  คืน w.eCode;
 }
 
 /*
@@ -2806,66 +2806,66 @@ int sqlite3ExprIsTableConstant(Expr *p, int iCur, int bAllowSubq){
 **       which leads to incorrect answers.  See also restriction (9)
 **       on push-down.
 */
-int sqlite3ExprIsSingleTableConstraint(
+จำนวนเต็ม sqlite3ExprIsSingleTableConstraint(
   Expr *pExpr,                 /* The constraint */
   const SrcList *pSrcList,     /* Complete FROM clause */
-  int iSrc,                    /* Which element of pSrcList to use */
-  int bAllowSubq               /* Allow non-correlated subqueries */
+  จำนวนเต็ม iSrc,                    /* Which element of pSrcList to use */
+  จำนวนเต็ม bAllowSubq               /* Allow non-correlated subqueries */
 ){
   const SrcItem *pSrc = &pSrcList->a[iSrc];
-  if( pSrc->fg.jointype & JT_LTORJ ){
-    return 0;  /* rule (3) */
+  ถ้า( pSrc->fg.jointype & JT_LTORJ ){
+    คืน 0;  /* rule (3) */
   }
-  if( pSrc->fg.jointype & JT_LEFT ){
-    if( !ExprHasProperty(pExpr, EP_OuterON) ) return 0;   /* rule (4a) */
-    if( pExpr->w.iJoin!=pSrc->iCursor ) return 0;         /* rule (4b) */
-  }else{
-    if( ExprHasProperty(pExpr, EP_OuterON) ) return 0;    /* rule (5) */
+  ถ้า( pSrc->fg.jointype & JT_LEFT ){
+    ถ้า( !ExprHasProperty(pExpr, EP_OuterON) ) คืน 0;   /* rule (4a) */
+    ถ้า( pExpr->w.iJoin!=pSrc->iCursor ) คืน 0;         /* rule (4b) */
+  }มิฉะนั้น{
+    ถ้า( ExprHasProperty(pExpr, EP_OuterON) ) คืน 0;    /* rule (5) */
   }
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)  /* (6a) */
+  ถ้า( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)  /* (6a) */
    && (pSrcList->a[0].fg.jointype & JT_LTORJ)!=0     /* Fast pre-test of (6b) */
   ){
-    int jj;
-    for(jj=0; jj<iSrc; jj++){
-      if( pExpr->w.iJoin==pSrcList->a[jj].iCursor ){
-        if( (pSrcList->a[jj].fg.jointype & JT_LTORJ)!=0 ){
-          return 0;  /* restriction (6) */
+    จำนวนเต็ม jj;
+    สำหรับ(jj=0; jj<iSrc; jj++){
+      ถ้า( pExpr->w.iJoin==pSrcList->a[jj].iCursor ){
+        ถ้า( (pSrcList->a[jj].fg.jointype & JT_LTORJ)!=0 ){
+          คืน 0;  /* restriction (6) */
         }
-        break;
+        bha_nga;
       }
     }
   }
   /* Rules (1), (2a), and (2b) handled by the following: */
-  return sqlite3ExprIsTableConstant(pExpr, pSrc->iCursor, bAllowSubq);
+  คืน sqlite3ExprIsTableConstant(pExpr, pSrc->iCursor, bAllowSubq);
 }
 
 
 /*
 ** sqlite3WalkExpr() callback used by sqlite3ExprIsConstantOrGroupBy().
 */
-static int exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
+static จำนวนเต็ม exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
   ExprList *pGroupBy = pWalker->u.pGroupBy;
-  int i;
+  จำนวนเต็ม i;
 
   /* Check if pExpr is identical to any GROUP BY term. If so, consider
   ** it constant.  */
-  for(i=0; i<pGroupBy->nExpr; i++){
+  สำหรับ(i=0; i<pGroupBy->nExpr; i++){
     Expr *p = pGroupBy->a[i].pExpr;
-    if( sqlite3ExprCompare(0, pExpr, p, -1)<2 ){
+    ถ้า( sqlite3ExprCompare(0, pExpr, p, -1)<2 ){
       CollSeq *pColl = sqlite3ExprNNCollSeq(pWalker->pParse, p);
-      if( sqlite3IsBinary(pColl) ){
-        return WRC_Prune;
+      ถ้า( sqlite3IsBinary(pColl) ){
+        คืน WRC_Prune;
       }
     }
   }
 
   /* Check if pExpr is a sub-select. If so, consider it variable. */
-  if( ExprUseXSelect(pExpr) ){
+  ถ้า( ExprUseXSelect(pExpr) ){
     pWalker->eCode = 0;
-    return WRC_Abort;
+    คืน WRC_Abort;
   }
 
-  return exprNodeIsConstant(pWalker, pExpr);
+  คืน exprNodeIsConstant(pWalker, pExpr);
 }
 
 /*
@@ -2887,7 +2887,7 @@ static int exprNodeIsConstantOrGroupBy(Walker *pWalker, Expr *pExpr){
 ** optimization, so we take the easy way out and simply require the
 ** GROUP BY to use the BINARY collating sequence.
 */
-int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
+จำนวนเต็ม sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
   Walker w;
   w.eCode = 1;
   w.xExprCallback = exprNodeIsConstantOrGroupBy;
@@ -2895,7 +2895,7 @@ int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
   w.u.pGroupBy = pGroupBy;
   w.pParse = pParse;
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  คืน w.eCode;
 }
 
 /*
@@ -2919,16 +2919,16 @@ int sqlite3ExprIsConstantOrGroupBy(Parse *pParse, Expr *p, ExprList *pGroupBy){
 ** is considered a variable but a single-quoted string (ex: 'abc') is
 ** a constant.
 */
-int sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit){
+จำนวนเต็ม sqlite3ExprIsConstantOrFunction(Expr *p, u8 isInit){
   assert( isInit==0 || isInit==1 );
-  return exprIsConst(0, p, 4+isInit);
+  คืน exprIsConst(0, p, 4+isInit);
 }
 
 /*
 ** Walk an expression tree.  Return 1 if the expression contains a
 ** subquery of some kind.  Return 0 if there are no subqueries.
 */
-int sqlite3ExprContainsSubquery(Expr *p){
+จำนวนเต็ม sqlite3ExprContainsSubquery(Expr *p){
   Walker w;
   w.eCode = 1;
   w.xExprCallback = sqlite3ExprWalkNoop;
@@ -2937,7 +2937,7 @@ int sqlite3ExprContainsSubquery(Expr *p){
   w.xSelectCallback2 = sqlite3SelectWalkAssert2;
 #endif
   sqlite3WalkExpr(&w, p);
-  return w.eCode==0;
+  คืน w.eCode==0;
 }
 
 /*
@@ -2981,54 +2981,54 @@ int sqlite3ExprContainsSubquery(Expr *p){
 **                    change move the variable value to or from an integer 0
 **                    or 1.
 */
-int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse, int bRSI){
-  int iSign = 1;   /* Either +1 or -1. */
-  while( 1/*exit-by-break*/ ){
-    if( NEVER(p==0) ) return 0;
-    if( ExprUseUValue(p) ){
+จำนวนเต็ม sqlite3ExprIsInteger(const Expr *p, จำนวนเต็ม *pValue, Parse *pParse, จำนวนเต็ม bRSI){
+  จำนวนเต็ม iSign = 1;   /* Either +1 or -1. */
+  ขณะ( 1/*exit-by-break*/ ){
+    ถ้า( NEVER(p==0) ) คืน 0;
+    ถ้า( ExprUseUValue(p) ){
       assert( p->op==TK_INTEGER );
       *pValue = p->u.iValue*iSign;
-      if( bRSI && pParse==0 && p->op2 ){
-        return 0;
+      ถ้า( bRSI && pParse==0 && p->op2 ){
+        คืน 0;
       }
-      return 1;
+      คืน 1;
     }
-    if( p->op==TK_UPLUS ){
+    ถ้า( p->op==TK_UPLUS ){
       p = p->pLeft;
       pParse = 0;
       continue;
     }
-    if( p->op==TK_UMINUS ){
+    ถ้า( p->op==TK_UMINUS ){
       iSign = -iSign;
       p = p->pLeft;
       pParse = 0;
       continue;
     }
-    if( p->op==TK_VARIABLE && pParse!=0 ){
+    ถ้า( p->op==TK_VARIABLE && pParse!=0 ){
       sqlite3_value *pVal; /* The variable */
-      int rc = 0;          /* 1 if successful, 0 if failed */
+      จำนวนเต็ม rc = 0;          /* 1 if successful, 0 if failed */
       assert( iSign==1 );
-      if( NEVER(pParse->pVdbe==0) ) break;
-      if( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) break;
+      ถ้า( NEVER(pParse->pVdbe==0) ) bha_nga;
+      ถ้า( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) bha_nga;
       pVal = sqlite3VdbeGetBoundValue(pParse->pReprepare, p->iColumn,
                                       SQLITE_AFF_BLOB);
-      if( pVal ){
+      ถ้า( pVal ){
         i64 vv;
-        if( sqlite3_value_type(pVal)==SQLITE_INTEGER
+        ถ้า( sqlite3_value_type(pVal)==SQLITE_INTEGER
          && (vv = sqlite3_value_int64(pVal))>=0
          && vv<=0x7fffffff
         ){
-          *pValue = (int)vv;
+          *pValue = (จำนวนเต็ม)vv;
           rc = 1;       
         }
         sqlite3ValueFree(pVal);
       }
       sqlite3VdbeReprepareOnBind(pParse->pVdbe, p->iColumn, bRSI);
-      return rc;
+      คืน rc;
     }
-    break;
+    bha_nga;
   }
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -3045,24 +3045,24 @@ int sqlite3ExprIsInteger(const Expr *p, int *pValue, Parse *pParse, int bRSI){
 ** will likely result in an incorrect answer.  So when in doubt, return
 ** TRUE.
 */
-int sqlite3ExprCanBeNull(const Expr *p){
+จำนวนเต็ม sqlite3ExprCanBeNull(const Expr *p){
   u8 op;
   assert( p!=0 );
-  while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+  ขณะ( p->op==TK_UPLUS || p->op==TK_UMINUS ){
     p = p->pLeft;
     assert( p!=0 );
   }
   op = p->op;
-  if( op==TK_REGISTER ) op = p->op2;
+  ถ้า( op==TK_REGISTER ) op = p->op2;
   switch( op ){
-    case TK_INTEGER:
-    case TK_STRING:
-    case TK_FLOAT:
-    case TK_BLOB:
-      return 0;
-    case TK_COLUMN:
+    pak_sa TK_INTEGER:
+    pak_sa TK_STRING:
+    pak_sa TK_FLOAT:
+    pak_sa TK_BLOB:
+      คืน 0;
+    pak_sa TK_COLUMN:
       assert( ExprUseYTab(p) );
-      return ExprHasProperty(p, EP_CanBeNull)
+      คืน ExprHasProperty(p, EP_CanBeNull)
           || NEVER(p->y.pTab==0) /* Reference to column of index on expr */
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
           || (p->iColumn==XN_ROWID && IsView(p->y.pTab))
@@ -3072,7 +3072,7 @@ int sqlite3ExprCanBeNull(const Expr *p){
               && ALWAYS(p->iColumn<p->y.pTab->nCol)
               && p->y.pTab->aCol[p->iColumn].notNull==0);
     default:
-      return 1;
+      คืน 1;
   }
 }
 
@@ -3086,35 +3086,35 @@ int sqlite3ExprCanBeNull(const Expr *p){
 ** is harmless.  A false positive, however, can result in the wrong
 ** answer.
 */
-int sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){
+จำนวนเต็ม sqlite3ExprNeedsNoAffinityChange(const Expr *p, var_na aff){
   u8 op;
-  int unaryMinus = 0;
-  if( aff==SQLITE_AFF_BLOB ) return 1;
-  while( p->op==TK_UPLUS || p->op==TK_UMINUS ){
-    if( p->op==TK_UMINUS ) unaryMinus = 1;
+  จำนวนเต็ม unaryMinus = 0;
+  ถ้า( aff==SQLITE_AFF_BLOB ) คืน 1;
+  ขณะ( p->op==TK_UPLUS || p->op==TK_UMINUS ){
+    ถ้า( p->op==TK_UMINUS ) unaryMinus = 1;
     p = p->pLeft;
   }
   op = p->op;
-  if( op==TK_REGISTER ) op = p->op2;
+  ถ้า( op==TK_REGISTER ) op = p->op2;
   switch( op ){
-    case TK_INTEGER: {
-      return aff>=SQLITE_AFF_NUMERIC;
+    pak_sa TK_INTEGER: {
+      คืน aff>=SQLITE_AFF_NUMERIC;
     }
-    case TK_FLOAT: {
-      return aff>=SQLITE_AFF_NUMERIC;
+    pak_sa TK_FLOAT: {
+      คืน aff>=SQLITE_AFF_NUMERIC;
     }
-    case TK_STRING: {
-      return !unaryMinus && aff==SQLITE_AFF_TEXT;
+    pak_sa TK_STRING: {
+      คืน !unaryMinus && aff==SQLITE_AFF_TEXT;
     }
-    case TK_BLOB: {
-      return !unaryMinus;
+    pak_sa TK_BLOB: {
+      คืน !unaryMinus;
     }
-    case TK_COLUMN: {
+    pak_sa TK_COLUMN: {
       assert( p->iTable>=0 );  /* p cannot be part of a CHECK constraint */
-      return aff>=SQLITE_AFF_NUMERIC && p->iColumn<0;
+      คืน aff>=SQLITE_AFF_NUMERIC && p->iColumn<0;
     }
     default: {
-      return 0;
+      คืน 0;
     }
   }
 }
@@ -3122,11 +3122,11 @@ int sqlite3ExprNeedsNoAffinityChange(const Expr *p, char aff){
 /*
 ** Return TRUE if the given string is a row-id column name.
 */
-int sqlite3IsRowid(const char *z){
-  if( sqlite3StrICmp(z, "_ROWID_")==0 ) return 1;
-  if( sqlite3StrICmp(z, "ROWID")==0 ) return 1;
-  if( sqlite3StrICmp(z, "OID")==0 ) return 1;
-  return 0;
+จำนวนเต็ม sqlite3IsRowid(const var_na *z){
+  ถ้า( sqlite3StrICmp(z, "_ROWID_")==0 ) คืน 1;
+  ถ้า( sqlite3StrICmp(z, "ROWID")==0 ) คืน 1;
+  ถ้า( sqlite3StrICmp(z, "OID")==0 ) คืน 1;
+  คืน 0;
 }
 
 /*
@@ -3134,14 +3134,14 @@ int sqlite3IsRowid(const char *z){
 ** pTab. An alias is usable if there is not an explicit user-defined column 
 ** of the same name.
 */
-const char *sqlite3RowidAlias(Table *pTab){
-  const char *azOpt[] = {"_ROWID_", "ROWID", "OID"};
-  int ii;
+const var_na *sqlite3RowidAlias(Table *pTab){
+  const var_na *azOpt[] = {"_ROWID_", "ROWID", "OID"};
+  จำนวนเต็ม ii;
   assert( VisibleRowid(pTab) );
-  for(ii=0; ii<ArraySize(azOpt); ii++){
-    if( sqlite3ColumnIndex(pTab, azOpt[ii])<0 ) return azOpt[ii];
+  สำหรับ(ii=0; ii<ArraySize(azOpt); ii++){
+    ถ้า( sqlite3ColumnIndex(pTab, azOpt[ii])<0 ) คืน azOpt[ii];
   }
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -3157,34 +3157,34 @@ static Select *isCandidateForInOpt(const Expr *pX){
   SrcList *pSrc;
   ExprList *pEList;
   Table *pTab;
-  int i;
-  if( !ExprUseXSelect(pX) ) return 0;                 /* Not a subquery */
-  if( ExprHasProperty(pX, EP_VarSelect)  ) return 0;  /* Correlated subq */
+  จำนวนเต็ม i;
+  ถ้า( !ExprUseXSelect(pX) ) คืน 0;                 /* Not a subquery */
+  ถ้า( ExprHasProperty(pX, EP_VarSelect)  ) คืน 0;  /* Correlated subq */
   p = pX->x.pSelect;
-  if( p->pPrior ) return 0;              /* Not a compound SELECT */
-  if( p->selFlags & SF_Aggregate ){
-    return 0; /* No GROUP BY keyword or aggregate functions */
+  ถ้า( p->pPrior ) คืน 0;              /* Not a compound SELECT */
+  ถ้า( p->selFlags & SF_Aggregate ){
+    คืน 0; /* No GROUP BY keyword or aggregate functions */
   }
   assert( p->pGroupBy==0 );              /* Has no GROUP BY clause */
-  if( p->pLimit ) return 0;              /* Has no LIMIT clause */
-  if( p->pWhere ) return 0;              /* Has no WHERE clause */
+  ถ้า( p->pLimit ) คืน 0;              /* Has no LIMIT clause */
+  ถ้า( p->pWhere ) คืน 0;              /* Has no WHERE clause */
   pSrc = p->pSrc;
   assert( pSrc!=0 );
-  if( pSrc->nSrc!=1 ) return 0;          /* Single term in FROM clause */
-  if( pSrc->a[0].fg.isSubquery) return 0;/* FROM is not a subquery or view */
+  ถ้า( pSrc->nSrc!=1 ) คืน 0;          /* Single term in FROM clause */
+  ถ้า( pSrc->a[0].fg.isSubquery) คืน 0;/* FROM is not a subquery or view */
   pTab = pSrc->a[0].pSTab;
   assert( pTab!=0 );
   assert( !IsView(pTab)  );              /* FROM clause is not a view */
-  if( IsVirtual(pTab) ) return 0;        /* FROM clause not a virtual table */
+  ถ้า( IsVirtual(pTab) ) คืน 0;        /* FROM clause not a virtual table */
   pEList = p->pEList;
   assert( pEList!=0 );
   /* All SELECT results must be columns. */
-  for(i=0; i<pEList->nExpr; i++){
+  สำหรับ(i=0; i<pEList->nExpr; i++){
     Expr *pRes = pEList->a[i].pExpr;
-    if( pRes->op!=TK_COLUMN ) return 0;
+    ถ้า( pRes->op!=TK_COLUMN ) คืน 0;
     assert( pRes->iTable==pSrc->a[0].iCursor );  /* Not a correlated subquery */
   }
-  return p;
+  คืน p;
 }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -3197,16 +3197,16 @@ static Select *isCandidateForInOpt(const Expr *pX){
 */
 static void sqlite3SetHasNullFlag(
   Vdbe *v,           /* Write new code into this statement under construction */
-  int iCur,          /* Cursor for the index */
-  int regHasNull,    /* Register in which to store hasNull flag */
-  int eSortOrder     /* SQLITE_SO_ASC or SQLITE_SO_DESC */
+  จำนวนเต็ม iCur,          /* Cursor for the index */
+  จำนวนเต็ม regHasNull,    /* Register in which to store hasNull flag */
+  จำนวนเต็ม eSortOrder     /* SQLITE_SO_ASC or SQLITE_SO_DESC */
 ){
-  int addr1;
-  int op;
+  จำนวนเต็ม addr1;
+  จำนวนเต็ม op;
   sqlite3VdbeAddOp2(v, OP_Integer, 0, regHasNull);
-  if( eSortOrder==SQLITE_SO_ASC ){
+  ถ้า( eSortOrder==SQLITE_SO_ASC ){
     op = OP_Rewind;
-  }else{
+  }มิฉะนั้น{
     op = OP_Last;
   }
   addr1 = sqlite3VdbeAddOp1(v, op, iCur); VdbeCoverage(v);
@@ -3223,15 +3223,15 @@ static void sqlite3SetHasNullFlag(
 ** The argument is an IN operator with a list (not a subquery) on the
 ** right-hand side.  Return TRUE if that list is constant.
 */
-static int sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
+static จำนวนเต็ม sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
   Expr *pLHS;
-  int res;
+  จำนวนเต็ม res;
   assert( !ExprHasProperty(pIn, EP_xIsSelect) );
   pLHS = pIn->pLeft;
   pIn->pLeft = 0;
   res = sqlite3ExprIsConstant(pParse, pIn);
   pIn->pLeft = pLHS;
-  return res;
+  คืน res;
 }
 #endif
 
@@ -3319,18 +3319,18 @@ static int sqlite3InRhsIsConstant(Parse *pParse, Expr *pIn){
 ** then aiMap[] is populated with {2, 0, 1}.
 */
 #ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3FindInIndex(
+จำนวนเต็ม sqlite3FindInIndex(
   Parse *pParse,             /* Parsing context */
   Expr *pX,                  /* The IN expression */
   u32 inFlags,               /* IN_INDEX_LOOP, _MEMBERSHIP, and/or _NOOP_OK */
-  int *prRhsHasNull,         /* Register holding NULL status.  See notes */
-  int *aiMap,                /* Mapping from Index fields to RHS fields */
-  int *piTab                 /* OUT: index to use */
+  จำนวนเต็ม *prRhsHasNull,         /* Register holding NULL status.  See notes */
+  จำนวนเต็ม *aiMap,                /* Mapping from Index fields to RHS fields */
+  จำนวนเต็ม *piTab                 /* OUT: index to use */
 ){
   Select *p;                            /* SELECT to the right of IN operator */
-  int eType = 0;                        /* Type of RHS table. IN_INDEX_* */
-  int iTab;                             /* Cursor of the RHS table */
-  int mustBeUnique;                     /* True if RHS must be unique */
+  จำนวนเต็ม eType = 0;                        /* Type of RHS table. IN_INDEX_* */
+  จำนวนเต็ม iTab;                             /* Cursor of the RHS table */
+  จำนวนเต็ม mustBeUnique;                     /* True if RHS must be unique */
   Vdbe *v = sqlite3GetVdbe(pParse);     /* Virtual machine being coded */
 
   assert( pX->op==TK_IN );
@@ -3342,13 +3342,13 @@ int sqlite3FindInIndex(
   ** or not NULL is actually possible (it may not be, for example, due
   ** to NOT NULL constraints in the schema). If no NULL values are possible,
   ** set prRhsHasNull to 0 before continuing.  */
-  if( prRhsHasNull && ExprUseXSelect(pX) ){
-    int i;
+  ถ้า( prRhsHasNull && ExprUseXSelect(pX) ){
+    จำนวนเต็ม i;
     ExprList *pEList = pX->x.pSelect->pEList;
-    for(i=0; i<pEList->nExpr; i++){
-      if( sqlite3ExprCanBeNull(pEList->a[i].pExpr) ) break;
+    สำหรับ(i=0; i<pEList->nExpr; i++){
+      ถ้า( sqlite3ExprCanBeNull(pEList->a[i].pExpr) ) bha_nga;
     }
-    if( i==pEList->nExpr ){
+    ถ้า( i==pEList->nExpr ){
       prRhsHasNull = 0;
     }
   }
@@ -3356,12 +3356,12 @@ int sqlite3FindInIndex(
   /* Check to see if an existing table or index can be used to
   ** satisfy the query.  This is preferable to generating a new
   ** ephemeral table.  */
-  if( pParse->nErr==0 && (p = isCandidateForInOpt(pX))!=0 ){
+  ถ้า( pParse->nErr==0 && (p = isCandidateForInOpt(pX))!=0 ){
     sqlite3 *db = pParse->db;              /* Database connection */
     Table *pTab;                           /* Table <table>. */
-    int iDb;                               /* Database idx for pTab */
+    จำนวนเต็ม iDb;                               /* Database idx for pTab */
     ExprList *pEList = p->pEList;
-    int nExpr = pEList->nExpr;
+    จำนวนเต็ม nExpr = pEList->nExpr;
 
     assert( p->pEList!=0 );             /* Because of isCandidateForInOpt(p) */
     assert( p->pEList->a[0].pExpr!=0 ); /* Because of isCandidateForInOpt(p) */
@@ -3375,9 +3375,9 @@ int sqlite3FindInIndex(
     sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
 
     assert(v);  /* sqlite3GetVdbe() has always been previously called */
-    if( nExpr==1 && pEList->a[0].pExpr->iColumn<0 ){
+    ถ้า( nExpr==1 && pEList->a[0].pExpr->iColumn<0 ){
       /* The "x IN (SELECT rowid FROM table)" case */
-      int iAddr = sqlite3VdbeAddOp0(v, OP_Once);
+      จำนวนเต็ม iAddr = sqlite3VdbeAddOp0(v, OP_Once);
       VdbeCoverage(v);
 
       sqlite3OpenTable(pParse, iTab, iDb, pTab, OP_OpenRead);
@@ -3385,51 +3385,51 @@ int sqlite3FindInIndex(
       ExplainQueryPlan((pParse, 0,
             "USING ROWID SEARCH ON TABLE %s FOR IN-OPERATOR",pTab->zName));
       sqlite3VdbeJumpHere(v, iAddr);
-    }else{
+    }มิฉะนั้น{
       Index *pIdx;                         /* Iterator variable */
-      int affinity_ok = 1;
-      int i;
+      จำนวนเต็ม affinity_ok = 1;
+      จำนวนเต็ม i;
 
       /* Check that the affinity that will be used to perform each
       ** comparison is the same as the affinity of each column in table
       ** on the RHS of the IN operator.  If it not, it is not possible to
       ** use any index of the RHS table.  */
-      for(i=0; i<nExpr && affinity_ok; i++){
+      สำหรับ(i=0; i<nExpr && affinity_ok; i++){
         Expr *pLhs = sqlite3VectorFieldSubexpr(pX->pLeft, i);
-        int iCol = pEList->a[i].pExpr->iColumn;
-        char idxaff = sqlite3TableColumnAffinity(pTab,iCol); /* RHS table */
-        char cmpaff = sqlite3CompareAffinity(pLhs, idxaff);
+        จำนวนเต็ม iCol = pEList->a[i].pExpr->iColumn;
+        var_na idxaff = sqlite3TableColumnAffinity(pTab,iCol); /* RHS table */
+        var_na cmpaff = sqlite3CompareAffinity(pLhs, idxaff);
         testcase( cmpaff==SQLITE_AFF_BLOB );
         testcase( cmpaff==SQLITE_AFF_TEXT );
         switch( cmpaff ){
-          case SQLITE_AFF_BLOB:
-            break;
-          case SQLITE_AFF_TEXT:
+          pak_sa SQLITE_AFF_BLOB:
+            bha_nga;
+          pak_sa SQLITE_AFF_TEXT:
             /* sqlite3CompareAffinity() only returns TEXT if one side or the
             ** other has no affinity and the other side is TEXT.  Hence,
             ** the only way for cmpaff to be TEXT is for idxaff to be TEXT
             ** and for the term on the LHS of the IN to have no affinity. */
             assert( idxaff==SQLITE_AFF_TEXT );
-            break;
+            bha_nga;
           default:
             affinity_ok = sqlite3IsNumericAffinity(idxaff);
         }
       }
 
-      if( affinity_ok ){
+      ถ้า( affinity_ok ){
         /* Search for an existing index that will work for this IN operator */
-        for(pIdx=pTab->pIndex; pIdx && eType==0; pIdx=pIdx->pNext){
+        สำหรับ(pIdx=pTab->pIndex; pIdx && eType==0; pIdx=pIdx->pNext){
           Bitmask colUsed;      /* Columns of the index used */
           Bitmask mCol;         /* Mask for the current column */
-          if( pIdx->nColumn<nExpr ) continue;
-          if( pIdx->pPartIdxWhere!=0 ) continue;
+          ถ้า( pIdx->nColumn<nExpr ) continue;
+          ถ้า( pIdx->pPartIdxWhere!=0 ) continue;
           /* Maximum nColumn is BMS-2, not BMS-1, so that we can compute
           ** BITMASK(nExpr) without overflowing */
           testcase( pIdx->nColumn==BMS-2 );
           testcase( pIdx->nColumn==BMS-1 );
-          if( pIdx->nColumn>=BMS-1 ) continue;
-          if( mustBeUnique ){
-            if( pIdx->nKeyCol>nExpr
+          ถ้า( pIdx->nColumn>=BMS-1 ) continue;
+          ถ้า( mustBeUnique ){
+            ถ้า( pIdx->nKeyCol>nExpr
              ||(pIdx->nColumn>nExpr && !IsUniqueIndex(pIdx))
             ){
               continue;  /* This index is not unique over the IN RHS columns */
@@ -3437,32 +3437,32 @@ int sqlite3FindInIndex(
           }
  
           colUsed = 0;   /* Columns of index used so far */
-          for(i=0; i<nExpr; i++){
+          สำหรับ(i=0; i<nExpr; i++){
             Expr *pLhs = sqlite3VectorFieldSubexpr(pX->pLeft, i);
             Expr *pRhs = pEList->a[i].pExpr;
             CollSeq *pReq = sqlite3BinaryCompareCollSeq(pParse, pLhs, pRhs);
-            int j;
+            จำนวนเต็ม j;
  
-            for(j=0; j<nExpr; j++){
-              if( pIdx->aiColumn[j]!=pRhs->iColumn ) continue;
+            สำหรับ(j=0; j<nExpr; j++){
+              ถ้า( pIdx->aiColumn[j]!=pRhs->iColumn ) continue;
               assert( pIdx->azColl[j] );
-              if( pReq!=0 && sqlite3StrICmp(pReq->zName, pIdx->azColl[j])!=0 ){
+              ถ้า( pReq!=0 && sqlite3StrICmp(pReq->zName, pIdx->azColl[j])!=0 ){
                 continue;
               }
-              break;
+              bha_nga;
             }
-            if( j==nExpr ) break;
+            ถ้า( j==nExpr ) bha_nga;
             mCol = MASKBIT(j);
-            if( mCol & colUsed ) break; /* Each column used only once */
+            ถ้า( mCol & colUsed ) bha_nga; /* Each column used only once */
             colUsed |= mCol;
-            if( aiMap ) aiMap[i] = j;
+            ถ้า( aiMap ) aiMap[i] = j;
           }
  
           assert( nExpr>0 && nExpr<BMS );
           assert( i==nExpr || colUsed!=(MASKBIT(nExpr)-1) );
-          if( colUsed==(MASKBIT(nExpr)-1) ){
+          ถ้า( colUsed==(MASKBIT(nExpr)-1) ){
             /* If we reach this point, that means the index pIdx is usable */
-            int iAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
+            จำนวนเต็ม iAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
             ExplainQueryPlan((pParse, 0,
                               "USING INDEX %s FOR IN-OPERATOR",pIdx->zName));
             sqlite3VdbeAddOp3(v, OP_OpenRead, iTab, pIdx->tnum, iDb);
@@ -3471,14 +3471,14 @@ int sqlite3FindInIndex(
             assert( IN_INDEX_INDEX_DESC == IN_INDEX_INDEX_ASC+1 );
             eType = IN_INDEX_INDEX_ASC + pIdx->aSortOrder[0];
  
-            if( prRhsHasNull ){
+            ถ้า( prRhsHasNull ){
 #ifdef SQLITE_ENABLE_COLUMN_USED_MASK
               u64 mask = (1<<nExpr)-1;
               sqlite3VdbeAddOp3(v, OP_ColumnsUsed,
                                 iTab, LOWER32(mask), UPPER32(mask));
 #endif
               *prRhsHasNull = ++pParse->nMem;
-              if( nExpr==1 ){
+              ถ้า( nExpr==1 ){
                 sqlite3SetHasNullFlag(v, iTab, *prRhsHasNull,
                                       pIdx->aSortOrder[0]);
               }
@@ -3497,7 +3497,7 @@ int sqlite3FindInIndex(
   ** then it is not worth creating an ephemeral table to evaluate
   ** the IN operator so return IN_INDEX_NOOP.
   */
-  if( eType==0
+  ถ้า( eType==0
    && (inFlags & IN_INDEX_NOOP_OK)
    && ExprUseXList(pX)
    && (!sqlite3InRhsIsConstant(pParse,pX) || pX->x.pList->nExpr<=2)
@@ -3507,40 +3507,40 @@ int sqlite3FindInIndex(
     eType = IN_INDEX_NOOP;
   }
 
-  if( eType==0 ){
+  ถ้า( eType==0 ){
     /* Could not find an existing table or index to use as the RHS b-tree.
     ** We will have to generate an ephemeral table to do the job.
     */
     u32 savedNQueryLoop = pParse->nQueryLoop;
-    int rMayHaveNull = 0;
-    int bloomOk = (inFlags & IN_INDEX_MEMBERSHIP)!=0;
+    จำนวนเต็ม rMayHaveNull = 0;
+    จำนวนเต็ม bloomOk = (inFlags & IN_INDEX_MEMBERSHIP)!=0;
     eType = IN_INDEX_EPH;
-    if( inFlags & IN_INDEX_LOOP ){
+    ถ้า( inFlags & IN_INDEX_LOOP ){
       pParse->nQueryLoop = 0;
-    }else if( prRhsHasNull ){
+    }มิฉะนั้น ถ้า( prRhsHasNull ){
       *prRhsHasNull = rMayHaveNull = ++pParse->nMem;
     }
     assert( pX->op==TK_IN );
-    if( !bloomOk
+    ถ้า( !bloomOk
      && ExprUseXSelect(pX)
      && (pX->x.pSelect->selFlags & SF_ClonedRhsIn)!=0
     ){
       bloomOk = 1;
     }
     sqlite3CodeRhsOfIN(pParse, pX, iTab, bloomOk);
-    if( rMayHaveNull ){
+    ถ้า( rMayHaveNull ){
       sqlite3SetHasNullFlag(v, iTab, rMayHaveNull, SQLITE_SO_ASC);
     }
     pParse->nQueryLoop = savedNQueryLoop;
   }
 
-  if( aiMap && eType!=IN_INDEX_INDEX_ASC && eType!=IN_INDEX_INDEX_DESC ){
-    int i, n;
+  ถ้า( aiMap && eType!=IN_INDEX_INDEX_ASC && eType!=IN_INDEX_INDEX_DESC ){
+    จำนวนเต็ม i, n;
     n = sqlite3ExprVectorSize(pX->pLeft);
-    for(i=0; i<n; i++) aiMap[i] = i;
+    สำหรับ(i=0; i<n; i++) aiMap[i] = i;
   }
   *piTab = iTab;
-  return eType;
+  คืน eType;
 }
 #endif
 
@@ -3553,28 +3553,28 @@ int sqlite3FindInIndex(
 ** It is the responsibility of the caller to ensure that the returned
 ** string is eventually freed using sqlite3DbFree().
 */
-static char *exprINAffinity(Parse *pParse, const Expr *pExpr){
+static var_na *exprINAffinity(Parse *pParse, const Expr *pExpr){
   Expr *pLeft = pExpr->pLeft;
-  int nVal = sqlite3ExprVectorSize(pLeft);
+  จำนวนเต็ม nVal = sqlite3ExprVectorSize(pLeft);
   Select *pSelect = ExprUseXSelect(pExpr) ? pExpr->x.pSelect : 0;
-  char *zRet;
+  var_na *zRet;
 
   assert( pExpr->op==TK_IN );
   zRet = sqlite3DbMallocRaw(pParse->db, 1+(i64)nVal);
-  if( zRet ){
-    int i;
-    for(i=0; i<nVal; i++){
+  ถ้า( zRet ){
+    จำนวนเต็ม i;
+    สำหรับ(i=0; i<nVal; i++){
       Expr *pA = sqlite3VectorFieldSubexpr(pLeft, i);
-      char a = sqlite3ExprAffinity(pA);
-      if( pSelect ){
+      var_na a = sqlite3ExprAffinity(pA);
+      ถ้า( pSelect ){
         zRet[i] = sqlite3CompareAffinity(pSelect->pEList->a[i].pExpr, a);
-      }else{
+      }มิฉะนั้น{
         zRet[i] = a;
       }
     }
     zRet[nVal] = '\0';
   }
-  return zRet;
+  คืน zRet;
 }
 #endif
 
@@ -3585,9 +3585,9 @@ static char *exprINAffinity(Parse *pParse, const Expr *pExpr){
 **
 **   "sub-select returns N columns - expected M"
 */  
-void sqlite3SubselectError(Parse *pParse, int nActual, int nExpect){
-  if( pParse->nErr==0 ){
-    const char *zFmt = "sub-select returns %d columns - expected %d";
+void sqlite3SubselectError(Parse *pParse, จำนวนเต็ม nActual, จำนวนเต็ม nExpect){
+  ถ้า( pParse->nErr==0 ){
+    const var_na *zFmt = "sub-select returns %d columns - expected %d";
     sqlite3ErrorMsg(pParse, zFmt, nActual, nExpect);
   }
 }
@@ -3606,9 +3606,9 @@ void sqlite3SubselectError(Parse *pParse, int nActual, int nExpect){
 */  
 void sqlite3VectorErrorMsg(Parse *pParse, Expr *pExpr){
 #ifndef SQLITE_OMIT_SUBQUERY
-  if( ExprUseXSelect(pExpr) ){
+  ถ้า( ExprUseXSelect(pExpr) ){
     sqlite3SubselectError(pParse, pExpr->x.pSelect->pEList->nExpr, 1);
-  }else
+  }มิฉะนั้น
 #endif
   {
     sqlite3ErrorMsg(pParse, "row value misused");
@@ -3621,7 +3621,7 @@ void sqlite3VectorErrorMsg(Parse *pParse, Expr *pExpr){
 ** that is compatible with pExpr.  If found, add the y.sub values
 ** to pExpr and return true.  If not found, return false.
 */
-static int findCompatibleInRhsSubrtn(
+static จำนวนเต็ม findCompatibleInRhsSubrtn(
   Parse *pParse,          /* Parsing context */
   Expr *pExpr,            /* IN operator with RHS that we want to reuse */
   SubrtnSig *pNewSig      /* Signature for the IN operator */
@@ -3630,8 +3630,8 @@ static int findCompatibleInRhsSubrtn(
   SubrtnSig *pSig;
   Vdbe *v;
 
-  if( pNewSig==0 ) return 0;
-  if( (pParse->mSubrtnSig & (1<<(pNewSig->selId&7)))==0 ) return 0;
+  ถ้า( pNewSig==0 ) คืน 0;
+  ถ้า( (pParse->mSubrtnSig & (1<<(pNewSig->selId&7)))==0 ) คืน 0;
   assert( pExpr->op==TK_IN );
   assert( !ExprUseYSub(pExpr) );
   assert( ExprUseXSelect(pExpr) );
@@ -3641,21 +3641,21 @@ static int findCompatibleInRhsSubrtn(
   assert( v!=0 );
   pOp = sqlite3VdbeGetOp(v, 1);
   pEnd = sqlite3VdbeGetLastOp(v);
-  for(; pOp<pEnd; pOp++){
-    if( pOp->p4type!=P4_SUBRTNSIG ) continue;
+  สำหรับ(; pOp<pEnd; pOp++){
+    ถ้า( pOp->p4type!=P4_SUBRTNSIG ) continue;
     assert( pOp->opcode==OP_BeginSubrtn );
     pSig = pOp->p4.pSubrtnSig;
     assert( pSig!=0 );
-    if( !pSig->bComplete ) continue;
-    if( pNewSig->selId!=pSig->selId ) continue;
-    if( strcmp(pNewSig->zAff,pSig->zAff)!=0 ) continue;
+    ถ้า( !pSig->bComplete ) continue;
+    ถ้า( pNewSig->selId!=pSig->selId ) continue;
+    ถ้า( strcmp(pNewSig->zAff,pSig->zAff)!=0 ) continue;
     pExpr->y.sub.iAddr = pSig->iAddr;
     pExpr->y.sub.regReturn = pSig->regReturn;
     pExpr->iTable = pSig->iTable;
     ExprSetProperty(pExpr, EP_Subrtn);
-    return 1;
+    คืน 1;
   }
-  return 0;
+  คืน 0;
 }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -3685,14 +3685,14 @@ static int findCompatibleInRhsSubrtn(
 void sqlite3CodeRhsOfIN(
   Parse *pParse,          /* Parsing context */
   Expr *pExpr,            /* The IN operator */
-  int iTab,               /* Use this cursor number */
-  int allowBloom          /* True to allow the use of a Bloom filter */
+  จำนวนเต็ม iTab,               /* Use this cursor number */
+  จำนวนเต็ม allowBloom          /* True to allow the use of a Bloom filter */
 ){
-  int addrOnce = 0;           /* Address of the OP_Once instruction at top */
-  int addr;                   /* Address of OP_OpenEphemeral instruction */
+  จำนวนเต็ม addrOnce = 0;           /* Address of the OP_Once instruction at top */
+  จำนวนเต็ม addr;                   /* Address of OP_OpenEphemeral instruction */
   Expr *pLeft;                /* the LHS of the IN operator */
   KeyInfo *pKeyInfo = 0;      /* Key information */
-  int nVal;                   /* Size of vector pLeft */
+  จำนวนเต็ม nVal;                   /* Size of vector pLeft */
   Vdbe *v;                    /* The prepared statement under construction */
   SubrtnSig *pSig = 0;        /* Signature for this subroutine */
 
@@ -3709,16 +3709,16 @@ void sqlite3CodeRhsOfIN(
   ** If all of the above are false, then we can compute the RHS just once
   ** and reuse it many names.
   */
-  if( !ExprHasProperty(pExpr, EP_VarSelect) && pParse->iSelfTab==0 ){
+  ถ้า( !ExprHasProperty(pExpr, EP_VarSelect) && pParse->iSelfTab==0 ){
     /* Reuse of the RHS is allowed
     **
     ** Compute a signature for the RHS of the IN operator to facility
     ** finding and reusing prior instances of the same IN operator.
     */
     assert( !ExprUseXSelect(pExpr) || pExpr->x.pSelect!=0 );
-    if( ExprUseXSelect(pExpr) && (pExpr->x.pSelect->selFlags & SF_All)==0 ){
-      pSig = sqlite3DbMallocRawNN(pParse->db, sizeof(pSig[0]));
-      if( pSig ){
+    ถ้า( ExprUseXSelect(pExpr) && (pExpr->x.pSelect->selFlags & SF_All)==0 ){
+      pSig = sqlite3DbMallocRawNN(pParse->db, parimaa_na(pSig[0]));
+      ถ้า( pSig ){
         pSig->selId = pExpr->x.pSelect->selId;
         pSig->zAff = exprINAffinity(pParse, pExpr);
       }
@@ -3728,11 +3728,11 @@ void sqlite3CodeRhsOfIN(
     ** this IN operator.  If there is, then make use of that prior
     ** materialization rather than recomputing it.
     */
-    if( ExprHasProperty(pExpr, EP_Subrtn) 
+    ถ้า( ExprHasProperty(pExpr, EP_Subrtn) 
      || findCompatibleInRhsSubrtn(pParse, pExpr, pSig)
     ){
       addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
-      if( ExprUseXSelect(pExpr) ){
+      ถ้า( ExprUseXSelect(pExpr) ){
         ExplainQueryPlan((pParse, 0, "REUSE LIST SUBQUERY %d",
               pExpr->x.pSelect->selId));
       }
@@ -3742,11 +3742,11 @@ void sqlite3CodeRhsOfIN(
       assert( iTab!=pExpr->iTable );
       sqlite3VdbeAddOp2(v, OP_OpenDup, iTab, pExpr->iTable);
       sqlite3VdbeJumpHere(v, addrOnce);
-      if( pSig ){
+      ถ้า( pSig ){
         sqlite3DbFree(pParse->db, pSig->zAff);
         sqlite3DbFree(pParse->db, pSig);
       }
-      return;
+      คืน;
     }
 
     /* Begin coding the subroutine */
@@ -3756,13 +3756,13 @@ void sqlite3CodeRhsOfIN(
     pExpr->y.sub.regReturn = ++pParse->nMem;
     pExpr->y.sub.iAddr =
       sqlite3VdbeAddOp2(v, OP_BeginSubrtn, 0, pExpr->y.sub.regReturn) + 1;
-    if( pSig ){
+    ถ้า( pSig ){
       pSig->bComplete = 0;
       pSig->iAddr = pExpr->y.sub.iAddr;
       pSig->regReturn = pExpr->y.sub.regReturn;
       pSig->iTable = iTab;
       pParse->mSubrtnSig = 1 << (pSig->selId&7);
-      sqlite3VdbeChangeP4(v, -1, (const char*)pSig, P4_SUBRTNSIG);
+      sqlite3VdbeChangeP4(v, -1, (const var_na*)pSig, P4_SUBRTNSIG);
     }
     addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
   }
@@ -3777,17 +3777,17 @@ void sqlite3CodeRhsOfIN(
   pExpr->iTable = iTab;
   addr = sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pExpr->iTable, nVal);
 #ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
-  if( ExprUseXSelect(pExpr) ){
+  ถ้า( ExprUseXSelect(pExpr) ){
     VdbeComment((v, "Result of SELECT %u", pExpr->x.pSelect->selId));
-  }else{
+  }มิฉะนั้น{
     VdbeComment((v, "RHS of IN operator"));
   }
 #endif
   pKeyInfo = sqlite3KeyInfoAlloc(pParse->db, nVal, 1);
   assert( pKeyInfo!=0 || pParse->nErr );
-  if( pKeyInfo==0 ) return;
+  ถ้า( pKeyInfo==0 ) คืน;
 
-  if( ExprUseXSelect(pExpr) ){
+  ถ้า( ExprUseXSelect(pExpr) ){
     /* Case 1:     expr IN (SELECT ...)
     **
     ** Generate code to write the results of the select into the temporary
@@ -3801,33 +3801,33 @@ void sqlite3CodeRhsOfIN(
     ));
     /* If the LHS and RHS of the IN operator do not match, that
     ** error will have been caught long before we reach this point. */
-    if( ALWAYS(pEList->nExpr==nVal) ){
+    ถ้า( ALWAYS(pEList->nExpr==nVal) ){
       Select *pCopy;
       SelectDest dest;
-      int i;
-      int rc;
-      int addrBloom = 0;
+      จำนวนเต็ม i;
+      จำนวนเต็ม rc;
+      จำนวนเต็ม addrBloom = 0;
       sqlite3SelectDestInit(&dest, SRT_Set, iTab);
       dest.zAffSdst = exprINAffinity(pParse, pExpr);
       pSelect->iLimit = 0;
       assert( pEList!=0 );
       assert( pEList->nExpr>0 );
       assert( sqlite3KeyInfoIsWriteable(pKeyInfo) );
-      for(i=0; i<nVal; i++){
+      สำหรับ(i=0; i<nVal; i++){
         Expr *p = sqlite3VectorFieldSubexpr(pLeft, i);
         CollSeq *pColl;
         pKeyInfo->aColl[i] = pColl = sqlite3BinaryCompareCollSeq(
             pParse, p, pEList->a[i].pExpr
         );
-        if( !sqlite3IsBinary(pColl) ){
+        ถ้า( !sqlite3IsBinary(pColl) ){
           allowBloom = 0;  /* tag-202607231411 */
         }
       }
-      if( addrOnce
+      ถ้า( addrOnce
        && allowBloom
        && OptimizationEnabled(pParse->db, SQLITE_BloomFilter)
       ){
-        int regBloom = ++pParse->nMem;
+        จำนวนเต็ม regBloom = ++pParse->nMem;
         addrBloom = sqlite3VdbeAddOp2(v, OP_Blob, 10000, regBloom);
         VdbeComment((v, "Bloom filter"));
         dest.iSDParm2 = regBloom;
@@ -3839,21 +3839,21 @@ void sqlite3CodeRhsOfIN(
       rc = pParse->db->mallocFailed ? 1 :sqlite3Select(pParse, pCopy, &dest);
       sqlite3SelectDelete(pParse->db, pCopy);
       sqlite3DbFree(pParse->db, dest.zAffSdst);
-      if( addrBloom ){
+      ถ้า( addrBloom ){
         /* Remember that location of the Bloom filter in the P3 operand
         ** of the OP_Once that began this subroutine. tag-202407032019 */
         sqlite3VdbeGetOp(v, addrOnce)->p3 = dest.iSDParm2;
-        if( dest.iSDParm2==0 ){
+        ถ้า( dest.iSDParm2==0 ){
           /* If the Bloom filter won't actually be used, keep it small */
           sqlite3VdbeGetOp(v, addrBloom)->p1 = 10;
         }
       }
-      if( rc ){
+      ถ้า( rc ){
         sqlite3KeyInfoUnref(pKeyInfo);
-        return;
+        คืน;
       }
     }
-  }else if( ALWAYS(pExpr->x.pList!=0) ){
+  }มิฉะนั้น ถ้า( ALWAYS(pExpr->x.pList!=0) ){
     /* Case 2:     expr IN (exprlist)
     **
     ** For each expression, build an index key from the evaluation and
@@ -3861,15 +3861,15 @@ void sqlite3CodeRhsOfIN(
     ** that columns affinity when building index keys. If <expr> is not
     ** a column, use numeric affinity.
     */
-    char affinity;            /* Affinity of the LHS of the IN */
-    int i;
+    var_na affinity;            /* Affinity of the LHS of the IN */
+    จำนวนเต็ม i;
     ExprList *pList = pExpr->x.pList;
-    struct ExprList_item *pItem;
-    int r1, r2;
+    sa_nracanaa ExprList_item *pItem;
+    จำนวนเต็ม r1, r2;
     affinity = sqlite3ExprAffinity(pLeft);
-    if( affinity<=SQLITE_AFF_NONE ){
+    ถ้า( affinity<=SQLITE_AFF_NONE ){
       affinity = SQLITE_AFF_BLOB;
-    }else if( affinity==SQLITE_AFF_REAL ){
+    }มิฉะนั้น ถ้า( affinity==SQLITE_AFF_REAL ){
       affinity = SQLITE_AFF_NUMERIC;
     }
     assert( pKeyInfo!=0 );
@@ -3879,7 +3879,7 @@ void sqlite3CodeRhsOfIN(
     /* Loop through each expression in <exprlist>. */
     r1 = sqlite3GetTempReg(pParse);
     r2 = sqlite3GetTempReg(pParse);
-    for(i=pList->nExpr, pItem=pList->a; i>0; i--, pItem++){
+    สำหรับ(i=pList->nExpr, pItem=pList->a; i>0; i--, pItem++){
       Expr *pE2 = pItem->pExpr;
 
       /* If the expression is not constant then we will need to
@@ -3887,7 +3887,7 @@ void sqlite3CodeRhsOfIN(
       ** this code only executes once.  Because for a non-constant
       ** expression we need to rerun this code each time.
       */
-      if( addrOnce && !sqlite3ExprIsConstant(pParse, pE2) ){
+      ถ้า( addrOnce && !sqlite3ExprIsConstant(pParse, pE2) ){
         sqlite3VdbeChangeToNoop(v, addrOnce-1);
         sqlite3VdbeChangeToNoop(v, addrOnce);
         ExprClearProperty(pExpr, EP_Subrtn);
@@ -3902,11 +3902,11 @@ void sqlite3CodeRhsOfIN(
     sqlite3ReleaseTempReg(pParse, r1);
     sqlite3ReleaseTempReg(pParse, r2);
   }
-  if( pSig ) pSig->bComplete = 1;
-  if( pKeyInfo ){
+  ถ้า( pSig ) pSig->bComplete = 1;
+  ถ้า( pKeyInfo ){
     sqlite3VdbeChangeP4(v, addr, (void *)pKeyInfo, P4_KEYINFO);
   }
-  if( addrOnce ){
+  ถ้า( addrOnce ){
     sqlite3VdbeAddOp1(v, OP_NullRow, iTab);
     sqlite3VdbeJumpHere(v, addrOnce);
     /* Subroutine return */
@@ -3936,20 +3936,20 @@ void sqlite3CodeRhsOfIN(
 ** Return 0 if an error occurs.
 */
 #ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
-  int addrOnce = 0;           /* Address of OP_Once at top of subroutine */
-  int rReg = 0;               /* Register storing resulting */
+จำนวนเต็ม sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
+  จำนวนเต็ม addrOnce = 0;           /* Address of OP_Once at top of subroutine */
+  จำนวนเต็ม rReg = 0;               /* Register storing resulting */
   Select *pSel;               /* SELECT statement to encode */
   SelectDest dest;            /* How to deal with SELECT result */
-  int nReg;                   /* Registers to allocate */
+  จำนวนเต็ม nReg;                   /* Registers to allocate */
   Expr *pLimit;               /* New limit expression */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrExplain;            /* Address of OP_Explain instruction */
+  จำนวนเต็ม addrExplain;            /* Address of OP_Explain instruction */
 #endif
 
   Vdbe *v = pParse->pVdbe;
   assert( v!=0 );
-  if( pParse->nErr ) return 0;
+  ถ้า( pParse->nErr ) คืน 0;
   testcase( pExpr->op==TK_EXISTS );
   testcase( pExpr->op==TK_SELECT );
   assert( pExpr->op==TK_EXISTS || pExpr->op==TK_SELECT );
@@ -3958,12 +3958,12 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
 
   /* If this routine has already been coded, then invoke it as a
   ** subroutine. */
-  if( ExprHasProperty(pExpr, EP_Subrtn) ){
+  ถ้า( ExprHasProperty(pExpr, EP_Subrtn) ){
     ExplainQueryPlan((pParse, 0, "REUSE SUBQUERY %d", pSel->selId));
     assert( ExprUseYSub(pExpr) );
     sqlite3VdbeAddOp2(v, OP_Gosub, pExpr->y.sub.regReturn,
                       pExpr->y.sub.iAddr);
-    return pExpr->iTable;
+    คืน pExpr->iTable;
   }
 
   /* Begin coding the subroutine */
@@ -3984,7 +3984,7 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
   ** If all of the above are false, then we can run this code just once
   ** save the results, and reuse the same result on subsequent invocations.
   */
-  if( !ExprHasProperty(pExpr, EP_VarSelect) ){
+  ถ้า( !ExprHasProperty(pExpr, EP_VarSelect) ){
     addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
   }
  
@@ -4004,9 +4004,9 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
   nReg = pExpr->op==TK_SELECT ? pSel->pEList->nExpr : 1;
   sqlite3SelectDestInit(&dest, 0, pParse->nMem+1);
   pParse->nMem += nReg;
-  if( pExpr->op==TK_SELECT ){
+  ถ้า( pExpr->op==TK_SELECT ){
     dest.eDest = SRT_Mem;
-    if( (pSel->selFlags&SF_Distinct) && pSel->pLimit && pSel->pLimit->pRight ){
+    ถ้า( (pSel->selFlags&SF_Distinct) && pSel->pLimit && pSel->pLimit->pRight ){
       /* If there is both a DISTINCT and an OFFSET clause, then allocate
       ** a separate dest.iSdst array for sqlite3Select() and other
       ** routines to populate. In this case results will be copied over
@@ -4017,28 +4017,28 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
       ** excluded by OFFSET.  */ 
       dest.iSdst = pParse->nMem+1;
       pParse->nMem += nReg;
-    }else{
+    }มิฉะนั้น{
       dest.iSdst = dest.iSDParm;
     }
     dest.nSdst = nReg;
     sqlite3VdbeAddOp3(v, OP_Null, 0, dest.iSDParm, pParse->nMem);
     VdbeComment((v, "Init subquery result"));
-  }else{
+  }มิฉะนั้น{
     dest.eDest = SRT_Exists;
     sqlite3VdbeAddOp2(v, OP_Integer, 0, dest.iSDParm);
     VdbeComment((v, "Init EXISTS result"));
   }
-  if( pSel->pLimit ){
+  ถ้า( pSel->pLimit ){
     /* The subquery already has a limit.  If the pre-existing limit X is 
     ** not already integer value 1 or 0, then make the new limit X<>0 so that
     ** the new limit is either 1 or 0 */
     Expr *pLeft = pSel->pLimit->pLeft;
-    if( ExprHasProperty(pLeft, EP_IntValue)==0
+    ถ้า( ExprHasProperty(pLeft, EP_IntValue)==0
      || (pLeft->u.iValue!=1 && pLeft->u.iValue!=0)
     ){
       sqlite3 *db = pParse->db;
       pLimit = sqlite3ExprInt32(db, 0);
-      if( pLimit ){
+      ถ้า( pLimit ){
         pLimit->affExpr = SQLITE_AFF_NUMERIC;
         pLimit = sqlite3PExpr(pParse, TK_NE,
             sqlite3ExprDup(db, pLeft, 0), pLimit);
@@ -4046,25 +4046,25 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
       sqlite3ExprDeferredDelete(pParse, pLeft);
       pSel->pLimit->pLeft = pLimit;
     }
-  }else{
+  }มิฉะนั้น{
     /* If there is no pre-existing limit add a limit of 1 */
     pLimit = sqlite3ExprInt32(pParse->db, 1);
     pSel->pLimit = sqlite3PExpr(pParse, TK_LIMIT, pLimit, 0);
   }
   pSel->iLimit = 0;
-  if( sqlite3Select(pParse, pSel, &dest) ){
+  ถ้า( sqlite3Select(pParse, pSel, &dest) ){
     pExpr->op2 = pExpr->op;
     pExpr->op = TK_ERROR;
-    return 0;
+    คืน 0;
   }
   pExpr->iTable = rReg = dest.iSDParm;
   ExprSetVVAProperty(pExpr, EP_NoReduce);
-  if( addrOnce ){
+  ถ้า( addrOnce ){
     sqlite3VdbeJumpHere(v, addrOnce);
   }
   sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
 
-  if( dest.eDest==SRT_Mem 
+  ถ้า( dest.eDest==SRT_Mem 
    && sqlite3ExprCanReturnSubtype(pParse, pSel->pEList->a[0].pExpr) 
   ){
     sqlite3VdbeAddOp1(v, OP_ClrSubtype, rReg);
@@ -4078,7 +4078,7 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
                     pExpr->y.sub.iAddr, 1);
   VdbeCoverage(v);
   sqlite3ClearTempRegCache(pParse);
-  return rReg;
+  คืน rReg;
 }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -4089,18 +4089,18 @@ int sqlite3CodeSubselect(Parse *pParse, Expr *pExpr){
 ** columns as the vector on the LHS. Or, if the RHS of the IN() is not
 ** a sub-query, that the LHS is a vector of size 1.
 */
-int sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
-  int nVector = sqlite3ExprVectorSize(pIn->pLeft);
-  if( ExprUseXSelect(pIn) && !pParse->db->mallocFailed ){
-    if( nVector!=pIn->x.pSelect->pEList->nExpr ){
+จำนวนเต็ม sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
+  จำนวนเต็ม nVector = sqlite3ExprVectorSize(pIn->pLeft);
+  ถ้า( ExprUseXSelect(pIn) && !pParse->db->mallocFailed ){
+    ถ้า( nVector!=pIn->x.pSelect->pEList->nExpr ){
       sqlite3SubselectError(pParse, pIn->x.pSelect->pEList->nExpr, nVector);
-      return 1;
+      คืน 1;
     }
-  }else if( nVector!=1 ){
+  }มิฉะนั้น ถ้า( nVector!=1 ){
     sqlite3VectorErrorMsg(pParse, pIn->pLeft);
-    return 1;
+    คืน 1;
   }
-  return 0;
+  คืน 0;
 }
 #endif
 
@@ -4133,34 +4133,34 @@ int sqlite3ExprCheckIN(Parse *pParse, Expr *pIn){
 static void sqlite3ExprCodeIN(
   Parse *pParse,        /* Parsing and code generating context */
   Expr *pExpr,          /* The IN expression */
-  int destIfFalse,      /* Jump here if LHS is not contained in the RHS */
-  int destIfNull        /* Jump here if the results are unknown due to NULLs */
+  จำนวนเต็ม destIfFalse,      /* Jump here if LHS is not contained in the RHS */
+  จำนวนเต็ม destIfNull        /* Jump here if the results are unknown due to NULLs */
 ){
-  int rRhsHasNull = 0;  /* Register that is true if RHS contains NULL values */
-  int eType;            /* Type of the RHS */
-  int rLhs;             /* Register(s) holding the LHS values */
+  จำนวนเต็ม rRhsHasNull = 0;  /* Register that is true if RHS contains NULL values */
+  จำนวนเต็ม eType;            /* Type of the RHS */
+  จำนวนเต็ม rLhs;             /* Register(s) holding the LHS values */
   Vdbe *v;              /* Statement under construction */
-  int *aiMap = 0;       /* Map from vector field to index column */
-  char *zAff = 0;       /* Affinity string for comparisons */
-  int nVector;          /* Size of vectors for this IN operator */
-  int iDummy;           /* Dummy parameter to exprCodeVector() */
+  จำนวนเต็ม *aiMap = 0;       /* Map from vector field to index column */
+  var_na *zAff = 0;       /* Affinity string for comparisons */
+  จำนวนเต็ม nVector;          /* Size of vectors for this IN operator */
+  จำนวนเต็ม iDummy;           /* Dummy parameter to exprCodeVector() */
   Expr *pLeft;          /* The LHS of the IN operator */
-  int i;                /* loop counter */
-  int destStep2;        /* Where to jump when NULLs seen in step 2 */
-  int destStep6 = 0;    /* Start of code for Step 6 */
-  int addrTruthOp;      /* Address of opcode that determines the IN is true */
-  int destNotNull;      /* Jump here if a comparison is not true in step 6 */
-  int addrTop;          /* Top of the step-6 loop */
-  int iTab = 0;         /* Index to use */
+  จำนวนเต็ม i;                /* loop counter */
+  จำนวนเต็ม destStep2;        /* Where to jump when NULLs seen in step 2 */
+  จำนวนเต็ม destStep6 = 0;    /* Start of code for Step 6 */
+  จำนวนเต็ม addrTruthOp;      /* Address of opcode that determines the IN is true */
+  จำนวนเต็ม destNotNull;      /* Jump here if a comparison is not true in step 6 */
+  จำนวนเต็ม addrTop;          /* Top of the step-6 loop */
+  จำนวนเต็ม iTab = 0;         /* Index to use */
   u8 okConstFactor = pParse->okConstFactor;
 
   assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
   pLeft = pExpr->pLeft;
-  if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
+  ถ้า( sqlite3ExprCheckIN(pParse, pExpr) ) คืน;
   zAff = exprINAffinity(pParse, pExpr);
   nVector = sqlite3ExprVectorSize(pExpr->pLeft);
-  aiMap = (int*)sqlite3DbMallocZero(pParse->db, nVector*sizeof(int));
-  if( pParse->db->mallocFailed ) goto sqlite3ExprCodeIN_oom_error;
+  aiMap = (จำนวนเต็ม*)sqlite3DbMallocZero(pParse->db, nVector*parimaa_na(จำนวนเต็ม));
+  ถ้า( pParse->db->mallocFailed ) goto sqlite3ExprCodeIN_oom_error;
 
   /* Attempt to compute the RHS. After this step, if anything other than
   ** IN_INDEX_NOOP is returned, the table opened with cursor iTab
@@ -4180,9 +4180,9 @@ static void sqlite3ExprCodeIN(
 #ifdef SQLITE_DEBUG
   /* Confirm that aiMap[] contains nVector integer values between 0 and
   ** nVector-1. */
-  for(i=0; i<nVector; i++){
-    int j, cnt;
-    for(cnt=j=0; j<nVector; j++) if( aiMap[j]==i ) cnt++;
+  สำหรับ(i=0; i<nVector; i++){
+    จำนวนเต็ม j, cnt;
+    สำหรับ(cnt=j=0; j<nVector; j++) ถ้า( aiMap[j]==i ) cnt++;
     assert( cnt==1 );
   }
 #endif
@@ -4210,29 +4210,29 @@ static void sqlite3ExprCodeIN(
   **
   ** This is step (1) in the in-operator.md optimized algorithm.
   */
-  if( eType==IN_INDEX_NOOP ){
+  ถ้า( eType==IN_INDEX_NOOP ){
     ExprList *pList;
     CollSeq *pColl;
-    int labelOk = sqlite3VdbeMakeLabel(pParse);
-    int r2, regToFree;
-    int regCkNull = 0;
-    int ii;
+    จำนวนเต็ม labelOk = sqlite3VdbeMakeLabel(pParse);
+    จำนวนเต็ม r2, regToFree;
+    จำนวนเต็ม regCkNull = 0;
+    จำนวนเต็ม ii;
     assert( nVector==1 );
     assert( ExprUseXList(pExpr) );
     pList = pExpr->x.pList;
     pColl = sqlite3ExprCollSeq(pParse, pExpr->pLeft);
-    if( destIfNull!=destIfFalse ){
+    ถ้า( destIfNull!=destIfFalse ){
       regCkNull = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp3(v, OP_BitAnd, rLhs, rLhs, regCkNull);
     }
-    for(ii=0; ii<pList->nExpr; ii++){
+    สำหรับ(ii=0; ii<pList->nExpr; ii++){
       r2 = sqlite3ExprCodeTemp(pParse, pList->a[ii].pExpr, &regToFree);
-      if( regCkNull && sqlite3ExprCanBeNull(pList->a[ii].pExpr) ){
+      ถ้า( regCkNull && sqlite3ExprCanBeNull(pList->a[ii].pExpr) ){
         sqlite3VdbeAddOp3(v, OP_BitAnd, regCkNull, r2, regCkNull);
       }
       sqlite3ReleaseTempReg(pParse, regToFree);
-      if( ii<pList->nExpr-1 || destIfNull!=destIfFalse ){
-        int op = rLhs!=r2 ? OP_Eq : OP_NotNull;
+      ถ้า( ii<pList->nExpr-1 || destIfNull!=destIfFalse ){
+        จำนวนเต็ม op = rLhs!=r2 ? OP_Eq : OP_NotNull;
         sqlite3VdbeAddOp4(v, op, rLhs, labelOk, r2,
                           (void*)pColl, P4_COLLSEQ);
         VdbeCoverageIf(v, ii<pList->nExpr-1 && op==OP_Eq);
@@ -4240,8 +4240,8 @@ static void sqlite3ExprCodeIN(
         VdbeCoverageIf(v, ii<pList->nExpr-1 && op==OP_NotNull);
         VdbeCoverageIf(v, ii==pList->nExpr-1 && op==OP_NotNull);
         sqlite3VdbeChangeP5(v, zAff[0]);
-      }else{
-        int op = rLhs!=r2 ? OP_Ne : OP_IsNull;
+      }มิฉะนั้น{
+        จำนวนเต็ม op = rLhs!=r2 ? OP_Ne : OP_IsNull;
         assert( destIfNull==destIfFalse );
         sqlite3VdbeAddOp4(v, op, rLhs, destIfFalse, r2,
                           (void*)pColl, P4_COLLSEQ);
@@ -4250,7 +4250,7 @@ static void sqlite3ExprCodeIN(
         sqlite3VdbeChangeP5(v, zAff[0] | SQLITE_JUMPIFNULL);
       }
     }
-    if( regCkNull ){
+    ถ้า( regCkNull ){
       sqlite3VdbeAddOp2(v, OP_IsNull, regCkNull, destIfNull); VdbeCoverage(v);
       sqlite3VdbeGoto(v, destIfFalse);
     }
@@ -4259,33 +4259,33 @@ static void sqlite3ExprCodeIN(
     goto sqlite3ExprCodeIN_finished;
   }
 
-  if( eType!=IN_INDEX_ROWID ){
+  ถ้า( eType!=IN_INDEX_ROWID ){
     /* If this IN operator will use an index, then the order of columns in the
     ** vector might be different from the order in the index.  In that case,
     ** we need to reorder the LHS values to be in index order.  Run Affinity
     ** before reordering the columns, so that the affinity is correct.
     */
-    if( nVector==1 ){
-      char aff = zAff[0];
-      if( aff>=SQLITE_AFF_TEXT && aff!=sqlite3ExprAffinity(pLeft) ){
+    ถ้า( nVector==1 ){
+      var_na aff = zAff[0];
+      ถ้า( aff>=SQLITE_AFF_TEXT && aff!=sqlite3ExprAffinity(pLeft) ){
         /* The OP_Affinity below may change the value. In this case, create a
         ** copy of rLhs to run OP_Affinity on, in case the original register
         ** is used again (e.g. if it is TK_AGG_COLUMN).  */
-        int rTmp = sqlite3GetTempReg(pParse);
+        จำนวนเต็ม rTmp = sqlite3GetTempReg(pParse);
         sqlite3VdbeAddOp3(v, OP_Copy, rLhs, rTmp, 0);
         rLhs = rTmp;
         sqlite3VdbeAddOp4(v, OP_Affinity, rLhs, 1, 0, zAff, 1);
       }
-    }else{
+    }มิฉะนั้น{
       sqlite3VdbeAddOp4(v, OP_Affinity, rLhs, nVector, 0, zAff, nVector);
     }
 
-    for(i=0; i<nVector && aiMap[i]==i; i++){} /* Are LHS fields reordered? */
-    if( i!=nVector ){
+    สำหรับ(i=0; i<nVector && aiMap[i]==i; i++){} /* Are LHS fields reordered? */
+    ถ้า( i!=nVector ){
       /* Need to reorder the LHS fields according to aiMap */
-      int rLhsOrig = rLhs;
+      จำนวนเต็ม rLhsOrig = rLhs;
       rLhs = sqlite3GetTempRange(pParse, nVector);
-      for(i=0; i<nVector; i++){
+      สำหรับ(i=0; i<nVector; i++){
         testcase( aiMap[i]!=i );
         sqlite3VdbeAddOp3(v, OP_Copy, rLhsOrig+i, rLhs+aiMap[i], 0);
       }
@@ -4297,15 +4297,15 @@ static void sqlite3ExprCodeIN(
   ** LHS does contain NULLs then the result must be either FALSE or NULL.
   ** We will then skip the binary search of the RHS.
   */
-  if( destIfNull==destIfFalse ){
+  ถ้า( destIfNull==destIfFalse ){
     destStep2 = destIfFalse;
-  }else{
+  }มิฉะนั้น{
     destStep2 = destStep6 = sqlite3VdbeMakeLabel(pParse);
   }
-  for(i=0; i<nVector; i++){
+  สำหรับ(i=0; i<nVector; i++){
     Expr *p = sqlite3VectorFieldSubexpr(pExpr->pLeft, i);
-    if( pParse->nErr ) goto sqlite3ExprCodeIN_oom_error;
-    if( sqlite3ExprCanBeNull(p) ){
+    ถ้า( pParse->nErr ) goto sqlite3ExprCodeIN_oom_error;
+    ถ้า( sqlite3ExprCanBeNull(p) ){
       testcase( aiMap[i]!=i );
       sqlite3VdbeAddOp2(v, OP_IsNull, rLhs+aiMap[i], destStep2);
       VdbeCoverage(v);
@@ -4316,7 +4316,7 @@ static void sqlite3ExprCodeIN(
   ** of the RHS using the LHS as a probe.  If found, the result is
   ** true.
   */
-  if( eType==IN_INDEX_ROWID ){
+  ถ้า( eType==IN_INDEX_ROWID ){
     /* In this case, the RHS is the ROWID of table b-tree and so we also
     ** know that the RHS is non-NULL.  Hence, we combine steps 3 and 4
     ** into a single opcode. */
@@ -4324,13 +4324,13 @@ static void sqlite3ExprCodeIN(
     sqlite3VdbeAddOp3(v, OP_SeekRowid, iTab, destIfFalse, rLhs);
     VdbeCoverage(v);
     addrTruthOp = sqlite3VdbeAddOp0(v, OP_Goto);  /* Return True */
-  }else{
-    if( destIfFalse==destIfNull ){
+  }มิฉะนั้น{
+    ถ้า( destIfFalse==destIfNull ){
       /* Combine Step 3 and Step 5 into a single opcode */
-      if( ExprHasProperty(pExpr, EP_Subrtn) ){
+      ถ้า( ExprHasProperty(pExpr, EP_Subrtn) ){
         const VdbeOp *pOp = sqlite3VdbeGetOp(v, pExpr->y.sub.iAddr);
         assert( pOp->opcode==OP_Once || pParse->nErr );
-        if( pOp->p3>0 ){  /* tag-202407032019 */
+        ถ้า( pOp->p3>0 ){  /* tag-202407032019 */
           assert( OptimizationEnabled(pParse->db, SQLITE_BloomFilter)
                  || pParse->nErr );
           sqlite3VdbeAddOp4Int(v, OP_Filter, pOp->p3, destIfFalse,
@@ -4349,7 +4349,7 @@ static void sqlite3ExprCodeIN(
   /* Step 4.  If the RHS is known to be non-NULL and we did not find
   ** an match on the search above, then the result must be FALSE.
   */
-  if( rRhsHasNull && nVector==1 ){
+  ถ้า( rRhsHasNull && nVector==1 ){
     sqlite3VdbeAddOp2(v, OP_NotNull, rRhsHasNull, destIfFalse);
     VdbeCoverage(v);
   }
@@ -4357,7 +4357,7 @@ static void sqlite3ExprCodeIN(
   /* Step 5.  If we do not care about the difference between NULL and
   ** FALSE, then just return false.
   */
-  if( destIfFalse==destIfNull ) sqlite3VdbeGoto(v, destIfFalse);
+  ถ้า( destIfFalse==destIfNull ) sqlite3VdbeGoto(v, destIfFalse);
 
   /* Step 6: Loop through rows of the RHS.  Compare each row to the LHS.
   ** If any comparison is NULL, then the result is NULL.  If all
@@ -4366,31 +4366,31 @@ static void sqlite3ExprCodeIN(
   ** For a scalar LHS, it is sufficient to check just the first row
   ** of the RHS.
   */
-  if( destStep6 ) sqlite3VdbeResolveLabel(v, destStep6);
-  if( eType==IN_INDEX_INDEX_DESC ){
+  ถ้า( destStep6 ) sqlite3VdbeResolveLabel(v, destStep6);
+  ถ้า( eType==IN_INDEX_INDEX_DESC ){
     addrTop = sqlite3VdbeAddOp2(v, OP_Last, iTab, destIfFalse);
-  }else{
+  }มิฉะนั้น{
     testcase( eType==IN_INDEX_EPH );
     testcase( eType==IN_INDEX_ROWID );
     addrTop = sqlite3VdbeAddOp2(v, OP_Rewind, iTab, destIfFalse);
   }
   VdbeCoverage(v);
-  if( nVector>1 ){
+  ถ้า( nVector>1 ){
     destNotNull = sqlite3VdbeMakeLabel(pParse);
-  }else{
+  }มิฉะนั้น{
     /* For nVector==1, combine steps 6 and 7 by immediately returning
     ** FALSE if the first comparison is not NULL */
     destNotNull = destIfFalse;
   }
-  for(i=0; i<nVector; i++){
+  สำหรับ(i=0; i<nVector; i++){
     Expr *p;
     CollSeq *pColl;
-    int r3 = sqlite3GetTempReg(pParse);
+    จำนวนเต็ม r3 = sqlite3GetTempReg(pParse);
     p = sqlite3VectorFieldSubexpr(pLeft, i);
-    if( ExprUseXSelect(pExpr) ){
+    ถ้า( ExprUseXSelect(pExpr) ){
       Expr *pRhs = pExpr->x.pSelect->pEList->a[i].pExpr;
       pColl = sqlite3BinaryCompareCollSeq(pParse, p, pRhs);
-    }else{
+    }มิฉะนั้น{
       /* If the RHS of the IN(...) expression are scalar expressions, do
       ** not consider their collation sequences. The documentation says
       ** "The collating sequence used for expressions of the form "x IN (y, z,
@@ -4405,7 +4405,7 @@ static void sqlite3ExprCodeIN(
     sqlite3ReleaseTempReg(pParse, r3);
   }
   sqlite3VdbeAddOp2(v, OP_Goto, 0, destIfNull);
-  if( nVector>1 ){
+  ถ้า( nVector>1 ){
     sqlite3VdbeResolveLabel(v, destNotNull);
     sqlite3VdbeAddOp2(v, OP_Next, iTab, addrTop+1);
     VdbeCoverage(v);
@@ -4435,12 +4435,12 @@ sqlite3ExprCodeIN_oom_error:
 ** z[n] character is guaranteed to be something that does not look
 ** like the continuation of the number.
 */
-static void codeReal(Vdbe *v, const char *z, int negateFlag, int iMem){
-  if( ALWAYS(z!=0) ){
-    double value;
+static void codeReal(Vdbe *v, const var_na *z, จำนวนเต็ม negateFlag, จำนวนเต็ม iMem){
+  ถ้า( ALWAYS(z!=0) ){
+    dviguu_na value;
     sqlite3AtoF(z, &value);
     assert( !sqlite3IsNaN(value) ); /* The new AtoF never returns NaN */
-    if( negateFlag ) value = -value;
+    ถ้า( negateFlag ) value = -value;
     sqlite3VdbeAddDouble(v, iMem, value);
   }
 }
@@ -4453,35 +4453,35 @@ static void codeReal(Vdbe *v, const char *z, int negateFlag, int iMem){
 **
 ** Expr.u.zToken is always UTF8 and zero-terminated.
 */
-static void codeInteger(Parse *pParse, Expr *pExpr, int negFlag, int iMem){
+static void codeInteger(Parse *pParse, Expr *pExpr, จำนวนเต็ม negFlag, จำนวนเต็ม iMem){
   Vdbe *v = pParse->pVdbe;
-  if( pExpr->flags & EP_IntValue ){
-    int i = pExpr->u.iValue;
+  ถ้า( pExpr->flags & EP_IntValue ){
+    จำนวนเต็ม i = pExpr->u.iValue;
     assert( i>=0 );
-    if( negFlag ) i = -i;
+    ถ้า( negFlag ) i = -i;
     sqlite3VdbeAddOp2(v, OP_Integer, i, iMem);
-  }else{
-    int c;
+  }มิฉะนั้น{
+    จำนวนเต็ม c;
     i64 value;
-    const char *z = pExpr->u.zToken;
+    const var_na *z = pExpr->u.zToken;
     assert( z!=0 );
     c = sqlite3DecOrHexToI64(z, &value);
-    if( (c==3 && !negFlag) || (c==2) || (negFlag && value==SMALLEST_INT64)){
+    ถ้า( (c==3 && !negFlag) || (c==2) || (negFlag && value==SMALLEST_INT64)){
 #ifdef SQLITE_OMIT_FLOATING_POINT
       sqlite3ErrorMsg(pParse, "oversized integer: %s%#T", negFlag?"-":"",pExpr);
-#else
+#มิฉะนั้น
 #ifndef SQLITE_OMIT_HEX_INTEGER
-      if( sqlite3_strnicmp(z,"0x",2)==0 ){
+      ถ้า( sqlite3_strnicmp(z,"0x",2)==0 ){
         sqlite3ErrorMsg(pParse, "hex literal too big: %s%#T",
                         negFlag?"-":"",pExpr);
-      }else
+      }มิฉะนั้น
 #endif
       {
         codeReal(v, z, negFlag, iMem);
       }
 #endif
-    }else{
-      if( negFlag ){ value = c==3 ? SMALLEST_INT64 : -value; }
+    }มิฉะนั้น{
+      ถ้า( negFlag ){ value = c==3 ? SMALLEST_INT64 : -value; }
       sqlite3VdbeAddInt64(v, iMem, value);
     }
   }
@@ -4494,18 +4494,18 @@ static void codeInteger(Parse *pParse, Expr *pExpr, int negFlag, int iMem){
 void sqlite3ExprCodeLoadIndexColumn(
   Parse *pParse,  /* The parsing context */
   Index *pIdx,    /* The index whose column is to be loaded */
-  int iTabCur,    /* Cursor pointing to a table row */
-  int iIdxCol,    /* The column of the index to be loaded */
-  int regOut      /* Store the index column value in this register */
+  จำนวนเต็ม iTabCur,    /* Cursor pointing to a table row */
+  จำนวนเต็ม iIdxCol,    /* The column of the index to be loaded */
+  จำนวนเต็ม regOut      /* Store the index column value in this register */
 ){
   i16 iTabCol = pIdx->aiColumn[iIdxCol];
-  if( iTabCol==XN_EXPR ){
+  ถ้า( iTabCol==XN_EXPR ){
     assert( pIdx->aColExpr );
     assert( pIdx->aColExpr->nExpr>iIdxCol );
     pParse->iSelfTab = iTabCur + 1;
     sqlite3ExprCodeCopy(pParse, pIdx->aColExpr->a[iIdxCol].pExpr, regOut);
     pParse->iSelfTab = 0;
-  }else{
+  }มิฉะนั้น{
     sqlite3ExprCodeGetColumnOfTable(pParse->pVdbe, pIdx->pTable, iTabCur,
                                     iTabCol, regOut);
   }
@@ -4520,29 +4520,29 @@ void sqlite3ExprCodeGeneratedColumn(
   Parse *pParse,     /* Parsing context */
   Table *pTab,       /* Table containing the generated column */
   Column *pCol,      /* The generated column */
-  int regOut         /* Put the result in this register */
+  จำนวนเต็ม regOut         /* Put the result in this register */
 ){
-  int iAddr;
+  จำนวนเต็ม iAddr;
   Vdbe *v = pParse->pVdbe;
-  int nErr = pParse->nErr;
+  จำนวนเต็ม nErr = pParse->nErr;
   assert( v!=0 );
   assert( pParse->iSelfTab!=0 );
-  if( pParse->iSelfTab>0 ){
+  ถ้า( pParse->iSelfTab>0 ){
     iAddr = sqlite3VdbeAddOp3(v, OP_IfNullRow, pParse->iSelfTab-1, 0, regOut);
-  }else{
+  }มิฉะนั้น{
     iAddr = 0;
   }
   sqlite3ExprCodeCopy(pParse, sqlite3ColumnExpr(pTab,pCol), regOut);
-  if( (pCol->colFlags & COLFLAG_VIRTUAL)!=0
+  ถ้า( (pCol->colFlags & COLFLAG_VIRTUAL)!=0
    && (pTab->tabFlags & TF_Strict)!=0
   ){
-    int p3 = 2+(int)(pCol - pTab->aCol);
-    sqlite3VdbeAddOp4(v, OP_TypeCheck, regOut, 1, p3, (char*)pTab, P4_TABLE);
-  }else if( pCol->affinity>=SQLITE_AFF_TEXT ){
+    จำนวนเต็ม p3 = 2+(จำนวนเต็ม)(pCol - pTab->aCol);
+    sqlite3VdbeAddOp4(v, OP_TypeCheck, regOut, 1, p3, (var_na*)pTab, P4_TABLE);
+  }มิฉะนั้น ถ้า( pCol->affinity>=SQLITE_AFF_TEXT ){
     sqlite3VdbeAddOp4(v, OP_Affinity, regOut, 1, 0, &pCol->affinity, 1);
   }
-  if( iAddr ) sqlite3VdbeJumpHere(v, iAddr);
-  if( pParse->nErr>nErr ) pParse->db->errByteOffset = -1;
+  ถ้า( iAddr ) sqlite3VdbeJumpHere(v, iAddr);
+  ถ้า( pParse->nErr>nErr ) pParse->db->errByteOffset = -1;
 }
 #endif /* SQLITE_OMIT_GENERATED_COLUMNS */
 
@@ -4552,43 +4552,43 @@ void sqlite3ExprCodeGeneratedColumn(
 void sqlite3ExprCodeGetColumnOfTable(
   Vdbe *v,        /* Parsing context */
   Table *pTab,    /* The table containing the value */
-  int iTabCur,    /* The table cursor.  Or the PK cursor for WITHOUT ROWID */
-  int iCol,       /* Index of the column to extract */
-  int regOut      /* Extract the value into this register */
+  จำนวนเต็ม iTabCur,    /* The table cursor.  Or the PK cursor for WITHOUT ROWID */
+  จำนวนเต็ม iCol,       /* Index of the column to extract */
+  จำนวนเต็ม regOut      /* Extract the value into this register */
 ){
   Column *pCol;
   assert( v!=0 );
   assert( pTab!=0 );
   assert( iCol!=XN_EXPR );
-  if( iCol<0 || iCol==pTab->iPKey ){
+  ถ้า( iCol<0 || iCol==pTab->iPKey ){
     sqlite3VdbeAddOp2(v, OP_Rowid, iTabCur, regOut);
     VdbeComment((v, "%s.rowid", pTab->zName));
- }else{
-    int x;
-    if( IsVirtual(pTab) ){
+ }มิฉะนั้น{
+    จำนวนเต็ม x;
+    ถ้า( IsVirtual(pTab) ){
       x = iCol;
       sqlite3VdbeAddOp3(v, OP_VColumn, iTabCur, x, regOut);
-      return;
+      คืน;
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-    }else if( (pCol = &pTab->aCol[iCol])->colFlags & COLFLAG_VIRTUAL ){
+    }มิฉะนั้น ถ้า( (pCol = &pTab->aCol[iCol])->colFlags & COLFLAG_VIRTUAL ){
       Parse *pParse = sqlite3VdbeParser(v);
-      if( pCol->colFlags & COLFLAG_BUSY ){
+      ถ้า( pCol->colFlags & COLFLAG_BUSY ){
         sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"",
                         pCol->zCnName);
-      }else{
-        int savedSelfTab = pParse->iSelfTab;
+      }มิฉะนั้น{
+        จำนวนเต็ม savedSelfTab = pParse->iSelfTab;
         pCol->colFlags |= COLFLAG_BUSY;
         pParse->iSelfTab = iTabCur+1;
         sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, regOut);
         pParse->iSelfTab = savedSelfTab;
         pCol->colFlags &= ~COLFLAG_BUSY;
       }
-      return;
+      คืน;
 #endif
-    }else if( !HasRowid(pTab) ){
+    }มิฉะนั้น ถ้า( !HasRowid(pTab) ){
       testcase( iCol!=sqlite3TableColumnToStorage(pTab, iCol) );
       x = sqlite3TableColumnToIndex(sqlite3PrimaryKeyIndex(pTab), iCol);
-    }else{
+    }มิฉะนั้น{
       x = sqlite3TableColumnToStorage(pTab,iCol);
       testcase( x!=iCol );
     }
@@ -4604,31 +4604,31 @@ void sqlite3ExprCodeGetColumnOfTable(
 ** There must be an open cursor to pTab in iTable when this routine
 ** is called.  If iColumn<0 then code is generated that extracts the rowid.
 */
-int sqlite3ExprCodeGetColumn(
+จำนวนเต็ม sqlite3ExprCodeGetColumn(
   Parse *pParse,   /* Parsing and code generating context */
   Table *pTab,     /* Description of the table we are reading from */
-  int iColumn,     /* Index of the table column */
-  int iTable,      /* The cursor pointing to the table */
-  int iReg,        /* Store results here */
+  จำนวนเต็ม iColumn,     /* Index of the table column */
+  จำนวนเต็ม iTable,      /* The cursor pointing to the table */
+  จำนวนเต็ม iReg,        /* Store results here */
   u8 p5            /* P5 value for OP_Column + FLAGS */
 ){
   assert( pParse->pVdbe!=0 );
   assert( (p5 & (OPFLAG_NOCHNG|OPFLAG_TYPEOFARG|OPFLAG_LENGTHARG))==p5 );
   assert( IsVirtual(pTab) || (p5 & OPFLAG_NOCHNG)==0 );
   sqlite3ExprCodeGetColumnOfTable(pParse->pVdbe, pTab, iTable, iColumn, iReg);
-  if( p5 ){
+  ถ้า( p5 ){
     VdbeOp *pOp = sqlite3VdbeGetLastOp(pParse->pVdbe);
-    if( pOp->opcode==OP_Column ) pOp->p5 = p5;
-    if( pOp->opcode==OP_VColumn ) pOp->p5 = (p5 & OPFLAG_NOCHNG);
+    ถ้า( pOp->opcode==OP_Column ) pOp->p5 = p5;
+    ถ้า( pOp->opcode==OP_VColumn ) pOp->p5 = (p5 & OPFLAG_NOCHNG);
   }
-  return iReg;
+  คืน iReg;
 }
 
 /*
 ** Generate code to move content from registers iFrom...iFrom+nReg-1
 ** over to iTo..iTo+nReg-1.
 */
-void sqlite3ExprCodeMove(Parse *pParse, int iFrom, int iTo, int nReg){
+void sqlite3ExprCodeMove(Parse *pParse, จำนวนเต็ม iFrom, จำนวนเต็ม iTo, จำนวนเต็ม nReg){
   sqlite3VdbeAddOp3(pParse->pVdbe, OP_Move, iFrom, iTo, nReg);
 }
 
@@ -4637,12 +4637,12 @@ void sqlite3ExprCodeMove(Parse *pParse, int iFrom, int iTo, int nReg){
 ** register iReg.  The caller must ensure that iReg already contains
 ** the correct value for the expression.
 */
-void sqlite3ExprToRegister(Expr *pExpr, int iReg){
+void sqlite3ExprToRegister(Expr *pExpr, จำนวนเต็ม iReg){
   Expr *p = sqlite3ExprSkipCollateAndLikely(pExpr);
-  if( NEVER(p==0) ) return;
-  if( p->op==TK_REGISTER ){
+  ถ้า( NEVER(p==0) ) คืน;
+  ถ้า( p->op==TK_REGISTER ){
     assert( p->iTable==iReg );
-  }else{
+  }มิฉะนั้น{
     p->op2 = p->op;
     p->op = TK_REGISTER;
     p->iTable = iReg;
@@ -4660,30 +4660,30 @@ void sqlite3ExprToRegister(Expr *pExpr, int iReg){
 ** is not a temporary or if the expression is a vector set *piFreeable
 ** to 0.
 */
-static int exprCodeVector(Parse *pParse, Expr *p, int *piFreeable){
-  int iResult;
-  int nResult = sqlite3ExprVectorSize(p);
-  if( nResult==1 ){
+static จำนวนเต็ม exprCodeVector(Parse *pParse, Expr *p, จำนวนเต็ม *piFreeable){
+  จำนวนเต็ม iResult;
+  จำนวนเต็ม nResult = sqlite3ExprVectorSize(p);
+  ถ้า( nResult==1 ){
     iResult = sqlite3ExprCodeTemp(pParse, p, piFreeable);
-  }else{
+  }มิฉะนั้น{
     *piFreeable = 0;
-    if( p->op==TK_SELECT ){
-#if SQLITE_OMIT_SUBQUERY
+    ถ้า( p->op==TK_SELECT ){
+#ถ้า SQLITE_OMIT_SUBQUERY
       iResult = 0;
-#else
+#มิฉะนั้น
       iResult = sqlite3CodeSubselect(pParse, p);
 #endif
-    }else{
-      int i;
+    }มิฉะนั้น{
+      จำนวนเต็ม i;
       iResult = pParse->nMem+1;
       pParse->nMem += nResult;
       assert( ExprUseXList(p) );
-      for(i=0; i<nResult; i++){
+      สำหรับ(i=0; i<nResult; i++){
         sqlite3ExprCodeFactorable(pParse, p->x.pList->a[i].pExpr, i+iResult);
       }
     }
   }
-  return iResult;
+  คืน iResult;
 }
 
 /*
@@ -4691,7 +4691,7 @@ static int exprCodeVector(Parse *pParse, Expr *p, int *piFreeable){
 ** so that a subsequent copy will not be merged into this one.
 */
 static void setDoNotMergeFlagOnCopy(Vdbe *v){
-  if( sqlite3VdbeGetLastOp(v)->opcode==OP_Copy ){
+  ถ้า( sqlite3VdbeGetLastOp(v)->opcode==OP_Copy ){
     sqlite3VdbeChangeP5(v, 1);  /* Tag trailing OP_Copy as not mergeable */
   }
 }
@@ -4700,53 +4700,53 @@ static void setDoNotMergeFlagOnCopy(Vdbe *v){
 ** Generate code to implement special SQL functions that are implemented
 ** in-line rather than by using the usual callbacks.
 */
-static int exprCodeInlineFunction(
+static จำนวนเต็ม exprCodeInlineFunction(
   Parse *pParse,        /* Parsing context */
   ExprList *pFarg,      /* List of function arguments */
-  int iFuncId,          /* Function ID.  One of the INTFUNC_... values */
-  int target            /* Store function result in this register */
+  จำนวนเต็ม iFuncId,          /* Function ID.  One of the INTFUNC_... values */
+  จำนวนเต็ม target            /* Store function result in this register */
 ){
-  int nFarg;
+  จำนวนเต็ม nFarg;
   Vdbe *v = pParse->pVdbe;
   assert( v!=0 );
   assert( pFarg!=0 );
   nFarg = pFarg->nExpr;
   assert( nFarg>0 );  /* All in-line functions have at least one argument */
   switch( iFuncId ){
-    case INLINEFUNC_coalesce: {
+    pak_sa INLINEFUNC_coalesce: {
       /* Attempt a direct implementation of the built-in COALESCE() and
       ** IFNULL() functions.  This avoids unnecessary evaluation of
       ** arguments past the first non-NULL argument.
       */
-      int endCoalesce = sqlite3VdbeMakeLabel(pParse);
-      int i;
+      จำนวนเต็ม endCoalesce = sqlite3VdbeMakeLabel(pParse);
+      จำนวนเต็ม i;
       assert( nFarg>=2 );
       sqlite3ExprCode(pParse, pFarg->a[0].pExpr, target);
-      for(i=1; i<nFarg; i++){
+      สำหรับ(i=1; i<nFarg; i++){
         sqlite3VdbeAddOp2(v, OP_NotNull, target, endCoalesce);
         VdbeCoverage(v);
         sqlite3ExprCode(pParse, pFarg->a[i].pExpr, target);
       }
       setDoNotMergeFlagOnCopy(v);
       sqlite3VdbeResolveLabel(v, endCoalesce);
-      break;
+      bha_nga;
     }
-    case INLINEFUNC_iif: {
+    pak_sa INLINEFUNC_iif: {
       Expr caseExpr;
-      memset(&caseExpr, 0, sizeof(caseExpr));
+      memset(&caseExpr, 0, parimaa_na(caseExpr));
       caseExpr.op = TK_CASE;
       caseExpr.x.pList = pFarg;
-      return sqlite3ExprCodeTarget(pParse, &caseExpr, target);
+      คืน sqlite3ExprCodeTarget(pParse, &caseExpr, target);
     }
 #ifdef SQLITE_ENABLE_OFFSET_SQL_FUNC
-    case INLINEFUNC_sqlite_offset: {
+    pak_sa INLINEFUNC_sqlite_offset: {
       Expr *pArg = pFarg->a[0].pExpr;
-      if( pArg->op==TK_COLUMN && pArg->iTable>=0 ){
+      ถ้า( pArg->op==TK_COLUMN && pArg->iTable>=0 ){
         sqlite3VdbeAddOp3(v, OP_Offset, pArg->iTable, pArg->iColumn, target);
-      }else{
+      }มิฉะนั้น{
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       }
-      break;
+      bha_nga;
     }
 #endif
     default: {  
@@ -4755,66 +4755,66 @@ static int exprCodeInlineFunction(
       */
       assert( nFarg==1 || nFarg==2 );
       target = sqlite3ExprCodeTarget(pParse, pFarg->a[0].pExpr, target);
-      break;
+      bha_nga;
     }
 
   /***********************************************************************
   ** Test-only SQL functions that are only usable if enabled
   ** via SQLITE_TESTCTRL_INTERNAL_FUNCTIONS
   */
-#if !defined(SQLITE_UNTESTABLE)
-    case INLINEFUNC_expr_compare: {
+#ถ้า !defined(SQLITE_UNTESTABLE)
+    pak_sa INLINEFUNC_expr_compare: {
       /* Compare two expressions using sqlite3ExprCompare() */
       assert( nFarg==2 );
       sqlite3VdbeAddOp2(v, OP_Integer,
          sqlite3ExprCompare(0,pFarg->a[0].pExpr, pFarg->a[1].pExpr,-1),
          target);
-      break;
+      bha_nga;
     }
 
-    case INLINEFUNC_expr_implies_expr: {
+    pak_sa INLINEFUNC_expr_implies_expr: {
       /* Compare two expressions using sqlite3ExprImpliesExpr() */
       assert( nFarg==2 );
       sqlite3VdbeAddOp2(v, OP_Integer,
          sqlite3ExprImpliesExpr(pParse,pFarg->a[0].pExpr, pFarg->a[1].pExpr,-1),
          target);
-      break;
+      bha_nga;
     }
 
-    case INLINEFUNC_implies_nonnull_row: {
+    pak_sa INLINEFUNC_implies_nonnull_row: {
       /* Result of sqlite3ExprImpliesNonNullRow() */
       Expr *pA1;
       assert( nFarg==2 );
       pA1 = pFarg->a[1].pExpr;
-      if( pA1->op==TK_COLUMN ){
+      ถ้า( pA1->op==TK_COLUMN ){
         sqlite3VdbeAddOp2(v, OP_Integer,
            sqlite3ExprImpliesNonNullRow(pFarg->a[0].pExpr,pA1->iTable,1),
            target);
-      }else{
+      }มิฉะนั้น{
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       }
-      break;
+      bha_nga;
     }
 
-    case INLINEFUNC_affinity: {
+    pak_sa INLINEFUNC_affinity: {
       /* The AFFINITY() function evaluates to a string that describes
       ** the type affinity of the argument.  This is used for testing of
       ** the SQLite type logic.
       */
-      const char *azAff[] = { "blob", "text", "numeric", "integer",
+      const var_na *azAff[] = { "blob", "text", "numeric", "integer",
                               "real", "flexnum" };
-      char aff;
+      var_na aff;
       assert( nFarg==1 );
       aff = sqlite3ExprAffinity(pFarg->a[0].pExpr);
       assert( aff<=SQLITE_AFF_NONE
            || (aff>=SQLITE_AFF_BLOB && aff<=SQLITE_AFF_FLEXNUM) );
       sqlite3VdbeLoadString(v, target,
               (aff<=SQLITE_AFF_NONE) ? "none" : azAff[aff-SQLITE_AFF_BLOB]);
-      break;
+      bha_nga;
     }
 #endif /* !defined(SQLITE_UNTESTABLE) */
   }
-  return target;
+  คืน target;
 }
 
 /*
@@ -4840,32 +4840,32 @@ static int exprCodeInlineFunction(
 ** In all cases 1 through 5, the expression might also return a subtype
 ** if any operand can return a subtype.
 */
-static int exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
-  int n;
+static จำนวนเต็ม exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
+  จำนวนเต็ม n;
   FuncDef *pDef;
   sqlite3 *db;
-  if( pExpr->op==TK_CASE || pExpr->op==TK_UPLUS 
+  ถ้า( pExpr->op==TK_CASE || pExpr->op==TK_UPLUS 
    || pExpr->op==TK_COLLATE || pExpr->op==TK_CAST 
   ){
-    return WRC_Continue;
+    คืน WRC_Continue;
   }
-  if( pExpr->op!=TK_FUNCTION && pExpr->op!=TK_AGG_FUNCTION ){
-    return WRC_Prune;
+  ถ้า( pExpr->op!=TK_FUNCTION && pExpr->op!=TK_AGG_FUNCTION ){
+    คืน WRC_Prune;
   }
   assert( ExprUseXList(pExpr) );
   db = pWalker->pParse->db;
   n = pExpr->x.pList ? pExpr->x.pList->nExpr : 0;
   pDef = sqlite3FindFunction(db, pExpr->u.zToken, n, ENC(db), 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-  if( pDef==0 ) return WRC_Continue;
-#else
+  ถ้า( pDef==0 ) คืน WRC_Continue;
+#มิฉะนั้น
   assert( pDef!=0 );
 #endif
-  if( (pDef->funcFlags & SQLITE_RESULT_SUBTYPE)!=0 ){
+  ถ้า( (pDef->funcFlags & SQLITE_RESULT_SUBTYPE)!=0 ){
     pWalker->eCode = 1;
-    return WRC_Abort;
+    คืน WRC_Abort;
   }
-  return WRC_Continue;
+  คืน WRC_Continue;
 }
 
 /*
@@ -4876,13 +4876,13 @@ static int exprNodeCanReturnSubtype(Walker *pWalker, Expr *pExpr){
 ** are acceptable as they only disable an optimization.  False negatives,
 ** on the other hand, can lead to incorrect answers.
 */
-int sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
+จำนวนเต็ม sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
   Walker w;
-  memset(&w, 0, sizeof(w));
+  memset(&w, 0, parimaa_na(w));
   w.pParse = pParse;
   w.xExprCallback = exprNodeCanReturnSubtype;
   sqlite3WalkExpr(&w, pExpr);
-  return w.eCode;
+  คืน w.eCode;
 }
 
 
@@ -4892,25 +4892,25 @@ int sqlite3ExprCanReturnSubtype(Parse *pParse, Expr *pExpr){
 ** return the register into which the value has been read.  If pExpr is
 ** not an indexed expression, then return negative.
 */
-static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
+static SQLITE_NOINLINE จำนวนเต็ม sqlite3IndexedExprLookup(
   Parse *pParse,   /* The parsing context */
   Expr *pExpr,     /* The expression to potentially bypass */
-  int target       /* Where to store the result of the expression */
+  จำนวนเต็ม target       /* Where to store the result of the expression */
 ){
   IndexedExpr *p;
   Vdbe *v;
-  for(p=pParse->pIdxEpr; p; p=p->pIENext){
+  สำหรับ(p=pParse->pIdxEpr; p; p=p->pIENext){
     u8 exprAff;
-    int iDataCur = p->iDataCur;
-    if( iDataCur<0 ) continue;
-    if( pParse->iSelfTab ){
-      if( p->iDataCur!=pParse->iSelfTab-1 ) continue;
+    จำนวนเต็ม iDataCur = p->iDataCur;
+    ถ้า( iDataCur<0 ) continue;
+    ถ้า( pParse->iSelfTab ){
+      ถ้า( p->iDataCur!=pParse->iSelfTab-1 ) continue;
       iDataCur = -1;
     }
-    if( sqlite3ExprCompare(0, pExpr, p->pExpr, iDataCur)!=0 ) continue;
+    ถ้า( sqlite3ExprCompare(0, pExpr, p->pExpr, iDataCur)!=0 ) continue;
     assert( p->aff>=SQLITE_AFF_BLOB && p->aff<=SQLITE_AFF_NUMERIC );
     exprAff = sqlite3ExprAffinity(pExpr);
-    if( (exprAff<=SQLITE_AFF_BLOB && p->aff!=SQLITE_AFF_BLOB)
+    ถ้า( (exprAff<=SQLITE_AFF_BLOB && p->aff!=SQLITE_AFF_BLOB)
      || (exprAff==SQLITE_AFF_TEXT && p->aff!=SQLITE_AFF_TEXT)
      || (exprAff>=SQLITE_AFF_NUMERIC && p->aff!=SQLITE_AFF_NUMERIC)
     ){
@@ -4923,7 +4923,7 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
     ** value taken from an expression index if they are themselves an
     ** argument to another scalar function or aggregate. 
     ** https://sqlite.org/forum/forumpost/68d284c86b082c3e */
-    if( ExprHasProperty(pExpr, EP_SubtArg)
+    ถ้า( ExprHasProperty(pExpr, EP_SubtArg)
      && sqlite3ExprCanReturnSubtype(pParse, pExpr) 
     ){
       continue;
@@ -4931,7 +4931,7 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
 
     v = pParse->pVdbe;
     assert( v!=0 );
-    if( p->bMaybeNullRow || sqlite3ExprIsConstant(pParse, pExpr) ){
+    ถ้า( p->bMaybeNullRow || sqlite3ExprIsConstant(pParse, pExpr) ){
       /* The value of pExpr should be computed from the original expression,
       ** not from the index, if either:
       **
@@ -4941,7 +4941,7 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
       **         use an index value outside of the loop that positions the
       **         index.  (Bug 2026-10-11T19:26:40Z).
       */
-      int addr = sqlite3VdbeCurrentAddr(v);
+      จำนวนเต็ม addr = sqlite3VdbeCurrentAddr(v);
       sqlite3VdbeAddOp3(v, OP_IfNullRow, p->iIdxCur, addr+3, target);
       VdbeCoverage(v);
       sqlite3VdbeAddOp3(v, OP_Column, p->iIdxCur, p->iIdxCol, target);
@@ -4952,13 +4952,13 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
       sqlite3ExprCode(pParse, pExpr, target);
       pParse->pIdxEpr = p;
       sqlite3VdbeJumpHere(v, addr+2);
-    }else{
+    }มิฉะนั้น{
       sqlite3VdbeAddOp3(v, OP_Column, p->iIdxCur, p->iIdxCol, target);
       VdbeComment((v, "%s expr-column %d", p->zIdxName, p->iIdxCol));
     }
-    return target;
+    คืน target;
   }
-  return -1;  /* Not found */
+  คืน -1;  /* Not found */
 }
 
 
@@ -4972,33 +4972,33 @@ static SQLITE_NOINLINE int sqlite3IndexedExprLookup(
 ** Or, if the TK_COLUMN cannot be replaced by a constant, zero is 
 ** returned.
 */
-static int exprPartidxExprLookup(Parse *pParse, Expr *pExpr, int iTarget){
+static จำนวนเต็ม exprPartidxExprLookup(Parse *pParse, Expr *pExpr, จำนวนเต็ม iTarget){
   IndexedExpr *p;
-  for(p=pParse->pIdxPartExpr; p; p=p->pIENext){
-    if( pExpr->iColumn==p->iIdxCol && pExpr->iTable==p->iDataCur ){
+  สำหรับ(p=pParse->pIdxPartExpr; p; p=p->pIENext){
+    ถ้า( pExpr->iColumn==p->iIdxCol && pExpr->iTable==p->iDataCur ){
       Vdbe *v = pParse->pVdbe;
-      int addr = 0;
-      int ret;
+      จำนวนเต็ม addr = 0;
+      จำนวนเต็ม ret;
 
-      if( p->bMaybeNullRow ){
+      ถ้า( p->bMaybeNullRow ){
         addr = sqlite3VdbeAddOp1(v, OP_IfNullRow, p->iIdxCur);
       }
       ret = sqlite3ExprCodeTarget(pParse, p->pExpr, iTarget);
       sqlite3VdbeAddOp4(pParse->pVdbe, OP_Affinity, ret, 1, 0,
-                        (const char*)&p->aff, 1);
-      if( sqlite3ExprCanReturnSubtype(pParse, p->pExpr) ){
+                        (const var_na*)&p->aff, 1);
+      ถ้า( sqlite3ExprCanReturnSubtype(pParse, p->pExpr) ){
         /* If the expression value may have a sub-type, clear it. Values
         ** read from columns do not have subtypes. */
         sqlite3VdbeAddOp1(pParse->pVdbe, OP_ClrSubtype, ret);
       }
-      if( addr ){
+      ถ้า( addr ){
         sqlite3VdbeJumpHere(v, addr);
         sqlite3VdbeChangeP3(v, addr, ret);
       }
-      return ret;
+      คืน ret;
     }
   }
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -5011,17 +5011,17 @@ static int exprPartidxExprLookup(Parse *pParse, Expr *pExpr, int iTarget){
 ** If it does, then write the number of that temporary register
 ** into *pTmpReg.  If not, leave *pTmpReg unchanged.
 */
-static SQLITE_NOINLINE int exprCodeTargetAndOr(
+static SQLITE_NOINLINE จำนวนเต็ม exprCodeTargetAndOr(
   Parse *pParse,     /* Parsing context */
   Expr *pExpr,       /* AND or OR expression to be coded */
-  int target,        /* Put result in this register, guaranteed */
-  int *pTmpReg       /* Write a temporary register here */
+  จำนวนเต็ม target,        /* Put result in this register, guaranteed */
+  จำนวนเต็ม *pTmpReg       /* Write a temporary register here */
 ){
-  int op;            /* The opcode.  TK_AND or TK_OR */
-  int skipOp;        /* Opcode for the branch that skips one operand */
-  int addrSkip;      /* Branch instruction that skips one of the operands */
-  int regSS = 0;     /* Register holding computed operand when other omitted */
-  int r1, r2;        /* Registers for left and right operands, respectively */
+  จำนวนเต็ม op;            /* The opcode.  TK_AND or TK_OR */
+  จำนวนเต็ม skipOp;        /* Opcode for the branch that skips one operand */
+  จำนวนเต็ม addrSkip;      /* Branch instruction that skips one of the operands */
+  จำนวนเต็ม regSS = 0;     /* Register holding computed operand when other omitted */
+  จำนวนเต็ม r1, r2;        /* Registers for left and right operands, respectively */
   Expr *pAlt;        /* Alternative, simplified expression */
   Vdbe *v;           /* statement being coded */
 
@@ -5033,13 +5033,13 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
   assert( pParse->pVdbe!=0 );
   v = pParse->pVdbe;
   pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-  if( pAlt!=pExpr ){
+  ถ้า( pAlt!=pExpr ){
     r1 = sqlite3ExprCodeTarget(pParse, pAlt, target);
     sqlite3VdbeAddOp3(v, OP_And, r1, r1, target);
-    return target;
+    คืน target;
   }
   skipOp = op==TK_AND ? OP_IfNot : OP_If;
-  if( exprEvalRhsFirst(pExpr) ){
+  ถ้า( exprEvalRhsFirst(pExpr) ){
     /* Compute the right operand first.  Skip the computation of the left
     ** operand if the right operand fully determines the result */
     r2 = regSS = sqlite3ExprCodeTarget(pParse, pExpr->pRight, target);
@@ -5047,10 +5047,10 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
     VdbeComment((v, "skip left operand"));
     VdbeCoverage(v); 
     r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, pTmpReg);
-  }else{
+  }มิฉะนั้น{
     /* Compute the left operand first */
     r1 = sqlite3ExprCodeTarget(pParse, pExpr->pLeft, target);
-    if( ExprHasProperty(pExpr->pRight, EP_Subquery) ){
+    ถ้า( ExprHasProperty(pExpr->pRight, EP_Subquery) ){
       /* Skip over the computation of the right operand if the right
       ** operand is a subquery and the left operand completely determines
       ** the result */
@@ -5058,20 +5058,20 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
       addrSkip = sqlite3VdbeAddOp1(v, skipOp, r1);
       VdbeComment((v, "skip right operand"));
       VdbeCoverage(v);
-    }else{
+    }มิฉะนั้น{
       addrSkip = regSS = 0;
     }
     r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, pTmpReg);
   }
   sqlite3VdbeAddOp3(v, op, r2, r1, target);
   testcase( (*pTmpReg)==0 );
-  if( addrSkip ){
+  ถ้า( addrSkip ){
     sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
     sqlite3VdbeJumpHere(v, addrSkip);
     sqlite3VdbeAddOp3(v, OP_Or, regSS, regSS, target);
     VdbeComment((v, "short-circut value"));
   }
-  return target;
+  คืน target;
 }
 
 
@@ -5087,39 +5087,39 @@ static SQLITE_NOINLINE int exprCodeTargetAndOr(
 ** must check the return code and move the results to the desired
 ** register.
 */
-int sqlite3ExprCodeTarget(Parse *pParse, Expr *pExpr, int target){
+จำนวนเต็ม sqlite3ExprCodeTarget(Parse *pParse, Expr *pExpr, จำนวนเต็ม target){
   Vdbe *v = pParse->pVdbe;  /* The VM under construction */
-  int op;                   /* The opcode being coded */
-  int inReg = target;       /* Results stored in register inReg */
-  int regFree1 = 0;         /* If non-zero free this temporary register */
-  int regFree2 = 0;         /* If non-zero free this temporary register */
-  int r1, r2;               /* Various register numbers */
+  จำนวนเต็ม op;                   /* The opcode being coded */
+  จำนวนเต็ม inReg = target;       /* Results stored in register inReg */
+  จำนวนเต็ม regFree1 = 0;         /* If non-zero free this temporary register */
+  จำนวนเต็ม regFree2 = 0;         /* If non-zero free this temporary register */
+  จำนวนเต็ม r1, r2;               /* Various register numbers */
   Expr tempX;               /* Temporary expression node */
-  int p5 = 0;
+  จำนวนเต็ม p5 = 0;
 
   assert( target>0 && target<=pParse->nMem );
   assert( v!=0 );
 
 expr_code_doover:
-  if( pExpr==0 ){
+  ถ้า( pExpr==0 ){
     op = TK_NULL;
-  }else if( pParse->pIdxEpr!=0
+  }มิฉะนั้น ถ้า( pParse->pIdxEpr!=0
    && !ExprHasProperty(pExpr, EP_Leaf)
    && (r1 = sqlite3IndexedExprLookup(pParse, pExpr, target))>=0
   ){
-    return r1;
-  }else{
+    คืน r1;
+  }มิฉะนั้น{
     assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
     op = pExpr->op;
   }
   assert( op!=TK_ORDER );
   switch( op ){
-    case TK_AGG_COLUMN: {
+    pak_sa TK_AGG_COLUMN: {
       AggInfo *pAggInfo = pExpr->pAggInfo;
-      struct AggInfo_col *pCol;
+      sa_nracanaa AggInfo_col *pCol;
       assert( pAggInfo!=0 );
       assert( pExpr->iAgg>=0 );
-      if( pExpr->iAgg>=pAggInfo->nColumn ){
+      ถ้า( pExpr->iAgg>=pAggInfo->nColumn ){
         /* Happens when the left table of a RIGHT JOIN is null and
         ** is using an expression index */
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
@@ -5129,62 +5129,62 @@ expr_code_doover:
         sqlite3VdbeAddOp3(v, OP_NotNull, target, 1, 20230325);
         VdbeCoverageNeverTaken(v);
 #endif
-        break;
+        bha_nga;
       }
       pCol = &pAggInfo->aCol[pExpr->iAgg];
-      if( !pAggInfo->directMode ){
-        return AggInfoColumnReg(pAggInfo, pExpr->iAgg);
-      }else if( pAggInfo->useSortingIdx ){
+      ถ้า( !pAggInfo->directMode ){
+        คืน AggInfoColumnReg(pAggInfo, pExpr->iAgg);
+      }มิฉะนั้น ถ้า( pAggInfo->useSortingIdx ){
         Table *pTab = pCol->pTab;
         sqlite3VdbeAddOp3(v, OP_Column, pAggInfo->sortingIdxPTab,
                               pCol->iSorterColumn, target);
-        if( pTab==0 ){
+        ถ้า( pTab==0 ){
           /* No comment added */
-        }else if( pCol->iColumn<0 ){
+        }มิฉะนั้น ถ้า( pCol->iColumn<0 ){
           VdbeComment((v,"%s.rowid",pTab->zName));
-        }else{
+        }มิฉะนั้น{
           VdbeComment((v,"%s.%s",
               pTab->zName, pTab->aCol[pCol->iColumn].zCnName));
-          if( pTab->aCol[pCol->iColumn].affinity==SQLITE_AFF_REAL ){
+          ถ้า( pTab->aCol[pCol->iColumn].affinity==SQLITE_AFF_REAL ){
             sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
           }
         }
-        return target;
-      }else if( pExpr->y.pTab==0 ){
+        คืน target;
+      }มิฉะนั้น ถ้า( pExpr->y.pTab==0 ){
         /* This case happens when the argument to an aggregate function
         ** is rewritten by aggregateConvertIndexedExprRefToColumn() */
         sqlite3VdbeAddOp3(v, OP_Column, pExpr->iTable, pExpr->iColumn, target);
-        return target;
+        คืน target;
       }
       /* Otherwise, fall thru into the TK_COLUMN case */
       /* no break */ deliberate_fall_through
     }
-    case TK_COLUMN: {
-      int iTab = pExpr->iTable;
-      int iReg;
-      if( ExprHasProperty(pExpr, EP_FixedCol) ){
+    pak_sa TK_COLUMN: {
+      จำนวนเต็ม iTab = pExpr->iTable;
+      จำนวนเต็ม iReg;
+      ถ้า( ExprHasProperty(pExpr, EP_FixedCol) ){
         /* This COLUMN expression is really a constant due to WHERE clause
         ** constraints, and that constant is coded by the pExpr->pLeft
         ** expression.  However, make sure the constant has the correct
         ** datatype by applying the Affinity of the table column to the
         ** constant.
         */
-        int aff;
+        จำนวนเต็ม aff;
         iReg = sqlite3ExprCodeTarget(pParse, pExpr->pLeft,target);
         assert( ExprUseYTab(pExpr) );
         assert( pExpr->y.pTab!=0 );
         aff = sqlite3TableColumnAffinity(pExpr->y.pTab, pExpr->iColumn);
-        if( aff>SQLITE_AFF_BLOB ){
-          static const char zAff[] = "B\000C\000D\000E\000F";
+        ถ้า( aff>SQLITE_AFF_BLOB ){
+          static const var_na zAff[] = "B\000C\000D\000E\000F";
           assert( SQLITE_AFF_BLOB=='A' );
           assert( SQLITE_AFF_TEXT=='B' );
           sqlite3VdbeAddOp4(v, OP_Affinity, iReg, 1, 0,
                             &zAff[(aff-'B')*2], P4_STATIC);
         }
-        return iReg;
+        คืน iReg;
       }
-      if( iTab<0 ){
-        if( pParse->iSelfTab<0 ){
+      ถ้า( iTab<0 ){
+        ถ้า( pParse->iSelfTab<0 ){
           /* Other columns in the same row for CHECK constraints or
           ** generated columns or for inserting into partial index.
           ** The row is unpacked into registers beginning at
@@ -5193,84 +5193,84 @@ expr_code_doover:
           */
           Column *pCol;
           Table *pTab;
-          int iSrc;
-          int iCol = pExpr->iColumn;
+          จำนวนเต็ม iSrc;
+          จำนวนเต็ม iCol = pExpr->iColumn;
           assert( ExprUseYTab(pExpr) );
           pTab = pExpr->y.pTab;
           assert( pTab!=0 );
           assert( iCol>=XN_ROWID );
           assert( iCol<pTab->nCol );
-          if( iCol<0 ){
-            return -1-pParse->iSelfTab;
+          ถ้า( iCol<0 ){
+            คืน -1-pParse->iSelfTab;
           }
           pCol = pTab->aCol + iCol;
           testcase( iCol!=sqlite3TableColumnToStorage(pTab,iCol) );
           iSrc = sqlite3TableColumnToStorage(pTab, iCol) - pParse->iSelfTab;
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-          if( pCol->colFlags & COLFLAG_GENERATED ){
-            if( pCol->colFlags & COLFLAG_BUSY ){
+          ถ้า( pCol->colFlags & COLFLAG_GENERATED ){
+            ถ้า( pCol->colFlags & COLFLAG_BUSY ){
               sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"",
                               pCol->zCnName);
-              return 0;
+              คืน 0;
             }
             pCol->colFlags |= COLFLAG_BUSY;
-            if( pCol->colFlags & COLFLAG_NOTAVAIL ){
+            ถ้า( pCol->colFlags & COLFLAG_NOTAVAIL ){
               sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, iSrc);
             }
             pCol->colFlags &= ~(COLFLAG_BUSY|COLFLAG_NOTAVAIL);
-            return iSrc;
-          }else
+            คืน iSrc;
+          }มิฉะนั้น
 #endif /* SQLITE_OMIT_GENERATED_COLUMNS */
-          if( pCol->affinity==SQLITE_AFF_REAL ){
+          ถ้า( pCol->affinity==SQLITE_AFF_REAL ){
             sqlite3VdbeAddOp2(v, OP_SCopy, iSrc, target);
             sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
-            return target;
-          }else{
-            return iSrc;
+            คืน target;
+          }มิฉะนั้น{
+            คืน iSrc;
           }
-        }else{
+        }มิฉะนั้น{
           /* Coding an expression that is part of an index where column names
           ** in the index refer to the table to which the index belongs */
           iTab = pParse->iSelfTab - 1;
         }
       }
-      else if( pParse->pIdxPartExpr 
+      มิฉะนั้น ถ้า( pParse->pIdxPartExpr 
        && 0!=(r1 = exprPartidxExprLookup(pParse, pExpr, target))
       ){
-        return r1;
+        คืน r1;
       }
       assert( ExprUseYTab(pExpr) );
       assert( pExpr->y.pTab!=0 );
       iReg = sqlite3ExprCodeGetColumn(pParse, pExpr->y.pTab,
                                pExpr->iColumn, iTab, target,
                                pExpr->op2);
-      return iReg;
+      คืน iReg;
     }
-    case TK_INTEGER: {
+    pak_sa TK_INTEGER: {
       codeInteger(pParse, pExpr, 0, target);
-      return target;
+      คืน target;
     }
-    case TK_TRUEFALSE: {
+    pak_sa TK_TRUEFALSE: {
       sqlite3VdbeAddOp2(v, OP_Integer, sqlite3ExprTruthValue(pExpr), target);
-      return target;
+      คืน target;
     }
 #ifndef SQLITE_OMIT_FLOATING_POINT
-    case TK_FLOAT: {
+    pak_sa TK_FLOAT: {
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       codeReal(v, pExpr->u.zToken, 0, target);
-      return target;
+      คืน target;
     }
 #endif
-    case TK_STRING: {
+    pak_sa TK_STRING: {
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       sqlite3VdbeLoadString(v, target, pExpr->u.zToken);
-      return target;
+      คืน target;
     }
-    case TK_NULLS: {
+    pak_sa TK_NULLS: {
       /* Set a range of registers to NULL.  pExpr->y.nReg registers starting
       ** with target */
       sqlite3VdbeAddOp3(v, OP_Null, 0, target, target + pExpr->y.nReg - 1);
-      return target;
+      คืน target;
     }
     default: {
       /* Make NULL the default case so that if a bug causes an illegal
@@ -5279,13 +5279,13 @@ expr_code_doover:
       ** to the attention of the developers. */
       assert( op==TK_NULL || op==TK_ERROR || pParse->db->mallocFailed );
       sqlite3VdbeAddOp2(v, OP_Null, 0, target);
-      return target;
+      คืน target;
     }
 #ifndef SQLITE_OMIT_BLOB_LITERAL
-    case TK_BLOB: {
-      int n;
-      const char *z;
-      char *zBlob;
+    pak_sa TK_BLOB: {
+      จำนวนเต็ม n;
+      const var_na *z;
+      var_na *zBlob;
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       assert( pExpr->u.zToken[0]=='x' || pExpr->u.zToken[0]=='X' );
       assert( pExpr->u.zToken[1]=='\'' );
@@ -5294,50 +5294,50 @@ expr_code_doover:
       assert( z[n]=='\'' );
       zBlob = sqlite3HexToBlob(sqlite3VdbeDb(v), z, n);
       sqlite3VdbeAddOp4(v, OP_Blob, n/2, target, 0, zBlob, P4_DYNAMIC);
-      return target;
+      คืน target;
     }
 #endif
-    case TK_VARIABLE: {
+    pak_sa TK_VARIABLE: {
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       assert( pExpr->u.zToken!=0 );
       assert( pExpr->u.zToken[0]!=0 );
       sqlite3VdbeAddOp2(v, OP_Variable, pExpr->iColumn, target);
-      return target;
+      คืน target;
     }
-    case TK_REGISTER: {
-      return pExpr->iTable;
+    pak_sa TK_REGISTER: {
+      คืน pExpr->iTable;
     }
 #ifndef SQLITE_OMIT_CAST
-    case TK_CAST: {
+    pak_sa TK_CAST: {
       /* Expressions of the form:   CAST(pLeft AS token) */
       sqlite3ExprCode(pParse, pExpr->pLeft, target);
       assert( inReg==target );
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
       sqlite3VdbeAddOp2(v, OP_Cast, target,
                         sqlite3AffinityType(pExpr->u.zToken, 0));
-      return inReg;
+      คืน inReg;
     }
 #endif /* SQLITE_OMIT_CAST */
-    case TK_IS:
-    case TK_ISNOT:
+    pak_sa TK_IS:
+    pak_sa TK_ISNOT:
       op = (op==TK_IS) ? TK_EQ : TK_NE;
       p5 = SQLITE_NULLEQ;
       /* no break */ deliberate_fall_through
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_NE:
-    case TK_EQ: {
+    pak_sa TK_LT:
+    pak_sa TK_LE:
+    pak_sa TK_GT:
+    pak_sa TK_GE:
+    pak_sa TK_NE:
+    pak_sa TK_EQ: {
       Expr *pLeft = pExpr->pLeft;
-      int addrIsNull = 0;
-      if( sqlite3ExprIsVector(pLeft) ){
+      จำนวนเต็ม addrIsNull = 0;
+      ถ้า( sqlite3ExprIsVector(pLeft) ){
         codeVectorCompare(pParse, pExpr, target, op, p5);
-      }else{
-        if( ExprHasProperty(pExpr, EP_Subquery) && p5!=SQLITE_NULLEQ ){
+      }มิฉะนั้น{
+        ถ้า( ExprHasProperty(pExpr, EP_Subquery) && p5!=SQLITE_NULLEQ ){
           addrIsNull = exprComputeOperands(pParse, pExpr,
                                      &r1, &r2, &regFree1, &regFree2);
-        }else{
+        }มิฉะนั้น{
           r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
           r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         }
@@ -5351,11 +5351,11 @@ expr_code_doover:
         assert(TK_GE==OP_Ge); testcase(op==OP_Ge); VdbeCoverageIf(v,op==OP_Ge);
         assert(TK_EQ==OP_Eq); testcase(op==OP_Eq); VdbeCoverageIf(v,op==OP_Eq);
         assert(TK_NE==OP_Ne); testcase(op==OP_Ne); VdbeCoverageIf(v,op==OP_Ne);
-        if( p5==SQLITE_NULLEQ ){
+        ถ้า( p5==SQLITE_NULLEQ ){
           sqlite3VdbeAddOp2(v, OP_Integer, 0, inReg);
-        }else{
+        }มิฉะนั้น{
           sqlite3VdbeAddOp3(v, OP_ZeroOrNull, r1, inReg, r2);
-          if( addrIsNull ){
+          ถ้า( addrIsNull ){
             sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
             sqlite3VdbeJumpHere(v, addrIsNull);
             sqlite3VdbeAddOp2(v, OP_Null, 0, inReg);
@@ -5364,24 +5364,24 @@ expr_code_doover:
         testcase( regFree1==0 );
         testcase( regFree2==0 );
       }
-      break;
+      bha_nga;
     }
-    case TK_AND:
-    case TK_OR: {
+    pak_sa TK_AND:
+    pak_sa TK_OR: {
       inReg = exprCodeTargetAndOr(pParse, pExpr, target, &regFree1);
-      break;
+      bha_nga;
     }
-    case TK_PLUS:
-    case TK_STAR:
-    case TK_MINUS:
-    case TK_REM:
-    case TK_BITAND:
-    case TK_BITOR:
-    case TK_SLASH:
-    case TK_LSHIFT:
-    case TK_RSHIFT:
-    case TK_CONCAT: {
-      int addrIsNull;
+    pak_sa TK_PLUS:
+    pak_sa TK_STAR:
+    pak_sa TK_MINUS:
+    pak_sa TK_REM:
+    pak_sa TK_BITAND:
+    pak_sa TK_BITOR:
+    pak_sa TK_SLASH:
+    pak_sa TK_LSHIFT:
+    pak_sa TK_RSHIFT:
+    pak_sa TK_CONCAT: {
+      จำนวนเต็ม addrIsNull;
       assert( TK_PLUS==OP_Add );           testcase( op==TK_PLUS );
       assert( TK_MINUS==OP_Subtract );     testcase( op==TK_MINUS );
       assert( TK_REM==OP_Remainder );      testcase( op==TK_REM );
@@ -5391,10 +5391,10 @@ expr_code_doover:
       assert( TK_LSHIFT==OP_ShiftLeft );   testcase( op==TK_LSHIFT );
       assert( TK_RSHIFT==OP_ShiftRight );  testcase( op==TK_RSHIFT );
       assert( TK_CONCAT==OP_Concat );      testcase( op==TK_CONCAT );
-      if( ExprHasProperty(pExpr, EP_Subquery) ){
+      ถ้า( ExprHasProperty(pExpr, EP_Subquery) ){
         addrIsNull = exprComputeOperands(pParse, pExpr,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
+      }มิฉะนั้น{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         addrIsNull = 0;
@@ -5402,27 +5402,27 @@ expr_code_doover:
       sqlite3VdbeAddOp3(v, op, r2, r1, target);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
+      ถ้า( addrIsNull ){
         sqlite3VdbeAddOp2(v, OP_Goto, 0, sqlite3VdbeCurrentAddr(v)+2);
         sqlite3VdbeJumpHere(v, addrIsNull);
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
         VdbeComment((v, "short-circut value"));
       }
-      break;
+      bha_nga;
     }
-    case TK_UMINUS: {
+    pak_sa TK_UMINUS: {
       Expr *pLeft = pExpr->pLeft;
       assert( pLeft );
-      if( pLeft->op==TK_INTEGER ){
+      ถ้า( pLeft->op==TK_INTEGER ){
         codeInteger(pParse, pLeft, 1, target);
-        return target;
+        คืน target;
 #ifndef SQLITE_OMIT_FLOATING_POINT
-      }else if( pLeft->op==TK_FLOAT ){
+      }มิฉะนั้น ถ้า( pLeft->op==TK_FLOAT ){
         assert( !ExprHasProperty(pExpr, EP_IntValue) );
         codeReal(v, pLeft->u.zToken, 1, target);
-        return target;
+        คืน target;
 #endif
-      }else{
+      }มิฉะนั้น{
         tempX.op = TK_INTEGER;
         tempX.flags = EP_IntValue|EP_TokenOnly;
         tempX.u.iValue = 0;
@@ -5432,20 +5432,20 @@ expr_code_doover:
         sqlite3VdbeAddOp3(v, OP_Subtract, r2, r1, target);
         testcase( regFree2==0 );
       }
-      break;
+      bha_nga;
     }
-    case TK_BITNOT:
-    case TK_NOT: {
+    pak_sa TK_BITNOT:
+    pak_sa TK_NOT: {
       assert( TK_BITNOT==OP_BitNot );   testcase( op==TK_BITNOT );
       assert( TK_NOT==OP_Not );         testcase( op==TK_NOT );
       r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
       testcase( regFree1==0 );
       sqlite3VdbeAddOp2(v, op, r1, inReg);
-      break;
+      bha_nga;
     }
-    case TK_TRUTH: {
-      int isTrue;    /* IS TRUE or IS NOT TRUE */
-      int bNormal;   /* IS TRUE or IS FALSE */
+    pak_sa TK_TRUTH: {
+      จำนวนเต็ม isTrue;    /* IS TRUE or IS NOT TRUE */
+      จำนวนเต็ม bNormal;   /* IS TRUE or IS FALSE */
       r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
       testcase( regFree1==0 );
       isTrue = sqlite3ExprTruthValue(pExpr->pRight);
@@ -5453,11 +5453,11 @@ expr_code_doover:
       testcase( isTrue && bNormal);
       testcase( !isTrue && bNormal);
       sqlite3VdbeAddOp4Int(v, OP_IsTrue, r1, inReg, !isTrue, isTrue ^ bNormal);
-      break;
+      bha_nga;
     }
-    case TK_ISNULL:
-    case TK_NOTNULL: {
-      int addr;
+    pak_sa TK_ISNULL:
+    pak_sa TK_NOTNULL: {
+      จำนวนเต็ม addr;
       assert( TK_ISNULL==OP_IsNull );   testcase( op==TK_ISNULL );
       assert( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
       sqlite3VdbeAddOp2(v, OP_Integer, 1, target);
@@ -5468,44 +5468,44 @@ expr_code_doover:
       VdbeCoverageIf(v, op==TK_NOTNULL);
       sqlite3VdbeAddOp2(v, OP_Integer, 0, target);
       sqlite3VdbeJumpHere(v, addr);
-      break;
+      bha_nga;
     }
-    case TK_AGG_FUNCTION: {
+    pak_sa TK_AGG_FUNCTION: {
       AggInfo *pInfo = pExpr->pAggInfo;
-      if( pInfo==0
+      ถ้า( pInfo==0
        || NEVER(pExpr->iAgg<0)
        || NEVER(pExpr->iAgg>=pInfo->nFunc)
       ){
         assert( !ExprHasProperty(pExpr, EP_IntValue) );
         sqlite3ErrorMsg(pParse, "misuse of aggregate: %#T()", pExpr);
-      }else{
-        return AggInfoFuncReg(pInfo, pExpr->iAgg);
+      }มิฉะนั้น{
+        คืน AggInfoFuncReg(pInfo, pExpr->iAgg);
       }
-      break;
+      bha_nga;
     }
-    case TK_FUNCTION: {
+    pak_sa TK_FUNCTION: {
       ExprList *pFarg;       /* List of function arguments */
-      int nFarg;             /* Number of function arguments */
+      จำนวนเต็ม nFarg;             /* Number of function arguments */
       FuncDef *pDef;         /* The function definition object */
-      const char *zId;       /* The function name */
+      const var_na *zId;       /* The function name */
       u32 constMask = 0;     /* Mask of function arguments that are constant */
-      int i;                 /* Loop counter */
+      จำนวนเต็ม i;                 /* Loop counter */
       sqlite3 *db = pParse->db;  /* The database connection */
       u8 enc = ENC(db);      /* The text encoding used by this database */
       CollSeq *pColl = 0;    /* A collating sequence */
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( ExprHasProperty(pExpr, EP_WinFunc) ){
-        return pExpr->y.pWin->regResult;
+      ถ้า( ExprHasProperty(pExpr, EP_WinFunc) ){
+        คืน pExpr->y.pWin->regResult;
       }
 #endif
 
-      if( ConstFactorOk(pParse)
+      ถ้า( ConstFactorOk(pParse)
        && sqlite3ExprIsConstantNotJoin(pParse,pExpr)
       ){
         /* SQL functions can be expensive. So try to avoid running them
         ** multiple times if we know they always give the same result */
-        return sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
+        คืน sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
       }
       assert( !ExprHasProperty(pExpr, EP_TokenOnly) );
       assert( ExprUseXList(pExpr) );
@@ -5515,42 +5515,42 @@ expr_code_doover:
       zId = pExpr->u.zToken;
       pDef = sqlite3FindFunction(db, zId, nFarg, enc, 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-      if( pDef==0 && pParse->explain ){
+      ถ้า( pDef==0 && pParse->explain ){
         pDef = sqlite3FindFunction(db, "unknown", nFarg, enc, 0);
       }
 #endif
-      if( pDef==0
+      ถ้า( pDef==0
        || pDef->xFinalize!=0
        || ((pDef->funcFlags & SQLITE_FUNC_INTERNAL)!=0 &&
            !pParse->nested &&
            (db->mDbFlags & DBFLAG_InternalFunc)==0)
       ){
         sqlite3ErrorMsg(pParse, "unknown function: %#T()", pExpr);
-        break;
+        bha_nga;
       }
-      if( (pDef->funcFlags & SQLITE_FUNC_INLINE)!=0 && ALWAYS(pFarg!=0) ){
+      ถ้า( (pDef->funcFlags & SQLITE_FUNC_INLINE)!=0 && ALWAYS(pFarg!=0) ){
         assert( (pDef->funcFlags & SQLITE_FUNC_UNSAFE)==0 );
         assert( (pDef->funcFlags & SQLITE_FUNC_DIRECT)==0 );
-        return exprCodeInlineFunction(pParse, pFarg,
+        คืน exprCodeInlineFunction(pParse, pFarg,
              SQLITE_PTR_TO_INT(pDef->pUserData), target);
-      }else if( pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE) ){
+      }มิฉะนั้น ถ้า( pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE) ){
         sqlite3ExprFunctionUsable(pParse, pExpr, pDef);
       }
 
-      for(i=0; i<nFarg; i++){
-        if( i<32 && sqlite3ExprIsConstant(pParse, pFarg->a[i].pExpr) ){
+      สำหรับ(i=0; i<nFarg; i++){
+        ถ้า( i<32 && sqlite3ExprIsConstant(pParse, pFarg->a[i].pExpr) ){
           testcase( i==31 );
           constMask |= MASKBIT32(i);
         }
-        if( (pDef->funcFlags & SQLITE_FUNC_NEEDCOLL)!=0 && !pColl ){
+        ถ้า( (pDef->funcFlags & SQLITE_FUNC_NEEDCOLL)!=0 && !pColl ){
           pColl = sqlite3ExprCollSeq(pParse, pFarg->a[i].pExpr);
         }
       }
-      if( pFarg ){
-        if( constMask ){
+      ถ้า( pFarg ){
+        ถ้า( constMask ){
           r1 = pParse->nMem+1;
           pParse->nMem += nFarg;
-        }else{
+        }มิฉะนั้น{
           r1 = sqlite3GetTempRange(pParse, nFarg);
         }
 
@@ -5559,12 +5559,12 @@ expr_code_doover:
         ** or OPFLAG_TYPEOFARG or OPFLAG_BYTELENARG respectively, to avoid
         ** unnecessary data loading.
         */
-        if( (pDef->funcFlags & (SQLITE_FUNC_LENGTH|SQLITE_FUNC_TYPEOF))!=0 ){
+        ถ้า( (pDef->funcFlags & (SQLITE_FUNC_LENGTH|SQLITE_FUNC_TYPEOF))!=0 ){
           u8 exprOp;
           assert( nFarg==1 );
           assert( pFarg->a[0].pExpr!=0 );
           exprOp = pFarg->a[0].pExpr->op;
-          if( exprOp==TK_COLUMN || exprOp==TK_AGG_COLUMN ){
+          ถ้า( exprOp==TK_COLUMN || exprOp==TK_AGG_COLUMN ){
             assert( SQLITE_FUNC_LENGTH==OPFLAG_LENGTHARG );
             assert( SQLITE_FUNC_TYPEOF==OPFLAG_TYPEOFARG );
             assert( SQLITE_FUNC_BYTELEN==OPFLAG_BYTELENARG );
@@ -5577,7 +5577,7 @@ expr_code_doover:
         }
 
         sqlite3ExprCodeExprList(pParse, pFarg, r1, 0, SQLITE_ECEL_FACTOR);
-      }else{
+      }มิฉะนั้น{
         r1 = 0;
       }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
@@ -5593,70 +5593,70 @@ expr_code_doover:
       ** "glob(B,A).  We want to use the A in "A glob B" to test
       ** for function overloading.  But we use the B term in "glob(B,A)".
       */
-      if( nFarg>=2 && ExprHasProperty(pExpr, EP_InfixFunc) ){
+      ถ้า( nFarg>=2 && ExprHasProperty(pExpr, EP_InfixFunc) ){
         pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[1].pExpr);
-      }else if( nFarg>0 ){
+      }มิฉะนั้น ถ้า( nFarg>0 ){
         pDef = sqlite3VtabOverloadFunction(db, pDef, nFarg, pFarg->a[0].pExpr);
       }
 #endif
-      if( pDef->funcFlags & SQLITE_FUNC_NEEDCOLL ){
-        if( !pColl ) pColl = db->pDfltColl;
-        sqlite3VdbeAddOp4(v, OP_CollSeq, 0, 0, 0, (char *)pColl, P4_COLLSEQ);
+      ถ้า( pDef->funcFlags & SQLITE_FUNC_NEEDCOLL ){
+        ถ้า( !pColl ) pColl = db->pDfltColl;
+        sqlite3VdbeAddOp4(v, OP_CollSeq, 0, 0, 0, (var_na *)pColl, P4_COLLSEQ);
       }
       sqlite3VdbeAddFunctionCall(pParse, constMask, r1, target, nFarg,
                                  pDef, pExpr->op2);
-      if( nFarg ){
-        if( constMask==0 ){
+      ถ้า( nFarg ){
+        ถ้า( constMask==0 ){
           sqlite3ReleaseTempRange(pParse, r1, nFarg);
-        }else{
+        }มิฉะนั้น{
           sqlite3VdbeReleaseRegisters(pParse, r1, nFarg, constMask, 1);
         }
       }
-      return target;
+      คืน target;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_EXISTS:
-    case TK_SELECT: {
-      int nCol;
+    pak_sa TK_EXISTS:
+    pak_sa TK_SELECT: {
+      จำนวนเต็ม nCol;
       testcase( op==TK_EXISTS );
       testcase( op==TK_SELECT );
-      if( pParse->db->mallocFailed ){
-        return 0;
-      }else if( op==TK_SELECT
+      ถ้า( pParse->db->mallocFailed ){
+        คืน 0;
+      }มิฉะนั้น ถ้า( op==TK_SELECT
              && ALWAYS( ExprUseXSelect(pExpr) )
              && (nCol = pExpr->x.pSelect->pEList->nExpr)!=1
       ){
         sqlite3SubselectError(pParse, nCol, 1);
-      }else{
-        return sqlite3CodeSubselect(pParse, pExpr);
+      }มิฉะนั้น{
+        คืน sqlite3CodeSubselect(pParse, pExpr);
       }
-      break;
+      bha_nga;
     }
-    case TK_SELECT_COLUMN: {
-      int n;
+    pak_sa TK_SELECT_COLUMN: {
+      จำนวนเต็ม n;
       Expr *pLeft = pExpr->pLeft;
-      if( pLeft->iTable==0 || pParse->withinRJSubrtn > pLeft->op2 ){
+      ถ้า( pLeft->iTable==0 || pParse->withinRJSubrtn > pLeft->op2 ){
         pLeft->iTable = sqlite3CodeSubselect(pParse, pLeft);
         pLeft->op2 = pParse->withinRJSubrtn;
       }
       assert( pLeft->op==TK_SELECT || pLeft->op==TK_ERROR );
       n = sqlite3ExprVectorSize(pLeft);
-      if( pExpr->iTable!=n ){
+      ถ้า( pExpr->iTable!=n ){
         sqlite3ErrorMsg(pParse, "%d columns assigned %d values",
                                 pExpr->iTable, n);
       }
-      return pLeft->iTable + pExpr->iColumn;
+      คืน pLeft->iTable + pExpr->iColumn;
     }
-    case TK_IN: {
-      int destIfFalse = sqlite3VdbeMakeLabel(pParse);
-      int destIfNull = sqlite3VdbeMakeLabel(pParse);
+    pak_sa TK_IN: {
+      จำนวนเต็ม destIfFalse = sqlite3VdbeMakeLabel(pParse);
+      จำนวนเต็ม destIfNull = sqlite3VdbeMakeLabel(pParse);
       sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       sqlite3ExprCodeIN(pParse, pExpr, destIfFalse, destIfNull);
       sqlite3VdbeAddOp2(v, OP_Integer, 1, target);
       sqlite3VdbeResolveLabel(v, destIfFalse);
       sqlite3VdbeAddOp2(v, OP_AddImm, target, 0);
       sqlite3VdbeResolveLabel(v, destIfNull);
-      return target;
+      คืน target;
     }
 #endif /* SQLITE_OMIT_SUBQUERY */
 
@@ -5672,12 +5672,12 @@ expr_code_doover:
     ** Y is stored in pExpr->pList->a[0].pExpr.
     ** Z is stored in pExpr->pList->a[1].pExpr.
     */
-    case TK_BETWEEN: {
+    pak_sa TK_BETWEEN: {
       exprCodeBetween(pParse, pExpr, target, 0, 0);
-      return target;
+      คืน target;
     }
-    case TK_COLLATE: {
-      if( !ExprHasProperty(pExpr, EP_Collate) ){
+    pak_sa TK_COLLATE: {
+      ถ้า( !ExprHasProperty(pExpr, EP_Collate) ){
         /* A TK_COLLATE Expr node without the EP_Collate tag is a so-called
         ** "SOFT-COLLATE" that is added to constraints that are pushed down
         ** from outer queries into sub-queries by the WHERE-clause push-down
@@ -5687,19 +5687,19 @@ expr_code_doover:
         assert( pExpr->pLeft );
         sqlite3ExprCode(pParse, pExpr->pLeft, target);
         sqlite3VdbeAddOp1(v, OP_ClrSubtype, target);
-        return target;
-      }else{
+        คืน target;
+      }มิฉะนั้น{
         pExpr = pExpr->pLeft;
         goto expr_code_doover; /* 2018-04-28: Prevent deep recursion. */
       }
     }
-    case TK_SPAN:
-    case TK_UPLUS: {
+    pak_sa TK_SPAN:
+    pak_sa TK_UPLUS: {
       pExpr = pExpr->pLeft;
       goto expr_code_doover; /* 2018-04-28: Prevent deep recursion. OSSFuzz. */
     }
 
-    case TK_TRIGGER: {
+    pak_sa TK_TRIGGER: {
       /* If the opcode is TK_TRIGGER, then the expression is a reference
       ** to a column in the new.* or old.* pseudo-tables available to
       ** trigger programs. In this case Expr.iTable is set to 1 for the
@@ -5726,8 +5726,8 @@ expr_code_doover:
       **   p1==2   ->    old.b         p1==5   ->    new.b      
       */
       Table *pTab;
-      int iCol;
-      int p1;
+      จำนวนเต็ม iCol;
+      จำนวนเต็ม p1;
 
       assert( ExprUseYTab(pExpr) );
       pTab = pExpr->y.pTab;
@@ -5752,16 +5752,16 @@ expr_code_doover:
       **
       ** EVIDENCE-OF: R-60985-57662 SQLite will convert the value back to
       ** floating point when extracting it from the record.  */
-      if( iCol>=0 && pTab->aCol[iCol].affinity==SQLITE_AFF_REAL ){
+      ถ้า( iCol>=0 && pTab->aCol[iCol].affinity==SQLITE_AFF_REAL ){
         sqlite3VdbeAddOp1(v, OP_RealAffinity, target);
       }
 #endif
-      break;
+      bha_nga;
     }
 
-    case TK_VECTOR: {
+    pak_sa TK_VECTOR: {
       sqlite3ErrorMsg(pParse, "row value misused");
-      break;
+      bha_nga;
     }
 
     /* TK_IF_NULL_ROW Expr nodes are inserted ahead of expressions
@@ -5770,22 +5770,22 @@ expr_code_doover:
     ** The expression is only evaluated if that table is not currently
     ** on a LEFT JOIN NULL row.
     */
-    case TK_IF_NULL_ROW: {
-      int addrINR;
+    pak_sa TK_IF_NULL_ROW: {
+      จำนวนเต็ม addrINR;
       u8 okConstFactor = pParse->okConstFactor;
       AggInfo *pAggInfo = pExpr->pAggInfo;
-      if( pAggInfo ){
+      ถ้า( pAggInfo ){
         assert( pExpr->iAgg>=0 && pExpr->iAgg<pAggInfo->nColumn );
-        if( !pAggInfo->directMode ){
+        ถ้า( !pAggInfo->directMode ){
           inReg = AggInfoColumnReg(pAggInfo, pExpr->iAgg);
-          break;
+          bha_nga;
         }
-        if( pExpr->pAggInfo->useSortingIdx ){
+        ถ้า( pExpr->pAggInfo->useSortingIdx ){
           sqlite3VdbeAddOp3(v, OP_Column, pAggInfo->sortingIdxPTab,
                             pAggInfo->aCol[pExpr->iAgg].iSorterColumn,
                             target);
           inReg = target;
-          break;
+          bha_nga;
         }
       }
       addrINR = sqlite3VdbeAddOp3(v, OP_IfNullRow, pExpr->iTable, 0, target);
@@ -5801,7 +5801,7 @@ expr_code_doover:
       assert( target==inReg );
       pParse->okConstFactor = okConstFactor;
       sqlite3VdbeJumpHere(v, addrINR);
-      break;
+      bha_nga;
     }
 
     /*
@@ -5825,13 +5825,13 @@ expr_code_doover:
     ** or if there is no matching Ei, the ELSE term Y, or if there is
     ** no ELSE term, NULL.
     */
-    case TK_CASE: {
-      int endLabel;                     /* GOTO label for end of CASE stmt */
-      int nextCase;                     /* GOTO label for next WHEN clause */
-      int nExpr;                        /* 2x number of WHEN terms */
-      int i;                            /* Loop counter */
+    pak_sa TK_CASE: {
+      จำนวนเต็ม endLabel;                     /* GOTO label for end of CASE stmt */
+      จำนวนเต็ม nextCase;                     /* GOTO label for next WHEN clause */
+      จำนวนเต็ม nExpr;                        /* 2x number of WHEN terms */
+      จำนวนเต็ม i;                            /* Loop counter */
       ExprList *pEList;                 /* List of WHEN terms */
-      struct ExprList_item *aListelem;  /* Array of WHEN terms */
+      sa_nracanaa ExprList_item *aListelem;  /* Array of WHEN terms */
       Expr opCompare;                   /* The X==Ei expression */
       Expr *pX;                         /* The X expression */
       Expr *pTest = 0;                  /* X==Ei (form A) or just Ei (form B) */
@@ -5844,16 +5844,16 @@ expr_code_doover:
       aListelem = pEList->a;
       nExpr = pEList->nExpr;
       endLabel = sqlite3VdbeMakeLabel(pParse);
-      if( (pX = pExpr->pLeft)!=0 ){
+      ถ้า( (pX = pExpr->pLeft)!=0 ){
         pDel = sqlite3ExprDup(db, pX, 0);
-        if( db->mallocFailed ){
+        ถ้า( db->mallocFailed ){
           sqlite3ExprDelete(db, pDel);
-          break;
+          bha_nga;
         }
         testcase( pX->op==TK_COLUMN );
         sqlite3ExprToRegister(pDel, exprCodeVector(pParse, pDel, &regFree1));
         testcase( regFree1==0 );
-        memset(&opCompare, 0, sizeof(opCompare));
+        memset(&opCompare, 0, parimaa_na(opCompare));
         opCompare.op = TK_EQ;
         opCompare.pLeft = pDel;
         pTest = &opCompare;
@@ -5863,11 +5863,11 @@ expr_code_doover:
         ** purposes and possibly overwritten.  */
         regFree1 = 0;
       }
-      for(i=0; i<nExpr-1; i=i+2){
-        if( pX ){
+      สำหรับ(i=0; i<nExpr-1; i=i+2){
+        ถ้า( pX ){
           assert( pTest!=0 );
           opCompare.pRight = aListelem[i].pExpr;
-        }else{
+        }มิฉะนั้น{
           pTest = aListelem[i].pExpr;
         }
         nextCase = sqlite3VdbeMakeLabel(pParse);
@@ -5878,48 +5878,48 @@ expr_code_doover:
         sqlite3VdbeGoto(v, endLabel);
         sqlite3VdbeResolveLabel(v, nextCase);
       }
-      if( (nExpr&1)!=0 ){
+      ถ้า( (nExpr&1)!=0 ){
         sqlite3ExprCode(pParse, pEList->a[nExpr-1].pExpr, target);
-      }else{
+      }มิฉะนั้น{
         sqlite3VdbeAddOp2(v, OP_Null, 0, target);
       }
       sqlite3ExprDelete(db, pDel);
       setDoNotMergeFlagOnCopy(v);
       sqlite3VdbeResolveLabel(v, endLabel);
-      break;
+      bha_nga;
     }
 #ifndef SQLITE_OMIT_TRIGGER
-    case TK_RAISE: {
+    pak_sa TK_RAISE: {
       assert( pExpr->affExpr==OE_Rollback
            || pExpr->affExpr==OE_Abort
            || pExpr->affExpr==OE_Fail
            || pExpr->affExpr==OE_Ignore
       );
-      if( !pParse->pTriggerTab && !pParse->nested ){
+      ถ้า( !pParse->pTriggerTab && !pParse->nested ){
         sqlite3ErrorMsg(pParse,
                        "RAISE() may only be used within a trigger-program");
-        return 0;
+        คืน 0;
       }
-      if( pExpr->affExpr==OE_Abort ){
+      ถ้า( pExpr->affExpr==OE_Abort ){
         sqlite3MayAbort(pParse);
       }
       assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      if( pExpr->affExpr==OE_Ignore ){
+      ถ้า( pExpr->affExpr==OE_Ignore ){
         sqlite3VdbeAddOp2(v, OP_Halt, SQLITE_OK, OE_Ignore);
         VdbeCoverage(v);
-      }else{
+      }มิฉะนั้น{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         sqlite3VdbeAddOp3(v, OP_Halt, 
              pParse->pTriggerTab ? SQLITE_CONSTRAINT_TRIGGER : SQLITE_ERROR,
              pExpr->affExpr, r1);
       }
-      break;
+      bha_nga;
     }
 #endif
   }
   sqlite3ReleaseTempReg(pParse, regFree1);
   sqlite3ReleaseTempReg(pParse, regFree2);
-  return inReg;
+  คืน inReg;
 }
 
 /*
@@ -5939,51 +5939,51 @@ expr_code_doover:
 ** are factored out into the initialization section at the end of the
 ** prepared statement.
 */
-int sqlite3ExprCodeRunJustOnce(
+จำนวนเต็ม sqlite3ExprCodeRunJustOnce(
   Parse *pParse,    /* Parsing context */
   Expr *pExpr,      /* The expression to code when the VDBE initializes */
-  int regDest       /* Store the value in this register */
+  จำนวนเต็ม regDest       /* Store the value in this register */
 ){
   ExprList *p;
   assert( ConstFactorOk(pParse) );
   assert( regDest!=0 );
   p = pParse->pConstExpr;
-  if( regDest<0 && p ){
-    struct ExprList_item *pItem;
-    int i;
-    for(pItem=p->a, i=p->nExpr; i>0; pItem++, i--){
-      if( pItem->fg.reusable
+  ถ้า( regDest<0 && p ){
+    sa_nracanaa ExprList_item *pItem;
+    จำนวนเต็ม i;
+    สำหรับ(pItem=p->a, i=p->nExpr; i>0; pItem++, i--){
+      ถ้า( pItem->fg.reusable
        && sqlite3ExprCompare(0,pItem->pExpr,pExpr,-1)==0
       ){
-        return pItem->u.iConstExprReg;
+        คืน pItem->u.iConstExprReg;
       }
     }
   }
   pExpr = sqlite3ExprDup(pParse->db, pExpr, 0);
-  if( pExpr!=0 && ExprHasProperty(pExpr, EP_HasFunc) ){
+  ถ้า( pExpr!=0 && ExprHasProperty(pExpr, EP_HasFunc) ){
     Vdbe *v = pParse->pVdbe;
-    int addr;
+    จำนวนเต็ม addr;
     assert( v );
     addr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
     pParse->okConstFactor = 0;
-    if( !pParse->db->mallocFailed ){
-      if( regDest<0 ) regDest = ++pParse->nMem;
+    ถ้า( !pParse->db->mallocFailed ){
+      ถ้า( regDest<0 ) regDest = ++pParse->nMem;
       sqlite3ExprCode(pParse, pExpr, regDest);
     }
     pParse->okConstFactor = 1;
     sqlite3ExprDelete(pParse->db, pExpr);
     sqlite3VdbeJumpHere(v, addr);
-  }else{
+  }มิฉะนั้น{
     p = sqlite3ExprListAppend(pParse, p, pExpr);
-    if( p ){
-       struct ExprList_item *pItem = &p->a[p->nExpr-1];
+    ถ้า( p ){
+       sa_nracanaa ExprList_item *pItem = &p->a[p->nExpr-1];
        pItem->fg.reusable = regDest<0;
-       if( regDest<0 ) regDest = ++pParse->nMem;
+       ถ้า( regDest<0 ) regDest = ++pParse->nMem;
        pItem->u.iConstExprReg = regDest;
     }
     pParse->pConstExpr = p;
   }
-  return regDest;
+  คืน regDest;
 }
 
 /*
@@ -5992,12 +5992,12 @@ int sqlite3ExprCodeRunJustOnce(
 */
 SQLITE_NOINLINE void sqlite3ExprNullRegisterRange(
   Parse *pParse,   /* Parsing context */
-  int iReg,        /* First register to set to NULL */
-  int nReg         /* Number of sequential registers to NULL out */
+  จำนวนเต็ม iReg,        /* First register to set to NULL */
+  จำนวนเต็ม nReg         /* Number of sequential registers to NULL out */
 ){
   u8 okConstFactor = pParse->okConstFactor;
   Expr t;
-  memset(&t, 0, sizeof(t));
+  memset(&t, 0, parimaa_na(t));
   t.op = TK_NULLS;
   t.y.nReg = nReg;
   pParse->okConstFactor = 1;
@@ -6018,27 +6018,27 @@ SQLITE_NOINLINE void sqlite3ExprNullRegisterRange(
 ** code to fill the register in the initialization section of the
 ** VDBE program, in order to factor it out of the evaluation loop.
 */
-int sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, int *pReg){
-  int r2;
+จำนวนเต็ม sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, จำนวนเต็ม *pReg){
+  จำนวนเต็ม r2;
   pExpr = sqlite3ExprSkipCollateAndLikely(pExpr);
-  if( ConstFactorOk(pParse)
+  ถ้า( ConstFactorOk(pParse)
    && ALWAYS(pExpr!=0)
    && pExpr->op!=TK_REGISTER
    && sqlite3ExprIsConstantNotJoin(pParse, pExpr)
   ){
     *pReg  = 0;
     r2 = sqlite3ExprCodeRunJustOnce(pParse, pExpr, -1);
-  }else{
-    int r1 = sqlite3GetTempReg(pParse);
+  }มิฉะนั้น{
+    จำนวนเต็ม r1 = sqlite3GetTempReg(pParse);
     r2 = sqlite3ExprCodeTarget(pParse, pExpr, r1);
-    if( r2==r1 ){
+    ถ้า( r2==r1 ){
       *pReg = r1;
-    }else{
+    }มิฉะนั้น{
       sqlite3ReleaseTempReg(pParse, r1);
       *pReg = 0;
     }
   }
-  return r2;
+  คืน r2;
 }
 
 /*
@@ -6046,23 +6046,23 @@ int sqlite3ExprCodeTemp(Parse *pParse, Expr *pExpr, int *pReg){
 ** results in register target.  The results are guaranteed to appear
 ** in register target.
 */
-void sqlite3ExprCode(Parse *pParse, Expr *pExpr, int target){
-  int inReg;
+void sqlite3ExprCode(Parse *pParse, Expr *pExpr, จำนวนเต็ม target){
+  จำนวนเต็ม inReg;
 
   assert( pExpr==0 || !ExprHasVVAProperty(pExpr,EP_Immutable) );
   assert( target>0 && target<=pParse->nMem );
   assert( pParse->pVdbe!=0 || pParse->db->mallocFailed );
-  if( pParse->pVdbe==0 ) return;
+  ถ้า( pParse->pVdbe==0 ) คืน;
   inReg = sqlite3ExprCodeTarget(pParse, pExpr, target);
-  if( inReg!=target ){
+  ถ้า( inReg!=target ){
     u8 op;
     Expr *pX = sqlite3ExprSkipCollateAndLikely(pExpr);
     testcase( pX!=pExpr );
-    if( ALWAYS(pX)
+    ถ้า( ALWAYS(pX)
      && (ExprHasProperty(pX,EP_Subquery) || pX->op==TK_REGISTER)
     ){
       op = OP_Copy;
-    }else{
+    }มิฉะนั้น{
       op = OP_SCopy;
     }
     sqlite3VdbeAddOp2(pParse->pVdbe, op, inReg, target);
@@ -6074,10 +6074,10 @@ void sqlite3ExprCode(Parse *pParse, Expr *pExpr, int target){
 ** sqlite3ExprCode().  This routine works just like sqlite3ExprCode()
 ** except that the input expression is guaranteed to be unchanged.
 */
-void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, int target){
+void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, จำนวนเต็ม target){
   sqlite3 *db = pParse->db;
   pExpr = sqlite3ExprDup(db, pExpr, 0);
-  if( !db->mallocFailed ) sqlite3ExprCode(pParse, pExpr, target);
+  ถ้า( !db->mallocFailed ) sqlite3ExprCode(pParse, pExpr, target);
   sqlite3ExprDelete(db, pExpr);
 }
 
@@ -6087,10 +6087,10 @@ void sqlite3ExprCodeCopy(Parse *pParse, Expr *pExpr, int target){
 ** in register target.  If the expression is constant, then this routine
 ** might choose to code the expression at initialization time.
 */
-void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, int target){
-  if( pParse->okConstFactor && sqlite3ExprIsConstantNotJoin(pParse,pExpr) ){
+void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, จำนวนเต็ม target){
+  ถ้า( pParse->okConstFactor && sqlite3ExprIsConstantNotJoin(pParse,pExpr) ){
     sqlite3ExprCodeRunJustOnce(pParse, pExpr, target);
-  }else{
+  }มิฉะนั้น{
     sqlite3ExprCodeCopy(pParse, pExpr, target);
   }
 }
@@ -6115,59 +6115,59 @@ void sqlite3ExprCodeFactorable(Parse *pParse, Expr *pExpr, int target){
 ** If SQLITE_ECEL_OMITREF is also set, then the values with u.x.iOrderByCol>0
 ** are simply omitted rather than being copied from srcReg.
 */
-int sqlite3ExprCodeExprList(
+จำนวนเต็ม sqlite3ExprCodeExprList(
   Parse *pParse,     /* Parsing context */
   ExprList *pList,   /* The expression list to be coded */
-  int target,        /* Where to write results */
-  int srcReg,        /* Source registers if SQLITE_ECEL_REF */
+  จำนวนเต็ม target,        /* Where to write results */
+  จำนวนเต็ม srcReg,        /* Source registers if SQLITE_ECEL_REF */
   u8 flags           /* SQLITE_ECEL_* flags */
 ){
-  struct ExprList_item *pItem;
-  int i, j, n;
+  sa_nracanaa ExprList_item *pItem;
+  จำนวนเต็ม i, j, n;
   u8 copyOp = (flags & SQLITE_ECEL_DUP) ? OP_Copy : OP_SCopy;
   Vdbe *v = pParse->pVdbe;
   assert( pList!=0 );
   assert( target>0 );
   assert( pParse->pVdbe!=0 );  /* Never gets this far otherwise */
   n = pList->nExpr;
-  if( !ConstFactorOk(pParse) ) flags &= ~SQLITE_ECEL_FACTOR;
-  for(pItem=pList->a, i=0; i<n; i++, pItem++){
+  ถ้า( !ConstFactorOk(pParse) ) flags &= ~SQLITE_ECEL_FACTOR;
+  สำหรับ(pItem=pList->a, i=0; i<n; i++, pItem++){
     Expr *pExpr = pItem->pExpr;
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( pItem->fg.bSorterRef ){
+    ถ้า( pItem->fg.bSorterRef ){
       i--;
       n--;
-    }else
+    }มิฉะนั้น
 #endif
-    if( (flags & SQLITE_ECEL_REF)!=0 && (j = pItem->u.x.iOrderByCol)>0 ){
-      if( flags & SQLITE_ECEL_OMITREF ){
+    ถ้า( (flags & SQLITE_ECEL_REF)!=0 && (j = pItem->u.x.iOrderByCol)>0 ){
+      ถ้า( flags & SQLITE_ECEL_OMITREF ){
         i--;
         n--;
-      }else{
+      }มิฉะนั้น{
         sqlite3VdbeAddOp2(v, copyOp, j+srcReg-1, target+i);
       }
-    }else if( (flags & SQLITE_ECEL_FACTOR)!=0
+    }มิฉะนั้น ถ้า( (flags & SQLITE_ECEL_FACTOR)!=0
            && sqlite3ExprIsConstantNotJoin(pParse,pExpr)
     ){
       sqlite3ExprCodeRunJustOnce(pParse, pExpr, target+i);
-    }else{
-      int inReg = sqlite3ExprCodeTarget(pParse, pExpr, target+i);
-      if( inReg!=target+i ){
+    }มิฉะนั้น{
+      จำนวนเต็ม inReg = sqlite3ExprCodeTarget(pParse, pExpr, target+i);
+      ถ้า( inReg!=target+i ){
         VdbeOp *pOp;
-        if( copyOp==OP_Copy
+        ถ้า( copyOp==OP_Copy
          && (pOp=sqlite3VdbeGetLastOp(v))->opcode==OP_Copy
          && pOp->p1+pOp->p3+1==inReg
          && pOp->p2+pOp->p3+1==target+i
          && pOp->p5==0  /* The do-not-merge flag must be clear */
         ){
           pOp->p3++;
-        }else{
+        }มิฉะนั้น{
           sqlite3VdbeAddOp2(v, copyOp, inReg, target+i);
         }
       }
     }
   }
-  return n;
+  คืน n;
 }
 
 /*
@@ -6193,24 +6193,24 @@ int sqlite3ExprCodeExprList(
 static void exprCodeBetween(
   Parse *pParse,    /* Parsing and code generating context */
   Expr *pExpr,      /* The BETWEEN expression */
-  int dest,         /* Jump destination or storage location */
-  void (*xJump)(Parse*,Expr*,int,int), /* Action to take */
-  int jumpIfNull    /* Take the jump if the BETWEEN is NULL */
+  จำนวนเต็ม dest,         /* Jump destination or storage location */
+  void (*xJump)(Parse*,Expr*,จำนวนเต็ม,จำนวนเต็ม), /* Action to take */
+  จำนวนเต็ม jumpIfNull    /* Take the jump if the BETWEEN is NULL */
 ){
   Expr exprAnd;     /* The AND operator in  x>=y AND x<=z  */
   Expr compLeft;    /* The  x>=y  term */
   Expr compRight;   /* The  x<=z  term */
-  int regFree1 = 0; /* Temporary use register */
+  จำนวนเต็ม regFree1 = 0; /* Temporary use register */
   Expr *pDel = 0;
   sqlite3 *db = pParse->db;
 
-  memset(&compLeft, 0, sizeof(Expr));
-  memset(&compRight, 0, sizeof(Expr));
-  memset(&exprAnd, 0, sizeof(Expr));
+  memset(&compLeft, 0, parimaa_na(Expr));
+  memset(&compRight, 0, parimaa_na(Expr));
+  memset(&exprAnd, 0, parimaa_na(Expr));
 
   assert( ExprUseXList(pExpr) );
   pDel = sqlite3ExprDup(db, pExpr->pLeft, 0);
-  if( db->mallocFailed==0 ){
+  ถ้า( db->mallocFailed==0 ){
     exprAnd.op = TK_AND;
     exprAnd.pLeft = &compLeft;
     exprAnd.pRight = &compRight;
@@ -6221,9 +6221,9 @@ static void exprCodeBetween(
     compRight.pLeft = pDel;
     compRight.pRight = pExpr->x.pList->a[1].pExpr;
     sqlite3ExprToRegister(pDel, exprCodeVector(pParse, pDel, &regFree1));
-    if( xJump ){
+    ถ้า( xJump ){
       xJump(pParse, &exprAnd, dest, jumpIfNull);
-    }else{
+    }มิฉะนั้น{
       /* Mark the expression is being from the ON or USING clause of a join
       ** so that the sqlite3ExprCodeTarget() routine will not attempt to move
       ** it into the Parse.pConstExpr list.  We should use a new bit for this,
@@ -6262,89 +6262,89 @@ static void exprCodeBetween(
 ** the make process cause these values to align.  Assert()s in the code
 ** below verify that the numbers are aligned correctly.
 */
-void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
+void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, จำนวนเต็ม dest, จำนวนเต็ม jumpIfNull){
   Vdbe *v = pParse->pVdbe;
-  int op = 0;
-  int regFree1 = 0;
-  int regFree2 = 0;
-  int r1, r2;
+  จำนวนเต็ม op = 0;
+  จำนวนเต็ม regFree1 = 0;
+  จำนวนเต็ม regFree2 = 0;
+  จำนวนเต็ม r1, r2;
 
   assert( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
-  if( NEVER(v==0) )     return;  /* Existence of VDBE checked by caller */
-  if( NEVER(pExpr==0) ) return;  /* No way this can happen */
+  ถ้า( NEVER(v==0) )     คืน;  /* Existence of VDBE checked by caller */
+  ถ้า( NEVER(pExpr==0) ) คืน;  /* No way this can happen */
   assert( !ExprHasVVAProperty(pExpr, EP_Immutable) );
   op = pExpr->op;
   switch( op ){
-    case TK_AND:
-    case TK_OR: {
+    pak_sa TK_AND:
+    pak_sa TK_OR: {
       Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-      if( pAlt!=pExpr ){
+      ถ้า( pAlt!=pExpr ){
         sqlite3ExprIfTrue(pParse, pAlt, dest, jumpIfNull);
-      }else{
+      }มิฉะนั้น{
         Expr *pFirst, *pSecond;
-        if( exprEvalRhsFirst(pExpr) ){
+        ถ้า( exprEvalRhsFirst(pExpr) ){
           pFirst = pExpr->pRight;
           pSecond = pExpr->pLeft;
-        }else{
+        }มิฉะนั้น{
           pFirst = pExpr->pLeft;
           pSecond = pExpr->pRight;
         }
-        if( op==TK_AND ){
-          int d2 = sqlite3VdbeMakeLabel(pParse);
+        ถ้า( op==TK_AND ){
+          จำนวนเต็ม d2 = sqlite3VdbeMakeLabel(pParse);
           testcase( jumpIfNull==0 );
           sqlite3ExprIfFalse(pParse, pFirst, d2,
                              jumpIfNull^SQLITE_JUMPIFNULL);
           sqlite3ExprIfTrue(pParse, pSecond, dest, jumpIfNull);
           sqlite3VdbeResolveLabel(v, d2);
-        }else{
+        }มิฉะนั้น{
           testcase( jumpIfNull==0 );
           sqlite3ExprIfTrue(pParse, pFirst, dest, jumpIfNull);
           sqlite3ExprIfTrue(pParse, pSecond, dest, jumpIfNull);
         }
       }
-      break;
+      bha_nga;
     }
-    case TK_NOT: {
+    pak_sa TK_NOT: {
       testcase( jumpIfNull==0 );
       sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest, jumpIfNull);
-      break;
+      bha_nga;
     }
-    case TK_TRUTH: {
-      int isNot;      /* IS NOT TRUE or IS NOT FALSE */
-      int isTrue;     /* IS TRUE or IS NOT TRUE */
+    pak_sa TK_TRUTH: {
+      จำนวนเต็ม isNot;      /* IS NOT TRUE or IS NOT FALSE */
+      จำนวนเต็ม isTrue;     /* IS TRUE or IS NOT TRUE */
       testcase( jumpIfNull==0 );
       isNot = pExpr->op2==TK_ISNOT;
       isTrue = sqlite3ExprTruthValue(pExpr->pRight);
       testcase( isTrue && isNot );
       testcase( !isTrue && isNot );
-      if( isTrue ^ isNot ){
+      ถ้า( isTrue ^ isNot ){
         sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest,
                           isNot ? SQLITE_JUMPIFNULL : 0);
-      }else{
+      }มิฉะนั้น{
         sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest,
                            isNot ? SQLITE_JUMPIFNULL : 0);
       }
-      break;
+      bha_nga;
     }
-    case TK_IS:
-    case TK_ISNOT:
+    pak_sa TK_IS:
+    pak_sa TK_ISNOT:
       testcase( op==TK_IS );
       testcase( op==TK_ISNOT );
       op = (op==TK_IS) ? TK_EQ : TK_NE;
       jumpIfNull = SQLITE_NULLEQ;
       /* no break */ deliberate_fall_through
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_NE:
-    case TK_EQ: {
-      int addrIsNull;
-      if( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
-      if( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
+    pak_sa TK_LT:
+    pak_sa TK_LE:
+    pak_sa TK_GT:
+    pak_sa TK_GE:
+    pak_sa TK_NE:
+    pak_sa TK_EQ: {
+      จำนวนเต็ม addrIsNull;
+      ถ้า( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
+      ถ้า( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
         addrIsNull = exprComputeOperands(pParse, pExpr,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
+      }มิฉะนั้น{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         addrIsNull = 0;
@@ -6363,56 +6363,56 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull!=SQLITE_NULLEQ);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
-        if( jumpIfNull ){
+      ถ้า( addrIsNull ){
+        ถ้า( jumpIfNull ){
           sqlite3VdbeChangeP2(v, addrIsNull, dest);
-        }else{
+        }มิฉะนั้น{
           sqlite3VdbeJumpHere(v, addrIsNull);
         }
       }
-      break;
+      bha_nga;
     }
-    case TK_ISNULL:
-    case TK_NOTNULL: {
+    pak_sa TK_ISNULL:
+    pak_sa TK_NOTNULL: {
       assert( TK_ISNULL==OP_IsNull );   testcase( op==TK_ISNULL );
       assert( TK_NOTNULL==OP_NotNull ); testcase( op==TK_NOTNULL );
       r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
       assert( regFree1==0 || regFree1==r1 );
-      if( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
+      ถ้า( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
       sqlite3VdbeAddOp2(v, op, r1, dest);
       VdbeCoverageIf(v, op==TK_ISNULL);
       VdbeCoverageIf(v, op==TK_NOTNULL);
-      break;
+      bha_nga;
     }
-    case TK_BETWEEN: {
+    pak_sa TK_BETWEEN: {
       testcase( jumpIfNull==0 );
       exprCodeBetween(pParse, pExpr, dest, sqlite3ExprIfTrue, jumpIfNull);
-      break;
+      bha_nga;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_IN: {
-      int destIfFalse = sqlite3VdbeMakeLabel(pParse);
-      int destIfNull = jumpIfNull ? dest : destIfFalse;
+    pak_sa TK_IN: {
+      จำนวนเต็ม destIfFalse = sqlite3VdbeMakeLabel(pParse);
+      จำนวนเต็ม destIfNull = jumpIfNull ? dest : destIfFalse;
       sqlite3ExprCodeIN(pParse, pExpr, destIfFalse, destIfNull);
       sqlite3VdbeGoto(v, dest);
       sqlite3VdbeResolveLabel(v, destIfFalse);
-      break;
+      bha_nga;
     }
 #endif
     default: {
     default_expr:
-      if( ExprAlwaysTrue(pExpr) ){
+      ถ้า( ExprAlwaysTrue(pExpr) ){
         sqlite3VdbeGoto(v, dest);
-      }else if( ExprAlwaysFalse(pExpr) ){
+      }มิฉะนั้น ถ้า( ExprAlwaysFalse(pExpr) ){
         /* No-op */
-      }else{
+      }มิฉะนั้น{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr, &regFree1);
         sqlite3VdbeAddOp3(v, OP_If, r1, dest, jumpIfNull!=0);
         VdbeCoverage(v);
         testcase( regFree1==0 );
         testcase( jumpIfNull==0 );
       }
-      break;
+      bha_nga;
     }
   }
   sqlite3ReleaseTempReg(pParse, regFree1);
@@ -6428,16 +6428,16 @@ void sqlite3ExprIfTrue(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 ** jump if jumpIfNull is SQLITE_JUMPIFNULL or fall through if jumpIfNull
 ** is 0.
 */
-void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
+void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, จำนวนเต็ม dest, จำนวนเต็ม jumpIfNull){
   Vdbe *v = pParse->pVdbe;
-  int op = 0;
-  int regFree1 = 0;
-  int regFree2 = 0;
-  int r1, r2;
+  จำนวนเต็ม op = 0;
+  จำนวนเต็ม regFree1 = 0;
+  จำนวนเต็ม regFree2 = 0;
+  จำนวนเต็ม r1, r2;
 
   assert( jumpIfNull==SQLITE_JUMPIFNULL || jumpIfNull==0 );
-  if( NEVER(v==0) ) return; /* Existence of VDBE checked by caller */
-  if( pExpr==0 )    return;
+  ถ้า( NEVER(v==0) ) คืน; /* Existence of VDBE checked by caller */
+  ถ้า( pExpr==0 )    คืน;
   assert( !ExprHasVVAProperty(pExpr,EP_Immutable) );
 
   /* The value of pExpr->op and op are related as follows:
@@ -6472,26 +6472,26 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
   assert( pExpr->op!=TK_GE || op==OP_Lt );
 
   switch( pExpr->op ){
-    case TK_AND:
-    case TK_OR: {
+    pak_sa TK_AND:
+    pak_sa TK_OR: {
       Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-      if( pAlt!=pExpr ){
+      ถ้า( pAlt!=pExpr ){
         sqlite3ExprIfFalse(pParse, pAlt, dest, jumpIfNull);
-      }else{
+      }มิฉะนั้น{
         Expr *pFirst, *pSecond;
-        if( exprEvalRhsFirst(pExpr) ){
+        ถ้า( exprEvalRhsFirst(pExpr) ){
           pFirst = pExpr->pRight;
           pSecond = pExpr->pLeft;
-        }else{
+        }มิฉะนั้น{
           pFirst = pExpr->pLeft;
           pSecond = pExpr->pRight;
         }
-        if( pExpr->op==TK_AND ){
+        ถ้า( pExpr->op==TK_AND ){
           testcase( jumpIfNull==0 );
           sqlite3ExprIfFalse(pParse, pFirst, dest, jumpIfNull);
           sqlite3ExprIfFalse(pParse, pSecond, dest, jumpIfNull);
-        }else{
-          int d2 = sqlite3VdbeMakeLabel(pParse);
+        }มิฉะนั้น{
+          จำนวนเต็ม d2 = sqlite3VdbeMakeLabel(pParse);
           testcase( jumpIfNull==0 );
           sqlite3ExprIfTrue(pParse, pFirst, d2,
                             jumpIfNull^SQLITE_JUMPIFNULL);
@@ -6499,52 +6499,52 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
           sqlite3VdbeResolveLabel(v, d2);
         }
       }
-      break;
+      bha_nga;
     }
-    case TK_NOT: {
+    pak_sa TK_NOT: {
       testcase( jumpIfNull==0 );
       sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest, jumpIfNull);
-      break;
+      bha_nga;
     }
-    case TK_TRUTH: {
-      int isNot;   /* IS NOT TRUE or IS NOT FALSE */
-      int isTrue;  /* IS TRUE or IS NOT TRUE */
+    pak_sa TK_TRUTH: {
+      จำนวนเต็ม isNot;   /* IS NOT TRUE or IS NOT FALSE */
+      จำนวนเต็ม isTrue;  /* IS TRUE or IS NOT TRUE */
       testcase( jumpIfNull==0 );
       isNot = pExpr->op2==TK_ISNOT;
       isTrue = sqlite3ExprTruthValue(pExpr->pRight);
       testcase( isTrue && isNot );
       testcase( !isTrue && isNot );
-      if( isTrue ^ isNot ){
+      ถ้า( isTrue ^ isNot ){
         /* IS TRUE and IS NOT FALSE */
         sqlite3ExprIfFalse(pParse, pExpr->pLeft, dest,
                            isNot ? 0 : SQLITE_JUMPIFNULL);
 
-      }else{
+      }มิฉะนั้น{
         /* IS FALSE and IS NOT TRUE */
         sqlite3ExprIfTrue(pParse, pExpr->pLeft, dest,
                           isNot ? 0 : SQLITE_JUMPIFNULL);
       }
-      break;
+      bha_nga;
     }
-    case TK_IS:
-    case TK_ISNOT:
+    pak_sa TK_IS:
+    pak_sa TK_ISNOT:
       testcase( pExpr->op==TK_IS );
       testcase( pExpr->op==TK_ISNOT );
       op = (pExpr->op==TK_IS) ? TK_NE : TK_EQ;
       jumpIfNull = SQLITE_NULLEQ;
       /* no break */ deliberate_fall_through
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_NE:
-    case TK_EQ: {
-      int addrIsNull;
-      if( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
-      if( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
+    pak_sa TK_LT:
+    pak_sa TK_LE:
+    pak_sa TK_GT:
+    pak_sa TK_GE:
+    pak_sa TK_NE:
+    pak_sa TK_EQ: {
+      จำนวนเต็ม addrIsNull;
+      ถ้า( sqlite3ExprIsVector(pExpr->pLeft) ) goto default_expr;
+      ถ้า( ExprHasProperty(pExpr, EP_Subquery) && jumpIfNull!=SQLITE_NULLEQ ){
         addrIsNull = exprComputeOperands(pParse, pExpr,
                                    &r1, &r2, &regFree1, &regFree2);
-      }else{
+      }มิฉะนั้น{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
         r2 = sqlite3ExprCodeTemp(pParse, pExpr->pRight, &regFree2);
         addrIsNull = 0;
@@ -6563,56 +6563,56 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
       VdbeCoverageIf(v, op==OP_Ne && jumpIfNull==SQLITE_NULLEQ);
       testcase( regFree1==0 );
       testcase( regFree2==0 );
-      if( addrIsNull ){
-        if( jumpIfNull ){
+      ถ้า( addrIsNull ){
+        ถ้า( jumpIfNull ){
           sqlite3VdbeChangeP2(v, addrIsNull, dest);
-        }else{
+        }มิฉะนั้น{
           sqlite3VdbeJumpHere(v, addrIsNull);
         }
       }
-      break;
+      bha_nga;
     }
-    case TK_ISNULL:
-    case TK_NOTNULL: {
+    pak_sa TK_ISNULL:
+    pak_sa TK_NOTNULL: {
       r1 = sqlite3ExprCodeTemp(pParse, pExpr->pLeft, &regFree1);
       assert( regFree1==0 || regFree1==r1 );
-      if( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
+      ถ้า( regFree1 ) sqlite3VdbeTypeofColumn(v, r1);
       sqlite3VdbeAddOp2(v, op, r1, dest);
       testcase( op==TK_ISNULL );   VdbeCoverageIf(v, op==TK_ISNULL);
       testcase( op==TK_NOTNULL );  VdbeCoverageIf(v, op==TK_NOTNULL);
-      break;
+      bha_nga;
     }
-    case TK_BETWEEN: {
+    pak_sa TK_BETWEEN: {
       testcase( jumpIfNull==0 );
       exprCodeBetween(pParse, pExpr, dest, sqlite3ExprIfFalse, jumpIfNull);
-      break;
+      bha_nga;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_IN: {
-      if( jumpIfNull ){
+    pak_sa TK_IN: {
+      ถ้า( jumpIfNull ){
         sqlite3ExprCodeIN(pParse, pExpr, dest, dest);
-      }else{
-        int destIfNull = sqlite3VdbeMakeLabel(pParse);
+      }มิฉะนั้น{
+        จำนวนเต็ม destIfNull = sqlite3VdbeMakeLabel(pParse);
         sqlite3ExprCodeIN(pParse, pExpr, dest, destIfNull);
         sqlite3VdbeResolveLabel(v, destIfNull);
       }
-      break;
+      bha_nga;
     }
 #endif
     default: {
     default_expr:
-      if( ExprAlwaysFalse(pExpr) ){
+      ถ้า( ExprAlwaysFalse(pExpr) ){
         sqlite3VdbeGoto(v, dest);
-      }else if( ExprAlwaysTrue(pExpr) ){
+      }มิฉะนั้น ถ้า( ExprAlwaysTrue(pExpr) ){
         /* no-op */
-      }else{
+      }มิฉะนั้น{
         r1 = sqlite3ExprCodeTemp(pParse, pExpr, &regFree1);
         sqlite3VdbeAddOp3(v, OP_IfNot, r1, dest, jumpIfNull!=0);
         VdbeCoverage(v);
         testcase( regFree1==0 );
         testcase( jumpIfNull==0 );
       }
-      break;
+      bha_nga;
     }
   }
   sqlite3ReleaseTempReg(pParse, regFree1);
@@ -6624,10 +6624,10 @@ void sqlite3ExprIfFalse(Parse *pParse, Expr *pExpr, int dest, int jumpIfNull){
 ** code generation, and that copy is deleted after code generation. This
 ** ensures that the original pExpr is unchanged.
 */
-void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, int dest,int jumpIfNull){
+void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, จำนวนเต็ม dest,จำนวนเต็ม jumpIfNull){
   sqlite3 *db = pParse->db;
   Expr *pCopy = sqlite3ExprDup(db, pExpr, 0);
-  if( db->mallocFailed==0 ){
+  ถ้า( db->mallocFailed==0 ){
     sqlite3ExprIfFalse(pParse, pCopy, dest, jumpIfNull);
   }
   sqlite3ExprDelete(db, pCopy);
@@ -6649,26 +6649,26 @@ void sqlite3ExprIfFalseDup(Parse *pParse, Expr *pExpr, int dest,int jumpIfNull){
 ** If the SQLITE_EnableQPSG flag is set on the database connection, then
 ** this routine always returns false.
 */
-static SQLITE_NOINLINE int exprCompareVariable(
+static SQLITE_NOINLINE จำนวนเต็ม exprCompareVariable(
   const Parse *pParse,
   const Expr *pVar,
   const Expr *pExpr
 ){
-  int res = 2;
-  int iVar;
+  จำนวนเต็ม res = 2;
+  จำนวนเต็ม iVar;
   sqlite3_value *pL, *pR = 0;
  
-  if( pExpr->op==TK_VARIABLE && pVar->iColumn==pExpr->iColumn ){
-    return 0;
+  ถ้า( pExpr->op==TK_VARIABLE && pVar->iColumn==pExpr->iColumn ){
+    คืน 0;
   }
-  if( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) return 2;
+  ถ้า( (pParse->db->flags & SQLITE_EnableQPSG)!=0 ) คืน 2;
   sqlite3ValueFromExpr(pParse->db, pExpr, SQLITE_UTF8, SQLITE_AFF_BLOB, &pR);
-  if( pR ){
+  ถ้า( pR ){
     iVar = pVar->iColumn;
     sqlite3VdbeReprepareOnBind(pParse->pVdbe, iVar, 0);
     pL = sqlite3VdbeGetBoundValue(pParse->pReprepare, iVar, SQLITE_AFF_BLOB);
-    if( pL ){
-      if( sqlite3_value_type(pL)==SQLITE_TEXT ){
+    ถ้า( pL ){
+      ถ้า( sqlite3_value_type(pL)==SQLITE_TEXT ){
         sqlite3_value_text(pL); /* Make sure the encoding is UTF-8 */
       }
       res = sqlite3MemCompare(pL, pR, 0) ? 2 : 0;
@@ -6676,7 +6676,7 @@ static SQLITE_NOINLINE int exprCompareVariable(
     sqlite3ValueFree(pR);
     sqlite3ValueFree(pL);
   }
-  return res;
+  คืน res;
 }
 
 /*
@@ -6706,90 +6706,90 @@ static SQLITE_NOINLINE int exprCompareVariable(
 ** literals in pB.  The pParse->pVdbe->expmask bitmask is updated for
 ** each variable referenced.
 */
-int sqlite3ExprCompare(
+จำนวนเต็ม sqlite3ExprCompare(
   const Parse *pParse,
   const Expr *pA,
   const Expr *pB,
-  int iTab
+  จำนวนเต็ม iTab
 ){
   u32 combinedFlags;
-  if( pA==0 || pB==0 ){
-    return pB==pA ? 0 : 2;
+  ถ้า( pA==0 || pB==0 ){
+    คืน pB==pA ? 0 : 2;
   }
-  if( pParse && pA->op==TK_VARIABLE ){
-    return exprCompareVariable(pParse, pA, pB);
+  ถ้า( pParse && pA->op==TK_VARIABLE ){
+    คืน exprCompareVariable(pParse, pA, pB);
   }
   combinedFlags = pA->flags | pB->flags;
-  if( combinedFlags & EP_IntValue ){
-    if( (pA->flags&pB->flags&EP_IntValue)!=0 && pA->u.iValue==pB->u.iValue ){
-      return 0;
+  ถ้า( combinedFlags & EP_IntValue ){
+    ถ้า( (pA->flags&pB->flags&EP_IntValue)!=0 && pA->u.iValue==pB->u.iValue ){
+      คืน 0;
     }
-    return 2;
+    คืน 2;
   }
-  if( pA->op!=pB->op || pA->op==TK_RAISE ){
-    if( pA->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA->pLeft,pB,iTab)<2 ){
-      return 1;
+  ถ้า( pA->op!=pB->op || pA->op==TK_RAISE ){
+    ถ้า( pA->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA->pLeft,pB,iTab)<2 ){
+      คืน 1;
     }
-    if( pB->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA,pB->pLeft,iTab)<2 ){
-      return 1;
+    ถ้า( pB->op==TK_COLLATE && sqlite3ExprCompare(pParse, pA,pB->pLeft,iTab)<2 ){
+      คืน 1;
     }
-    if( pA->op==TK_AGG_COLUMN && pB->op==TK_COLUMN
+    ถ้า( pA->op==TK_AGG_COLUMN && pB->op==TK_COLUMN
      && pB->iTable<0 && pA->iTable==iTab
     ){
       /* fall through */
-    }else{
-      return 2;
+    }มิฉะนั้น{
+      คืน 2;
     }
   }
   assert( !ExprHasProperty(pA, EP_IntValue) );
   assert( !ExprHasProperty(pB, EP_IntValue) );
-  if( pA->u.zToken ){
-    if( pA->op==TK_FUNCTION || pA->op==TK_AGG_FUNCTION ){
-      if( sqlite3StrICmp(pA->u.zToken,pB->u.zToken)!=0 ) return 2;
+  ถ้า( pA->u.zToken ){
+    ถ้า( pA->op==TK_FUNCTION || pA->op==TK_AGG_FUNCTION ){
+      ถ้า( sqlite3StrICmp(pA->u.zToken,pB->u.zToken)!=0 ) คืน 2;
 #ifndef SQLITE_OMIT_WINDOWFUNC
       assert( pA->op==pB->op );
-      if( ExprHasProperty(pA,EP_WinFunc)!=ExprHasProperty(pB,EP_WinFunc) ){
-        return 2;
+      ถ้า( ExprHasProperty(pA,EP_WinFunc)!=ExprHasProperty(pB,EP_WinFunc) ){
+        คืน 2;
       }
-      if( ExprHasProperty(pA,EP_WinFunc) ){
-        if( sqlite3WindowCompare(pParse, pA->y.pWin, pB->y.pWin, 1)!=0 ){
-          return 2;
+      ถ้า( ExprHasProperty(pA,EP_WinFunc) ){
+        ถ้า( sqlite3WindowCompare(pParse, pA->y.pWin, pB->y.pWin, 1)!=0 ){
+          คืน 2;
         }
       }
 #endif
-    }else if( pA->op==TK_NULL ){
-      return 0;
-    }else if( pA->op==TK_COLLATE ){
-      if( sqlite3_stricmp(pA->u.zToken,pB->u.zToken)!=0 ) return 2;
-    }else
-    if( pB->u.zToken!=0
+    }มิฉะนั้น ถ้า( pA->op==TK_NULL ){
+      คืน 0;
+    }มิฉะนั้น ถ้า( pA->op==TK_COLLATE ){
+      ถ้า( sqlite3_stricmp(pA->u.zToken,pB->u.zToken)!=0 ) คืน 2;
+    }มิฉะนั้น
+    ถ้า( pB->u.zToken!=0
      && pA->op!=TK_COLUMN
      && pA->op!=TK_AGG_COLUMN
      && strcmp(pA->u.zToken,pB->u.zToken)!=0
     ){
-      return 2;
+      คืน 2;
     }
   }
-  if( (pA->flags & (EP_Distinct|EP_Commuted))
-     != (pB->flags & (EP_Distinct|EP_Commuted)) ) return 2;
-  if( ALWAYS((combinedFlags & EP_TokenOnly)==0) ){
-    if( combinedFlags & EP_xIsSelect ) return 2;
-    if( (combinedFlags & EP_FixedCol)==0
-     && sqlite3ExprCompare(pParse, pA->pLeft, pB->pLeft, iTab) ) return 2;
-    if( sqlite3ExprCompare(pParse, pA->pRight, pB->pRight, iTab) ) return 2;
-    if( sqlite3ExprListCompare(pA->x.pList, pB->x.pList, iTab) ) return 2;
-    if( pA->op!=TK_STRING
+  ถ้า( (pA->flags & (EP_Distinct|EP_Commuted))
+     != (pB->flags & (EP_Distinct|EP_Commuted)) ) คืน 2;
+  ถ้า( ALWAYS((combinedFlags & EP_TokenOnly)==0) ){
+    ถ้า( combinedFlags & EP_xIsSelect ) คืน 2;
+    ถ้า( (combinedFlags & EP_FixedCol)==0
+     && sqlite3ExprCompare(pParse, pA->pLeft, pB->pLeft, iTab) ) คืน 2;
+    ถ้า( sqlite3ExprCompare(pParse, pA->pRight, pB->pRight, iTab) ) คืน 2;
+    ถ้า( sqlite3ExprListCompare(pA->x.pList, pB->x.pList, iTab) ) คืน 2;
+    ถ้า( pA->op!=TK_STRING
      && pA->op!=TK_TRUEFALSE
      && ALWAYS((combinedFlags & EP_Reduced)==0)
     ){
-      if( pA->iColumn!=pB->iColumn ) return 2;
-      if( pA->op2!=pB->op2 && pA->op==TK_TRUTH ) return 2;
-      if( pA->op!=TK_IN && pA->iTable!=pB->iTable && pA->iTable!=iTab ){
-        return 2;
+      ถ้า( pA->iColumn!=pB->iColumn ) คืน 2;
+      ถ้า( pA->op2!=pB->op2 && pA->op==TK_TRUTH ) คืน 2;
+      ถ้า( pA->op!=TK_IN && pA->iTable!=pB->iTable && pA->iTable!=iTab ){
+        คืน 2;
       }
     }
   }
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -6808,27 +6808,27 @@ int sqlite3ExprCompare(
 ** Two NULL pointers are considered to be the same.  But a NULL pointer
 ** always differs from a non-NULL pointer.
 */
-int sqlite3ExprListCompare(const ExprList *pA, const ExprList *pB, int iTab){
-  int i;
-  if( pA==0 && pB==0 ) return 0;
-  if( pA==0 || pB==0 ) return 1;
-  if( pA->nExpr!=pB->nExpr ) return 1;
-  for(i=0; i<pA->nExpr; i++){
-    int res;
+จำนวนเต็ม sqlite3ExprListCompare(const ExprList *pA, const ExprList *pB, จำนวนเต็ม iTab){
+  จำนวนเต็ม i;
+  ถ้า( pA==0 && pB==0 ) คืน 0;
+  ถ้า( pA==0 || pB==0 ) คืน 1;
+  ถ้า( pA->nExpr!=pB->nExpr ) คืน 1;
+  สำหรับ(i=0; i<pA->nExpr; i++){
+    จำนวนเต็ม res;
     Expr *pExprA = pA->a[i].pExpr;
     Expr *pExprB = pB->a[i].pExpr;
-    if( pA->a[i].fg.sortFlags!=pB->a[i].fg.sortFlags ) return 1;
-    if( (res = sqlite3ExprCompare(0, pExprA, pExprB, iTab)) ) return res;
+    ถ้า( pA->a[i].fg.sortFlags!=pB->a[i].fg.sortFlags ) คืน 1;
+    ถ้า( (res = sqlite3ExprCompare(0, pExprA, pExprB, iTab)) ) คืน res;
   }
-  return 0;
+  คืน 0;
 }
 
 /*
 ** Like sqlite3ExprCompare() except COLLATE operators at the top-level
 ** are ignored.
 */
-int sqlite3ExprCompareSkip(Expr *pA,Expr *pB, int iTab){
-  return sqlite3ExprCompare(0,
+จำนวนเต็ม sqlite3ExprCompareSkip(Expr *pA,Expr *pB, จำนวนเต็ม iTab){
+  คืน sqlite3ExprCompare(0,
              sqlite3ExprSkipCollate(pA),
              sqlite3ExprSkipCollate(pB),
              iTab);
@@ -6840,89 +6840,89 @@ int sqlite3ExprCompareSkip(Expr *pA,Expr *pB, int iTab){
 ** Or if seenNot is true, return non-zero if Expr p can only be
 ** non-NULL if pNN is not NULL
 */
-static int exprImpliesNotNull(
+static จำนวนเต็ม exprImpliesNotNull(
   const Parse *pParse,/* Parsing context */
   const Expr *p,      /* The expression to be checked */
   const Expr *pNN,    /* The expression that is NOT NULL */
-  int iTab,           /* Table being evaluated */
-  int seenNot         /* Return true only if p can be any non-NULL value */
+  จำนวนเต็ม iTab,           /* Table being evaluated */
+  จำนวนเต็ม seenNot         /* Return true only if p can be any non-NULL value */
 ){
   assert( p );
   assert( pNN );
-  if( sqlite3ExprCompare(pParse, p, pNN, iTab)==0 ){
-    return pNN->op!=TK_NULL;
+  ถ้า( sqlite3ExprCompare(pParse, p, pNN, iTab)==0 ){
+    คืน pNN->op!=TK_NULL;
   }
   switch( p->op ){
-    case TK_IN: {
-      if( seenNot && ExprHasProperty(p, EP_xIsSelect) ) return 0;
+    pak_sa TK_IN: {
+      ถ้า( seenNot && ExprHasProperty(p, EP_xIsSelect) ) คืน 0;
       assert( ExprUseXSelect(p) || (p->x.pList!=0 && p->x.pList->nExpr>0) );
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+      คืน exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
-    case TK_BETWEEN: {
+    pak_sa TK_BETWEEN: {
       ExprList *pList;
       assert( ExprUseXList(p) );
       pList = p->x.pList;
       assert( pList!=0 );
       assert( pList->nExpr==2 );
-      if( seenNot ) return 0;
-      if( exprImpliesNotNull(pParse, pList->a[0].pExpr, pNN, iTab, 1)
+      ถ้า( seenNot ) คืน 0;
+      ถ้า( exprImpliesNotNull(pParse, pList->a[0].pExpr, pNN, iTab, 1)
        || exprImpliesNotNull(pParse, pList->a[1].pExpr, pNN, iTab, 1)
       ){
-        return 1;
+        คืน 1;
       }
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+      คืน exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
-    case TK_EQ:
-    case TK_NE:
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE:
-    case TK_PLUS:
-    case TK_MINUS:
-    case TK_BITOR:
-    case TK_LSHIFT:
-    case TK_RSHIFT:
-    case TK_CONCAT:
+    pak_sa TK_EQ:
+    pak_sa TK_NE:
+    pak_sa TK_LT:
+    pak_sa TK_LE:
+    pak_sa TK_GT:
+    pak_sa TK_GE:
+    pak_sa TK_PLUS:
+    pak_sa TK_MINUS:
+    pak_sa TK_BITOR:
+    pak_sa TK_LSHIFT:
+    pak_sa TK_RSHIFT:
+    pak_sa TK_CONCAT:
       seenNot = 1;
       /* no break */ deliberate_fall_through
-    case TK_STAR:
-    case TK_REM:
-    case TK_BITAND:
-    case TK_SLASH: {
-      if( exprImpliesNotNull(pParse, p->pRight, pNN, iTab, seenNot) ) return 1;
+    pak_sa TK_STAR:
+    pak_sa TK_REM:
+    pak_sa TK_BITAND:
+    pak_sa TK_SLASH: {
+      ถ้า( exprImpliesNotNull(pParse, p->pRight, pNN, iTab, seenNot) ) คืน 1;
       /* no break */ deliberate_fall_through
     }
-    case TK_SPAN:
-    case TK_COLLATE:
-    case TK_UPLUS:
-    case TK_UMINUS: {
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, seenNot);
+    pak_sa TK_SPAN:
+    pak_sa TK_COLLATE:
+    pak_sa TK_UPLUS:
+    pak_sa TK_UMINUS: {
+      คืน exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, seenNot);
     }
-    case TK_TRUTH: {
-      if( seenNot ) return 0;
-      if( p->op2!=TK_IS ) return 0;
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+    pak_sa TK_TRUTH: {
+      ถ้า( seenNot ) คืน 0;
+      ถ้า( p->op2!=TK_IS ) คืน 0;
+      คืน exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
-    case TK_BITNOT:
-    case TK_NOT: {
-      return exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
+    pak_sa TK_BITNOT:
+    pak_sa TK_NOT: {
+      คืน exprImpliesNotNull(pParse, p->pLeft, pNN, iTab, 1);
     }
   }
-  return 0;
+  คืน 0;
 }
 
 /*
 ** Return true if the boolean value of the expression is always either
 ** FALSE or NULL.
 */
-static int sqlite3ExprIsNotTrue(Expr *pExpr){
-  int v;
-  if( pExpr->op==TK_NULL ) return 1;
-  if( pExpr->op==TK_TRUEFALSE && sqlite3ExprTruthValue(pExpr)==0 ) return 1;
+static จำนวนเต็ม sqlite3ExprIsNotTrue(Expr *pExpr){
+  จำนวนเต็ม v;
+  ถ้า( pExpr->op==TK_NULL ) คืน 1;
+  ถ้า( pExpr->op==TK_TRUEFALSE && sqlite3ExprTruthValue(pExpr)==0 ) คืน 1;
   v = 1;
-  if( sqlite3ExprIsInteger(pExpr, &v, 0, 0) && v==0 ) return 1;
-  return 0;
+  ถ้า( sqlite3ExprIsInteger(pExpr, &v, 0, 0) && v==0 ) คืน 1;
+  คืน 0;
 }
 
 /*
@@ -6935,31 +6935,31 @@ static int sqlite3ExprIsNotTrue(Expr *pExpr){
 **    iif(x,y,NULL)
 **    iif(x,y,false)
 */
-static int sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
+static จำนวนเต็ม sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
   ExprList *pList;
-  if( pExpr->op==TK_FUNCTION ){
-    const char *z = pExpr->u.zToken;
+  ถ้า( pExpr->op==TK_FUNCTION ){
+    const var_na *z = pExpr->u.zToken;
     FuncDef *pDef;
-    if( (z[0]!='i' && z[0]!='I') ) return 0;
-    if( pExpr->x.pList==0 ) return 0;
+    ถ้า( (z[0]!='i' && z[0]!='I') ) คืน 0;
+    ถ้า( pExpr->x.pList==0 ) คืน 0;
     pDef = sqlite3FindFunction(db, z, pExpr->x.pList->nExpr, ENC(db), 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
-    if( pDef==0 ) return 0;
-#else
-    if( NEVER(pDef==0) ) return 0;
+    ถ้า( pDef==0 ) คืน 0;
+#มิฉะนั้น
+    ถ้า( NEVER(pDef==0) ) คืน 0;
 #endif
-    if( (pDef->funcFlags & SQLITE_FUNC_INLINE)==0 ) return 0;
-    if( SQLITE_PTR_TO_INT(pDef->pUserData)!=INLINEFUNC_iif ) return 0;
-  }else if( pExpr->op==TK_CASE ){
-    if( pExpr->pLeft!=0 ) return 0;
-  }else{
-    return 0;
+    ถ้า( (pDef->funcFlags & SQLITE_FUNC_INLINE)==0 ) คืน 0;
+    ถ้า( SQLITE_PTR_TO_INT(pDef->pUserData)!=INLINEFUNC_iif ) คืน 0;
+  }มิฉะนั้น ถ้า( pExpr->op==TK_CASE ){
+    ถ้า( pExpr->pLeft!=0 ) คืน 0;
+  }มิฉะนั้น{
+    คืน 0;
   }
   pList = pExpr->x.pList;
   assert( pList!=0 );
-  if( pList->nExpr==2 ) return 1;
-  if( pList->nExpr==3 && sqlite3ExprIsNotTrue(pList->a[2].pExpr) ) return 1;
-  return 0;
+  ถ้า( pList->nExpr==2 ) คืน 1;
+  ถ้า( pList->nExpr==3 && sqlite3ExprIsNotTrue(pList->a[2].pExpr) ) คืน 1;
+  คืน 0;
 }
 
 /*
@@ -6989,30 +6989,30 @@ static int sqlite3ExprIsIIF(sqlite3 *db, const Expr *pExpr){
 ** improvement.  Returning false might cause a performance reduction, but
 ** it will always give the correct answer and is hence always safe.
 */
-int sqlite3ExprImpliesExpr(
+จำนวนเต็ม sqlite3ExprImpliesExpr(
   const Parse *pParse,
   const Expr *pE1,
   const Expr *pE2,
-  int iTab
+  จำนวนเต็ม iTab
 ){
-  if( sqlite3ExprCompare(pParse, pE1, pE2, iTab)==0 ){
-    return 1;
+  ถ้า( sqlite3ExprCompare(pParse, pE1, pE2, iTab)==0 ){
+    คืน 1;
   }
-  if( pE2->op==TK_OR
+  ถ้า( pE2->op==TK_OR
    && (sqlite3ExprImpliesExpr(pParse, pE1, pE2->pLeft, iTab)
              || sqlite3ExprImpliesExpr(pParse, pE1, pE2->pRight, iTab) )
   ){
-    return 1;
+    คืน 1;
   }
-  if( pE2->op==TK_NOTNULL
+  ถ้า( pE2->op==TK_NOTNULL
    && exprImpliesNotNull(pParse, pE1, pE2->pLeft, iTab, 0)
   ){
-    return 1;
+    คืน 1;
   }
-  if( sqlite3ExprIsIIF(pParse->db, pE1) ){
-    return sqlite3ExprImpliesExpr(pParse,pE1->x.pList->a[0].pExpr,pE2,iTab);
+  ถ้า( sqlite3ExprIsIIF(pParse->db, pE1) ){
+    คืน sqlite3ExprImpliesExpr(pParse,pE1->x.pList->a[0].pExpr,pE2,iTab);
   }
-  return 0;
+  คืน 0;
 }
 
 /* This is a helper function to impliesNotNullRow().  In this routine,
@@ -7020,9 +7020,9 @@ int sqlite3ExprImpliesExpr(
 ** separately have the implies-not-null-row property.
 */
 static void bothImplyNotNullRow(Walker *pWalker, Expr *pE1, Expr *pE2){
-  if( pWalker->eCode==0 ){
+  ถ้า( pWalker->eCode==0 ){
     sqlite3WalkExpr(pWalker, pE1);
-    if( pWalker->eCode ){
+    ถ้า( pWalker->eCode ){
       pWalker->eCode = 0;
       sqlite3WalkExpr(pWalker, pE2);
     }
@@ -7042,27 +7042,27 @@ static void bothImplyNotNullRow(Walker *pWalker, Expr *pE1, Expr *pE2){
 ** pWalker->eCode to 1 when it should not be) are deadly, but false-negatives
 ** (never setting pWalker->eCode) is a harmless missed optimization.
 */
-static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
+static จำนวนเต็ม impliesNotNullRow(Walker *pWalker, Expr *pExpr){
   testcase( pExpr->op==TK_AGG_COLUMN );
   testcase( pExpr->op==TK_AGG_FUNCTION );
-  if( ExprHasProperty(pExpr, EP_OuterON) ) return WRC_Prune;
-  if( ExprHasProperty(pExpr, EP_InnerON) && pWalker->mWFlags ){
+  ถ้า( ExprHasProperty(pExpr, EP_OuterON) ) คืน WRC_Prune;
+  ถ้า( ExprHasProperty(pExpr, EP_InnerON) && pWalker->mWFlags ){
     /* If iCur is used in an inner-join ON clause to the left of a
     ** RIGHT JOIN, that does *not* mean that the table must be non-null.
     ** But it is difficult to check for that condition precisely.
     ** To keep things simple, any use of iCur from any inner-join is
     ** ignored while attempting to simplify a RIGHT JOIN. */
-    return WRC_Prune;
+    คืน WRC_Prune;
   }
   switch( pExpr->op ){
-    case TK_ISNOT:
-    case TK_ISNULL:
-    case TK_NOTNULL:
-    case TK_IS:
-    case TK_VECTOR:
-    case TK_FUNCTION:
-    case TK_TRUTH:
-    case TK_CASE:
+    pak_sa TK_ISNOT:
+    pak_sa TK_ISNULL:
+    pak_sa TK_NOTNULL:
+    pak_sa TK_IS:
+    pak_sa TK_VECTOR:
+    pak_sa TK_FUNCTION:
+    pak_sa TK_TRUTH:
+    pak_sa TK_CASE:
       testcase( pExpr->op==TK_ISNOT );
       testcase( pExpr->op==TK_ISNULL );
       testcase( pExpr->op==TK_NOTNULL );
@@ -7071,17 +7071,17 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       testcase( pExpr->op==TK_FUNCTION );
       testcase( pExpr->op==TK_TRUTH );
       testcase( pExpr->op==TK_CASE );
-      return WRC_Prune;
+      คืน WRC_Prune;
 
-    case TK_COLUMN:
-      if( pWalker->u.iCur==pExpr->iTable ){
+    pak_sa TK_COLUMN:
+      ถ้า( pWalker->u.iCur==pExpr->iTable ){
         pWalker->eCode = 1;
-        return WRC_Abort;
+        คืน WRC_Abort;
       }
-      return WRC_Prune;
+      คืน WRC_Prune;
 
-    case TK_OR:
-    case TK_AND:
+    pak_sa TK_OR:
+    pak_sa TK_AND:
       /* Both sides of an AND or OR must separately imply non-null-row.
       ** Consider these cases:
       **    1.  NOT (x AND y)
@@ -7092,19 +7092,19 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       testcase( pExpr->op==TK_OR );
       testcase( pExpr->op==TK_AND );
       bothImplyNotNullRow(pWalker, pExpr->pLeft, pExpr->pRight);
-      return WRC_Prune;
+      คืน WRC_Prune;
        
-    case TK_IN:
+    pak_sa TK_IN:
       /* Beware of "x NOT IN ()" and "x NOT IN (SELECT 1 WHERE false)",
       ** both of which can be true.  But apart from these cases, if
       ** the left-hand side of the IN is NULL then the IN itself will be
       ** NULL. */
-      if( ExprUseXList(pExpr) && ALWAYS(pExpr->x.pList->nExpr>0) ){
+      ถ้า( ExprUseXList(pExpr) && ALWAYS(pExpr->x.pList->nExpr>0) ){
         sqlite3WalkExpr(pWalker, pExpr->pLeft);
       }
-      return WRC_Prune;
+      คืน WRC_Prune;
 
-    case TK_BETWEEN:
+    pak_sa TK_BETWEEN:
       /* In "x NOT BETWEEN y AND z" either x must be non-null-row or else
       ** both y and z must be non-null row */
       assert( ExprUseXList(pExpr) );
@@ -7112,17 +7112,17 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       sqlite3WalkExpr(pWalker, pExpr->pLeft);
       bothImplyNotNullRow(pWalker, pExpr->x.pList->a[0].pExpr,
                                    pExpr->x.pList->a[1].pExpr);
-      return WRC_Prune;
+      คืน WRC_Prune;
 
     /* Virtual tables are allowed to use constraints like x=NULL.  So
     ** a term of the form x=y does not prove that y is not null if x
     ** is the column of a virtual table */
-    case TK_EQ:
-    case TK_NE:
-    case TK_LT:
-    case TK_LE:
-    case TK_GT:
-    case TK_GE: {
+    pak_sa TK_EQ:
+    pak_sa TK_NE:
+    pak_sa TK_LT:
+    pak_sa TK_LE:
+    pak_sa TK_GT:
+    pak_sa TK_GE: {
       Expr *pLeft = pExpr->pLeft;
       Expr *pRight = pExpr->pRight;
       testcase( pExpr->op==TK_EQ );
@@ -7135,19 +7135,19 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
       ** impliesNotNullRow() test */
       assert( pLeft->op!=TK_COLUMN || ExprUseYTab(pLeft) );
       assert( pRight->op!=TK_COLUMN || ExprUseYTab(pRight) );
-      if( (pLeft->op==TK_COLUMN
+      ถ้า( (pLeft->op==TK_COLUMN
            && ALWAYS(pLeft->y.pTab!=0)
            && IsVirtual(pLeft->y.pTab))
        || (pRight->op==TK_COLUMN
            && ALWAYS(pRight->y.pTab!=0)
            && IsVirtual(pRight->y.pTab))
       ){
-        return WRC_Prune;
+        คืน WRC_Prune;
       }
       /* no break */ deliberate_fall_through
     }
     default:
-      return WRC_Continue;
+      คืน WRC_Continue;
   }
 }
 
@@ -7173,15 +7173,15 @@ static int impliesNotNullRow(Walker *pWalker, Expr *pExpr){
 ** be non-NULL, then the LEFT JOIN can be safely converted into an
 ** ordinary join.
 */
-int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
+จำนวนเต็ม sqlite3ExprImpliesNonNullRow(Expr *p, จำนวนเต็ม iTab, จำนวนเต็ม isRJ){
   Walker w;
   p = sqlite3ExprSkipCollateAndLikely(p);
-  if( p==0 ) return 0;
-  if( p->op==TK_NOTNULL ){
+  ถ้า( p==0 ) คืน 0;
+  ถ้า( p->op==TK_NOTNULL ){
     p = p->pLeft;
-  }else{
-    while( p->op==TK_AND ){
-      if( sqlite3ExprImpliesNonNullRow(p->pLeft, iTab, isRJ) ) return 1;
+  }มิฉะนั้น{
+    ขณะ( p->op==TK_AND ){
+      ถ้า( sqlite3ExprImpliesNonNullRow(p->pLeft, iTab, isRJ) ) คืน 1;
       p = p->pRight;
     }
   }
@@ -7192,7 +7192,7 @@ int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
   w.mWFlags = isRJ!=0;
   w.u.iCur = iTab;
   sqlite3WalkExpr(&w, p);
-  return w.eCode;
+  คืน w.eCode;
 }
 
 /*
@@ -7202,9 +7202,9 @@ int sqlite3ExprImpliesNonNullRow(Expr *p, int iTab, int isRJ){
 ** table entry.  The IdxCover.pIdx field is the index.  IdxCover.iCur
 ** is the cursor for the table.
 */
-struct IdxCover {
+sa_nracanaa IdxCover {
   Index *pIdx;     /* The index to be tested for coverage */
-  int iCur;        /* Cursor number for the table corresponding to the index */
+  จำนวนเต็ม iCur;        /* Cursor number for the table corresponding to the index */
 };
 
 /*
@@ -7212,15 +7212,15 @@ struct IdxCover {
 ** pWalker->u.pIdxCover->iCur can be satisfied using the index
 ** pWalker->u.pIdxCover->pIdx.
 */
-static int exprIdxCover(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN
+static จำนวนเต็ม exprIdxCover(Walker *pWalker, Expr *pExpr){
+  ถ้า( pExpr->op==TK_COLUMN
    && pExpr->iTable==pWalker->u.pIdxCover->iCur
    && sqlite3TableColumnToIndex(pWalker->u.pIdxCover->pIdx, pExpr->iColumn)<0
   ){
     pWalker->eCode = 1;
-    return WRC_Abort;
+    คืน WRC_Abort;
   }
-  return WRC_Continue;
+  คืน WRC_Continue;
 }
 
 /*
@@ -7233,31 +7233,31 @@ static int exprIdxCover(Walker *pWalker, Expr *pExpr){
 ** evaluated using only the index and without having to lookup the
 ** corresponding table entry.
 */
-int sqlite3ExprCoveredByIndex(
+จำนวนเต็ม sqlite3ExprCoveredByIndex(
   Expr *pExpr,        /* The index to be tested */
-  int iCur,           /* The cursor number for the corresponding table */
+  จำนวนเต็ม iCur,           /* The cursor number for the corresponding table */
   Index *pIdx         /* The index that might be used for coverage */
 ){
   Walker w;
-  struct IdxCover xcov;
-  memset(&w, 0, sizeof(w));
+  sa_nracanaa IdxCover xcov;
+  memset(&w, 0, parimaa_na(w));
   xcov.iCur = iCur;
   xcov.pIdx = pIdx;
   w.xExprCallback = exprIdxCover;
   w.u.pIdxCover = &xcov;
   sqlite3WalkExpr(&w, pExpr);
-  return !w.eCode;
+  คืน !w.eCode;
 }
 
 
 /* Structure used to pass information throughout the Walker in order to
 ** implement sqlite3ReferencesSrcList().
 */
-struct RefSrcList {
+sa_nracanaa RefSrcList {
   sqlite3 *db;         /* Database connection used for sqlite3DbRealloc() */
   SrcList *pRef;       /* Looking for references to these tables */
   i64 nExclude;        /* Number of tables to exclude from the search */
-  int *aiExclude;      /* Cursor IDs for tables to exclude from the search */
+  จำนวนเต็ม *aiExclude;      /* Cursor IDs for tables to exclude from the search */
 };
 
 /*
@@ -7268,30 +7268,30 @@ struct RefSrcList {
 **
 ** When leaving the subquery, remove those entries from the exclude list.
 */
-static int selectRefEnter(Walker *pWalker, Select *pSelect){
-  struct RefSrcList *p = pWalker->u.pRefSrcList;
+static จำนวนเต็ม selectRefEnter(Walker *pWalker, Select *pSelect){
+  sa_nracanaa RefSrcList *p = pWalker->u.pRefSrcList;
   SrcList *pSrc = pSelect->pSrc;
   i64 i, j;
-  int *piNew;
-  if( pSrc->nSrc==0 ) return WRC_Continue;
+  จำนวนเต็ม *piNew;
+  ถ้า( pSrc->nSrc==0 ) คืน WRC_Continue;
   j = p->nExclude;
   p->nExclude += pSrc->nSrc;
-  piNew = sqlite3DbRealloc(p->db, p->aiExclude, p->nExclude*sizeof(int));
-  if( piNew==0 ){
+  piNew = sqlite3DbRealloc(p->db, p->aiExclude, p->nExclude*parimaa_na(จำนวนเต็ม));
+  ถ้า( piNew==0 ){
     p->nExclude = 0;
-    return WRC_Abort;
-  }else{
+    คืน WRC_Abort;
+  }มิฉะนั้น{
     p->aiExclude = piNew;
   }
-  for(i=0; i<pSrc->nSrc; i++, j++){
+  สำหรับ(i=0; i<pSrc->nSrc; i++, j++){
      p->aiExclude[j] = pSrc->a[i].iCursor;
   }
-  return WRC_Continue;
+  คืน WRC_Continue;
 }
 static void selectRefLeave(Walker *pWalker, Select *pSelect){
-  struct RefSrcList *p = pWalker->u.pRefSrcList;
+  sa_nracanaa RefSrcList *p = pWalker->u.pRefSrcList;
   SrcList *pSrc = pSelect->pSrc;
-  if( p->nExclude ){
+  ถ้า( p->nExclude ){
     assert( p->nExclude>=pSrc->nSrc );
     p->nExclude -= pSrc->nSrc;
   }
@@ -7305,26 +7305,26 @@ static void selectRefLeave(Walker *pWalker, Select *pSelect){
 ** Set the 0x02 bit of pWalker->eCode if there is a reference to a
 ** table is in neither RefSrcList.pRef nor RefSrcList.aiExclude.
 */
-static int exprRefToSrcList(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN
+static จำนวนเต็ม exprRefToSrcList(Walker *pWalker, Expr *pExpr){
+  ถ้า( pExpr->op==TK_COLUMN
    || pExpr->op==TK_AGG_COLUMN
   ){
-    int i;
-    struct RefSrcList *p = pWalker->u.pRefSrcList;
+    จำนวนเต็ม i;
+    sa_nracanaa RefSrcList *p = pWalker->u.pRefSrcList;
     SrcList *pSrc = p->pRef;
-    int nSrc = pSrc ? pSrc->nSrc : 0;
-    for(i=0; i<nSrc; i++){
-      if( pExpr->iTable==pSrc->a[i].iCursor ){
+    จำนวนเต็ม nSrc = pSrc ? pSrc->nSrc : 0;
+    สำหรับ(i=0; i<nSrc; i++){
+      ถ้า( pExpr->iTable==pSrc->a[i].iCursor ){
         pWalker->eCode |= 1;
-        return WRC_Continue;
+        คืน WRC_Continue;
       }
     }
-    for(i=0; i<p->nExclude && p->aiExclude[i]!=pExpr->iTable; i++){}
-    if( i>=p->nExclude ){
+    สำหรับ(i=0; i<p->nExclude && p->aiExclude[i]!=pExpr->iTable; i++){}
+    ถ้า( i>=p->nExclude ){
       pWalker->eCode |= 2;
     }
   }
-  return WRC_Continue;
+  คืน WRC_Continue;
 }
 
 /*
@@ -7342,12 +7342,12 @@ static int exprRefToSrcList(Walker *pWalker, Expr *pExpr){
 ** As currently used, pExpr is always an aggregate function call.  That
 ** fact is exploited for efficiency.
 */
-int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
+จำนวนเต็ม sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
   Walker w;
-  struct RefSrcList x;
+  sa_nracanaa RefSrcList x;
   assert( pParse->db!=0 );
-  memset(&w, 0, sizeof(w));
-  memset(&x, 0, sizeof(x));
+  memset(&w, 0, parimaa_na(w));
+  memset(&x, 0, parimaa_na(x));
   w.xExprCallback = exprRefToSrcList;
   w.xSelectCallback = selectRefEnter;
   w.xSelectCallback2 = selectRefLeave;
@@ -7357,24 +7357,24 @@ int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
   assert( pExpr->op==TK_AGG_FUNCTION );
   assert( ExprUseXList(pExpr) );
   sqlite3WalkExprList(&w, pExpr->x.pList);
-  if( pExpr->pLeft ){
+  ถ้า( pExpr->pLeft ){
     assert( pExpr->pLeft->op==TK_ORDER );
     assert( ExprUseXList(pExpr->pLeft) );
     assert( pExpr->pLeft->x.pList!=0 );
     sqlite3WalkExprList(&w, pExpr->pLeft->x.pList);
   }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( ExprHasProperty(pExpr, EP_WinFunc) ){
+  ถ้า( ExprHasProperty(pExpr, EP_WinFunc) ){
     sqlite3WalkExpr(&w, pExpr->y.pWin->pFilter);
   }
 #endif
-  if( x.aiExclude ) sqlite3DbNNFreeNN(pParse->db, x.aiExclude);
-  if( w.eCode & 0x01 ){
-    return 1;
-  }else if( w.eCode ){
-    return 0;
-  }else{
-    return -1;
+  ถ้า( x.aiExclude ) sqlite3DbNNFreeNN(pParse->db, x.aiExclude);
+  ถ้า( w.eCode & 0x01 ){
+    คืน 1;
+  }มิฉะนั้น ถ้า( w.eCode ){
+    คืน 0;
+  }มิฉะนั้น{
+    คืน -1;
   }
 }
 
@@ -7389,37 +7389,37 @@ int sqlite3ReferencesSrcList(Parse *pParse, Expr *pExpr, SrcList *pSrcList){
 ** The copy is scheduled for deletion using the sqlite3ExprDeferredDelete()
 ** which builds on the sqlite3ParserAddCleanup() mechanism.
 */
-static int agginfoPersistExprCb(Walker *pWalker, Expr *pExpr){
-  if( ALWAYS(!ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced))
+static จำนวนเต็ม agginfoPersistExprCb(Walker *pWalker, Expr *pExpr){
+  ถ้า( ALWAYS(!ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced))
    && pExpr->pAggInfo!=0
   ){
     AggInfo *pAggInfo = pExpr->pAggInfo;
-    int iAgg = pExpr->iAgg;
+    จำนวนเต็ม iAgg = pExpr->iAgg;
     Parse *pParse = pWalker->pParse;
     sqlite3 *db = pParse->db;
     assert( iAgg>=0 );
-    if( pExpr->op!=TK_AGG_FUNCTION ){
-      if( iAgg<pAggInfo->nColumn
+    ถ้า( pExpr->op!=TK_AGG_FUNCTION ){
+      ถ้า( iAgg<pAggInfo->nColumn
        && pAggInfo->aCol[iAgg].pCExpr==pExpr
       ){
         pExpr = sqlite3ExprDup(db, pExpr, 0);
-        if( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
+        ถ้า( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
           pAggInfo->aCol[iAgg].pCExpr = pExpr;
         }
       }
-    }else{
+    }มิฉะนั้น{
       assert( pExpr->op==TK_AGG_FUNCTION );
-      if( ALWAYS(iAgg<pAggInfo->nFunc)
+      ถ้า( ALWAYS(iAgg<pAggInfo->nFunc)
        && pAggInfo->aFunc[iAgg].pFExpr==pExpr
       ){
         pExpr = sqlite3ExprDup(db, pExpr, 0);
-        if( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
+        ถ้า( pExpr && !sqlite3ExprDeferredDelete(pParse, pExpr) ){
           pAggInfo->aFunc[iAgg].pFExpr = pExpr;
         }
       }
     }
   }
-  return WRC_Continue;
+  คืน WRC_Continue;
 }
 
 /*
@@ -7427,7 +7427,7 @@ static int agginfoPersistExprCb(Walker *pWalker, Expr *pExpr){
 ** by the tree that is walked.
 */
 void sqlite3AggInfoPersistWalkerInit(Walker *pWalker, Parse *pParse){
-  memset(pWalker, 0, sizeof(*pWalker));
+  memset(pWalker, 0, parimaa_na(*pWalker));
   pWalker->pParse = pParse;
   pWalker->xExprCallback = agginfoPersistExprCb;
   pWalker->xSelectCallback = sqlite3SelectWalkNoop;
@@ -7437,32 +7437,32 @@ void sqlite3AggInfoPersistWalkerInit(Walker *pWalker, Parse *pParse){
 ** Add a new element to the pAggInfo->aCol[] array.  Return the index of
 ** the new element.  Return a negative number if malloc fails.
 */
-static int addAggInfoColumn(sqlite3 *db, AggInfo *pInfo){
-  int i;
+static จำนวนเต็ม addAggInfoColumn(sqlite3 *db, AggInfo *pInfo){
+  จำนวนเต็ม i;
   pInfo->aCol = sqlite3ArrayAllocate(
        db,
        pInfo->aCol,
-       sizeof(pInfo->aCol[0]),
+       parimaa_na(pInfo->aCol[0]),
        &pInfo->nColumn,
        &i
   );
-  return i;
+  คืน i;
 }   
 
 /*
 ** Add a new element to the pAggInfo->aFunc[] array.  Return the index of
 ** the new element.  Return a negative number if malloc fails.
 */
-static int addAggInfoFunc(sqlite3 *db, AggInfo *pInfo){
-  int i;
+static จำนวนเต็ม addAggInfoFunc(sqlite3 *db, AggInfo *pInfo){
+  จำนวนเต็ม i;
   pInfo->aFunc = sqlite3ArrayAllocate(
        db,
        pInfo->aFunc,
-       sizeof(pInfo->aFunc[0]),
+       parimaa_na(pInfo->aFunc[0]),
        &pInfo->nFunc,
        &i
   );
-  return i;
+  คืน i;
 }
 
 /*
@@ -7477,16 +7477,16 @@ static void findOrCreateAggInfoColumn(
   AggInfo *pAggInfo,   /* The AggInfo object to search and/or modify */
   Expr *pExpr          /* Expr describing the column to find or insert */
 ){
-  struct AggInfo_col *pCol;
-  int k;
-  int mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
+  sa_nracanaa AggInfo_col *pCol;
+  จำนวนเต็ม k;
+  จำนวนเต็ม mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
 
   assert( mxTerm <= SMXV(i16) );
   assert( pAggInfo->iFirstReg==0 );
   pCol = pAggInfo->aCol;
-  for(k=0; k<pAggInfo->nColumn; k++, pCol++){
-    if( pCol->pCExpr==pExpr ) return;
-    if( pCol->iTable==pExpr->iTable
+  สำหรับ(k=0; k<pAggInfo->nColumn; k++, pCol++){
+    ถ้า( pCol->pCExpr==pExpr ) คืน;
+    ถ้า( pCol->iTable==pExpr->iTable
      && pCol->iColumn==pExpr->iColumn
      && pExpr->op!=TK_IF_NULL_ROW
     ){
@@ -7494,12 +7494,12 @@ static void findOrCreateAggInfoColumn(
     }
   }
   k = addAggInfoColumn(pParse->db, pAggInfo);
-  if( k<0 ){
+  ถ้า( k<0 ){
     /* OOM on resize */
     assert( pParse->db->mallocFailed );
-    return;
+    คืน;
   }
-  if( k>mxTerm ){
+  ถ้า( k>mxTerm ){
     sqlite3ErrorMsg(pParse, "more than %d aggregate terms", mxTerm);
     k = mxTerm;
   }
@@ -7510,30 +7510,30 @@ static void findOrCreateAggInfoColumn(
   pCol->iColumn = pExpr->iColumn;
   pCol->iSorterColumn = -1;
   pCol->pCExpr = pExpr;
-  if( pAggInfo->pGroupBy && pExpr->op!=TK_IF_NULL_ROW ){
-    int j, n;
+  ถ้า( pAggInfo->pGroupBy && pExpr->op!=TK_IF_NULL_ROW ){
+    จำนวนเต็ม j, n;
     ExprList *pGB = pAggInfo->pGroupBy;
-    struct ExprList_item *pTerm = pGB->a;
+    sa_nracanaa ExprList_item *pTerm = pGB->a;
     n = pGB->nExpr;
-    for(j=0; j<n; j++, pTerm++){
+    สำหรับ(j=0; j<n; j++, pTerm++){
       Expr *pE = pTerm->pExpr;
-      if( pE->op==TK_COLUMN
+      ถ้า( pE->op==TK_COLUMN
        && pE->iTable==pExpr->iTable
        && pE->iColumn==pExpr->iColumn
       ){
         pCol->iSorterColumn = j;
-        break;
+        bha_nga;
       }
     }
   }
-  if( pCol->iSorterColumn<0 ){
+  ถ้า( pCol->iSorterColumn<0 ){
     pCol->iSorterColumn = pAggInfo->nSortingColumn++;
   }
 fix_up_expr:
   ExprSetVVAProperty(pExpr, EP_NoReduce);
   assert( pExpr->pAggInfo==0 || pExpr->pAggInfo==pAggInfo );
   pExpr->pAggInfo = pAggInfo;
-  if( pExpr->op==TK_COLUMN ){
+  ถ้า( pExpr->op==TK_COLUMN ){
     pExpr->op = TK_AGG_COLUMN;
   }
   assert( k <= SMXV(pExpr->iAgg) );
@@ -7545,8 +7545,8 @@ fix_up_expr:
 ** implement sqlite3ExprAnalyzeAggregates().  See sqlite3ExprAnalyzeAggregates
 ** for additional information.
 */
-static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
-  int i;
+static จำนวนเต็ม analyzeAggregate(Walker *pWalker, Expr *pExpr){
+  จำนวนเต็ม i;
   NameContext *pNC = pWalker->u.pNC;
   Parse *pParse = pNC->pParse;
   SrcList *pSrcList = pNC->pSrcList;
@@ -7559,90 +7559,90 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
       IndexedExpr *pIEpr;
       Expr tmp;
       assert( pParse->iSelfTab==0 );
-      if( (pNC->ncFlags & NC_InAggFunc)==0 ) break;
-      if( pParse->pIdxEpr==0 ) break;
-      for(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
-        int iDataCur = pIEpr->iDataCur;
-        if( iDataCur<0 ) continue;
-        if( sqlite3ExprCompare(0, pExpr, pIEpr->pExpr, iDataCur)==0 ) break;
+      ถ้า( (pNC->ncFlags & NC_InAggFunc)==0 ) bha_nga;
+      ถ้า( pParse->pIdxEpr==0 ) bha_nga;
+      สำหรับ(pIEpr=pParse->pIdxEpr; pIEpr; pIEpr=pIEpr->pIENext){
+        จำนวนเต็ม iDataCur = pIEpr->iDataCur;
+        ถ้า( iDataCur<0 ) continue;
+        ถ้า( sqlite3ExprCompare(0, pExpr, pIEpr->pExpr, iDataCur)==0 ) bha_nga;
       }
-      if( pIEpr==0 ) break;
-      if( NEVER(!ExprUseYTab(pExpr)) ) break;
-      for(i=0; i<pSrcList->nSrc; i++){
-         if( pSrcList->a[i].iCursor==pIEpr->iDataCur ){
+      ถ้า( pIEpr==0 ) bha_nga;
+      ถ้า( NEVER(!ExprUseYTab(pExpr)) ) bha_nga;
+      สำหรับ(i=0; i<pSrcList->nSrc; i++){
+         ถ้า( pSrcList->a[i].iCursor==pIEpr->iDataCur ){
            testcase( i>0 );
-           break;
+           bha_nga;
          }
       }
-      if( i>=pSrcList->nSrc ) break;
-      if( NEVER(pExpr->pAggInfo!=0) ) break; /* Resolved by outer context */
-      if( pParse->nErr ){ return WRC_Abort; }
+      ถ้า( i>=pSrcList->nSrc ) bha_nga;
+      ถ้า( NEVER(pExpr->pAggInfo!=0) ) bha_nga; /* Resolved by outer context */
+      ถ้า( pParse->nErr ){ คืน WRC_Abort; }
 
       /* If we reach this point, it means that expression pExpr can be
       ** translated into a reference to an index column as described by
       ** pIEpr.
       */
-      memset(&tmp, 0, sizeof(tmp));
+      memset(&tmp, 0, parimaa_na(tmp));
       tmp.op = TK_AGG_COLUMN;
       tmp.iTable = pIEpr->iIdxCur;
       tmp.iColumn = pIEpr->iIdxCol;
       findOrCreateAggInfoColumn(pParse, pAggInfo, &tmp);
-      if( pParse->nErr ){ return WRC_Abort; }
+      ถ้า( pParse->nErr ){ คืน WRC_Abort; }
       assert( pAggInfo->aCol!=0 );
       assert( tmp.iAgg<pAggInfo->nColumn );
       pAggInfo->aCol[tmp.iAgg].pCExpr = pExpr;
       pExpr->pAggInfo = pAggInfo;
       pExpr->iAgg = tmp.iAgg;
-      return WRC_Prune;
+      คืน WRC_Prune;
     }
-    case TK_IF_NULL_ROW:
-    case TK_AGG_COLUMN:
-    case TK_COLUMN: {
+    pak_sa TK_IF_NULL_ROW:
+    pak_sa TK_AGG_COLUMN:
+    pak_sa TK_COLUMN: {
       testcase( pExpr->op==TK_AGG_COLUMN );
       testcase( pExpr->op==TK_COLUMN );
       testcase( pExpr->op==TK_IF_NULL_ROW );
       /* Check to see if the column is in one of the tables in the FROM
       ** clause of the aggregate query */
-      if( ALWAYS(pSrcList!=0) ){
+      ถ้า( ALWAYS(pSrcList!=0) ){
         SrcItem *pItem = pSrcList->a;
-        for(i=0; i<pSrcList->nSrc; i++, pItem++){
+        สำหรับ(i=0; i<pSrcList->nSrc; i++, pItem++){
           assert( !ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced) );
-          if( pExpr->iTable==pItem->iCursor ){
+          ถ้า( pExpr->iTable==pItem->iCursor ){
             findOrCreateAggInfoColumn(pParse, pAggInfo, pExpr);
-            break;
+            bha_nga;
           } /* endif pExpr->iTable==pItem->iCursor */
         } /* end loop over pSrcList */
       }
-      return WRC_Continue;
+      คืน WRC_Continue;
     }
-    case TK_AGG_FUNCTION: {
-      if( (pNC->ncFlags & NC_InAggFunc)==0
+    pak_sa TK_AGG_FUNCTION: {
+      ถ้า( (pNC->ncFlags & NC_InAggFunc)==0
        && pWalker->walkerDepth==pExpr->op2
        && pExpr->pAggInfo==0
       ){
         /* Check to see if pExpr is a duplicate of another aggregate
         ** function that is already in the pAggInfo structure
         */
-        struct AggInfo_func *pItem = pAggInfo->aFunc;
-        int mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
+        sa_nracanaa AggInfo_func *pItem = pAggInfo->aFunc;
+        จำนวนเต็ม mxTerm = pParse->db->aLimit[SQLITE_LIMIT_COLUMN];
         assert( mxTerm <= SMXV(i16) );
-        for(i=0; i<pAggInfo->nFunc; i++, pItem++){
-          if( NEVER(pItem->pFExpr==pExpr) ) break;
-          if( sqlite3ExprCompare(0, pItem->pFExpr, pExpr, -1)==0 ){
-            break;
+        สำหรับ(i=0; i<pAggInfo->nFunc; i++, pItem++){
+          ถ้า( NEVER(pItem->pFExpr==pExpr) ) bha_nga;
+          ถ้า( sqlite3ExprCompare(0, pItem->pFExpr, pExpr, -1)==0 ){
+            bha_nga;
           }
         }
-        if( i>mxTerm ){
+        ถ้า( i>mxTerm ){
           sqlite3ErrorMsg(pParse, "more than %d aggregate terms", mxTerm);
           i = mxTerm;
           assert( i<pAggInfo->nFunc );
-        }else if( i>=pAggInfo->nFunc ){
+        }มิฉะนั้น ถ้า( i>=pAggInfo->nFunc ){
           /* pExpr is original.  Make a new entry in pAggInfo->aFunc[]
           */
           u8 enc = ENC(pParse->db);
           i = addAggInfoFunc(pParse->db, pAggInfo);
-          if( i>=0 ){
-            int nArg;
+          ถ้า( i>=0 ){
+            จำนวนเต็ม nArg;
             assert( !ExprHasProperty(pExpr, EP_xIsSelect) );
             pItem = &pAggInfo->aFunc[i];
             pItem->pFExpr = pExpr;
@@ -7651,7 +7651,7 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
             pItem->pFunc = sqlite3FindFunction(pParse->db,
                                          pExpr->u.zToken, nArg, enc, 0);
             assert( pItem->bOBUnique==0 );
-            if( pExpr->pLeft
+            ถ้า( pExpr->pLeft
              && (pItem->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL)==0
             ){
               /* The NEEDCOLL test above causes any ORDER BY clause on
@@ -7664,24 +7664,24 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
               pOBList = pExpr->pLeft->x.pList;
               assert( pOBList->nExpr>0 );
               assert( pItem->bOBUnique==0 );
-              if( pOBList->nExpr==1
+              ถ้า( pOBList->nExpr==1
                && nArg==1
                && sqlite3ExprCompare(0,pOBList->a[0].pExpr,
                                pExpr->x.pList->a[0].pExpr,-1)==0
               ){
                 pItem->bOBPayload = 0;
                 pItem->bOBUnique = ExprHasProperty(pExpr, EP_Distinct);
-              }else{
+              }มิฉะนั้น{
                 pItem->bOBPayload = 1;
               }
               pItem->bUseSubtype =
                     (pItem->pFunc->funcFlags & SQLITE_SUBTYPE)!=0;
-            }else{
+            }มิฉะนั้น{
               pItem->iOBTab = -1;
             }
-            if( ExprHasProperty(pExpr, EP_Distinct) && !pItem->bOBUnique ){
+            ถ้า( ExprHasProperty(pExpr, EP_Distinct) && !pItem->bOBUnique ){
               pItem->iDistinct = pParse->nTab++;
-            }else{
+            }มิฉะนั้น{
               pItem->iDistinct = -1;
             }
           }
@@ -7693,13 +7693,13 @@ static int analyzeAggregate(Walker *pWalker, Expr *pExpr){
         assert( i <= SMXV(pExpr->iAgg) );
         pExpr->iAgg = (i16)i;
         pExpr->pAggInfo = pAggInfo;
-        return WRC_Prune;
-      }else{
-        return WRC_Continue;
+        คืน WRC_Prune;
+      }มิฉะนั้น{
+        คืน WRC_Continue;
       }
     }
   }
-  return WRC_Continue;
+  คืน WRC_Continue;
 }
 
 /*
@@ -7730,10 +7730,10 @@ void sqlite3ExprAnalyzeAggregates(NameContext *pNC, Expr *pExpr){
 ** If an error is found, the analysis is cut short.
 */
 void sqlite3ExprAnalyzeAggList(NameContext *pNC, ExprList *pList){
-  struct ExprList_item *pItem;
-  int i;
-  if( pList ){
-    for(pItem=pList->a, i=0; i<pList->nExpr; i++, pItem++){
+  sa_nracanaa ExprList_item *pItem;
+  จำนวนเต็ม i;
+  ถ้า( pList ){
+    สำหรับ(pItem=pList->a, i=0; i<pList->nExpr; i++, pItem++){
       sqlite3ExprAnalyzeAggregates(pNC, pItem->pExpr);
     }
   }
@@ -7742,28 +7742,28 @@ void sqlite3ExprAnalyzeAggList(NameContext *pNC, ExprList *pList){
 /*
 ** Allocate a single new register for use to hold some intermediate result.
 */
-int sqlite3GetTempReg(Parse *pParse){
-  if( pParse->nTempReg==0 ){
-    return ++pParse->nMem;
+จำนวนเต็ม sqlite3GetTempReg(Parse *pParse){
+  ถ้า( pParse->nTempReg==0 ){
+    คืน ++pParse->nMem;
   }
-  return pParse->aTempReg[--pParse->nTempReg];
+  คืน pParse->aTempReg[--pParse->nTempReg];
 }
 
 /*
 ** Deallocate a register, making available for reuse for some other
 ** purpose.
 */
-void sqlite3ReleaseTempReg(Parse *pParse, int iReg){
-  if( iReg ){
+void sqlite3ReleaseTempReg(Parse *pParse, จำนวนเต็ม iReg){
+  ถ้า( iReg ){
 #ifdef SQLITE_DEBUG
     /* Verify that iReg is not already on the unused register list */
-    int kk;
-    for(kk=0; kk<pParse->nTempReg; kk++){
+    จำนวนเต็ม kk;
+    สำหรับ(kk=0; kk<pParse->nTempReg; kk++){
       assert( pParse->aTempReg[kk]!=iReg );
     }
 #endif
     sqlite3VdbeReleaseRegisters(pParse, iReg, 1, 0, 0);
-    if( pParse->nTempReg<ArraySize(pParse->aTempReg) ){
+    ถ้า( pParse->nTempReg<ArraySize(pParse->aTempReg) ){
       pParse->aTempReg[pParse->nTempReg++] = iReg;
     }
   }
@@ -7772,27 +7772,27 @@ void sqlite3ReleaseTempReg(Parse *pParse, int iReg){
 /*
 ** Allocate or deallocate a block of nReg consecutive registers.
 */
-int sqlite3GetTempRange(Parse *pParse, int nReg){
-  int i, n;
-  if( nReg==1 ) return sqlite3GetTempReg(pParse);
+จำนวนเต็ม sqlite3GetTempRange(Parse *pParse, จำนวนเต็ม nReg){
+  จำนวนเต็ม i, n;
+  ถ้า( nReg==1 ) คืน sqlite3GetTempReg(pParse);
   i = pParse->iRangeReg;
   n = pParse->nRangeReg;
-  if( nReg<=n ){
+  ถ้า( nReg<=n ){
     pParse->iRangeReg += nReg;
     pParse->nRangeReg -= nReg;
-  }else{
+  }มิฉะนั้น{
     i = pParse->nMem+1;
     pParse->nMem += nReg;
   }
-  return i;
+  คืน i;
 }
-void sqlite3ReleaseTempRange(Parse *pParse, int iReg, int nReg){
-  if( nReg==1 ){
+void sqlite3ReleaseTempRange(Parse *pParse, จำนวนเต็ม iReg, จำนวนเต็ม nReg){
+  ถ้า( nReg==1 ){
     sqlite3ReleaseTempReg(pParse, iReg);
-    return;
+    คืน;
   }
   sqlite3VdbeReleaseRegisters(pParse, iReg, nReg, 0, 0);
-  if( nReg>pParse->nRangeReg ){
+  ถ้า( nReg>pParse->nRangeReg ){
     pParse->nRangeReg = nReg;
     pParse->iRangeReg = iReg;
   }
@@ -7815,30 +7815,30 @@ void sqlite3ClearTempRegCache(Parse *pParse){
 ** Make sure sufficient registers have been allocated so that
 ** iReg is a valid register number.
 */
-void sqlite3TouchRegister(Parse *pParse, int iReg){
-  if( pParse->nMem<iReg ) pParse->nMem = iReg;
+void sqlite3TouchRegister(Parse *pParse, จำนวนเต็ม iReg){
+  ถ้า( pParse->nMem<iReg ) pParse->nMem = iReg;
 }
 
-#if defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
+#ถ้า defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
 /*
 ** Return the latest reusable register in the set of all registers.
 ** The value returned is no less than iMin.  If any register iMin or
 ** greater is in permanent use, then return one more than that last
 ** permanent register.
 */
-int sqlite3FirstAvailableRegister(Parse *pParse, int iMin){
+จำนวนเต็ม sqlite3FirstAvailableRegister(Parse *pParse, จำนวนเต็ม iMin){
   const ExprList *pList = pParse->pConstExpr;
-  if( pList ){
-    int i;
-    for(i=0; i<pList->nExpr; i++){
-      if( pList->a[i].u.iConstExprReg>=iMin ){
+  ถ้า( pList ){
+    จำนวนเต็ม i;
+    สำหรับ(i=0; i<pList->nExpr; i++){
+      ถ้า( pList->a[i].u.iConstExprReg>=iMin ){
         iMin = pList->a[i].u.iConstExprReg + 1;
       }
     }
   }
   pParse->nTempReg = 0;
   pParse->nRangeReg = 0;
-  return iMin;
+  คืน iMin;
 }
 #endif /* SQLITE_ENABLE_STAT4 || SQLITE_DEBUG */
 
@@ -7848,27 +7848,27 @@ int sqlite3FirstAvailableRegister(Parse *pParse, int iMin){
 ** statements.
 */
 #ifdef SQLITE_DEBUG
-int sqlite3NoTempsInRange(Parse *pParse, int iFirst, int iLast){
-  int i;
-  if( pParse->nRangeReg>0
+จำนวนเต็ม sqlite3NoTempsInRange(Parse *pParse, จำนวนเต็ม iFirst, จำนวนเต็ม iLast){
+  จำนวนเต็ม i;
+  ถ้า( pParse->nRangeReg>0
    && pParse->iRangeReg+pParse->nRangeReg > iFirst
    && pParse->iRangeReg <= iLast
   ){
-     return 0;
+     คืน 0;
   }
-  for(i=0; i<pParse->nTempReg; i++){
-    if( pParse->aTempReg[i]>=iFirst && pParse->aTempReg[i]<=iLast ){
-      return 0;
+  สำหรับ(i=0; i<pParse->nTempReg; i++){
+    ถ้า( pParse->aTempReg[i]>=iFirst && pParse->aTempReg[i]<=iLast ){
+      คืน 0;
     }
   }
-  if( pParse->pConstExpr ){
+  ถ้า( pParse->pConstExpr ){
     ExprList *pList = pParse->pConstExpr;
-    for(i=0; i<pList->nExpr; i++){
-      int iReg = pList->a[i].u.iConstExprReg;
-      if( iReg==0 ) continue;
-      if( iReg>=iFirst && iReg<=iLast ) return 0;
+    สำหรับ(i=0; i<pList->nExpr; i++){
+      จำนวนเต็ม iReg = pList->a[i].u.iConstExprReg;
+      ถ้า( iReg==0 ) continue;
+      ถ้า( iReg>=iFirst && iReg<=iLast ) คืน 0;
     }
   }
-  return 1;
+  คืน 1;
 }
 #endif /* SQLITE_DEBUG */

@@ -29,61 +29,61 @@
 #include <string.h>
 #include "tclsqlite.h"
 
-static struct Wrapped {
+static sa_nracanaa Wrapped {
   sqlite3_pcache_methods2 pcache;
   sqlite3_mem_methods     mem;
   sqlite3_mutex_methods   mutex;
 
-  int mem_init;              /* True if mem subsystem is initialized */
-  int mem_fail;              /* True to fail mem subsystem initialization */
-  int mutex_init;            /* True if mutex subsystem is initialized */
-  int mutex_fail;            /* True to fail mutex subsystem initialization */
-  int pcache_init;           /* True if pcache subsystem is initialized */
-  int pcache_fail;           /* True to fail pcache subsystem initialization */
+  จำนวนเต็ม mem_init;              /* True if mem subsystem is initialized */
+  จำนวนเต็ม mem_fail;              /* True to fail mem subsystem initialization */
+  จำนวนเต็ม mutex_init;            /* True if mutex subsystem is initialized */
+  จำนวนเต็ม mutex_fail;            /* True to fail mutex subsystem initialization */
+  จำนวนเต็ม pcache_init;           /* True if pcache subsystem is initialized */
+  จำนวนเต็ม pcache_fail;           /* True to fail pcache subsystem initialization */
 } wrapped;
 
-static int wrMemInit(void *pAppData){
-  int rc;
-  if( wrapped.mem_fail ){
+static จำนวนเต็ม wrMemInit(void *pAppData){
+  จำนวนเต็ม rc;
+  ถ้า( wrapped.mem_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }มิฉะนั้น{
     rc = wrapped.mem.xInit(wrapped.mem.pAppData);
   }
-  if( rc==SQLITE_OK ){
+  ถ้า( rc==SQLITE_OK ){
     wrapped.mem_init = 1;
   }
-  return rc;
+  คืน rc;
 }
 static void wrMemShutdown(void *pAppData){
   wrapped.mem.xShutdown(wrapped.mem.pAppData);
   wrapped.mem_init = 0;
 }
-static void *wrMemMalloc(int n)           {return wrapped.mem.xMalloc(n);}
+static void *wrMemMalloc(จำนวนเต็ม n)           {คืน wrapped.mem.xMalloc(n);}
 static void wrMemFree(void *p)            {wrapped.mem.xFree(p);}
-static void *wrMemRealloc(void *p, int n) {return wrapped.mem.xRealloc(p, n);}
-static int wrMemSize(void *p)             {return wrapped.mem.xSize(p);}
-static int wrMemRoundup(int n)            {return wrapped.mem.xRoundup(n);}
+static void *wrMemRealloc(void *p, จำนวนเต็ม n) {คืน wrapped.mem.xRealloc(p, n);}
+static จำนวนเต็ม wrMemSize(void *p)             {คืน wrapped.mem.xSize(p);}
+static จำนวนเต็ม wrMemRoundup(จำนวนเต็ม n)            {คืน wrapped.mem.xRoundup(n);}
 
 
-static int wrMutexInit(void){
-  int rc;
-  if( wrapped.mutex_fail ){
+static จำนวนเต็ม wrMutexInit(void){
+  จำนวนเต็ม rc;
+  ถ้า( wrapped.mutex_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }มิฉะนั้น{
     rc = wrapped.mutex.xMutexInit();
   }
-  if( rc==SQLITE_OK ){
+  ถ้า( rc==SQLITE_OK ){
     wrapped.mutex_init = 1;
   }
-  return rc;
+  คืน rc;
 }
-static int wrMutexEnd(void){
+static จำนวนเต็ม wrMutexEnd(void){
   wrapped.mutex.xMutexEnd();
   wrapped.mutex_init = 0;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
-static sqlite3_mutex *wrMutexAlloc(int e){
-  return wrapped.mutex.xMutexAlloc(e);
+static sqlite3_mutex *wrMutexAlloc(จำนวนเต็ม e){
+  คืน wrapped.mutex.xMutexAlloc(e);
 }
 static void wrMutexFree(sqlite3_mutex *p){
   wrapped.mutex.xMutexFree(p);
@@ -91,51 +91,51 @@ static void wrMutexFree(sqlite3_mutex *p){
 static void wrMutexEnter(sqlite3_mutex *p){
   wrapped.mutex.xMutexEnter(p);
 }
-static int wrMutexTry(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexTry(p);
+static จำนวนเต็ม wrMutexTry(sqlite3_mutex *p){
+  คืน wrapped.mutex.xMutexTry(p);
 }
 static void wrMutexLeave(sqlite3_mutex *p){
   wrapped.mutex.xMutexLeave(p);
 }
-static int wrMutexHeld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexHeld(p);
+static จำนวนเต็ม wrMutexHeld(sqlite3_mutex *p){
+  คืน wrapped.mutex.xMutexHeld(p);
 }
-static int wrMutexNotheld(sqlite3_mutex *p){
-  return wrapped.mutex.xMutexNotheld(p);
+static จำนวนเต็ม wrMutexNotheld(sqlite3_mutex *p){
+  คืน wrapped.mutex.xMutexNotheld(p);
 }
 
 
 
-static int wrPCacheInit(void *pArg){
-  int rc;
-  if( wrapped.pcache_fail ){
+static จำนวนเต็ม wrPCacheInit(void *pArg){
+  จำนวนเต็ม rc;
+  ถ้า( wrapped.pcache_fail ){
     rc = SQLITE_ERROR;
-  }else{
+  }มิฉะนั้น{
     rc = wrapped.pcache.xInit(wrapped.pcache.pArg);
   }
-  if( rc==SQLITE_OK ){
+  ถ้า( rc==SQLITE_OK ){
     wrapped.pcache_init = 1;
   }
-  return rc;
+  คืน rc;
 }
 static void wrPCacheShutdown(void *pArg){
   wrapped.pcache.xShutdown(wrapped.pcache.pArg);
   wrapped.pcache_init = 0;
 }
 
-static sqlite3_pcache *wrPCacheCreate(int a, int b, int c){
-  return wrapped.pcache.xCreate(a, b, c);
+static sqlite3_pcache *wrPCacheCreate(จำนวนเต็ม a, จำนวนเต็ม b, จำนวนเต็ม c){
+  คืน wrapped.pcache.xCreate(a, b, c);
 }  
-static void wrPCacheCachesize(sqlite3_pcache *p, int n){
+static void wrPCacheCachesize(sqlite3_pcache *p, จำนวนเต็ม n){
   wrapped.pcache.xCachesize(p, n);
 }  
-static int wrPCachePagecount(sqlite3_pcache *p){
-  return wrapped.pcache.xPagecount(p);
+static จำนวนเต็ม wrPCachePagecount(sqlite3_pcache *p){
+  คืน wrapped.pcache.xPagecount(p);
 }  
-static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, int b){
-  return wrapped.pcache.xFetch(p, a, b);
+static sqlite3_pcache_page *wrPCacheFetch(sqlite3_pcache *p, unsigned a, จำนวนเต็ม b){
+  คืน wrapped.pcache.xFetch(p, a, b);
 }  
-static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, int b){
+static void wrPCacheUnpin(sqlite3_pcache *p, sqlite3_pcache_page *a, จำนวนเต็ม b){
   wrapped.pcache.xUnpin(p, a, b);
 }  
 static void wrPCacheRekey(
@@ -173,7 +173,7 @@ static void installInitWrappers(void){
     0
   };
 
-  memset(&wrapped, 0, sizeof(wrapped));
+  memset(&wrapped, 0, parimaa_na(wrapped));
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_GETMUTEX, &wrapped.mutex);
@@ -184,96 +184,96 @@ static void installInitWrappers(void){
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &pcachemethods);
 }
 
-static int SQLITE_TCLAPI init_wrapper_install(
+static จำนวนเต็ม SQLITE_TCLAPI init_wrapper_install(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  จำนวนเต็ม objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  int i;
+  จำนวนเต็ม i;
   installInitWrappers();
-  for(i=1; i<objc; i++){
-    char *z = Tcl_GetString(objv[i]);
-    if( strcmp(z, "mem")==0 ){
+  สำหรับ(i=1; i<objc; i++){
+    var_na *z = Tcl_GetString(objv[i]);
+    ถ้า( strcmp(z, "mem")==0 ){
       wrapped.mem_fail = 1;
-    }else if( strcmp(z, "mutex")==0 ){
+    }มิฉะนั้น ถ้า( strcmp(z, "mutex")==0 ){
       wrapped.mutex_fail = 1;
-    }else if( strcmp(z, "pcache")==0 ){
+    }มิฉะนั้น ถ้า( strcmp(z, "pcache")==0 ){
       wrapped.pcache_fail = 1;
-    }else{
+    }มิฉะนั้น{
       Tcl_AppendResult(interp, "Unknown argument: \"", z, "\"", NULL);
-      return TCL_ERROR;
+      คืน TCL_ERROR;
     }
   }
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_uninstall(
+static จำนวนเต็ม SQLITE_TCLAPI init_wrapper_uninstall(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  จำนวนเต็ม objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  ถ้า( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   sqlite3_shutdown();
   sqlite3_config(SQLITE_CONFIG_MUTEX, &wrapped.mutex);
   sqlite3_config(SQLITE_CONFIG_MALLOC, &wrapped.mem);
   sqlite3_config(SQLITE_CONFIG_PCACHE2, &wrapped.pcache);
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_clear(
+static จำนวนเต็ม SQLITE_TCLAPI init_wrapper_clear(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  จำนวนเต็ม objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  if( objc!=1 ){
+  ถ้า( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   wrapped.mem_fail = 0;
   wrapped.mutex_fail = 0;
   wrapped.pcache_fail = 0;
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI init_wrapper_query(
+static จำนวนเต็ม SQLITE_TCLAPI init_wrapper_query(
   ClientData clientData, /* Unused */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  จำนวนเต็ม objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   Tcl_Obj *pRet;
 
-  if( objc!=1 ){
+  ถ้า( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  if( wrapped.mutex_init ){
+  ถ้า( wrapped.mutex_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mutex", -1));
   }
-  if( wrapped.mem_init ){
+  ถ้า( wrapped.mem_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("mem", -1));
   }
-  if( wrapped.pcache_init ){
+  ถ้า( wrapped.pcache_init ){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj("pcache", -1));
   }
 
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-int Sqlitetest_init_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+จำนวนเต็ม Sqlitetest_init_Init(Tcl_Interp *interp){
+  static sa_nracanaa {
+     var_na *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
     {"init_wrapper_install",   init_wrapper_install},
@@ -281,11 +281,11 @@ int Sqlitetest_init_Init(Tcl_Interp *interp){
     {"init_wrapper_uninstall", init_wrapper_uninstall},
     {"init_wrapper_clear",     init_wrapper_clear}
   };
-  int i;
+  จำนวนเต็ม i;
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  สำหรับ(i=0; i<parimaa_na(aObjCmd)/parimaa_na(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
 
-  return TCL_OK;
+  คืน TCL_OK;
 }

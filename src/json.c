@@ -139,7 +139,7 @@
 /* Human-readable names for the JSONB values.  The index for each
 ** string must correspond to the JSONB_* integer above.
 */
-static const char * const jsonbType[] = {
+static const var_na * const jsonbType[] = {
   "null", "true", "false", "integer", "integer", 
   "real", "real", "text",  "text",    "text",
   "text", "array", "object", "", "", "", ""
@@ -150,7 +150,7 @@ static const char * const jsonbType[] = {
 ** the library isspace() function, resulting in a 7% overall performance
 ** increase for the text-JSON parser.  (Ubuntu14.10 gcc 4.8.4 x64 with -Os).
 */
-static const char jsonIsSpace[] = {
+static const var_na jsonIsSpace[] = {
 #ifdef SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 1, 1, 0, 0, 1, 0, 0,  /* 0 */
@@ -193,17 +193,17 @@ static const char jsonIsSpace[] = {
 #endif
 
 };
-#define jsonIsspace(x) (jsonIsSpace[(unsigned char)x])
+#define jsonIsspace(x) (jsonIsSpace[(unsigned var_na)x])
 
 /*
 ** The set of all space characters recognized by jsonIsspace().
 ** Useful as the second argument to strspn().
 */
 #ifdef SQLITE_ASCII
-static const char jsonSpaces[] = "\011\012\015\040";
+static const var_na jsonSpaces[] = "\011\012\015\040";
 #endif
 #ifdef SQLITE_EBCDIC
-static const char jsonSpaces[] = "\005\045\015\100";
+static const var_na jsonSpaces[] = "\005\045\015\100";
 #endif
 
 
@@ -213,7 +213,7 @@ static const char jsonSpaces[] = "\005\045\015\100";
 ** canonical JSON, but it is special in JSON-5, so we include
 ** it in the set of special characters.
 */
-static const char jsonIsOk[256] = {
+static const var_na jsonIsOk[256] = {
 #ifdef SQLITE_ASCII
 /*0  1  2  3  4  5  6  7   8  9  a  b  c  d  e  f  */
   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  /* 0 */
@@ -257,9 +257,9 @@ static const char jsonIsOk[256] = {
 };
 
 /* Objects */
-typedef struct JsonCache JsonCache;
-typedef struct JsonString JsonString;
-typedef struct JsonParse JsonParse;
+typedef sa_nracanaa JsonCache JsonCache;
+typedef sa_nracanaa JsonString JsonString;
+typedef sa_nracanaa JsonParse JsonParse;
 
 /*
 ** Magic number used for the JSON parse cache in sqlite3_get_auxdata()
@@ -286,9 +286,9 @@ typedef struct JsonParse JsonParse;
 **
 **    *   zJson must be an RCStr.  In other words bJsonIsRCStr must be true.
 */
-struct JsonCache {
+sa_nracanaa JsonCache {
   sqlite3 *db;                    /* Database connection */
-  int nUsed;                      /* Number of active entries in the cache */
+  จำนวนเต็ม nUsed;                      /* Number of active entries in the cache */
   JsonParse *a[JSON_CACHE_SIZE];  /* One line for each cache entry */
 };
 
@@ -300,14 +300,14 @@ struct JsonCache {
 ** then it will be an RCStr string.  This aids with caching of large
 ** JSON strings.
 */
-struct JsonString {
+sa_nracanaa JsonString {
   sqlite3_context *pCtx;   /* Function context - put error messages here */
-  char *zBuf;              /* Append JSON content here */
+  var_na *zBuf;              /* Append JSON content here */
   u64 nAlloc;              /* Bytes of storage available in zBuf[] */
   u64 nUsed;               /* Bytes of zBuf[] currently used */
   u8 bStatic;              /* True if zBuf is static space */
   u8 eErr;                 /* True if an error has been encountered */
-  char zSpace[100];        /* Initial static space */
+  var_na zSpace[100];        /* Initial static space */
 };
 
 /* Allowed values for JsonString.eErr */
@@ -350,13 +350,13 @@ struct JsonString {
 **       is skipped if the function is one of the jsonb_* functions that
 **       returns JSONB instead of text JSON.
 */
-struct JsonParse {
+sa_nracanaa JsonParse {
   u8 *aBlob;         /* JSONB representation of JSON value */
   u32 nBlob;         /* Bytes of aBlob[] actually used */
   u32 nBlobAlloc;    /* Bytes allocated to aBlob[].  0 if aBlob is external */
-  char *zJson;       /* Json text used for parsing */
+  var_na *zJson;       /* Json text used for parsing */
   sqlite3 *db;       /* The database connection to which this object belongs */
-  int nJson;         /* Length of the zJson string in bytes */
+  จำนวนเต็ม nJson;         /* Length of the zJson string in bytes */
   u32 nJPRef;        /* Number of references to this object */
   u32 iErr;          /* Error location in zJson[] */
   u16 iDepth;        /* Nesting depth */
@@ -367,7 +367,7 @@ struct JsonParse {
   u8 bReadOnly;      /* Do not modify. */
   /* Search and edit information.  See jsonLookupStep() */
   u8 eEdit;          /* Edit operation to apply */
-  int delta;         /* Size change due to the edit */
+  จำนวนเต็ม delta;         /* Size change due to the edit */
   u32 nIns;          /* Number of bytes to insert */
   u32 iLabel;        /* Location of label if search landed on an object value */
   u8 *aIns;          /* Content to be inserted */
@@ -389,7 +389,7 @@ struct JsonParse {
 */
 #ifndef SQLITE_JSON_MAX_DEPTH
 # define JSON_MAX_DEPTH  1000
-#else
+#มิฉะนั้น
 # define JSON_MAX_DEPTH SQLITE_JSON_MAX_DEPTH
 #endif
 
@@ -404,13 +404,13 @@ struct JsonParse {
 ** Forward references
 **************************************************************************/
 static void jsonReturnStringAsBlob(JsonString*);
-static int jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
+static จำนวนเต็ม jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
 static u32 jsonTranslateBlobToText(JsonParse*,u32,JsonString*);
 static void jsonReturnParse(sqlite3_context*,JsonParse*);
 static JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_value*,u32);
 static void jsonParseFree(JsonParse*);
 static u32 jsonbPayloadSize(const JsonParse*, u32, u32*);
-static u32 jsonUnescapeOneChar(const char*, u32, u32*);
+static u32 jsonUnescapeOneChar(const var_na*, u32, u32*);
 
 /**************************************************************************
 ** Utility routines for dealing with JsonCache objects
@@ -420,8 +420,8 @@ static u32 jsonUnescapeOneChar(const char*, u32, u32*);
 ** Free a JsonCache object.
 */
 static void jsonCacheDelete(JsonCache *p){
-  int i;
-  for(i=0; i<p->nUsed; i++){
+  จำนวนเต็ม i;
+  สำหรับ(i=0; i<p->nUsed; i++){
     jsonParseFree(p->a[i]);
   }
   sqlite3DbFree(p->db, p);
@@ -437,7 +437,7 @@ static void jsonCacheDeleteGeneric(void *p){
 **
 ** Cache entries are stored in age order, oldest first.
 */
-static int jsonCacheInsert(
+static จำนวนเต็ม jsonCacheInsert(
   sqlite3_context *ctx,   /* The SQL statement context holding the cache */
   JsonParse *pParse       /* The parse object to be added to the cache */
 ){
@@ -447,18 +447,18 @@ static int jsonCacheInsert(
   assert( pParse->bJsonIsRCStr );
   assert( pParse->delta==0 );
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
+  ถ้า( p==0 ){
     sqlite3 *db = sqlite3_context_db_handle(ctx);
-    p = sqlite3DbMallocZero(db, sizeof(*p));
-    if( p==0 ) return SQLITE_NOMEM;
+    p = sqlite3DbMallocZero(db, parimaa_na(*p));
+    ถ้า( p==0 ) คืน SQLITE_NOMEM;
     p->db = db;
     sqlite3_set_auxdata(ctx, JSON_CACHE_ID, p, jsonCacheDeleteGeneric);
     p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-    if( p==0 ) return SQLITE_NOMEM;
+    ถ้า( p==0 ) คืน SQLITE_NOMEM;
   }
-  if( p->nUsed >= JSON_CACHE_SIZE ){
+  ถ้า( p->nUsed >= JSON_CACHE_SIZE ){
     jsonParseFree(p->a[0]);
-    memmove(p->a, &p->a[1], (JSON_CACHE_SIZE-1)*sizeof(p->a[0]));
+    memmove(p->a, &p->a[1], (JSON_CACHE_SIZE-1)*parimaa_na(p->a[0]));
     p->nUsed = JSON_CACHE_SIZE-1;
   }
   assert( pParse->nBlobAlloc>0 );
@@ -467,7 +467,7 @@ static int jsonCacheInsert(
   pParse->bReadOnly = 1;
   p->a[p->nUsed] = pParse;
   p->nUsed++;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /*
@@ -486,42 +486,42 @@ static JsonParse *jsonCacheSearch(
   sqlite3_value *pArg      /* Function argument containing SQL text */
 ){
   JsonCache *p;
-  int i;
-  const char *zJson;
-  int nJson;
+  จำนวนเต็ม i;
+  const var_na *zJson;
+  จำนวนเต็ม nJson;
 
-  if( sqlite3_value_type(pArg)!=SQLITE_TEXT ){
-    return 0;
+  ถ้า( sqlite3_value_type(pArg)!=SQLITE_TEXT ){
+    คืน 0;
   }
-  zJson = (const char*)sqlite3_value_text(pArg);
-  if( zJson==0 ) return 0;
+  zJson = (const var_na*)sqlite3_value_text(pArg);
+  ถ้า( zJson==0 ) คืน 0;
   nJson = sqlite3_value_bytes(pArg);
 
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
-  if( p==0 ){
-    return 0;
+  ถ้า( p==0 ){
+    คืน 0;
   }
-  for(i=0; i<p->nUsed; i++){
-    if( p->a[i]->zJson==zJson ) break;
+  สำหรับ(i=0; i<p->nUsed; i++){
+    ถ้า( p->a[i]->zJson==zJson ) bha_nga;
   }
-  if( i>=p->nUsed ){
-    for(i=0; i<p->nUsed; i++){
-      if( p->a[i]->nJson!=nJson ) continue;
-      if( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) break;
+  ถ้า( i>=p->nUsed ){
+    สำหรับ(i=0; i<p->nUsed; i++){
+      ถ้า( p->a[i]->nJson!=nJson ) continue;
+      ถ้า( memcmp(p->a[i]->zJson, zJson, nJson)==0 ) bha_nga;
     }
   }
-  if( i<p->nUsed ){
-    if( i<p->nUsed-1 ){
+  ถ้า( i<p->nUsed ){
+    ถ้า( i<p->nUsed-1 ){
       /* Make the matching entry the most recently used entry */
       JsonParse *tmp = p->a[i];
-      memmove(&p->a[i], &p->a[i+1], (p->nUsed-i-1)*sizeof(tmp));
+      memmove(&p->a[i], &p->a[i+1], (p->nUsed-i-1)*parimaa_na(tmp));
       p->a[p->nUsed-1] = tmp;
       i = p->nUsed - 1;
     }
     assert( p->a[i]->delta==0 );
-    return p->a[i];
-  }else{
-    return 0;
+    คืน p->a[i];
+  }มิฉะนั้น{
+    คืน 0;
   }
 }
 
@@ -534,7 +534,7 @@ static JsonParse *jsonCacheSearch(
 */
 static void jsonStringZero(JsonString *p){
   p->zBuf = p->zSpace;
-  p->nAlloc = sizeof(p->zSpace);
+  p->nAlloc = parimaa_na(p->zSpace);
   p->nUsed = 0;
   p->bStatic = 1;
 }
@@ -551,7 +551,7 @@ static void jsonStringInit(JsonString *p, sqlite3_context *pCtx){
 ** initial state.
 */
 static void jsonStringReset(JsonString *p){
-  if( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
+  ถ้า( !p->bStatic ) sqlite3RCStrUnref(p->zBuf);
   jsonStringZero(p);
 }
 
@@ -559,7 +559,7 @@ static void jsonStringReset(JsonString *p){
 */
 static void jsonStringOom(JsonString *p){
   p->eErr |= JSTRING_OOM;
-  if( p->pCtx ) sqlite3_result_error_nomem(p->pCtx);
+  ถ้า( p->pCtx ) sqlite3_result_error_nomem(p->pCtx);
   jsonStringReset(p);
 }
 
@@ -575,57 +575,57 @@ static void jsonStringTooDeep(JsonString *p){
 /* Enlarge pJson->zBuf so that it can hold at least N more bytes.
 ** Return zero on success.  Return non-zero on an OOM error
 */
-static int jsonStringGrow(JsonString *p, u32 N){
+static จำนวนเต็ม jsonStringGrow(JsonString *p, u32 N){
   u64 nTotal = N<p->nAlloc ? p->nAlloc*2 : p->nAlloc+N+10;
-  char *zNew;
-  if( p->bStatic ){
-    if( p->eErr ) return 1;
+  var_na *zNew;
+  ถ้า( p->bStatic ){
+    ถ้า( p->eErr ) คืน 1;
     zNew = sqlite3RCStrNew(nTotal);
-    if( zNew==0 ){
+    ถ้า( zNew==0 ){
       jsonStringOom(p);
-      return SQLITE_NOMEM;
+      คืน SQLITE_NOMEM;
     }
     memcpy(zNew, p->zBuf, (size_t)p->nUsed);
     p->zBuf = zNew;
     p->bStatic = 0;
-  }else{
+  }มิฉะนั้น{
     p->zBuf = sqlite3RCStrResize(p->zBuf, nTotal);
-    if( p->zBuf==0 ){
+    ถ้า( p->zBuf==0 ){
       p->eErr |= JSTRING_OOM;
       jsonStringZero(p);
-      return SQLITE_NOMEM;
+      คืน SQLITE_NOMEM;
     }
   }
   p->nAlloc = nTotal;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* Append N bytes from zIn onto the end of the JsonString string.
 */
 static SQLITE_NOINLINE void jsonStringExpandAndAppend(
   JsonString *p,
-  const char *zIn,
+  const var_na *zIn,
   u32 N
 ){
   assert( N>0 );
-  if( jsonStringGrow(p,N) ) return;
+  ถ้า( jsonStringGrow(p,N) ) คืน;
   memcpy(p->zBuf+p->nUsed, zIn, N);
   p->nUsed += N;
 }
-static void jsonAppendRaw(JsonString *p, const char *zIn, u32 N){
-  if( N==0 ) return;
-  if( N+p->nUsed >= p->nAlloc ){
+static void jsonAppendRaw(JsonString *p, const var_na *zIn, u32 N){
+  ถ้า( N==0 ) คืน;
+  ถ้า( N+p->nUsed >= p->nAlloc ){
     jsonStringExpandAndAppend(p,zIn,N);
-  }else{
+  }มิฉะนั้น{
     memcpy(p->zBuf+p->nUsed, zIn, N);
     p->nUsed += N;
   }
 }
-static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
+static void jsonAppendRawNZ(JsonString *p, const var_na *zIn, u32 N){
   assert( N>0 );
-  if( N+p->nUsed >= p->nAlloc ){
+  ถ้า( N+p->nUsed >= p->nAlloc ){
     jsonStringExpandAndAppend(p,zIn,N);
-  }else{
+  }มิฉะนั้น{
     memcpy(p->zBuf+p->nUsed, zIn, N);
     p->nUsed += N;
   }
@@ -633,25 +633,25 @@ static void jsonAppendRawNZ(JsonString *p, const char *zIn, u32 N){
 
 /* Append formatted text (not to exceed N bytes) to the JsonString.
 */
-static void jsonPrintf(int N, JsonString *p, const char *zFormat, ...){
+static void jsonPrintf(จำนวนเต็ม N, JsonString *p, const var_na *zFormat, ...){
   va_list ap;
-  if( (p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N) ) return;
+  ถ้า( (p->nUsed + N >= p->nAlloc) && jsonStringGrow(p, N) ) คืน;
   va_start(ap, zFormat);
   sqlite3_vsnprintf(N, p->zBuf+p->nUsed, zFormat, ap);
   va_end(ap);
-  p->nUsed += (int)strlen(p->zBuf+p->nUsed);
+  p->nUsed += (จำนวนเต็ม)strlen(p->zBuf+p->nUsed);
 }
 
 /* Append a single character
 */
-static SQLITE_NOINLINE void jsonAppendCharExpand(JsonString *p, char c){
-  if( jsonStringGrow(p,1) ) return;
+static SQLITE_NOINLINE void jsonAppendCharExpand(JsonString *p, var_na c){
+  ถ้า( jsonStringGrow(p,1) ) คืน;
   p->zBuf[p->nUsed++] = c;
 }
-static void jsonAppendChar(JsonString *p, char c){
-  if( p->nUsed>=p->nAlloc ){
+static void jsonAppendChar(JsonString *p, var_na c){
+  ถ้า( p->nUsed>=p->nAlloc ){
     jsonAppendCharExpand(p,c);
-  }else{
+  }มิฉะนั้น{
     p->zBuf[p->nUsed++] = c;
   }
 }
@@ -659,7 +659,7 @@ static void jsonAppendChar(JsonString *p, char c){
 /* Remove a single character from the end of the string
 */
 static void jsonStringTrimOneChar(JsonString *p){
-  if( p->eErr==0 ){
+  ถ้า( p->eErr==0 ){
     assert( p->nUsed>0 );
     p->nUsed--;
   }
@@ -671,20 +671,20 @@ static void jsonStringTrimOneChar(JsonString *p){
 ** Return true on success.  Return false if an OOM prevents this
 ** from happening.
 */
-static int jsonStringTerminate(JsonString *p){
+static จำนวนเต็ม jsonStringTerminate(JsonString *p){
   jsonAppendChar(p, 0);
   jsonStringTrimOneChar(p);
-  return p->eErr==0;
+  คืน p->eErr==0;
 }
 
 /* Append a comma separator to the output buffer, if the previous
 ** character is not '[' or '{'.
 */
 static void jsonAppendSeparator(JsonString *p){
-  char c;
-  if( p->nUsed==0 ) return;
+  var_na c;
+  ถ้า( p->nUsed==0 ) คืน;
   c = p->zBuf[p->nUsed-1];
-  if( c=='[' || c=='{' ) return;
+  ถ้า( c=='[' || c=='{' ) คืน;
   jsonAppendChar(p, ',');
 }
 
@@ -695,23 +695,23 @@ static void jsonAppendSeparator(JsonString *p){
 ** sufficiently to hold the worst-case encoding plus a nul terminator.
 */
 static void jsonAppendControlChar(JsonString *p, u8 c){
-  static const char aSpecial[] = {
+  static const var_na aSpecial[] = {
      0, 0, 0, 0, 0, 0, 0, 0, 'b', 't', 'n', 0, 'f', 'r', 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,   0,   0,   0, 0,   0,   0, 0, 0
   };
-  assert( sizeof(aSpecial)==32 );
+  assert( parimaa_na(aSpecial)==32 );
   assert( aSpecial['\b']=='b' );
   assert( aSpecial['\f']=='f' );
   assert( aSpecial['\n']=='n' );
   assert( aSpecial['\r']=='r' );
   assert( aSpecial['\t']=='t' );
-  assert( c>=0 && c<sizeof(aSpecial) );
+  assert( c>=0 && c<parimaa_na(aSpecial) );
   assert( p->nUsed+7 <= p->nAlloc );
-  if( aSpecial[c] ){
+  ถ้า( aSpecial[c] ){
     p->zBuf[p->nUsed] = '\\';
     p->zBuf[p->nUsed+1] = aSpecial[c];
     p->nUsed += 2;
-  }else{
+  }มิฉะนั้น{
     p->zBuf[p->nUsed] = '\\';
     p->zBuf[p->nUsed+1] = 'u';
     p->zBuf[p->nUsed+2] = '0';
@@ -730,64 +730,64 @@ static void jsonAppendControlChar(JsonString *p, u8 c){
 ** This routine is a high-runner.  There is a measurable performance
 ** increase associated with unwinding the jsonIsOk[] loop.
 */
-static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
+static void jsonAppendString(JsonString *p, const var_na *zIn, u32 N){
   u32 k;
   u8 c;
   const u8 *z = (const u8*)zIn;
-  if( z==0 ) return;
-  if( (N+p->nUsed+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) return;
+  ถ้า( z==0 ) คืน;
+  ถ้า( (N+p->nUsed+2 >= p->nAlloc) && jsonStringGrow(p,N+2)!=0 ) คืน;
   p->zBuf[p->nUsed++] = '"';
-  while( 1 /*exit-by-break*/ ){
+  ขณะ( 1 /*exit-by-break*/ ){
     k = 0;
     /* The following while() is the 4-way unwound equivalent of
     **
     **     while( k<N && jsonIsOk[z[k]] ){ k++; }
     */
-    while( 1 /* Exit by break */ ){
-      if( k+3>=N ){
-        while( k<N && jsonIsOk[z[k]] ){ k++; }
-        break;
+    ขณะ( 1 /* Exit by break */ ){
+      ถ้า( k+3>=N ){
+        ขณะ( k<N && jsonIsOk[z[k]] ){ k++; }
+        bha_nga;
       }
-      if( !jsonIsOk[z[k]] ){
-        break;
+      ถ้า( !jsonIsOk[z[k]] ){
+        bha_nga;
       }
-      if( !jsonIsOk[z[k+1]] ){
+      ถ้า( !jsonIsOk[z[k+1]] ){
         k += 1;
-        break;
+        bha_nga;
       }
-      if( !jsonIsOk[z[k+2]] ){
+      ถ้า( !jsonIsOk[z[k+2]] ){
         k += 2;
-        break;
+        bha_nga;
       }
-      if( !jsonIsOk[z[k+3]] ){
+      ถ้า( !jsonIsOk[z[k+3]] ){
         k += 3;
-        break;
-      }else{
+        bha_nga;
+      }มิฉะนั้น{
         k += 4;
       }
     }
-    if( k>=N ){
-      if( k>0 ){
+    ถ้า( k>=N ){
+      ถ้า( k>0 ){
         memcpy(&p->zBuf[p->nUsed], z, k);
         p->nUsed += k;
       }
-      break;
+      bha_nga;
     }
-    if( k>0 ){
+    ถ้า( k>0 ){
       memcpy(&p->zBuf[p->nUsed], z, k);
       p->nUsed += k;
       z += k;
       N -= k;
     }
     c = z[0];
-    if( c=='"' || c=='\\' ){
-      if( (p->nUsed+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) return;
+    ถ้า( c=='"' || c=='\\' ){
+      ถ้า( (p->nUsed+N+3 > p->nAlloc) && jsonStringGrow(p,N+3)!=0 ) คืน;
       p->zBuf[p->nUsed++] = '\\';
       p->zBuf[p->nUsed++] = c;
-    }else if( c=='\'' ){
+    }มิฉะนั้น ถ้า( c=='\'' ){
       p->zBuf[p->nUsed++] = c;
-    }else{
-      if( (p->nUsed+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) return;
+    }มิฉะนั้น{
+      ถ้า( (p->nUsed+N+7 > p->nAlloc) && jsonStringGrow(p,N+7)!=0 ) คืน;
       jsonAppendControlChar(p, c);
     }
     z++;
@@ -806,41 +806,41 @@ static void jsonAppendSqlValue(
   sqlite3_value *pValue          /* Value to append */
 ){
   switch( sqlite3_value_type(pValue) ){
-    case SQLITE_NULL: {
+    pak_sa SQLITE_NULL: {
       jsonAppendRawNZ(p, "null", 4);
-      break;
+      bha_nga;
     }
-    case SQLITE_FLOAT: {
+    pak_sa SQLITE_FLOAT: {
       jsonPrintf(100, p, "%!0.17g", sqlite3_value_double(pValue));
-      break;
+      bha_nga;
     }
-    case SQLITE_INTEGER: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
+    pak_sa SQLITE_INTEGER: {
+      const var_na *z = (const var_na*)sqlite3_value_text(pValue);
       u32 n = (u32)sqlite3_value_bytes(pValue);
       jsonAppendRaw(p, z, n);
-      break;
+      bha_nga;
     }
-    case SQLITE_TEXT: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
+    pak_sa SQLITE_TEXT: {
+      const var_na *z = (const var_na*)sqlite3_value_text(pValue);
       u32 n = (u32)sqlite3_value_bytes(pValue);
-      if( sqlite3_value_subtype(pValue)==JSON_SUBTYPE ){
+      ถ้า( sqlite3_value_subtype(pValue)==JSON_SUBTYPE ){
         jsonAppendRaw(p, z, n);
-      }else{
+      }มิฉะนั้น{
         jsonAppendString(p, z, n);
       }
-      break;
+      bha_nga;
     }
     default: {
       JsonParse px;
-      memset(&px, 0, sizeof(px));
-      if( jsonArgIsJsonb(pValue, &px) ){
+      memset(&px, 0, parimaa_na(px));
+      ถ้า( jsonArgIsJsonb(pValue, &px) ){
         jsonTranslateBlobToText(&px, 0, p);
-      }else if( p->eErr==0 ){
+      }มิฉะนั้น ถ้า( p->eErr==0 ){
         sqlite3_result_error(p->pCtx, "JSON cannot hold BLOB values", -1);
         p->eErr = JSTRING_ERR;
         jsonStringReset(p);
       }
-      break;
+      bha_nga;
     }
   }
 }
@@ -862,35 +862,35 @@ static void jsonReturnString(
   assert( (pParse!=0)==(ctx!=0) );
   assert( ctx==0 || ctx==p->pCtx );
   jsonStringTerminate(p);
-  if( p->eErr==0 ){
-    int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(p->pCtx));
-    if( flags & JSON_BLOB ){
+  ถ้า( p->eErr==0 ){
+    จำนวนเต็ม flags = SQLITE_PTR_TO_INT(sqlite3_user_data(p->pCtx));
+    ถ้า( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(p);
-    }else if( p->bStatic ){
+    }มิฉะนั้น ถ้า( p->bStatic ){
       sqlite3_result_text64(p->pCtx, p->zBuf, p->nUsed,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-    }else{
-      if( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
-        int rc;
+    }มิฉะนั้น{
+      ถ้า( pParse && pParse->bJsonIsRCStr==0 && pParse->nBlobAlloc>0 ){
+        จำนวนเต็ม rc;
         pParse->zJson = sqlite3RCStrRef(p->zBuf);
         pParse->nJson = p->nUsed;
         pParse->bJsonIsRCStr = 1;
         rc = jsonCacheInsert(ctx, pParse);
-        if( rc==SQLITE_NOMEM ){
+        ถ้า( rc==SQLITE_NOMEM ){
           sqlite3_result_error_nomem(ctx);
           jsonStringReset(p);
-          return;
+          คืน;
         }
       }
       sqlite3_result_text64(p->pCtx, sqlite3RCStrRef(p->zBuf), p->nUsed,
                             sqlite3RCStrUnref,
                             SQLITE_UTF8);
     }
-  }else if( p->eErr & JSTRING_OOM ){
+  }มิฉะนั้น ถ้า( p->eErr & JSTRING_OOM ){
     sqlite3_result_error_nomem(p->pCtx);
-  }else if( p->eErr & JSTRING_TOODEEP ){
+  }มิฉะนั้น ถ้า( p->eErr & JSTRING_TOODEEP ){
     /* error already in p->pCtx */
-  }else if( p->eErr & JSTRING_MALFORMED ){
+  }มิฉะนั้น ถ้า( p->eErr & JSTRING_MALFORMED ){
     sqlite3_result_error(p->pCtx, "malformed JSON", -1);
   }
   jsonStringReset(p);
@@ -906,13 +906,13 @@ static void jsonReturnString(
 */
 static void jsonParseReset(JsonParse *pParse){
   assert( pParse->nJPRef<=1 );
-  if( pParse->bJsonIsRCStr ){
+  ถ้า( pParse->bJsonIsRCStr ){
     sqlite3RCStrUnref(pParse->zJson);
     pParse->zJson = 0;
     pParse->nJson = 0;
     pParse->bJsonIsRCStr = 0;
   }
-  if( pParse->nBlobAlloc ){
+  ถ้า( pParse->nBlobAlloc ){
     sqlite3DbFree(pParse->db, pParse->aBlob);
     pParse->aBlob = 0;
     pParse->nBlob = 0;
@@ -925,10 +925,10 @@ static void jsonParseReset(JsonParse *pParse){
 ** count reaches zero, free the object.
 */
 static void jsonParseFree(JsonParse *pParse){
-  if( pParse ){
-    if( pParse->nJPRef>1 ){
+  ถ้า( pParse ){
+    ถ้า( pParse->nJPRef>1 ){
       pParse->nJPRef--;
-    }else{
+    }มิฉะนั้น{
       jsonParseReset(pParse);
       sqlite3DbFree(pParse->db, pParse);
     }
@@ -945,40 +945,40 @@ static void jsonParseFree(JsonParse *pParse){
 ** character:  0..9a..fA..F.  But unlike sqlite3HexToInt(), it does not
 ** assert() if the digit is not hex.
 */
-static u8 jsonHexToInt(int h){
+static u8 jsonHexToInt(จำนวนเต็ม h){
 #ifdef SQLITE_ASCII
   h += 9*(1&(h>>6));
 #endif
 #ifdef SQLITE_EBCDIC
   h += 9*(1&~(h>>4));
 #endif
-  return (u8)(h & 0xf);
+  คืน (u8)(h & 0xf);
 }
 
 /*
 ** Convert a 4-byte hex string into an integer
 */
-static u32 jsonHexToInt4(const char *z){
+static u32 jsonHexToInt4(const var_na *z){
   u32 v;
   v = (jsonHexToInt(z[0])<<12)
     + (jsonHexToInt(z[1])<<8)
     + (jsonHexToInt(z[2])<<4)
     + jsonHexToInt(z[3]);
-  return v;
+  คืน v;
 }
 
 /*
 ** Return true if z[] begins with 2 (or more) hexadecimal digits
 */
-static int jsonIs2Hex(const char *z){
-  return sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
+static จำนวนเต็ม jsonIs2Hex(const var_na *z){
+  คืน sqlite3Isxdigit(z[0]) && sqlite3Isxdigit(z[1]);
 }
 
 /*
 ** Return true if z[] begins with 4 (or more) hexadecimal digits
 */
-static int jsonIs4Hex(const char *z){
-  return jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
+static จำนวนเต็ม jsonIs4Hex(const var_na *z){
+  คืน jsonIs2Hex(z) && jsonIs2Hex(&z[2]);
 }
 
 /*
@@ -1017,85 +1017,85 @@ static int jsonIs4Hex(const char *z){
 ** In addition, comments between '/', '*' and '*', '/' and
 ** from '/', '/' to end-of-line are also considered to be whitespace.
 */
-static int json5Whitespace(const char *zIn){
-  int n = 0;
+static จำนวนเต็ม json5Whitespace(const var_na *zIn){
+  จำนวนเต็ม n = 0;
   const u8 *z = (u8*)zIn;
-  while( 1 /*exit by "goto whitespace_done"*/ ){
+  ขณะ( 1 /*exit by "goto whitespace_done"*/ ){
     switch( z[n] ){
-      case 0x09:
-      case 0x0a:
-      case 0x0b:
-      case 0x0c:
-      case 0x0d:
-      case 0x20: {
+      pak_sa 0x09:
+      pak_sa 0x0a:
+      pak_sa 0x0b:
+      pak_sa 0x0c:
+      pak_sa 0x0d:
+      pak_sa 0x20: {
         n++;
-        break;
+        bha_nga;
       }
-      case '/': {
-        if( z[n+1]=='*' && z[n+2]!=0 ){
-          int j;
-          for(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
-            if( z[j]==0 ) goto whitespace_done;
+      pak_sa '/': {
+        ถ้า( z[n+1]=='*' && z[n+2]!=0 ){
+          จำนวนเต็ม j;
+          สำหรับ(j=n+3; z[j]!='/' || z[j-1]!='*'; j++){
+            ถ้า( z[j]==0 ) goto whitespace_done;
           }
           n = j+1;
-          break;
-        }else if( z[n+1]=='/' ){
-          int j;
-          char c;
-          for(j=n+2; (c = z[j])!=0; j++){
-            if( c=='\n' || c=='\r' ) break;
-            if( 0xe2==(u8)c && 0x80==(u8)z[j+1]
+          bha_nga;
+        }มิฉะนั้น ถ้า( z[n+1]=='/' ){
+          จำนวนเต็ม j;
+          var_na c;
+          สำหรับ(j=n+2; (c = z[j])!=0; j++){
+            ถ้า( c=='\n' || c=='\r' ) bha_nga;
+            ถ้า( 0xe2==(u8)c && 0x80==(u8)z[j+1]
              && (0xa8==(u8)z[j+2] || 0xa9==(u8)z[j+2])
             ){
               j += 2;
-              break;
+              bha_nga;
             }
           }
           n = j;
-          if( z[n] ) n++;
-          break;
+          ถ้า( z[n] ) n++;
+          bha_nga;
         }
         goto whitespace_done;
       }
-      case 0xc2: {
-        if( z[n+1]==0xa0 ){
+      pak_sa 0xc2: {
+        ถ้า( z[n+1]==0xa0 ){
           n += 2;
-          break;
+          bha_nga;
         }
         goto whitespace_done;
       }
-      case 0xe1: {
-        if( z[n+1]==0x9a && z[n+2]==0x80 ){
+      pak_sa 0xe1: {
+        ถ้า( z[n+1]==0x9a && z[n+2]==0x80 ){
           n += 3;
-          break;
+          bha_nga;
         }
         goto whitespace_done;
       }
-      case 0xe2: {
-        if( z[n+1]==0x80 ){
+      pak_sa 0xe2: {
+        ถ้า( z[n+1]==0x80 ){
           u8 c = z[n+2];
-          if( c<0x80 ) goto whitespace_done;
-          if( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
+          ถ้า( c<0x80 ) goto whitespace_done;
+          ถ้า( c<=0x8a || c==0xa8 || c==0xa9 || c==0xaf ){
             n += 3;
-            break;
+            bha_nga;
           }
-        }else if( z[n+1]==0x81 && z[n+2]==0x9f ){
+        }มิฉะนั้น ถ้า( z[n+1]==0x81 && z[n+2]==0x9f ){
           n += 3;
-          break;
+          bha_nga;
         }
         goto whitespace_done;
       }
-      case 0xe3: {
-        if( z[n+1]==0x80 && z[n+2]==0x80 ){
+      pak_sa 0xe3: {
+        ถ้า( z[n+1]==0x80 && z[n+2]==0x80 ){
           n += 3;
-          break;
+          bha_nga;
         }
         goto whitespace_done;
       }
-      case 0xef: {
-        if( z[n+1]==0xbb && z[n+2]==0xbf ){
+      pak_sa 0xef: {
+        ถ้า( z[n+1]==0xbb && z[n+2]==0xbf ){
           n += 3;
-          break;
+          bha_nga;
         }
         goto whitespace_done;
       }
@@ -1105,20 +1105,20 @@ static int json5Whitespace(const char *zIn){
     }
   }
   whitespace_done:
-  return n;
+  คืน n;
 }
 
 /*
 ** Extra floating-point literals to allow in JSON.
 */
-static const struct NanInfName {
-  char c1;
-  char c2;
-  char n;
-  char eType;
-  char nRepl;
-  char *zMatch;
-  char *zRepl;
+static const sa_nracanaa NanInfName {
+  var_na c1;
+  var_na c2;
+  var_na n;
+  var_na eType;
+  var_na nRepl;
+  var_na *zMatch;
+  var_na *zRepl;
 } aNanInfName[] = {
   { 'i', 'I', 3, JSONB_FLOAT, 7, "inf", "9.0e999" },
   { 'i', 'I', 8, JSONB_FLOAT, 7, "infinity", "9.0e999" },
@@ -1134,9 +1134,9 @@ static const struct NanInfName {
 */
 static void jsonWrongNumArgs(
   sqlite3_context *pCtx,
-  const char *zFuncName
+  const var_na *zFuncName
 ){
-  char *zMsg = sqlite3_mprintf("json_%s() needs an odd number of arguments",
+  var_na *zMsg = sqlite3_mprintf("json_%s() needs an odd number of arguments",
                                zFuncName);
   sqlite3_result_error(pCtx, zMsg, -1);
   sqlite3_free(zMsg);
@@ -1151,22 +1151,22 @@ static void jsonWrongNumArgs(
 **
 ** Return the number of errors.
 */
-static int jsonBlobExpand(JsonParse *pParse, u64 N){
+static จำนวนเต็ม jsonBlobExpand(JsonParse *pParse, u64 N){
   u8 *aNew;
   u64 t;
   assert( N>pParse->nBlobAlloc );
-  if( pParse->nBlobAlloc==0 ){
+  ถ้า( pParse->nBlobAlloc==0 ){
     t = 100;
-  }else{
+  }มิฉะนั้น{
     t = pParse->nBlobAlloc*2;
   }
-  if( t<N ) t = N+100;
+  ถ้า( t<N ) t = N+100;
   aNew = sqlite3DbRealloc(pParse->db, pParse->aBlob, t);
-  if( aNew==0 ){ pParse->oom = 1; return 1; }
+  ถ้า( aNew==0 ){ pParse->oom = 1; คืน 1; }
   assert( t<0x7fffffff );
   pParse->aBlob = aNew;
   pParse->nBlobAlloc = (u32)t;
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -1177,21 +1177,21 @@ static int jsonBlobExpand(JsonParse *pParse, u64 N){
 **
 ** Return true on success.  Return false on OOM.
 */
-static int jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
+static จำนวนเต็ม jsonBlobMakeEditable(JsonParse *pParse, u32 nExtra){
   u8 *aOld;
   u64 nSize;
   assert( !pParse->bReadOnly );
-  if( pParse->oom ) return 0;
-  if( pParse->nBlobAlloc>0 ) return 1;
+  ถ้า( pParse->oom ) คืน 0;
+  ถ้า( pParse->nBlobAlloc>0 ) คืน 1;
   aOld = pParse->aBlob;
   nSize = pParse->nBlob + nExtra;
   pParse->aBlob = 0;
-  if( jsonBlobExpand(pParse, nSize) ){
-    return 0;
+  ถ้า( jsonBlobExpand(pParse, nSize) ){
+    คืน 0;
   }
   assert( pParse->nBlobAlloc >= pParse->nBlob + nExtra );
   memcpy(pParse->aBlob, aOld, pParse->nBlob);
-  return 1;
+  คืน 1;
 }
 
 /* Expand pParse->aBlob and append one bytes.
@@ -1201,7 +1201,7 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
   u8 c
 ){
   jsonBlobExpand(pParse, (u64)pParse->nBlob+1);
-  if( pParse->oom==0 ){
+  ถ้า( pParse->oom==0 ){
     assert( pParse->nBlob+1<=pParse->nBlobAlloc );
     pParse->aBlob[pParse->nBlob++] = c;
   }
@@ -1210,9 +1210,9 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendOneByte(
 /* Append a single character.
 */
 static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
-  if( pParse->nBlob >= pParse->nBlobAlloc ){
+  ถ้า( pParse->nBlob >= pParse->nBlobAlloc ){
     jsonBlobExpandAndAppendOneByte(pParse, c);
-  }else{
+  }มิฉะนั้น{
     pParse->aBlob[pParse->nBlob++] = c;
   }
 }
@@ -1227,7 +1227,7 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
   u64 szPayload,
   const void *aPayload
 ){
-  if( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) return;
+  ถ้า( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) คืน;
   jsonBlobAppendNode(pParse, eType, szPayload, aPayload);
 }
 
@@ -1248,25 +1248,25 @@ static void jsonBlobAppendNode(
   const void *aPayload        /* The payload.  Might be NULL */
 ){
   u8 *a;
-  if( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
+  ถ้า( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
     jsonBlobExpandAndAppendNode(pParse,eType,szPayload,aPayload);
-    return;
+    คืน;
   }
   assert( pParse->aBlob!=0 );
   a = &pParse->aBlob[pParse->nBlob];
-  if( szPayload<=11 ){
+  ถ้า( szPayload<=11 ){
     a[0] = eType | (szPayload<<4);
     pParse->nBlob += 1;
-  }else if( szPayload<=0xff ){
+  }มิฉะนั้น ถ้า( szPayload<=0xff ){
     a[0] = eType | 0xc0;
     a[1] = szPayload & 0xff;
     pParse->nBlob += 2;
-  }else if( szPayload<=0xffff ){
+  }มิฉะนั้น ถ้า( szPayload<=0xffff ){
     a[0] = eType | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
     pParse->nBlob += 3;
-  }else{
+  }มิฉะนั้น{
     a[0] = eType | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
@@ -1274,7 +1274,7 @@ static void jsonBlobAppendNode(
     a[4] = szPayload & 0xff;
     pParse->nBlob += 5;
   }
-  if( aPayload ){
+  ถ้า( aPayload ){
     pParse->nBlob += szPayload;
     memcpy(&pParse->aBlob[pParse->nBlob-szPayload], aPayload, szPayload);
   }
@@ -1282,7 +1282,7 @@ static void jsonBlobAppendNode(
 
 /* Change the payload size for the node at index i to be szPayload.
 */
-static int jsonBlobChangePayloadSize(
+static จำนวนเต็ม jsonBlobChangePayloadSize(
   JsonParse *pParse,
   u32 i,
   u32 szPayload
@@ -1291,61 +1291,61 @@ static int jsonBlobChangePayloadSize(
   u8 szType;
   u8 nExtra;
   u8 nNeeded;
-  int delta;
-  if( pParse->oom ) return 0;
+  จำนวนเต็ม delta;
+  ถ้า( pParse->oom ) คืน 0;
   a = &pParse->aBlob[i];
   szType = a[0]>>4;
-  if( szType<=11 ){
+  ถ้า( szType<=11 ){
     nExtra = 0;
-  }else if( szType==12 ){
+  }มิฉะนั้น ถ้า( szType==12 ){
     nExtra = 1;
-  }else if( szType==13 ){
+  }มิฉะนั้น ถ้า( szType==13 ){
     nExtra = 2;
-  }else if( szType==14 ){
+  }มิฉะนั้น ถ้า( szType==14 ){
     nExtra = 4;
-  }else{
+  }มิฉะนั้น{
     nExtra = 8;
   }
-  if( szPayload<=11 ){
+  ถ้า( szPayload<=11 ){
     nNeeded = 0;
-  }else if( szPayload<=0xff ){
+  }มิฉะนั้น ถ้า( szPayload<=0xff ){
     nNeeded = 1;
-  }else if( szPayload<=0xffff ){
+  }มิฉะนั้น ถ้า( szPayload<=0xffff ){
     nNeeded = 2;
-  }else{
+  }มิฉะนั้น{
     nNeeded = 4;
   }
   delta = nNeeded - nExtra;
-  if( delta ){
+  ถ้า( delta ){
     u64 newSize = (u64)pParse->nBlob + delta;
-    if( delta>0 ){
-      if( newSize>pParse->nBlobAlloc && jsonBlobExpand(pParse, newSize) ){
-        return 0;  /* OOM error.  Error state recorded in pParse->oom. */
+    ถ้า( delta>0 ){
+      ถ้า( newSize>pParse->nBlobAlloc && jsonBlobExpand(pParse, newSize) ){
+        คืน 0;  /* OOM error.  Error state recorded in pParse->oom. */
       }
       a = &pParse->aBlob[i];
       memmove(&a[1+delta], &a[1], pParse->nBlob - (i+1));
-    }else{
+    }มิฉะนั้น{
       memmove(&a[1], &a[1-delta], pParse->nBlob - (i+1-delta));
     }
     pParse->nBlob = newSize;
   }
-  if( nNeeded==0 ){
+  ถ้า( nNeeded==0 ){
     a[0] = (a[0] & 0x0f) | (szPayload<<4);
-  }else if( nNeeded==1 ){
+  }มิฉะนั้น ถ้า( nNeeded==1 ){
     a[0] = (a[0] & 0x0f) | 0xc0;
     a[1] = szPayload & 0xff;
-  }else if( nNeeded==2 ){
+  }มิฉะนั้น ถ้า( nNeeded==2 ){
     a[0] = (a[0] & 0x0f) | 0xd0;
     a[1] = (szPayload >> 8) & 0xff;
     a[2] = szPayload & 0xff;
-  }else{
+  }มิฉะนั้น{
     a[0] = (a[0] & 0x0f) | 0xe0;
     a[1] = (szPayload >> 24) & 0xff;
     a[2] = (szPayload >> 16) & 0xff;
     a[3] = (szPayload >> 8) & 0xff;
     a[4] = szPayload & 0xff;
   }
-  return delta;
+  คืน delta;
 }
 
 /*
@@ -1353,11 +1353,11 @@ static int jsonBlobChangePayloadSize(
 ** then set *pOp to JSONB_TEXTJ and return true.  If not, do not make
 ** any changes to *pOp and return false.
 */
-static int jsonIs4HexB(const char *z, int *pOp){
-  if( z[0]!='u' ) return 0;
-  if( !jsonIs4Hex(&z[1]) ) return 0;
+static จำนวนเต็ม jsonIs4HexB(const var_na *z, จำนวนเต็ม *pOp){
+  ถ้า( z[0]!='u' ) คืน 0;
+  ถ้า( !jsonIs4Hex(&z[1]) ) คืน 0;
   *pOp = JSONB_TEXTJ;
-  return 1;
+  คืน 1;
 }
 
 /*
@@ -1379,186 +1379,186 @@ static u32 jsonbValidityCheck(
   u32 n, sz, j, k;
   const u8 *z;
   u8 x;
-  if( iDepth>JSON_MAX_DEPTH ) return i+1;
+  ถ้า( iDepth>JSON_MAX_DEPTH ) คืน i+1;
   sz = 0;
   n = jsonbPayloadSize(pParse, i, &sz);
-  if( NEVER(n==0) ) return i+1;          /* Checked by caller */
-  if( NEVER(i+n+sz!=iEnd) ) return i+1;  /* Checked by caller */
+  ถ้า( NEVER(n==0) ) คืน i+1;          /* Checked by caller */
+  ถ้า( NEVER(i+n+sz!=iEnd) ) คืน i+1;  /* Checked by caller */
   z = pParse->aBlob;
   x = z[i] & 0x0f;
   switch( x ){
-    case JSONB_NULL:
-    case JSONB_TRUE:
-    case JSONB_FALSE: {
-      return n+sz==1 ? 0 : i+1;
+    pak_sa JSONB_NULL:
+    pak_sa JSONB_TRUE:
+    pak_sa JSONB_FALSE: {
+      คืน n+sz==1 ? 0 : i+1;
     }
-    case JSONB_INT: {
-      if( sz<1 ) return i+1;
+    pak_sa JSONB_INT: {
+      ถ้า( sz<1 ) คืน i+1;
       j = i+n;
-      if( z[j]=='-' ){
+      ถ้า( z[j]=='-' ){
         j++;
-        if( sz<2 ) return i+1;
+        ถ้า( sz<2 ) คืน i+1;
       }
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isdigit(z[j]) ){
+      ขณะ( j<k ){
+        ถ้า( sqlite3Isdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }มิฉะนั้น{
+          คืน j+1;
         }
       }
-      return 0;
+      คืน 0;
     }
-    case JSONB_INT5: {
-      if( sz<3 ) return i+1;
+    pak_sa JSONB_INT5: {
+      ถ้า( sz<3 ) คืน i+1;
       j = i+n;
-      if( z[j]=='-' ){
-        if( sz<4 ) return i+1;
+      ถ้า( z[j]=='-' ){
+        ถ้า( sz<4 ) คืน i+1;
         j++;
       }
-      if( z[j]!='0' ) return i+1;
-      if( z[j+1]!='x' && z[j+1]!='X' ) return j+2;
+      ถ้า( z[j]!='0' ) คืน i+1;
+      ถ้า( z[j+1]!='x' && z[j+1]!='X' ) คืน j+2;
       j += 2;
       k = i+n+sz;
-      while( j<k ){
-        if( sqlite3Isxdigit(z[j]) ){
+      ขณะ( j<k ){
+        ถ้า( sqlite3Isxdigit(z[j]) ){
           j++;
-        }else{
-          return j+1;
+        }มิฉะนั้น{
+          คืน j+1;
         }
       }
-      return 0;
+      คืน 0;
     }
-    case JSONB_FLOAT:
-    case JSONB_FLOAT5: {
+    pak_sa JSONB_FLOAT:
+    pak_sa JSONB_FLOAT5: {
       u8 seen = 0;   /* 0: initial.  1: '.' seen  2: 'e' seen */
-      if( sz<2 ) return i+1;
+      ถ้า( sz<2 ) คืน i+1;
       j = i+n;
       k = j+sz;
-      if( z[j]=='-' ){
+      ถ้า( z[j]=='-' ){
         j++;
-        if( sz<3 ) return i+1;
+        ถ้า( sz<3 ) คืน i+1;
       }
-      if( z[j]=='.' ){
-        if( x==JSONB_FLOAT ) return j+1;
-        if( !sqlite3Isdigit(z[j+1]) ) return j+1;
+      ถ้า( z[j]=='.' ){
+        ถ้า( x==JSONB_FLOAT ) คืน j+1;
+        ถ้า( !sqlite3Isdigit(z[j+1]) ) คืน j+1;
         j += 2;
         seen = 1;
-      }else if( z[j]=='0' && x==JSONB_FLOAT ){
-        if( j+3>k ) return j+1;
-        if( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) return j+1;
+      }มิฉะนั้น ถ้า( z[j]=='0' && x==JSONB_FLOAT ){
+        ถ้า( j+3>k ) คืน j+1;
+        ถ้า( z[j+1]!='.' && z[j+1]!='e' && z[j+1]!='E' ) คืน j+1;
         j++;
       }
-      for(; j<k; j++){
-        if( sqlite3Isdigit(z[j]) ) continue;
-        if( z[j]=='.' ){
-          if( seen>0 ) return j+1;
-          if( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
-            return j+1;
+      สำหรับ(; j<k; j++){
+        ถ้า( sqlite3Isdigit(z[j]) ) continue;
+        ถ้า( z[j]=='.' ){
+          ถ้า( seen>0 ) คืน j+1;
+          ถ้า( x==JSONB_FLOAT && (j==k-1 || !sqlite3Isdigit(z[j+1])) ){
+            คืน j+1;
           }
           seen = 1;
           continue;
         }
-        if( z[j]=='e' || z[j]=='E' ){
-          if( seen==2 ) return j+1;
-          if( j==k-1 ) return j+1;
-          if( z[j+1]=='+' || z[j+1]=='-' ){
+        ถ้า( z[j]=='e' || z[j]=='E' ){
+          ถ้า( seen==2 ) คืน j+1;
+          ถ้า( j==k-1 ) คืน j+1;
+          ถ้า( z[j+1]=='+' || z[j+1]=='-' ){
             j++;
-            if( j==k-1 ) return j+1;
+            ถ้า( j==k-1 ) คืน j+1;
           }
           seen = 2;
           continue;
         }
-        return j+1;
+        คืน j+1;
       }
-      if( seen==0 ) return i+1;
-      return 0;
+      ถ้า( seen==0 ) คืน i+1;
+      คืน 0;
     }
-    case JSONB_TEXT: {
+    pak_sa JSONB_TEXT: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ) return j+1;
+      ขณะ( j<k ){
+        ถ้า( !jsonIsOk[z[j]] && z[j]!='\'' ) คืน j+1;
         j++;
       }
-      return 0;
+      คืน 0;
     }
-    case JSONB_TEXTJ:
-    case JSONB_TEXT5: {
+    pak_sa JSONB_TEXTJ:
+    pak_sa JSONB_TEXT5: {
       j = i+n;
       k = j+sz;
-      while( j<k ){
-        if( !jsonIsOk[z[j]] && z[j]!='\'' ){
-          if( z[j]=='"' ){
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( z[j]<=0x1f ){
+      ขณะ( j<k ){
+        ถ้า( !jsonIsOk[z[j]] && z[j]!='\'' ){
+          ถ้า( z[j]=='"' ){
+            ถ้า( x==JSONB_TEXTJ ) คืน j+1;
+          }มิฉะนั้น ถ้า( z[j]<=0x1f ){
             /* Control characters in JSON5 string literals are ok */
-            if( x==JSONB_TEXTJ ) return j+1;
-          }else if( NEVER(z[j]!='\\') || j+1>=k ){
-            return j+1;
-          }else if( strchr("\"\\/bfnrt",z[j+1])!=0 ){
+            ถ้า( x==JSONB_TEXTJ ) คืน j+1;
+          }มิฉะนั้น ถ้า( NEVER(z[j]!='\\') || j+1>=k ){
+            คืน j+1;
+          }มิฉะนั้น ถ้า( strchr("\"\\/bfnrt",z[j+1])!=0 ){
             j++;
-          }else if( z[j+1]=='u' ){
-            if( j+5>=k ) return j+1;
-            if( !jsonIs4Hex((const char*)&z[j+2]) ) return j+1;
+          }มิฉะนั้น ถ้า( z[j+1]=='u' ){
+            ถ้า( j+5>=k ) คืน j+1;
+            ถ้า( !jsonIs4Hex((const var_na*)&z[j+2]) ) คืน j+1;
             j++;
-          }else if( x!=JSONB_TEXT5 ){
-            return j+1;
-          }else{
+          }มิฉะนั้น ถ้า( x!=JSONB_TEXT5 ){
+            คืน j+1;
+          }มิฉะนั้น{
             u32 c = 0;
-            u32 szC = jsonUnescapeOneChar((const char*)&z[j], k-j, &c);
-            if( c==JSON_INVALID_CHAR ) return j+1;
+            u32 szC = jsonUnescapeOneChar((const var_na*)&z[j], k-j, &c);
+            ถ้า( c==JSON_INVALID_CHAR ) คืน j+1;
             j += szC - 1;
           }
         }
         j++;
       }
-      return 0;
+      คืน 0;
     }
-    case JSONB_TEXTRAW: {
-      return 0;
+    pak_sa JSONB_TEXTRAW: {
+      คืน 0;
     }
-    case JSONB_ARRAY: {
+    pak_sa JSONB_ARRAY: {
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      ขณะ( j<k ){
         sz = 0;
         n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
+        ถ้า( n==0 ) คืน j+1;
+        ถ้า( j+n+sz>k ) คืน j+1;
         sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        ถ้า( sub ) คืน sub;
         j += n + sz;
       }
       assert( j==k );
-      return 0;
+      คืน 0;
     }
-    case JSONB_OBJECT: {
+    pak_sa JSONB_OBJECT: {
       u32 cnt = 0;
       u32 sub;
       j = i+n;
       k = j+sz;
-      while( j<k ){
+      ขณะ( j<k ){
         sz = 0;
         n = jsonbPayloadSize(pParse, j, &sz);
-        if( n==0 ) return j+1;
-        if( j+n+sz>k ) return j+1;
-        if( (cnt & 1)==0 ){
+        ถ้า( n==0 ) คืน j+1;
+        ถ้า( j+n+sz>k ) คืน j+1;
+        ถ้า( (cnt & 1)==0 ){
           x = z[j] & 0x0f;
-          if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return j+1;
+          ถ้า( x<JSONB_TEXT || x>JSONB_TEXTRAW ) คืน j+1;
         }
         sub = jsonbValidityCheck(pParse, j, j+n+sz, iDepth+1);
-        if( sub ) return sub;
+        ถ้า( sub ) คืน sub;
         cnt++;
         j += n + sz;
       }
       assert( j==k );
-      if( (cnt & 1)!=0 ) return j+1;
-      return 0;
+      ถ้า( (cnt & 1)!=0 ) คืน j+1;
+      คืน 0;
     }
     default: {
-      return i+1;
+      คืน i+1;
     }
   }
 }
@@ -1579,41 +1579,41 @@ static u32 jsonbValidityCheck(
 **     -4    ',' seen    /     the index in zJson[] of the seen character
 **     -5    ':' seen   /
 */
-static int jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
-  char c;
+static จำนวนเต็ม jsonTranslateTextToBlob(JsonParse *pParse, u32 i){
+  var_na c;
   u32 j;
   u32 iThis, iStart;
-  int x;
+  จำนวนเต็ม x;
   u8 t;
-  const char *z = pParse->zJson;
+  const var_na *z = pParse->zJson;
 json_parse_restart:
   switch( (u8)z[i] ){
-  case '{': {
+  pak_sa '{': {
     /* Parse object */
     iThis = pParse->nBlob;
     jsonBlobAppendNode(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    ถ้า( ++pParse->iDepth > JSON_MAX_DEPTH ){
       pParse->iErr = i;
-      return -1;
+      คืน -1;
     }
     iStart = pParse->nBlob;
-    for(j=i+1;;j++){
+    สำหรับ(j=i+1;;j++){
       u32 iBlob = pParse->nBlob;
       x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        int op;
-        if( x==(-2) ){
+      ถ้า( x<=0 ){
+        จำนวนเต็ม op;
+        ถ้า( x==(-2) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=(u32)iStart ) pParse->hasNonstd = 1;
-          break;
+          ถ้า( pParse->nBlob!=(u32)iStart ) pParse->hasNonstd = 1;
+          bha_nga;
         }
         j += json5Whitespace(&z[j]);
         op = JSONB_TEXT;
-        if( sqlite3JsonId1(z[j]) 
+        ถ้า( sqlite3JsonId1(z[j]) 
          || (z[j]=='\\' && jsonIs4HexB(&z[j+1], &op))
         ){
-          int k = j+1;
-          while( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
+          จำนวนเต็ม k = j+1;
+          ขณะ( (sqlite3JsonId2(z[k]) && json5Whitespace(&z[k])==0)
             || (z[k]=='\\' && jsonIs4HexB(&z[k+1], &op))
           ){
             k++;
@@ -1622,162 +1622,162 @@ json_parse_restart:
           jsonBlobAppendNode(pParse, op, k-j, &z[j]);
           pParse->hasNonstd = 1;
           x = k;
-        }else{
-          if( x!=-1 ) pParse->iErr = j;
-          return -1;
+        }มิฉะนั้น{
+          ถ้า( x!=-1 ) pParse->iErr = j;
+          คืน -1;
         }
       }
-      if( pParse->oom ) return -1;
+      ถ้า( pParse->oom ) คืน -1;
       t = pParse->aBlob[iBlob] & 0x0f;
-      if( t<JSONB_TEXT || t>JSONB_TEXTRAW ){
+      ถ้า( t<JSONB_TEXT || t>JSONB_TEXTRAW ){
         pParse->iErr = j;
-        return -1;
+        คืน -1;
       }
       j = x;
-      if( z[j]==':' ){
+      ถ้า( z[j]==':' ){
         j++;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }มิฉะนั้น{
+        ถ้า( jsonIsspace(z[j]) ){
           /* strspn() is not helpful here */
-          do{ j++; }while( jsonIsspace(z[j]) );
-          if( z[j]==':' ){
+          do{ j++; }ขณะ( jsonIsspace(z[j]) );
+          ถ้า( z[j]==':' ){
             j++;
             goto parse_object_value;
           }
         }
         x = jsonTranslateTextToBlob(pParse, j);
-        if( x!=(-5) ){
-          if( x!=(-1) ) pParse->iErr = j;
-          return -1;
+        ถ้า( x!=(-5) ){
+          ถ้า( x!=(-1) ) pParse->iErr = j;
+          คืน -1;
         }
         j = pParse->iErr+1;
       }
     parse_object_value:
       x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+      ถ้า( x<=0 ){
+        ถ้า( x!=(-1) ) pParse->iErr = j;
+        คืน -1;
       }
       j = x;
-      if( z[j]==',' ){
+      ถ้า( z[j]==',' ){
         continue;
-      }else if( z[j]=='}' ){
-        break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }มิฉะนั้น ถ้า( z[j]=='}' ){
+        bha_nga;
+      }มิฉะนั้น{
+        ถ้า( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
+          ถ้า( z[j]==',' ){
             continue;
-          }else if( z[j]=='}' ){
-            break;
+          }มิฉะนั้น ถ้า( z[j]=='}' ){
+            bha_nga;
           }
         }
         x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        ถ้า( x==(-4) ){
           j = pParse->iErr;
           continue;
         }
-        if( x==(-2) ){
+        ถ้า( x==(-2) ){
           j = pParse->iErr;
-          break;
+          bha_nga;
         }
       }
       pParse->iErr = j;
-      return -1;
+      คืน -1;
     }
     jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
     pParse->iDepth--;
-    return j+1;
+    คืน j+1;
   }
-  case '[': {
+  pak_sa '[': {
     /* Parse array */
     iThis = pParse->nBlob;
     assert( i<=(u32)pParse->nJson );
     jsonBlobAppendNode(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
     iStart = pParse->nBlob;
-    if( pParse->oom ) return -1;
-    if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+    ถ้า( pParse->oom ) คืน -1;
+    ถ้า( ++pParse->iDepth > JSON_MAX_DEPTH ){
       pParse->iErr = i;
-      return -1;
+      คืน -1;
     }
-    for(j=i+1;;j++){
+    สำหรับ(j=i+1;;j++){
       x = jsonTranslateTextToBlob(pParse, j);
-      if( x<=0 ){
-        if( x==(-3) ){
+      ถ้า( x<=0 ){
+        ถ้า( x==(-3) ){
           j = pParse->iErr;
-          if( pParse->nBlob!=iStart ) pParse->hasNonstd = 1;
-          break;
+          ถ้า( pParse->nBlob!=iStart ) pParse->hasNonstd = 1;
+          bha_nga;
         }
-        if( x!=(-1) ) pParse->iErr = j;
-        return -1;
+        ถ้า( x!=(-1) ) pParse->iErr = j;
+        คืน -1;
       }
       j = x;
-      if( z[j]==',' ){
+      ถ้า( z[j]==',' ){
         continue;
-      }else if( z[j]==']' ){
-        break;
-      }else{
-        if( jsonIsspace(z[j]) ){
+      }มิฉะนั้น ถ้า( z[j]==']' ){
+        bha_nga;
+      }มิฉะนั้น{
+        ถ้า( jsonIsspace(z[j]) ){
           j += 1 + (u32)strspn(&z[j+1], jsonSpaces);
-          if( z[j]==',' ){
+          ถ้า( z[j]==',' ){
             continue;
-          }else if( z[j]==']' ){
-            break;
+          }มิฉะนั้น ถ้า( z[j]==']' ){
+            bha_nga;
           }
         }
         x = jsonTranslateTextToBlob(pParse, j);
-        if( x==(-4) ){
+        ถ้า( x==(-4) ){
           j = pParse->iErr;
           continue;
         }
-        if( x==(-3) ){
+        ถ้า( x==(-3) ){
           j = pParse->iErr;
-          break;
+          bha_nga;
         }
       }
       pParse->iErr = j;
-      return -1;
+      คืน -1;
     }
     jsonBlobChangePayloadSize(pParse, iThis, pParse->nBlob - iStart);
     pParse->iDepth--;
-    return j+1;
+    คืน j+1;
   }
-  case '\'': {
+  pak_sa '\'': {
     u8 opcode;
-    char cDelim;
+    var_na cDelim;
     pParse->hasNonstd = 1;
     opcode = JSONB_TEXT;
     goto parse_string;
-  case '"':
+  pak_sa '"':
     /* Parse string */
     opcode = JSONB_TEXT;
   parse_string:
     cDelim = z[i];
     j = i+1;
-    while( 1 /*exit-by-break*/ ){
-      if( jsonIsOk[(u8)z[j]] ){
-        if( !jsonIsOk[(u8)z[j+1]] ){
+    ขณะ( 1 /*exit-by-break*/ ){
+      ถ้า( jsonIsOk[(u8)z[j]] ){
+        ถ้า( !jsonIsOk[(u8)z[j+1]] ){
           j += 1;
-        }else if( !jsonIsOk[(u8)z[j+2]] ){
+        }มิฉะนั้น ถ้า( !jsonIsOk[(u8)z[j+2]] ){
           j += 2;
-        }else{
+        }มิฉะนั้น{
           j += 3;
           continue;
         }
       }
       c = z[j];
-      if( c==cDelim ){
-        break;
-      }else if( c=='\\' ){
+      ถ้า( c==cDelim ){
+        bha_nga;
+      }มิฉะนั้น ถ้า( c=='\\' ){
         c = z[++j];
-        if( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
+        ถ้า( c=='"' || c=='\\' || c=='/' || c=='b' || c=='f'
            || c=='n' || c=='r' || c=='t'
            || (c=='u' && jsonIs4Hex(&z[j+1])) ){
-          if( opcode==JSONB_TEXT ) opcode = JSONB_TEXTJ;
-        }else if( c=='\'' ||  c=='v' || c=='\n'
+          ถ้า( opcode==JSONB_TEXT ) opcode = JSONB_TEXTJ;
+        }มิฉะนั้น ถ้า( c=='\'' ||  c=='v' || c=='\n'
 #ifdef SQLITE_BUG_COMPATIBLE_20250510
            || (c=='0')                            /* Legacy bug compatible */
-#else
+#มิฉะนั้น
            || (c=='0' && !sqlite3Isdigit(z[j+1])) /* Correct implementation */
 #endif
            || (0xe2==(u8)c && 0x80==(u8)z[j+1]
@@ -1785,72 +1785,72 @@ json_parse_restart:
            || (c=='x' && jsonIs2Hex(&z[j+1])) ){
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else if( c=='\r' ){
-          if( z[j+1]=='\n' ) j++;
+        }มิฉะนั้น ถ้า( c=='\r' ){
+          ถ้า( z[j+1]=='\n' ) j++;
           opcode = JSONB_TEXT5;
           pParse->hasNonstd = 1;
-        }else{
+        }มิฉะนั้น{
           pParse->iErr = j;
-          return -1;
+          คืน -1;
         }
-      }else if( c<=0x1f ){
-        if( c==0 ){
+      }มิฉะนั้น ถ้า( c<=0x1f ){
+        ถ้า( c==0 ){
           pParse->iErr = j;
-          return -1;
+          คืน -1;
         }
         /* Control characters are not allowed in canonical JSON string
         ** literals, but are allowed in JSON5 string literals. */
         opcode = JSONB_TEXT5;
         pParse->hasNonstd = 1;
-      }else if( c=='"' ){
+      }มิฉะนั้น ถ้า( c=='"' ){
         opcode = JSONB_TEXT5;
       }
       j++;
     }
     jsonBlobAppendNode(pParse, opcode, j-1-i, &z[i+1]);
-    return j+1;
+    คืน j+1;
   }
-  case 't': {
-    if( strncmp(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+  pak_sa 't': {
+    ถ้า( strncmp(z+i,"true",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_TRUE);
-      return i+4;
+      คืน i+4;
     }
     pParse->iErr = i;
-    return -1;
+    คืน -1;
   }
-  case 'f': {
-    if( strncmp(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
+  pak_sa 'f': {
+    ถ้า( strncmp(z+i,"false",5)==0 && !sqlite3Isalnum(z[i+5]) ){
       jsonBlobAppendOneByte(pParse, JSONB_FALSE);
-      return i+5;
+      คืน i+5;
     }
     pParse->iErr = i;
-    return -1;
+    คืน -1;
   }
-  case '+': {
+  pak_sa '+': {
     u8 seenE;
     pParse->hasNonstd = 1;
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
     goto parse_number;
-  case '.':
-    if( sqlite3Isdigit(z[i+1]) ){
+  pak_sa '.':
+    ถ้า( sqlite3Isdigit(z[i+1]) ){
       pParse->hasNonstd = 1;
       t = 0x03;          /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
       seenE = 0;
       goto parse_number_2;
     }
     pParse->iErr = i;
-    return -1;
-  case '-':
-  case '0':
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-  case '9':
+    คืน -1;
+  pak_sa '-':
+  pak_sa '0':
+  pak_sa '1':
+  pak_sa '2':
+  pak_sa '3':
+  pak_sa '4':
+  pak_sa '5':
+  pak_sa '6':
+  pak_sa '7':
+  pak_sa '8':
+  pak_sa '9':
     /* Parse number */
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
   parse_number:
@@ -1860,50 +1860,50 @@ json_parse_restart:
     assert( '.' < '0' );
     c = z[i];
 
-    if( c<='0' ){
-      if( c=='0' ){
-        if( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
+    ถ้า( c<='0' ){
+      ถ้า( c=='0' ){
+        ถ้า( (z[i+1]=='x' || z[i+1]=='X') && sqlite3Isxdigit(z[i+2]) ){
           assert( t==0x00 );
           pParse->hasNonstd = 1;
           t = 0x01;
-          for(j=i+3; sqlite3Isxdigit(z[j]); j++){}
+          สำหรับ(j=i+3; sqlite3Isxdigit(z[j]); j++){}
           goto parse_number_finish;
-        }else if( sqlite3Isdigit(z[i+1]) ){
+        }มิฉะนั้น ถ้า( sqlite3Isdigit(z[i+1]) ){
           pParse->iErr = i+1;
-          return -1;
+          คืน -1;
         }
-      }else{
-        if( !sqlite3Isdigit(z[i+1]) ){
+      }มิฉะนั้น{
+        ถ้า( !sqlite3Isdigit(z[i+1]) ){
           /* JSON5 allows for "+Infinity" and "-Infinity" using exactly
           ** that case.  SQLite also allows these in any case and it allows
           ** "+inf" and "-inf". */
-          if( (z[i+1]=='I' || z[i+1]=='i')
+          ถ้า( (z[i+1]=='I' || z[i+1]=='i')
            && sqlite3StrNICmp(&z[i+1], "inf",3)==0
           ){
             pParse->hasNonstd = 1;
-            if( z[i]=='-' ){
+            ถ้า( z[i]=='-' ){
               jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-            }else{
+            }มิฉะนั้น{
               jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
             }
-            return i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
+            คืน i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
           }
-          if( z[i+1]=='.' ){
+          ถ้า( z[i+1]=='.' ){
             pParse->hasNonstd = 1;
             t |= 0x01;
             goto parse_number_2;
           }
           pParse->iErr = i;
-          return -1;
+          คืน -1;
         }
-        if( z[i+1]=='0' ){
-          if( sqlite3Isdigit(z[i+2]) ){
+        ถ้า( z[i+1]=='0' ){
+          ถ้า( sqlite3Isdigit(z[i+2]) ){
             pParse->iErr = i+1;
-            return -1;
-          }else if( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
+            คืน -1;
+          }มิฉะนั้น ถ้า( (z[i+2]=='x' || z[i+2]=='X') && sqlite3Isxdigit(z[i+3]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-            for(j=i+4; sqlite3Isxdigit(z[j]); j++){}
+            สำหรับ(j=i+4; sqlite3Isxdigit(z[j]); j++){}
             goto parse_number_finish;
           }
         }
@@ -1911,135 +1911,135 @@ json_parse_restart:
     }
 
   parse_number_2:
-    for(j=i+1;; j++){
+    สำหรับ(j=i+1;; j++){
       c = z[j];
-      if( sqlite3Isdigit(c) ) continue;
-      if( c=='.' ){
-        if( (t & 0x02)!=0 ){
+      ถ้า( sqlite3Isdigit(c) ) continue;
+      ถ้า( c=='.' ){
+        ถ้า( (t & 0x02)!=0 ){
           pParse->iErr = j;
-          return -1;
+          คืน -1;
         }
         t |= 0x02;
         continue;
       }
-      if( c=='e' || c=='E' ){
-        if( z[j-1]<'0' ){
-          if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+      ถ้า( c=='e' || c=='E' ){
+        ถ้า( z[j-1]<'0' ){
+          ถ้า( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-          }else{
+          }มิฉะนั้น{
             pParse->iErr = j;
-            return -1;
+            คืน -1;
           }
         }
-        if( seenE ){
+        ถ้า( seenE ){
           pParse->iErr = j;
-          return -1;
+          คืน -1;
         }
         t |= 0x02;
         seenE = 1;
         c = z[j+1];
-        if( c=='+' || c=='-' ){
+        ถ้า( c=='+' || c=='-' ){
           j++;
           c = z[j+1];
         }
-        if( c<'0' || c>'9' ){
+        ถ้า( c<'0' || c>'9' ){
           pParse->iErr = j;
-          return -1;
+          คืน -1;
         }
         continue;
       }
-      break;
+      bha_nga;
     }
-    if( z[j-1]<'0' ){
-      if( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
+    ถ้า( z[j-1]<'0' ){
+      ถ้า( ALWAYS(z[j-1]=='.') && ALWAYS(j-2>=i) && sqlite3Isdigit(z[j-2]) ){
         pParse->hasNonstd = 1;
         t |= 0x01;
-      }else{
+      }มิฉะนั้น{
         pParse->iErr = j;
-        return -1;
+        คืน -1;
       }
     }
   parse_number_finish:
     assert( JSONB_INT+0x01==JSONB_INT5 );
     assert( JSONB_FLOAT+0x01==JSONB_FLOAT5 );
     assert( JSONB_INT+0x02==JSONB_FLOAT );
-    if( z[i]=='+' ) i++;
+    ถ้า( z[i]=='+' ) i++;
     jsonBlobAppendNode(pParse, JSONB_INT+t, j-i, &z[i]);
-    return j;
+    คืน j;
   }
-  case '}': {
+  pak_sa '}': {
     pParse->iErr = i;
-    return -2;  /* End of {...} */
+    คืน -2;  /* End of {...} */
   }
-  case ']': {
+  pak_sa ']': {
     pParse->iErr = i;
-    return -3;  /* End of [...] */
+    คืน -3;  /* End of [...] */
   }
-  case ',': {
+  pak_sa ',': {
     pParse->iErr = i;
-    return -4;  /* List separator */
+    คืน -4;  /* List separator */
   }
-  case ':': {
+  pak_sa ':': {
     pParse->iErr = i;
-    return -5;  /* Object label/value separator */
+    คืน -5;  /* Object label/value separator */
   }
-  case 0: {
-    return 0;   /* End of file */
+  pak_sa 0: {
+    คืน 0;   /* End of file */
   }
-  case 0x09:
-  case 0x0a:
-  case 0x0d:
-  case 0x20: {
+  pak_sa 0x09:
+  pak_sa 0x0a:
+  pak_sa 0x0d:
+  pak_sa 0x20: {
     i += 1 + (u32)strspn(&z[i+1], jsonSpaces);
     goto json_parse_restart;
   }
-  case 0x0b:
-  case 0x0c:
-  case '/':
-  case 0xc2:
-  case 0xe1:
-  case 0xe2:
-  case 0xe3:
-  case 0xef: {
+  pak_sa 0x0b:
+  pak_sa 0x0c:
+  pak_sa '/':
+  pak_sa 0xc2:
+  pak_sa 0xe1:
+  pak_sa 0xe2:
+  pak_sa 0xe3:
+  pak_sa 0xef: {
     j = json5Whitespace(&z[i]);
-    if( j>0 ){
+    ถ้า( j>0 ){
       i += j;
       pParse->hasNonstd = 1;
       goto json_parse_restart;
     }
     pParse->iErr = i;
-    return -1;
+    คืน -1;
   }
-  case 'n': {
-    if( strncmp(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
+  pak_sa 'n': {
+    ถ้า( strncmp(z+i,"null",4)==0 && !sqlite3Isalnum(z[i+4]) ){
       jsonBlobAppendOneByte(pParse, JSONB_NULL);
-      return i+4;
+      คืน i+4;
     }
     /* fall-through into the default case that checks for NaN */
     /* no break */ deliberate_fall_through
   }
   default: {
     u32 k;
-    int nn;
+    จำนวนเต็ม nn;
     c = z[i];
-    for(k=0; k<sizeof(aNanInfName)/sizeof(aNanInfName[0]); k++){
-      if( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) continue;
+    สำหรับ(k=0; k<parimaa_na(aNanInfName)/parimaa_na(aNanInfName[0]); k++){
+      ถ้า( c!=aNanInfName[k].c1 && c!=aNanInfName[k].c2 ) continue;
       nn = aNanInfName[k].n;
-      if( sqlite3StrNICmp(&z[i], aNanInfName[k].zMatch, nn)!=0 ){
+      ถ้า( sqlite3StrNICmp(&z[i], aNanInfName[k].zMatch, nn)!=0 ){
         continue;
       }
-      if( sqlite3Isalnum(z[i+nn]) ) continue;
-      if( aNanInfName[k].eType==JSONB_FLOAT ){
+      ถ้า( sqlite3Isalnum(z[i+nn]) ) continue;
+      ถ้า( aNanInfName[k].eType==JSONB_FLOAT ){
         jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-      }else{
+      }มิฉะนั้น{
         jsonBlobAppendOneByte(pParse, JSONB_NULL);
       }
       pParse->hasNonstd = 1;
-      return i + nn;
+      คืน i + nn;
     }
     pParse->iErr = i;
-    return -1;  /* Syntax error */
+    คืน -1;  /* Syntax error */
   }
   } /* End switch(z[i]) */
 }
@@ -2053,44 +2053,44 @@ json_parse_restart:
 ** pParse must be initialized to an empty parse object prior to calling
 ** this routine.
 */
-static int jsonConvertTextToBlob(
+static จำนวนเต็ม jsonConvertTextToBlob(
   JsonParse *pParse,           /* Initialize and fill this JsonParse object */
   sqlite3_context *pCtx        /* Report errors here */
 ){
-  int i;
-  const char *zJson = pParse->zJson;
+  จำนวนเต็ม i;
+  const var_na *zJson = pParse->zJson;
   i = jsonTranslateTextToBlob(pParse, 0);
-  if( pParse->oom ) i = -1;
-  if( i>0 ){
+  ถ้า( pParse->oom ) i = -1;
+  ถ้า( i>0 ){
 #ifdef SQLITE_DEBUG
     assert( pParse->iDepth==0 );
-    if( sqlite3Config.bJsonSelfcheck ){
+    ถ้า( sqlite3Config.bJsonSelfcheck ){
       assert( jsonbValidityCheck(pParse, 0, pParse->nBlob, 0)==0 );
     }   
 #endif
-    while( jsonIsspace(zJson[i]) ) i++;
-    if( zJson[i] ){
+    ขณะ( jsonIsspace(zJson[i]) ) i++;
+    ถ้า( zJson[i] ){
       i += json5Whitespace(&zJson[i]);
-      if( zJson[i] ){
-        if( pCtx ) sqlite3_result_error(pCtx, "malformed JSON", -1);
+      ถ้า( zJson[i] ){
+        ถ้า( pCtx ) sqlite3_result_error(pCtx, "malformed JSON", -1);
         jsonParseReset(pParse);
-        return 1;
+        คืน 1;
       }
       pParse->hasNonstd = 1;
     }
   }
-  if( i<=0 ){
-    if( pCtx!=0 ){
-      if( pParse->oom ){
+  ถ้า( i<=0 ){
+    ถ้า( pCtx!=0 ){
+      ถ้า( pParse->oom ){
         sqlite3_result_error_nomem(pCtx);
-      }else{
+      }มิฉะนั้น{
         sqlite3_result_error(pCtx, "malformed JSON", -1);
       }
     }
     jsonParseReset(pParse);
-    return 1;
+    คืน 1;
   }
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -2101,15 +2101,15 @@ static int jsonConvertTextToBlob(
 static void jsonReturnStringAsBlob(JsonString *pStr){
   JsonParse px;
   assert( pStr->eErr==0 );
-  memset(&px, 0, sizeof(px));
+  memset(&px, 0, parimaa_na(px));
   px.zJson = pStr->zBuf;
   px.nJson = pStr->nUsed;
   px.db = sqlite3_context_db_handle(pStr->pCtx);
   (void)jsonTranslateTextToBlob(&px, 0);
-  if( px.oom ){
+  ถ้า( px.oom ){
     sqlite3DbFree(px.db, px.aBlob);
     sqlite3_result_error_nomem(pStr->pCtx);
-  }else{
+  }มิฉะนั้น{
     assert( px.nBlobAlloc>0 );
     assert( !px.bReadOnly );
     sqlite3_result_blob(pStr->pCtx, px.aBlob, px.nBlob, SQLITE_DYNAMIC);
@@ -2133,30 +2133,30 @@ static u32 jsonbPayloadSizeWide(
   assert( i<pParse->nBlob );
   assert( x==(pParse->aBlob[i]>>4) );
   assert( x>=13 );
-  if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  ถ้า( x==13 ){
+    ถ้า( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }มิฉะนั้น ถ้า( x==14 ){
+    ถ้า( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }มิฉะนั้น{
+    ถ้า( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
@@ -2170,14 +2170,14 @@ static u32 jsonbPayloadSizeWide(
   /* Quirks with -Os and gcov cause the NO_TEST line below to show up as
   ** false-positive coverage miss.  The testcases() macros above are
   ** sufficient to prove that the branch is in fact covered */
-  if( (i64)i+sz+n > pParse->nBlob
+  ถ้า( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta  /*NO_TEST*/
   ){
     *pSz = 0;
-    return 0;
+    คืน 0;
   }
   *pSz = sz;
-  return n;
+  คืน n;
 }
 
 /*
@@ -2200,33 +2200,33 @@ static u32 jsonbPayloadSize(
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  ถ้า( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    คืน 0;
+  }มิฉะนั้น ถ้า( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }มิฉะนั้น ถ้า( x==12 ){
+    ถ้า( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse, i, pSz, x);
+  }มิฉะนั้น{
+    คืน jsonbPayloadSizeWide(pParse, i, pSz, x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ถ้า( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    คืน 0;
   }
   *pSz = sz;
-  return n;
+  คืน n;
 }
 
-#if SQLITE_USES_INLINE
+#ถ้า SQLITE_USES_INLINE
 /* A separate inline version of jsonbPayloadSize(), used in one particulary
 ** performance-critical place.
 */
@@ -2238,65 +2238,65 @@ static SQLITE_INLINE u32 jsonbPayloadSizeInline(
   u8 x;
   u32 sz;
   u32 n;
-  if( i>=pParse->nBlob ){
+  ถ้า( i>=pParse->nBlob ){
     *pSz = 0;
-    return 0;
-  }else if( (x = pParse->aBlob[i]>>4)<=11 ){
+    คืน 0;
+  }มิฉะนั้น ถ้า( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }มิฉะนั้น ถ้า( x==12 ){
+    ถ้า( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else if( x==13 ){
-    if( i+2>=pParse->nBlob ){
+  }มิฉะนั้น ถ้า( x==13 ){
+    ถ้า( i+2>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = (pParse->aBlob[i+1]<<8) + pParse->aBlob[i+2];
     n = 3;
-  }else if( x==14 ){
-    if( i+4>=pParse->nBlob ){
+  }มิฉะนั้น ถ้า( x==14 ){
+    ถ้า( i+4>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = ((u32)pParse->aBlob[i+1]<<24) + (pParse->aBlob[i+2]<<16) +
          (pParse->aBlob[i+3]<<8) + pParse->aBlob[i+4];
     n = 5;
-  }else{
-    if( i+8>=pParse->nBlob
+  }มิฉะนั้น{
+    ถ้า( i+8>=pParse->nBlob
      || pParse->aBlob[i+1]!=0
      || pParse->aBlob[i+2]!=0
      || pParse->aBlob[i+3]!=0
      || pParse->aBlob[i+4]!=0
     ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = ((u32)pParse->aBlob[i+5]<<24) + (pParse->aBlob[i+6]<<16) +
          (pParse->aBlob[i+7]<<8) + pParse->aBlob[i+8];
     n = 9;
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ถ้า( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    คืน 0;
   }
   *pSz = sz;
-  return n;
+  คืน n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#มิฉะนั้น /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
 # define jsonbPayloadSizeInline(a,b,c) jsonbPayloadSize(a,b,c)
 #endif
 
 
-#if SQLITE_USES_INLINE
+#ถ้า SQLITE_USES_INLINE
 /* A separate inline version of jsonbPayloadSize() that implements the more
 ** common paths inline but then calls out to a subroutine for the uncommon
 ** paths.
@@ -2317,29 +2317,29 @@ static SQLITE_INLINE u32 jsonbPayloadSizeSemiInline(
   u32 sz;
   u32 n;
   assert( i<pParse->nBlob );
-  if( (x = pParse->aBlob[i]>>4)<=11 ){
+  ถ้า( (x = pParse->aBlob[i]>>4)<=11 ){
     sz = x;
     n = 1;
-  }else if( x==12 ){
-    if( i+1>=pParse->nBlob ){
+  }มิฉะนั้น ถ้า( x==12 ){
+    ถ้า( i+1>=pParse->nBlob ){
       *pSz = 0;
-      return 0;
+      คืน 0;
     }
     sz = pParse->aBlob[i+1];
     n = 2;
-  }else{
-    return jsonbPayloadSizeWide(pParse,i,pSz,x);
+  }มิฉะนั้น{
+    คืน jsonbPayloadSizeWide(pParse,i,pSz,x);
   }
-  if( (i64)i+sz+n > pParse->nBlob
+  ถ้า( (i64)i+sz+n > pParse->nBlob
    && (i64)i+sz+n > pParse->nBlob-pParse->delta
   ){
     *pSz = 0;
-    return 0;
+    คืน 0;
   }
   *pSz = sz;
-  return n;
+  คืน n;
 }
-#else /* if !SQLITE_USES_INLINE */
+#มิฉะนั้น /* if !SQLITE_USES_INLINE */
   /* On compilers that do not support in-lining, just call the original
   ** jsonbPayloadSize().  It's slower, but it gets the right answer. */
 # define jsonbPayloadSizeSemiInline(a,b,c) jsonbPayloadSize(a,b,c)
@@ -2366,108 +2366,108 @@ static u32 jsonTranslateBlobToText(
   u32 sz, n, j, iEnd;
 
   n = jsonbPayloadSizeInline(pParse, i, &sz);
-  if( n==0 ){
+  ถ้า( n==0 ){
     pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+    คืน pParse->nBlob+1;
   }
   switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_NULL: {
+    pak_sa JSONB_NULL: {
       jsonAppendRawNZ(pOut, "null", 4);
-      return i+1;
+      คืน i+1;
     }
-    case JSONB_TRUE: {
+    pak_sa JSONB_TRUE: {
       jsonAppendRawNZ(pOut, "true", 4);
-      return i+1;
+      คืน i+1;
     }
-    case JSONB_FALSE: {
+    pak_sa JSONB_FALSE: {
       jsonAppendRawNZ(pOut, "false", 5);
-      return i+1;
+      คืน i+1;
     }
-    case JSONB_INT:
-    case JSONB_FLOAT: {
-      if( sz==0 ) goto malformed_jsonb;
-      jsonAppendRaw(pOut, (const char*)&pParse->aBlob[i+n], sz);
-      break;
+    pak_sa JSONB_INT:
+    pak_sa JSONB_FLOAT: {
+      ถ้า( sz==0 ) goto malformed_jsonb;
+      jsonAppendRaw(pOut, (const var_na*)&pParse->aBlob[i+n], sz);
+      bha_nga;
     }
-    case JSONB_INT5: {  /* Integer literal in hexadecimal notation */
+    pak_sa JSONB_INT5: {  /* Integer literal in hexadecimal notation */
       u32 k = 2;
       sqlite3_uint64 u = 0;
-      const char *zIn = (const char*)&pParse->aBlob[i+n];
-      int bOverflow = 0;
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
+      const var_na *zIn = (const var_na*)&pParse->aBlob[i+n];
+      จำนวนเต็ม bOverflow = 0;
+      ถ้า( sz==0 ) goto malformed_jsonb;
+      ถ้า( zIn[0]=='-' ){
         jsonAppendChar(pOut, '-');
         k++;
-      }else if( zIn[0]=='+' ){
+      }มิฉะนั้น ถ้า( zIn[0]=='+' ){
         k++;
       }
-      for(; k<sz; k++){
-        if( !sqlite3Isxdigit(zIn[k]) ){
+      สำหรับ(; k<sz; k++){
+        ถ้า( !sqlite3Isxdigit(zIn[k]) ){
           pOut->eErr |= JSTRING_MALFORMED;
-          break;
-        }else if( (u>>60)!=0 ){
+          bha_nga;
+        }มิฉะนั้น ถ้า( (u>>60)!=0 ){
           bOverflow = 1;
-        }else{
+        }มิฉะนั้น{
           u = u*16 + sqlite3HexToInt(zIn[k]);
         }
       }
       jsonPrintf(100,pOut,bOverflow?"9.0e999":"%llu", u);
-      break;
+      bha_nga;
     }
-    case JSONB_FLOAT5: { /* Float literal missing digits beside "." */
+    pak_sa JSONB_FLOAT5: { /* Float literal missing digits beside "." */
       u32 k = 0;
-      const char *zIn = (const char*)&pParse->aBlob[i+n];
-      if( sz==0 ) goto malformed_jsonb;
-      if( zIn[0]=='-' ){
+      const var_na *zIn = (const var_na*)&pParse->aBlob[i+n];
+      ถ้า( sz==0 ) goto malformed_jsonb;
+      ถ้า( zIn[0]=='-' ){
         jsonAppendChar(pOut, '-');
-        if( sz<=1 ) goto malformed_jsonb;
+        ถ้า( sz<=1 ) goto malformed_jsonb;
         k = 1;
       }
-      if( zIn[k]=='.' ){
+      ถ้า( zIn[k]=='.' ){
         jsonAppendChar(pOut, '0');
       }
-      for(; k<sz; k++){
+      สำหรับ(; k<sz; k++){
         jsonAppendChar(pOut, zIn[k]);
-        if( zIn[k]=='.' && (k+1==sz || !sqlite3Isdigit(zIn[k+1])) ){
+        ถ้า( zIn[k]=='.' && (k+1==sz || !sqlite3Isdigit(zIn[k+1])) ){
           jsonAppendChar(pOut, '0');
         }
       }
-      break;
+      bha_nga;
     }
-    case JSONB_TEXT:
-    case JSONB_TEXTJ: {
-      if( pOut->nUsed+sz+2<=pOut->nAlloc || jsonStringGrow(pOut, sz+2)==0 ){
+    pak_sa JSONB_TEXT:
+    pak_sa JSONB_TEXTJ: {
+      ถ้า( pOut->nUsed+sz+2<=pOut->nAlloc || jsonStringGrow(pOut, sz+2)==0 ){
         pOut->zBuf[pOut->nUsed] = '"';
-        memcpy(pOut->zBuf+pOut->nUsed+1,(const char*)&pParse->aBlob[i+n],sz);
+        memcpy(pOut->zBuf+pOut->nUsed+1,(const var_na*)&pParse->aBlob[i+n],sz);
         pOut->zBuf[pOut->nUsed+sz+1] = '"';
         pOut->nUsed += sz+2;
       }
-      break;
+      bha_nga;
     }
-    case JSONB_TEXT5: {
-      const char *zIn;
+    pak_sa JSONB_TEXT5: {
+      const var_na *zIn;
       u32 k;
       u32 sz2 = sz;
-      zIn = (const char*)&pParse->aBlob[i+n];
+      zIn = (const var_na*)&pParse->aBlob[i+n];
       jsonAppendChar(pOut, '"');
-      while( sz2>0 ){
-        for(k=0; k<sz2 && (jsonIsOk[(u8)zIn[k]] || zIn[k]=='\''); k++){}
-        if( k>0 ){
+      ขณะ( sz2>0 ){
+        สำหรับ(k=0; k<sz2 && (jsonIsOk[(u8)zIn[k]] || zIn[k]=='\''); k++){}
+        ถ้า( k>0 ){
           jsonAppendRawNZ(pOut, zIn, k);
-          if( k>=sz2 ){
-            break;
+          ถ้า( k>=sz2 ){
+            bha_nga;
           }
           zIn += k;
           sz2 -= k;
         }
-        if( zIn[0]=='"' ){
+        ถ้า( zIn[0]=='"' ){
           jsonAppendRawNZ(pOut, "\\\"", 2);
           zIn++;
           sz2--;
           continue;
         }
-        if( zIn[0]<=0x1f ){
-          if( pOut->nUsed+7>pOut->nAlloc && jsonStringGrow(pOut,7) ) break;
+        ถ้า( zIn[0]<=0x1f ){
+          ถ้า( pOut->nUsed+7>pOut->nAlloc && jsonStringGrow(pOut,7) ) bha_nga;
           jsonAppendControlChar(pOut, zIn[0]);
           zIn++;
           sz2--;
@@ -2475,121 +2475,121 @@ static u32 jsonTranslateBlobToText(
         }
         assert( zIn[0]=='\\' );
         assert( sz2>=1 );
-        if( sz2<2 ){
+        ถ้า( sz2<2 ){
           pOut->eErr |= JSTRING_MALFORMED;
-          break;
+          bha_nga;
         }
         switch( (u8)zIn[1] ){
-          case '\'':
+          pak_sa '\'':
             jsonAppendChar(pOut, '\'');
-            break;
-          case 'v':
+            bha_nga;
+          pak_sa 'v':
             jsonAppendRawNZ(pOut, "\\u000b", 6);
-            break;
-          case 'x':
-            if( sz2<4 ){
+            bha_nga;
+          pak_sa 'x':
+            ถ้า( sz2<4 ){
               pOut->eErr |= JSTRING_MALFORMED;
               sz2 = 2;
-              break;
+              bha_nga;
             }
             jsonAppendRawNZ(pOut, "\\u00", 4);
             jsonAppendRawNZ(pOut, &zIn[2], 2);
             zIn += 2;
             sz2 -= 2;
-            break;
-          case '0':
+            bha_nga;
+          pak_sa '0':
             jsonAppendRawNZ(pOut, "\\u0000", 6);
-            break;
-          case '\r':
-            if( sz2>2 && zIn[2]=='\n' ){
+            bha_nga;
+          pak_sa '\r':
+            ถ้า( sz2>2 && zIn[2]=='\n' ){
               zIn++;
               sz2--;
             }
-            break;
-          case '\n':
-            break;
-          case 0xe2:
+            bha_nga;
+          pak_sa '\n':
+            bha_nga;
+          pak_sa 0xe2:
             /* '\' followed by either U+2028 or U+2029 is ignored as
             ** whitespace.  Note that in UTF8, U+2028 is 0xe2 0x80 0x29.
             ** U+2029 is the same except for the last byte */
-            if( sz2<4
+            ถ้า( sz2<4
              || 0x80!=(u8)zIn[2]
              || (0xa8!=(u8)zIn[3] && 0xa9!=(u8)zIn[3])
             ){
               pOut->eErr |= JSTRING_MALFORMED;
               sz2 = 2;
-              break;
+              bha_nga;
             }
             zIn += 2;
             sz2 -= 2;
-            break;
+            bha_nga;
           default:
             jsonAppendRawNZ(pOut, zIn, 2);
-            break;
+            bha_nga;
         }
         assert( sz2>=2 );
         zIn += 2;
         sz2 -= 2;
       }
       jsonAppendChar(pOut, '"');
-      break;
+      bha_nga;
     }
-    case JSONB_TEXTRAW: {
-      jsonAppendString(pOut, (const char*)&pParse->aBlob[i+n], sz);
-      break;
+    pak_sa JSONB_TEXTRAW: {
+      jsonAppendString(pOut, (const var_na*)&pParse->aBlob[i+n], sz);
+      bha_nga;
     }
-    case JSONB_ARRAY: {
+    pak_sa JSONB_ARRAY: {
       jsonAppendChar(pOut, '[');
       j = i+n;
       iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+      ถ้า( ++pParse->iDepth > JSON_MAX_DEPTH ){
         jsonStringTooDeep(pOut);
       }
-      while( j<iEnd && pOut->eErr==0 ){
+      ขณะ( j<iEnd && pOut->eErr==0 ){
         j = jsonTranslateBlobToText(pParse, j, pOut);
         jsonAppendChar(pOut, ',');
       }
       pParse->iDepth--;
-      if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
+      ถ้า( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
+      ถ้า( sz>0 ) jsonStringTrimOneChar(pOut);
       jsonAppendChar(pOut, ']');
-      break;
+      bha_nga;
     }
-    case JSONB_OBJECT: {
-      int x = 0;
+    pak_sa JSONB_OBJECT: {
+      จำนวนเต็ม x = 0;
       jsonAppendChar(pOut, '{');
       j = i+n;
       iEnd = j+sz;
-      if( ++pParse->iDepth > JSON_MAX_DEPTH ){
+      ถ้า( ++pParse->iDepth > JSON_MAX_DEPTH ){
         jsonStringTooDeep(pOut);
       }
-      while( j<iEnd && pOut->eErr==0 ){
+      ขณะ( j<iEnd && pOut->eErr==0 ){
         j = jsonTranslateBlobToText(pParse, j, pOut);
         jsonAppendChar(pOut, (x++ & 1) ? ',' : ':');
       }
       pParse->iDepth--;
-      if( (x & 1)!=0 || j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-      if( sz>0 ) jsonStringTrimOneChar(pOut);
+      ถ้า( (x & 1)!=0 || j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
+      ถ้า( sz>0 ) jsonStringTrimOneChar(pOut);
       jsonAppendChar(pOut, '}');
-      break;
+      bha_nga;
     }
 
     default: {
       malformed_jsonb:
       pOut->eErr |= JSTRING_MALFORMED;
-      break;
+      bha_nga;
     }
   }
-  return i+n+sz;
+  คืน i+n+sz;
 }
 
 /* Context for recursion of json_pretty()
 */
-typedef struct JsonPretty JsonPretty;
-struct JsonPretty {
+typedef sa_nracanaa JsonPretty JsonPretty;
+sa_nracanaa JsonPretty {
   JsonParse *pParse;        /* The BLOB being rendered */
   JsonString *pOut;         /* Generate pretty output into this string */
-  const char *zIndent;      /* Use this text for indentation */
+  const var_na *zIndent;      /* Use this text for indentation */
   u32 szIndent;             /* Bytes in zIndent[] */
   u32 nIndent;              /* Current level of indentation */
 };
@@ -2597,7 +2597,7 @@ struct JsonPretty {
 /* Append indentation to the pretty JSON under construction */
 static void jsonPrettyIndent(JsonPretty *pPretty){
   u32 jj;
-  for(jj=0; jj<pPretty->nIndent; jj++){
+  สำหรับ(jj=0; jj<pPretty->nIndent; jj++){
     jsonAppendRaw(pPretty->pOut, pPretty->zIndent, pPretty->szIndent);
   }
 }
@@ -2627,27 +2627,27 @@ static u32 jsonTranslateBlobToPrettyText(
   JsonParse *pParse = pPretty->pParse;
   JsonString *pOut = pPretty->pOut;
   n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
+  ถ้า( n==0 ){
     pOut->eErr |= JSTRING_MALFORMED;
-    return pParse->nBlob+1;
+    คืน pParse->nBlob+1;
   }
   switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_ARRAY: {
+    pak_sa JSONB_ARRAY: {
       j = i+n;
       iEnd = j+sz;
       jsonAppendChar(pOut, '[');
-      if( j<iEnd ){
+      ถ้า( j<iEnd ){
         jsonAppendChar(pOut, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
+        ถ้า( pPretty->nIndent >= JSON_MAX_DEPTH ){
           jsonStringTooDeep(pOut);
         }
-        while( pOut->eErr==0 ){
+        ขณะ( pOut->eErr==0 ){
           jsonPrettyIndent(pPretty);
           j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ){
-            if( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
-            break;
+          ถ้า( j>=iEnd ){
+            ถ้า( j>iEnd ) pOut->eErr |= JSTRING_MALFORMED;
+            bha_nga;
           }
           jsonAppendRawNZ(pOut, ",\n", 2);
         }
@@ -2657,29 +2657,29 @@ static u32 jsonTranslateBlobToPrettyText(
       }
       jsonAppendChar(pOut, ']');
       i = iEnd;
-      break;
+      bha_nga;
     }
-    case JSONB_OBJECT: {
+    pak_sa JSONB_OBJECT: {
       j = i+n;
       iEnd = j+sz;
       jsonAppendChar(pOut, '{');
-      if( j<iEnd ){
+      ถ้า( j<iEnd ){
         jsonAppendChar(pOut, '\n');
         pPretty->nIndent++;
-        if( pPretty->nIndent >= JSON_MAX_DEPTH ){
+        ถ้า( pPretty->nIndent >= JSON_MAX_DEPTH ){
           jsonStringTooDeep(pOut);
         }
         pParse->iDepth = pPretty->nIndent;
-        while( pOut->eErr==0 ){
+        ขณะ( pOut->eErr==0 ){
           jsonPrettyIndent(pPretty);
           j = jsonTranslateBlobToText(pParse, j, pOut);
-          if( j>iEnd ){
+          ถ้า( j>iEnd ){
             pOut->eErr |= JSTRING_MALFORMED;
-            break;
+            bha_nga;
           }
           jsonAppendRawNZ(pOut, ": ", 2);
           j = jsonTranslateBlobToPrettyText(pPretty, j);
-          if( j>=iEnd ) break;
+          ถ้า( j>=iEnd ) bha_nga;
           jsonAppendRawNZ(pOut, ",\n", 2);
         }
         jsonAppendChar(pOut, '\n');
@@ -2688,14 +2688,14 @@ static u32 jsonTranslateBlobToPrettyText(
       }
       jsonAppendChar(pOut, '}');
       i = iEnd;
-      break;
+      bha_nga;
     }
     default: {
       i = jsonTranslateBlobToText(pParse, i, pOut);
-      break;
+      bha_nga;
     }
   }
-  return i;
+  คืน i;
 }
 
 /*
@@ -2707,10 +2707,10 @@ static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
   u32 k = 0;
   n = jsonbPayloadSize(pParse, iRoot, &sz);
   iEnd = iRoot+n+sz;
-  for(i=iRoot+n; n>0 && i<iEnd; i+=sz+n, k++){
+  สำหรับ(i=iRoot+n; n>0 && i<iEnd; i+=sz+n, k++){
     n = jsonbPayloadSizeSemiInline(pParse, i, &sz);
   }
-  return k;
+  คืน k;
 }
 
 /*
@@ -2746,7 +2746,7 @@ static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
 ** This routine is an optimization.  A correct answer is obtained if it
 ** always leaves the output unchanged and returns false.
 */
-static int jsonBlobOverwrite(
+static จำนวนเต็ม jsonBlobOverwrite(
   u8 *aOut,                 /* Overwrite here */
   const u8 *aIns,           /* New content */
   u32 nIns,                 /* Bytes of new content */
@@ -2762,48 +2762,48 @@ static int jsonBlobOverwrite(
   **                             2     3  4     5  6  7  8     9 */
   static const u8 aType[] = { 0xc0, 0xd0, 0, 0xe0, 0, 0, 0, 0xf0 };
 
-  if( (aIns[0]&0x0f)<=2 ) return 0;    /* Cannot enlarge NULL, true, false */
+  ถ้า( (aIns[0]&0x0f)<=2 ) คืน 0;    /* Cannot enlarge NULL, true, false */
   switch( aIns[0]>>4 ){
     default: {                         /* aIns[] header size 1 */
-      if( ((1<<d)&0x116)==0 ) return 0;  /* d must be 1, 2, 4, or 8 */
+      ถ้า( ((1<<d)&0x116)==0 ) คืน 0;  /* d must be 1, 2, 4, or 8 */
       i = d + 1;                         /* New hdr sz: 2, 3, 5, or 9 */
       szHdr = 1;
-      break;
+      bha_nga;
     }
-    case 12: {                         /* aIns[] header size is 2 */
-      if( ((1<<d)&0x8a)==0) return 0;    /* d must be 1, 3, or 7 */
+    pak_sa 12: {                         /* aIns[] header size is 2 */
+      ถ้า( ((1<<d)&0x8a)==0) คืน 0;    /* d must be 1, 3, or 7 */
       i = d + 2;                         /* New hdr sz: 2, 5, or 9 */
       szHdr = 2;
-      break;
+      bha_nga;
     }
-    case 13: {                         /* aIns[] header size is 3 */
-      if( d!=2 && d!=6 ) return 0;       /* d must be 2 or 6 */
+    pak_sa 13: {                         /* aIns[] header size is 3 */
+      ถ้า( d!=2 && d!=6 ) คืน 0;       /* d must be 2 or 6 */
       i = d + 3;                         /* New hdr sz: 5 or 9 */
       szHdr = 3;
-      break;
+      bha_nga;
     }
-    case 14: {                         /* aIns[] header size is 5 */
-      if( d!=4 ) return 0;               /* d must be 4 */
+    pak_sa 14: {                         /* aIns[] header size is 5 */
+      ถ้า( d!=4 ) คืน 0;               /* d must be 4 */
       i = 9;                             /* New hdr sz: 9 */
       szHdr = 5;
-      break;
+      bha_nga;
     }
-    case 15: {                         /* aIns[] header size is 9 */
-      return 0;                          /* No solution */
+    pak_sa 15: {                         /* aIns[] header size is 9 */
+      คืน 0;                          /* No solution */
     }
   }
   assert( i>=2 && i<=9 && aType[i-2]!=0 );
   aOut[0] = (aIns[0] & 0x0f) | aType[i-2];
   memcpy(&aOut[i], &aIns[szHdr], nIns-szHdr);
   szPayload = nIns - szHdr;
-  while( 1/*edit-by-break*/ ){
+  ขณะ( 1/*edit-by-break*/ ){
     i--;
     aOut[i] = szPayload & 0xff;
-    if( i==1 ) break;
+    ถ้า( i==1 ) bha_nga;
     szPayload >>= 8;
   }
   assert( (szPayload>>8)==0 );
-  return 1;
+  คืน 1;
 }
 
 /*
@@ -2828,15 +2828,15 @@ static void jsonBlobEdit(
 ){
   i64 d = (i64)nIns - (i64)nDel;
   assert( pParse->nBlob >= (u64)iDel + (u64)nDel );
-  if( d<0 && d>=(-8) && aIns!=0
-   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (int)-d)
+  ถ้า( d<0 && d>=(-8) && aIns!=0
+   && jsonBlobOverwrite(&pParse->aBlob[iDel], aIns, nIns, (จำนวนเต็ม)-d)
   ){
-    return;
+    คืน;
   }
-  if( d!=0 ){
-    if( pParse->nBlob + d > pParse->nBlobAlloc ){
+  ถ้า( d!=0 ){
+    ถ้า( pParse->nBlob + d > pParse->nBlobAlloc ){
       jsonBlobExpand(pParse, (u64)pParse->nBlob+d);
-      if( pParse->oom ) return;
+      ถ้า( pParse->oom ) คืน;
     }
     memmove(&pParse->aBlob[iDel+nIns],
             &pParse->aBlob[iDel+nDel],
@@ -2844,7 +2844,7 @@ static void jsonBlobEdit(
     pParse->nBlob += d;
     pParse->delta += d;
   }
-  if( nIns && aIns ){
+  ถ้า( nIns && aIns ){
     memcpy(&pParse->aBlob[iDel], aIns, nIns);
   }
 }
@@ -2859,23 +2859,23 @@ static void jsonBlobEdit(
 **    0x5c 0xe2 0x80 0xa8
 **    0x5c 0xe2 0x80 0xa9
 */
-static u32 jsonBytesToBypass(const char *z, u32 n){
+static u32 jsonBytesToBypass(const var_na *z, u32 n){
   u32 i = 0;
-  while( i+1<n ){
-    if( z[i]!='\\' ) return i;
-    if( z[i+1]=='\n' ){
+  ขณะ( i+1<n ){
+    ถ้า( z[i]!='\\' ) คืน i;
+    ถ้า( z[i+1]=='\n' ){
       i += 2;
       continue;
     }
-    if( z[i+1]=='\r' ){
-      if( i+2<n && z[i+2]=='\n' ){
+    ถ้า( z[i+1]=='\r' ){
+      ถ้า( i+2<n && z[i+2]=='\n' ){
         i += 3;
-      }else{
+      }มิฉะนั้น{
         i += 2;
       }
       continue;
     }
-    if( 0xe2==(u8)z[i+1]
+    ถ้า( 0xe2==(u8)z[i+1]
      && i+3<n
      && 0x80==(u8)z[i+2]
      && (0xa8==(u8)z[i+3] || 0xa9==(u8)z[i+3])
@@ -2883,9 +2883,9 @@ static u32 jsonBytesToBypass(const char *z, u32 n){
       i += 4;
       continue;
     }
-    break;
+    bha_nga;
   }
-  return i;
+  คืน i;
 }
 
 /*
@@ -2897,41 +2897,41 @@ static u32 jsonBytesToBypass(const char *z, u32 n){
 ** after the '\\' to complete the encoding) then *piOut is set to
 ** JSON_INVALID_CHAR.
 */
-static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
+static u32 jsonUnescapeOneChar(const var_na *z, u32 n, u32 *piOut){
   assert( n>0 );
   assert( z[0]=='\\' );
-  if( n<2 ){
+  ถ้า( n<2 ){
     *piOut = JSON_INVALID_CHAR;
-    return n;
+    คืน n;
   }
   switch( (u8)z[1] ){
-    case 'u': {
+    pak_sa 'u': {
       u32 v, vlo;
-      if( n<6 ){
+      ถ้า( n<6 ){
         *piOut = JSON_INVALID_CHAR;
-        return n;
+        คืน n;
       }
       v = jsonHexToInt4(&z[2]);
-      if( (v & 0xfc00)==0xd800
+      ถ้า( (v & 0xfc00)==0xd800
        && n>=12
        && z[6]=='\\'
        && z[7]=='u'
        && ((vlo = jsonHexToInt4(&z[8]))&0xfc00)==0xdc00
       ){
         *piOut = ((v&0x3ff)<<10) + (vlo&0x3ff) + 0x10000;
-        return 12;
-      }else{
+        คืน 12;
+      }มิฉะนั้น{
         *piOut = v;
-        return 6;
+        คืน 6;
       }
     }
-    case 'b': {   *piOut = '\b';  return 2; }
-    case 'f': {   *piOut = '\f';  return 2; }
-    case 'n': {   *piOut = '\n';  return 2; }
-    case 'r': {   *piOut = '\r';  return 2; }
-    case 't': {   *piOut = '\t';  return 2; }
-    case 'v': {   *piOut = '\v';  return 2; }
-    case '0': {
+    pak_sa 'b': {   *piOut = '\b';  คืน 2; }
+    pak_sa 'f': {   *piOut = '\f';  คืน 2; }
+    pak_sa 'n': {   *piOut = '\n';  คืน 2; }
+    pak_sa 'r': {   *piOut = '\r';  คืน 2; }
+    pak_sa 't': {   *piOut = '\t';  คืน 2; }
+    pak_sa 'v': {   *piOut = '\v';  คืน 2; }
+    pak_sa '0': {
       /* JSON5 requires that the \0 escape not be followed by a digit.
       ** But SQLite did not enforce this restriction in versions 3.42.0
       ** through 3.49.2.  That was a bug.  But some applications might have
@@ -2940,44 +2940,44 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 #ifdef SQLITE_BUG_COMPATIBLE_20250510
       /* Legacy bug-compatible behavior */
       *piOut = 0;
-#else
+#มิฉะนั้น
       /* Correct behavior */
       *piOut = (n>2 && sqlite3Isdigit(z[2])) ? JSON_INVALID_CHAR : 0;
 #endif
-      return 2;
+      คืน 2;
     }
-    case '\'':
-    case '"':
-    case '/':
-    case '\\':{   *piOut = z[1];  return 2; }
-    case 'x': {
-      if( n<4 ){
+    pak_sa '\'':
+    pak_sa '"':
+    pak_sa '/':
+    pak_sa '\\':{   *piOut = z[1];  คืน 2; }
+    pak_sa 'x': {
+      ถ้า( n<4 ){
         *piOut = JSON_INVALID_CHAR;
-        return n;
+        คืน n;
       }
       *piOut = (jsonHexToInt(z[2])<<4) | jsonHexToInt(z[3]);
-      return 4;
+      คืน 4;
     }
-    case 0xe2:
-    case '\r':
-    case '\n': {
+    pak_sa 0xe2:
+    pak_sa '\r':
+    pak_sa '\n': {
       u32 nSkip = jsonBytesToBypass(z, n);
-      if( nSkip==0 ){
+      ถ้า( nSkip==0 ){
         *piOut = JSON_INVALID_CHAR;
-        return n;
-      }else if( nSkip==n ){
+        คืน n;
+      }มิฉะนั้น ถ้า( nSkip==n ){
         *piOut = 0;
-        return n;
-      }else if( z[nSkip]=='\\' ){
-        return nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, piOut);
-      }else{
-        int sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, piOut);
-        return nSkip + sz;
+        คืน n;
+      }มิฉะนั้น ถ้า( z[nSkip]=='\\' ){
+        คืน nSkip + jsonUnescapeOneChar(&z[nSkip], n-nSkip, piOut);
+      }มิฉะนั้น{
+        จำนวนเต็ม sz = sqlite3Utf8ReadLimited((u8*)&z[nSkip], n-nSkip, piOut);
+        คืน nSkip + sz;
       }
     }
     default: {
       *piOut = JSON_INVALID_CHAR;
-      return 2;
+      คืน 2;
     }
   }
 }
@@ -2990,55 +2990,55 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 ** In this version, we know that one or the other or both of the
 ** two comparands contains an escape sequence.
 */
-static SQLITE_NOINLINE int jsonLabelCompareEscaped(
-  const char *zLeft,          /* The left label */
+static SQLITE_NOINLINE จำนวนเต็ม jsonLabelCompareEscaped(
+  const var_na *zLeft,          /* The left label */
   u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
+  จำนวนเต็ม rawLeft,                /* True if zLeft contains no escapes */
+  const var_na *zRight,         /* The right label */
   u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+  จำนวนเต็ม rawRight                /* True if zRight is escape-free */
 ){
   u32 cLeft, cRight;
   assert( rawLeft==0 || rawRight==0 );
-  while( 1 /*exit-by-return*/ ){
-    if( nLeft==0 ){
+  ขณะ( 1 /*exit-by-return*/ ){
+    ถ้า( nLeft==0 ){
       cLeft = 0;
-    }else if( rawLeft || zLeft[0]!='\\' ){
+    }มิฉะนั้น ถ้า( rawLeft || zLeft[0]!='\\' ){
       cLeft = ((u8*)zLeft)[0];
-      if( cLeft>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zLeft, nLeft, &cLeft);
+      ถ้า( cLeft>=0xc0 ){
+        จำนวนเต็ม sz = sqlite3Utf8ReadLimited((u8*)zLeft, nLeft, &cLeft);
         zLeft += sz;
         nLeft -= sz;
-      }else{
+      }มิฉะนั้น{
         zLeft++;
         nLeft--;
       }
-    }else{
+    }มิฉะนั้น{
       u32 n = jsonUnescapeOneChar(zLeft, nLeft, &cLeft);
       zLeft += n;
       assert( n<=nLeft );
       nLeft -= n;
     }
-    if( nRight==0 ){
+    ถ้า( nRight==0 ){
       cRight = 0;
-    }else if( rawRight || zRight[0]!='\\' ){
+    }มิฉะนั้น ถ้า( rawRight || zRight[0]!='\\' ){
       cRight = ((u8*)zRight)[0];
-      if( cRight>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zRight, nRight, &cRight);
+      ถ้า( cRight>=0xc0 ){
+        จำนวนเต็ม sz = sqlite3Utf8ReadLimited((u8*)zRight, nRight, &cRight);
         zRight += sz;
         nRight -= sz;
-      }else{
+      }มิฉะนั้น{
         zRight++;
         nRight--;
       }
-    }else{
+    }มิฉะนั้น{
       u32 n = jsonUnescapeOneChar(zRight, nRight, &cRight);
       zRight += n;
       assert( n<=nRight );
       nRight -= n;
     }
-    if( cLeft!=cRight ) return 0;
-    if( cLeft==0 ) return 1;
+    ถ้า( cLeft!=cRight ) คืน 0;
+    ถ้า( cLeft==0 ) คืน 1;
   }
 }
 
@@ -3046,21 +3046,21 @@ static SQLITE_NOINLINE int jsonLabelCompareEscaped(
 ** Compare two object labels.  Return 1 if they are equal and
 ** 0 if they differ.  Return -1 if an OOM occurs.
 */
-static int jsonLabelCompare(
-  const char *zLeft,          /* The left label */
+static จำนวนเต็ม jsonLabelCompare(
+  const var_na *zLeft,          /* The left label */
   u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
+  จำนวนเต็ม rawLeft,                /* True if zLeft contains no escapes */
+  const var_na *zRight,         /* The right label */
   u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+  จำนวนเต็ม rawRight                /* True if zRight is escape-free */
 ){
-  if( rawLeft && rawRight ){
+  ถ้า( rawLeft && rawRight ){
     /* Simpliest case:  Neither label contains escapes.  A simple
     ** memcmp() is sufficient. */
-    if( nLeft!=nRight ) return 0;
-    return memcmp(zLeft, zRight, nLeft)==0;
-  }else{
-    return jsonLabelCompareEscaped(zLeft, nLeft, rawLeft,
+    ถ้า( nLeft!=nRight ) คืน 0;
+    คืน memcmp(zLeft, zRight, nLeft)==0;
+  }มิฉะนั้น{
+    คืน jsonLabelCompareEscaped(zLeft, nLeft, rawLeft,
                                    zRight, nRight, rawRight);
   }
 }
@@ -3076,7 +3076,7 @@ static int jsonLabelCompare(
 #define JSON_LOOKUP_ISERROR(x) ((x)>=JSON_LOOKUP_PATHERROR)
 
 /* Forward declaration */
-static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
+static u32 jsonLookupStep(JsonParse*,u32,const var_na*,u32);
 
 
 /* This helper routine for jsonLookupStep() populates pIns with
@@ -3101,18 +3101,18 @@ static u32 jsonLookupStep(JsonParse*,u32,const char*,u32);
 static u32 jsonCreateEditSubstructure(
   JsonParse *pParse,  /* The original JSONB that is being edited */
   JsonParse *pIns,    /* Populate this with the blob data to insert */
-  const char *zTail   /* Tail of the path that determines substructure */
+  const var_na *zTail   /* Tail of the path that determines substructure */
 ){
   static const u8 emptyObject[] = { JSONB_ARRAY, JSONB_OBJECT };
-  int rc;
-  memset(pIns, 0, sizeof(*pIns));
+  จำนวนเต็ม rc;
+  memset(pIns, 0, parimaa_na(*pIns));
   pIns->db = pParse->db;
-  if( zTail[0]==0 ){
+  ถ้า( zTail[0]==0 ){
     /* No substructure.  Just insert what is given in pParse. */
     pIns->aBlob = pParse->aIns;
     pIns->nBlob = pParse->nIns;
     rc = 0;
-  }else{
+  }มิฉะนั้น{
     /* Construct the binary substructure */
     pIns->nBlob = 1;
     pIns->aBlob = (u8*)&emptyObject[zTail[0]=='.'];
@@ -3120,14 +3120,14 @@ static u32 jsonCreateEditSubstructure(
     pIns->nIns = pParse->nIns;
     pIns->aIns = pParse->aIns;
     pIns->iDepth = pParse->iDepth+1;
-    if( pIns->iDepth >= JSON_MAX_DEPTH ){
-      return JSON_LOOKUP_TOODEEP;
+    ถ้า( pIns->iDepth >= JSON_MAX_DEPTH ){
+      คืน JSON_LOOKUP_TOODEEP;
     }
     rc = jsonLookupStep(pIns, 0, zTail, 0);
     pParse->iDepth--;
     pParse->oom |= pIns->oom;
   }
-  return rc;  /* Error code only */
+  คืน rc;  /* Error code only */
 }
 
 /*
@@ -3150,123 +3150,123 @@ static u32 jsonCreateEditSubstructure(
 static u32 jsonLookupStep(
   JsonParse *pParse,      /* The JSON to search */
   u32 iRoot,              /* Begin the search at this element of aBlob[] */
-  const char *zPath,      /* The path to search */
+  const var_na *zPath,      /* The path to search */
   u32 iLabel              /* Label if iRoot is a value of in an object */
 ){
   u32 i, j, k, nKey, sz, n, iEnd, rc;
-  const char *zKey;
+  const var_na *zKey;
   u8 x;
 
-  if( zPath[0]==0 ){
-    if( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
+  ถ้า( zPath[0]==0 ){
+    ถ้า( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
       n = jsonbPayloadSize(pParse, iRoot, &sz);
       sz += n;
-      if( pParse->eEdit==JEDIT_DEL ){
-        if( iLabel>0 ){
+      ถ้า( pParse->eEdit==JEDIT_DEL ){
+        ถ้า( iLabel>0 ){
           sz += iRoot - iLabel;
           iRoot = iLabel;
         }
         jsonBlobEdit(pParse, iRoot, sz, 0, 0);
-      }else if( pParse->eEdit==JEDIT_INS ){
+      }มิฉะนั้น ถ้า( pParse->eEdit==JEDIT_INS ){
         /* Already exists, so json_insert() is a no-op */
-      }else if( pParse->eEdit==JEDIT_AINS ){
+      }มิฉะนั้น ถ้า( pParse->eEdit==JEDIT_AINS ){
         /* json_array_insert() */
-        if( zPath[-1]!=']' ){
-          return JSON_LOOKUP_NOTARRAY;
-        }else{
+        ถ้า( zPath[-1]!=']' ){
+          คืน JSON_LOOKUP_NOTARRAY;
+        }มิฉะนั้น{
           jsonBlobEdit(pParse, iRoot, 0, pParse->aIns, pParse->nIns);
         }
-      }else{
+      }มิฉะนั้น{
         /* json_set() or json_replace() */
         jsonBlobEdit(pParse, iRoot, sz, pParse->aIns, pParse->nIns);
       }
     }
     pParse->iLabel = iLabel;
-    return iRoot;
+    คืน iRoot;
   }
-  if( zPath[0]=='.' ){
-    int rawKey = 1;
+  ถ้า( zPath[0]=='.' ){
+    จำนวนเต็ม rawKey = 1;
     x = pParse->aBlob[iRoot];
     zPath++;
-    if( zPath[0]=='"' ){
+    ถ้า( zPath[0]=='"' ){
       zKey = zPath + 1;
-      for(i=1; zPath[i] && zPath[i]!='"'; i++){
-        if( zPath[i]=='\\' && zPath[i+1]!=0 ) i++;
+      สำหรับ(i=1; zPath[i] && zPath[i]!='"'; i++){
+        ถ้า( zPath[i]=='\\' && zPath[i+1]!=0 ) i++;
       }
       nKey = i-1;
-      if( zPath[i] ){
+      ถ้า( zPath[i] ){
         i++;
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }มิฉะนั้น{
+        คืน JSON_LOOKUP_PATHERROR;
       }
       testcase( nKey==0 );
       rawKey = memchr(zKey, '\\', nKey)==0;
-    }else{
+    }มิฉะนั้น{
       zKey = zPath;
-      for(i=0; zPath[i] && zPath[i]!='.' && zPath[i]!='['; i++){}
+      สำหรับ(i=0; zPath[i] && zPath[i]!='.' && zPath[i]!='['; i++){}
       nKey = i;
-      if( nKey==0 ){
-        return JSON_LOOKUP_PATHERROR;
+      ถ้า( nKey==0 ){
+        คืน JSON_LOOKUP_PATHERROR;
       }
     }
-    if( (x & 0x0f)!=JSONB_OBJECT ) return JSON_LOOKUP_NOTFOUND;
+    ถ้า( (x & 0x0f)!=JSONB_OBJECT ) คืน JSON_LOOKUP_NOTFOUND;
     n = jsonbPayloadSize(pParse, iRoot, &sz);
     j = iRoot + n;  /* j is the index of a label */
     iEnd = j+sz;
-    while( j<iEnd ){
-      int rawLabel;
-      const char *zLabel;
+    ขณะ( j<iEnd ){
+      จำนวนเต็ม rawLabel;
+      const var_na *zLabel;
       x = pParse->aBlob[j] & 0x0f;
-      if( x<JSONB_TEXT || x>JSONB_TEXTRAW ) return JSON_LOOKUP_ERROR;
+      ถ้า( x<JSONB_TEXT || x>JSONB_TEXTRAW ) คืน JSON_LOOKUP_ERROR;
       n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      ถ้า( n==0 ) คืน JSON_LOOKUP_ERROR;
       k = j+n;  /* k is the index of the label text */
-      if( k+sz>=iEnd ) return JSON_LOOKUP_ERROR;
-      zLabel = (const char*)&pParse->aBlob[k];
+      ถ้า( k+sz>=iEnd ) คืน JSON_LOOKUP_ERROR;
+      zLabel = (const var_na*)&pParse->aBlob[k];
       rawLabel = x==JSONB_TEXT || x==JSONB_TEXTRAW;
-      if( jsonLabelCompare(zKey, nKey, rawKey, zLabel, sz, rawLabel) ){
+      ถ้า( jsonLabelCompare(zKey, nKey, rawKey, zLabel, sz, rawLabel) ){
         u32 v = k+sz;  /* v is the index of the value */
-        if( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
+        ถ้า( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) คืน JSON_LOOKUP_ERROR;
         n = jsonbPayloadSize(pParse, v, &sz);
-        if( n==0 || v+n+sz>iEnd ) return JSON_LOOKUP_ERROR;
+        ถ้า( n==0 || v+n+sz>iEnd ) คืน JSON_LOOKUP_ERROR;
         assert( j>0 );
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+        ถ้า( ++pParse->iDepth >= JSON_MAX_DEPTH ){
+          คืน JSON_LOOKUP_TOODEEP;
         }
         rc = jsonLookupStep(pParse, v, &zPath[i], j);
         pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        ถ้า( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+        คืน rc;
       }
       j = k+sz;
-      if( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
+      ถ้า( ((pParse->aBlob[j])&0x0f)>JSONB_OBJECT ) คืน JSON_LOOKUP_ERROR;
       n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      ถ้า( n==0 ) คืน JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( pParse->eEdit>=JEDIT_INS ){
+    ถ้า( j>iEnd ) คืน JSON_LOOKUP_ERROR;
+    ถ้า( pParse->eEdit>=JEDIT_INS ){
       u32 nIns;          /* Total bytes to insert (label+value) */
       JsonParse v;       /* BLOB encoding of the value to be inserted */
       JsonParse ix;      /* Header of the label to be inserted */
       testcase( pParse->eEdit==JEDIT_INS );
       testcase( pParse->eEdit==JEDIT_SET );
       testcase( pParse->eEdit==JEDIT_AINS );
-      if( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&zPath[i])!=0 ){
-        return JSON_LOOKUP_NOTARRAY;
+      ถ้า( pParse->eEdit==JEDIT_AINS && sqlite3_strglob("*]",&zPath[i])!=0 ){
+        คืน JSON_LOOKUP_NOTARRAY;
       }
-      memset(&ix, 0, sizeof(ix));
+      memset(&ix, 0, parimaa_na(ix));
       ix.db = pParse->db;
       jsonBlobAppendNode(&ix, rawKey?JSONB_TEXTRAW:JSONB_TEXT5, nKey, 0);
       pParse->oom |= ix.oom;
       rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i]);
-      if( !JSON_LOOKUP_ISERROR(rc)
+      ถ้า( !JSON_LOOKUP_ISERROR(rc)
        && jsonBlobMakeEditable(pParse, ix.nBlob+nKey+v.nBlob)
       ){
         assert( !pParse->oom );
         nIns = ix.nBlob + nKey + v.nBlob;
         jsonBlobEdit(pParse, j, 0, 0, nIns);
-        if( !pParse->oom ){
+        ถ้า( !pParse->oom ){
           assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
           assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
           memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
@@ -3274,87 +3274,87 @@ static u32 jsonLookupStep(
           memcpy(&pParse->aBlob[k], zKey, nKey);
           k += nKey;
           memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
-          if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
+          ถ้า( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
         }
       }
       jsonParseReset(&v);
       jsonParseReset(&ix);
-      return rc;
+      คืน rc;
     }
-  }else if( zPath[0]=='[' ){
+  }มิฉะนั้น ถ้า( zPath[0]=='[' ){
     u64 kk = 0;
     x = pParse->aBlob[iRoot] & 0x0f;
-    if( x!=JSONB_ARRAY )  return JSON_LOOKUP_NOTFOUND;
+    ถ้า( x!=JSONB_ARRAY )  คืน JSON_LOOKUP_NOTFOUND;
     n = jsonbPayloadSize(pParse, iRoot, &sz);
     i = 1;
-    while( sqlite3Isdigit(zPath[i]) ){
-      if( kk<0xffffffff ) kk = kk*10 + zPath[i] - '0';
+    ขณะ( sqlite3Isdigit(zPath[i]) ){
+      ถ้า( kk<0xffffffff ) kk = kk*10 + zPath[i] - '0';
       /*     ^^^^^^^^^^--- Allow kk to be bigger than any JSON array so that
       ** we get NOTFOUND instead of PATHERROR, without overflowing kk. */
       i++;
     }
-    if( i<2 || zPath[i]!=']' ){
-      if( zPath[1]=='#' ){
+    ถ้า( i<2 || zPath[i]!=']' ){
+      ถ้า( zPath[1]=='#' ){
         kk = jsonbArrayCount(pParse, iRoot);
         i = 2;
-        if( zPath[2]=='-' && sqlite3Isdigit(zPath[3]) ){
+        ถ้า( zPath[2]=='-' && sqlite3Isdigit(zPath[3]) ){
           u64 nn = 0;
           i = 3;
           do{
-            if( nn<0xffffffff ) nn = nn*10 + zPath[i] - '0';
+            ถ้า( nn<0xffffffff ) nn = nn*10 + zPath[i] - '0';
             /*     ^^^^^^^^^^--- Allow nn to be bigger than any JSON array to
             ** get NOTFOUND instead of PATHERROR, without overflowing nn. */
             i++;
-          }while( sqlite3Isdigit(zPath[i]) );
-          if( nn>kk ) return JSON_LOOKUP_NOTFOUND;
+          }ขณะ( sqlite3Isdigit(zPath[i]) );
+          ถ้า( nn>kk ) คืน JSON_LOOKUP_NOTFOUND;
           kk -= nn;
         }
-        if( zPath[i]!=']' ){
-          return JSON_LOOKUP_PATHERROR;
+        ถ้า( zPath[i]!=']' ){
+          คืน JSON_LOOKUP_PATHERROR;
         }
-      }else{
-        return JSON_LOOKUP_PATHERROR;
+      }มิฉะนั้น{
+        คืน JSON_LOOKUP_PATHERROR;
       }
     }
     j = iRoot+n;
     iEnd = j+sz;
-    while( j<iEnd ){
-      if( kk==0 ){
-        if( ++pParse->iDepth >= JSON_MAX_DEPTH ){
-          return JSON_LOOKUP_TOODEEP;
+    ขณะ( j<iEnd ){
+      ถ้า( kk==0 ){
+        ถ้า( ++pParse->iDepth >= JSON_MAX_DEPTH ){
+          คืน JSON_LOOKUP_TOODEEP;
         }
         rc = jsonLookupStep(pParse, j, &zPath[i+1], 0);
         pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-        return rc;
+        ถ้า( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+        คืน rc;
       }
       kk--;
       n = jsonbPayloadSizeSemiInline(pParse, j, &sz);
-      if( n==0 ) return JSON_LOOKUP_ERROR;
+      ถ้า( n==0 ) คืน JSON_LOOKUP_ERROR;
       j += n+sz;
     }
-    if( j>iEnd ) return JSON_LOOKUP_ERROR;
-    if( kk>0 ) return JSON_LOOKUP_NOTFOUND;
-    if( pParse->eEdit>=JEDIT_INS ){
+    ถ้า( j>iEnd ) คืน JSON_LOOKUP_ERROR;
+    ถ้า( kk>0 ) คืน JSON_LOOKUP_NOTFOUND;
+    ถ้า( pParse->eEdit>=JEDIT_INS ){
       JsonParse v;
       testcase( pParse->eEdit==JEDIT_INS );
       testcase( pParse->eEdit==JEDIT_AINS );
       testcase( pParse->eEdit==JEDIT_SET );
       rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i+1]);
-      if( !JSON_LOOKUP_ISERROR(rc)
+      ถ้า( !JSON_LOOKUP_ISERROR(rc)
        && jsonBlobMakeEditable(pParse, v.nBlob)
       ){
         assert( !pParse->oom );
         jsonBlobEdit(pParse, j, 0, v.aBlob, v.nBlob);
       }
       jsonParseReset(&v);
-      if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
-      return rc;
+      ถ้า( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+      คืน rc;
     }
-  }else{
-    return JSON_LOOKUP_PATHERROR; 
+  }มิฉะนั้น{
+    คืน JSON_LOOKUP_PATHERROR; 
   }
-  return JSON_LOOKUP_NOTFOUND;
+  คืน JSON_LOOKUP_NOTFOUND;
 }
 
 /*
@@ -3369,8 +3369,8 @@ static void jsonReturnTextJsonFromBlob(
   JsonParse x;
   JsonString s;
 
-  if( NEVER(aBlob==0) ) return;
-  memset(&x, 0, sizeof(x));
+  ถ้า( NEVER(aBlob==0) ) คืน;
+  memset(&x, 0, parimaa_na(x));
   x.aBlob = (u8*)aBlob;
   x.nBlob = nBlob;
   jsonStringInit(&s, ctx);
@@ -3398,130 +3398,130 @@ static void jsonReturnFromBlob(
   JsonParse *pParse,          /* Complete JSON parse tree */
   u32 i,                      /* Index of the node */
   sqlite3_context *pCtx,      /* Return value for this function */
-  int eMode                   /* Format of return: text of JSONB */
+  จำนวนเต็ม eMode                   /* Format of return: text of JSONB */
 ){
   u32 n, sz;
-  int rc;
+  จำนวนเต็ม rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
 
   assert( eMode>=0 && eMode<=2 );
   n = jsonbPayloadSize(pParse, i, &sz);
-  if( n==0 ){
+  ถ้า( n==0 ){
     sqlite3_result_error(pCtx, "malformed JSON", -1);
-    return;
+    คืน;
   }
   switch( pParse->aBlob[i] & 0x0f ){
-    case JSONB_NULL: {
-      if( sz ) goto returnfromblob_malformed;
+    pak_sa JSONB_NULL: {
+      ถ้า( sz ) goto returnfromblob_malformed;
       sqlite3_result_null(pCtx);
-      break;
+      bha_nga;
     }
-    case JSONB_TRUE: {
-      if( sz ) goto returnfromblob_malformed;
+    pak_sa JSONB_TRUE: {
+      ถ้า( sz ) goto returnfromblob_malformed;
       sqlite3_result_int(pCtx, 1);
-      break;
+      bha_nga;
     }
-    case JSONB_FALSE: {
-      if( sz ) goto returnfromblob_malformed;
+    pak_sa JSONB_FALSE: {
+      ถ้า( sz ) goto returnfromblob_malformed;
       sqlite3_result_int(pCtx, 0);
-      break;
+      bha_nga;
     }
-    case JSONB_INT5:
-    case JSONB_INT: {
+    pak_sa JSONB_INT5:
+    pak_sa JSONB_INT: {
       sqlite3_int64 iRes = 0;
-      char *z;
-      int bNeg = 0;
-      char x;
-      if( sz==0 ) goto returnfromblob_malformed;
-      x = (char)pParse->aBlob[i+n];
-      if( x=='-' ){
-        if( sz<2 ) goto returnfromblob_malformed;
+      var_na *z;
+      จำนวนเต็ม bNeg = 0;
+      var_na x;
+      ถ้า( sz==0 ) goto returnfromblob_malformed;
+      x = (var_na)pParse->aBlob[i+n];
+      ถ้า( x=='-' ){
+        ถ้า( sz<2 ) goto returnfromblob_malformed;
         n++;
         sz--;
         bNeg = 1;
       }
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
+      z = sqlite3DbStrNDup(db, (const var_na*)&pParse->aBlob[i+n], (จำนวนเต็ม)sz);
+      ถ้า( z==0 ) goto returnfromblob_oom;
       rc = sqlite3DecOrHexToI64(z, &iRes);
       sqlite3DbFree(db, z);
-      if( rc==0 ){
-        if( iRes<0 ){
+      ถ้า( rc==0 ){
+        ถ้า( iRes<0 ){
           /* A hexadecimal literal with 16 significant digits and with the
           ** high-order bit set is a negative integer in SQLite (and hence
           ** iRes comes back as negative) but should be interpreted as a
           ** positive value if it occurs within JSON.  The value is too
           ** large to appear as an SQLite integer so it must be converted
           ** into floating point. */
-          double r;
-          r = (double)*(sqlite3_uint64*)&iRes;
+          dviguu_na r;
+          r = (dviguu_na)*(sqlite3_uint64*)&iRes;
           sqlite3_result_double(pCtx, bNeg ? -r : r);
-        }else{
+        }มิฉะนั้น{
           sqlite3_result_int64(pCtx, bNeg ? -iRes : iRes);
         }
-      }else if( rc==3 && bNeg ){
+      }มิฉะนั้น ถ้า( rc==3 && bNeg ){
         sqlite3_result_int64(pCtx, SMALLEST_INT64);
-      }else if( rc==1 ){
+      }มิฉะนั้น ถ้า( rc==1 ){
         goto returnfromblob_malformed;
-      }else{
-        if( bNeg ){ n--; sz++; }
+      }มิฉะนั้น{
+        ถ้า( bNeg ){ n--; sz++; }
         goto to_double;
       }
-      break;
+      bha_nga;
     }
-    case JSONB_FLOAT5:
-    case JSONB_FLOAT: {
-      double r;
-      char *z;
-      if( sz==0 ) goto returnfromblob_malformed;
+    pak_sa JSONB_FLOAT5:
+    pak_sa JSONB_FLOAT: {
+      dviguu_na r;
+      var_na *z;
+      ถ้า( sz==0 ) goto returnfromblob_malformed;
     to_double:
-      z = sqlite3DbStrNDup(db, (const char*)&pParse->aBlob[i+n], (int)sz);
-      if( z==0 ) goto returnfromblob_oom;
+      z = sqlite3DbStrNDup(db, (const var_na*)&pParse->aBlob[i+n], (จำนวนเต็ม)sz);
+      ถ้า( z==0 ) goto returnfromblob_oom;
       rc = sqlite3AtoF(z, &r);
       sqlite3DbFree(db, z);
-      if( rc<=0 ) goto returnfromblob_malformed;
+      ถ้า( rc<=0 ) goto returnfromblob_malformed;
       sqlite3_result_double(pCtx, r);
-      break;
+      bha_nga;
     }
-    case JSONB_TEXTRAW:
-    case JSONB_TEXT: {
-      sqlite3_result_text(pCtx, (char*)&pParse->aBlob[i+n], sz,
+    pak_sa JSONB_TEXTRAW:
+    pak_sa JSONB_TEXT: {
+      sqlite3_result_text(pCtx, (var_na*)&pParse->aBlob[i+n], sz,
                           SQLITE_TRANSIENT);
-      break;
+      bha_nga;
     }
-    case JSONB_TEXT5:
-    case JSONB_TEXTJ: {
+    pak_sa JSONB_TEXT5:
+    pak_sa JSONB_TEXTJ: {
       /* Translate JSON formatted string into raw text */
       u32 iIn, iOut;
-      const char *z;
-      char *zOut;
+      const var_na *z;
+      var_na *zOut;
       u32 nOut = sz;
-      z = (const char*)&pParse->aBlob[i+n];
+      z = (const var_na*)&pParse->aBlob[i+n];
       zOut = sqlite3DbMallocRaw(db, ((u64)nOut)+1);
-      if( zOut==0 ) goto returnfromblob_oom;
-      for(iIn=iOut=0; iIn<sz; iIn++){
-        char c = z[iIn];
-        if( c=='\\' ){
+      ถ้า( zOut==0 ) goto returnfromblob_oom;
+      สำหรับ(iIn=iOut=0; iIn<sz; iIn++){
+        var_na c = z[iIn];
+        ถ้า( c=='\\' ){
           u32 v;
           u32 szEscape = jsonUnescapeOneChar(&z[iIn], sz-iIn, &v);
-          if( v==0 && iIn+szEscape==sz
+          ถ้า( v==0 && iIn+szEscape==sz
            && (z[iIn+1]=='\n' || z[iIn+1]=='\r' || (u8)z[iIn+1]==0xe2)
           ){
             /* A JSON5 line continuation at the end of the string
             ** contributes no characters */
-          }else if( v<=0x7f ){
-            zOut[iOut++] = (char)v;
-          }else if( v<=0x7ff ){
+          }มิฉะนั้น ถ้า( v<=0x7f ){
+            zOut[iOut++] = (var_na)v;
+          }มิฉะนั้น ถ้า( v<=0x7ff ){
             assert( szEscape>=2 );
-            zOut[iOut++] = (char)(0xc0 | (v>>6));
+            zOut[iOut++] = (var_na)(0xc0 | (v>>6));
             zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v<0x10000 ){
+          }มิฉะนั้น ถ้า( v<0x10000 ){
             assert( szEscape>=3 );
             zOut[iOut++] = 0xe0 | (v>>12);
             zOut[iOut++] = 0x80 | ((v>>6)&0x3f);
             zOut[iOut++] = 0x80 | (v&0x3f);
-          }else if( v==JSON_INVALID_CHAR ){
+          }มิฉะนั้น ถ้า( v==JSON_INVALID_CHAR ){
             /* Silently ignore illegal unicode */
-          }else{
+          }มิฉะนั้น{
             assert( szEscape>=4 );
             zOut[iOut++] = 0xf0 | (v>>18);
             zOut[iOut++] = 0x80 | ((v>>12)&0x3f);
@@ -3529,44 +3529,44 @@ static void jsonReturnFromBlob(
             zOut[iOut++] = 0x80 | (v&0x3f);
           }
           iIn += szEscape - 1;
-        }else{
+        }มิฉะนั้น{
           zOut[iOut++] = c;
         }
       } /* end for() */
       assert( iOut<=nOut );
       zOut[iOut] = 0;
       sqlite3_result_text(pCtx, zOut, iOut, SQLITE_DYNAMIC);
-      break;
+      bha_nga;
     }
-    case JSONB_ARRAY:
-    case JSONB_OBJECT: {
-      if( eMode==0 ){
-        if( (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx)) & JSON_BLOB)!=0 ){
+    pak_sa JSONB_ARRAY:
+    pak_sa JSONB_OBJECT: {
+      ถ้า( eMode==0 ){
+        ถ้า( (SQLITE_PTR_TO_INT(sqlite3_user_data(pCtx)) & JSON_BLOB)!=0 ){
           eMode = 2;
-        }else{
+        }มิฉะนั้น{
           eMode = 1;
         }
       }
-      if( eMode==2 ){
+      ถ้า( eMode==2 ){
         sqlite3_result_blob(pCtx, &pParse->aBlob[i], sz+n, SQLITE_TRANSIENT);
-      }else{
+      }มิฉะนั้น{
         jsonReturnTextJsonFromBlob(pCtx, &pParse->aBlob[i], sz+n);
       }
-      break;
+      bha_nga;
     }
     default: {
       goto returnfromblob_malformed;
     }
   }
-  return;
+  คืน;
 
 returnfromblob_oom:
   sqlite3_result_error_nomem(pCtx);
-  return;
+  คืน;
 
 returnfromblob_malformed:
   sqlite3_result_error(pCtx, "malformed JSON", -1);
-  return;
+  คืน;
 }
 
 /*
@@ -3586,76 +3586,76 @@ returnfromblob_malformed:
 ** function might set an error message in ctx and return non-zero.
 ** It might also set an error message and return non-zero on an OOM error.
 */
-static int jsonFunctionArgToBlob(
+static จำนวนเต็ม jsonFunctionArgToBlob(
   sqlite3_context *ctx,
   sqlite3_value *pArg,
   JsonParse *pParse
 ){
-  int eType = sqlite3_value_type(pArg);
+  จำนวนเต็ม eType = sqlite3_value_type(pArg);
   static u8 aNull[] = { 0x00 };
-  memset(pParse, 0, sizeof(pParse[0]));
+  memset(pParse, 0, parimaa_na(pParse[0]));
   pParse->db = sqlite3_context_db_handle(ctx);
   switch( eType ){
     default: {
       pParse->aBlob = aNull;
       pParse->nBlob = 1;
-      return 0;
+      คืน 0;
     }
-    case SQLITE_BLOB: {
-      if( !jsonArgIsJsonb(pArg, pParse) ){
+    pak_sa SQLITE_BLOB: {
+      ถ้า( !jsonArgIsJsonb(pArg, pParse) ){
         sqlite3_result_error(ctx, "JSON cannot hold BLOB values", -1);
-        return 1;
+        คืน 1;
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_TEXT: {
-      const char *zJson = (const char*)sqlite3_value_text(pArg);
-      int nJson = sqlite3_value_bytes(pArg);
-      if( zJson==0 ) return 1;
-      if( sqlite3_value_subtype(pArg)==JSON_SUBTYPE ){
-        pParse->zJson = (char*)zJson;
+    pak_sa SQLITE_TEXT: {
+      const var_na *zJson = (const var_na*)sqlite3_value_text(pArg);
+      จำนวนเต็ม nJson = sqlite3_value_bytes(pArg);
+      ถ้า( zJson==0 ) คืน 1;
+      ถ้า( sqlite3_value_subtype(pArg)==JSON_SUBTYPE ){
+        pParse->zJson = (var_na*)zJson;
         pParse->nJson = nJson;
-        if( jsonConvertTextToBlob(pParse, ctx) ){
+        ถ้า( jsonConvertTextToBlob(pParse, ctx) ){
           sqlite3_result_error(ctx, "malformed JSON", -1);
           sqlite3DbFree(pParse->db, pParse->aBlob);
-          memset(pParse, 0, sizeof(pParse[0]));
-          return 1;
+          memset(pParse, 0, parimaa_na(pParse[0]));
+          คืน 1;
         }
-      }else{
+      }มิฉะนั้น{
         jsonBlobAppendNode(pParse, JSONB_TEXTRAW, nJson, zJson);
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_FLOAT: {
-      if( NEVER(sqlite3IsNaN(sqlite3_value_double(pArg))) ){
+    pak_sa SQLITE_FLOAT: {
+      ถ้า( NEVER(sqlite3IsNaN(sqlite3_value_double(pArg))) ){
         jsonBlobAppendNode(pParse, JSONB_NULL, 0, 0);
-      }else{
-        int n = sqlite3_value_bytes(pArg);
-        const char *z = (const char*)sqlite3_value_text(pArg);
-        if( z==0 ) return 1;
-        if( z[0]=='I' ){
+      }มิฉะนั้น{
+        จำนวนเต็ม n = sqlite3_value_bytes(pArg);
+        const var_na *z = (const var_na*)sqlite3_value_text(pArg);
+        ถ้า( z==0 ) คืน 1;
+        ถ้า( z[0]=='I' ){
           jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
-        }else if( z[0]=='-' && z[1]=='I' ){
+        }มิฉะนั้น ถ้า( z[0]=='-' && z[1]=='I' ){
           jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
-        }else{
+        }มิฉะนั้น{
           jsonBlobAppendNode(pParse, JSONB_FLOAT, n, z);
         }
       }
-      break;
+      bha_nga;
     }
-    case SQLITE_INTEGER: {
-      int n = sqlite3_value_bytes(pArg);
-      const char *z = (const char*)sqlite3_value_text(pArg);
-      if( z==0 ) return 1;
+    pak_sa SQLITE_INTEGER: {
+      จำนวนเต็ม n = sqlite3_value_bytes(pArg);
+      const var_na *z = (const var_na*)sqlite3_value_text(pArg);
+      ถ้า( z==0 ) คืน 1;
       jsonBlobAppendNode(pParse, JSONB_INT, n, z);
-      break;
+      bha_nga;
     }
   }
-  if( pParse->oom ){
+  ถ้า( pParse->oom ){
     sqlite3_result_error_nomem(ctx);
-    return 1;
-  }else{
-    return 0;
+    คืน 1;
+  }มิฉะนั้น{
+    คืน 0;
   }
 }
 
@@ -3674,29 +3674,29 @@ static int jsonFunctionArgToBlob(
 ** If ctx is not NULL then push the error message into ctx and return NULL.
 ** If ctx is NULL, then return the text of the error message.
 */
-static char *jsonBadPathError(
+static var_na *jsonBadPathError(
   sqlite3_context *ctx,     /* The function call containing the error */
-  const char *zPath,        /* The path with the problem */
-  int rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
+  const var_na *zPath,        /* The path with the problem */
+  จำนวนเต็ม rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
 ){
-  char *zMsg;
-  if( rc==(int)JSON_LOOKUP_NOTARRAY ){
+  var_na *zMsg;
+  ถ้า( rc==(จำนวนเต็ม)JSON_LOOKUP_NOTARRAY ){
     zMsg = sqlite3_mprintf("not an array element: %Q", zPath);
-  }else if( rc==(int)JSON_LOOKUP_ERROR ){
+  }มิฉะนั้น ถ้า( rc==(จำนวนเต็ม)JSON_LOOKUP_ERROR ){
     zMsg = sqlite3_mprintf("malformed JSON");
-  }else if( rc==(int)JSON_LOOKUP_TOODEEP ){
+  }มิฉะนั้น ถ้า( rc==(จำนวนเต็ม)JSON_LOOKUP_TOODEEP ){
     zMsg = sqlite3_mprintf("JSON path too deep");
-  }else{
+  }มิฉะนั้น{
     zMsg = sqlite3_mprintf("bad JSON path: %Q", zPath);
   }
-  if( ctx==0 ) return zMsg;
-  if( zMsg ){
+  ถ้า( ctx==0 ) คืน zMsg;
+  ถ้า( zMsg ){
     sqlite3_result_error(ctx, zMsg, -1);
     sqlite3_free(zMsg);
-  }else{
+  }มิฉะนั้น{
     sqlite3_result_error_nomem(ctx);
   }
-  return 0;
+  คืน 0;
 }
 
 /* argv[0] is a BLOB that seems likely to be a JSONB.  Subsequent
@@ -3709,41 +3709,41 @@ static char *jsonBadPathError(
 */
 static void jsonInsertIntoBlob(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv,
-  int eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
+  จำนวนเต็ม eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
 ){
-  int i;
+  จำนวนเต็ม i;
   u32 rc = 0;
-  const char *zPath = 0;
-  int flgs;
+  const var_na *zPath = 0;
+  จำนวนเต็ม flgs;
   JsonParse *p;
   JsonParse ax;
 
   assert( (argc&1)==1 );
   flgs = argc==1 ? 0 : JSON_EDITABLE;
   p = jsonParseFuncArg(ctx, argv[0], flgs);
-  if( p==0 ) return;
-  for(i=1; i<argc-1; i+=2){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) continue;
-    zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
+  ถ้า( p==0 ) คืน;
+  สำหรับ(i=1; i<argc-1; i+=2){
+    ถ้า( sqlite3_value_type(argv[i])==SQLITE_NULL ) continue;
+    zPath = (const var_na*)sqlite3_value_text(argv[i]);
+    ถ้า( zPath==0 ){
       sqlite3_result_error_nomem(ctx);
       jsonParseFree(p);
-      return;
+      คืน;
     }
-    if( zPath[0]!='$' ) goto jsonInsertIntoBlob_patherror;
-    if( jsonFunctionArgToBlob(ctx, argv[i+1], &ax) ){
+    ถ้า( zPath[0]!='$' ) goto jsonInsertIntoBlob_patherror;
+    ถ้า( jsonFunctionArgToBlob(ctx, argv[i+1], &ax) ){
       jsonParseReset(&ax);
       jsonParseFree(p);
-      return;
+      คืน;
     }
-    if( zPath[1]==0 ){
-      if( eEdit==JEDIT_REPL || eEdit==JEDIT_SET ){
+    ถ้า( zPath[1]==0 ){
+      ถ้า( eEdit==JEDIT_REPL || eEdit==JEDIT_SET ){
         jsonBlobEdit(p, 0, p->nBlob, ax.aBlob, ax.nBlob);
       }
       rc = 0;
-   }else{
+   }มิฉะนั้น{
       p->eEdit = eEdit;
       p->nIns = ax.nBlob;
       p->aIns = ax.aBlob;
@@ -3752,17 +3752,17 @@ static void jsonInsertIntoBlob(
       rc = jsonLookupStep(p, 0, zPath+1, 0);
     }
     jsonParseReset(&ax);
-    if( rc==JSON_LOOKUP_NOTFOUND ) continue;
-    if( JSON_LOOKUP_ISERROR(rc) ) goto jsonInsertIntoBlob_patherror;
+    ถ้า( rc==JSON_LOOKUP_NOTFOUND ) continue;
+    ถ้า( JSON_LOOKUP_ISERROR(rc) ) goto jsonInsertIntoBlob_patherror;
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  คืน;
 
 jsonInsertIntoBlob_patherror:
   jsonParseFree(p);
   jsonBadPathError(ctx, zPath, rc);
-  return;
+  คืน;
 }
 
 /*
@@ -3793,13 +3793,13 @@ jsonInsertIntoBlob_patherror:
 ** payload is less than 7 bytes, we will never get a false positive for
 ** JSONB on an input that is really text JSON.
 */
-static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
+static จำนวนเต็ม jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
   u32 n, sz = 0;
   u8 c;
-  if( sqlite3_value_type(pArg)!=SQLITE_BLOB ) return 0;
+  ถ้า( sqlite3_value_type(pArg)!=SQLITE_BLOB ) คืน 0;
   p->aBlob = (u8*)sqlite3_value_blob(pArg);
   p->nBlob = (u32)sqlite3_value_bytes(pArg);
-  if( p->nBlob>0
+  ถ้า( p->nBlob>0
    && ALWAYS(p->aBlob!=0)
    && ((c = p->aBlob[0]) & 0x0f)<=JSONB_OBJECT
    && (n = jsonbPayloadSize(p, 0, &sz))>0
@@ -3809,11 +3809,11 @@ static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
       || (c!=0x7b && c!=0x5b && !sqlite3Isdigit(c))
       || jsonbValidityCheck(p, 0, p->nBlob, 1)==0)
   ){
-    return 1;
+    คืน 1;
   }
   p->aBlob = 0;
   p->nBlob = 0;
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -3837,48 +3837,48 @@ static JsonParse *jsonParseFuncArg(
   sqlite3_value *pArg,
   u32 flgs
 ){
-  int eType;                   /* Datatype of pArg */
+  จำนวนเต็ม eType;                   /* Datatype of pArg */
   JsonParse *p = 0;            /* Value to be returned */
   JsonParse *pFromCache = 0;   /* Value taken from cache */
   sqlite3 *db;                 /* The database connection */
   
   assert( ctx!=0 );
   eType = sqlite3_value_type(pArg);
-  if( eType==SQLITE_NULL ){
-    return 0;
+  ถ้า( eType==SQLITE_NULL ){
+    คืน 0;
   }
-  if( (flgs & JSON_NOCACHE)==0 ){
+  ถ้า( (flgs & JSON_NOCACHE)==0 ){
     pFromCache = jsonCacheSearch(ctx, pArg);
   }
-  if( pFromCache ){
+  ถ้า( pFromCache ){
     pFromCache->nJPRef++;
-    if( (flgs & JSON_EDITABLE)==0 ){
-      return pFromCache;
+    ถ้า( (flgs & JSON_EDITABLE)==0 ){
+      คืน pFromCache;
     }
   }
   db = sqlite3_context_db_handle(ctx);
 rebuild_from_cache:
-  p = sqlite3DbMallocZero(db, sizeof(*p));
-  if( p==0 ) goto json_pfa_oom;
-  memset(p, 0, sizeof(*p));
+  p = sqlite3DbMallocZero(db, parimaa_na(*p));
+  ถ้า( p==0 ) goto json_pfa_oom;
+  memset(p, 0, parimaa_na(*p));
   p->db = db;
   p->nJPRef = 1;
-  if( pFromCache!=0 ){
+  ถ้า( pFromCache!=0 ){
     u32 nBlob = pFromCache->nBlob;
     p->aBlob = sqlite3DbMallocRaw(db, nBlob);
-    if( p->aBlob==0 ) goto json_pfa_oom;
+    ถ้า( p->aBlob==0 ) goto json_pfa_oom;
     memcpy(p->aBlob, pFromCache->aBlob, nBlob);
     p->nBlobAlloc = p->nBlob = nBlob;
     p->hasNonstd = pFromCache->hasNonstd;
     jsonParseFree(pFromCache);
-    return p;
+    คืน p;
   }
-  if( eType==SQLITE_BLOB ){
-    if( jsonArgIsJsonb(pArg,p) ){
-      if( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
+  ถ้า( eType==SQLITE_BLOB ){
+    ถ้า( jsonArgIsJsonb(pArg,p) ){
+      ถ้า( (flgs & JSON_EDITABLE)!=0 && jsonBlobMakeEditable(p, 0)==0 ){
         goto json_pfa_oom;
       }
-      return p;
+      คืน p;
     }
     /* If the blob is not valid JSONB, fall through into trying to cast
     ** the blob into text which is then interpreted as JSON.  (tag-20240123-a)
@@ -3893,57 +3893,57 @@ rebuild_from_cache:
     ** See for example https://sqlite.org/forum/forumpost/012136abd5292b8d
     */
   }
-  p->zJson = (char*)sqlite3_value_text(pArg);
+  p->zJson = (var_na*)sqlite3_value_text(pArg);
   p->nJson = sqlite3_value_bytes(pArg);
-  if( db->mallocFailed ) goto json_pfa_oom;
-  if( p->nJson==0 ) goto json_pfa_malformed;
+  ถ้า( db->mallocFailed ) goto json_pfa_oom;
+  ถ้า( p->nJson==0 ) goto json_pfa_malformed;
   assert( p->zJson!=0 );
-  if( jsonConvertTextToBlob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
-    if( flgs & JSON_KEEPERROR ){
+  ถ้า( jsonConvertTextToBlob(p, (flgs & JSON_KEEPERROR) ? 0 : ctx) ){
+    ถ้า( flgs & JSON_KEEPERROR ){
       p->nErr = 1;
-      return p;
-    }else{
+      คืน p;
+    }มิฉะนั้น{
       jsonParseFree(p);
-      return 0;
+      คืน 0;
     }
-  }else{
-    int isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
-    int rc;
-    if( !isRCStr ){
-      char *zNew = sqlite3RCStrNew( p->nJson );
-      if( zNew==0 ) goto json_pfa_oom;
+  }มิฉะนั้น{
+    จำนวนเต็ม isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
+    จำนวนเต็ม rc;
+    ถ้า( !isRCStr ){
+      var_na *zNew = sqlite3RCStrNew( p->nJson );
+      ถ้า( zNew==0 ) goto json_pfa_oom;
       memcpy(zNew, p->zJson, p->nJson);
       p->zJson = zNew;
       p->zJson[p->nJson] = 0;
-    }else{
+    }มิฉะนั้น{
       sqlite3RCStrRef(p->zJson);
     }
     p->bJsonIsRCStr = 1;
     rc = jsonCacheInsert(ctx, p);
-    if( rc==SQLITE_NOMEM ) goto json_pfa_oom;
-    if( flgs & JSON_EDITABLE ){
+    ถ้า( rc==SQLITE_NOMEM ) goto json_pfa_oom;
+    ถ้า( flgs & JSON_EDITABLE ){
       pFromCache = p;
       p = 0;
       goto rebuild_from_cache;
     }
   }
-  return p;
+  คืน p;
 
 json_pfa_malformed:
-  if( flgs & JSON_KEEPERROR ){
+  ถ้า( flgs & JSON_KEEPERROR ){
     p->nErr = 1;
-    return p;
-  }else{
+    คืน p;
+  }มิฉะนั้น{
     jsonParseFree(p);
     sqlite3_result_error(ctx, "malformed JSON", -1);
-    return 0;
+    คืน 0;
   }
 
 json_pfa_oom:
   jsonParseFree(pFromCache);
   jsonParseFree(p);
   sqlite3_result_error_nomem(ctx);
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -3955,20 +3955,20 @@ static void jsonReturnParse(
   sqlite3_context *ctx,
   JsonParse *p
 ){
-  int flgs;
-  if( p->oom ){
+  จำนวนเต็ม flgs;
+  ถ้า( p->oom ){
     sqlite3_result_error_nomem(ctx);
-    return;
+    คืน;
   }
   flgs = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  if( flgs & JSON_BLOB ){
-    if( p->nBlobAlloc>0 && !p->bReadOnly ){
+  ถ้า( flgs & JSON_BLOB ){
+    ถ้า( p->nBlobAlloc>0 && !p->bReadOnly ){
       sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_DYNAMIC);
       p->nBlobAlloc = 0;
-    }else{
+    }มิฉะนั้น{
       sqlite3_result_blob(ctx, p->aBlob, p->nBlob, SQLITE_TRANSIENT);
     }
-  }else{
+  }มิฉะนั้น{
     JsonString s;
     jsonStringInit(&s, ctx);
     p->delta = 0;
@@ -3982,7 +3982,7 @@ static void jsonReturnParse(
 ** SQL functions used for testing and debugging
 ****************************************************************************/
 
-#if SQLITE_DEBUG
+#ถ้า SQLITE_DEBUG
 /*
 ** Decode JSONB bytes in aBlob[] starting at iStart through but not 
 ** including iEnd.  Indent the
@@ -3992,83 +3992,83 @@ static void jsonDebugPrintBlob(
   JsonParse *pParse, /* JSON content */
   u32 iStart,        /* Start rendering here */
   u32 iEnd,          /* Do not render this byte or any byte after this one */
-  int nIndent,       /* Indent by this many spaces */
+  จำนวนเต็ม nIndent,       /* Indent by this many spaces */
   sqlite3_str *pOut  /* Generate output into this sqlite3_str object */
 ){
-  while( iStart<iEnd ){
+  ขณะ( iStart<iEnd ){
     u32 i, n, nn, sz = 0;
-    int showContent = 1;
+    จำนวนเต็ม showContent = 1;
     u8 x = pParse->aBlob[iStart] & 0x0f;
     u32 savedNBlob = pParse->nBlob;
     sqlite3_str_appendf(pOut, "%5d:%*s", iStart, nIndent, "");
-    if( pParse->nBlobAlloc>pParse->nBlob ){
+    ถ้า( pParse->nBlobAlloc>pParse->nBlob ){
       pParse->nBlob = pParse->nBlobAlloc;
     }
     nn = n = jsonbPayloadSize(pParse, iStart, &sz);
-    if( nn==0 ) nn = 1;
-    if( sz>0 && x<JSONB_ARRAY ){
+    ถ้า( nn==0 ) nn = 1;
+    ถ้า( sz>0 && x<JSONB_ARRAY ){
       nn += sz;
     }
-    for(i=0; i<nn; i++){
+    สำหรับ(i=0; i<nn; i++){
       sqlite3_str_appendf(pOut, " %02x", pParse->aBlob[iStart+i]);
     }
-    if( n==0 ){
+    ถ้า( n==0 ){
       sqlite3_str_appendf(pOut, "   ERROR invalid node size\n");
       iStart = n==0 ? iStart+1 : iEnd;
       continue;
     }
     pParse->nBlob = savedNBlob;
-    if( iStart+n+sz>iEnd ){
+    ถ้า( iStart+n+sz>iEnd ){
       iEnd = iStart+n+sz;
-      if( iEnd>pParse->nBlob ){
-        if( pParse->nBlobAlloc>0 && iEnd>pParse->nBlobAlloc ){
+      ถ้า( iEnd>pParse->nBlob ){
+        ถ้า( pParse->nBlobAlloc>0 && iEnd>pParse->nBlobAlloc ){
           iEnd = pParse->nBlobAlloc;
-        }else{
+        }มิฉะนั้น{
           iEnd = pParse->nBlob;
         }
       }
     }
     sqlite3_str_appendall(pOut,"  <-- ");
     switch( x ){
-      case JSONB_NULL:     sqlite3_str_appendall(pOut,"null"); break;
-      case JSONB_TRUE:     sqlite3_str_appendall(pOut,"true"); break;
-      case JSONB_FALSE:    sqlite3_str_appendall(pOut,"false"); break;
-      case JSONB_INT:      sqlite3_str_appendall(pOut,"int"); break;
-      case JSONB_INT5:     sqlite3_str_appendall(pOut,"int5"); break;
-      case JSONB_FLOAT:    sqlite3_str_appendall(pOut,"float"); break;
-      case JSONB_FLOAT5:   sqlite3_str_appendall(pOut,"float5"); break;
-      case JSONB_TEXT:     sqlite3_str_appendall(pOut,"text"); break;
-      case JSONB_TEXTJ:    sqlite3_str_appendall(pOut,"textj"); break;
-      case JSONB_TEXT5:    sqlite3_str_appendall(pOut,"text5"); break;
-      case JSONB_TEXTRAW:  sqlite3_str_appendall(pOut,"textraw"); break;
-      case JSONB_ARRAY: {
+      pak_sa JSONB_NULL:     sqlite3_str_appendall(pOut,"null"); bha_nga;
+      pak_sa JSONB_TRUE:     sqlite3_str_appendall(pOut,"true"); bha_nga;
+      pak_sa JSONB_FALSE:    sqlite3_str_appendall(pOut,"false"); bha_nga;
+      pak_sa JSONB_INT:      sqlite3_str_appendall(pOut,"int"); bha_nga;
+      pak_sa JSONB_INT5:     sqlite3_str_appendall(pOut,"int5"); bha_nga;
+      pak_sa JSONB_FLOAT:    sqlite3_str_appendall(pOut,"float"); bha_nga;
+      pak_sa JSONB_FLOAT5:   sqlite3_str_appendall(pOut,"float5"); bha_nga;
+      pak_sa JSONB_TEXT:     sqlite3_str_appendall(pOut,"text"); bha_nga;
+      pak_sa JSONB_TEXTJ:    sqlite3_str_appendall(pOut,"textj"); bha_nga;
+      pak_sa JSONB_TEXT5:    sqlite3_str_appendall(pOut,"text5"); bha_nga;
+      pak_sa JSONB_TEXTRAW:  sqlite3_str_appendall(pOut,"textraw"); bha_nga;
+      pak_sa JSONB_ARRAY: {
         sqlite3_str_appendf(pOut,"array, %u bytes\n", sz);
         jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
         showContent = 0;
-        break;
+        bha_nga;
       }
-      case JSONB_OBJECT: {
+      pak_sa JSONB_OBJECT: {
         sqlite3_str_appendf(pOut, "object, %u bytes\n", sz);
         jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
         showContent = 0;
-        break;
+        bha_nga;
       }
       default: {
         sqlite3_str_appendall(pOut, "ERROR: unknown node type\n");
         showContent = 0;
-        break;
+        bha_nga;
       }
     }
-    if( showContent ){
-      if( sz==0 && x<=JSONB_FALSE ){
+    ถ้า( showContent ){
+      ถ้า( sz==0 && x<=JSONB_FALSE ){
         sqlite3_str_append(pOut, "\n", 1);
-      }else{
+      }มิฉะนั้น{
         u32 j;
         sqlite3_str_appendall(pOut, ": \"");
-        for(j=iStart+n; j<iStart+n+sz; j++){
+        สำหรับ(j=iStart+n; j<iStart+n+sz; j++){
           u8 c = pParse->aBlob[j];
-          if( c<0x20 || c>=0x7f ) c = '.';
-          sqlite3_str_append(pOut, (char*)&c, 1);
+          ถ้า( c<0x20 || c>=0x7f ) c = '.';
+          sqlite3_str_append(pOut, (var_na*)&c, 1);
         }
         sqlite3_str_append(pOut, "\"\n", 2);
       }
@@ -4078,18 +4078,18 @@ static void jsonDebugPrintBlob(
 }
 static void jsonShowParse(JsonParse *pParse){
   sqlite3_str out;
-  char zBuf[1000];
-  if( pParse==0 ){
+  var_na zBuf[1000];
+  ถ้า( pParse==0 ){
     printf("NULL pointer\n");
-    return;
-  }else{
+    คืน;
+  }มิฉะนั้น{
     printf("nBlobAlloc = %u\n", pParse->nBlobAlloc);
     printf("nBlob = %u\n", pParse->nBlob);
     printf("delta = %d\n", pParse->delta);
-    if( pParse->nBlob==0 ) return;
+    ถ้า( pParse->nBlob==0 ) คืน;
     printf("content (bytes 0..%u):\n", pParse->nBlob-1);
   }
-  sqlite3StrAccumInit(&out, 0, zBuf, sizeof(zBuf), 1000000);
+  sqlite3StrAccumInit(&out, 0, zBuf, parimaa_na(zBuf), 1000000);
   jsonDebugPrintBlob(pParse, 0, pParse->nBlob, 0, &out);
   printf("%s", sqlite3_str_value(&out));
   sqlite3_str_reset(&out);
@@ -4105,7 +4105,7 @@ static void jsonShowParse(JsonParse *pParse){
 */
 static void jsonParseFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonParse *p;        /* The parse */
@@ -4114,11 +4114,11 @@ static void jsonParseFunc(
   assert( argc>=1 );
   sqlite3StrAccumInit(&out, 0, 0, 0, 1000000);
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==1 ){
+  ถ้า( p==0 ) คืน;
+  ถ้า( argc==1 ){
     jsonDebugPrintBlob(p, 0, p->nBlob, 0, &out);
     sqlite3_result_text64(ctx,out.zText,out.nChar,SQLITE_TRANSIENT,SQLITE_UTF8);
-  }else{
+  }มิฉะนั้น{
     jsonShowParse(p);
   }
   jsonParseFree(p);
@@ -4138,7 +4138,7 @@ static void jsonParseFunc(
 */
 static void jsonQuoteFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonString jx;
@@ -4157,15 +4157,15 @@ static void jsonQuoteFunc(
 */
 static void jsonArrayFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
-  int i;
+  จำนวนเต็ม i;
   JsonString jx;
 
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '[');
-  for(i=0; i<argc; i++){
+  สำหรับ(i=0; i<argc; i++){
     jsonAppendSeparator(&jx);
     jsonAppendSqlValue(&jx, argv[i]);
   }
@@ -4183,7 +4183,7 @@ static void jsonArrayFunc(
 */
 static void jsonArrayLengthFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
@@ -4192,38 +4192,38 @@ static void jsonArrayLengthFunc(
   u8 eErr = 0;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
-    const char *zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ){
+  ถ้า( p==0 ) คืน;
+  ถ้า( argc==2 ){
+    const var_na *zPath = (const var_na*)sqlite3_value_text(argv[1]);
+    ถ้า( zPath==0 ){
       jsonParseFree(p);
-      return;
+      คืน;
     }
     i = jsonLookupStep(p, 0, zPath[0]=='$' ? zPath+1 : "@", 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    ถ้า( JSON_LOOKUP_ISERROR(i) ){
+      ถ้า( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
+      }มิฉะนั้น{
         jsonBadPathError(ctx, zPath, i);
       }
       eErr = 1;
       i = 0;
     }
-  }else{
+  }มิฉะนั้น{
     i = 0;
   }
-  if( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
+  ถ้า( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
     cnt = jsonbArrayCount(p, i);
   }
-  if( !eErr ) sqlite3_result_int64(ctx, cnt);
+  ถ้า( !eErr ) sqlite3_result_int64(ctx, cnt);
   jsonParseFree(p);
 }
 
 /* True if the string is all alphanumerics and underscores */
-static int jsonAllAlphanum(const char *z, int n){
-  int i;
-  for(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
-  return i==n;
+static จำนวนเต็ม jsonAllAlphanum(const var_na *z, จำนวนเต็ม n){
+  จำนวนเต็ม i;
+  สำหรับ(i=0; i<n && (sqlite3Isalnum(z[i]) || z[i]=='_'); i++){}
+  คืน i==n;
 }
 
 /*
@@ -4248,32 +4248,32 @@ static int jsonAllAlphanum(const char *z, int n){
 */
 static void jsonExtractFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonParse *p = 0;      /* The parse */
-  int flags;             /* Flags associated with the function */
-  int i;                 /* Loop counter */
+  จำนวนเต็ม flags;             /* Flags associated with the function */
+  จำนวนเต็ม i;                 /* Loop counter */
   JsonString jx;         /* String for array result */
 
-  if( argc<2 ) return;
+  ถ้า( argc<2 ) คืน;
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
+  ถ้า( p==0 ) คืน;
   flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   jsonStringInit(&jx, ctx);
-  if( argc>2 ){
+  ถ้า( argc>2 ){
     jsonAppendChar(&jx, '[');
   }
-  for(i=1; i<argc; i++){
+  สำหรับ(i=1; i<argc; i++){
     /* With a single PATH argument */
-    const char *zPath = (const char*)sqlite3_value_text(argv[i]);
-    int nPath;
+    const var_na *zPath = (const var_na*)sqlite3_value_text(argv[i]);
+    จำนวนเต็ม nPath;
     u32 j;
-    if( zPath==0 ) goto json_extract_error;
+    ถ้า( zPath==0 ) goto json_extract_error;
     nPath = sqlite3Strlen30(zPath);
-    if( zPath[0]=='$' ){
+    ถ้า( zPath[0]=='$' ){
       j = jsonLookupStep(p, 0, zPath+1, 0);
-    }else if( (flags & JSON_ABPATH) ){
+    }มิฉะนั้น ถ้า( (flags & JSON_ABPATH) ){
       /* The -> and ->> operators accept abbreviated PATH arguments.  This
       ** is mostly for compatibility with PostgreSQL, but also for
       ** convenience.
@@ -4288,17 +4288,17 @@ static void jsonExtractFunc(
       **     NUMBER   ==>  $[#NUMBER]    // PG compatible
       */
       jsonStringInit(&jx, ctx);
-      if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
+      ถ้า( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
         jsonAppendRawNZ(&jx, "[", 1);
-        if( zPath[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
+        ถ้า( zPath[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
         jsonAppendRaw(&jx, zPath, nPath);
         jsonAppendRawNZ(&jx, "]", 2);
-      }else if( jsonAllAlphanum(zPath, nPath) ){
+      }มิฉะนั้น ถ้า( jsonAllAlphanum(zPath, nPath) ){
         jsonAppendRawNZ(&jx, ".", 1);
         jsonAppendRaw(&jx, zPath, nPath);
-      }else if( zPath[0]=='[' && nPath>=3 && zPath[nPath-1]==']' ){
+      }มิฉะนั้น ถ้า( zPath[0]=='[' && nPath>=3 && zPath[nPath-1]==']' ){
         jsonAppendRaw(&jx, zPath, nPath);
-      }else{
+      }มิฉะนั้น{
         jsonAppendRawNZ(&jx, ".\"", 2);
         jsonAppendRaw(&jx, zPath, nPath);
         jsonAppendRawNZ(&jx, "\"", 1);
@@ -4306,54 +4306,54 @@ static void jsonExtractFunc(
       jsonStringTerminate(&jx);
       j = jsonLookupStep(p, 0, jx.zBuf, 0);
       jsonStringReset(&jx);
-    }else{
+    }มิฉะนั้น{
       jsonBadPathError(ctx, zPath, 0);
       goto json_extract_error;
     }
-    if( j<p->nBlob ){
-      if( argc==2 ){
-        if( flags & JSON_JSON ){
+    ถ้า( j<p->nBlob ){
+      ถ้า( argc==2 ){
+        ถ้า( flags & JSON_JSON ){
           jsonStringInit(&jx, ctx);
           jsonTranslateBlobToText(p, j, &jx);
           jsonReturnString(&jx, 0, 0);
           jsonStringReset(&jx);
           assert( (flags & JSON_BLOB)==0 );
           sqlite3_result_subtype(ctx, JSON_SUBTYPE);
-        }else{
+        }มิฉะนั้น{
           jsonReturnFromBlob(p, j, ctx, 0);
-          if( (flags & (JSON_SQL|JSON_BLOB))==0
+          ถ้า( (flags & (JSON_SQL|JSON_BLOB))==0
            && (p->aBlob[j]&0x0f)>=JSONB_ARRAY
           ){
             sqlite3_result_subtype(ctx, JSON_SUBTYPE);
           }
         }
-      }else{
+      }มิฉะนั้น{
         jsonAppendSeparator(&jx);
         jsonTranslateBlobToText(p, j, &jx);
       }
-    }else if( j==JSON_LOOKUP_NOTFOUND ){
-      if( argc==2 ){
+    }มิฉะนั้น ถ้า( j==JSON_LOOKUP_NOTFOUND ){
+      ถ้า( argc==2 ){
         goto json_extract_error;  /* Return NULL if not found */
-      }else{
+      }มิฉะนั้น{
         jsonAppendSeparator(&jx);
         jsonAppendRawNZ(&jx, "null", 4);
       }
-    }else{
+    }มิฉะนั้น{
       jsonBadPathError(ctx, zPath, j);
       goto json_extract_error;
     }
   }
-  if( argc>2 ){
+  ถ้า( argc>2 ){
     jsonAppendChar(&jx, ']');
     jsonReturnString(&jx, 0, 0);
-    if( (flags & JSON_BLOB)==0 ){
+    ถ้า( (flags & JSON_BLOB)==0 ){
       sqlite3_result_subtype(ctx, JSON_SUBTYPE);
     }
   }
 json_extract_error:
   jsonStringReset(&jx);
   jsonParseFree(p);
-  return;
+  คืน;
 }
 
 /*
@@ -4411,7 +4411,7 @@ json_extract_error:
 **  |
 **  ^---- Line numbers referenced in comments in the implementation
 */
-static int jsonMergePatch(
+static จำนวนเต็ม jsonMergePatch(
   JsonParse *pTarget,      /* The JSON parser that contains the TARGET */
   u32 iTarget,             /* Index of TARGET in pTarget->aBlob[] */
   const JsonParse *pPatch, /* The PATCH */
@@ -4445,7 +4445,7 @@ static int jsonMergePatch(
   assert( iTarget>=0 && iTarget<pTarget->nBlob );
   assert( iPatch>=0 && iPatch<pPatch->nBlob );
   x = pPatch->aBlob[iPatch] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
+  ถ้า( x!=JSONB_OBJECT ){  /* Algorithm line 02 */
     u32 szPatch;        /* Total size of the patch, header+payload */
     u32 szTarget;       /* Total size of the target, header+payload */
     n = jsonbPayloadSize(pPatch, iPatch, &sz);
@@ -4454,108 +4454,108 @@ static int jsonMergePatch(
     n = jsonbPayloadSize(pTarget, iTarget, &sz);
     szTarget = n+sz;
     jsonBlobEdit(pTarget, iTarget, szTarget, pPatch->aBlob+iPatch, szPatch);
-    return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;  /* Line 03 */
+    คืน pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;  /* Line 03 */
   }
   x = pTarget->aBlob[iTarget] & 0x0f;
-  if( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
+  ถ้า( x!=JSONB_OBJECT ){  /* Algorithm line 05 */
     n = jsonbPayloadSize(pTarget, iTarget, &sz);
     jsonBlobEdit(pTarget, iTarget+n, sz, 0, 0);
     x = pTarget->aBlob[iTarget];
     pTarget->aBlob[iTarget] = (x & 0xf0) | JSONB_OBJECT;
   }
   n = jsonbPayloadSize(pPatch, iPatch, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADPATCH;
+  ถ้า( NEVER(n==0) ) คืน JSON_MERGE_BADPATCH;
   iPCursor = iPatch+n;
   iPEnd = iPCursor+sz;
   n = jsonbPayloadSize(pTarget, iTarget, &sz);
-  if( NEVER(n==0) ) return JSON_MERGE_BADTARGET;
+  ถ้า( NEVER(n==0) ) คืน JSON_MERGE_BADTARGET;
   iTStart = iTarget+n;
   iTEndBE = iTStart+sz;
 
-  while( iPCursor<iPEnd ){  /* Algorithm line 07 */
+  ขณะ( iPCursor<iPEnd ){  /* Algorithm line 07 */
     iPLabel = iPCursor;
     ePLabel = pPatch->aBlob[iPCursor] & 0x0f;
-    if( ePLabel<JSONB_TEXT || ePLabel>JSONB_TEXTRAW ){
-      return JSON_MERGE_BADPATCH;
+    ถ้า( ePLabel<JSONB_TEXT || ePLabel>JSONB_TEXTRAW ){
+      คืน JSON_MERGE_BADPATCH;
     }
     nPLabel = jsonbPayloadSize(pPatch, iPCursor, &szPLabel);
-    if( nPLabel==0 ) return JSON_MERGE_BADPATCH;
+    ถ้า( nPLabel==0 ) คืน JSON_MERGE_BADPATCH;
     iPValue = iPCursor + nPLabel + szPLabel;
-    if( iPValue>=iPEnd ) return JSON_MERGE_BADPATCH;
+    ถ้า( iPValue>=iPEnd ) คืน JSON_MERGE_BADPATCH;
     nPValue = jsonbPayloadSize(pPatch, iPValue, &szPValue);
-    if( nPValue==0 ) return JSON_MERGE_BADPATCH;
+    ถ้า( nPValue==0 ) คืน JSON_MERGE_BADPATCH;
     iPCursor = iPValue + nPValue + szPValue;
-    if( iPCursor>iPEnd ) return JSON_MERGE_BADPATCH;
+    ถ้า( iPCursor>iPEnd ) คืน JSON_MERGE_BADPATCH;
 
     iTCursor = iTStart;
     iTEnd = iTEndBE + pTarget->delta;
-    while( iTCursor<iTEnd ){
-      int isEqual;   /* true if the patch and target labels match */
+    ขณะ( iTCursor<iTEnd ){
+      จำนวนเต็ม isEqual;   /* true if the patch and target labels match */
       iTLabel = iTCursor;
       eTLabel = pTarget->aBlob[iTCursor] & 0x0f;
-      if( eTLabel<JSONB_TEXT || eTLabel>JSONB_TEXTRAW ){
-        return JSON_MERGE_BADTARGET;
+      ถ้า( eTLabel<JSONB_TEXT || eTLabel>JSONB_TEXTRAW ){
+        คืน JSON_MERGE_BADTARGET;
       }
       nTLabel = jsonbPayloadSize(pTarget, iTCursor, &szTLabel);
-      if( nTLabel==0 ) return JSON_MERGE_BADTARGET;
+      ถ้า( nTLabel==0 ) คืน JSON_MERGE_BADTARGET;
       iTValue = iTLabel + nTLabel + szTLabel;
-      if( iTValue>=iTEnd ) return JSON_MERGE_BADTARGET;
+      ถ้า( iTValue>=iTEnd ) คืน JSON_MERGE_BADTARGET;
       nTValue = jsonbPayloadSize(pTarget, iTValue, &szTValue);
-      if( nTValue==0 ) return JSON_MERGE_BADTARGET;
-      if( iTValue + nTValue + szTValue > iTEnd ) return JSON_MERGE_BADTARGET;
+      ถ้า( nTValue==0 ) คืน JSON_MERGE_BADTARGET;
+      ถ้า( iTValue + nTValue + szTValue > iTEnd ) คืน JSON_MERGE_BADTARGET;
       isEqual = jsonLabelCompare(
-                   (const char*)&pPatch->aBlob[iPLabel+nPLabel],
+                   (const var_na*)&pPatch->aBlob[iPLabel+nPLabel],
                    szPLabel,
                    (ePLabel==JSONB_TEXT || ePLabel==JSONB_TEXTRAW),
-                   (const char*)&pTarget->aBlob[iTLabel+nTLabel],
+                   (const var_na*)&pTarget->aBlob[iTLabel+nTLabel],
                    szTLabel,
                    (eTLabel==JSONB_TEXT || eTLabel==JSONB_TEXTRAW));
-      if( isEqual ) break;
+      ถ้า( isEqual ) bha_nga;
       iTCursor = iTValue + nTValue + szTValue;
     }
     x = pPatch->aBlob[iPValue] & 0x0f;
-    if( iTCursor<iTEnd ){
+    ถ้า( iTCursor<iTEnd ){
       /* A match was found.  Algorithm line 08 */
-      if( x==0 ){
+      ถ้า( x==0 ){
         /* Patch value is NULL.  Algorithm line 09 */
         jsonBlobEdit(pTarget, iTLabel, nTLabel+szTLabel+nTValue+szTValue, 0,0);
         /*  vvvvvv----- No OOM on a delete-only edit */
-        if( NEVER(pTarget->oom) ) return JSON_MERGE_OOM;
-      }else{
+        ถ้า( NEVER(pTarget->oom) ) คืน JSON_MERGE_OOM;
+      }มิฉะนั้น{
         /* Algorithm line 12 */
-        int rc, savedDelta = pTarget->delta;
+        จำนวนเต็ม rc, savedDelta = pTarget->delta;
         pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
+        ถ้า( iDepth>=JSON_MAX_DEPTH ) คืน JSON_MERGE_TOODEEP;
         rc = jsonMergePatch(pTarget, iTValue, pPatch, iPValue, iDepth+1);
-        if( rc ) return rc;
+        ถ้า( rc ) คืน rc;
         pTarget->delta += savedDelta;
       }        
-    }else if( x>0 ){  /* Algorithm line 13 */
+    }มิฉะนั้น ถ้า( x>0 ){  /* Algorithm line 13 */
       /* No match and patch value is not NULL */
       u32 szNew = szPLabel+nPLabel;
-      if( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
+      ถ้า( (pPatch->aBlob[iPValue] & 0x0f)!=JSONB_OBJECT ){  /* Line 14 */
         jsonBlobEdit(pTarget, iTEnd, 0, 0, szPValue+nPValue+szNew);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
+        ถ้า( pTarget->oom ) คืน JSON_MERGE_OOM;
         memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
         memcpy(&pTarget->aBlob[iTEnd+szNew], 
                &pPatch->aBlob[iPValue], szPValue+nPValue);
-      }else{
-        int rc, savedDelta;
+      }มิฉะนั้น{
+        จำนวนเต็ม rc, savedDelta;
         jsonBlobEdit(pTarget, iTEnd, 0, 0, szNew+1);
-        if( pTarget->oom ) return JSON_MERGE_OOM;
+        ถ้า( pTarget->oom ) คืน JSON_MERGE_OOM;
         memcpy(&pTarget->aBlob[iTEnd], &pPatch->aBlob[iPLabel], szNew);
         pTarget->aBlob[iTEnd+szNew] = 0x00;
         savedDelta = pTarget->delta;
         pTarget->delta = 0;
-        if( iDepth>=JSON_MAX_DEPTH ) return JSON_MERGE_TOODEEP;
+        ถ้า( iDepth>=JSON_MAX_DEPTH ) คืน JSON_MERGE_TOODEEP;
         rc = jsonMergePatch(pTarget, iTEnd+szNew,pPatch,iPValue,iDepth+1);
-        if( rc ) return rc;
+        ถ้า( rc ) คืน rc;
         pTarget->delta += savedDelta;
       }
     }
   }
-  if( pTarget->delta ) jsonAfterEditSizeAdjust(pTarget, iTarget);
-  return pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;
+  ถ้า( pTarget->delta ) jsonAfterEditSizeAdjust(pTarget, iTarget);
+  คืน pTarget->oom ? JSON_MERGE_OOM : JSON_MERGE_OK;
 }
 
 
@@ -4566,27 +4566,27 @@ static int jsonMergePatch(
 */
 static void jsonPatchFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonParse *pTarget;    /* The TARGET */
   JsonParse *pPatch;     /* The PATCH */
-  int rc;                /* Result code */
+  จำนวนเต็ม rc;                /* Result code */
 
   UNUSED_PARAMETER(argc);
   assert( argc==2 );
   pTarget = jsonParseFuncArg(ctx, argv[0], JSON_EDITABLE);
-  if( pTarget==0 ) return;
+  ถ้า( pTarget==0 ) คืน;
   pPatch = jsonParseFuncArg(ctx, argv[1], 0);
-  if( pPatch ){
+  ถ้า( pPatch ){
     rc = jsonMergePatch(pTarget, 0, pPatch, 0, 0);
-    if( rc==JSON_MERGE_OK ){
+    ถ้า( rc==JSON_MERGE_OK ){
       jsonReturnParse(ctx, pTarget);
-    }else if( rc==JSON_MERGE_OOM ){
+    }มิฉะนั้น ถ้า( rc==JSON_MERGE_OOM ){
       sqlite3_result_error_nomem(ctx);
-    }else if( rc==JSON_MERGE_TOODEEP ){
+    }มิฉะนั้น ถ้า( rc==JSON_MERGE_TOODEEP ){
       sqlite3_result_error(ctx, "JSON nested too deep", -1);
-    }else{
+    }มิฉะนั้น{
       sqlite3_result_error(ctx, "malformed JSON", -1);
     }
     jsonParseFree(pPatch);
@@ -4602,29 +4602,29 @@ static void jsonPatchFunc(
 */
 static void jsonObjectFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
-  int i;
+  จำนวนเต็ม i;
   JsonString jx;
-  const char *z;
+  const var_na *z;
   u32 n;
 
-  if( argc&1 ){
+  ถ้า( argc&1 ){
     sqlite3_result_error(ctx, "json_object() requires an even number "
                                   "of arguments", -1);
-    return;
+    คืน;
   }
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '{');
-  for(i=0; i<argc; i+=2){
-    if( sqlite3_value_type(argv[i])!=SQLITE_TEXT ){
+  สำหรับ(i=0; i<argc; i+=2){
+    ถ้า( sqlite3_value_type(argv[i])!=SQLITE_TEXT ){
       sqlite3_result_error(ctx, "json_object() labels must be TEXT", -1);
       jsonStringReset(&jx);
-      return;
+      คืน;
     }
     jsonAppendSeparator(&jx);
-    z = (const char*)sqlite3_value_text(argv[i]);
+    z = (const var_na*)sqlite3_value_text(argv[i]);
     n = sqlite3_value_bytes(argv[i]);
     jsonAppendString(&jx, z, n);
     jsonAppendChar(&jx, ':');
@@ -4644,36 +4644,36 @@ static void jsonObjectFunc(
 */
 static void jsonRemoveFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
-  const char *zPath = 0; /* Path of element to be removed */
-  int i;                 /* Loop counter */
+  const var_na *zPath = 0; /* Path of element to be removed */
+  จำนวนเต็ม i;                 /* Loop counter */
   u32 rc;                /* Subroutine return code */
 
-  if( argc<1 ) return;
+  ถ้า( argc<1 ) คืน;
   p = jsonParseFuncArg(ctx, argv[0], argc>1 ? JSON_EDITABLE : 0);
-  if( p==0 ) return;
-  for(i=1; i<argc; i++){
-    zPath = (const char*)sqlite3_value_text(argv[i]);
-    if( zPath==0 ){
+  ถ้า( p==0 ) คืน;
+  สำหรับ(i=1; i<argc; i++){
+    zPath = (const var_na*)sqlite3_value_text(argv[i]);
+    ถ้า( zPath==0 ){
       goto json_remove_done;
     }
-    if( zPath[0]!='$' ){
+    ถ้า( zPath[0]!='$' ){
       goto json_remove_patherror;
     }
-    if( zPath[1]==0 ){
+    ถ้า( zPath[1]==0 ){
       /* json_remove(j,'$') returns NULL */
       goto json_remove_done;
     }
     p->eEdit = JEDIT_DEL;
     p->delta = 0;
     rc = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(rc) ){
-      if( rc==JSON_LOOKUP_NOTFOUND ){
+    ถ้า( JSON_LOOKUP_ISERROR(rc) ){
+      ถ้า( rc==JSON_LOOKUP_NOTFOUND ){
         continue;  /* No-op */
-      }else{
+      }มิฉะนั้น{
         jsonBadPathError(ctx, zPath, rc);
       }
       goto json_remove_done;
@@ -4681,14 +4681,14 @@ static void jsonRemoveFunc(
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
-  return;
+  คืน;
 
 json_remove_patherror:
   jsonBadPathError(ctx, zPath, 0);
 
 json_remove_done:
   jsonParseFree(p);
-  return;
+  คืน;
 }
 
 /*
@@ -4699,13 +4699,13 @@ json_remove_done:
 */
 static void jsonReplaceFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
-  if( argc<1 ) return;
-  if( (argc&1)==0 ) {
+  ถ้า( argc<1 ) คืน;
+  ถ้า( (argc&1)==0 ) {
     jsonWrongNumArgs(ctx, "replace");
-    return;
+    คืน;
   }
   jsonInsertIntoBlob(ctx, argc, argv, JEDIT_REPL);
 }
@@ -4725,19 +4725,19 @@ static void jsonReplaceFunc(
 */
 static void jsonSetFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  int eInsType = JSON_INSERT_TYPE(flags);
-  static const char *azInsType[] = { "insert", "set", "array_insert" };
+  จำนวนเต็ม flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  จำนวนเต็ม eInsType = JSON_INSERT_TYPE(flags);
+  static const var_na *azInsType[] = { "insert", "set", "array_insert" };
   static const u8 aEditType[] = { JEDIT_INS, JEDIT_SET, JEDIT_AINS };
 
-  if( argc<1 ) return;
+  ถ้า( argc<1 ) คืน;
   assert( eInsType>=0 && eInsType<=2 );
-  if( (argc&1)==0 ) {
+  ถ้า( (argc&1)==0 ) {
     jsonWrongNumArgs(ctx, azInsType[eInsType]);
-    return;
+    คืน;
   }
   jsonInsertIntoBlob(ctx, argc, argv, aEditType[eInsType]);
 }
@@ -4751,32 +4751,32 @@ static void jsonSetFunc(
 */
 static void jsonTypeFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
-  const char *zPath = 0;
+  const var_na *zPath = 0;
   u32 i;
 
   p = jsonParseFuncArg(ctx, argv[0], 0);
-  if( p==0 ) return;
-  if( argc==2 ){
-    zPath = (const char*)sqlite3_value_text(argv[1]);
-    if( zPath==0 ) goto json_type_done;
-    if( zPath[0]!='$' ){
+  ถ้า( p==0 ) คืน;
+  ถ้า( argc==2 ){
+    zPath = (const var_na*)sqlite3_value_text(argv[1]);
+    ถ้า( zPath==0 ) goto json_type_done;
+    ถ้า( zPath[0]!='$' ){
       jsonBadPathError(ctx, zPath, 0);
       goto json_type_done;
     }
     i = jsonLookupStep(p, 0, zPath+1, 0);
-    if( JSON_LOOKUP_ISERROR(i) ){
-      if( i==JSON_LOOKUP_NOTFOUND ){
+    ถ้า( JSON_LOOKUP_ISERROR(i) ){
+      ถ้า( i==JSON_LOOKUP_NOTFOUND ){
         /* no-op */
-      }else{
+      }มิฉะนั้น{
         jsonBadPathError(ctx, zPath, i);
       }
       goto json_type_done;
     }
-  }else{
+  }มิฉะนั้น{
     i = 0;
   }
   sqlite3_result_text(ctx, jsonbType[p->aBlob[i]&0x0f], -1, SQLITE_STATIC);
@@ -4796,21 +4796,21 @@ json_type_done:
 */
 static void jsonPrettyFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonString s;          /* The output string */
   JsonPretty x;          /* Pretty printing context */
 
-  memset(&x, 0, sizeof(x));
+  memset(&x, 0, parimaa_na(x));
   x.pParse = jsonParseFuncArg(ctx, argv[0], 0);
-  if( x.pParse==0 ) return;
+  ถ้า( x.pParse==0 ) คืน;
   x.pOut = &s;
   jsonStringInit(&s, ctx);
-  if( argc==1 || (x.zIndent = (const char*)sqlite3_value_text(argv[1]))==0 ){
+  ถ้า( argc==1 || (x.zIndent = (const var_na*)sqlite3_value_text(argv[1]))==0 ){
     x.zIndent = "    ";
     x.szIndent = 4;
-  }else{
+  }มิฉะนั้น{
     x.szIndent = (u32)strlen(x.zIndent);
   }
   jsonTranslateBlobToPrettyText(&x, 0);
@@ -4877,43 +4877,43 @@ static void jsonPrettyFunc(
 */
 static void jsonValidFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonParse *p;          /* The parse */
   u8 flags = 1;
   u8 res = 0;
-  if( argc==2 ){
+  ถ้า( argc==2 ){
     i64 f = sqlite3_value_int64(argv[1]);
-    if( f<1 || f>15 ){
+    ถ้า( f<1 || f>15 ){
       sqlite3_result_error(ctx, "FLAGS parameter to json_valid() must be"
                                 " between 1 and 15", -1);
-      return;
+      คืน;
     }
     flags = f & 0x0f;
   }
   switch( sqlite3_value_type(argv[0]) ){
-    case SQLITE_NULL: {
+    pak_sa SQLITE_NULL: {
 #ifdef SQLITE_LEGACY_JSON_VALID
       /* Incorrect legacy behavior was to return FALSE for a NULL input */
       sqlite3_result_int(ctx, 0);
 #endif
-      return;
+      คืน;
     }
-    case SQLITE_BLOB: {
+    pak_sa SQLITE_BLOB: {
       JsonParse py;
-      memset(&py, 0, sizeof(py));
-      if( jsonArgIsJsonb(argv[0], &py) ){
-        if( flags & 0x04 ){
+      memset(&py, 0, parimaa_na(py));
+      ถ้า( jsonArgIsJsonb(argv[0], &py) ){
+        ถ้า( flags & 0x04 ){
           /* Superficial checking only - accomplished by the
           ** jsonArgIsJsonb() call above. */
           res = 1;
-        }else if( flags & 0x08 ){
+        }มิฉะนั้น ถ้า( flags & 0x08 ){
           /* Strict checking.  Check by translating BLOB->TEXT->BLOB.  If
           ** no errors occur, call that a "strict check". */
           res = 0==jsonbValidityCheck(&py, 0, py.nBlob, 1);
         }
-        break;
+        bha_nga;
       }
       /* Fall through into interpreting the input as text.  See note
       ** above at tag-20240123-a. */
@@ -4921,23 +4921,23 @@ static void jsonValidFunc(
     }
     default: {
       JsonParse px;
-      if( (flags & 0x3)==0 ) break;
-      memset(&px, 0, sizeof(px));
+      ถ้า( (flags & 0x3)==0 ) bha_nga;
+      memset(&px, 0, parimaa_na(px));
      
       p = jsonParseFuncArg(ctx, argv[0], JSON_KEEPERROR|JSON_NOCACHE);
-      if( p ){
-        if( p->oom ){
+      ถ้า( p ){
+        ถ้า( p->oom ){
           sqlite3_result_error_nomem(ctx);
-        }else if( p->nErr ){
+        }มิฉะนั้น ถ้า( p->nErr ){
           /* no-op */
-        }else if( (flags & 0x02)!=0 || p->hasNonstd==0 ){
+        }มิฉะนั้น ถ้า( (flags & 0x02)!=0 || p->hasNonstd==0 ){
           res = 1;
         }
         jsonParseFree(p);
-      }else{
+      }มิฉะนั้น{
         sqlite3_result_error_nomem(ctx);
       }
-      break;
+      bha_nga;
     }
   }
   sqlite3_result_int(ctx, res);
@@ -4959,7 +4959,7 @@ static void jsonValidFunc(
 */
 static void jsonErrorFunc(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   i64 iErrPos = 0;       /* Error position to be returned */
@@ -4967,32 +4967,32 @@ static void jsonErrorFunc(
 
   assert( argc==1 );
   UNUSED_PARAMETER(argc);
-  memset(&s, 0, sizeof(s));
+  memset(&s, 0, parimaa_na(s));
   s.db = sqlite3_context_db_handle(ctx);
-  if( jsonArgIsJsonb(argv[0], &s) ){
+  ถ้า( jsonArgIsJsonb(argv[0], &s) ){
     iErrPos = (i64)jsonbValidityCheck(&s, 0, s.nBlob, 1);
-  }else{
-    s.zJson = (char*)sqlite3_value_text(argv[0]);
-    if( s.zJson==0 ) return;  /* NULL input or OOM */
+  }มิฉะนั้น{
+    s.zJson = (var_na*)sqlite3_value_text(argv[0]);
+    ถ้า( s.zJson==0 ) คืน;  /* NULL input or OOM */
     s.nJson = sqlite3_value_bytes(argv[0]);
-    if( jsonConvertTextToBlob(&s,0) ){
-      if( s.oom ){
+    ถ้า( jsonConvertTextToBlob(&s,0) ){
+      ถ้า( s.oom ){
         iErrPos = -1;
-      }else{
+      }มิฉะนั้น{
         /* Convert byte-offset s.iErr into a character offset */
         u32 k;
         assert( s.zJson!=0 );  /* Because s.oom is false */
-        for(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
-          if( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
+        สำหรับ(k=0; k<s.iErr && ALWAYS(s.zJson[k]); k++){
+          ถ้า( (s.zJson[k] & 0xc0)!=0x80 ) iErrPos++;
         }
         iErrPos++;
       }
     }
   }
   jsonParseReset(&s);
-  if( iErrPos<0 ){
+  ถ้า( iErrPos<0 ){
     sqlite3_result_error_nomem(ctx);
-  }else{
+  }มิฉะนั้น{
     sqlite3_result_int64(ctx, iErrPos);
   }
 }
@@ -5007,55 +5007,55 @@ static void jsonErrorFunc(
 */
 static void jsonArrayStep(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonString *pStr;
   UNUSED_PARAMETER(argc);
-  pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
-    if( pStr->zBuf==0 ){
+  pStr = (JsonString*)sqlite3_aggregate_context(ctx, parimaa_na(*pStr));
+  ถ้า( pStr ){
+    ถ้า( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '[');
-    }else if( pStr->nUsed>1 ){
+    }มิฉะนั้น ถ้า( pStr->nUsed>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
     jsonAppendSqlValue(pStr, argv[0]);
   }
 }
-static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
+static void jsonArrayCompute(sqlite3_context *ctx, จำนวนเต็ม isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  จำนวนเต็ม flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  ถ้า( pStr ){
     pStr->pCtx = ctx;
     jsonAppendRawNZ(pStr, "]", 2);
     jsonStringTrimOneChar(pStr);
-    if( pStr->eErr ){
+    ถ้า( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
-    }else if( flags & JSON_BLOB ){
+      คืน;
+    }มิฉะนั้น ถ้า( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      ถ้า( isFinal ){
+        ถ้า( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }มิฉะนั้น{
         jsonStringTrimOneChar(pStr);
       }
-      return;
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+      คืน;
+    }มิฉะนั้น ถ้า( isFinal ){
+      sqlite3_result_text(ctx, pStr->zBuf, (จำนวนเต็ม)pStr->nUsed,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                               sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }มิฉะนั้น{
+      sqlite3_result_text(ctx, pStr->zBuf, (จำนวนเต็ม)pStr->nUsed, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pStr);
     }
-  }else if( flags & JSON_BLOB ){
+  }มิฉะนั้น ถ้า( flags & JSON_BLOB ){
     static const u8 emptyArray = 0x0b;
     sqlite3_result_blob(ctx, &emptyArray, 1, SQLITE_STATIC);
-  }else{
+  }มิฉะนั้น{
     sqlite3_result_text(ctx, "[]", 2, SQLITE_STATIC);
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
@@ -5076,41 +5076,41 @@ static void jsonArrayFinal(sqlite3_context *ctx){
 */
 static void jsonGroupInverse(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
-  unsigned int i;
-  int inStr = 0;
-  int nNest = 0;
-  char *z;
-  char c;
+  unsigned จำนวนเต็ม i;
+  จำนวนเต็ม inStr = 0;
+  จำนวนเต็ม nNest = 0;
+  var_na *z;
+  var_na c;
   JsonString *pStr;
   UNUSED_PARAMETER(argc);
   UNUSED_PARAMETER(argv);
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
   /* pStr is always non-NULL since jsonArrayStep() or jsonObjectStep() will
   ** always have been called to initialize it */
-  if( NEVER(!pStr) ) return;
+  ถ้า( NEVER(!pStr) ) คืน;
   z = pStr->zBuf;
-  for(i=1; i<pStr->nUsed && ((c = z[i])!=',' || inStr || nNest); i++){
-    if( c=='"' ){
+  สำหรับ(i=1; i<pStr->nUsed && ((c = z[i])!=',' || inStr || nNest); i++){
+    ถ้า( c=='"' ){
       inStr = !inStr;
-    }else if( c=='\\' ){
+    }มิฉะนั้น ถ้า( c=='\\' ){
       i++;
-    }else if( !inStr ){
-      if( c=='{' || c=='[' ) nNest++;
-      if( c=='}' || c==']' ) nNest--;
+    }มิฉะนั้น ถ้า( !inStr ){
+      ถ้า( c=='{' || c=='[' ) nNest++;
+      ถ้า( c=='}' || c==']' ) nNest--;
     }
   }
-  if( i<pStr->nUsed ){
+  ถ้า( i<pStr->nUsed ){
     pStr->nUsed -= i;
     memmove(&z[1], &z[i+1], (size_t)pStr->nUsed-1);
     z[pStr->nUsed] = 0;
-  }else{
+  }มิฉะนั้น{
     pStr->nUsed = 1;
   }
 }
-#else
+#มิฉะนั้น
 # define jsonGroupInverse 0
 #endif
 
@@ -5129,61 +5129,61 @@ static void jsonGroupInverse(
 */
 static void jsonObjectStep(
   sqlite3_context *ctx,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   JsonString *pStr;
-  const char *z;
+  const var_na *z;
   u32 n;
   UNUSED_PARAMETER(argc);
-  pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
-  if( pStr ){
-    z = (const char*)sqlite3_value_text(argv[0]);
+  pStr = (JsonString*)sqlite3_aggregate_context(ctx, parimaa_na(*pStr));
+  ถ้า( pStr ){
+    z = (const var_na*)sqlite3_value_text(argv[0]);
     n = sqlite3Strlen30(z);
-    if( pStr->zBuf==0 ){
+    ถ้า( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
       jsonAppendChar(pStr, '{');
-    }else if( pStr->nUsed>1 ){
+    }มิฉะนั้น ถ้า( pStr->nUsed>1 ){
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
-    if( z!=0 ){
+    ถ้า( z!=0 ){
       jsonAppendString(pStr, z, n);
       jsonAppendChar(pStr, ':');
       jsonAppendSqlValue(pStr, argv[1]);
-    }else{
+    }มิฉะนั้น{
       pStr->zBuf[0] = '@';
       jsonAppendRawNZ(pStr, "@", 1);
     }
   }
 }
-static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
+static void jsonObjectCompute(sqlite3_context *ctx, จำนวนเต็ม isFinal){
   JsonString *pStr;
-  int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
+  จำนวนเต็ม flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, 0);
-  if( pStr ){
+  ถ้า( pStr ){
     JsonString *pOgStr = pStr;
     JsonString tmpStr;
     jsonAppendRawNZ(pOgStr, "}", 2);  /* Ensure it is zero-terminated */
     jsonStringTrimOneChar(pOgStr);    /* Remove the zero terminator */
     pStr->pCtx = ctx;
-    if( pStr->eErr ){
+    ถ้า( pStr->eErr ){
       jsonReturnString(pStr, 0, 0);
-      return;
+      คืน;
     }
-    if( pStr->zBuf[0]!='{' ){
+    ถ้า( pStr->zBuf[0]!='{' ){
       /* The string contains null entries that need to be removed */
       u64 i, j;
-      int inStr = 0;
-      if( !isFinal ){
+      จำนวนเต็ม inStr = 0;
+      ถ้า( !isFinal ){
         /* Work with a temporary copy of the string if this is not the
         ** final result */
         jsonStringInit(&tmpStr, ctx);
         jsonAppendRawNZ(&tmpStr, pStr->zBuf, pStr->nUsed+1);
         pStr = &tmpStr;
-        if( pStr->eErr ){
+        ถ้า( pStr->eErr ){
           jsonReturnString(pStr, 0, 0);
-          return;
+          คืน;
         }
         jsonStringTrimOneChar(pStr);  /* Remove zero terminator */
       }
@@ -5191,49 +5191,49 @@ static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
       ** to "{" and removing all subsequence "@" entries, with their
       ** associated comma delimeters. */
       pStr->zBuf[0] = '{';
-      for(i=j=1; i<pStr->nUsed; i++){
-        char c = pStr->zBuf[i];
-        if( c=='"' ){
+      สำหรับ(i=j=1; i<pStr->nUsed; i++){
+        var_na c = pStr->zBuf[i];
+        ถ้า( c=='"' ){
           inStr = !inStr;
           pStr->zBuf[j++] = '"';
-        }else if( c=='\\' ){
+        }มิฉะนั้น ถ้า( c=='\\' ){
           pStr->zBuf[j++] = '\\';
           pStr->zBuf[j++] = pStr->zBuf[++i];
-        }else if( c=='@' && !inStr ){
+        }มิฉะนั้น ถ้า( c=='@' && !inStr ){
           assert( i+1<pStr->nUsed );
-          if( pStr->zBuf[i+1]==',' ){
+          ถ้า( pStr->zBuf[i+1]==',' ){
             i++;
-          }else if( pStr->zBuf[j-1]==',' ){
+          }มิฉะนั้น ถ้า( pStr->zBuf[j-1]==',' ){
             j--;
           }
-        }else{
+        }มิฉะนั้น{
           pStr->zBuf[j++] = c;
         }
       }
       pStr->zBuf[j] = 0;  /* Restore zero terminator */
       pStr->nUsed = j;    /* Truncate the string */
     }
-    if( flags & JSON_BLOB ){
+    ถ้า( flags & JSON_BLOB ){
       jsonReturnStringAsBlob(pStr);
-      if( isFinal ){
-        if( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
-      }else{
+      ถ้า( isFinal ){
+        ถ้า( !pStr->bStatic ) sqlite3RCStrUnref(pStr->zBuf);
+      }มิฉะนั้น{
         jsonStringTrimOneChar(pOgStr);
       }
-    }else if( isFinal ){
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed,
+    }มิฉะนั้น ถ้า( isFinal ){
+      sqlite3_result_text(ctx, pStr->zBuf, (จำนวนเต็ม)pStr->nUsed,
                           pStr->bStatic ? SQLITE_TRANSIENT :
                           sqlite3RCStrUnref);
       pStr->bStatic = 1;
-    }else{
-      sqlite3_result_text(ctx, pStr->zBuf, (int)pStr->nUsed, SQLITE_TRANSIENT);
+    }มิฉะนั้น{
+      sqlite3_result_text(ctx, pStr->zBuf, (จำนวนเต็ม)pStr->nUsed, SQLITE_TRANSIENT);
       jsonStringTrimOneChar(pOgStr);
     }
-    if( pStr!=pOgStr ) jsonStringReset(pStr);
-  }else if( flags & JSON_BLOB ){
-    static const unsigned char emptyObject = 0x0c;
+    ถ้า( pStr!=pOgStr ) jsonStringReset(pStr);
+  }มิฉะนั้น ถ้า( flags & JSON_BLOB ){
+    static const unsigned var_na emptyObject = 0x0c;
     sqlite3_result_blob(ctx, &emptyObject, 1, SQLITE_STATIC); 
-  }else{
+  }มิฉะนั้น{
     sqlite3_result_text(ctx, "{}", 2, SQLITE_STATIC);
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
@@ -5251,8 +5251,8 @@ static void jsonObjectFinal(sqlite3_context *ctx){
 /****************************************************************************
 ** The json_each virtual table
 ****************************************************************************/
-typedef struct JsonParent JsonParent;
-struct JsonParent {
+typedef sa_nracanaa JsonParent JsonParent;
+sa_nracanaa JsonParent {
   u32 iHead;                 /* Start of object or array */
   u32 iValue;                /* Start of the value */
   u32 iEnd;                  /* First byte past the end */
@@ -5260,8 +5260,8 @@ struct JsonParent {
   i64 iKey;                  /* Key for JSONB_ARRAY */
 };
 
-typedef struct JsonEachCursor JsonEachCursor;
-struct JsonEachCursor {
+typedef sa_nracanaa JsonEachCursor JsonEachCursor;
+sa_nracanaa JsonEachCursor {
   sqlite3_vtab_cursor base;  /* Base class - must be first */
   u32 iRowid;                /* The rowid */
   u32 i;                     /* Index in sParse.aBlob[] of current row */
@@ -5277,8 +5277,8 @@ struct JsonEachCursor {
   JsonString path;           /* Current path */
   JsonParse sParse;          /* Parse of the input JSON */
 };
-typedef struct JsonEachConnection JsonEachConnection;
-struct JsonEachConnection {
+typedef sa_nracanaa JsonEachConnection JsonEachConnection;
+sa_nracanaa JsonEachConnection {
   sqlite3_vtab base;         /* Base class - must be first */
   sqlite3 *db;               /* Database connection */
   u8 eMode;                  /* 1 for json_each().  2 for jsonb_each() */
@@ -5287,15 +5287,15 @@ struct JsonEachConnection {
 
 
 /* Constructor for the json_each virtual table */
-static int jsonEachConnect(
+static จำนวนเต็ม jsonEachConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  จำนวนเต็ม argc, const var_na *const*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  var_na **pzErr
 ){
   JsonEachConnection *pNew;
-  int rc;
+  จำนวนเต็ม rc;
 
 /* Column numbers */
 #define JEACH_KEY     0
@@ -5319,39 +5319,39 @@ static int jsonEachConnect(
   rc = sqlite3_declare_vtab(db,
      "CREATE TABLE x(key,value,type,atom,id,parent,fullkey,path,"
                     "json HIDDEN,root HIDDEN)");
-  if( rc==SQLITE_OK ){
-    pNew = (JsonEachConnection*)sqlite3DbMallocZero(db, sizeof(*pNew));
+  ถ้า( rc==SQLITE_OK ){
+    pNew = (JsonEachConnection*)sqlite3DbMallocZero(db, parimaa_na(*pNew));
     *ppVtab = (sqlite3_vtab*)pNew;
-    if( pNew==0 ) return SQLITE_NOMEM;
+    ถ้า( pNew==0 ) คืน SQLITE_NOMEM;
     sqlite3_vtab_config(db, SQLITE_VTAB_INNOCUOUS);
     pNew->db = db;
     pNew->eMode = argv[0][4]=='b' ? 2 : 1;
     pNew->bRecursive = argv[0][4+pNew->eMode]=='t';
   }
-  return rc;
+  คืน rc;
 }
 
 /* destructor for json_each virtual table */
-static int jsonEachDisconnect(sqlite3_vtab *pVtab){
+static จำนวนเต็ม jsonEachDisconnect(sqlite3_vtab *pVtab){
   JsonEachConnection *p = (JsonEachConnection*)pVtab;
   sqlite3DbFree(p->db, pVtab);
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* constructor for a JsonEachCursor object for json_each()/json_tree(). */
-static int jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
+static จำนวนเต็ม jsonEachOpen(sqlite3_vtab *p, sqlite3_vtab_cursor **ppCursor){
   JsonEachConnection *pVtab = (JsonEachConnection*)p;
   JsonEachCursor *pCur;
 
   UNUSED_PARAMETER(p);
-  pCur = sqlite3DbMallocZero(pVtab->db, sizeof(*pCur));
-  if( pCur==0 ) return SQLITE_NOMEM;
+  pCur = sqlite3DbMallocZero(pVtab->db, parimaa_na(*pCur));
+  ถ้า( pCur==0 ) คืน SQLITE_NOMEM;
   pCur->db = pVtab->db;
   pCur->eMode = pVtab->eMode;
   pCur->bRecursive = pVtab->bRecursive;
   jsonStringZero(&pCur->path);
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* Reset a JsonEachCursor back to its original state.  Free any memory
@@ -5370,19 +5370,19 @@ static void jsonEachCursorReset(JsonEachCursor *p){
 }
 
 /* Destructor for a jsonEachCursor object */
-static int jsonEachClose(sqlite3_vtab_cursor *cur){
+static จำนวนเต็ม jsonEachClose(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   jsonEachCursorReset(p);
   
   sqlite3DbFree(p->db, cur);
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* Return TRUE if the jsonEachCursor object has been advanced off the end
 ** of the JSON object */
-static int jsonEachEof(sqlite3_vtab_cursor *cur){
+static จำนวนเต็ม jsonEachEof(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  return p->i >= p->iEnd;
+  คืน p->i >= p->iEnd;
 }
 
 /*
@@ -5390,15 +5390,15 @@ static int jsonEachEof(sqlite3_vtab_cursor *cur){
 ** then return the index of the value.  For all other cases, return the
 ** current pointer position, which is the value.
 */
-static int jsonSkipLabel(JsonEachCursor *p){
-  if( p->eType==JSONB_OBJECT ){
+static จำนวนเต็ม jsonSkipLabel(JsonEachCursor *p){
+  ถ้า( p->eType==JSONB_OBJECT ){
     u32 sz = 0;
     u32 n = jsonbPayloadSize(&p->sParse, p->i, &sz);
     sz += p->i + n;
-    if( sz >= p->sParse.nBlob ) sz = p->i;
-    return sz;
-  }else{
-    return p->i;
+    ถ้า( sz >= p->sParse.nBlob ) sz = p->i;
+    คืน sz;
+  }มิฉะนั้น{
+    คืน p->i;
   }
 }
 
@@ -5408,28 +5408,28 @@ static int jsonSkipLabel(JsonEachCursor *p){
 static void jsonAppendPathName(JsonEachCursor *p){
   assert( p->nParent>0 );
   assert( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
-  if( p->eType==JSONB_ARRAY ){
+  ถ้า( p->eType==JSONB_ARRAY ){
     jsonPrintf(30, &p->path, "[%lld]", p->aParent[p->nParent-1].iKey);
-  }else{
+  }มิฉะนั้น{
     u32 n, sz = 0, k, i;
-    const char *z;
-    int needQuote = 0;
+    const var_na *z;
+    จำนวนเต็ม needQuote = 0;
     n = jsonbPayloadSize(&p->sParse, p->i, &sz);
     k = p->i + n;
-    z = (const char*)&p->sParse.aBlob[k];
-    if( sz==0 || !sqlite3Isalpha(z[0]) ){
+    z = (const var_na*)&p->sParse.aBlob[k];
+    ถ้า( sz==0 || !sqlite3Isalpha(z[0]) ){
       needQuote = 1;
-    }else{
-      for(i=0; i<sz; i++){
-        if( !sqlite3Isalnum(z[i]) ){
+    }มิฉะนั้น{
+      สำหรับ(i=0; i<sz; i++){
+        ถ้า( !sqlite3Isalnum(z[i]) ){
           needQuote = 1;
-          break;
+          bha_nga;
         }
       }
     }
-    if( needQuote ){
+    ถ้า( needQuote ){
       jsonPrintf(sz+4,&p->path,".\"%.*s\"", sz, z);
-    }else{
+    }มิฉะนั้น{
       jsonPrintf(sz+2,&p->path,".%.*s", sz, z);
     }
   }
@@ -5437,33 +5437,33 @@ static void jsonAppendPathName(JsonEachCursor *p){
 
 /* Report a "malformed JSON" or OOM error against the cursor.
 */
-static int jsonEachMalformedInput(sqlite3_vtab_cursor *cur){
+static จำนวนเต็ม jsonEachMalformedInput(sqlite3_vtab_cursor *cur){
   sqlite3_free(cur->pVtab->zErrMsg);
   cur->pVtab->zErrMsg = sqlite3_mprintf("malformed JSON");
   jsonEachCursorReset((JsonEachCursor*)cur);
-  return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+  คืน cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
 }
 
 /* Advance the cursor to the next element for json_tree() */
-static int jsonEachNext(sqlite3_vtab_cursor *cur){
+static จำนวนเต็ม jsonEachNext(sqlite3_vtab_cursor *cur){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  int rc = SQLITE_OK;
-  if( p->bRecursive ){
+  จำนวนเต็ม rc = SQLITE_OK;
+  ถ้า( p->bRecursive ){
     u8 x;
     u8 levelChange = 0;
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
     x = p->sParse.aBlob[i] & 0x0f;
     n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
-    if( x==JSONB_OBJECT || x==JSONB_ARRAY ){
+    ถ้า( n==0 )คืน jsonEachMalformedInput(cur);
+    ถ้า( x==JSONB_OBJECT || x==JSONB_ARRAY ){
       JsonParent *pParent;
-      if( p->nParent>=p->nParentAlloc ){
+      ถ้า( p->nParent>=p->nParentAlloc ){
         JsonParent *pNew;
         u64 nNew;
         nNew = p->nParentAlloc*2 + 3;
-        pNew = sqlite3DbRealloc(p->db, p->aParent, sizeof(JsonParent)*nNew);
-        if( pNew==0 ) return SQLITE_NOMEM;
+        pNew = sqlite3DbRealloc(p->db, p->aParent, parimaa_na(JsonParent)*nNew);
+        ถ้า( pNew==0 ) คืน SQLITE_NOMEM;
         p->nParentAlloc = (u32)nNew;
         p->aParent = pNew;
       }
@@ -5474,167 +5474,167 @@ static int jsonEachNext(sqlite3_vtab_cursor *cur){
       pParent->iEnd = i + n + sz;
       pParent->iKey = -1;
       pParent->nPath = (u32)p->path.nUsed;
-      if( p->eType && p->nParent ){
+      ถ้า( p->eType && p->nParent ){
         jsonAppendPathName(p);
-        if( p->path.eErr ) rc = SQLITE_NOMEM;
+        ถ้า( p->path.eErr ) rc = SQLITE_NOMEM;
       }
       p->nParent++;
       p->i = i + n;
-    }else{
+    }มิฉะนั้น{
       p->i = i + n + sz;
     }
-    while( p->nParent>0 && p->i >= p->aParent[p->nParent-1].iEnd ){
+    ขณะ( p->nParent>0 && p->i >= p->aParent[p->nParent-1].iEnd ){
       p->nParent--;
       p->path.nUsed = p->aParent[p->nParent].nPath;
       levelChange = 1;
     }
-    if( levelChange ){
-      if( p->nParent>0 ){
+    ถ้า( levelChange ){
+      ถ้า( p->nParent>0 ){
         JsonParent *pParent = &p->aParent[p->nParent-1];
         u32 iVal = pParent->iValue;
         p->eType = p->sParse.aBlob[iVal] & 0x0f;
-      }else{
+      }มิฉะนั้น{
         p->eType = 0;
       }
     }
-  }else{
+  }มิฉะนั้น{
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
     n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
+    ถ้า( n==0 )คืน jsonEachMalformedInput(cur);
     p->i = i + n + sz;
   }
-  if( p->eType==JSONB_ARRAY && p->nParent ){
+  ถ้า( p->eType==JSONB_ARRAY && p->nParent ){
     p->aParent[p->nParent-1].iKey++;
   }
   p->iRowid++;
-  return rc;
+  คืน rc;
 }
 
 /* Length of the path for rowid==0 in bRecursive mode.
 */
-static int jsonEachPathLength(JsonEachCursor *p){
+static จำนวนเต็ม jsonEachPathLength(JsonEachCursor *p){
   u32 n = p->path.nUsed;
-  char *z = p->path.zBuf;
-  if( p->iRowid==0 && p->bRecursive && n>=2 ){
-    while( ALWAYS(n>1) ){
+  var_na *z = p->path.zBuf;
+  ถ้า( p->iRowid==0 && p->bRecursive && n>=2 ){
+    ขณะ( ALWAYS(n>1) ){
       n--;
-      if( z[n]=='[' || z[n]=='.' ){
+      ถ้า( z[n]=='[' || z[n]=='.' ){
         u32 x;
-        char cSaved = z[n];
+        var_na cSaved = z[n];
         z[n] = 0;
         assert( p->sParse.eEdit==0 );
         x = jsonLookupStep(&p->sParse, 0, z+1, 0);
         z[n] = cSaved;
-        if( !JSON_LOOKUP_ISERROR(x) ) break;
+        ถ้า( !JSON_LOOKUP_ISERROR(x) ) bha_nga;
       }
     }
   }
-  return n;
+  คืน n;
 }
 
 /* Return the value of a column */
-static int jsonEachColumn(
+static จำนวนเต็ม jsonEachColumn(
   sqlite3_vtab_cursor *cur,   /* The cursor */
   sqlite3_context *ctx,       /* First argument to sqlite3_result_...() */
-  int iColumn                 /* Which column to return */
+  จำนวนเต็ม iColumn                 /* Which column to return */
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   switch( iColumn ){
-    case JEACH_KEY: {
-      if( p->nParent==0 ){
+    pak_sa JEACH_KEY: {
+      ถ้า( p->nParent==0 ){
         u32 n, j;
-        if( p->nRoot==1 ) break;
+        ถ้า( p->nRoot==1 ) bha_nga;
         j = jsonEachPathLength(p);
         n = p->nRoot - j;
-        if( n==0 ){
-          break;
-        }else if( p->path.zBuf[j]=='[' ){
+        ถ้า( n==0 ){
+          bha_nga;
+        }มิฉะนั้น ถ้า( p->path.zBuf[j]=='[' ){
           i64 x;
           sqlite3Atoi64(&p->path.zBuf[j+1], &x, n-1, SQLITE_UTF8);
           sqlite3_result_int64(ctx, x);
-        }else if( p->path.zBuf[j+1]=='"' ){
+        }มิฉะนั้น ถ้า( p->path.zBuf[j+1]=='"' ){
           sqlite3_result_text(ctx, &p->path.zBuf[j+2], n-3, SQLITE_TRANSIENT);
-        }else{
+        }มิฉะนั้น{
           sqlite3_result_text(ctx, &p->path.zBuf[j+1], n-1, SQLITE_TRANSIENT);
         }
-        break;
+        bha_nga;
       }
-      if( p->eType==JSONB_OBJECT ){
+      ถ้า( p->eType==JSONB_OBJECT ){
         jsonReturnFromBlob(&p->sParse, p->i, ctx, 1);
-      }else{
+      }มิฉะนั้น{
         assert( p->eType==JSONB_ARRAY );
         sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iKey);
       }
-      break;
+      bha_nga;
     }
-    case JEACH_VALUE: {
+    pak_sa JEACH_VALUE: {
       u32 i = jsonSkipLabel(p);
       jsonReturnFromBlob(&p->sParse, i, ctx, p->eMode);
-      if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
+      ถ้า( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
         sqlite3_result_subtype(ctx, JSON_SUBTYPE);
       }
-      break;
+      bha_nga;
     }
-    case JEACH_TYPE: {
+    pak_sa JEACH_TYPE: {
       u32 i = jsonSkipLabel(p);
       u8 eType = p->sParse.aBlob[i] & 0x0f;
       sqlite3_result_text(ctx, jsonbType[eType], -1, SQLITE_STATIC);
-      break;
+      bha_nga;
     }
-    case JEACH_ATOM: {
+    pak_sa JEACH_ATOM: {
       u32 i = jsonSkipLabel(p);
-      if( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
+      ถ้า( (p->sParse.aBlob[i] & 0x0f)<JSONB_ARRAY ){
         jsonReturnFromBlob(&p->sParse, i, ctx, 1);
       }
-      break;
+      bha_nga;
     }
-    case JEACH_ID: {
+    pak_sa JEACH_ID: {
       sqlite3_result_int64(ctx, (sqlite3_int64)p->i);
-      break;
+      bha_nga;
     }
-    case JEACH_PARENT: {
-      if( p->nParent>0 && p->bRecursive ){
+    pak_sa JEACH_PARENT: {
+      ถ้า( p->nParent>0 && p->bRecursive ){
         sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iHead);
       }
-      break;
+      bha_nga;
     }
-    case JEACH_FULLKEY: {
+    pak_sa JEACH_FULLKEY: {
       u64 nBase = p->path.nUsed;
-      if( p->nParent ) jsonAppendPathName(p);
+      ถ้า( p->nParent ) jsonAppendPathName(p);
       sqlite3_result_text64(ctx, p->path.zBuf, p->path.nUsed,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
       p->path.nUsed = nBase;
-      break;
+      bha_nga;
     }
-    case JEACH_PATH: {
+    pak_sa JEACH_PATH: {
       u32 n = jsonEachPathLength(p);
       sqlite3_result_text64(ctx, p->path.zBuf, n,
                             SQLITE_TRANSIENT, SQLITE_UTF8);
-      break;
+      bha_nga;
     }
     default: {
       sqlite3_result_text(ctx, p->path.zBuf, p->nRoot, SQLITE_TRANSIENT);
-      break;
+      bha_nga;
     }
-    case JEACH_JSON: {
-      if( p->sParse.zJson==0 ){
+    pak_sa JEACH_JSON: {
+      ถ้า( p->sParse.zJson==0 ){
         sqlite3_result_blob(ctx, p->sParse.aBlob, p->sParse.nBlob,
                             SQLITE_TRANSIENT);
-      }else{
+      }มิฉะนั้น{
         sqlite3_result_text(ctx, p->sParse.zJson, -1, SQLITE_TRANSIENT);
       }
-      break;
+      bha_nga;
     }
   }
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* Return the current rowid value */
-static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+static จำนวนเต็ม jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   *pRowid = p->iRowid;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* The query strategy is to look for an equality constraint on the json
@@ -5642,15 +5642,15 @@ static int jsonEachRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 ** 1 if the constraint is found, 3 if the constraint and zRoot are found,
 ** and 0 otherwise.
 */
-static int jsonEachBestIndex(
+static จำนวนเต็ม jsonEachBestIndex(
   sqlite3_vtab *tab,
   sqlite3_index_info *pIdxInfo
 ){
-  int i;                     /* Loop counter or computed array index */
-  int aIdx[2];               /* Index of constraints for JSON and ROOT */
-  int unusableMask = 0;      /* Mask of unusable JSON and ROOT constraints */
-  int idxMask = 0;           /* Mask of usable == constraints JSON and ROOT */
-  const struct sqlite3_index_constraint *pConstraint;
+  จำนวนเต็ม i;                     /* Loop counter or computed array index */
+  จำนวนเต็ม aIdx[2];               /* Index of constraints for JSON and ROOT */
+  จำนวนเต็ม unusableMask = 0;      /* Mask of unusable JSON and ROOT constraints */
+  จำนวนเต็ม idxMask = 0;           /* Mask of usable == constraints JSON and ROOT */
+  const sa_nracanaa sqlite3_index_constraint *pConstraint;
 
   /* This implementation assumes that JSON and ROOT are the last two
   ** columns in the table */
@@ -5658,125 +5658,125 @@ static int jsonEachBestIndex(
   UNUSED_PARAMETER(tab);
   aIdx[0] = aIdx[1] = -1;
   pConstraint = pIdxInfo->aConstraint;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    int iCol;
-    int iMask;
-    if( pConstraint->iColumn < JEACH_JSON ) continue;
+  สำหรับ(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    จำนวนเต็ม iCol;
+    จำนวนเต็ม iMask;
+    ถ้า( pConstraint->iColumn < JEACH_JSON ) continue;
     iCol = pConstraint->iColumn - JEACH_JSON;
     assert( iCol==0 || iCol==1 );
     testcase( iCol==0 );
     iMask = 1 << iCol;
-    if( pConstraint->usable==0 ){
+    ถ้า( pConstraint->usable==0 ){
       unusableMask |= iMask;
-    }else if( pConstraint->op==SQLITE_INDEX_CONSTRAINT_EQ ){
+    }มิฉะนั้น ถ้า( pConstraint->op==SQLITE_INDEX_CONSTRAINT_EQ ){
       aIdx[iCol] = i;
       idxMask |= iMask;
     }
   }
-  if( pIdxInfo->nOrderBy>0
+  ถ้า( pIdxInfo->nOrderBy>0
    && pIdxInfo->aOrderBy[0].iColumn<0
    && pIdxInfo->aOrderBy[0].desc==0
   ){
     pIdxInfo->orderByConsumed = 1;
   }
 
-  if( (unusableMask & ~idxMask)!=0 ){
+  ถ้า( (unusableMask & ~idxMask)!=0 ){
     /* If there are any unusable constraints on JSON or ROOT, then reject
     ** this entire plan */
-    return SQLITE_CONSTRAINT;
+    คืน SQLITE_CONSTRAINT;
   }
-  if( aIdx[0]<0 ){
+  ถ้า( aIdx[0]<0 ){
     /* No JSON input.  Leave estimatedCost at the huge value that it was
     ** initialized to to discourage the query planner from selecting this
     ** plan. */
     pIdxInfo->idxNum = 0;
-  }else{
+  }มิฉะนั้น{
     pIdxInfo->estimatedCost = 1.0;
     i = aIdx[0];
     pIdxInfo->aConstraintUsage[i].argvIndex = 1;
     pIdxInfo->aConstraintUsage[i].omit = 1;
-    if( aIdx[1]<0 ){
+    ถ้า( aIdx[1]<0 ){
       pIdxInfo->idxNum = 1;  /* Only JSON supplied.  Plan 1 */
-    }else{
+    }มิฉะนั้น{
       i = aIdx[1];
       pIdxInfo->aConstraintUsage[i].argvIndex = 2;
       pIdxInfo->aConstraintUsage[i].omit = 1;
       pIdxInfo->idxNum = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
     }
   }
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* Start a search on a new JSON string */
-static int jsonEachFilter(
+static จำนวนเต็ม jsonEachFilter(
   sqlite3_vtab_cursor *cur,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  จำนวนเต็ม idxNum, const var_na *idxStr,
+  จำนวนเต็ม argc, sqlite3_value **argv
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  const char *zRoot = 0;
+  const var_na *zRoot = 0;
   u32 i, n, sz;
 
   UNUSED_PARAMETER(idxStr);
   UNUSED_PARAMETER(argc);
   jsonEachCursorReset(p);
-  if( idxNum==0 ) return SQLITE_OK;
-  memset(&p->sParse, 0, sizeof(p->sParse));
+  ถ้า( idxNum==0 ) คืน SQLITE_OK;
+  memset(&p->sParse, 0, parimaa_na(p->sParse));
   p->sParse.nJPRef = 1;
   p->sParse.db = p->db;
-  if( jsonArgIsJsonb(argv[0], &p->sParse) ){
+  ถ้า( jsonArgIsJsonb(argv[0], &p->sParse) ){
     /* We have JSONB */
-  }else{
-    p->sParse.zJson = (char*)sqlite3_value_text(argv[0]);
+  }มิฉะนั้น{
+    p->sParse.zJson = (var_na*)sqlite3_value_text(argv[0]);
     p->sParse.nJson = sqlite3_value_bytes(argv[0]);
-    if( p->sParse.zJson==0 ){
+    ถ้า( p->sParse.zJson==0 ){
       p->i = p->iEnd = 0;
-      return SQLITE_OK;
+      คืน SQLITE_OK;
     }      
-    if( jsonConvertTextToBlob(&p->sParse, 0) ){
-      if( p->sParse.oom ){
-        return SQLITE_NOMEM;
+    ถ้า( jsonConvertTextToBlob(&p->sParse, 0) ){
+      ถ้า( p->sParse.oom ){
+        คืน SQLITE_NOMEM;
       }
-      return jsonEachMalformedInput(cur);
+      คืน jsonEachMalformedInput(cur);
     }
   }
-  if( idxNum==3 ){
-    zRoot = (const char*)sqlite3_value_text(argv[1]);
-    if( zRoot==0 ) return SQLITE_OK;
-    if( zRoot[0]!='$' ){
+  ถ้า( idxNum==3 ){
+    zRoot = (const var_na*)sqlite3_value_text(argv[1]);
+    ถ้า( zRoot==0 ) คืน SQLITE_OK;
+    ถ้า( zRoot[0]!='$' ){
       sqlite3_free(cur->pVtab->zErrMsg);
       cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
       jsonEachCursorReset(p);
-      return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+      คืน cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
     }
     p->nRoot = sqlite3Strlen30(zRoot);
-    if( zRoot[1]==0 ){
+    ถ้า( zRoot[1]==0 ){
       i = p->i = 0;
       p->eType = 0;
-    }else{
+    }มิฉะนั้น{
       i = jsonLookupStep(&p->sParse, 0, zRoot+1, 0);
-      if( JSON_LOOKUP_ISERROR(i) ){
-        if( i==JSON_LOOKUP_NOTFOUND ){
+      ถ้า( JSON_LOOKUP_ISERROR(i) ){
+        ถ้า( i==JSON_LOOKUP_NOTFOUND ){
           p->i = 0;
           p->eType = 0;
           p->iEnd = 0;
-          return SQLITE_OK;
+          คืน SQLITE_OK;
         }
         sqlite3_free(cur->pVtab->zErrMsg);
         cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
         jsonEachCursorReset(p);
-        return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+        คืน cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
       }
-      if( p->sParse.iLabel ){
+      ถ้า( p->sParse.iLabel ){
         p->i = p->sParse.iLabel;
         p->eType = JSONB_OBJECT;
-      }else{
+      }มิฉะนั้น{
         p->i = i;
         p->eType = JSONB_ARRAY;
       }
     }
     jsonAppendRaw(&p->path, zRoot, p->nRoot);
-  }else{
+  }มิฉะนั้น{
     i = p->i = 0;
     p->eType = 0;
     p->nRoot = 1;
@@ -5785,11 +5785,11 @@ static int jsonEachFilter(
   p->nParent = 0;
   n = jsonbPayloadSize(&p->sParse, i, &sz);
   p->iEnd = i+n+sz;
-  if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
+  ถ้า( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY && !p->bRecursive ){
     p->i = i + n;
     p->eType = p->sParse.aBlob[i] & 0x0f;
-    p->aParent = sqlite3DbMallocZero(p->db, sizeof(JsonParent));
-    if( p->aParent==0 ) return SQLITE_NOMEM;
+    p->aParent = sqlite3DbMallocZero(p->db, parimaa_na(JsonParent));
+    ถ้า( p->aParent==0 ) คืน SQLITE_NOMEM;
     p->nParent = 1;
     p->nParentAlloc = 1;
     p->aParent[0].iKey = 0;
@@ -5797,7 +5797,7 @@ static int jsonEachFilter(
     p->aParent[0].iHead = p->i;
     p->aParent[0].iValue = i;
   }
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /* The methods of the json_each virtual table */
@@ -5875,7 +5875,7 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(json_type,          2,1,0, 0,0,0,          jsonTypeFunc),
     JFUNCTION(json_valid,         1,1,0, 0,0,0,          jsonValidFunc),
     JFUNCTION(json_valid,         2,1,0, 0,0,0,          jsonValidFunc),
-#if SQLITE_DEBUG
+#ถ้า SQLITE_DEBUG
     JFUNCTION(json_parse,         1,1,0, 0,0,0,          jsonParseFunc),
 #endif
     WAGGREGATE(json_group_array,  1, 0, 0,
@@ -5897,22 +5897,22 @@ void sqlite3RegisterJsonFunctions(void){
 #endif
 }
 
-#if  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+#ถ้า  !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
 /*
 ** Register the JSON table-valued function named zName and return a
 ** pointer to its Module object.  Return NULL if something goes wrong.
 */
-Module *sqlite3JsonVtabRegister(sqlite3 *db, const char *zName){
-  unsigned int i;
-  static const char *azModule[] = {
+Module *sqlite3JsonVtabRegister(sqlite3 *db, const var_na *zName){
+  unsigned จำนวนเต็ม i;
+  static const var_na *azModule[] = {
     "json_each", "json_tree", "jsonb_each", "jsonb_tree"
   };
   assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  for(i=0; i<sizeof(azModule)/sizeof(azModule[0]); i++){
-    if( sqlite3StrICmp(azModule[i],zName)==0 ){
-      return sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
+  สำหรับ(i=0; i<parimaa_na(azModule)/parimaa_na(azModule[0]); i++){
+    ถ้า( sqlite3StrICmp(azModule[i],zName)==0 ){
+      คืน sqlite3VtabCreateModule(db, azModule[i], &jsonEachModule, 0, 0);
     }
   }
-  return 0;
+  คืน 0;
 }
 #endif /* !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON) */

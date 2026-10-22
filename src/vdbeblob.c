@@ -21,15 +21,15 @@
 /*
 ** Valid sqlite3_blob* handles point to Incrblob structures.
 */
-typedef struct Incrblob Incrblob;
-struct Incrblob {
-  int nByte;              /* Size of open blob, in bytes */
-  int iOffset;            /* Byte offset of blob in cursor data */
+typedef sa_nracanaa Incrblob Incrblob;
+sa_nracanaa Incrblob {
+  จำนวนเต็ม nByte;              /* Size of open blob, in bytes */
+  จำนวนเต็ม iOffset;            /* Byte offset of blob in cursor data */
   u16 iCol;               /* Table column this handle is open on */
   BtCursor *pCsr;         /* Cursor pointing at blob row */
   sqlite3_stmt *pStmt;    /* Statement holding cursor open */
   sqlite3 *db;            /* The associated database */
-  char *zDb;              /* Database name */
+  var_na *zDb;              /* Database name */
   Table *pTab;            /* Table object */
 };
 
@@ -51,9 +51,9 @@ struct Incrblob {
 ** calls to sqlite3_blob_read(), blob_write() or blob_reopen() will 
 ** immediately return SQLITE_ABORT.
 */
-static int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
-  int rc;                         /* Error code */
-  char *zErr = 0;                 /* Error message */
+static จำนวนเต็ม blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, var_na **pzErr){
+  จำนวนเต็ม rc;                         /* Error code */
+  var_na *zErr = 0;                 /* Error message */
   Vdbe *v = (Vdbe *)p->pStmt;
 
   /* Set the value of register r[1] in the SQL statement to integer iRow. 
@@ -65,14 +65,14 @@ static int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
   ** then back it up to the point where it does the OP_NotExists.  This could
   ** have been down with an extra OP_Goto, but simply setting the program
   ** counter is faster. */
-  if( v->pc>4 ){
+  ถ้า( v->pc>4 ){
     v->pc = 4;
     assert( v->aOp[v->pc].opcode==OP_NotExists );
     rc = sqlite3VdbeExec(v);
-  }else{
+  }มิฉะนั้น{
     rc = sqlite3_step(p->pStmt);
   }
-  if( rc==SQLITE_ROW ){
+  ถ้า( rc==SQLITE_ROW ){
     VdbeCursor *pC = v->apCsr[0];
     u32 type;
     assert( pC!=0 );
@@ -80,14 +80,14 @@ static int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
     type = pC->nHdrParsed>p->iCol ? pC->aType[p->iCol] : 0;
     testcase( pC->nHdrParsed==p->iCol );
     testcase( pC->nHdrParsed==p->iCol+1 );
-    if( type<12 ){
+    ถ้า( type<12 ){
       zErr = sqlite3MPrintf(p->db, "cannot open value of type %s",
           type==0?"null": type==7?"real": "integer"
       );
       rc = SQLITE_ERROR;
       sqlite3_finalize(p->pStmt);
       p->pStmt = 0;
-    }else{
+    }มิฉะนั้น{
       p->iOffset = pC->aType[p->iCol + pC->nField];
       p->nByte = sqlite3VdbeSerialTypeLen(type);
       p->pCsr =  pC->uc.pCursor;
@@ -95,15 +95,15 @@ static int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
     }
   }
 
-  if( rc==SQLITE_ROW ){
+  ถ้า( rc==SQLITE_ROW ){
     rc = SQLITE_OK;
-  }else if( p->pStmt ){
+  }มิฉะนั้น ถ้า( p->pStmt ){
     rc = sqlite3_finalize(p->pStmt);
     p->pStmt = 0;
-    if( rc==SQLITE_OK ){
+    ถ้า( rc==SQLITE_OK ){
       zErr = sqlite3MPrintf(p->db, "no such rowid: %lld", iRow);
       rc = SQLITE_ERROR;
-    }else{
+    }มิฉะนั้น{
       zErr = sqlite3MPrintf(p->db, "%s", sqlite3_errmsg(p->db));
     }
   }
@@ -112,78 +112,78 @@ static int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
   assert( rc!=SQLITE_ROW && rc!=SQLITE_DONE );
 
   *pzErr = zErr;
-  return rc;
+  คืน rc;
 }
 
 /*
 ** Open a blob handle.
 */
-int sqlite3_blob_open(
+จำนวนเต็ม sqlite3_blob_open(
   sqlite3* db,            /* The database connection */
-  const char *zDb,        /* The attached database containing the blob */
-  const char *zTable,     /* The table containing the blob */
-  const char *zColumn,    /* The column containing the blob */
+  const var_na *zDb,        /* The attached database containing the blob */
+  const var_na *zTable,     /* The table containing the blob */
+  const var_na *zColumn,    /* The column containing the blob */
   sqlite_int64 iRow,      /* The row containing the glob */
-  int wrFlag,             /* True -> read/write access, false -> read-only */
+  จำนวนเต็ม wrFlag,             /* True -> read/write access, false -> read-only */
   sqlite3_blob **ppBlob   /* Handle for accessing the blob returned here */
 ){
-  int nAttempt = 0;
-  int iCol;               /* Index of zColumn in row-record */
-  int rc = SQLITE_OK;
-  char *zErr = 0;
+  จำนวนเต็ม nAttempt = 0;
+  จำนวนเต็ม iCol;               /* Index of zColumn in row-record */
+  จำนวนเต็ม rc = SQLITE_OK;
+  var_na *zErr = 0;
   Table *pTab;
   Incrblob *pBlob = 0;
-  int iDb;
+  จำนวนเต็ม iDb;
   Parse sParse;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppBlob==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ถ้า( ppBlob==0 ){
+    คืน SQLITE_MISUSE_BKPT;
   }
 #endif
   *ppBlob = 0;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zTable==0 || zColumn==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ถ้า( !sqlite3SafetyCheckOk(db) || zTable==0 || zColumn==0 ){
+    คืน SQLITE_MISUSE_BKPT;
   }
 #endif
   wrFlag = !!wrFlag;                /* wrFlag = (wrFlag ? 1 : 0); */
 
   sqlite3_mutex_enter(db->mutex);
 
-  pBlob = (Incrblob *)sqlite3DbMallocZero(db, sizeof(Incrblob));
-  while(1){
+  pBlob = (Incrblob *)sqlite3DbMallocZero(db, parimaa_na(Incrblob));
+  ขณะ(1){
     sqlite3ParseObjectInit(&sParse,db);
-    if( !pBlob ) goto blob_open_out;
+    ถ้า( !pBlob ) goto blob_open_out;
     sqlite3DbFree(db, zErr);
     zErr = 0;
 
     sqlite3BtreeEnterAll(db);
     pTab = sqlite3LocateTable(&sParse, 0, zTable, zDb);
-    if( pTab && IsVirtual(pTab) ){
+    ถ้า( pTab && IsVirtual(pTab) ){
       pTab = 0;
       sqlite3ErrorMsg(&sParse, "cannot open virtual table: %s", zTable);
     }
-    if( pTab && !HasRowid(pTab) ){
+    ถ้า( pTab && !HasRowid(pTab) ){
       pTab = 0;
       sqlite3ErrorMsg(&sParse, "cannot open table without rowid: %s", zTable);
     }
-    if( pTab && (pTab->tabFlags&TF_HasGenerated)!=0 ){
+    ถ้า( pTab && (pTab->tabFlags&TF_HasGenerated)!=0 ){
       pTab = 0;
       sqlite3ErrorMsg(&sParse, "cannot open table with generated columns: %s",
                       zTable);
     }
 #ifndef SQLITE_OMIT_VIEW
-    if( pTab && IsView(pTab) ){
+    ถ้า( pTab && IsView(pTab) ){
       pTab = 0;
       sqlite3ErrorMsg(&sParse, "cannot open view: %s", zTable);
     }
 #endif
-    if( pTab==0
+    ถ้า( pTab==0
      || ((iDb = sqlite3SchemaToIndex(db, pTab->pSchema))==1 &&
          sqlite3OpenTempDatabase(&sParse))
     ){
-      if( sParse.zErrMsg ){
+      ถ้า( sParse.zErrMsg ){
         sqlite3DbFree(db, zErr);
         zErr = sParse.zErrMsg;
         sParse.zErrMsg = 0;
@@ -197,7 +197,7 @@ int sqlite3_blob_open(
 
     /* Now search pTab for the exact column. */
     iCol = sqlite3ColumnIndex(pTab, zColumn);
-    if( iCol<0 ){
+    ถ้า( iCol<0 ){
       sqlite3DbFree(db, zErr);
       zErr = sqlite3MPrintf(db, "no such column: \"%s\"", zColumn);
       rc = SQLITE_ERROR;
@@ -208,37 +208,37 @@ int sqlite3_blob_open(
     /* If the value is being opened for writing, check that the
     ** column is not indexed, and that it is not part of a foreign key. 
     */
-    if( wrFlag ){
-      const char *zFault = 0;
+    ถ้า( wrFlag ){
+      const var_na *zFault = 0;
       Index *pIdx;
 #ifndef SQLITE_OMIT_FOREIGN_KEY
-      if( db->flags&SQLITE_ForeignKeys ){
+      ถ้า( db->flags&SQLITE_ForeignKeys ){
         /* Check that the column is not part of an FK child key definition. It
         ** is not necessary to check if it is part of a parent key, as parent
         ** key columns must be indexed. The check below will pick up this 
         ** case.  */
         FKey *pFKey;
         assert( IsOrdinaryTable(pTab) );
-        for(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
-          int j;
-          for(j=0; j<pFKey->nCol; j++){
-            if( pFKey->aCol[j].iFrom==iCol ){
+        สำหรับ(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
+          จำนวนเต็ม j;
+          สำหรับ(j=0; j<pFKey->nCol; j++){
+            ถ้า( pFKey->aCol[j].iFrom==iCol ){
               zFault = "foreign key";
             }
           }
         }
       }
 #endif
-      for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-        int j;
-        for(j=0; j<pIdx->nKeyCol; j++){
+      สำหรับ(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
+        จำนวนเต็ม j;
+        สำหรับ(j=0; j<pIdx->nKeyCol; j++){
           /* FIXME: Be smarter about indexes that use expressions */
-          if( pIdx->aiColumn[j]==iCol || pIdx->aiColumn[j]==XN_EXPR ){
+          ถ้า( pIdx->aiColumn[j]==iCol || pIdx->aiColumn[j]==XN_EXPR ){
             zFault = "indexed";
           }
         }
       }
-      if( zFault ){
+      ถ้า( zFault ){
         sqlite3DbFree(db, zErr);
         zErr = sqlite3MPrintf(db, "cannot open %s column for writing", zFault);
         rc = SQLITE_ERROR;
@@ -249,7 +249,7 @@ int sqlite3_blob_open(
 
     pBlob->pStmt = (sqlite3_stmt *)sqlite3VdbeCreate(&sParse);
     assert( pBlob->pStmt || db->mallocFailed );
-    if( pBlob->pStmt ){
+    ถ้า( pBlob->pStmt ){
       
       /* This VDBE program seeks a btree cursor to the identified 
       ** db/table/row entry. The reason for using a vdbe program instead
@@ -266,7 +266,7 @@ int sqlite3_blob_open(
       ** which closes the b-tree cursor and (possibly) commits the 
       ** transaction.
       */
-      static const int iLn = VDBE_OFFSET_LINENO(2);
+      static const จำนวนเต็ม iLn = VDBE_OFFSET_LINENO(2);
       static const VdbeOpList openBlob[] = {
         {OP_TableLock,      0, 0, 0},  /* 0: Acquire a read or write lock */
         {OP_OpenRead,       0, 0, 0},  /* 1: Open a cursor */
@@ -289,23 +289,23 @@ int sqlite3_blob_open(
       /* Make sure a mutex is held on the table to be accessed */
       sqlite3VdbeUsesBtree(v, iDb); 
 
-      if( db->mallocFailed==0 ){
+      ถ้า( db->mallocFailed==0 ){
         assert( aOp!=0 );
         /* Configure the OP_TableLock instruction */
 #ifdef SQLITE_OMIT_SHARED_CACHE
         aOp[0].opcode = OP_Noop;
-#else
+#มิฉะนั้น
         aOp[0].p1 = iDb;
         aOp[0].p2 = pTab->tnum;
         aOp[0].p3 = wrFlag;
         sqlite3VdbeChangeP4(v, 2, pTab->zName, P4_TRANSIENT);
       }
-      if( db->mallocFailed==0 ){
+      ถ้า( db->mallocFailed==0 ){
 #endif
 
         /* Remove either the OP_OpenWrite or OpenRead. Set the P2 
         ** parameter of the other to pTab->tnum.  */
-        if( wrFlag ) aOp[1].opcode = OP_OpenWrite;
+        ถ้า( wrFlag ) aOp[1].opcode = OP_OpenWrite;
         aOp[1].p2 = pTab->tnum;
         aOp[1].p3 = iDb;   
 
@@ -330,80 +330,80 @@ int sqlite3_blob_open(
     pBlob->iCol = iCol;
     pBlob->db = db;
     sqlite3BtreeLeaveAll(db);
-    if( db->mallocFailed ){
+    ถ้า( db->mallocFailed ){
       goto blob_open_out;
     }
     rc = blobSeekToRow(pBlob, iRow, &zErr);
-    if( (++nAttempt)>=SQLITE_MAX_SCHEMA_RETRY || rc!=SQLITE_SCHEMA ) break;
+    ถ้า( (++nAttempt)>=SQLITE_MAX_SCHEMA_RETRY || rc!=SQLITE_SCHEMA ) bha_nga;
     sqlite3ParseObjectReset(&sParse);
   }
 
 blob_open_out:
-  if( rc==SQLITE_OK && db->mallocFailed==0 ){
+  ถ้า( rc==SQLITE_OK && db->mallocFailed==0 ){
     *ppBlob = (sqlite3_blob *)pBlob;
-  }else{
-    if( pBlob && pBlob->pStmt ) sqlite3VdbeFinalize((Vdbe *)pBlob->pStmt);
+  }มิฉะนั้น{
+    ถ้า( pBlob && pBlob->pStmt ) sqlite3VdbeFinalize((Vdbe *)pBlob->pStmt);
     sqlite3DbFree(db, pBlob);
   }
-  sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (char*)0), zErr);
+  sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (var_na*)0), zErr);
   sqlite3DbFree(db, zErr);
   sqlite3ParseObjectReset(&sParse);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  คืน rc;
 }
 
 /*
 ** Close a blob handle that was previously created using
 ** sqlite3_blob_open().
 */
-int sqlite3_blob_close(sqlite3_blob *pBlob){
+จำนวนเต็ม sqlite3_blob_close(sqlite3_blob *pBlob){
   Incrblob *p = (Incrblob *)pBlob;
-  int rc;
+  จำนวนเต็ม rc;
   sqlite3 *db;
 
-  if( p ){
+  ถ้า( p ){
     sqlite3_stmt *pStmt = p->pStmt;
     db = p->db;
     sqlite3_mutex_enter(db->mutex);
     sqlite3DbFree(db, p);
     sqlite3_mutex_leave(db->mutex);
     rc = sqlite3_finalize(pStmt);
-  }else{
+  }มิฉะนั้น{
     rc = SQLITE_OK;
   }
-  return rc;
+  คืน rc;
 }
 
 /*
 ** Perform a read or write operation on a blob
 */
-static int blobReadWrite(
+static จำนวนเต็ม blobReadWrite(
   sqlite3_blob *pBlob, 
   void *z, 
-  int n, 
-  int iOffset, 
-  int (*xCall)(BtCursor*, u32, u32, void*)
+  จำนวนเต็ม n, 
+  จำนวนเต็ม iOffset, 
+  จำนวนเต็ม (*xCall)(BtCursor*, u32, u32, void*)
 ){
-  int rc = SQLITE_OK;
+  จำนวนเต็ม rc = SQLITE_OK;
   Incrblob *p = (Incrblob *)pBlob;
   Vdbe *v;
   sqlite3 *db;
 
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
+  ถ้า( p==0 ) คืน SQLITE_MISUSE_BKPT;
   db = p->db;
   sqlite3_mutex_enter(db->mutex);
   v = (Vdbe*)p->pStmt;
 
-  if( n<0 || iOffset<0 || ((sqlite3_int64)iOffset+n)>p->nByte ){
+  ถ้า( n<0 || iOffset<0 || ((sqlite3_int64)iOffset+n)>p->nByte ){
     /* Request is out of range. Return a transient error. */
     rc = SQLITE_ERROR;
-  }else if( v==0 ){
+  }มิฉะนั้น ถ้า( v==0 ){
     /* If there is no statement handle, then the blob-handle has
     ** already been invalidated. Return SQLITE_ABORT in this case.
     */
     rc = SQLITE_ABORT;
-  }else{
+  }มิฉะนั้น{
     /* Call either BtreeData() or BtreePutData(). If SQLITE_ABORT is
     ** returned, clean-up the statement handle.
     */
@@ -411,7 +411,7 @@ static int blobReadWrite(
     sqlite3BtreeEnterCursor(p->pCsr);
 
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( xCall==sqlite3BtreePutData && db->xPreUpdateCallback ){
+    ถ้า( xCall==sqlite3BtreePutData && db->xPreUpdateCallback ){
       /* If a pre-update hook is registered and this is a write cursor, 
       ** invoke it here. 
       ** 
@@ -425,16 +425,16 @@ static int blobReadWrite(
       ** using the incremental-blob API, this works. For the sessions module
       ** anyhow.
       */
-      if( sqlite3BtreeCursorIsValidNN(p->pCsr)==0 ){
+      ถ้า( sqlite3BtreeCursorIsValidNN(p->pCsr)==0 ){
         /* If the cursor is not currently valid, try to reseek it. This 
         ** always either fails or finds the correct row - the cursor will
         ** have been marked permanently CURSOR_INVALID if the open row has
         ** been deleted.  */
-        int bDiff = 0;
+        จำนวนเต็ม bDiff = 0;
         rc = sqlite3BtreeCursorRestore(p->pCsr, &bDiff);
         assert( bDiff==0 || sqlite3BtreeCursorIsValidNN(p->pCsr)==0 );
       }
-      if( sqlite3BtreeCursorIsValidNN(p->pCsr) ){
+      ถ้า( sqlite3BtreeCursorIsValidNN(p->pCsr) ){
         sqlite3_int64 iKey;
         iKey = sqlite3BtreeIntegerKey(p->pCsr);
         assert( v->apCsr[0]!=0 );
@@ -444,39 +444,39 @@ static int blobReadWrite(
         );
       }
     }
-    if( rc==SQLITE_OK ){
+    ถ้า( rc==SQLITE_OK ){
       rc = xCall(p->pCsr, iOffset+p->iOffset, n, z);
     }
-#else
+#มิฉะนั้น
     rc = xCall(p->pCsr, iOffset+p->iOffset, n, z);
 #endif
 
     sqlite3BtreeLeaveCursor(p->pCsr);
-    if( rc==SQLITE_ABORT ){
+    ถ้า( rc==SQLITE_ABORT ){
       sqlite3VdbeFinalize(v);
       p->pStmt = 0;
-    }else{
+    }มิฉะนั้น{
       v->rc = rc;
     }
   }
   sqlite3Error(db, rc);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  คืน rc;
 }
 
 /*
 ** Read data from a blob handle.
 */
-int sqlite3_blob_read(sqlite3_blob *pBlob, void *z, int n, int iOffset){
-  return blobReadWrite(pBlob, z, n, iOffset, sqlite3BtreePayloadChecked);
+จำนวนเต็ม sqlite3_blob_read(sqlite3_blob *pBlob, void *z, จำนวนเต็ม n, จำนวนเต็ม iOffset){
+  คืน blobReadWrite(pBlob, z, n, iOffset, sqlite3BtreePayloadChecked);
 }
 
 /*
 ** Write data to a blob handle.
 */
-int sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, int n, int iOffset){
-  return blobReadWrite(pBlob, (void *)z, n, iOffset, sqlite3BtreePutData);
+จำนวนเต็ม sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, จำนวนเต็ม n, จำนวนเต็ม iOffset){
+  คืน blobReadWrite(pBlob, (void *)z, n, iOffset, sqlite3BtreePutData);
 }
 
 /*
@@ -485,9 +485,9 @@ int sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, int n, int iOffset){
 ** The Incrblob.nByte field is fixed for the lifetime of the Incrblob
 ** so no mutex is required for access.
 */
-int sqlite3_blob_bytes(sqlite3_blob *pBlob){
+จำนวนเต็ม sqlite3_blob_bytes(sqlite3_blob *pBlob){
   Incrblob *p = (Incrblob *)pBlob;
-  return (p && p->pStmt) ? p->nByte : 0;
+  คืน (p && p->pStmt) ? p->nByte : 0;
 }
 
 /*
@@ -500,26 +500,26 @@ int sqlite3_blob_bytes(sqlite3_blob *pBlob){
 ** subsequent calls to sqlite3_blob_xxx() functions (except blob_close()) 
 ** immediately return SQLITE_ABORT.
 */
-int sqlite3_blob_reopen(sqlite3_blob *pBlob, sqlite3_int64 iRow){
-  int rc;
+จำนวนเต็ม sqlite3_blob_reopen(sqlite3_blob *pBlob, sqlite3_int64 iRow){
+  จำนวนเต็ม rc;
   Incrblob *p = (Incrblob *)pBlob;
   sqlite3 *db;
 
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
+  ถ้า( p==0 ) คืน SQLITE_MISUSE_BKPT;
   db = p->db;
   sqlite3_mutex_enter(db->mutex);
 
-  if( p->pStmt==0 ){
+  ถ้า( p->pStmt==0 ){
     /* If there is no statement handle, then the blob-handle has
     ** already been invalidated. Return SQLITE_ABORT in this case.
     */
     rc = SQLITE_ABORT;
-  }else{
-    char *zErr;
+  }มิฉะนั้น{
+    var_na *zErr;
     ((Vdbe*)p->pStmt)->rc = SQLITE_OK;
     rc = blobSeekToRow(p, iRow, &zErr);
-    if( rc!=SQLITE_OK ){
-      sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (char*)0), zErr);
+    ถ้า( rc!=SQLITE_OK ){
+      sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (var_na*)0), zErr);
       sqlite3DbFree(db, zErr);
     }
     assert( rc!=SQLITE_SCHEMA );
@@ -528,7 +528,7 @@ int sqlite3_blob_reopen(sqlite3_blob *pBlob, sqlite3_int64 iRow){
   rc = sqlite3ApiExit(db, rc);
   assert( rc==SQLITE_OK || p->pStmt==0 );
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  คืน rc;
 }
 
 #endif /* #ifndef SQLITE_OMIT_INCRBLOB */

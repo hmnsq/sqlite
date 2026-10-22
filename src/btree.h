@@ -36,19 +36,19 @@
 /*
 ** Forward declarations of structure
 */
-typedef struct Btree Btree;
-typedef struct BtCursor BtCursor;
-typedef struct BtShared BtShared;
-typedef struct BtreePayload BtreePayload;
+typedef sa_nracanaa Btree Btree;
+typedef sa_nracanaa BtCursor BtCursor;
+typedef sa_nracanaa BtShared BtShared;
+typedef sa_nracanaa BtreePayload BtreePayload;
 
 
-int sqlite3BtreeOpen(
+จำนวนเต็ม sqlite3BtreeOpen(
   sqlite3_vfs *pVfs,       /* VFS to use with this b-tree */
-  const char *zFilename,   /* Name of database file to open */
+  const var_na *zFilename,   /* Name of database file to open */
   sqlite3 *db,             /* Associated database connection */
   Btree **ppBtree,         /* Return open Btree* here */
-  int flags,               /* Flags */
-  int vfsFlags             /* Flags passed through to VFS open */
+  จำนวนเต็ม flags,               /* Flags */
+  จำนวนเต็ม vfsFlags             /* Flags passed through to VFS open */
 );
 
 /* The flags parameter to sqlite3BtreeOpen can be the bitwise or of the
@@ -62,52 +62,52 @@ int sqlite3BtreeOpen(
 #define BTREE_SINGLE        4  /* The file contains at most 1 b-tree */
 #define BTREE_UNORDERED     8  /* Use of a hash implementation is OK */
 
-int sqlite3BtreeClose(Btree*);
-int sqlite3BtreeSetCacheSize(Btree*,int);
-int sqlite3BtreeSetSpillSize(Btree*,int);
-#if SQLITE_MAX_MMAP_SIZE>0
-  int sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
+จำนวนเต็ม sqlite3BtreeClose(Btree*);
+จำนวนเต็ม sqlite3BtreeSetCacheSize(Btree*,จำนวนเต็ม);
+จำนวนเต็ม sqlite3BtreeSetSpillSize(Btree*,จำนวนเต็ม);
+#ถ้า SQLITE_MAX_MMAP_SIZE>0
+  จำนวนเต็ม sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
 #endif
-int sqlite3BtreeSetPagerFlags(Btree*,unsigned);
-int sqlite3BtreeSetPageSize(Btree *p, int nPagesize, int nReserve, int eFix);
-int sqlite3BtreeGetPageSize(Btree*);
+จำนวนเต็ม sqlite3BtreeSetPagerFlags(Btree*,unsigned);
+จำนวนเต็ม sqlite3BtreeSetPageSize(Btree *p, จำนวนเต็ม nPagesize, จำนวนเต็ม nReserve, จำนวนเต็ม eFix);
+จำนวนเต็ม sqlite3BtreeGetPageSize(Btree*);
 Pgno sqlite3BtreeMaxPageCount(Btree*,Pgno);
 Pgno sqlite3BtreeLastPage(Btree*);
-int sqlite3BtreeSecureDelete(Btree*,int);
-int sqlite3BtreeGetRequestedReserve(Btree*);
-int sqlite3BtreeGetReserveNoMutex(Btree *p);
-int sqlite3BtreeSetAutoVacuum(Btree *, int);
-int sqlite3BtreeGetAutoVacuum(Btree *);
-int sqlite3BtreeBeginTrans(Btree*,int,int*);
-int sqlite3BtreeCommitPhaseOne(Btree*, const char*);
-int sqlite3BtreeCommitPhaseTwo(Btree*, int);
-int sqlite3BtreeCommit(Btree*);
-int sqlite3BtreeRollback(Btree*,int,int);
-int sqlite3BtreeBeginStmt(Btree*,int);
-int sqlite3BtreeCreateTable(Btree*, Pgno*, int flags);
-int sqlite3BtreeTxnState(Btree*);
-int sqlite3BtreeIsInBackup(Btree*);
+จำนวนเต็ม sqlite3BtreeSecureDelete(Btree*,จำนวนเต็ม);
+จำนวนเต็ม sqlite3BtreeGetRequestedReserve(Btree*);
+จำนวนเต็ม sqlite3BtreeGetReserveNoMutex(Btree *p);
+จำนวนเต็ม sqlite3BtreeSetAutoVacuum(Btree *, จำนวนเต็ม);
+จำนวนเต็ม sqlite3BtreeGetAutoVacuum(Btree *);
+จำนวนเต็ม sqlite3BtreeBeginTrans(Btree*,จำนวนเต็ม,จำนวนเต็ม*);
+จำนวนเต็ม sqlite3BtreeCommitPhaseOne(Btree*, const var_na*);
+จำนวนเต็ม sqlite3BtreeCommitPhaseTwo(Btree*, จำนวนเต็ม);
+จำนวนเต็ม sqlite3BtreeCommit(Btree*);
+จำนวนเต็ม sqlite3BtreeRollback(Btree*,จำนวนเต็ม,จำนวนเต็ม);
+จำนวนเต็ม sqlite3BtreeBeginStmt(Btree*,จำนวนเต็ม);
+จำนวนเต็ม sqlite3BtreeCreateTable(Btree*, Pgno*, จำนวนเต็ม flags);
+จำนวนเต็ม sqlite3BtreeTxnState(Btree*);
+จำนวนเต็ม sqlite3BtreeIsInBackup(Btree*);
 
-void *sqlite3BtreeSchema(Btree *, int, void(*)(void *));
-int sqlite3BtreeSchemaLocked(Btree *pBtree);
+void *sqlite3BtreeSchema(Btree *, จำนวนเต็ม, void(*)(void *));
+จำนวนเต็ม sqlite3BtreeSchemaLocked(Btree *pBtree);
 #ifndef SQLITE_OMIT_SHARED_CACHE
-int sqlite3BtreeLockTable(Btree *pBtree, int iTab, u8 isWriteLock);
+จำนวนเต็ม sqlite3BtreeLockTable(Btree *pBtree, จำนวนเต็ม iTab, u8 isWriteLock);
 #endif
 
 /* Savepoints are named, nestable SQL transactions mostly implemented */ 
 /* in vdbe.c and pager.c See https://sqlite.org/lang_savepoint.html */
-int sqlite3BtreeSavepoint(Btree *, int, int);
+จำนวนเต็ม sqlite3BtreeSavepoint(Btree *, จำนวนเต็ม, จำนวนเต็ม);
 
 /* "Checkpoint" only refers to WAL. See https://sqlite.org/wal.html#ckpt */
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);  
+  จำนวนเต็ม sqlite3BtreeCheckpoint(Btree*, จำนวนเต็ม, จำนวนเต็ม *, จำนวนเต็ม *);  
 #endif
 
-const char *sqlite3BtreeGetFilename(Btree *);
-const char *sqlite3BtreeGetJournalname(Btree *);
-int sqlite3BtreeCopyFile(Btree*, Btree*);
+const var_na *sqlite3BtreeGetFilename(Btree *);
+const var_na *sqlite3BtreeGetJournalname(Btree *);
+จำนวนเต็ม sqlite3BtreeCopyFile(Btree*, Btree*);
 
-int sqlite3BtreeIncrVacuum(Btree *);
+จำนวนเต็ม sqlite3BtreeIncrVacuum(Btree *);
 
 /* The flags parameter to sqlite3BtreeCreateTable can be the bitwise OR
 ** of the flags shown below.
@@ -122,15 +122,15 @@ int sqlite3BtreeIncrVacuum(Btree *);
 #define BTREE_INTKEY     1    /* Table has only 64-bit signed integer keys */
 #define BTREE_BLOBKEY    2    /* Table has keys only - no data */
 
-int sqlite3BtreeDropTable(Btree*, int, int*);
-int sqlite3BtreeClearTable(Btree*, int, i64*);
-int sqlite3BtreeClearTableOfCursor(BtCursor*);
-int sqlite3BtreeTripAllCursors(Btree*, int, int);
+จำนวนเต็ม sqlite3BtreeDropTable(Btree*, จำนวนเต็ม, จำนวนเต็ม*);
+จำนวนเต็ม sqlite3BtreeClearTable(Btree*, จำนวนเต็ม, i64*);
+จำนวนเต็ม sqlite3BtreeClearTableOfCursor(BtCursor*);
+จำนวนเต็ม sqlite3BtreeTripAllCursors(Btree*, จำนวนเต็ม, จำนวนเต็ม);
 
-void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *pValue);
-int sqlite3BtreeUpdateMeta(Btree*, int idx, u32 value);
+void sqlite3BtreeGetMeta(Btree *pBtree, จำนวนเต็ม idx, u32 *pValue);
+จำนวนเต็ม sqlite3BtreeUpdateMeta(Btree*, จำนวนเต็ม idx, u32 value);
 
-int sqlite3BtreeNewDb(Btree *p);
+จำนวนเต็ม sqlite3BtreeNewDb(Btree *p);
 
 /*
 ** The second parameter to sqlite3BtreeGetMeta or sqlite3BtreeUpdateMeta
@@ -238,42 +238,42 @@ int sqlite3BtreeNewDb(Btree *p);
 #define BTREE_WRCSR     0x00000004     /* read-write cursor */
 #define BTREE_FORDELETE 0x00000008     /* Cursor is for seek/delete only */
 
-int sqlite3BtreeCursor(
+จำนวนเต็ม sqlite3BtreeCursor(
   Btree*,                              /* BTree containing table to open */
   Pgno iTable,                         /* Index of root page */
-  int wrFlag,                          /* 1 for writing.  0 for read-only */
-  struct KeyInfo*,                     /* First argument to compare function */
+  จำนวนเต็ม wrFlag,                          /* 1 for writing.  0 for read-only */
+  sa_nracanaa KeyInfo*,                     /* First argument to compare function */
   BtCursor *pCursor                    /* Space to write cursor structure */
 );
 BtCursor *sqlite3BtreeFakeValidCursor(void);
-int sqlite3BtreeCursorSize(void);
+จำนวนเต็ม sqlite3BtreeCursorSize(void);
 #ifdef SQLITE_DEBUG
-int sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
+จำนวนเต็ม sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
 #endif
 void sqlite3BtreeCursorZero(BtCursor*);
 void sqlite3BtreeCursorHintFlags(BtCursor*, unsigned);
 #ifdef SQLITE_ENABLE_CURSOR_HINTS
-void sqlite3BtreeCursorHint(BtCursor*, int, ...);
+void sqlite3BtreeCursorHint(BtCursor*, จำนวนเต็ม, ...);
  #ifdef SQLITE_DEBUG
  BtCursor *sqlite3BtreeCursorHintTblCsr(BtCursor*);
  #endif
 #endif
 
-int sqlite3BtreeCloseCursor(BtCursor*);
-int sqlite3BtreeTableMoveto(
+จำนวนเต็ม sqlite3BtreeCloseCursor(BtCursor*);
+จำนวนเต็ม sqlite3BtreeTableMoveto(
   BtCursor*,
   i64 intKey,
-  int bias,
-  int *pRes
+  จำนวนเต็ม bias,
+  จำนวนเต็ม *pRes
 );
-int sqlite3BtreeIndexMoveto(
+จำนวนเต็ม sqlite3BtreeIndexMoveto(
   BtCursor*,
   UnpackedRecord *pUnKey,
-  int *pRes
+  จำนวนเต็ม *pRes
 );
-int sqlite3BtreeCursorHasMoved(BtCursor*);
-int sqlite3BtreeCursorRestore(BtCursor*, int*);
-int sqlite3BtreeDelete(BtCursor*, u8 flags);
+จำนวนเต็ม sqlite3BtreeCursorHasMoved(BtCursor*);
+จำนวนเต็ม sqlite3BtreeCursorRestore(BtCursor*, จำนวนเต็ม*);
+จำนวนเต็ม sqlite3BtreeDelete(BtCursor*, u8 flags);
 
 /* Allowed flags for sqlite3BtreeDelete() and sqlite3BtreeInsert() */
 #define BTREE_SAVEPOSITION 0x02  /* Leave cursor pointing at NEXT or PREV */
@@ -314,80 +314,80 @@ int sqlite3BtreeDelete(BtCursor*, u8 flags);
 ** organized and understandable, and it also helps the resulting code to
 ** run a little faster by using fewer registers for parameter passing.
 */
-struct BtreePayload {
+sa_nracanaa BtreePayload {
   const void *pKey;       /* Key content for indexes.  NULL for tables */
   sqlite3_int64 nKey;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
   const void *pData;      /* Data for tables. */
   sqlite3_value *aMem;    /* First of nMem value in the unpacked pKey */
   u16 nMem;               /* Number of aMem[] value.  Might be zero */
-  int nData;              /* Size of pData.  0 if none. */
-  int nZero;              /* Extra zero data appended after pData,nData */
+  จำนวนเต็ม nData;              /* Size of pData.  0 if none. */
+  จำนวนเต็ม nZero;              /* Extra zero data appended after pData,nData */
 };
 
-int sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
-                       int flags, int seekResult);
-int sqlite3BtreeFirst(BtCursor*, int *pRes);
-int sqlite3BtreeIsEmpty(BtCursor *pCur, int *pRes);
-int sqlite3BtreeLast(BtCursor*, int *pRes);
-int sqlite3BtreeNext(BtCursor*, int flags);
-int sqlite3BtreeEof(BtCursor*);
-int sqlite3BtreePrevious(BtCursor*, int flags);
+จำนวนเต็ม sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
+                       จำนวนเต็ม flags, จำนวนเต็ม seekResult);
+จำนวนเต็ม sqlite3BtreeFirst(BtCursor*, จำนวนเต็ม *pRes);
+จำนวนเต็ม sqlite3BtreeIsEmpty(BtCursor *pCur, จำนวนเต็ม *pRes);
+จำนวนเต็ม sqlite3BtreeLast(BtCursor*, จำนวนเต็ม *pRes);
+จำนวนเต็ม sqlite3BtreeNext(BtCursor*, จำนวนเต็ม flags);
+จำนวนเต็ม sqlite3BtreeEof(BtCursor*);
+จำนวนเต็ม sqlite3BtreePrevious(BtCursor*, จำนวนเต็ม flags);
 i64 sqlite3BtreeIntegerKey(BtCursor*);
 void sqlite3BtreeCursorPin(BtCursor*);
 void sqlite3BtreeCursorUnpin(BtCursor*);
 i64 sqlite3BtreeOffset(BtCursor*);
-int sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, void*);
+จำนวนเต็ม sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, void*);
 const void *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
 u32 sqlite3BtreePayloadSize(BtCursor*);
 sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor*);
 
-int sqlite3BtreeIntegrityCheck(
+จำนวนเต็ม sqlite3BtreeIntegrityCheck(
   sqlite3 *db,  /* Database connection that is running the check */
   Btree *p,     /* The btree to be checked */
   Pgno *aRoot,  /* An array of root pages numbers for individual trees */
   sqlite3_value *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
-  int nRoot,    /* Number of entries in aRoot[] */
-  int mxErr,    /* Stop reporting errors after this many */
-  int *pnErr,   /* OUT: Write number of errors seen to this variable */
-  char **pzOut  /* OUT: Write the error message string here */
+  จำนวนเต็ม nRoot,    /* Number of entries in aRoot[] */
+  จำนวนเต็ม mxErr,    /* Stop reporting errors after this many */
+  จำนวนเต็ม *pnErr,   /* OUT: Write number of errors seen to this variable */
+  var_na **pzOut  /* OUT: Write the error message string here */
 );
-struct Pager *sqlite3BtreePager(Btree*);
+sa_nracanaa Pager *sqlite3BtreePager(Btree*);
 i64 sqlite3BtreeRowCountEst(BtCursor*);
 
 #ifndef SQLITE_OMIT_INCRBLOB
-int sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
-int sqlite3BtreePutData(BtCursor*, u32 offset, u32 amt, void*);
+จำนวนเต็ม sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
+จำนวนเต็ม sqlite3BtreePutData(BtCursor*, u32 offset, u32 amt, void*);
 void sqlite3BtreeIncrblobCursor(BtCursor *);
 #endif
 void sqlite3BtreeClearCursor(BtCursor *);
-int sqlite3BtreeSetVersion(Btree *pBt, int iVersion);
-int sqlite3BtreeCursorHasHint(BtCursor*, unsigned int mask);
-int sqlite3BtreeIsReadonly(Btree *pBt);
-int sqlite3HeaderSizeBtree(void);
+จำนวนเต็ม sqlite3BtreeSetVersion(Btree *pBt, จำนวนเต็ม iVersion);
+จำนวนเต็ม sqlite3BtreeCursorHasHint(BtCursor*, unsigned จำนวนเต็ม mask);
+จำนวนเต็ม sqlite3BtreeIsReadonly(Btree *pBt);
+จำนวนเต็ม sqlite3HeaderSizeBtree(void);
 
 #ifdef SQLITE_DEBUG
 sqlite3_uint64 sqlite3BtreeSeekCount(Btree*);
-#else
+#มิฉะนั้น
 # define sqlite3BtreeSeekCount(X) 0
 #endif
 
 #ifndef NDEBUG
-int sqlite3BtreeCursorIsValid(BtCursor*);
+จำนวนเต็ม sqlite3BtreeCursorIsValid(BtCursor*);
 #endif
-int sqlite3BtreeCursorIsValidNN(BtCursor*);
+จำนวนเต็ม sqlite3BtreeCursorIsValidNN(BtCursor*);
 
-int sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
+จำนวนเต็ม sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
 
 #ifdef SQLITE_TEST
-int sqlite3BtreeCursorInfo(BtCursor*, int*, int);
+จำนวนเต็ม sqlite3BtreeCursorInfo(BtCursor*, จำนวนเต็ม*, จำนวนเต็ม);
 void sqlite3BtreeCursorList(Btree*);
 #endif
 
 #ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);
+  จำนวนเต็ม sqlite3BtreeCheckpoint(Btree*, จำนวนเต็ม, จำนวนเต็ม *, จำนวนเต็ม *);
 #endif
 
-int sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
+จำนวนเต็ม sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
 
 void sqlite3BtreeClearCache(Btree*);
 
@@ -399,10 +399,10 @@ void sqlite3BtreeClearCache(Btree*);
 #ifndef SQLITE_OMIT_SHARED_CACHE
   void sqlite3BtreeEnter(Btree*);
   void sqlite3BtreeEnterAll(sqlite3*);
-  int sqlite3BtreeSharable(Btree*);
+  จำนวนเต็ม sqlite3BtreeSharable(Btree*);
   void sqlite3BtreeEnterCursor(BtCursor*);
-  int sqlite3BtreeConnectionCount(Btree*);
-#else
+  จำนวนเต็ม sqlite3BtreeConnectionCount(Btree*);
+#มิฉะนั้น
 # define sqlite3BtreeEnter(X) 
 # define sqlite3BtreeEnterAll(X)
 # define sqlite3BtreeSharable(X) 0
@@ -410,17 +410,17 @@ void sqlite3BtreeClearCache(Btree*);
 # define sqlite3BtreeConnectionCount(X) 1
 #endif
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
+#ถ้า !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
   void sqlite3BtreeLeave(Btree*);
   void sqlite3BtreeLeaveCursor(BtCursor*);
   void sqlite3BtreeLeaveAll(sqlite3*);
 #ifndef NDEBUG
   /* These routines are used inside assert() statements only. */
-  int sqlite3BtreeHoldsMutex(Btree*);
-  int sqlite3BtreeHoldsAllMutexes(sqlite3*);
-  int sqlite3SchemaMutexHeld(sqlite3*,int,Schema*);
+  จำนวนเต็ม sqlite3BtreeHoldsMutex(Btree*);
+  จำนวนเต็ม sqlite3BtreeHoldsAllMutexes(sqlite3*);
+  จำนวนเต็ม sqlite3SchemaMutexHeld(sqlite3*,จำนวนเต็ม,Schema*);
 #endif
-#else
+#มิฉะนั้น
 
 # define sqlite3BtreeLeave(X)
 # define sqlite3BtreeLeaveCursor(X)

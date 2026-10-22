@@ -22,7 +22,7 @@
 */
 
 #include "sqliteInt.h"   /* Requires access to internal data structures */
-#if (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
+#ถ้า (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
     && !defined(SQLITE_OMIT_VIRTUALTABLE)
 
 /*
@@ -65,7 +65,7 @@
 **
 **      '/1c2/000/'               // Left-most child of 451st child of root
 */
-static const char zDbstatSchema[] = 
+static const var_na zDbstatSchema[] = 
   "CREATE TABLE x("
   " name       TEXT,"          /*  0 Name of table or index */
   " path       TEXT,"          /*  1 Path to page from root (NULL for agg) */
@@ -83,56 +83,56 @@ static const char zDbstatSchema[] =
 ;
 
 /* Forward reference to data structured used in this module */
-typedef struct StatTable StatTable;
-typedef struct StatCursor StatCursor;
-typedef struct StatPage StatPage;
-typedef struct StatCell StatCell;
+typedef sa_nracanaa StatTable StatTable;
+typedef sa_nracanaa StatCursor StatCursor;
+typedef sa_nracanaa StatPage StatPage;
+typedef sa_nracanaa StatCell StatCell;
 
 /* Size information for a single cell within a btree page */
-struct StatCell {
-  int nLocal;                     /* Bytes of local payload */
+sa_nracanaa StatCell {
+  จำนวนเต็ม nLocal;                     /* Bytes of local payload */
   u32 iChildPg;                   /* Child node (or 0 if this is a leaf) */
-  int nOvfl;                      /* Entries in aOvfl[] */
+  จำนวนเต็ม nOvfl;                      /* Entries in aOvfl[] */
   u32 *aOvfl;                     /* Array of overflow page numbers */
-  int nLastOvfl;                  /* Bytes of payload on final overflow page */
-  int iOvfl;                      /* Iterates through aOvfl[] */
+  จำนวนเต็ม nLastOvfl;                  /* Bytes of payload on final overflow page */
+  จำนวนเต็ม iOvfl;                      /* Iterates through aOvfl[] */
 };
 
 /* Size information for a single btree page */
-struct StatPage {
+sa_nracanaa StatPage {
   u32 iPgno;                      /* Page number */
   u8 *aPg;                        /* Page buffer from sqlite3_malloc() */
-  int iCell;                      /* Current cell */
-  char *zPath;                    /* Path to this page */
+  จำนวนเต็ม iCell;                      /* Current cell */
+  var_na *zPath;                    /* Path to this page */
 
   /* Variables populated by statDecodePage(): */
   u8 flags;                       /* Copy of flags byte */
-  int nCell;                      /* Number of cells on page */
-  int nUnused;                    /* Number of unused bytes on page */
+  จำนวนเต็ม nCell;                      /* Number of cells on page */
+  จำนวนเต็ม nUnused;                    /* Number of unused bytes on page */
   StatCell *aCell;                /* Array of parsed cells */
   u32 iRightChildPg;              /* Right-child page number (or 0) */
-  int nMxPayload;                 /* Largest payload of any cell on the page */
+  จำนวนเต็ม nMxPayload;                 /* Largest payload of any cell on the page */
 };
 
 /* The cursor for scanning the dbstat virtual table */
-struct StatCursor {
+sa_nracanaa StatCursor {
   sqlite3_vtab_cursor base;       /* base class.  MUST BE FIRST! */
   sqlite3_stmt *pStmt;            /* Iterates through set of root pages */
   u8 isEof;                       /* After pStmt has returned SQLITE_DONE */
   u8 isAgg;                       /* Aggregate results for each table */
-  int iDb;                        /* Schema used for this query */
+  จำนวนเต็ม iDb;                        /* Schema used for this query */
 
   StatPage aPage[32];             /* Pages in path to current page */
-  int iPage;                      /* Current entry in aPage[] */
+  จำนวนเต็ม iPage;                      /* Current entry in aPage[] */
 
   /* Values to return. */
   u32 iPageno;                    /* Value of 'pageno' column */
-  char *zName;                    /* Value of 'name' column */
-  char *zPath;                    /* Value of 'path' column */
-  char *zPagetype;                /* Value of 'pagetype' column */
-  int nPage;                      /* Number of pages in current btree */
-  int nCell;                      /* Value of 'ncell' column */
-  int nMxPayload;                 /* Value of 'mx_payload' column */
+  var_na *zName;                    /* Value of 'name' column */
+  var_na *zPath;                    /* Value of 'path' column */
+  var_na *zPagetype;                /* Value of 'pagetype' column */
+  จำนวนเต็ม nPage;                      /* Number of pages in current btree */
+  จำนวนเต็ม nCell;                      /* Value of 'ncell' column */
+  จำนวนเต็ม nMxPayload;                 /* Value of 'mx_payload' column */
   i64 nUnused;                    /* Value of 'unused' column */
   i64 nPayload;                   /* Value of 'payload' column */
   i64 iOffset;                    /* Value of 'pgOffset' column */
@@ -140,10 +140,10 @@ struct StatCursor {
 };
 
 /* An instance of the DBSTAT virtual table */
-struct StatTable {
+sa_nracanaa StatTable {
   sqlite3_vtab base;              /* base class.  MUST BE FIRST! */
   sqlite3 *db;                    /* Database connection that owns this vtab */
-  int iDb;                        /* Index of database to analyze */
+  จำนวนเต็ม iDb;                        /* Index of database to analyze */
 };
 
 #ifndef get2byte
@@ -153,53 +153,53 @@ struct StatTable {
 /*
 ** Connect to or create a new DBSTAT virtual table.
 */
-static int statConnect(
+static จำนวนเต็ม statConnect(
   sqlite3 *db,
   void *pAux,
-  int argc, const char *const*argv,
+  จำนวนเต็ม argc, const var_na *const*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  var_na **pzErr
 ){
   StatTable *pTab = 0;
-  int rc = SQLITE_OK;
-  int iDb;
+  จำนวนเต็ม rc = SQLITE_OK;
+  จำนวนเต็ม iDb;
   (void)pAux;
 
-  if( argc>=4 ){
+  ถ้า( argc>=4 ){
     Token nm;
-    sqlite3TokenInit(&nm, (char*)argv[3]);
+    sqlite3TokenInit(&nm, (var_na*)argv[3]);
     iDb = sqlite3FindDb(db, &nm);
-    if( iDb<0 ){
+    ถ้า( iDb<0 ){
       *pzErr = sqlite3_mprintf("no such database: %s", argv[3]);
-      return SQLITE_ERROR;
+      คืน SQLITE_ERROR;
     }
-  }else{
+  }มิฉะนั้น{
     iDb = 0;
   }
   sqlite3_vtab_config(db, SQLITE_VTAB_DIRECTONLY);
   rc = sqlite3_declare_vtab(db, zDbstatSchema);
-  if( rc==SQLITE_OK ){
-    pTab = (StatTable *)sqlite3_malloc64(sizeof(StatTable));
-    if( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
+  ถ้า( rc==SQLITE_OK ){
+    pTab = (StatTable *)sqlite3_malloc64(parimaa_na(StatTable));
+    ถ้า( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
   }
 
   assert( rc==SQLITE_OK || pTab==0 );
-  if( rc==SQLITE_OK ){
-    memset(pTab, 0, sizeof(StatTable));
+  ถ้า( rc==SQLITE_OK ){
+    memset(pTab, 0, parimaa_na(StatTable));
     pTab->db = db;
     pTab->iDb = iDb;
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  คืน rc;
 }
 
 /*
 ** Disconnect from or destroy the DBSTAT virtual table.
 */
-static int statDisconnect(sqlite3_vtab *pVtab){
+static จำนวนเต็ม statDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /*
@@ -212,11 +212,11 @@ static int statDisconnect(sqlite3_vtab *pVtab){
 **      0x04           There is an aggregate=? term in the WHERE clause
 **      0x08           Output should be ordered by name and path
 */
-static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int i;
-  int iSchema = -1;
-  int iName = -1;
-  int iAgg = -1;
+static จำนวนเต็ม statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  จำนวนเต็ม i;
+  จำนวนเต็ม iSchema = -1;
+  จำนวนเต็ม iName = -1;
+  จำนวนเต็ม iAgg = -1;
   (void)tab;
 
   /* Look for a valid schema=? constraint.  If found, change the idxNum to
@@ -224,38 +224,38 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** lower the cost estimate to encourage the constrained version to be
   ** used.
   */
-  for(i=0; i<pIdxInfo->nConstraint; i++){
-    if( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pIdxInfo->aConstraint[i].usable==0 ){
+  สำหรับ(i=0; i<pIdxInfo->nConstraint; i++){
+    ถ้า( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
+    ถ้า( pIdxInfo->aConstraint[i].usable==0 ){
       /* Force DBSTAT table should always be the right-most table in a join */
-      return SQLITE_CONSTRAINT;
+      คืน SQLITE_CONSTRAINT;
     }
     switch( pIdxInfo->aConstraint[i].iColumn ){
-      case 0: {    /* name */
+      pak_sa 0: {    /* name */
         iName = i;
-        break;
+        bha_nga;
       }
-      case 10: {   /* schema */
+      pak_sa 10: {   /* schema */
         iSchema = i;
-        break;
+        bha_nga;
       }
-      case 11: {   /* aggregate */
+      pak_sa 11: {   /* aggregate */
         iAgg = i;
-        break;
+        bha_nga;
       }
     }
   }
   i = 0;
-  if( iSchema>=0 ){
+  ถ้า( iSchema>=0 ){
     pIdxInfo->aConstraintUsage[iSchema].argvIndex = ++i;
     pIdxInfo->aConstraintUsage[iSchema].omit = 1;
     pIdxInfo->idxNum |= 0x01;
   }
-  if( iName>=0 ){
+  ถ้า( iName>=0 ){
     pIdxInfo->aConstraintUsage[iName].argvIndex = ++i;
     pIdxInfo->idxNum |= 0x02;
   }
-  if( iAgg>=0 ){
+  ถ้า( iAgg>=0 ){
     pIdxInfo->aConstraintUsage[iAgg].argvIndex = ++i;
     pIdxInfo->idxNum |= 0x04;
   }
@@ -265,7 +265,7 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** If this will satisfy the client, set the orderByConsumed flag so that 
   ** SQLite does not do an external sort.
   */
-  if( ( pIdxInfo->nOrderBy==1
+  ถ้า( ( pIdxInfo->nOrderBy==1
      && pIdxInfo->aOrderBy[0].iColumn==0
      && pIdxInfo->aOrderBy[0].desc==0
      ) ||
@@ -281,33 +281,33 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   }
   pIdxInfo->idxFlags |= SQLITE_INDEX_SCAN_HEX;
 
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /*
 ** Open a new DBSTAT cursor.
 */
-static int statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+static จำนวนเต็ม statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   StatTable *pTab = (StatTable *)pVTab;
   StatCursor *pCsr;
 
-  pCsr = (StatCursor *)sqlite3_malloc64(sizeof(StatCursor));
-  if( pCsr==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
-    memset(pCsr, 0, sizeof(StatCursor));
+  pCsr = (StatCursor *)sqlite3_malloc64(parimaa_na(StatCursor));
+  ถ้า( pCsr==0 ){
+    คืน SQLITE_NOMEM_BKPT;
+  }มิฉะนั้น{
+    memset(pCsr, 0, parimaa_na(StatCursor));
     pCsr->base.pVtab = pVTab;
     pCsr->iDb = pTab->iDb;
   }
 
   *ppCursor = (sqlite3_vtab_cursor *)pCsr;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 static void statClearCells(StatPage *p){
-  int i;
-  if( p->aCell ){
-    for(i=0; i<p->nCell; i++){
+  จำนวนเต็ม i;
+  ถ้า( p->aCell ){
+    สำหรับ(i=0; i<p->nCell; i++){
       sqlite3_free(p->aCell[i].aOvfl);
     }
     sqlite3_free(p->aCell);
@@ -320,17 +320,17 @@ static void statClearPage(StatPage *p){
   u8 *aPg = p->aPg;
   statClearCells(p);
   sqlite3_free(p->zPath);
-  memset(p, 0, sizeof(StatPage));
+  memset(p, 0, parimaa_na(StatPage));
   p->aPg = aPg;
 }
 
 static void statResetCsr(StatCursor *pCsr){
-  int i;
+  จำนวนเต็ม i;
   /* In some circumstances, specifically if an OOM has occurred, the call
   ** to sqlite3_reset() may cause the pager to be reset (emptied). It is
   ** important that statClearPage() is called to free any page refs before
   ** this happens. dbsqlfuzz 9ed3e4e3816219d3509d711636c38542bf3f40b1. */
-  for(i=0; i<ArraySize(pCsr->aPage); i++){
+  สำหรับ(i=0; i<ArraySize(pCsr->aPage); i++){
     statClearPage(&pCsr->aPage[i]);
     sqlite3_free(pCsr->aPage[i].aPg);
     pCsr->aPage[i].aPg = 0;
@@ -355,12 +355,12 @@ static void statResetCounts(StatCursor *pCsr){
 /*
 ** Close a DBSTAT cursor.
 */
-static int statClose(sqlite3_vtab_cursor *pCursor){
+static จำนวนเต็ม statClose(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /*
@@ -368,125 +368,125 @@ static int statClose(sqlite3_vtab_cursor *pCursor){
 ** content (payload) stored on that page.  That is to say, compute the
 ** number of bytes of content not found on overflow pages.
 */
-static int getLocalPayload(
-  int nUsable,                    /* Usable bytes per page */
+static จำนวนเต็ม getLocalPayload(
+  จำนวนเต็ม nUsable,                    /* Usable bytes per page */
   u8 flags,                       /* Page flags */
-  int nTotal                      /* Total record (payload) size */
+  จำนวนเต็ม nTotal                      /* Total record (payload) size */
 ){
-  int nLocal;
-  int nMinLocal;
-  int nMaxLocal;
+  จำนวนเต็ม nLocal;
+  จำนวนเต็ม nMinLocal;
+  จำนวนเต็ม nMaxLocal;
  
-  if( flags==0x0D ){              /* Table leaf node */
+  ถ้า( flags==0x0D ){              /* Table leaf node */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = nUsable - 35;
-  }else{                          /* Index interior and leaf nodes */
+  }มิฉะนั้น{                          /* Index interior and leaf nodes */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = (nUsable - 12) * 64 / 255 - 23;
   }
 
   nLocal = nMinLocal + (nTotal - nMinLocal) % (nUsable - 4);
-  if( nLocal>nMaxLocal ) nLocal = nMinLocal;
-  return nLocal;
+  ถ้า( nLocal>nMaxLocal ) nLocal = nMinLocal;
+  คืน nLocal;
 }
 
 /* Populate the StatPage object with information about the all
 ** cells found on the page currently under analysis.
 */
-static int statDecodePage(Btree *pBt, StatPage *p){
-  int nUnused;
-  int iOff;
-  int nHdr;
-  int isLeaf;
-  int szPage;
+static จำนวนเต็ม statDecodePage(Btree *pBt, StatPage *p){
+  จำนวนเต็ม nUnused;
+  จำนวนเต็ม iOff;
+  จำนวนเต็ม nHdr;
+  จำนวนเต็ม isLeaf;
+  จำนวนเต็ม szPage;
 
   u8 *aData = p->aPg;
   u8 *aHdr = &aData[p->iPgno==1 ? 100 : 0];
 
   p->flags = aHdr[0];
-  if( p->flags==0x0A || p->flags==0x0D ){
+  ถ้า( p->flags==0x0A || p->flags==0x0D ){
     isLeaf = 1;
     nHdr = 8;
-  }else if( p->flags==0x05 || p->flags==0x02 ){
+  }มิฉะนั้น ถ้า( p->flags==0x05 || p->flags==0x02 ){
     isLeaf = 0;
     nHdr = 12;
-  }else{
+  }มิฉะนั้น{
     goto statPageIsCorrupt;
   }
-  if( p->iPgno==1 ) nHdr += 100;
+  ถ้า( p->iPgno==1 ) nHdr += 100;
   p->nCell = get2byte(&aHdr[3]);
   p->nMxPayload = 0;
   szPage = sqlite3BtreeGetPageSize(pBt);
 
   nUnused = get2byte(&aHdr[5]) - nHdr - 2*p->nCell;
-  nUnused += (int)aHdr[7];
+  nUnused += (จำนวนเต็ม)aHdr[7];
   iOff = get2byte(&aHdr[1]);
-  while( iOff ){
-    int iNext;
-    if( iOff>=szPage ) goto statPageIsCorrupt;
+  ขณะ( iOff ){
+    จำนวนเต็ม iNext;
+    ถ้า( iOff>=szPage ) goto statPageIsCorrupt;
     nUnused += get2byte(&aData[iOff+2]);
     iNext = get2byte(&aData[iOff]);
-    if( iNext<iOff+4 && iNext>0 ) goto statPageIsCorrupt;
+    ถ้า( iNext<iOff+4 && iNext>0 ) goto statPageIsCorrupt;
     iOff = iNext;
   }
   p->nUnused = nUnused;
   p->iRightChildPg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
 
-  if( p->nCell ){
-    int i;                        /* Used to iterate through cells */
-    int nUsable;                  /* Usable bytes per page */
+  ถ้า( p->nCell ){
+    จำนวนเต็ม i;                        /* Used to iterate through cells */
+    จำนวนเต็ม nUsable;                  /* Usable bytes per page */
 
     sqlite3BtreeEnter(pBt);
     nUsable = szPage - sqlite3BtreeGetReserveNoMutex(pBt);
     sqlite3BtreeLeave(pBt);
-    p->aCell = sqlite3_malloc64((p->nCell+1) * sizeof(StatCell));
-    if( p->aCell==0 ) return SQLITE_NOMEM_BKPT;
-    memset(p->aCell, 0, (p->nCell+1) * sizeof(StatCell));
+    p->aCell = sqlite3_malloc64((p->nCell+1) * parimaa_na(StatCell));
+    ถ้า( p->aCell==0 ) คืน SQLITE_NOMEM_BKPT;
+    memset(p->aCell, 0, (p->nCell+1) * parimaa_na(StatCell));
 
-    for(i=0; i<p->nCell; i++){
+    สำหรับ(i=0; i<p->nCell; i++){
       StatCell *pCell = &p->aCell[i];
 
       iOff = get2byte(&aData[nHdr+i*2]);
-      if( iOff<nHdr || iOff>=szPage ) goto statPageIsCorrupt;
-      if( !isLeaf ){
+      ถ้า( iOff<nHdr || iOff>=szPage ) goto statPageIsCorrupt;
+      ถ้า( !isLeaf ){
         pCell->iChildPg = sqlite3Get4byte(&aData[iOff]);
         iOff += 4;
       }
-      if( p->flags==0x05 ){
+      ถ้า( p->flags==0x05 ){
         /* A table interior node. nPayload==0. */
-      }else{
+      }มิฉะนั้น{
         u32 nPayload;             /* Bytes of payload total (local+overflow) */
-        int nLocal;               /* Bytes of payload stored locally */
+        จำนวนเต็ม nLocal;               /* Bytes of payload stored locally */
         iOff += getVarint32(&aData[iOff], nPayload);
-        if( p->flags==0x0D ){
+        ถ้า( p->flags==0x0D ){
           u64 dummy;
           iOff += sqlite3GetVarint(&aData[iOff], &dummy);
         }
-        if( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
+        ถ้า( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
         nLocal = getLocalPayload(nUsable, p->flags, nPayload);
-        if( nLocal<0 ) goto statPageIsCorrupt;
+        ถ้า( nLocal<0 ) goto statPageIsCorrupt;
         pCell->nLocal = nLocal;
         assert( nPayload>=(u32)nLocal );
         assert( nLocal<=(nUsable-35) );
-        if( nPayload>(u32)nLocal ){
-          int j;
-          int nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
-          if( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
+        ถ้า( nPayload>(u32)nLocal ){
+          จำนวนเต็ม j;
+          จำนวนเต็ม nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
+          ถ้า( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
             goto statPageIsCorrupt;
           }
           pCell->nLastOvfl = (nPayload-nLocal) - (nOvfl-1) * (nUsable-4);
           pCell->nOvfl = nOvfl;
-          pCell->aOvfl = sqlite3_malloc64(sizeof(u32)*nOvfl);
-          if( pCell->aOvfl==0 ) return SQLITE_NOMEM_BKPT;
+          pCell->aOvfl = sqlite3_malloc64(parimaa_na(u32)*nOvfl);
+          ถ้า( pCell->aOvfl==0 ) คืน SQLITE_NOMEM_BKPT;
           pCell->aOvfl[0] = sqlite3Get4byte(&aData[iOff+nLocal]);
-          for(j=1; j<nOvfl; j++){
-            int rc;
+          สำหรับ(j=1; j<nOvfl; j++){
+            จำนวนเต็ม rc;
             u32 iPrev = pCell->aOvfl[j-1];
             DbPage *pPg = 0;
             rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPrev, &pPg, 0);
-            if( rc!=SQLITE_OK ){
+            ถ้า( rc!=SQLITE_OK ){
               assert( pPg==0 );
-              return rc;
+              คืน rc;
             } 
             pCell->aOvfl[j] = sqlite3Get4byte(sqlite3PagerGetData(pPg));
             sqlite3PagerUnref(pPg);
@@ -496,12 +496,12 @@ static int statDecodePage(Btree *pBt, StatPage *p){
     }
   }
 
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 
 statPageIsCorrupt:
   p->flags = 0;
   statClearCells(p);
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /*
@@ -520,10 +520,10 @@ static void statSizeAndOffset(StatCursor *pCsr){
   */
   fd = sqlite3PagerFile(pPager);
   x[0] = pCsr->iPageno;
-  if( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
+  ถ้า( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
     pCsr->iOffset = x[0];
     pCsr->szPage += x[1];
-  }else{
+  }มิฉะนั้น{
     /* Not ZIPVFS: The default page size and offset */
     pCsr->szPage += sqlite3BtreeGetPageSize(pBt);
     pCsr->iOffset = (i64)pCsr->szPage * (pCsr->iPageno - 1);
@@ -535,31 +535,31 @@ static void statSizeAndOffset(StatCursor *pCsr){
 ** to page object pPg. Allocate the buffer if necessary. Return SQLITE_OK
 ** if successful, or an SQLite error code otherwise.
 */
-static int statGetPage(
+static จำนวนเต็ม statGetPage(
   Btree *pBt,                     /* Load page from this b-tree */
   u32 iPg,                        /* Page number to load */
   StatPage *pPg                   /* Load page into this object */
 ){
-  int pgsz = sqlite3BtreeGetPageSize(pBt);
+  จำนวนเต็ม pgsz = sqlite3BtreeGetPageSize(pBt);
   DbPage *pDbPage = 0;
-  int rc;
+  จำนวนเต็ม rc;
 
-  if( pPg->aPg==0 ){
+  ถ้า( pPg->aPg==0 ){
     pPg->aPg = (u8*)sqlite3_malloc(pgsz + DBSTAT_PAGE_PADDING_BYTES);
-    if( pPg->aPg==0 ){
-      return SQLITE_NOMEM_BKPT;
+    ถ้า( pPg->aPg==0 ){
+      คืน SQLITE_NOMEM_BKPT;
     }
     memset(&pPg->aPg[pgsz], 0, DBSTAT_PAGE_PADDING_BYTES);
   }
 
   rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPg, &pDbPage, 0);
-  if( rc==SQLITE_OK ){
+  ถ้า( rc==SQLITE_OK ){
     const u8 *a = sqlite3PagerGetData(pDbPage);
     memcpy(pPg->aPg, a, pgsz);
     sqlite3PagerUnref(pDbPage);
   }
 
-  return rc;
+  คืน rc;
 }
 
 /*
@@ -567,10 +567,10 @@ static int statGetPage(
 ** entry will be the next page, but in aggregated mode (pCsr->isAgg!=0),
 ** the next entry is the next btree.
 */
-static int statNext(sqlite3_vtab_cursor *pCursor){
-  int rc;
-  int nPayload;
-  char *z;
+static จำนวนเต็ม statNext(sqlite3_vtab_cursor *pCursor){
+  จำนวนเต็ม rc;
+  จำนวนเต็ม nPayload;
+  var_na *z;
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable *)pCursor->pVtab;
   Btree *pBt = pTab->db->aDb[pCsr->iDb].pBt;
@@ -580,40 +580,40 @@ static int statNext(sqlite3_vtab_cursor *pCursor){
   pCsr->zPath = 0;
 
 statNextRestart:
-  if( pCsr->iPage<0 ){
+  ถ้า( pCsr->iPage<0 ){
     /* Start measuring space on the next btree */
     statResetCounts(pCsr);
     rc = sqlite3_step(pCsr->pStmt);
-    if( rc==SQLITE_ROW ){
-      int nPage;
+    ถ้า( rc==SQLITE_ROW ){
+      จำนวนเต็ม nPage;
       u32 iRoot = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
       sqlite3PagerPagecount(pPager, &nPage);
-      if( nPage==0 ){
+      ถ้า( nPage==0 ){
         pCsr->isEof = 1;
-        return sqlite3_reset(pCsr->pStmt);
+        คืน sqlite3_reset(pCsr->pStmt);
       }
       rc = statGetPage(pBt, iRoot, &pCsr->aPage[0]);
       pCsr->aPage[0].iPgno = iRoot;
       pCsr->aPage[0].iCell = 0;
-      if( !pCsr->isAgg ){
+      ถ้า( !pCsr->isAgg ){
         pCsr->aPage[0].zPath = z = sqlite3_mprintf("/");
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        ถ้า( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       pCsr->iPage = 0;
       pCsr->nPage = 1;
-    }else{
+    }มิฉะนั้น{
       pCsr->isEof = 1;
-      return sqlite3_reset(pCsr->pStmt);
+      คืน sqlite3_reset(pCsr->pStmt);
     }
-  }else{
+  }มิฉะนั้น{
     /* Continue analyzing the btree previously started */
     StatPage *p = &pCsr->aPage[pCsr->iPage];
-    if( !pCsr->isAgg ) statResetCounts(pCsr);
-    while( p->iCell<p->nCell ){
+    ถ้า( !pCsr->isAgg ) statResetCounts(pCsr);
+    ขณะ( p->iCell<p->nCell ){
       StatCell *pCell = &p->aCell[p->iCell];
-      while( pCell->iOvfl<pCell->nOvfl ){
-        int nUsable;
-        int iOvfl = pCell->iOvfl;
+      ขณะ( pCell->iOvfl<pCell->nOvfl ){
+        จำนวนเต็ม nUsable;
+        จำนวนเต็ม iOvfl = pCell->iOvfl;
         sqlite3BtreeEnter(pBt);
         nUsable = sqlite3BtreeGetPageSize(pBt) - 
                         sqlite3BtreeGetReserveNoMutex(pBt);
@@ -621,54 +621,54 @@ statNextRestart:
         pCsr->nPage++;
         pCsr->iPageno = pCell->aOvfl[iOvfl];
         statSizeAndOffset(pCsr);
-        if( pCell->iOvfl<pCell->nOvfl-1 ){
+        ถ้า( pCell->iOvfl<pCell->nOvfl-1 ){
           pCsr->nPayload += nUsable - 4;
-        }else{
+        }มิฉะนั้น{
           pCsr->nPayload += pCell->nLastOvfl;
           pCsr->nUnused += nUsable - 4 - pCell->nLastOvfl;
         }
         pCell->iOvfl++;
-        if( !pCsr->isAgg ){
-          pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
+        ถ้า( !pCsr->isAgg ){
+          pCsr->zName = (var_na *)sqlite3_column_text(pCsr->pStmt, 0);
           pCsr->zPagetype = "overflow";
           pCsr->zPath = z = sqlite3_mprintf(
               "%s%.3x+%.6x", p->zPath, p->iCell, iOvfl
           );
-          return z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
+          คืน z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
         }
       }
-      if( p->iRightChildPg ) break;
+      ถ้า( p->iRightChildPg ) bha_nga;
       p->iCell++;
     }
 
-    if( !p->iRightChildPg || p->iCell>p->nCell ){
+    ถ้า( !p->iRightChildPg || p->iCell>p->nCell ){
       statClearPage(p);
       pCsr->iPage--;
-      if( pCsr->isAgg && pCsr->iPage<0 ){
+      ถ้า( pCsr->isAgg && pCsr->iPage<0 ){
         /* label-statNext-done:  When computing aggregate space usage over
         ** an entire btree, this is the exit point from this function */
-        return SQLITE_OK;
+        คืน SQLITE_OK;
       }
       goto statNextRestart; /* Tail recursion */
     }
     pCsr->iPage++;
-    if( pCsr->iPage>=ArraySize(pCsr->aPage) ){
+    ถ้า( pCsr->iPage>=ArraySize(pCsr->aPage) ){
       statResetCsr(pCsr);
-      return SQLITE_CORRUPT_BKPT;
+      คืน SQLITE_CORRUPT_BKPT;
     }
     assert( p==&pCsr->aPage[pCsr->iPage-1] );
 
-    if( p->iCell==p->nCell ){
+    ถ้า( p->iCell==p->nCell ){
       p[1].iPgno = p->iRightChildPg;
-    }else{
+    }มิฉะนั้น{
       p[1].iPgno = p->aCell[p->iCell].iChildPg;
     }
     rc = statGetPage(pBt, p[1].iPgno, &p[1]);
     pCsr->nPage++;
     p[1].iCell = 0;
-    if( !pCsr->isAgg ){
+    ถ้า( !pCsr->isAgg ){
       p[1].zPath = z = sqlite3_mprintf("%s%.3x/", p->zPath, p->iCell);
-      if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+      ถ้า( z==0 ) rc = SQLITE_NOMEM_BKPT;
     }
     p->iCell++;
   }
@@ -677,38 +677,38 @@ statNextRestart:
   /* Populate the StatCursor fields with the values to be returned
   ** by the xColumn() and xRowid() methods.
   */
-  if( rc==SQLITE_OK ){
-    int i;
+  ถ้า( rc==SQLITE_OK ){
+    จำนวนเต็ม i;
     StatPage *p = &pCsr->aPage[pCsr->iPage];
-    pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
+    pCsr->zName = (var_na *)sqlite3_column_text(pCsr->pStmt, 0);
     pCsr->iPageno = p->iPgno;
 
     rc = statDecodePage(pBt, p);
-    if( rc==SQLITE_OK ){
+    ถ้า( rc==SQLITE_OK ){
       statSizeAndOffset(pCsr);
 
       switch( p->flags ){
-        case 0x05:             /* table internal */
-        case 0x02:             /* index internal */
+        pak_sa 0x05:             /* table internal */
+        pak_sa 0x02:             /* index internal */
           pCsr->zPagetype = "internal";
-          break;
-        case 0x0D:             /* table leaf */
-        case 0x0A:             /* index leaf */
+          bha_nga;
+        pak_sa 0x0D:             /* table leaf */
+        pak_sa 0x0A:             /* index leaf */
           pCsr->zPagetype = "leaf";
-          break;
+          bha_nga;
         default:
           pCsr->zPagetype = "corrupted";
-          break;
+          bha_nga;
       }
       pCsr->nCell += p->nCell;
       pCsr->nUnused += p->nUnused;
-      if( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
-      if( !pCsr->isAgg ){
+      ถ้า( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
+      ถ้า( !pCsr->isAgg ){
         pCsr->zPath = z = sqlite3_mprintf("%s", p->zPath);
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        ถ้า( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       nPayload = 0;
-      for(i=0; i<p->nCell; i++){
+      สำหรับ(i=0; i<p->nCell; i++){
         nPayload += p->aCell[i].nLocal;
       }
       pCsr->nPayload += nPayload;
@@ -716,60 +716,60 @@ statNextRestart:
       /* If computing aggregate space usage by btree, continue with the
       ** next page.  The loop will exit via the return at label-statNext-done
       */
-      if( pCsr->isAgg ) goto statNextRestart;
+      ถ้า( pCsr->isAgg ) goto statNextRestart;
     }
   }
 
-  return rc;
+  คืน rc;
 }
 
-static int statEof(sqlite3_vtab_cursor *pCursor){
+static จำนวนเต็ม statEof(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
-  return pCsr->isEof;
+  คืน pCsr->isEof;
 }
 
 /* Initialize a cursor according to the query plan idxNum using the
 ** arguments in argv[0].  See statBestIndex() for a description of the
 ** meaning of the bits in idxNum.
 */
-static int statFilter(
+static จำนวนเต็ม statFilter(
   sqlite3_vtab_cursor *pCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  จำนวนเต็ม idxNum, const var_na *idxStr,
+  จำนวนเต็ม argc, sqlite3_value **argv
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable*)(pCursor->pVtab);
   sqlite3_str *pSql;      /* Query of btrees to analyze */
-  char *zSql;             /* String value of pSql */
-  int iArg = 0;           /* Count of argv[] parameters used so far */
-  int rc = SQLITE_OK;     /* Result of this operation */
-  const char *zName = 0;  /* Only provide analysis of this table */
+  var_na *zSql;             /* String value of pSql */
+  จำนวนเต็ม iArg = 0;           /* Count of argv[] parameters used so far */
+  จำนวนเต็ม rc = SQLITE_OK;     /* Result of this operation */
+  const var_na *zName = 0;  /* Only provide analysis of this table */
   (void)argc;
   (void)idxStr;
 
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
-  if( idxNum & 0x01 ){
+  ถ้า( idxNum & 0x01 ){
     /* schema=? constraint is present.  Get its value */
-    const char *zDbase = (const char*)sqlite3_value_text(argv[iArg++]);
+    const var_na *zDbase = (const var_na*)sqlite3_value_text(argv[iArg++]);
     pCsr->iDb = sqlite3FindDbName(pTab->db, zDbase);
-    if( pCsr->iDb<0 ){
+    ถ้า( pCsr->iDb<0 ){
       pCsr->iDb = 0;
       pCsr->isEof = 1;
-      return SQLITE_OK;
+      คืน SQLITE_OK;
     }
-  }else{
+  }มิฉะนั้น{
     pCsr->iDb = pTab->iDb;
   }
-  if( idxNum & 0x02 ){
+  ถ้า( idxNum & 0x02 ){
     /* name=? constraint is present */
-    zName = (const char*)sqlite3_value_text(argv[iArg++]);
+    zName = (const var_na*)sqlite3_value_text(argv[iArg++]);
   }
-  if( idxNum & 0x04 ){
+  ถ้า( idxNum & 0x04 ){
     /* aggregate=? constraint is present */
     pCsr->isAgg = sqlite3_value_double(argv[iArg++])!=0.0;
-  }else{
+  }มิฉะนั้น{
     pCsr->isAgg = 0;
   }
   pSql = sqlite3_str_new(pTab->db);
@@ -780,98 +780,98 @@ static int statFilter(
         "SELECT name,rootpage,type"
         " FROM \"%w\".sqlite_schema WHERE rootpage!=0)",
       pTab->db->aDb[pCsr->iDb].zDbSName);
-  if( zName ){
+  ถ้า( zName ){
     sqlite3_str_appendf(pSql, "WHERE name=%Q", zName);
   }
-  if( idxNum & 0x08 ){
+  ถ้า( idxNum & 0x08 ){
     sqlite3_str_appendf(pSql, " ORDER BY name");
   }
   zSql = sqlite3_str_finish(pSql);
-  if( zSql==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
+  ถ้า( zSql==0 ){
+    คืน SQLITE_NOMEM_BKPT;
+  }มิฉะนั้น{
     rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
     sqlite3_free(zSql);
   }
 
-  if( rc==SQLITE_OK ){
+  ถ้า( rc==SQLITE_OK ){
     pCsr->iPage = -1;
     rc = statNext(pCursor);
   }
-  return rc;
+  คืน rc;
 }
 
-static int statColumn(
+static จำนวนเต็ม statColumn(
   sqlite3_vtab_cursor *pCursor, 
   sqlite3_context *ctx, 
-  int i
+  จำนวนเต็ม i
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
   switch( i ){
-    case 0:            /* name */
+    pak_sa 0:            /* name */
       sqlite3_result_text(ctx, pCsr->zName, -1, SQLITE_TRANSIENT);
-      break;
-    case 1:            /* path */
-      if( !pCsr->isAgg ){
+      bha_nga;
+    pak_sa 1:            /* path */
+      ถ้า( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPath, -1, SQLITE_TRANSIENT);
       }
-      break;
-    case 2:            /* pageno */
-      if( pCsr->isAgg ){
+      bha_nga;
+    pak_sa 2:            /* pageno */
+      ถ้า( pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->nPage);
-      }else{
+      }มิฉะนั้น{
         sqlite3_result_int64(ctx, pCsr->iPageno);
       }
-      break;
-    case 3:            /* pagetype */
-      if( !pCsr->isAgg ){
+      bha_nga;
+    pak_sa 3:            /* pagetype */
+      ถ้า( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPagetype, -1, SQLITE_STATIC);
       }
-      break;
-    case 4:            /* ncell */
+      bha_nga;
+    pak_sa 4:            /* ncell */
       sqlite3_result_int64(ctx, pCsr->nCell);
-      break;
-    case 5:            /* payload */
+      bha_nga;
+    pak_sa 5:            /* payload */
       sqlite3_result_int64(ctx, pCsr->nPayload);
-      break;
-    case 6:            /* unused */
+      bha_nga;
+    pak_sa 6:            /* unused */
       sqlite3_result_int64(ctx, pCsr->nUnused);
-      break;
-    case 7:            /* mx_payload */
+      bha_nga;
+    pak_sa 7:            /* mx_payload */
       sqlite3_result_int64(ctx, pCsr->nMxPayload);
-      break;
-    case 8:            /* pgoffset */
-      if( !pCsr->isAgg ){
+      bha_nga;
+    pak_sa 8:            /* pgoffset */
+      ถ้า( !pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->iOffset);
       }
-      break;
-    case 9:            /* pgsize */
+      bha_nga;
+    pak_sa 9:            /* pgsize */
       sqlite3_result_int64(ctx, pCsr->szPage);
-      break;
-    case 10: {         /* schema */
+      bha_nga;
+    pak_sa 10: {         /* schema */
       sqlite3 *db = sqlite3_context_db_handle(ctx);
-      int iDb = pCsr->iDb;
+      จำนวนเต็ม iDb = pCsr->iDb;
       sqlite3_result_text(ctx, db->aDb[iDb].zDbSName, -1, SQLITE_STATIC);
-      break;
+      bha_nga;
     }
     default: {         /* aggregate */
       sqlite3_result_int(ctx, pCsr->isAgg);
-      break;
+      bha_nga;
     }
   }
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
-static int statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+static จำนวนเต็ม statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   StatCursor *pCsr = (StatCursor *)pCursor;
   *pRowid = pCsr->iPageno;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 /*
 ** Invoke this routine to register the "dbstat" virtual table module
 */
-int sqlite3DbstatRegister(sqlite3 *db){
+จำนวนเต็ม sqlite3DbstatRegister(sqlite3 *db){
   static sqlite3_module dbstat_module = {
     0,                            /* iVersion */
     statConnect,                  /* xCreate */
@@ -899,8 +899,8 @@ int sqlite3DbstatRegister(sqlite3 *db){
     0,                            /* xShadowName */
     0                             /* xIntegrity */
   };
-  return sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
+  คืน sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
 }
 #elif defined(SQLITE_ENABLE_DBSTAT_VTAB)
-int sqlite3DbstatRegister(sqlite3 *db){ return SQLITE_OK; }
+จำนวนเต็ม sqlite3DbstatRegister(sqlite3 *db){ คืน SQLITE_OK; }
 #endif /* SQLITE_ENABLE_DBSTAT_VTAB */

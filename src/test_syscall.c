@@ -81,51 +81,51 @@
 #include <string.h>
 #include <assert.h>
 
-#if SQLITE_OS_UNIX
+#ถ้า SQLITE_OS_UNIX
 
 /* From main.c */
-extern const char *sqlite3ErrName(int);
+extern const var_na *sqlite3ErrName(จำนวนเต็ม);
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <errno.h>
 
-static struct TestSyscallGlobal {
-  int bPersist;                   /* 1 for persistent errors, 0 for transient */
-  int nCount;                     /* Fail after this many more calls */
-  int nFail;                      /* Number of failures that have occurred */
-  int pgsz;
+static sa_nracanaa TestSyscallGlobal {
+  จำนวนเต็ม bPersist;                   /* 1 for persistent errors, 0 for transient */
+  จำนวนเต็ม nCount;                     /* Fail after this many more calls */
+  จำนวนเต็ม nFail;                      /* Number of failures that have occurred */
+  จำนวนเต็ม pgsz;
   sqlite3_syscall_ptr orig_getpagesize;
 } gSyscall = { 0, 0, 0, 0, 0 };
 
-static int ts_open(const char *, int, int);
-static int ts_close(int fd);
-static int ts_access(const char *zPath, int mode);
-static char *ts_getcwd(char *zPath, size_t nPath);
-static int ts_stat(const char *zPath, struct stat *p);
-static int ts_fstat(int fd, struct stat *p);
-static int ts_ftruncate(int fd, off_t n);
-static int ts_fcntl(int fd, int cmd, ... );
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf);
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off);
+static จำนวนเต็ม ts_open(const var_na *, จำนวนเต็ม, จำนวนเต็ม);
+static จำนวนเต็ม ts_close(จำนวนเต็ม fd);
+static จำนวนเต็ม ts_access(const var_na *zPath, จำนวนเต็ม mode);
+static var_na *ts_getcwd(var_na *zPath, size_t nPath);
+static จำนวนเต็ม ts_stat(const var_na *zPath, sa_nracanaa stat *p);
+static จำนวนเต็ม ts_fstat(จำนวนเต็ม fd, sa_nracanaa stat *p);
+static จำนวนเต็ม ts_ftruncate(จำนวนเต็ม fd, off_t n);
+static จำนวนเต็ม ts_fcntl(จำนวนเต็ม fd, จำนวนเต็ม cmd, ... );
+static ssize_t ts_read(จำนวนเต็ม fd, void *aBuf, size_t nBuf);
+static ssize_t ts_pread(จำนวนเต็ม fd, void *aBuf, size_t nBuf, off_t off);
 /* Note:  pread64() and pwrite64() actually use off64_t as the type on their
 ** last parameter.  But that datatype is not defined on many systems 
 ** (ex: Mac, OpenBSD).  So substitute a likely equivalent: sqlite3_uint64 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf);
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off);
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
-static int ts_fchmod(int fd, mode_t mode);
-static int ts_fallocate(int fd, off_t off, off_t len);
-static void *ts_mmap(void *, size_t, int, int, int, off_t);
-static void *ts_mremap(void*, size_t, size_t, int, ...);
+static ssize_t ts_pread64(จำนวนเต็ม fd, void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static ssize_t ts_write(จำนวนเต็ม fd, const void *aBuf, size_t nBuf);
+static ssize_t ts_pwrite(จำนวนเต็ม fd, const void *aBuf, size_t nBuf, off_t off);
+static ssize_t ts_pwrite64(จำนวนเต็ม fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off);
+static จำนวนเต็ม ts_fchmod(จำนวนเต็ม fd, mode_t mode);
+static จำนวนเต็ม ts_fallocate(จำนวนเต็ม fd, off_t off, off_t len);
+static void *ts_mmap(void *, size_t, จำนวนเต็ม, จำนวนเต็ม, จำนวนเต็ม, off_t);
+static void *ts_mremap(void*, size_t, size_t, จำนวนเต็ม, ...);
 
-struct TestSyscallArray {
-  const char *zName;
+sa_nracanaa TestSyscallArray {
+  const var_na *zName;
   sqlite3_syscall_ptr xTest;
   sqlite3_syscall_ptr xOrig;
-  int default_errno;              /* Default value for errno following errors */
-  int custom_errno;               /* Current value for errno if error */
+  จำนวนเต็ม default_errno;              /* Default value for errno following errors */
+  จำนวนเต็ม custom_errno;               /* Current value for errno if error */
 } aSyscall[] = {
   /*  0 */ { "open",      (sqlite3_syscall_ptr)ts_open,      0, EACCES, 0 },
   /*  1 */ { "close",     (sqlite3_syscall_ptr)ts_close,     0, 0, 0 },
@@ -148,39 +148,39 @@ struct TestSyscallArray {
            { 0, 0, 0, 0, 0 }
 };
 
-#define orig_open      ((int(*)(const char *, int, int))aSyscall[0].xOrig)
-#define orig_close     ((int(*)(int))aSyscall[1].xOrig)
-#define orig_access    ((int(*)(const char*,int))aSyscall[2].xOrig)
-#define orig_getcwd    ((char*(*)(char*,size_t))aSyscall[3].xOrig)
-#define orig_stat      ((int(*)(const char*,struct stat*))aSyscall[4].xOrig)
-#define orig_fstat     ((int(*)(int,struct stat*))aSyscall[5].xOrig)
-#define orig_ftruncate ((int(*)(int,off_t))aSyscall[6].xOrig)
-#define orig_fcntl     ((int(*)(int,int,...))aSyscall[7].xOrig)
-#define orig_read      ((ssize_t(*)(int,void*,size_t))aSyscall[8].xOrig)
-#define orig_pread     ((ssize_t(*)(int,void*,size_t,off_t))aSyscall[9].xOrig)
-#define orig_pread64   ((ssize_t(*)(int,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
-#define orig_write     ((ssize_t(*)(int,const void*,size_t))aSyscall[11].xOrig)
-#define orig_pwrite    ((ssize_t(*)(int,const void*,size_t,off_t))\
+#define orig_open      ((จำนวนเต็ม(*)(const var_na *, จำนวนเต็ม, จำนวนเต็ม))aSyscall[0].xOrig)
+#define orig_close     ((จำนวนเต็ม(*)(จำนวนเต็ม))aSyscall[1].xOrig)
+#define orig_access    ((จำนวนเต็ม(*)(const var_na*,จำนวนเต็ม))aSyscall[2].xOrig)
+#define orig_getcwd    ((var_na*(*)(var_na*,size_t))aSyscall[3].xOrig)
+#define orig_stat      ((จำนวนเต็ม(*)(const var_na*,sa_nracanaa stat*))aSyscall[4].xOrig)
+#define orig_fstat     ((จำนวนเต็ม(*)(จำนวนเต็ม,sa_nracanaa stat*))aSyscall[5].xOrig)
+#define orig_ftruncate ((จำนวนเต็ม(*)(จำนวนเต็ม,off_t))aSyscall[6].xOrig)
+#define orig_fcntl     ((จำนวนเต็ม(*)(จำนวนเต็ม,จำนวนเต็ม,...))aSyscall[7].xOrig)
+#define orig_read      ((ssize_t(*)(จำนวนเต็ม,void*,size_t))aSyscall[8].xOrig)
+#define orig_pread     ((ssize_t(*)(จำนวนเต็ม,void*,size_t,off_t))aSyscall[9].xOrig)
+#define orig_pread64   ((ssize_t(*)(จำนวนเต็ม,void*,size_t,sqlite3_uint64))aSyscall[10].xOrig)
+#define orig_write     ((ssize_t(*)(จำนวนเต็ม,const void*,size_t))aSyscall[11].xOrig)
+#define orig_pwrite    ((ssize_t(*)(จำนวนเต็ม,const void*,size_t,off_t))\
                        aSyscall[12].xOrig)
-#define orig_pwrite64  ((ssize_t(*)(int,const void*,size_t,sqlite3_uint64))\
+#define orig_pwrite64  ((ssize_t(*)(จำนวนเต็ม,const void*,size_t,sqlite3_uint64))\
                        aSyscall[13].xOrig)
-#define orig_fchmod    ((int(*)(int,mode_t))aSyscall[14].xOrig)
-#define orig_fallocate ((int(*)(int,off_t,off_t))aSyscall[15].xOrig)
-#define orig_mmap      ((void*(*)(void*,size_t,int,int,int,off_t))aSyscall[16].xOrig)
-#define orig_mremap    ((void*(*)(void*,size_t,size_t,int,...))aSyscall[17].xOrig)
+#define orig_fchmod    ((จำนวนเต็ม(*)(จำนวนเต็ม,mode_t))aSyscall[14].xOrig)
+#define orig_fallocate ((จำนวนเต็ม(*)(จำนวนเต็ม,off_t,off_t))aSyscall[15].xOrig)
+#define orig_mmap      ((void*(*)(void*,size_t,จำนวนเต็ม,จำนวนเต็ม,จำนวนเต็ม,off_t))aSyscall[16].xOrig)
+#define orig_mremap    ((void*(*)(void*,size_t,size_t,จำนวนเต็ม,...))aSyscall[17].xOrig)
 
 /*
 ** This function is called exactly once from within each invocation of a
 ** system call wrapper in this file. It returns 1 if the function should
 ** fail, or 0 if it should succeed.
 */
-static int tsIsFail(void){
+static จำนวนเต็ม tsIsFail(void){
   gSyscall.nCount--;
-  if( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
+  ถ้า( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
     gSyscall.nFail++;
-    return 1;
+    คืน 1;
   }
-  return 0;
+  คืน 0;
 }
 
 /*
@@ -191,190 +191,190 @@ static int tsIsFail(void){
 ** to if the named system call fails. The exception is "fallocate". See 
 ** comments above the implementation of ts_fallocate() for details.
 */
-static int tsErrno(const char *zFunc){
-  int i;
+static จำนวนเต็ม tsErrno(const var_na *zFunc){
+  จำนวนเต็ม i;
   size_t nFunc = strlen(zFunc);
-  for(i=0; aSyscall[i].zName; i++){
-    if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-    if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
-    return aSyscall[i].custom_errno;
+  สำหรับ(i=0; aSyscall[i].zName; i++){
+    ถ้า( strlen(aSyscall[i].zName)!=nFunc ) continue;
+    ถ้า( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    คืน aSyscall[i].custom_errno;
   }
 
   assert(0);
-  return 0;
+  คืน 0;
 }
 
 /*
 ** A wrapper around tsIsFail(). If tsIsFail() returns non-zero, set the
 ** value of errno before returning.
 */
-static int tsIsFailErrno(const char *zFunc){
-  if( tsIsFail() ){
+static จำนวนเต็ม tsIsFailErrno(const var_na *zFunc){
+  ถ้า( tsIsFail() ){
     errno = tsErrno(zFunc);
-    return 1;
+    คืน 1;
   }
-  return 0;
+  คืน 0;
 }
 
 /*
 ** A wrapper around open().
 */
-static int ts_open(const char *zFile, int flags, int mode){
-  if( tsIsFailErrno("open") ){
-    return -1;
+static จำนวนเต็ม ts_open(const var_na *zFile, จำนวนเต็ม flags, จำนวนเต็ม mode){
+  ถ้า( tsIsFailErrno("open") ){
+    คืน -1;
   }
-  return orig_open(zFile, flags, mode);
+  คืน orig_open(zFile, flags, mode);
 }
 
 /*
 ** A wrapper around close().
 */
-static int ts_close(int fd){
-  if( tsIsFail() ){
+static จำนวนเต็ม ts_close(จำนวนเต็ม fd){
+  ถ้า( tsIsFail() ){
     /* Even if simulating an error, close the original file-descriptor. 
     ** This is to stop the test process from running out of file-descriptors
     ** when running a long test. If a call to close() appears to fail, SQLite
     ** never attempts to use the file-descriptor afterwards (or even to close
     ** it a second time).  */
     orig_close(fd);
-    return -1;
+    คืน -1;
   }
-  return orig_close(fd);
+  คืน orig_close(fd);
 }
 
 /*
 ** A wrapper around access().
 */
-static int ts_access(const char *zPath, int mode){
-  if( tsIsFail() ){
-    return -1;
+static จำนวนเต็ม ts_access(const var_na *zPath, จำนวนเต็ม mode){
+  ถ้า( tsIsFail() ){
+    คืน -1;
   }
-  return orig_access(zPath, mode);
+  คืน orig_access(zPath, mode);
 }
 
 /*
 ** A wrapper around getcwd().
 */
-static char *ts_getcwd(char *zPath, size_t nPath){
-  if( tsIsFail() ){
-    return NULL;
+static var_na *ts_getcwd(var_na *zPath, size_t nPath){
+  ถ้า( tsIsFail() ){
+    คืน NULL;
   }
-  return orig_getcwd(zPath, nPath);
+  คืน orig_getcwd(zPath, nPath);
 }
 
 /*
 ** A wrapper around stat().
 */
-static int ts_stat(const char *zPath, struct stat *p){
-  if( tsIsFail() ){
-    return -1;
+static จำนวนเต็ม ts_stat(const var_na *zPath, sa_nracanaa stat *p){
+  ถ้า( tsIsFail() ){
+    คืน -1;
   }
-  return orig_stat(zPath, p);
+  คืน orig_stat(zPath, p);
 }
 
 /*
 ** A wrapper around fstat().
 */
-static int ts_fstat(int fd, struct stat *p){
-  if( tsIsFailErrno("fstat") ){
-    return -1;
+static จำนวนเต็ม ts_fstat(จำนวนเต็ม fd, sa_nracanaa stat *p){
+  ถ้า( tsIsFailErrno("fstat") ){
+    คืน -1;
   }
-  return orig_fstat(fd, p);
+  คืน orig_fstat(fd, p);
 }
 
 /*
 ** A wrapper around ftruncate().
 */
-static int ts_ftruncate(int fd, off_t n){
-  if( tsIsFailErrno("ftruncate") ){
-    return -1;
+static จำนวนเต็ม ts_ftruncate(จำนวนเต็ม fd, off_t n){
+  ถ้า( tsIsFailErrno("ftruncate") ){
+    คืน -1;
   }
-  return orig_ftruncate(fd, n);
+  คืน orig_ftruncate(fd, n);
 }
 
 /*
 ** A wrapper around fcntl().
 */
-static int ts_fcntl(int fd, int cmd, ... ){
+static จำนวนเต็ม ts_fcntl(จำนวนเต็ม fd, จำนวนเต็ม cmd, ... ){
   va_list ap;
   void *pArg;
-  if( tsIsFailErrno("fcntl") ){
-    return -1;
+  ถ้า( tsIsFailErrno("fcntl") ){
+    คืน -1;
   }
   va_start(ap, cmd);
   pArg = va_arg(ap, void *);
-  return orig_fcntl(fd, cmd, pArg);
+  คืน orig_fcntl(fd, cmd, pArg);
 }
 
 /*
 ** A wrapper around read().
 */
-static ssize_t ts_read(int fd, void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("read") ){
-    return -1;
+static ssize_t ts_read(จำนวนเต็ม fd, void *aBuf, size_t nBuf){
+  ถ้า( tsIsFailErrno("read") ){
+    คืน -1;
   }
-  return orig_read(fd, aBuf, nBuf);
+  คืน orig_read(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pread().
 */
-static ssize_t ts_pread(int fd, void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pread") ){
-    return -1;
+static ssize_t ts_pread(จำนวนเต็ม fd, void *aBuf, size_t nBuf, off_t off){
+  ถ้า( tsIsFailErrno("pread") ){
+    คืน -1;
   }
-  return orig_pread(fd, aBuf, nBuf, off);
+  คืน orig_pread(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pread64().
 */
-static ssize_t ts_pread64(int fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pread64") ){
-    return -1;
+static ssize_t ts_pread64(จำนวนเต็ม fd, void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  ถ้า( tsIsFailErrno("pread64") ){
+    คืน -1;
   }
-  return orig_pread64(fd, aBuf, nBuf, off);
+  คืน orig_pread64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around write().
 */
-static ssize_t ts_write(int fd, const void *aBuf, size_t nBuf){
-  if( tsIsFailErrno("write") ){
-    if( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
-    return -1;
+static ssize_t ts_write(จำนวนเต็ม fd, const void *aBuf, size_t nBuf){
+  ถ้า( tsIsFailErrno("write") ){
+    ถ้า( tsErrno("write")==EINTR ) orig_write(fd, aBuf, nBuf/2);
+    คืน -1;
   }
-  return orig_write(fd, aBuf, nBuf);
+  คืน orig_write(fd, aBuf, nBuf);
 }
 
 /*
 ** A wrapper around pwrite().
 */
-static ssize_t ts_pwrite(int fd, const void *aBuf, size_t nBuf, off_t off){
-  if( tsIsFailErrno("pwrite") ){
-    return -1;
+static ssize_t ts_pwrite(จำนวนเต็ม fd, const void *aBuf, size_t nBuf, off_t off){
+  ถ้า( tsIsFailErrno("pwrite") ){
+    คืน -1;
   }
-  return orig_pwrite(fd, aBuf, nBuf, off);
+  คืน orig_pwrite(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around pwrite64().
 */
-static ssize_t ts_pwrite64(int fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
-  if( tsIsFailErrno("pwrite64") ){
-    return -1;
+static ssize_t ts_pwrite64(จำนวนเต็ม fd, const void *aBuf, size_t nBuf, sqlite3_uint64 off){
+  ถ้า( tsIsFailErrno("pwrite64") ){
+    คืน -1;
   }
-  return orig_pwrite64(fd, aBuf, nBuf, off);
+  คืน orig_pwrite64(fd, aBuf, nBuf, off);
 }
 
 /*
 ** A wrapper around fchmod().
 */
-static int ts_fchmod(int fd, mode_t mode){
-  if( tsIsFail() ){
-    return -1;
+static จำนวนเต็ม ts_fchmod(จำนวนเต็ม fd, mode_t mode){
+  ถ้า( tsIsFail() ){
+    คืน -1;
   }
-  return orig_fchmod(fd, mode);
+  คืน orig_fchmod(fd, mode);
 }
 
 /*
@@ -386,30 +386,30 @@ static int ts_fchmod(int fd, mode_t mode){
 **   posix_fallocate() returns  zero on success, or an error number on
 **   failure. Note that errno is not set.
 */
-static int ts_fallocate(int fd, off_t off, off_t len){
-  if( tsIsFail() ){
-    return tsErrno("fallocate");
+static จำนวนเต็ม ts_fallocate(จำนวนเต็ม fd, off_t off, off_t len){
+  ถ้า( tsIsFail() ){
+    คืน tsErrno("fallocate");
   }
-  return orig_fallocate(fd, off, len);
+  คืน orig_fallocate(fd, off, len);
 }
 
 static void *ts_mmap(
   void *pAddr, 
   size_t nByte, 
-  int prot, 
-  int flags, 
-  int fd, 
+  จำนวนเต็ม prot, 
+  จำนวนเต็ม flags, 
+  จำนวนเต็ม fd, 
   off_t iOff
 ){
-  if( tsIsFailErrno("mmap") ){
-    return MAP_FAILED;
+  ถ้า( tsIsFailErrno("mmap") ){
+    คืน MAP_FAILED;
   }
-  return orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
+  คืน orig_mmap(pAddr, nByte, prot, flags, fd, iOff);
 }
 
-static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
-  if( tsIsFailErrno("mremap") ){
-    return MAP_FAILED;
+static void *ts_mremap(void *a, size_t b, size_t c, จำนวนเต็ม d, ...){
+  ถ้า( tsIsFailErrno("mremap") ){
+    คืน MAP_FAILED;
   }
   /* mremap() may be called with 4 or 5 arguments (when MREMAP_FIXED) is
   ** set. But SQLite only ever calls the 4 argument form, and attempting to
@@ -418,147 +418,147 @@ static void *ts_mremap(void *a, size_t b, size_t c, int d, ...){
 #ifdef MREMAP_FIXED
   assert( (d & MREMAP_FIXED)==0 );
 #endif
-  return orig_mremap(a, b, c, d);
+  คืน orig_mremap(a, b, c, d);
 }
 
-static int SQLITE_TCLAPI test_syscall_install(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_install(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   Tcl_Size nElem;
-  int i;
+  จำนวนเต็ม i;
   Tcl_Obj **apElem;
 
-  if( objc!=3 ){
+  ถ้า( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL-LIST");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
-  if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
-    return TCL_ERROR;
+  ถ้า( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
+    คืน TCL_ERROR;
   }
   pVfs = sqlite3_vfs_find(0);
 
-  for(i=0; i<(int)nElem; i++){
-    int iCall;
-    int rc = Tcl_GetIndexFromObjStruct(interp, 
-        apElem[i], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
+  สำหรับ(i=0; i<(จำนวนเต็ม)nElem; i++){
+    จำนวนเต็ม iCall;
+    จำนวนเต็ม rc = Tcl_GetIndexFromObjStruct(interp, 
+        apElem[i], aSyscall, parimaa_na(aSyscall[0]), "system-call", 0, &iCall
     );
-    if( rc ) return rc;
-    if( aSyscall[iCall].xOrig==0 ){
+    ถ้า( rc ) คืน rc;
+    ถ้า( aSyscall[iCall].xOrig==0 ){
       aSyscall[iCall].xOrig = pVfs->xGetSystemCall(pVfs, aSyscall[iCall].zName);
       pVfs->xSetSystemCall(pVfs, aSyscall[iCall].zName, aSyscall[iCall].xTest);
     }
     aSyscall[iCall].custom_errno = aSyscall[iCall].default_errno;
   }
 
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_uninstall(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_uninstall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
+  จำนวนเต็ม i;
 
-  if( objc!=2 ){
+  ถ้า( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  for(i=0; aSyscall[i].zName; i++){
-    if( aSyscall[i].xOrig ){
+  สำหรับ(i=0; aSyscall[i].zName; i++){
+    ถ้า( aSyscall[i].xOrig ){
       pVfs->xSetSystemCall(pVfs, aSyscall[i].zName, 0);
       aSyscall[i].xOrig = 0;
     }
   }
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_reset(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_reset(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
-  int i;
-  int rc;
+  จำนวนเต็ม i;
+  จำนวนเต็ม rc;
 
-  if( objc!=2 && objc!=3 ){
+  ถ้า( objc!=2 && objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
-  if( objc==2 ){
+  ถ้า( objc==2 ){
     rc = pVfs->xSetSystemCall(pVfs, 0, 0);
-    for(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
-  }else{
+    สำหรับ(i=0; aSyscall[i].zName; i++) aSyscall[i].xOrig = 0;
+  }มิฉะนั้น{
     Tcl_Size nFunc;
-    char *zFunc = Tcl_GetStringFromObj(objv[2], &nFunc);
+    var_na *zFunc = Tcl_GetStringFromObj(objv[2], &nFunc);
     rc = pVfs->xSetSystemCall(pVfs, Tcl_GetString(objv[2]), 0);
-    for(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
-      if( strlen(aSyscall[i].zName)!=nFunc ) continue;
-      if( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
+    สำหรับ(i=0; rc==SQLITE_OK && aSyscall[i].zName; i++){
+      ถ้า( strlen(aSyscall[i].zName)!=nFunc ) continue;
+      ถ้า( memcmp(aSyscall[i].zName, zFunc, nFunc) ) continue;
       aSyscall[i].xOrig = 0;
     }
   }
-  if( rc!=SQLITE_OK ){
+  ถ้า( rc!=SQLITE_OK ){
     Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_exists(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_exists(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
   sqlite3_syscall_ptr x;
 
-  if( objc!=3 ){
+  ถ้า( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   x = pVfs->xGetSystemCall(pVfs, Tcl_GetString(objv[2]));
 
   Tcl_SetObjResult(interp, Tcl_NewBooleanObj(x!=0));
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_fault(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_fault(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nCount = 0;
-  int bPersist = 0;
+  จำนวนเต็ม nCount = 0;
+  จำนวนเต็ม bPersist = 0;
 
-  if( objc!=2 && objc!=4 ){
+  ถ้า( objc!=2 && objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "?COUNT PERSIST?");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
-  if( objc==4 ){
-    if( Tcl_GetIntFromObj(interp, objv[2], &nCount)
+  ถ้า( objc==4 ){
+    ถ้า( Tcl_GetIntFromObj(interp, objv[2], &nCount)
      || Tcl_GetBooleanFromObj(interp, objv[3], &bPersist)
     ){
-      return TCL_ERROR;
+      คืน TCL_ERROR;
     }
   }
 
@@ -566,22 +566,22 @@ static int SQLITE_TCLAPI test_syscall_fault(
   gSyscall.nCount = nCount;
   gSyscall.bPersist = bPersist;
   gSyscall.nFail = 0;
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_errno(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_errno(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
-  int iCall;
-  int iErrno;
-  int rc;
+  จำนวนเต็ม iCall;
+  จำนวนเต็ม iErrno;
+  จำนวนเต็ม rc;
 
-  struct Errno {
-    const char *z;
-    int i;
+  sa_nracanaa Errno {
+    const var_na *z;
+    จำนวนเต็ม i;
   } aErrno[] = {
     { "EACCES",    EACCES },
     { "EINTR",     EINTR },
@@ -597,43 +597,43 @@ static int SQLITE_TCLAPI test_syscall_errno(
     { 0, 0 }
   };
 
-  if( objc!=4 ){
+  ถ้า( objc!=4 ){
     Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL ERRNO");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   rc = Tcl_GetIndexFromObjStruct(interp, 
-      objv[2], aSyscall, sizeof(aSyscall[0]), "system-call", 0, &iCall
+      objv[2], aSyscall, parimaa_na(aSyscall[0]), "system-call", 0, &iCall
   );
-  if( rc!=TCL_OK ) return rc;
+  ถ้า( rc!=TCL_OK ) คืน rc;
   rc = Tcl_GetIndexFromObjStruct(interp, 
-      objv[3], aErrno, sizeof(aErrno[0]), "errno", 0, &iErrno
+      objv[3], aErrno, parimaa_na(aErrno[0]), "errno", 0, &iErrno
   );
-  if( rc!=TCL_OK ) return rc;
+  ถ้า( rc!=TCL_OK ) คืน rc;
 
   aSyscall[iCall].custom_errno = aErrno[iErrno].i;
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_list(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_list(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *zSys;
+  const var_na *zSys;
   sqlite3_vfs *pVfs; 
   Tcl_Obj *pList;
 
-  if( objc!=2 ){
+  ถ้า( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   pList = Tcl_NewObj();
   Tcl_IncrRefCount(pList);
-  for(zSys = pVfs->xNextSystemCall(pVfs, 0); 
+  สำหรับ(zSys = pVfs->xNextSystemCall(pVfs, 0); 
       zSys!=0;
       zSys = pVfs->xNextSystemCall(pVfs, zSys)
   ){
@@ -642,55 +642,55 @@ static int SQLITE_TCLAPI test_syscall_list(
 
   Tcl_SetObjResult(interp, pList);
   Tcl_DecrRefCount(pList);
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall_defaultvfs(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_defaultvfs(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs; 
 
-  if( objc!=2 ){
+  ถ้า( objc!=2 ){
     Tcl_WrongNumArgs(interp, 2, objv, "");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   Tcl_SetObjResult(interp, Tcl_NewStringObj(pVfs->zName, -1));
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int ts_getpagesize(void){
-  return gSyscall.pgsz;
+static จำนวนเต็ม ts_getpagesize(void){
+  คืน gSyscall.pgsz;
 }
 
-static int SQLITE_TCLAPI test_syscall_pagesize(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall_pagesize(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
-  int pgsz;
-  if( objc!=3 ){
+  จำนวนเต็ม pgsz;
+  ถ้า( objc!=3 ){
     Tcl_WrongNumArgs(interp, 2, objv, "PGSZ");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
-    return TCL_ERROR;
+  ถ้า( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
+    คืน TCL_ERROR;
   }
 
-  if( pgsz<0 ){
-    if( gSyscall.orig_getpagesize ){
+  ถ้า( pgsz<0 ){
+    ถ้า( gSyscall.orig_getpagesize ){
       pVfs->xSetSystemCall(pVfs, "getpagesize", gSyscall.orig_getpagesize);
     }
-  }else{
-    if( pgsz<512 || (pgsz & (pgsz-1)) ){
+  }มิฉะนั้น{
+    ถ้า( pgsz<512 || (pgsz & (pgsz-1)) ){
       Tcl_AppendResult(interp, "pgsz out of range", NULL);
-      return TCL_ERROR;
+      คืน TCL_ERROR;
     }
     gSyscall.orig_getpagesize = pVfs->xGetSystemCall(pVfs, "getpagesize");
     gSyscall.pgsz = pgsz;
@@ -699,17 +699,17 @@ static int SQLITE_TCLAPI test_syscall_pagesize(
     );
   }
 
-  return TCL_OK;
+  คืน TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_syscall(
+static จำนวนเต็ม SQLITE_TCLAPI test_syscall(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  จำนวนเต็ม objc,
   Tcl_Obj *CONST objv[]
 ){
-  struct SyscallCmd {
-    const char *zName;
+  sa_nracanaa SyscallCmd {
+    const var_na *zName;
     Tcl_ObjCmdProc *xCmd;
   } aCmd[] = {
     { "fault",      test_syscall_fault },
@@ -723,42 +723,42 @@ static int SQLITE_TCLAPI test_syscall(
     { "pagesize",   test_syscall_pagesize },
     { 0, 0 }
   };
-  int iCmd;
-  int rc;
+  จำนวนเต็ม iCmd;
+  จำนวนเต็ม rc;
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
 
-  if( objc<2 ){
+  ถ้า( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
-    return TCL_ERROR;
+    คืน TCL_ERROR;
   }
-  if( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
+  ถ้า( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){
     Tcl_AppendResult(interp, "VFS does not support xSetSystemCall", NULL);
     rc = TCL_ERROR;
-  }else{
+  }มิฉะนั้น{
     rc = Tcl_GetIndexFromObjStruct(interp, 
-        objv[1], aCmd, sizeof(aCmd[0]), "sub-command", 0, &iCmd
+        objv[1], aCmd, parimaa_na(aCmd[0]), "sub-command", 0, &iCmd
     );
   }
-  if( rc!=TCL_OK ) return rc;
-  return aCmd[iCmd].xCmd(clientData, interp, objc, objv);
+  ถ้า( rc!=TCL_OK ) คืน rc;
+  คืน aCmd[iCmd].xCmd(clientData, interp, objc, objv);
 }
 
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
-  struct SyscallCmd {
-    const char *zName;
+จำนวนเต็ม SqlitetestSyscall_Init(Tcl_Interp *interp){
+  sa_nracanaa SyscallCmd {
+    const var_na *zName;
     Tcl_ObjCmdProc *xCmd;
   } aCmd[] = {
     { "test_syscall",     test_syscall},
   };
-  int i;
+  จำนวนเต็ม i;
 
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  สำหรับ(i=0; i<parimaa_na(aCmd)/parimaa_na(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xCmd, 0, 0);
   }
-  return TCL_OK;
+  คืน TCL_OK;
 }
-#else
-int SqlitetestSyscall_Init(Tcl_Interp *interp){
-  return TCL_OK;
+#มิฉะนั้น
+จำนวนเต็ม SqlitetestSyscall_Init(Tcl_Interp *interp){
+  คืน TCL_OK;
 }
 #endif

@@ -20,7 +20,7 @@ SQLITE_EXTENSION_INIT1
 */
 static void halfFunc(
   sqlite3_context *context,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
   sqlite3_result_double(context, 0.5*sqlite3_value_double(argv[0]));
@@ -31,18 +31,18 @@ static void halfFunc(
 */
 static void statusFunc(
   sqlite3_context *context,
-  int argc,
+  จำนวนเต็ม argc,
   sqlite3_value **argv
 ){
-  int op = 0, mx, cur, resetFlag, rc;
-  if( sqlite3_value_type(argv[0])==SQLITE_INTEGER ){
+  จำนวนเต็ม op = 0, mx, cur, resetFlag, rc;
+  ถ้า( sqlite3_value_type(argv[0])==SQLITE_INTEGER ){
     op = sqlite3_value_int(argv[0]);
-  }else if( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
-    int i;
-    const char *zName;
-    static const struct {
-      const char *zName;
-      int op;
+  }มิฉะนั้น ถ้า( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
+    จำนวนเต็ม i;
+    const var_na *zName;
+    static const sa_nracanaa {
+      const var_na *zName;
+      จำนวนเต็ม op;
     } aOp[] = {
       { "MEMORY_USED",         SQLITE_STATUS_MEMORY_USED         },
       { "PAGECACHE_USED",      SQLITE_STATUS_PAGECACHE_USED      },
@@ -51,39 +51,39 @@ static void statusFunc(
       { "SCRATCH_OVERFLOW",    SQLITE_STATUS_SCRATCH_OVERFLOW    },
       { "MALLOC_SIZE",         SQLITE_STATUS_MALLOC_SIZE         },
     };
-    int nOp = sizeof(aOp)/sizeof(aOp[0]);
-    zName = (const char*)sqlite3_value_text(argv[0]);
-    for(i=0; i<nOp; i++){
-      if( strcmp(aOp[i].zName, zName)==0 ){
+    จำนวนเต็ม nOp = parimaa_na(aOp)/parimaa_na(aOp[0]);
+    zName = (const var_na*)sqlite3_value_text(argv[0]);
+    สำหรับ(i=0; i<nOp; i++){
+      ถ้า( strcmp(aOp[i].zName, zName)==0 ){
         op = aOp[i].op;
-        break;
+        bha_nga;
       }
     }
-    if( i>=nOp ){
-      char *zMsg = sqlite3_mprintf("unknown status property: %s", zName);
+    ถ้า( i>=nOp ){
+      var_na *zMsg = sqlite3_mprintf("unknown status property: %s", zName);
       sqlite3_result_error(context, zMsg, -1);
       sqlite3_free(zMsg);
-      return;
+      คืน;
     }
-  }else{
+  }มิฉะนั้น{
     sqlite3_result_error(context, "unknown status type", -1);
-    return;
+    คืน;
   }
-  if( argc==2 ){
+  ถ้า( argc==2 ){
     resetFlag = sqlite3_value_int(argv[1]);
-  }else{
+  }มิฉะนั้น{
     resetFlag = 0;
   }
   rc = sqlite3_status(op, &cur, &mx, resetFlag);
-  if( rc!=SQLITE_OK ){
-    char *zMsg = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
+  ถ้า( rc!=SQLITE_OK ){
+    var_na *zMsg = sqlite3_mprintf("sqlite3_status(%d,...) returns %d", op, rc);
     sqlite3_result_error(context, zMsg, -1);
     sqlite3_free(zMsg);
-    return;
+    คืน;
   } 
-  if( argc==2 ){
+  ถ้า( argc==2 ){
     sqlite3_result_int(context, mx);
-  }else{
+  }มิฉะนั้น{
     sqlite3_result_int(context, cur);
   }
 }
@@ -94,19 +94,19 @@ static void statusFunc(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testloadext_init(
+จำนวนเต็ม testloadext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  var_na **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
-  int nErr = 0;
+  จำนวนเต็ม nErr = 0;
   SQLITE_EXTENSION_INIT2(pApi);
   nErr |= sqlite3_create_function(db, "half", 1, SQLITE_ANY, 0, halfFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 1, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
   nErr |= sqlite3_create_function(db, "sqlite3_status", 2, SQLITE_ANY, 0,
                           statusFunc, 0, 0);
-  return nErr ? SQLITE_ERROR : SQLITE_OK;
+  คืน nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 /*
@@ -115,14 +115,14 @@ int testloadext_init(
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int testbrokenext_init(
+จำนวนเต็ม testbrokenext_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  var_na **pzErrMsg, 
   const sqlite3_api_routines *pApi
 ){
-  char *zErr;
+  var_na *zErr;
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken!");
   *pzErrMsg = zErr;
-  return 1;
+  คืน 1;
 }

@@ -91,7 +91,7 @@
 # define sqlite3_enable_shared_cache 0
 #endif
 
-#if defined(SQLITE_OMIT_TRACE) || defined(SQLITE_OMIT_DEPRECATED)
+#ถ้า defined(SQLITE_OMIT_TRACE) || defined(SQLITE_OMIT_DEPRECATED)
 # define sqlite3_profile       0
 # define sqlite3_trace         0
 #endif
@@ -111,7 +111,7 @@
 #define sqlite3_blob_reopen    0
 #endif
 
-#if defined(SQLITE_OMIT_TRACE)
+#ถ้า defined(SQLITE_OMIT_TRACE)
 # define sqlite3_trace_v2      0
 #endif
 
@@ -134,7 +134,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_aggregate_context,
 #ifndef SQLITE_OMIT_DEPRECATED
   sqlite3_aggregate_count,
-#else
+#มิฉะนั้น
   0,
 #endif
   sqlite3_bind_blob,
@@ -193,7 +193,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_exec,
 #ifndef SQLITE_OMIT_DEPRECATED
   sqlite3_expired,
-#else
+#มิฉะนั้น
   0,
 #endif
   sqlite3_finalize,
@@ -237,14 +237,14 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_table_column_metadata,
 #ifndef SQLITE_OMIT_DEPRECATED
   sqlite3_thread_cleanup,
-#else
+#มิฉะนั้น
   0,
 #endif
   sqlite3_total_changes,
   sqlite3_trace,
 #ifndef SQLITE_OMIT_DEPRECATED
   sqlite3_transfer_bindings,
-#else
+#มิฉะนั้น
   0,
 #endif
   sqlite3_update_hook,
@@ -303,7 +303,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   0,
   0,
   0,
-#else
+#มิฉะนั้น
   sqlite3_mutex_alloc,
   sqlite3_mutex_enter,
   sqlite3_mutex_free,
@@ -350,7 +350,7 @@ static const sqlite3_api_routines sqlite3Apis = {
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
   sqlite3_compileoption_get,
   sqlite3_compileoption_used,
-#else
+#มิฉะนั้น
   0,
   0,
 #endif
@@ -366,14 +366,14 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_strnicmp,
 #ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
   sqlite3_unlock_notify,
-#else
+#มิฉะนั้น
   0,
 #endif
 #ifndef SQLITE_OMIT_WAL
   sqlite3_wal_autocheckpoint,
   sqlite3_wal_checkpoint,
   sqlite3_wal_hook,
-#else
+#มิฉะนั้น
   0,
   0,
   0,
@@ -456,7 +456,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   /* Version 3.26.0 and later */
 #ifdef SQLITE_ENABLE_NORMALIZE
   sqlite3_normalized_sql,
-#else
+#มิฉะนั้น
   0,
 #endif
   /* Version 3.28.0 and later */
@@ -465,7 +465,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   /* Version 3.30.0 and later */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_drop_modules,
-#else
+#มิฉะนั้น
   0,
 #endif
   /* Version 3.31.0 and later */
@@ -493,7 +493,7 @@ static const sqlite3_api_routines sqlite3Apis = {
   sqlite3_vtab_in,
   sqlite3_vtab_in_first,
   sqlite3_vtab_in_next,
-#else
+#มิฉะนั้น
   0,
   0,
   0,
@@ -504,7 +504,7 @@ static const sqlite3_api_routines sqlite3Apis = {
 #ifndef SQLITE_OMIT_DESERIALIZE
   sqlite3_deserialize,
   sqlite3_serialize,
-#else
+#มิฉะนั้น
   0,
   0,
 #endif
@@ -529,7 +529,7 @@ static const sqlite3_api_routines sqlite3Apis = {
 #ifdef SQLITE_ENABLE_CARRAY
   sqlite3_carray_bind,
   sqlite3_carray_bind_v2,
-#else
+#มิฉะนั้น
   0,
   0,
 #endif
@@ -540,9 +540,9 @@ static const sqlite3_api_routines sqlite3Apis = {
 
 /* True if x is the directory separator character
 */
-#if SQLITE_OS_WIN
+#ถ้า SQLITE_OS_WIN
 # define DirSep(X)  ((X)=='/'||(X)=='\\')
-#else
+#มิฉะนั้น
 # define DirSep(X)  ((X)=='/')
 #endif
 
@@ -558,36 +558,36 @@ static const sqlite3_api_routines sqlite3Apis = {
 ** error message text.  The calling function should free this memory
 ** by calling sqlite3DbFree(db, ).
 */
-static int sqlite3LoadExtension(
+static จำนวนเต็ม sqlite3LoadExtension(
   sqlite3 *db,          /* Load the extension into this database connection */
-  const char *zFile,    /* Name of the shared library containing extension */
-  const char *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
-  char **pzErrMsg       /* Put error message here if not 0 */
+  const var_na *zFile,    /* Name of the shared library containing extension */
+  const var_na *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
+  var_na **pzErrMsg       /* Put error message here if not 0 */
 ){
   sqlite3_vfs *pVfs = db->pVfs;
   void *handle;
   sqlite3_loadext_entry xInit;
-  char *zErrmsg = 0;
-  const char *zEntry;
-  char *zAltEntry = 0;
+  var_na *zErrmsg = 0;
+  const var_na *zEntry;
+  var_na *zAltEntry = 0;
   void **aHandle;
   u64 nMsg = strlen(zFile);
-  int ii;
-  int rc;
+  จำนวนเต็ม ii;
+  จำนวนเต็ม rc;
 
   /* Shared library endings to try if zFile cannot be loaded as written */
-  static const char *azEndings[] = {
-#if SQLITE_OS_WIN
+  static const var_na *azEndings[] = {
+#ถ้า SQLITE_OS_WIN
      "dll"   
 #elif defined(__APPLE__)
      "dylib"
-#else
+#มิฉะนั้น
      "so"
 #endif
   };
 
 
-  if( pzErrMsg ) *pzErrMsg = 0;
+  ถ้า( pzErrMsg ) *pzErrMsg = 0;
 
   /* Ticket #1863.  To avoid a creating security problems for older
   ** applications that relink against newer versions of SQLite, the
@@ -596,11 +596,11 @@ static int sqlite3LoadExtension(
   ** sqlite3_db_config(db, SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION, 1, 0)
   ** to turn on extension loading.
   */
-  if( (db->flags & SQLITE_LoadExtension)==0 ){
-    if( pzErrMsg ){
+  ถ้า( (db->flags & SQLITE_LoadExtension)==0 ){
+    ถ้า( pzErrMsg ){
       *pzErrMsg = sqlite3_mprintf("not authorized");
     }
-    return SQLITE_ERROR;
+    คืน SQLITE_ERROR;
   }
 
   zEntry = zProc ? zProc : "sqlite3_extension_init";
@@ -613,24 +613,24 @@ static int sqlite3LoadExtension(
   ** Later (2023-03-25): Save an extra 6 bytes for the filename suffix.
   ** See https://sqlite.org/forum/forumpost/24083b579d.
   */
-  if( nMsg>SQLITE_MAX_PATHLEN ) goto extension_not_found;
+  ถ้า( nMsg>SQLITE_MAX_PATHLEN ) goto extension_not_found;
 
   /* Do not allow sqlite3_load_extension() to link to a copy of the
   ** running application, by passing in an empty filename. */
-  if( nMsg==0 ) goto extension_not_found;
+  ถ้า( nMsg==0 ) goto extension_not_found;
     
   handle = sqlite3OsDlOpen(pVfs, zFile);
-#if SQLITE_OS_UNIX || SQLITE_OS_WIN
-  for(ii=0; ii<ArraySize(azEndings) && handle==0; ii++){
-    char *zAltFile = sqlite3_mprintf("%s.%s", zFile, azEndings[ii]);
-    if( zAltFile==0 ) return SQLITE_NOMEM_BKPT;
-    if( nMsg+strlen(azEndings[ii])+1<=SQLITE_MAX_PATHLEN ){
+#ถ้า SQLITE_OS_UNIX || SQLITE_OS_WIN
+  สำหรับ(ii=0; ii<ArraySize(azEndings) && handle==0; ii++){
+    var_na *zAltFile = sqlite3_mprintf("%s.%s", zFile, azEndings[ii]);
+    ถ้า( zAltFile==0 ) คืน SQLITE_NOMEM_BKPT;
+    ถ้า( nMsg+strlen(azEndings[ii])+1<=SQLITE_MAX_PATHLEN ){
       handle = sqlite3OsDlOpen(pVfs, zAltFile);
     }
     sqlite3_free(zAltFile);
   }
 #endif
-  if( handle==0 ) goto extension_not_found;
+  ถ้า( handle==0 ) goto extension_not_found;
   xInit = (sqlite3_loadext_entry)sqlite3OsDlSym(pVfs, handle, zEntry);
 
   /* If no entry point was specified and the default legacy
@@ -650,96 +650,96 @@ static int sqlite3LoadExtension(
   **
   **    /usr/local/lib/libExample5.4.3.so ==>  sqlite3_example5_init
   */
-  if( xInit==0 && zProc==0 ){
-    int iFile, iEntry, c;
-    int ncFile = sqlite3Strlen30(zFile);
-    int cnt = 0;
+  ถ้า( xInit==0 && zProc==0 ){
+    จำนวนเต็ม iFile, iEntry, c;
+    จำนวนเต็ม ncFile = sqlite3Strlen30(zFile);
+    จำนวนเต็ม cnt = 0;
     zAltEntry = sqlite3_malloc64(ncFile+30);
-    if( zAltEntry==0 ){
+    ถ้า( zAltEntry==0 ){
       sqlite3OsDlClose(pVfs, handle);
-      return SQLITE_NOMEM_BKPT;
+      คืน SQLITE_NOMEM_BKPT;
     }
     do{
       memcpy(zAltEntry, "sqlite3_", 8);
-      for(iFile=ncFile-1; iFile>=0 && !DirSep(zFile[iFile]); iFile--){}
+      สำหรับ(iFile=ncFile-1; iFile>=0 && !DirSep(zFile[iFile]); iFile--){}
       iFile++;
-      if( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
-      for(iEntry=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
-        if( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
-          zAltEntry[iEntry++] = (char)sqlite3UpperToLower[(unsigned)c];
+      ถ้า( sqlite3_strnicmp(zFile+iFile, "lib", 3)==0 ) iFile += 3;
+      สำหรับ(iEntry=8; (c = zFile[iFile])!=0 && c!='.'; iFile++){
+        ถ้า( sqlite3Isalpha(c) || (cnt && sqlite3Isdigit(c)) ){
+          zAltEntry[iEntry++] = (var_na)sqlite3UpperToLower[(unsigned)c];
         }
       }
       memcpy(zAltEntry+iEntry, "_init", 6);
       zEntry = zAltEntry;
       xInit = (sqlite3_loadext_entry)sqlite3OsDlSym(pVfs, handle, zEntry);
-    }while( xInit==0 && (++cnt)<2 );
+    }ขณะ( xInit==0 && (++cnt)<2 );
   }
-  if( xInit==0 ){
-    if( pzErrMsg ){
+  ถ้า( xInit==0 ){
+    ถ้า( pzErrMsg ){
       nMsg += strlen(zEntry) + 300;
       *pzErrMsg = zErrmsg = sqlite3_malloc64(nMsg);
-      if( zErrmsg ){
+      ถ้า( zErrmsg ){
         assert( nMsg<0x7fffffff );  /* zErrmsg would be NULL if not so */
-        sqlite3_snprintf((int)nMsg, zErrmsg,
+        sqlite3_snprintf((จำนวนเต็ม)nMsg, zErrmsg,
             "no entry point [%s] in shared library [%s]", zEntry, zFile);
         sqlite3OsDlError(pVfs, nMsg-1, zErrmsg);
       }
     }
     sqlite3OsDlClose(pVfs, handle);
     sqlite3_free(zAltEntry);
-    return SQLITE_ERROR;
+    คืน SQLITE_ERROR;
   }
   sqlite3_free(zAltEntry);
   rc = xInit(db, &zErrmsg, &sqlite3Apis);
-  if( rc ){
-    if( rc==SQLITE_OK_LOAD_PERMANENTLY ) return SQLITE_OK;
-    if( pzErrMsg ){
+  ถ้า( rc ){
+    ถ้า( rc==SQLITE_OK_LOAD_PERMANENTLY ) คืน SQLITE_OK;
+    ถ้า( pzErrMsg ){
       *pzErrMsg = sqlite3_mprintf("error during initialization: %s", zErrmsg);
     }
     sqlite3_free(zErrmsg);
     sqlite3OsDlClose(pVfs, handle);
-    return SQLITE_ERROR;
+    คืน SQLITE_ERROR;
   }
 
   /* Append the new shared library handle to the db->aExtension array. */
-  aHandle = sqlite3DbMallocZero(db, sizeof(handle)*(db->nExtension+1));
-  if( aHandle==0 ){
-    return SQLITE_NOMEM_BKPT;
+  aHandle = sqlite3DbMallocZero(db, parimaa_na(handle)*(db->nExtension+1));
+  ถ้า( aHandle==0 ){
+    คืน SQLITE_NOMEM_BKPT;
   }
-  if( db->nExtension>0 ){
-    memcpy(aHandle, db->aExtension, sizeof(handle)*db->nExtension);
+  ถ้า( db->nExtension>0 ){
+    memcpy(aHandle, db->aExtension, parimaa_na(handle)*db->nExtension);
   }
   sqlite3DbFree(db, db->aExtension);
   db->aExtension = aHandle;
 
   db->aExtension[db->nExtension++] = handle;
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 
 extension_not_found:
-  if( pzErrMsg ){
+  ถ้า( pzErrMsg ){
     nMsg += 300;
     *pzErrMsg = zErrmsg = sqlite3_malloc64(nMsg);
-    if( zErrmsg ){
+    ถ้า( zErrmsg ){
       assert( nMsg<0x7fffffff );  /* zErrmsg would be NULL if not so */
-      sqlite3_snprintf((int)nMsg, zErrmsg,
+      sqlite3_snprintf((จำนวนเต็ม)nMsg, zErrmsg,
           "unable to open shared library [%.*s]", SQLITE_MAX_PATHLEN, zFile);
       sqlite3OsDlError(pVfs, nMsg-1, zErrmsg);
     }
   }
-  return SQLITE_ERROR;
+  คืน SQLITE_ERROR;
 }
-int sqlite3_load_extension(
+จำนวนเต็ม sqlite3_load_extension(
   sqlite3 *db,          /* Load the extension into this database connection */
-  const char *zFile,    /* Name of the shared library containing extension */
-  const char *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
-  char **pzErrMsg       /* Put error message here if not 0 */
+  const var_na *zFile,    /* Name of the shared library containing extension */
+  const var_na *zProc,    /* Entry point.  Use "sqlite3_extension_init" if 0 */
+  var_na **pzErrMsg       /* Put error message here if not 0 */
 ){
-  int rc;
+  จำนวนเต็ม rc;
   sqlite3_mutex_enter(db->mutex);
   rc = sqlite3LoadExtension(db, zFile, zProc, pzErrMsg);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  คืน rc;
 }
 
 /*
@@ -747,9 +747,9 @@ int sqlite3_load_extension(
 ** to clean up loaded extensions
 */
 void sqlite3CloseExtensions(sqlite3 *db){
-  int i;
+  จำนวนเต็ม i;
   assert( sqlite3_mutex_held(db->mutex) );
-  for(i=0; i<db->nExtension; i++){
+  สำหรับ(i=0; i<db->nExtension; i++){
     sqlite3OsDlClose(db->pVfs, db->aExtension[i]);
   }
   sqlite3DbFree(db, db->aExtension);
@@ -759,18 +759,18 @@ void sqlite3CloseExtensions(sqlite3 *db){
 ** Enable or disable extension loading.  Extension loading is disabled by
 ** default so as not to open security holes in older applications.
 */
-int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
+จำนวนเต็ม sqlite3_enable_load_extension(sqlite3 *db, จำนวนเต็ม onoff){
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
+  ถ้า( !sqlite3SafetyCheckOk(db) ) คืน SQLITE_MISUSE_BKPT;
 #endif
   sqlite3_mutex_enter(db->mutex);
-  if( onoff ){
+  ถ้า( onoff ){
     db->flags |= SQLITE_LoadExtension|SQLITE_LoadExtFunc;
-  }else{
+  }มิฉะนั้น{
     db->flags &= ~(u64)(SQLITE_LoadExtension|SQLITE_LoadExtFunc);
   }
   sqlite3_mutex_leave(db->mutex);
-  return SQLITE_OK;
+  คืน SQLITE_OK;
 }
 
 #endif /* !defined(SQLITE_OMIT_LOAD_EXTENSION) */
@@ -782,8 +782,8 @@ int sqlite3_enable_load_extension(sqlite3 *db, int onoff){
 ** This list is shared across threads.  The SQLITE_MUTEX_STATIC_MAIN
 ** mutex must be held while accessing this list.
 */
-typedef struct sqlite3AutoExtList sqlite3AutoExtList;
-static SQLITE_WSD struct sqlite3AutoExtList {
+typedef sa_nracanaa sqlite3AutoExtList sqlite3AutoExtList;
+static SQLITE_WSD sa_nracanaa sqlite3AutoExtList {
   u32 nExt;              /* Number of entries in aExt[] */
   void (**aExt)(void);   /* Pointers to the extension init functions */
 } sqlite3Autoext = { 0, 0 };
@@ -798,7 +798,7 @@ static SQLITE_WSD struct sqlite3AutoExtList {
 # define wsdAutoextInit \
   sqlite3AutoExtList *x = &GLOBAL(sqlite3AutoExtList,sqlite3Autoext)
 # define wsdAutoext x[0]
-#else
+#มิฉะนั้น
 # define wsdAutoextInit
 # define wsdAutoext sqlite3Autoext
 #endif
@@ -808,36 +808,36 @@ static SQLITE_WSD struct sqlite3AutoExtList {
 ** Register a statically linked extension that is automatically
 ** loaded by every new database connection.
 */
-int sqlite3_auto_extension(
+จำนวนเต็ม sqlite3_auto_extension(
   void (*xInit)(void)
 ){
-  int rc = SQLITE_OK;
+  จำนวนเต็ม rc = SQLITE_OK;
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( xInit==0 ) return SQLITE_MISUSE_BKPT;
+  ถ้า( xInit==0 ) คืน SQLITE_MISUSE_BKPT;
 #endif
 #ifndef SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ){
-    return rc;
-  }else
+  ถ้า( rc ){
+    คืน rc;
+  }มิฉะนั้น
 #endif
   {
     u32 i;
-#if SQLITE_THREADSAFE
+#ถ้า SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
     wsdAutoextInit;
     sqlite3_mutex_enter(mutex);
-    for(i=0; i<wsdAutoext.nExt; i++){
-      if( wsdAutoext.aExt[i]==xInit ) break;
+    สำหรับ(i=0; i<wsdAutoext.nExt; i++){
+      ถ้า( wsdAutoext.aExt[i]==xInit ) bha_nga;
     }
-    if( i==wsdAutoext.nExt ){
-      u64 nByte = (wsdAutoext.nExt+1)*sizeof(wsdAutoext.aExt[0]);
+    ถ้า( i==wsdAutoext.nExt ){
+      u64 nByte = (wsdAutoext.nExt+1)*parimaa_na(wsdAutoext.aExt[0]);
       void (**aNew)(void);
       aNew = sqlite3_realloc64(wsdAutoext.aExt, nByte);
-      if( aNew==0 ){
+      ถ้า( aNew==0 ){
         rc = SQLITE_NOMEM_BKPT;
-      }else{
+      }มิฉะนั้น{
         wsdAutoext.aExt = aNew;
         wsdAutoext.aExt[wsdAutoext.nExt] = xInit;
         wsdAutoext.nExt++;
@@ -845,7 +845,7 @@ int sqlite3_auto_extension(
     }
     sqlite3_mutex_leave(mutex);
     assert( (rc&0xff)==rc );
-    return rc;
+    คืน rc;
   }
 }
 
@@ -858,36 +858,36 @@ int sqlite3_auto_extension(
 ** Return 1 if xInit was found on the list and removed.  Return 0 if xInit
 ** was not on the list.
 */
-int sqlite3_cancel_auto_extension(
+จำนวนเต็ม sqlite3_cancel_auto_extension(
   void (*xInit)(void)
 ){
-  int n = 0;
+  จำนวนเต็ม n = 0;
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ){
-    return 0;
-  }else
+  ถ้า( sqlite3_initialize() ){
+    คืน 0;
+  }มิฉะนั้น
 #endif
   {
-#if SQLITE_THREADSAFE
+#ถ้า SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
-    int i;
+    จำนวนเต็ม i;
     wsdAutoextInit;
 #ifdef SQLITE_ENABLE_API_ARMOR
-    if( xInit==0 ) return 0;
+    ถ้า( xInit==0 ) คืน 0;
 #endif
     sqlite3_mutex_enter(mutex);
-    for(i=(int)wsdAutoext.nExt-1; i>=0; i--){
-      if( wsdAutoext.aExt[i]==xInit ){
+    สำหรับ(i=(จำนวนเต็ม)wsdAutoext.nExt-1; i>=0; i--){
+      ถ้า( wsdAutoext.aExt[i]==xInit ){
         wsdAutoext.nExt--;
         wsdAutoext.aExt[i] = wsdAutoext.aExt[wsdAutoext.nExt];
         n++;
-        break;
+        bha_nga;
       }
     }
     sqlite3_mutex_leave(mutex);
   }
-  return n;
+  คืน n;
 }
 
 /*
@@ -895,10 +895,10 @@ int sqlite3_cancel_auto_extension(
 */
 void sqlite3_reset_auto_extension(void){
 #ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize()==SQLITE_OK )
+  ถ้า( sqlite3_initialize()==SQLITE_OK )
 #endif
   {
-#if SQLITE_THREADSAFE
+#ถ้า SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
     wsdAutoextInit;
@@ -917,35 +917,35 @@ void sqlite3_reset_auto_extension(void){
 */
 void sqlite3AutoLoadExtensions(sqlite3 *db){
   u32 i;
-  int go = 1;
-  int rc;
+  จำนวนเต็ม go = 1;
+  จำนวนเต็ม rc;
   sqlite3_loadext_entry xInit;
 
   wsdAutoextInit;
-  if( wsdAutoext.nExt==0 ){
+  ถ้า( wsdAutoext.nExt==0 ){
     /* Common case: early out without every having to acquire a mutex */
-    return;
+    คืน;
   }
-  for(i=0; go; i++){
-    char *zErrmsg;
-#if SQLITE_THREADSAFE
+  สำหรับ(i=0; go; i++){
+    var_na *zErrmsg;
+#ถ้า SQLITE_THREADSAFE
     sqlite3_mutex *mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN);
 #endif
 #ifdef SQLITE_OMIT_LOAD_EXTENSION
     const sqlite3_api_routines *pThunk = 0;
-#else
+#มิฉะนั้น
     const sqlite3_api_routines *pThunk = &sqlite3Apis;
 #endif
     sqlite3_mutex_enter(mutex);
-    if( i>=wsdAutoext.nExt ){
+    ถ้า( i>=wsdAutoext.nExt ){
       xInit = 0;
       go = 0;
-    }else{
+    }มิฉะนั้น{
       xInit = (sqlite3_loadext_entry)wsdAutoext.aExt[i];
     }
     sqlite3_mutex_leave(mutex);
     zErrmsg = 0;
-    if( xInit && (rc = xInit(db, &zErrmsg, pThunk))!=0 ){
+    ถ้า( xInit && (rc = xInit(db, &zErrmsg, pThunk))!=0 ){
       sqlite3ErrorWithMsg(db, rc,
             "automatic extension loading failed: %s", zErrmsg);
       go = 0;
