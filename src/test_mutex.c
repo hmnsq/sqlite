@@ -11,21 +11,21 @@
 *************************************************************************
 ** This file contains test logic for the sqlite3_mutex interfaces.
 */
-#include "tclsqlite.h"
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#अन्तर्भाव "tclsqlite.h"
+#अन्तर्भाव "sqlite3.h"
+#अन्तर्भाव "sqliteInt.h"
+#अन्तर्भाव <stdlib.h>
+#अन्तर्भाव <assert.h>
+#अन्तर्भाव <string.h>
 
 #define MAX_MUTEXES        (SQLITE_MUTEX_STATIC_VFS3+1)
 #define STATIC_MUTEXES     (MAX_MUTEXES-(SQLITE_MUTEX_RECURSIVE+1))
 
 /* defined in main.c */
-extern const char *sqlite3ErrName(int);
-int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+बाह्य ध्रुव वर्ण *sqlite3ErrName(पूर्णाङ्क);
+पूर्णाङ्क getDbPointer(Tcl_Interp *interp, ध्रुव वर्ण *zA, sqlite3 **ppDb);
 
-static const char *aName[MAX_MUTEXES+1] = {
+स्थिर ध्रुव वर्ण *aName[MAX_MUTEXES+1] = {
   "fast",        "recursive",   "static_main",   "static_mem",
   "static_open", "static_prng", "static_lru",    "static_pmem",
   "static_app1", "static_app2", "static_app3",   "static_vfs1",
@@ -33,30 +33,30 @@ static const char *aName[MAX_MUTEXES+1] = {
 };
 
 /* A countable mutex */
-struct sqlite3_mutex {
+संरचना sqlite3_mutex {
   sqlite3_mutex *pReal;
-  int eType;
+  पूर्णाङ्क eType;
 };
 
 /* State variables */
-static struct test_mutex_globals {
-  int isInstalled;           /* True if installed */
-  int disableInit;           /* True to cause sqlite3_initialize() to fail */
-  int disableTry;            /* True to force sqlite3_mutex_try() to fail */
-  int isInit;                /* True if initialized */
+स्थिर संरचना test_mutex_globals {
+  पूर्णाङ्क isInstalled;           /* True if installed */
+  पूर्णाङ्क disableInit;           /* True to cause sqlite3_initialize() to fail */
+  पूर्णाङ्क disableTry;            /* True to force sqlite3_mutex_try() to fail */
+  पूर्णाङ्क isInit;                /* True if initialized */
   sqlite3_mutex_methods m;   /* Interface to "real" mutex system */
-  int aCounter[MAX_MUTEXES]; /* Number of grabs of each type of mutex */
+  पूर्णाङ्क aCounter[MAX_MUTEXES]; /* Number of grabs of each type of mutex */
   sqlite3_mutex aStatic[STATIC_MUTEXES]; /* The static mutexes */
 } g = {0};
 
 /* Return true if the countable mutex is currently held */
-static int counterMutexHeld(sqlite3_mutex *p){
-  return g.m.xMutexHeld(p->pReal);
+स्थिर पूर्णाङ्क counterMutexHeld(sqlite3_mutex *p){
+  प्रत्यागम g.m.xMutexHeld(p->pReal);
 }
 
 /* Return true if the countable mutex is not currently held */
-static int counterMutexNotheld(sqlite3_mutex *p){
-  return g.m.xMutexNotheld(p->pReal);
+स्थिर पूर्णाङ्क counterMutexNotheld(sqlite3_mutex *p){
+  प्रत्यागम g.m.xMutexNotheld(p->pReal);
 }
 
 /* Initialize the countable mutex interface
@@ -64,68 +64,68 @@ static int counterMutexNotheld(sqlite3_mutex *p){
 ** return the value of g.disableInit as the result code.  This can be used
 ** to simulate an initialization failure.
 */
-static int counterMutexInit(void){ 
-  int rc;
-  if( g.disableInit ) return g.disableInit;
+स्थिर पूर्णाङ्क counterMutexInit(शून्य){ 
+  पूर्णाङ्क rc;
+  जइ( g.disableInit ) प्रत्यागम g.disableInit;
   rc = g.m.xMutexInit();
   g.isInit = 1;
-  return rc;
+  प्रत्यागम rc;
 }
 
 /*
 ** Uninitialize the mutex subsystem
 */
-static int counterMutexEnd(void){ 
+स्थिर पूर्णाङ्क counterMutexEnd(शून्य){ 
   g.isInit = 0;
-  return g.m.xMutexEnd();
+  प्रत्यागम g.m.xMutexEnd();
 }
 
 /*
 ** Allocate a countable mutex
 */
-static sqlite3_mutex *counterMutexAlloc(int eType){
+स्थिर sqlite3_mutex *counterMutexAlloc(पूर्णाङ्क eType){
   sqlite3_mutex *pReal;
   sqlite3_mutex *pRet = 0;
 
-  assert( g.isInit );
-  assert( eType>=SQLITE_MUTEX_FAST );
-  assert( eType<=SQLITE_MUTEX_STATIC_VFS3 );
+  प्रतिज्ञा( g.isInit );
+  प्रतिज्ञा( eType>=SQLITE_MUTEX_FAST );
+  प्रतिज्ञा( eType<=SQLITE_MUTEX_STATIC_VFS3 );
 
   pReal = g.m.xMutexAlloc(eType);
-  if( !pReal ) return 0;
+  जइ( !pReal ) प्रत्यागम 0;
 
-  if( eType==SQLITE_MUTEX_FAST || eType==SQLITE_MUTEX_RECURSIVE ){
-    pRet = (sqlite3_mutex *)malloc(sizeof(sqlite3_mutex));
-  }else{
-    int eStaticType = eType - (MAX_MUTEXES - STATIC_MUTEXES);
-    assert( eStaticType>=0 );
-    assert( eStaticType<STATIC_MUTEXES );
+  जइ( eType==SQLITE_MUTEX_FAST || eType==SQLITE_MUTEX_RECURSIVE ){
+    pRet = (sqlite3_mutex *)malloc(परिमाण(sqlite3_mutex));
+  }अण्णहा{
+    पूर्णाङ्क eStaticType = eType - (MAX_MUTEXES - STATIC_MUTEXES);
+    प्रतिज्ञा( eStaticType>=0 );
+    प्रतिज्ञा( eStaticType<STATIC_MUTEXES );
     pRet = &g.aStatic[eStaticType];
   }
 
   pRet->eType = eType;
   pRet->pReal = pReal;
-  return pRet;
+  प्रत्यागम pRet;
 }
 
 /*
 ** Free a countable mutex
 */
-static void counterMutexFree(sqlite3_mutex *p){
-  assert( g.isInit );
+स्थिर शून्य counterMutexFree(sqlite3_mutex *p){
+  प्रतिज्ञा( g.isInit );
   g.m.xMutexFree(p->pReal);
-  if( p->eType==SQLITE_MUTEX_FAST || p->eType==SQLITE_MUTEX_RECURSIVE ){
-    free(p);
+  जइ( p->eType==SQLITE_MUTEX_FAST || p->eType==SQLITE_MUTEX_RECURSIVE ){
+    मुक्त(p);
   }
 }
 
 /*
 ** Enter a countable mutex.  Block until entry is safe.
 */
-static void counterMutexEnter(sqlite3_mutex *p){
-  assert( g.isInit );
-  assert( p->eType>=0 );
-  assert( p->eType<MAX_MUTEXES );
+स्थिर शून्य counterMutexEnter(sqlite3_mutex *p){
+  प्रतिज्ञा( g.isInit );
+  प्रतिज्ञा( p->eType>=0 );
+  प्रतिज्ञा( p->eType<MAX_MUTEXES );
   g.aCounter[p->eType]++;
   g.m.xMutexEnter(p->pReal);
 }
@@ -133,75 +133,75 @@ static void counterMutexEnter(sqlite3_mutex *p){
 /*
 ** Try to enter a mutex.  Return true on success.
 */
-static int counterMutexTry(sqlite3_mutex *p){
-  assert( g.isInit );
-  assert( p->eType>=0 );
-  assert( p->eType<MAX_MUTEXES );
+स्थिर पूर्णाङ्क counterMutexTry(sqlite3_mutex *p){
+  प्रतिज्ञा( g.isInit );
+  प्रतिज्ञा( p->eType>=0 );
+  प्रतिज्ञा( p->eType<MAX_MUTEXES );
   g.aCounter[p->eType]++;
-  if( g.disableTry ) return SQLITE_BUSY;
-  return g.m.xMutexTry(p->pReal);
+  जइ( g.disableTry ) प्रत्यागम SQLITE_BUSY;
+  प्रत्यागम g.m.xMutexTry(p->pReal);
 }
 
 /* Leave a mutex
 */
-static void counterMutexLeave(sqlite3_mutex *p){
-  assert( g.isInit );
+स्थिर शून्य counterMutexLeave(sqlite3_mutex *p){
+  प्रतिज्ञा( g.isInit );
   g.m.xMutexLeave(p->pReal);
 }
 
 /*
 ** sqlite3_shutdown
 */
-static int SQLITE_TCLAPI test_shutdown(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_shutdown(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
+  पूर्णाङ्क rc;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  जइ( objc!=1 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "");
+    प्रत्यागम TCL_ERROR;
   }
 
   rc = sqlite3_shutdown();
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (वर्ण *)sqlite3ErrName(rc), TCL_VOLATILE);
+  प्रत्यागम TCL_OK;
 }
 
 /*
 ** sqlite3_initialize
 */
-static int SQLITE_TCLAPI test_initialize(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_initialize(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
+  पूर्णाङ्क rc;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  जइ( objc!=1 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "");
+    प्रत्यागम TCL_ERROR;
   }
 
   rc = sqlite3_initialize();
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (वर्ण *)sqlite3ErrName(rc), TCL_VOLATILE);
+  प्रत्यागम TCL_OK;
 }
 
 /*
 ** install_mutex_counters BOOLEAN
 */
-static int SQLITE_TCLAPI test_install_mutex_counters(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_install_mutex_counters(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = SQLITE_OK;
-  int isInstall;
+  पूर्णाङ्क rc = SQLITE_OK;
+  पूर्णाङ्क isInstall;
 
   sqlite3_mutex_methods counter_methods = {
     counterMutexInit,
@@ -215,92 +215,92 @@ static int SQLITE_TCLAPI test_install_mutex_counters(
     counterMutexNotheld
   };
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
-    return TCL_ERROR;
+  जइ( objc!=2 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "BOOLEAN");
+    प्रत्यागम TCL_ERROR;
   }
-  if( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
-    return TCL_ERROR;
-  }
-
-  assert(isInstall==0 || isInstall==1);
-  assert(g.isInstalled==0 || g.isInstalled==1);
-  if( isInstall==g.isInstalled ){
-    Tcl_AppendResult(interp, "mutex counters are ", NULL);
-    Tcl_AppendResult(interp, isInstall?"already installed":"not installed", NULL);
-    return TCL_ERROR;
+  जइ( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
+    प्रत्यागम TCL_ERROR;
   }
 
-  if( isInstall ){
-    assert( g.m.xMutexAlloc==0 );
+  प्रतिज्ञा(isInstall==0 || isInstall==1);
+  प्रतिज्ञा(g.isInstalled==0 || g.isInstalled==1);
+  जइ( isInstall==g.isInstalled ){
+    Tcl_AppendResult(interp, "mutex counters are ", रिक्त);
+    Tcl_AppendResult(interp, isInstall?"already installed":"not installed", रिक्त);
+    प्रत्यागम TCL_ERROR;
+  }
+
+  जइ( isInstall ){
+    प्रतिज्ञा( g.m.xMutexAlloc==0 );
     rc = sqlite3_config(SQLITE_CONFIG_GETMUTEX, &g.m);
-    if( rc==SQLITE_OK ){
+    जइ( rc==SQLITE_OK ){
       sqlite3_config(SQLITE_CONFIG_MUTEX, &counter_methods);
     }
     g.disableTry = 0;
-  }else{
-    assert( g.m.xMutexAlloc );
+  }अण्णहा{
+    प्रतिज्ञा( g.m.xMutexAlloc );
     rc = sqlite3_config(SQLITE_CONFIG_MUTEX, &g.m);
-    memset(&g.m, 0, sizeof(sqlite3_mutex_methods));
+    memset(&g.m, 0, परिमाण(sqlite3_mutex_methods));
   }
 
-  if( rc==SQLITE_OK ){
+  जइ( rc==SQLITE_OK ){
     g.isInstalled = isInstall;
   }
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (वर्ण *)sqlite3ErrName(rc), TCL_VOLATILE);
+  प्रत्यागम TCL_OK;
 }
 
 /*
 ** read_mutex_counters
 */
-static int SQLITE_TCLAPI test_read_mutex_counters(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_read_mutex_counters(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Obj *pRet;
-  int ii;
+  पूर्णाङ्क ii;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  जइ( objc!=1 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "");
+    प्रत्यागम TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  Tcl_IncrRefCount(pRet);
-  for(ii=0; ii<MAX_MUTEXES; ii++){
+  Tcl_Incr_Ref_गणनम्(pRet);
+  प्रति(ii=0; ii<MAX_MUTEXES; ii++){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj(aName[ii], -1));
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewIntObj(g.aCounter[ii]));
   }
   Tcl_SetObjResult(interp, pRet);
-  Tcl_DecrRefCount(pRet);
+  Tcl_Decr_Ref_गणनम्(pRet);
 
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
 /*
 ** clear_mutex_counters
 */
-static int SQLITE_TCLAPI test_clear_mutex_counters(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_clear_mutex_counters(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-  int ii;
+  पूर्णाङ्क ii;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  जइ( objc!=1 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "");
+    प्रत्यागम TCL_ERROR;
   }
 
-  for(ii=0; ii<MAX_MUTEXES; ii++){
+  प्रति(ii=0; ii<MAX_MUTEXES; ii++){
     g.aCounter[ii] = 0;
   }
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
 /*
@@ -308,20 +308,20 @@ static int SQLITE_TCLAPI test_clear_mutex_counters(
 ** will be invalid since the mutex has already been freed.  The
 ** return pointer just checks to see if the mutex really was allocated.
 */
-static int SQLITE_TCLAPI test_alloc_mutex(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_alloc_mutex(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-#if SQLITE_THREADSAFE
+#जइ SQLITE_THREADSAFE
   sqlite3_mutex *p = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-  char zBuf[100];
+  वर्ण zBuf[100];
   sqlite3_mutex_free(p);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%p", p);
-  Tcl_AppendResult(interp, zBuf, (char*)0);
+  sqlite3_snprintf(परिमाण(zBuf), zBuf, "%p", p);
+  Tcl_AppendResult(interp, zBuf, (वर्ण*)0);
 #endif
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
 /*
@@ -335,138 +335,138 @@ static int SQLITE_TCLAPI test_alloc_mutex(
 **
 ** Or OPTION can be an raw integer.
 */
-static int SQLITE_TCLAPI test_config(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_config(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
-  struct ConfigOption {
-    const char *zName;
-    int iValue;
+  संरचना ConfigOption {
+    ध्रुव वर्ण *zName;
+    पूर्णाङ्क i_मानम्;
   } aOpt[] = {
     {"singlethread", SQLITE_CONFIG_SINGLETHREAD},
     {"multithread",  SQLITE_CONFIG_MULTITHREAD},
     {"serialized",   SQLITE_CONFIG_SERIALIZED},
     {0, 0}
   };
-  int s = sizeof(struct ConfigOption);
-  int i;
-  int rc;
+  पूर्णाङ्क s = परिमाण(संरचना ConfigOption);
+  पूर्णाङ्क i;
+  पूर्णाङ्क rc;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  जइ( objc!=2 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "");
+    प्रत्यागम TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObjStruct(interp, objv[1], aOpt, s, "flag", 0, &i) ){
-    if( Tcl_GetIntFromObj(interp, objv[1], &i) ){
-      return TCL_ERROR;
+  जइ( Tcl_GetIndexFromObjStruct(interp, objv[1], aOpt, s, "flag", 0, &i) ){
+    जइ( Tcl_GetIntFromObj(interp, objv[1], &i) ){
+      प्रत्यागम TCL_ERROR;
     }
-  }else{
-    i = aOpt[i].iValue;
+  }अण्णहा{
+    i = aOpt[i].i_मानम्;
   }
 
   rc = sqlite3_config(i);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (वर्ण *)sqlite3ErrName(rc), TCL_VOLATILE);
+  प्रत्यागम TCL_OK;
 }
 
-static sqlite3_mutex *getStaticMutexPointer(
+स्थिर sqlite3_mutex *getStaticMutexPointer(
   Tcl_Interp *pInterp,
   Tcl_Obj *pObj
 ){
-  int iMutex;
-  if( Tcl_GetIndexFromObj(pInterp, pObj, aName, "mutex name", 0, &iMutex) ){
-    return 0;
+  पूर्णाङ्क iMutex;
+  जइ( Tcl_GetIndexFromObj(pInterp, pObj, aName, "mutex name", 0, &iMutex) ){
+    प्रत्यागम 0;
   }
-  assert( iMutex!=SQLITE_MUTEX_FAST && iMutex!=SQLITE_MUTEX_RECURSIVE );
-  return counterMutexAlloc(iMutex);
+  प्रतिज्ञा( iMutex!=SQLITE_MUTEX_FAST && iMutex!=SQLITE_MUTEX_RECURSIVE );
+  प्रत्यागम counterMutexAlloc(iMutex);
 }
 
-static int SQLITE_TCLAPI test_enter_static_mutex(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_enter_static_mutex(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_mutex *pMutex;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME");
-    return TCL_ERROR;
+  जइ( objc!=2 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "NAME");
+    प्रत्यागम TCL_ERROR;
   }
   pMutex = getStaticMutexPointer(interp, objv[1]);
-  if( !pMutex ){
-    return TCL_ERROR;
+  जइ( !pMutex ){
+    प्रत्यागम TCL_ERROR;
   }
   sqlite3_mutex_enter(pMutex);
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_leave_static_mutex(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_leave_static_mutex(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_mutex *pMutex;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME");
-    return TCL_ERROR;
+  जइ( objc!=2 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "NAME");
+    प्रत्यागम TCL_ERROR;
   }
   pMutex = getStaticMutexPointer(interp, objv[1]);
-  if( !pMutex ){
-    return TCL_ERROR;
+  जइ( !pMutex ){
+    प्रत्यागम TCL_ERROR;
   }
   sqlite3_mutex_leave(pMutex);
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_enter_db_mutex(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_enter_db_mutex(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  जइ( objc!=2 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "DB");
+    प्रत्यागम TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
-    return TCL_ERROR;
+  जइ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
+    प्रत्यागम TCL_ERROR;
   }
-  if( !db ){
-    return TCL_ERROR;
+  जइ( !db ){
+    प्रत्यागम TCL_ERROR;
   }
   sqlite3_mutex_enter(sqlite3_db_mutex(db));
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_leave_db_mutex(
-  void * clientData,
+स्थिर पूर्णाङ्क SQLITE_TCLAPI test_leave_db_mutex(
+  शून्य * clientData,
   Tcl_Interp *interp,
-  int objc,
+  पूर्णाङ्क objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  जइ( objc!=2 ){
+    Tcl_Wrong_अङ्कः_Args(interp, 1, objv, "DB");
+    प्रत्यागम TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
-    return TCL_ERROR;
+  जइ( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
+    प्रत्यागम TCL_ERROR;
   }
-  if( !db ){
-    return TCL_ERROR;
+  जइ( !db ){
+    प्रत्यागम TCL_ERROR;
   }
   sqlite3_mutex_leave(sqlite3_db_mutex(db));
-  return TCL_OK;
+  प्रत्यागम TCL_OK;
 }
 
-int Sqlitetest_mutex_Init(Tcl_Interp *interp){
-  static struct {
-    char *zName;
+पूर्णाङ्क Sqlitetest_mutex_Init(Tcl_Interp *interp){
+  स्थिर संरचना {
+    वर्ण *zName;
     Tcl_ObjCmdProc *xProc;
   } aCmd[] = {
     { "sqlite3_shutdown",        (Tcl_ObjCmdProc*)test_shutdown },
@@ -484,14 +484,14 @@ int Sqlitetest_mutex_Init(Tcl_Interp *interp){
     { "read_mutex_counters",     (Tcl_ObjCmdProc*)test_read_mutex_counters },
     { "clear_mutex_counters",    (Tcl_ObjCmdProc*)test_clear_mutex_counters },
   };
-  int i;
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  पूर्णाङ्क i;
+  प्रति(i=0; i<परिमाण(aCmd)/परिमाण(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
 
   Tcl_LinkVar(interp, "disable_mutex_init", 
-              (char*)&g.disableInit, TCL_LINK_INT);
+              (वर्ण*)&g.disableInit, TCL_LINK_INT);
   Tcl_LinkVar(interp, "disable_mutex_try", 
-              (char*)&g.disableTry, TCL_LINK_INT);
-  return SQLITE_OK;
+              (वर्ण*)&g.disableTry, TCL_LINK_INT);
+  प्रत्यागम SQLITE_OK;
 }
