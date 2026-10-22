@@ -23,7 +23,7 @@
 ** This version of the memory allocation subsystem is included
 ** in the build only if SQLITE_ENABLE_MEMSYS3 is defined.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is only built into the library
@@ -32,18 +32,18 @@
 ** it is available. The mempool allocator is activated by calling
 ** sqlite3_config().
 */
-#ifdef SQLITE_ENABLE_MEMSYS3
+#اگر_تعریف_شده SQLITE_ENABLE_MEMSYS3
 
 /*
 ** Maximum size (in Mem3Blocks) of a "small" chunk.
 */
-#define MX_SMALL 10
+#تعریف_کن MX_SMALL 10
 
 
 /*
 ** Number of freelist hash slots
 */
-#define N_HASH  61
+#تعریف_کن N_HASH  61
 
 /*
 ** A memory allocation (also called a "chunk") consists of two or 
@@ -77,15 +77,15 @@
 ** out.  If a chunk is checked out, the user data may extend into
 ** the u.hdr.prevSize value of the following chunk.
 */
-typedef struct Mem3Block Mem3Block;
-struct Mem3Block {
-  union {
-    struct {
-      u32 prevSize;   /* Size of previous chunk in Mem3Block elements */
+تعريفنوع بنية Mem3_بلوک Mem3_بلوک;
+بنية Mem3_بلوک {
+  اتحاد {
+    بنية {
+      u32 prev_اندازه;   /* Size of previous chunk in Mem3Block elements */
       u32 size4x;     /* 4x the size of current chunk in Mem3Block elements */
     } hdr;
-    struct {
-      u32 next;       /* Index in mem3.aPool[] of next free chunk */
+    بنية {
+      u32 بعدی;       /* Index in mem3.aPool[] of next free chunk */
       u32 prev;       /* Index in mem3.aPool[] of previous free chunk */
     } list;
   } u;
@@ -97,18 +97,18 @@ struct Mem3Block {
 ** static variables organized and to reduce namespace pollution
 ** when this module is combined with other in the amalgamation.
 */
-static SQLITE_WSD struct Mem3Global {
+ساكن SQLITE_WSD بنية Mem3Global {
   /*
   ** Memory available for allocation. nPool is the size of the array
   ** (in Mem3Blocks) pointed to by aPool less 2.
   */
   u32 nPool;
-  Mem3Block *aPool;
+  Mem3_بلوک *aPool;
 
   /*
   ** True if we are evaluating an out-of-memory callback.
   */
-  int alarmBusy;
+  صحيح alarmBusy;
   
   /*
   ** Mutex to control access to the memory allocation subsystem.
@@ -118,7 +118,7 @@ static SQLITE_WSD struct Mem3Global {
   /*
   ** The minimum amount of free space that we have seen.
   */
-  u32 mnKeyBlk;
+  u32 mn_کلید_Blk;
 
   /*
   ** iKeyBlk is the index of the key chunk.  Most new allocations
@@ -126,8 +126,8 @@ static SQLITE_WSD struct Mem3Global {
   ** of the current key chunk.  iKeyBlk is 0 if there is no key chunk.
   ** The key chunk is not in either the aiHash[] or aiSmall[].
   */
-  u32 iKeyBlk;
-  u32 szKeyBlk;
+  u32 i_کلید_Blk;
+  u32 sz_کلید_Blk;
 
   /*
   ** Array of lists of free blocks according to the block size 
@@ -138,25 +138,25 @@ static SQLITE_WSD struct Mem3Global {
   u32 aiHash[N_HASH];        /* For sizes MX_SMALL+1 and larger */
 } mem3 = { 97535575 };
 
-#define mem3 GLOBAL(struct Mem3Global, mem3)
+#تعریف_کن mem3 GLOBAL(بنية Mem3Global, mem3)
 
 /*
 ** Unlink the chunk at mem3.aPool[i] from list it is currently
 ** on.  *pRoot is the list that i is a member of.
 */
-static void memsys3UnlinkFromList(u32 i, u32 *pRoot){
-  u32 next = mem3.aPool[i].u.list.next;
+ساكن فراغ memsys3UnlinkFromList(u32 i, u32 *p_ریشه){
+  u32 بعدی = mem3.aPool[i].u.list.بعدی;
   u32 prev = mem3.aPool[i].u.list.prev;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  if( prev==0 ){
-    *pRoot = next;
-  }else{
-    mem3.aPool[prev].u.list.next = next;
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  إذا( prev==0 ){
+    *p_ریشه = بعدی;
+  }وإلا{
+    mem3.aPool[prev].u.list.بعدی = بعدی;
   }
-  if( next ){
-    mem3.aPool[next].u.list.prev = prev;
+  إذا( بعدی ){
+    mem3.aPool[بعدی].u.list.prev = prev;
   }
-  mem3.aPool[i].u.list.next = 0;
+  mem3.aPool[i].u.list.بعدی = 0;
   mem3.aPool[i].u.list.prev = 0;
 }
 
@@ -164,18 +164,18 @@ static void memsys3UnlinkFromList(u32 i, u32 *pRoot){
 ** Unlink the chunk at index i from 
 ** whatever list is currently a member of.
 */
-static void memsys3Unlink(u32 i){
-  u32 size, hash;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
-  assert( i>=1 );
-  size = mem3.aPool[i-1].u.hdr.size4x/4;
-  assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
-  assert( size>=2 );
-  if( size <= MX_SMALL ){
-    memsys3UnlinkFromList(i, &mem3.aiSmall[size-2]);
-  }else{
-    hash = size % N_HASH;
+ساكن فراغ memsys3Unlink(u32 i){
+  u32 اندازه, hash;
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  أكد( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
+  أكد( i>=1 );
+  اندازه = mem3.aPool[i-1].u.hdr.size4x/4;
+  أكد( اندازه==mem3.aPool[i+اندازه-1].u.hdr.prev_اندازه );
+  أكد( اندازه>=2 );
+  إذا( اندازه <= MX_SMALL ){
+    memsys3UnlinkFromList(i, &mem3.aiSmall[اندازه-2]);
+  }وإلا{
+    hash = اندازه % N_HASH;
     memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
   }
 }
@@ -184,32 +184,32 @@ static void memsys3Unlink(u32 i){
 ** Link the chunk at mem3.aPool[i] so that is on the list rooted
 ** at *pRoot.
 */
-static void memsys3LinkIntoList(u32 i, u32 *pRoot){
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  mem3.aPool[i].u.list.next = *pRoot;
+ساكن فراغ memsys3LinkIntoList(u32 i, u32 *p_ریشه){
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  mem3.aPool[i].u.list.بعدی = *p_ریشه;
   mem3.aPool[i].u.list.prev = 0;
-  if( *pRoot ){
-    mem3.aPool[*pRoot].u.list.prev = i;
+  إذا( *p_ریشه ){
+    mem3.aPool[*p_ریشه].u.list.prev = i;
   }
-  *pRoot = i;
+  *p_ریشه = i;
 }
 
 /*
 ** Link the chunk at index i into either the appropriate
 ** small chunk list, or into the large chunk hash table.
 */
-static void memsys3Link(u32 i){
-  u32 size, hash;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( i>=1 );
-  assert( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
-  size = mem3.aPool[i-1].u.hdr.size4x/4;
-  assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
-  assert( size>=2 );
-  if( size <= MX_SMALL ){
-    memsys3LinkIntoList(i, &mem3.aiSmall[size-2]);
-  }else{
-    hash = size % N_HASH;
+ساكن فراغ memsys3Link(u32 i){
+  u32 اندازه, hash;
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  أكد( i>=1 );
+  أكد( (mem3.aPool[i-1].u.hdr.size4x & 1)==0 );
+  اندازه = mem3.aPool[i-1].u.hdr.size4x/4;
+  أكد( اندازه==mem3.aPool[i+اندازه-1].u.hdr.prev_اندازه );
+  أكد( اندازه>=2 );
+  إذا( اندازه <= MX_SMALL ){
+    memsys3LinkIntoList(i, &mem3.aiSmall[اندازه-2]);
+  }وإلا{
+    hash = اندازه % N_HASH;
     memsys3LinkIntoList(i, &mem3.aiHash[hash]);
   }
 }
@@ -219,25 +219,25 @@ static void memsys3Link(u32 i){
 ** will already be held (obtained by code in malloc.c) if
 ** sqlite3GlobalConfig.bMemStat is true.
 */
-static void memsys3Enter(void){
-  if( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
+ساكن فراغ memsys3Enter(فراغ){
+  إذا( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
     mem3.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
   sqlite3_mutex_enter(mem3.mutex);
 }
-static void memsys3Leave(void){
+ساكن فراغ memsys3Leave(فراغ){
   sqlite3_mutex_leave(mem3.mutex);
 }
 
 /*
 ** Called when we are unable to satisfy an allocation of nBytes.
 */
-static void memsys3OutOfMemory(int nByte){
-  if( !mem3.alarmBusy ){
+ساكن فراغ memsys3_بیرون_از_حافظه(صحيح nByte){
+  إذا( !mem3.alarmBusy ){
     mem3.alarmBusy = 1;
-    assert( sqlite3_mutex_held(mem3.mutex) );
+    أكد( sqlite3_mutex_held(mem3.mutex) );
     sqlite3_mutex_leave(mem3.mutex);
-    sqlite3_release_memory(nByte);
+    sqlite3_release_حافظه(nByte);
     sqlite3_mutex_enter(mem3.mutex);
     mem3.alarmBusy = 0;
   }
@@ -249,17 +249,17 @@ static void memsys3OutOfMemory(int nByte){
 ** size parameters for check-out and return a pointer to the 
 ** user portion of the chunk.
 */
-static void *memsys3Checkout(u32 i, u32 nBlock){
+ساكن فراغ *memsys3Checkout(u32 i, u32 n_بلوک){
   u32 x;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( i>=1 );
-  assert( mem3.aPool[i-1].u.hdr.size4x/4==nBlock );
-  assert( mem3.aPool[i+nBlock-1].u.hdr.prevSize==nBlock );
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  أكد( i>=1 );
+  أكد( mem3.aPool[i-1].u.hdr.size4x/4==n_بلوک );
+  أكد( mem3.aPool[i+n_بلوک-1].u.hdr.prev_اندازه==n_بلوک );
   x = mem3.aPool[i-1].u.hdr.size4x;
-  mem3.aPool[i-1].u.hdr.size4x = nBlock*4 | 1 | (x&2);
-  mem3.aPool[i+nBlock-1].u.hdr.prevSize = nBlock;
-  mem3.aPool[i+nBlock-1].u.hdr.size4x |= 2;
-  return &mem3.aPool[i];
+  mem3.aPool[i-1].u.hdr.size4x = n_بلوک*4 | 1 | (x&2);
+  mem3.aPool[i+n_بلوک-1].u.hdr.prev_اندازه = n_بلوک;
+  mem3.aPool[i+n_بلوک-1].u.hdr.size4x |= 2;
+  أرجع &mem3.aPool[i];
 }
 
 /*
@@ -267,32 +267,32 @@ static void *memsys3Checkout(u32 i, u32 nBlock){
 ** Return a pointer to the new allocation.  Or, if the key chunk
 ** is not large enough, return 0.
 */
-static void *memsys3FromKeyBlk(u32 nBlock){
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( mem3.szKeyBlk>=nBlock );
-  if( nBlock>=mem3.szKeyBlk-1 ){
+ساكن فراغ *memsys3_From_کلید_Blk(u32 n_بلوک){
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  أكد( mem3.sz_کلید_Blk>=n_بلوک );
+  إذا( n_بلوک>=mem3.sz_کلید_Blk-1 ){
     /* Use the entire key chunk */
-    void *p = memsys3Checkout(mem3.iKeyBlk, mem3.szKeyBlk);
-    mem3.iKeyBlk = 0;
-    mem3.szKeyBlk = 0;
-    mem3.mnKeyBlk = 0;
-    return p;
-  }else{
+    فراغ *p = memsys3Checkout(mem3.i_کلید_Blk, mem3.sz_کلید_Blk);
+    mem3.i_کلید_Blk = 0;
+    mem3.sz_کلید_Blk = 0;
+    mem3.mn_کلید_Blk = 0;
+    أرجع p;
+  }وإلا{
     /* Split the key block.  Return the tail. */
     u32 newi, x;
-    newi = mem3.iKeyBlk + mem3.szKeyBlk - nBlock;
-    assert( newi > mem3.iKeyBlk+1 );
-    mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = nBlock;
-    mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x |= 2;
-    mem3.aPool[newi-1].u.hdr.size4x = nBlock*4 + 1;
-    mem3.szKeyBlk -= nBlock;
-    mem3.aPool[newi-1].u.hdr.prevSize = mem3.szKeyBlk;
-    x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-    mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-    if( mem3.szKeyBlk < mem3.mnKeyBlk ){
-      mem3.mnKeyBlk = mem3.szKeyBlk;
+    newi = mem3.i_کلید_Blk + mem3.sz_کلید_Blk - n_بلوک;
+    أكد( newi > mem3.i_کلید_Blk+1 );
+    mem3.aPool[mem3.i_کلید_Blk+mem3.sz_کلید_Blk-1].u.hdr.prev_اندازه = n_بلوک;
+    mem3.aPool[mem3.i_کلید_Blk+mem3.sz_کلید_Blk-1].u.hdr.size4x |= 2;
+    mem3.aPool[newi-1].u.hdr.size4x = n_بلوک*4 + 1;
+    mem3.sz_کلید_Blk -= n_بلوک;
+    mem3.aPool[newi-1].u.hdr.prev_اندازه = mem3.sz_کلید_Blk;
+    x = mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.size4x & 2;
+    mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.size4x = mem3.sz_کلید_Blk*4 | x;
+    إذا( mem3.sz_کلید_Blk < mem3.mn_کلید_Blk ){
+      mem3.mn_کلید_Blk = mem3.sz_کلید_Blk;
     }
-    return (void*)&mem3.aPool[newi];
+    أرجع (فراغ*)&mem3.aPool[newi];
   }
 }
 
@@ -312,34 +312,34 @@ static void *memsys3FromKeyBlk(u32 nBlock){
 ** chunk before invoking this routine, then must unlink the (possibly
 ** changed) key chunk once this routine has finished.
 */
-static void memsys3Merge(u32 *pRoot){
-  u32 iNext, prev, size, i, x;
+ساكن فراغ memsys3_ادغام(u32 *p_ریشه){
+  u32 i_بعدی, prev, اندازه, i, x;
 
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  for(i=*pRoot; i>0; i=iNext){
-    iNext = mem3.aPool[i].u.list.next;
-    size = mem3.aPool[i-1].u.hdr.size4x;
-    assert( (size&1)==0 );
-    if( (size&2)==0 ){
-      memsys3UnlinkFromList(i, pRoot);
-      assert( i > mem3.aPool[i-1].u.hdr.prevSize );
-      prev = i - mem3.aPool[i-1].u.hdr.prevSize;
-      if( prev==iNext ){
-        iNext = mem3.aPool[prev].u.list.next;
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  لكل(i=*p_ریشه; i>0; i=i_بعدی){
+    i_بعدی = mem3.aPool[i].u.list.بعدی;
+    اندازه = mem3.aPool[i-1].u.hdr.size4x;
+    أكد( (اندازه&1)==0 );
+    إذا( (اندازه&2)==0 ){
+      memsys3UnlinkFromList(i, p_ریشه);
+      أكد( i > mem3.aPool[i-1].u.hdr.prev_اندازه );
+      prev = i - mem3.aPool[i-1].u.hdr.prev_اندازه;
+      إذا( prev==i_بعدی ){
+        i_بعدی = mem3.aPool[prev].u.list.بعدی;
       }
       memsys3Unlink(prev);
-      size = i + size/4 - prev;
+      اندازه = i + اندازه/4 - prev;
       x = mem3.aPool[prev-1].u.hdr.size4x & 2;
-      mem3.aPool[prev-1].u.hdr.size4x = size*4 | x;
-      mem3.aPool[prev+size-1].u.hdr.prevSize = size;
+      mem3.aPool[prev-1].u.hdr.size4x = اندازه*4 | x;
+      mem3.aPool[prev+اندازه-1].u.hdr.prev_اندازه = اندازه;
       memsys3Link(prev);
       i = prev;
-    }else{
-      size /= 4;
+    }وإلا{
+      اندازه /= 4;
     }
-    if( size>mem3.szKeyBlk ){
-      mem3.iKeyBlk = i;
-      mem3.szKeyBlk = size;
+    إذا( اندازه>mem3.sz_کلید_Blk ){
+      mem3.i_کلید_Blk = i;
+      mem3.sz_کلید_Blk = اندازه;
     }
   }
 }
@@ -351,37 +351,37 @@ static void memsys3Merge(u32 *pRoot){
 ** This function assumes that the necessary mutexes, if any, are
 ** already held by the caller. Hence "Unsafe".
 */
-static void *memsys3MallocUnsafe(int nByte){
+ساكن فراغ *memsys3MallocUnsafe(صحيح nByte){
   u32 i;
-  u32 nBlock;
-  u32 toFree;
+  u32 n_بلوک;
+  u32 مقصد_Free;
 
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( sizeof(Mem3Block)==8 );
-  if( nByte<=12 ){
-    nBlock = 2;
-  }else{
-    nBlock = (nByte + 11)/8;
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  أكد( حجم(Mem3_بلوک)==8 );
+  إذا( nByte<=12 ){
+    n_بلوک = 2;
+  }وإلا{
+    n_بلوک = (nByte + 11)/8;
   }
-  assert( nBlock>=2 );
+  أكد( n_بلوک>=2 );
 
   /* STEP 1:
   ** Look for an entry of the correct size in either the small
   ** chunk table or in the large chunk hash table.  This is
   ** successful most of the time (about 9 times out of 10).
   */
-  if( nBlock <= MX_SMALL ){
-    i = mem3.aiSmall[nBlock-2];
-    if( i>0 ){
-      memsys3UnlinkFromList(i, &mem3.aiSmall[nBlock-2]);
-      return memsys3Checkout(i, nBlock);
+  إذا( n_بلوک <= MX_SMALL ){
+    i = mem3.aiSmall[n_بلوک-2];
+    إذا( i>0 ){
+      memsys3UnlinkFromList(i, &mem3.aiSmall[n_بلوک-2]);
+      أرجع memsys3Checkout(i, n_بلوک);
     }
-  }else{
-    int hash = nBlock % N_HASH;
-    for(i=mem3.aiHash[hash]; i>0; i=mem3.aPool[i].u.list.next){
-      if( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){
+  }وإلا{
+    صحيح hash = n_بلوک % N_HASH;
+    لكل(i=mem3.aiHash[hash]; i>0; i=mem3.aPool[i].u.list.بعدی){
+      إذا( mem3.aPool[i-1].u.hdr.size4x/4==n_بلوک ){
         memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
-        return memsys3Checkout(i, nBlock);
+        أرجع memsys3Checkout(i, n_بلوک);
       }
     }
   }
@@ -390,8 +390,8 @@ static void *memsys3MallocUnsafe(int nByte){
   ** Try to satisfy the allocation by carving a piece off of the end
   ** of the key chunk.  This step usually works if step 1 fails.
   */
-  if( mem3.szKeyBlk>=nBlock ){
-    return memsys3FromKeyBlk(nBlock);
+  إذا( mem3.sz_کلید_Blk>=n_بلوک ){
+    أرجع memsys3_From_کلید_Blk(n_بلوک);
   }
 
 
@@ -402,29 +402,29 @@ static void *memsys3MallocUnsafe(int nByte){
   ** of the end of the key chunk.  This step happens very
   ** rarely (we hope!)
   */
-  for(toFree=nBlock*16; toFree<(mem3.nPool*16); toFree *= 2){
-    memsys3OutOfMemory(toFree);
-    if( mem3.iKeyBlk ){
-      memsys3Link(mem3.iKeyBlk);
-      mem3.iKeyBlk = 0;
-      mem3.szKeyBlk = 0;
+  لكل(مقصد_Free=n_بلوک*16; مقصد_Free<(mem3.nPool*16); مقصد_Free *= 2){
+    memsys3_بیرون_از_حافظه(مقصد_Free);
+    إذا( mem3.i_کلید_Blk ){
+      memsys3Link(mem3.i_کلید_Blk);
+      mem3.i_کلید_Blk = 0;
+      mem3.sz_کلید_Blk = 0;
     }
-    for(i=0; i<N_HASH; i++){
-      memsys3Merge(&mem3.aiHash[i]);
+    لكل(i=0; i<N_HASH; i++){
+      memsys3_ادغام(&mem3.aiHash[i]);
     }
-    for(i=0; i<MX_SMALL-1; i++){
-      memsys3Merge(&mem3.aiSmall[i]);
+    لكل(i=0; i<MX_SMALL-1; i++){
+      memsys3_ادغام(&mem3.aiSmall[i]);
     }
-    if( mem3.szKeyBlk ){
-      memsys3Unlink(mem3.iKeyBlk);
-      if( mem3.szKeyBlk>=nBlock ){
-        return memsys3FromKeyBlk(nBlock);
+    إذا( mem3.sz_کلید_Blk ){
+      memsys3Unlink(mem3.i_کلید_Blk);
+      إذا( mem3.sz_کلید_Blk>=n_بلوک ){
+        أرجع memsys3_From_کلید_Blk(n_بلوک);
       }
     }
   }
 
   /* If none of the above worked, then we fail. */
-  return 0;
+  أرجع 0;
 }
 
 /*
@@ -433,38 +433,38 @@ static void *memsys3MallocUnsafe(int nByte){
 ** This function assumes that the necessary mutexes, if any, are
 ** already held by the caller. Hence "Unsafe".
 */
-static void memsys3FreeUnsafe(void *pOld){
-  Mem3Block *p = (Mem3Block*)pOld;
-  int i;
-  u32 size, x;
-  assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( p>mem3.aPool && p<&mem3.aPool[mem3.nPool] );
+ساكن فراغ memsys3FreeUnsafe(فراغ *pOld){
+  Mem3_بلوک *p = (Mem3_بلوک*)pOld;
+  صحيح i;
+  u32 اندازه, x;
+  أكد( sqlite3_mutex_held(mem3.mutex) );
+  أكد( p>mem3.aPool && p<&mem3.aPool[mem3.nPool] );
   i = p - mem3.aPool;
-  assert( (mem3.aPool[i-1].u.hdr.size4x&1)==1 );
-  size = mem3.aPool[i-1].u.hdr.size4x/4;
-  assert( i+size<=mem3.nPool+1 );
+  أكد( (mem3.aPool[i-1].u.hdr.size4x&1)==1 );
+  اندازه = mem3.aPool[i-1].u.hdr.size4x/4;
+  أكد( i+اندازه<=mem3.nPool+1 );
   mem3.aPool[i-1].u.hdr.size4x &= ~1;
-  mem3.aPool[i+size-1].u.hdr.prevSize = size;
-  mem3.aPool[i+size-1].u.hdr.size4x &= ~2;
+  mem3.aPool[i+اندازه-1].u.hdr.prev_اندازه = اندازه;
+  mem3.aPool[i+اندازه-1].u.hdr.size4x &= ~2;
   memsys3Link(i);
 
   /* Try to expand the key using the newly freed chunk */
-  if( mem3.iKeyBlk ){
-    while( (mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x&2)==0 ){
-      size = mem3.aPool[mem3.iKeyBlk-1].u.hdr.prevSize;
-      mem3.iKeyBlk -= size;
-      mem3.szKeyBlk += size;
-      memsys3Unlink(mem3.iKeyBlk);
-      x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-      mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-      mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = mem3.szKeyBlk;
+  إذا( mem3.i_کلید_Blk ){
+    طالما( (mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.size4x&2)==0 ){
+      اندازه = mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.prev_اندازه;
+      mem3.i_کلید_Blk -= اندازه;
+      mem3.sz_کلید_Blk += اندازه;
+      memsys3Unlink(mem3.i_کلید_Blk);
+      x = mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.size4x & 2;
+      mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.size4x = mem3.sz_کلید_Blk*4 | x;
+      mem3.aPool[mem3.i_کلید_Blk+mem3.sz_کلید_Blk-1].u.hdr.prev_اندازه = mem3.sz_کلید_Blk;
     }
-    x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-    while( (mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x&1)==0 ){
-      memsys3Unlink(mem3.iKeyBlk+mem3.szKeyBlk);
-      mem3.szKeyBlk += mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x/4;
-      mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-      mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = mem3.szKeyBlk;
+    x = mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.size4x & 2;
+    طالما( (mem3.aPool[mem3.i_کلید_Blk+mem3.sz_کلید_Blk-1].u.hdr.size4x&1)==0 ){
+      memsys3Unlink(mem3.i_کلید_Blk+mem3.sz_کلید_Blk);
+      mem3.sz_کلید_Blk += mem3.aPool[mem3.i_کلید_Blk+mem3.sz_کلید_Blk-1].u.hdr.size4x/4;
+      mem3.aPool[mem3.i_کلید_Blk-1].u.hdr.size4x = mem3.sz_کلید_Blk*4 | x;
+      mem3.aPool[mem3.i_کلید_Blk+mem3.sz_کلید_Blk-1].u.hdr.prev_اندازه = mem3.sz_کلید_Blk;
     }
   }
 }
@@ -474,110 +474,110 @@ static void memsys3FreeUnsafe(void *pOld){
 ** size returned omits the 8-byte header overhead.  This only
 ** works for chunks that are currently checked out.
 */
-static int memsys3Size(void *p){
-  Mem3Block *pBlock;
-  assert( p!=0 );
-  pBlock = (Mem3Block*)p;
-  assert( (pBlock[-1].u.hdr.size4x&1)!=0 );
-  return (pBlock[-1].u.hdr.size4x&~3)*2 - 4;
+ساكن صحيح memsys3_اندازه(فراغ *p){
+  Mem3_بلوک *p_بلوک;
+  أكد( p!=0 );
+  p_بلوک = (Mem3_بلوک*)p;
+  أكد( (p_بلوک[-1].u.hdr.size4x&1)!=0 );
+  أرجع (p_بلوک[-1].u.hdr.size4x&~3)*2 - 4;
 }
 
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int memsys3Roundup(int n){
-  if( n<=12 ){
-    return 12;
-  }else{
-    return ((n+11)&~7) - 4;
+ساكن صحيح memsys3Roundup(صحيح n){
+  إذا( n<=12 ){
+    أرجع 12;
+  }وإلا{
+    أرجع ((n+11)&~7) - 4;
   }
 }
 
 /*
 ** Allocate nBytes of memory.
 */
-static void *memsys3Malloc(int nBytes){
+ساكن فراغ *memsys3Malloc(صحيح n_بایتها){
   sqlite3_int64 *p;
-  assert( nBytes>0 );          /* malloc.c filters out 0 byte requests */
+  أكد( n_بایتها>0 );          /* malloc.c filters out 0 byte requests */
   memsys3Enter();
-  p = memsys3MallocUnsafe(nBytes);
+  p = memsys3MallocUnsafe(n_بایتها);
   memsys3Leave();
-  return (void*)p; 
+  أرجع (فراغ*)p; 
 }
 
 /*
 ** Free memory.
 */
-static void memsys3Free(void *pPrior){
-  assert( pPrior );
+ساكن فراغ memsys3Free(فراغ *p_پیشین){
+  أكد( p_پیشین );
   memsys3Enter();
-  memsys3FreeUnsafe(pPrior);
+  memsys3FreeUnsafe(p_پیشین);
   memsys3Leave();
 }
 
 /*
 ** Change the size of an existing memory allocation
 */
-static void *memsys3Realloc(void *pPrior, int nBytes){
-  int nOld;
-  void *p;
-  if( pPrior==0 ){
-    return sqlite3_malloc(nBytes);
+ساكن فراغ *memsys3Realloc(فراغ *p_پیشین, صحيح n_بایتها){
+  صحيح nOld;
+  فراغ *p;
+  إذا( p_پیشین==0 ){
+    أرجع sqlite3_malloc(n_بایتها);
   }
-  if( nBytes<=0 ){
-    sqlite3_free(pPrior);
-    return 0;
+  إذا( n_بایتها<=0 ){
+    sqlite3_free(p_پیشین);
+    أرجع 0;
   }
-  nOld = memsys3Size(pPrior);
-  if( nBytes<=nOld && nBytes>=nOld-128 ){
-    return pPrior;
+  nOld = memsys3_اندازه(p_پیشین);
+  إذا( n_بایتها<=nOld && n_بایتها>=nOld-128 ){
+    أرجع p_پیشین;
   }
   memsys3Enter();
-  p = memsys3MallocUnsafe(nBytes);
-  if( p ){
-    if( nOld<nBytes ){
-      memcpy(p, pPrior, nOld);
-    }else{
-      memcpy(p, pPrior, nBytes);
+  p = memsys3MallocUnsafe(n_بایتها);
+  إذا( p ){
+    إذا( nOld<n_بایتها ){
+      کپی_حافظه(p, p_پیشین, nOld);
+    }وإلا{
+      کپی_حافظه(p, p_پیشین, n_بایتها);
     }
-    memsys3FreeUnsafe(pPrior);
+    memsys3FreeUnsafe(p_پیشین);
   }
   memsys3Leave();
-  return p;
+  أرجع p;
 }
 
 /*
 ** Initialize this module.
 */
-static int memsys3Init(void *NotUsed){
-  UNUSED_PARAMETER(NotUsed);
-  if( !sqlite3GlobalConfig.pHeap ){
-    return SQLITE_ERROR;
+ساكن صحيح memsys3Init(فراغ *Not_استفاده_شده){
+  استفادهنشده_PARAMETER(Not_استفاده_شده);
+  إذا( !sqlite3GlobalConfig.p_انباشته ){
+    أرجع SQLITE_ERROR;
   }
 
   /* Store a pointer to the memory block in global structure mem3. */
-  assert( sizeof(Mem3Block)==8 );
-  mem3.aPool = (Mem3Block *)sqlite3GlobalConfig.pHeap;
-  mem3.nPool = (sqlite3GlobalConfig.nHeap / sizeof(Mem3Block)) - 2;
+  أكد( حجم(Mem3_بلوک)==8 );
+  mem3.aPool = (Mem3_بلوک *)sqlite3GlobalConfig.p_انباشته;
+  mem3.nPool = (sqlite3GlobalConfig.n_انباشته / حجم(Mem3_بلوک)) - 2;
 
   /* Initialize the key block. */
-  mem3.szKeyBlk = mem3.nPool;
-  mem3.mnKeyBlk = mem3.szKeyBlk;
-  mem3.iKeyBlk = 1;
-  mem3.aPool[0].u.hdr.size4x = (mem3.szKeyBlk<<2) + 2;
-  mem3.aPool[mem3.nPool].u.hdr.prevSize = mem3.nPool;
+  mem3.sz_کلید_Blk = mem3.nPool;
+  mem3.mn_کلید_Blk = mem3.sz_کلید_Blk;
+  mem3.i_کلید_Blk = 1;
+  mem3.aPool[0].u.hdr.size4x = (mem3.sz_کلید_Blk<<2) + 2;
+  mem3.aPool[mem3.nPool].u.hdr.prev_اندازه = mem3.nPool;
   mem3.aPool[mem3.nPool].u.hdr.size4x = 1;
 
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Deinitialize this module.
 */
-static void memsys3Shutdown(void *NotUsed){
-  UNUSED_PARAMETER(NotUsed);
+ساكن فراغ memsys3Shutdown(فراغ *Not_استفاده_شده){
+  استفادهنشده_PARAMETER(Not_استفاده_شده);
   mem3.mutex = 0;
-  return;
+  أرجع;
 }
 
 
@@ -586,77 +586,77 @@ static void memsys3Shutdown(void *NotUsed){
 ** Open the file indicated and write a log of all unfreed memory 
 ** allocations into that log.
 */
-void sqlite3Memsys3Dump(const char *zFilename){
-#ifdef SQLITE_DEBUG
-  FILE *out;
+فراغ sqlite3Memsys3Dump(ثابت حرف *zFilename){
+#اگر_تعریف_شده SQLITE_DEBUG
+  FILE *بیرون;
   u32 i, j;
-  u32 size;
-  if( zFilename==0 || zFilename[0]==0 ){
-    out = stdout;
-  }else{
-    out = fopen(zFilename, "w");
-    if( out==0 ){
+  u32 اندازه;
+  إذا( zFilename==0 || zFilename[0]==0 ){
+    بیرون = stdout;
+  }وإلا{
+    بیرون = fopen(zFilename, "w");
+    إذا( بیرون==0 ){
       fprintf(stderr, "** Unable to output memory debug output log: %s **\n",
                       zFilename);
-      return;
+      أرجع;
     }
   }
   memsys3Enter();
-  fprintf(out, "CHUNKS:\n");
-  for(i=1; i<=mem3.nPool; i+=size/4){
-    size = mem3.aPool[i-1].u.hdr.size4x;
-    if( size/4<=1 ){
-      fprintf(out, "%p size error\n", &mem3.aPool[i]);
-      assert( 0 );
-      break;
+  fprintf(بیرون, "CHUNKS:\n");
+  لكل(i=1; i<=mem3.nPool; i+=اندازه/4){
+    اندازه = mem3.aPool[i-1].u.hdr.size4x;
+    إذا( اندازه/4<=1 ){
+      fprintf(بیرون, "%p size error\n", &mem3.aPool[i]);
+      أكد( 0 );
+      اكسر;
     }
-    if( (size&1)==0 && mem3.aPool[i+size/4-1].u.hdr.prevSize!=size/4 ){
-      fprintf(out, "%p tail size does not match\n", &mem3.aPool[i]);
-      assert( 0 );
-      break;
+    إذا( (اندازه&1)==0 && mem3.aPool[i+اندازه/4-1].u.hdr.prev_اندازه!=اندازه/4 ){
+      fprintf(بیرون, "%p tail size does not match\n", &mem3.aPool[i]);
+      أكد( 0 );
+      اكسر;
     }
-    if( ((mem3.aPool[i+size/4-1].u.hdr.size4x&2)>>1)!=(size&1) ){
-      fprintf(out, "%p tail checkout bit is incorrect\n", &mem3.aPool[i]);
-      assert( 0 );
-      break;
+    إذا( ((mem3.aPool[i+اندازه/4-1].u.hdr.size4x&2)>>1)!=(اندازه&1) ){
+      fprintf(بیرون, "%p tail checkout bit is incorrect\n", &mem3.aPool[i]);
+      أكد( 0 );
+      اكسر;
     }
-    if( size&1 ){
-      fprintf(out, "%p %6d bytes checked out\n", &mem3.aPool[i], (size/4)*8-8);
-    }else{
-      fprintf(out, "%p %6d bytes free%s\n", &mem3.aPool[i], (size/4)*8-8,
-                  i==mem3.iKeyBlk ? " **key**" : "");
+    إذا( اندازه&1 ){
+      fprintf(بیرون, "%p %6d bytes checked out\n", &mem3.aPool[i], (اندازه/4)*8-8);
+    }وإلا{
+      fprintf(بیرون, "%p %6d bytes free%s\n", &mem3.aPool[i], (اندازه/4)*8-8,
+                  i==mem3.i_کلید_Blk ? " **key**" : "");
     }
   }
-  for(i=0; i<MX_SMALL-1; i++){
-    if( mem3.aiSmall[i]==0 ) continue;
-    fprintf(out, "small(%2d):", i);
-    for(j = mem3.aiSmall[i]; j>0; j=mem3.aPool[j].u.list.next){
-      fprintf(out, " %p(%d)", &mem3.aPool[j],
+  لكل(i=0; i<MX_SMALL-1; i++){
+    إذا( mem3.aiSmall[i]==0 ) استمر;
+    fprintf(بیرون, "small(%2d):", i);
+    لكل(j = mem3.aiSmall[i]; j>0; j=mem3.aPool[j].u.list.بعدی){
+      fprintf(بیرون, " %p(%d)", &mem3.aPool[j],
               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);
     }
-    fprintf(out, "\n"); 
+    fprintf(بیرون, "\n"); 
   }
-  for(i=0; i<N_HASH; i++){
-    if( mem3.aiHash[i]==0 ) continue;
-    fprintf(out, "hash(%2d):", i);
-    for(j = mem3.aiHash[i]; j>0; j=mem3.aPool[j].u.list.next){
-      fprintf(out, " %p(%d)", &mem3.aPool[j],
+  لكل(i=0; i<N_HASH; i++){
+    إذا( mem3.aiHash[i]==0 ) استمر;
+    fprintf(بیرون, "hash(%2d):", i);
+    لكل(j = mem3.aiHash[i]; j>0; j=mem3.aPool[j].u.list.بعدی){
+      fprintf(بیرون, " %p(%d)", &mem3.aPool[j],
               (mem3.aPool[j-1].u.hdr.size4x/4)*8-8);
     }
-    fprintf(out, "\n"); 
+    fprintf(بیرون, "\n"); 
   }
-  fprintf(out, "key=%d\n", mem3.iKeyBlk);
-  fprintf(out, "nowUsed=%d\n", mem3.nPool*8 - mem3.szKeyBlk*8);
-  fprintf(out, "mxUsed=%d\n", mem3.nPool*8 - mem3.mnKeyBlk*8);
+  fprintf(بیرون, "key=%d\n", mem3.i_کلید_Blk);
+  fprintf(بیرون, "nowUsed=%d\n", mem3.nPool*8 - mem3.sz_کلید_Blk*8);
+  fprintf(بیرون, "mxUsed=%d\n", mem3.nPool*8 - mem3.mn_کلید_Blk*8);
   sqlite3_mutex_leave(mem3.mutex);
-  if( out==stdout ){
+  إذا( بیرون==stdout ){
     fflush(stdout);
-  }else{
-    fclose(out);
+  }وإلا{
+    fclose(بیرون);
   }
-#else
-  UNUSED_PARAMETER(zFilename);
-#endif
+#وإلا
+  استفادهنشده_PARAMETER(zFilename);
+#پایان_اگر
 }
 
 /*
@@ -670,18 +670,18 @@ void sqlite3Memsys3Dump(const char *zFilename){
 ** This routine is only called by sqlite3_config(), and therefore
 ** is not required to be threadsafe (it is not).
 */
-const sqlite3_mem_methods *sqlite3MemGetMemsys3(void){
-  static const sqlite3_mem_methods mempoolMethods = {
+ثابت sqlite3_mem_methods *sqlite3MemGetMemsys3(فراغ){
+  ساكن ثابت sqlite3_mem_methods mempoolMethods = {
      memsys3Malloc,
      memsys3Free,
      memsys3Realloc,
-     memsys3Size,
+     memsys3_اندازه,
      memsys3Roundup,
      memsys3Init,
      memsys3Shutdown,
      0
   };
-  return &mempoolMethods;
+  أرجع &mempoolMethods;
 }
 
-#endif /* SQLITE_ENABLE_MEMSYS3 */
+#پایان_اگر /* SQLITE_ENABLE_MEMSYS3 */

@@ -13,42 +13,42 @@
 ** subsystem.  See comments in the source code for a detailed description
 ** of what each interface routine does.
 */
-#ifndef SQLITE_BTREE_H
-#define SQLITE_BTREE_H
+#اگر_تعریف_نشده SQLITE_BTREE_H
+#تعریف_کن SQLITE_BTREE_H
 
 /* TODO: This definition is just included so other modules compile. It
 ** needs to be revisited.
 */
-#define SQLITE_N_BTREE_META 16
+#تعریف_کن SQLITE_N_BTREE_META 16
 
 /*
 ** If defined as non-zero, auto-vacuum is enabled by default. Otherwise
 ** it must be turned on for each database using "PRAGMA auto_vacuum = 1".
 */
-#ifndef SQLITE_DEFAULT_AUTOVACUUM
-  #define SQLITE_DEFAULT_AUTOVACUUM 0
-#endif
+#اگر_تعریف_نشده SQLITE_DEFAULT_AUTOVACUUM
+  #تعریف_کن SQLITE_DEFAULT_AUTOVACUUM 0
+#پایان_اگر
 
-#define BTREE_AUTOVACUUM_NONE 0        /* Do not do auto-vacuum */
-#define BTREE_AUTOVACUUM_FULL 1        /* Do full auto-vacuum */
-#define BTREE_AUTOVACUUM_INCR 2        /* Incremental vacuum */
+#تعریف_کن BTREE_AUTOVACUUM_NONE 0        /* Do not do auto-vacuum */
+#تعریف_کن BTREE_AUTOVACUUM_پر 1        /* Do full auto-vacuum */
+#تعریف_کن BTREE_AUTOVACUUM_INCR 2        /* Incremental vacuum */
 
 /*
 ** Forward declarations of structure
 */
-typedef struct Btree Btree;
-typedef struct BtCursor BtCursor;
-typedef struct BtShared BtShared;
-typedef struct BtreePayload BtreePayload;
+تعريفنوع بنية Btree Btree;
+تعريفنوع بنية BtCursor BtCursor;
+تعريفنوع بنية BtShared BtShared;
+تعريفنوع بنية BtreePayload BtreePayload;
 
 
-int sqlite3BtreeOpen(
+صحيح sqlite3BtreeOpen(
   sqlite3_vfs *pVfs,       /* VFS to use with this b-tree */
-  const char *zFilename,   /* Name of database file to open */
+  ثابت حرف *zFilename,   /* Name of database file to open */
   sqlite3 *db,             /* Associated database connection */
   Btree **ppBtree,         /* Return open Btree* here */
-  int flags,               /* Flags */
-  int vfsFlags             /* Flags passed through to VFS open */
+  صحيح flags,               /* Flags */
+  صحيح vfsFlags             /* Flags passed through to VFS open */
 );
 
 /* The flags parameter to sqlite3BtreeOpen can be the bitwise or of the
@@ -57,57 +57,57 @@ int sqlite3BtreeOpen(
 ** NOTE:  These values must match the corresponding PAGER_ values in
 ** pager.h.
 */
-#define BTREE_OMIT_JOURNAL  1  /* Do not create or use a rollback journal */
-#define BTREE_MEMORY        2  /* This is an in-memory DB */
-#define BTREE_SINGLE        4  /* The file contains at most 1 b-tree */
-#define BTREE_UNORDERED     8  /* Use of a hash implementation is OK */
+#تعریف_کن BTREE_OMIT_JOURNAL  1  /* Do not create or use a rollback journal */
+#تعریف_کن BTREE_حافظه        2  /* This is an in-memory DB */
+#تعریف_کن BTREE_SINGLE        4  /* The file contains at most 1 b-tree */
+#تعریف_کن BTREE_UNORDERED     8  /* Use of a hash implementation is OK */
 
-int sqlite3BtreeClose(Btree*);
-int sqlite3BtreeSetCacheSize(Btree*,int);
-int sqlite3BtreeSetSpillSize(Btree*,int);
-#if SQLITE_MAX_MMAP_SIZE>0
-  int sqlite3BtreeSetMmapLimit(Btree*,sqlite3_int64);
-#endif
-int sqlite3BtreeSetPagerFlags(Btree*,unsigned);
-int sqlite3BtreeSetPageSize(Btree *p, int nPagesize, int nReserve, int eFix);
-int sqlite3BtreeGetPageSize(Btree*);
-Pgno sqlite3BtreeMaxPageCount(Btree*,Pgno);
-Pgno sqlite3BtreeLastPage(Btree*);
-int sqlite3BtreeSecureDelete(Btree*,int);
-int sqlite3BtreeGetRequestedReserve(Btree*);
-int sqlite3BtreeGetReserveNoMutex(Btree *p);
-int sqlite3BtreeSetAutoVacuum(Btree *, int);
-int sqlite3BtreeGetAutoVacuum(Btree *);
-int sqlite3BtreeBeginTrans(Btree*,int,int*);
-int sqlite3BtreeCommitPhaseOne(Btree*, const char*);
-int sqlite3BtreeCommitPhaseTwo(Btree*, int);
-int sqlite3BtreeCommit(Btree*);
-int sqlite3BtreeRollback(Btree*,int,int);
-int sqlite3BtreeBeginStmt(Btree*,int);
-int sqlite3BtreeCreateTable(Btree*, Pgno*, int flags);
-int sqlite3BtreeTxnState(Btree*);
-int sqlite3BtreeIsInBackup(Btree*);
+صحيح sqlite3BtreeClose(Btree*);
+صحيح sqlite3_Btree_مجموعه_Cache_اندازه(Btree*,صحيح);
+صحيح sqlite3_Btree_مجموعه_Spill_اندازه(Btree*,صحيح);
+#إذا SQLITE_MAX_MMAP_اندازه>0
+  صحيح sqlite3_Btree_مجموعه_Mmap_حد(Btree*,sqlite3_int64);
+#پایان_اگر
+صحيح sqlite3_Btree_مجموعه_Pager_Flags(Btree*,بیعلامت);
+صحيح sqlite3_Btree_مجموعه_صفحه_اندازه(Btree *p, صحيح nPagesize, صحيح nReserve, صحيح eFix);
+صحيح sqlite3_Btree_Get_صفحه_اندازه(Btree*);
+Pgno sqlite3_Btree_Max_صفحه_شمار(Btree*,Pgno);
+Pgno sqlite3_Btree_آخرین_صفحه(Btree*);
+صحيح sqlite3BtreeSecureDelete(Btree*,صحيح);
+صحيح sqlite3BtreeGetRequestedReserve(Btree*);
+صحيح sqlite3BtreeGetReserveNoMutex(Btree *p);
+صحيح sqlite3_Btree_مجموعه_Auto_Vacuum(Btree *, صحيح);
+صحيح sqlite3BtreeGetAutoVacuum(Btree *);
+صحيح sqlite3BtreeBeginTrans(Btree*,صحيح,صحيح*);
+صحيح sqlite3BtreeCommitPhaseOne(Btree*, ثابت حرف*);
+صحيح sqlite3BtreeCommitPhaseTwo(Btree*, صحيح);
+صحيح sqlite3BtreeCommit(Btree*);
+صحيح sqlite3BtreeRollback(Btree*,صحيح,صحيح);
+صحيح sqlite3BtreeBeginStmt(Btree*,صحيح);
+صحيح sqlite3_Btree_Create_جدول(Btree*, Pgno*, صحيح flags);
+صحيح sqlite3BtreeTxnState(Btree*);
+صحيح sqlite3_Btree_Is_درون_Backup(Btree*);
 
-void *sqlite3BtreeSchema(Btree *, int, void(*)(void *));
-int sqlite3BtreeSchemaLocked(Btree *pBtree);
-#ifndef SQLITE_OMIT_SHARED_CACHE
-int sqlite3BtreeLockTable(Btree *pBtree, int iTab, u8 isWriteLock);
-#endif
+فراغ *sqlite3BtreeSchema(Btree *, صحيح, فراغ(*)(فراغ *));
+صحيح sqlite3BtreeSchemaLocked(Btree *pBtree);
+#اگر_تعریف_نشده SQLITE_OMIT_SHARED_CACHE
+صحيح sqlite3_Btree_قفل_جدول(Btree *pBtree, صحيح iTab, u8 is_Write_قفل);
+#پایان_اگر
 
 /* Savepoints are named, nestable SQL transactions mostly implemented */ 
 /* in vdbe.c and pager.c See https://sqlite.org/lang_savepoint.html */
-int sqlite3BtreeSavepoint(Btree *, int, int);
+صحيح sqlite3BtreeSavepoint(Btree *, صحيح, صحيح);
 
 /* "Checkpoint" only refers to WAL. See https://sqlite.org/wal.html#ckpt */
-#ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);  
-#endif
+#اگر_تعریف_نشده SQLITE_OMIT_WAL
+  صحيح sqlite3BtreeCheckpoint(Btree*, صحيح, صحيح *, صحيح *);  
+#پایان_اگر
 
-const char *sqlite3BtreeGetFilename(Btree *);
-const char *sqlite3BtreeGetJournalname(Btree *);
-int sqlite3BtreeCopyFile(Btree*, Btree*);
+ثابت حرف *sqlite3BtreeGetFilename(Btree *);
+ثابت حرف *sqlite3BtreeGetJournalname(Btree *);
+صحيح sqlite3BtreeCopyFile(Btree*, Btree*);
 
-int sqlite3BtreeIncrVacuum(Btree *);
+صحيح sqlite3BtreeIncrVacuum(Btree *);
 
 /* The flags parameter to sqlite3BtreeCreateTable can be the bitwise OR
 ** of the flags shown below.
@@ -119,18 +119,18 @@ int sqlite3BtreeIncrVacuum(Btree *);
 ** anywhere - the key is the content.  (BTREE_BLOBKEY is used for SQL
 ** indices.)
 */
-#define BTREE_INTKEY     1    /* Table has only 64-bit signed integer keys */
-#define BTREE_BLOBKEY    2    /* Table has keys only - no data */
+#تعریف_کن BTREE_INTKEY     1    /* Table has only 64-bit signed integer keys */
+#تعریف_کن BTREE_BLOBKEY    2    /* Table has keys only - no data */
 
-int sqlite3BtreeDropTable(Btree*, int, int*);
-int sqlite3BtreeClearTable(Btree*, int, i64*);
-int sqlite3BtreeClearTableOfCursor(BtCursor*);
-int sqlite3BtreeTripAllCursors(Btree*, int, int);
+صحيح sqlite3_Btree_Drop_جدول(Btree*, صحيح, صحيح*);
+صحيح sqlite3_Btree_Clear_جدول(Btree*, صحيح, i64*);
+صحيح sqlite3_Btree_Clear_جدول_از_Cursor(BtCursor*);
+صحيح sqlite3BtreeTripAllCursors(Btree*, صحيح, صحيح);
 
-void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *pValue);
-int sqlite3BtreeUpdateMeta(Btree*, int idx, u32 value);
+فراغ sqlite3BtreeGetMeta(Btree *pBtree, صحيح idx, u32 *p_مقدار);
+صحيح sqlite3BtreeUpdateMeta(Btree*, صحيح idx, u32 مقدار);
 
-int sqlite3BtreeNewDb(Btree *p);
+صحيح sqlite3BtreeNewDb(Btree *p);
 
 /*
 ** The second parameter to sqlite3BtreeGetMeta or sqlite3BtreeUpdateMeta
@@ -149,16 +149,16 @@ int sqlite3BtreeNewDb(Btree *p);
 ** the header value access routines since its access pattern is the same.
 ** Call it a "virtual meta value".
 */
-#define BTREE_FREE_PAGE_COUNT     0
-#define BTREE_SCHEMA_VERSION      1
-#define BTREE_FILE_FORMAT         2
-#define BTREE_DEFAULT_CACHE_SIZE  3
-#define BTREE_LARGEST_ROOT_PAGE   4
-#define BTREE_TEXT_ENCODING       5
-#define BTREE_USER_VERSION        6
-#define BTREE_INCR_VACUUM         7
-#define BTREE_APPLICATION_ID      8
-#define BTREE_DATA_VERSION        15  /* A virtual meta-value */
+#تعریف_کن BTREE_FREE_صفحه_شمار     0
+#تعریف_کن BTREE_SCHEMA_نسخه      1
+#تعریف_کن BTREE_FILE_FORMAT         2
+#تعریف_کن BTREE_DEFAULT_CACHE_اندازه  3
+#تعریف_کن BTREE_بزرگترین_ریشه_صفحه   4
+#تعریف_کن BTREE_متن_ENCODING       5
+#تعریف_کن BTREE_USER_نسخه        6
+#تعریف_کن BTREE_INCR_VACUUM         7
+#تعریف_کن BTREE_APPLICATION_ID      8
+#تعریف_کن BTREE_داده_نسخه        15  /* A virtual meta-value */
 
 /*
 ** Kinds of hints that can be passed into the sqlite3BtreeCursorHint()
@@ -193,8 +193,8 @@ int sqlite3BtreeNewDb(Btree *p);
 ** the SQLite parser and code generator but substitute their own storage
 ** engine.
 */
-#define BTREE_HINT_RANGE 0       /* Range constraints on queries */
-#define BTREE_HINT_TABLECURSOR 1 /* Table csr associated with this index csr */
+#تعریف_کن BTREE_HINT_RANGE 0       /* Range constraints on queries */
+#تعریف_کن BTREE_HINT_TABLECURSOR 1 /* Table csr associated with this index csr */
 
 /*
 ** Values that may be OR'd together to form the argument to the
@@ -209,8 +209,8 @@ int sqlite3BtreeNewDb(Btree *p);
 ** be used only for equality key searches.
 **
 */
-#define BTREE_BULKLOAD 0x00000001  /* Used to full index in sorted order */
-#define BTREE_SEEK_EQ  0x00000002  /* EQ seeks only - no range seeks */
+#تعریف_کن BTREE_BULKLOAD 0x00000001  /* Used to full index in sorted order */
+#تعریف_کن BTREE_SEEK_EQ  0x00000002  /* EQ seeks only - no range seeks */
 
 /* 
 ** Flags passed as the third argument to sqlite3BtreeCursor().
@@ -235,51 +235,51 @@ int sqlite3BtreeNewDb(Btree *p);
 ** and DELETE operations as no-ops, and any READ operation against a
 ** FORDELETE cursor may return a null row: 0x01 0x00.
 */
-#define BTREE_WRCSR     0x00000004     /* read-write cursor */
-#define BTREE_FORDELETE 0x00000008     /* Cursor is for seek/delete only */
+#تعریف_کن BTREE_WRCSR     0x00000004     /* read-write cursor */
+#تعریف_کن BTREE_FORDELETE 0x00000008     /* Cursor is for seek/delete only */
 
-int sqlite3BtreeCursor(
+صحيح sqlite3BtreeCursor(
   Btree*,                              /* BTree containing table to open */
-  Pgno iTable,                         /* Index of root page */
-  int wrFlag,                          /* 1 for writing.  0 for read-only */
-  struct KeyInfo*,                     /* First argument to compare function */
+  Pgno i_جدول,                         /* Index of root page */
+  صحيح wrFlag,                          /* 1 for writing.  0 for read-only */
+  بنية کلید_Info*,                     /* First argument to compare function */
   BtCursor *pCursor                    /* Space to write cursor structure */
 );
-BtCursor *sqlite3BtreeFakeValidCursor(void);
-int sqlite3BtreeCursorSize(void);
-#ifdef SQLITE_DEBUG
-int sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
-#endif
-void sqlite3BtreeCursorZero(BtCursor*);
-void sqlite3BtreeCursorHintFlags(BtCursor*, unsigned);
-#ifdef SQLITE_ENABLE_CURSOR_HINTS
-void sqlite3BtreeCursorHint(BtCursor*, int, ...);
- #ifdef SQLITE_DEBUG
+BtCursor *sqlite3BtreeFakeValidCursor(فراغ);
+صحيح sqlite3_Btree_Cursor_اندازه(فراغ);
+#اگر_تعریف_شده SQLITE_DEBUG
+صحيح sqlite3BtreeClosesWithCursor(Btree*,BtCursor*);
+#پایان_اگر
+فراغ sqlite3BtreeCursorZero(BtCursor*);
+فراغ sqlite3BtreeCursorHintFlags(BtCursor*, بیعلامت);
+#اگر_تعریف_شده SQLITE_ENABLE_CURSOR_HINTS
+فراغ sqlite3BtreeCursorHint(BtCursor*, صحيح, ...);
+ #اگر_تعریف_شده SQLITE_DEBUG
  BtCursor *sqlite3BtreeCursorHintTblCsr(BtCursor*);
- #endif
-#endif
+ #پایان_اگر
+#پایان_اگر
 
-int sqlite3BtreeCloseCursor(BtCursor*);
-int sqlite3BtreeTableMoveto(
+صحيح sqlite3BtreeCloseCursor(BtCursor*);
+صحيح sqlite3_Btree_جدول_Moveto(
   BtCursor*,
-  i64 intKey,
-  int bias,
-  int *pRes
+  i64 int_کلید,
+  صحيح bias,
+  صحيح *pRes
 );
-int sqlite3BtreeIndexMoveto(
+صحيح sqlite3_Btree_شاخص_Moveto(
   BtCursor*,
-  UnpackedRecord *pUnKey,
-  int *pRes
+  Unpacked_رکورد *p_Un_کلید,
+  صحيح *pRes
 );
-int sqlite3BtreeCursorHasMoved(BtCursor*);
-int sqlite3BtreeCursorRestore(BtCursor*, int*);
-int sqlite3BtreeDelete(BtCursor*, u8 flags);
+صحيح sqlite3BtreeCursorHasMoved(BtCursor*);
+صحيح sqlite3BtreeCursorRestore(BtCursor*, صحيح*);
+صحيح sqlite3BtreeDelete(BtCursor*, u8 flags);
 
 /* Allowed flags for sqlite3BtreeDelete() and sqlite3BtreeInsert() */
-#define BTREE_SAVEPOSITION 0x02  /* Leave cursor pointing at NEXT or PREV */
-#define BTREE_AUXDELETE    0x04  /* not the primary delete operation */
-#define BTREE_APPEND       0x08  /* Insert is likely an append */
-#define BTREE_PREFORMAT    0x80  /* Inserted data is a preformated cell */
+#تعریف_کن BTREE_SAVEPOSITION 0x02  /* Leave cursor pointing at NEXT or PREV */
+#تعریف_کن BTREE_AUXDELETE    0x04  /* not the primary delete operation */
+#تعریف_کن BTREE_APPEND       0x08  /* Insert is likely an append */
+#تعریف_کن BTREE_PREFORMAT    0x80  /* Inserted data is a preformated cell */
 
 /* An instance of the BtreePayload object describes the content of a single
 ** entry in either an index or table btree.
@@ -314,113 +314,113 @@ int sqlite3BtreeDelete(BtCursor*, u8 flags);
 ** organized and understandable, and it also helps the resulting code to
 ** run a little faster by using fewer registers for parameter passing.
 */
-struct BtreePayload {
-  const void *pKey;       /* Key content for indexes.  NULL for tables */
-  sqlite3_int64 nKey;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
-  const void *pData;      /* Data for tables. */
-  sqlite3_value *aMem;    /* First of nMem value in the unpacked pKey */
+بنية BtreePayload {
+  ثابت فراغ *p_کلید;       /* Key content for indexes.  NULL for tables */
+  sqlite3_int64 n_کلید;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
+  ثابت فراغ *p_داده;      /* Data for tables. */
+  sqlite3_مقدار *aMem;    /* First of nMem value in the unpacked pKey */
   u16 nMem;               /* Number of aMem[] value.  Might be zero */
-  int nData;              /* Size of pData.  0 if none. */
-  int nZero;              /* Extra zero data appended after pData,nData */
+  صحيح n_داده;              /* Size of pData.  0 if none. */
+  صحيح nZero;              /* Extra zero data appended after pData,nData */
 };
 
-int sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
-                       int flags, int seekResult);
-int sqlite3BtreeFirst(BtCursor*, int *pRes);
-int sqlite3BtreeIsEmpty(BtCursor *pCur, int *pRes);
-int sqlite3BtreeLast(BtCursor*, int *pRes);
-int sqlite3BtreeNext(BtCursor*, int flags);
-int sqlite3BtreeEof(BtCursor*);
-int sqlite3BtreePrevious(BtCursor*, int flags);
-i64 sqlite3BtreeIntegerKey(BtCursor*);
-void sqlite3BtreeCursorPin(BtCursor*);
-void sqlite3BtreeCursorUnpin(BtCursor*);
-i64 sqlite3BtreeOffset(BtCursor*);
-int sqlite3BtreePayload(BtCursor*, u32 offset, u32 amt, void*);
-const void *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
-u32 sqlite3BtreePayloadSize(BtCursor*);
-sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor*);
+صحيح sqlite3_Btree_درج(BtCursor*, ثابت BtreePayload *pPayload,
+                       صحيح flags, صحيح seek_نتیجه);
+صحيح sqlite3_Btree_اولی(BtCursor*, صحيح *pRes);
+صحيح sqlite3_Btree_Is_خالی(BtCursor *pCur, صحيح *pRes);
+صحيح sqlite3_Btree_آخرین(BtCursor*, صحيح *pRes);
+صحيح sqlite3_Btree_بعدی(BtCursor*, صحيح flags);
+صحيح sqlite3BtreeEof(BtCursor*);
+صحيح sqlite3_Btree_قبلی(BtCursor*, صحيح flags);
+i64 sqlite3_Btree_Integer_کلید(BtCursor*);
+فراغ sqlite3BtreeCursorPin(BtCursor*);
+فراغ sqlite3BtreeCursorUnpin(BtCursor*);
+i64 sqlite3_Btree_جابه_جایی(BtCursor*);
+صحيح sqlite3BtreePayload(BtCursor*, u32 جابه_جایی, u32 amt, فراغ*);
+ثابت فراغ *sqlite3BtreePayloadFetch(BtCursor*, u32 *pAmt);
+u32 sqlite3_Btree_Payload_اندازه(BtCursor*);
+sqlite3_int64 sqlite3_Btree_Max_رکورد_اندازه(BtCursor*);
 
-int sqlite3BtreeIntegrityCheck(
+صحيح sqlite3BtreeIntegrityCheck(
   sqlite3 *db,  /* Database connection that is running the check */
   Btree *p,     /* The btree to be checked */
-  Pgno *aRoot,  /* An array of root pages numbers for individual trees */
-  sqlite3_value *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
-  int nRoot,    /* Number of entries in aRoot[] */
-  int mxErr,    /* Stop reporting errors after this many */
-  int *pnErr,   /* OUT: Write number of errors seen to this variable */
-  char **pzOut  /* OUT: Write the error message string here */
+  Pgno *a_ریشه,  /* An array of root pages numbers for individual trees */
+  sqlite3_مقدار *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
+  صحيح n_ریشه,    /* Number of entries in aRoot[] */
+  صحيح mxErr,    /* Stop reporting errors after this many */
+  صحيح *pnErr,   /* OUT: Write number of errors seen to this variable */
+  حرف **pz_بیرون  /* OUT: Write the error message string here */
 );
-struct Pager *sqlite3BtreePager(Btree*);
-i64 sqlite3BtreeRowCountEst(BtCursor*);
+بنية Pager *sqlite3BtreePager(Btree*);
+i64 sqlite3_Btree_ردیف_شمار_Est(BtCursor*);
 
-#ifndef SQLITE_OMIT_INCRBLOB
-int sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
-int sqlite3BtreePutData(BtCursor*, u32 offset, u32 amt, void*);
-void sqlite3BtreeIncrblobCursor(BtCursor *);
-#endif
-void sqlite3BtreeClearCursor(BtCursor *);
-int sqlite3BtreeSetVersion(Btree *pBt, int iVersion);
-int sqlite3BtreeCursorHasHint(BtCursor*, unsigned int mask);
-int sqlite3BtreeIsReadonly(Btree *pBt);
-int sqlite3HeaderSizeBtree(void);
+#اگر_تعریف_نشده SQLITE_OMIT_INCRBLOB
+صحيح sqlite3BtreePayloadChecked(BtCursor*, u32 جابه_جایی, u32 amt, فراغ*);
+صحيح sqlite3_Btree_Put_داده(BtCursor*, u32 جابه_جایی, u32 amt, فراغ*);
+فراغ sqlite3BtreeIncrblobCursor(BtCursor *);
+#پایان_اگر
+فراغ sqlite3BtreeClearCursor(BtCursor *);
+صحيح sqlite3_Btree_مجموعه_نسخه(Btree *pBt, صحيح i_نسخه);
+صحيح sqlite3BtreeCursorHasHint(BtCursor*, بیعلامت صحيح ماسک);
+صحيح sqlite3BtreeIsReadonly(Btree *pBt);
+صحيح sqlite3_سرآیند_اندازه_Btree(فراغ);
 
-#ifdef SQLITE_DEBUG
-sqlite3_uint64 sqlite3BtreeSeekCount(Btree*);
-#else
-# define sqlite3BtreeSeekCount(X) 0
-#endif
+#اگر_تعریف_شده SQLITE_DEBUG
+sqlite3_uint64 sqlite3_Btree_Seek_شمار(Btree*);
+#وإلا
+# define sqlite3_Btree_Seek_شمار(X) 0
+#پایان_اگر
 
-#ifndef NDEBUG
-int sqlite3BtreeCursorIsValid(BtCursor*);
-#endif
-int sqlite3BtreeCursorIsValidNN(BtCursor*);
+#اگر_تعریف_نشده NDEBUG
+صحيح sqlite3BtreeCursorIsValid(BtCursor*);
+#پایان_اگر
+صحيح sqlite3BtreeCursorIsValidNN(BtCursor*);
 
-int sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
+صحيح sqlite3_Btree_شمار(sqlite3*, BtCursor*, i64*);
 
-#ifdef SQLITE_TEST
-int sqlite3BtreeCursorInfo(BtCursor*, int*, int);
-void sqlite3BtreeCursorList(Btree*);
-#endif
+#اگر_تعریف_شده SQLITE_TEST
+صحيح sqlite3BtreeCursorInfo(BtCursor*, صحيح*, صحيح);
+فراغ sqlite3BtreeCursorList(Btree*);
+#پایان_اگر
 
-#ifndef SQLITE_OMIT_WAL
-  int sqlite3BtreeCheckpoint(Btree*, int, int *, int *);
-#endif
+#اگر_تعریف_نشده SQLITE_OMIT_WAL
+  صحيح sqlite3BtreeCheckpoint(Btree*, صحيح, صحيح *, صحيح *);
+#پایان_اگر
 
-int sqlite3BtreeTransferRow(BtCursor*, BtCursor*, i64);
+صحيح sqlite3_Btree_Transfer_ردیف(BtCursor*, BtCursor*, i64);
 
-void sqlite3BtreeClearCache(Btree*);
+فراغ sqlite3BtreeClearCache(Btree*);
 
 /*
 ** If we are not using shared cache, then there is no need to
 ** use mutexes to access the BtShared structures.  So make the
 ** Enter and Leave procedures no-ops.
 */
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  void sqlite3BtreeEnter(Btree*);
-  void sqlite3BtreeEnterAll(sqlite3*);
-  int sqlite3BtreeSharable(Btree*);
-  void sqlite3BtreeEnterCursor(BtCursor*);
-  int sqlite3BtreeConnectionCount(Btree*);
-#else
+#اگر_تعریف_نشده SQLITE_OMIT_SHARED_CACHE
+  فراغ sqlite3BtreeEnter(Btree*);
+  فراغ sqlite3BtreeEnterAll(sqlite3*);
+  صحيح sqlite3BtreeSharable(Btree*);
+  فراغ sqlite3BtreeEnterCursor(BtCursor*);
+  صحيح sqlite3_Btree_Connection_شمار(Btree*);
+#وإلا
 # define sqlite3BtreeEnter(X) 
 # define sqlite3BtreeEnterAll(X)
 # define sqlite3BtreeSharable(X) 0
 # define sqlite3BtreeEnterCursor(X)
-# define sqlite3BtreeConnectionCount(X) 1
-#endif
+# define sqlite3_Btree_Connection_شمار(X) 1
+#پایان_اگر
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
-  void sqlite3BtreeLeave(Btree*);
-  void sqlite3BtreeLeaveCursor(BtCursor*);
-  void sqlite3BtreeLeaveAll(sqlite3*);
-#ifndef NDEBUG
+#إذا !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE
+  فراغ sqlite3BtreeLeave(Btree*);
+  فراغ sqlite3BtreeLeaveCursor(BtCursor*);
+  فراغ sqlite3BtreeLeaveAll(sqlite3*);
+#اگر_تعریف_نشده NDEBUG
   /* These routines are used inside assert() statements only. */
-  int sqlite3BtreeHoldsMutex(Btree*);
-  int sqlite3BtreeHoldsAllMutexes(sqlite3*);
-  int sqlite3SchemaMutexHeld(sqlite3*,int,Schema*);
-#endif
-#else
+  صحيح sqlite3BtreeHoldsMutex(Btree*);
+  صحيح sqlite3BtreeHoldsAllMutexes(sqlite3*);
+  صحيح sqlite3SchemaMutexHeld(sqlite3*,صحيح,Schema*);
+#پایان_اگر
+#وإلا
 
 # define sqlite3BtreeLeave(X)
 # define sqlite3BtreeLeaveCursor(X)
@@ -429,7 +429,7 @@ void sqlite3BtreeClearCache(Btree*);
 # define sqlite3BtreeHoldsMutex(X) 1
 # define sqlite3BtreeHoldsAllMutexes(X) 1
 # define sqlite3SchemaMutexHeld(X,Y,Z) 1
-#endif
+#پایان_اگر
 
 
-#endif /* SQLITE_BTREE_H */
+#پایان_اگر /* SQLITE_BTREE_H */

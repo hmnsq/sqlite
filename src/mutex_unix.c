@@ -11,7 +11,7 @@
 *************************************************************************
 ** This file contains the C functions that implement mutexes for pthreads
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 /*
 ** The code in this file is only used if we are compiling threadsafe
@@ -20,50 +20,50 @@
 ** Note that this implementation requires a version of pthreads that
 ** supports recursive mutexes.
 */
-#ifdef SQLITE_MUTEX_PTHREADS
+#اگر_تعریف_شده SQLITE_MUTEX_PTHREADS
 
-#include <pthread.h>
+#ضمن <pthread.h>
 
 /*
 ** The sqlite3_mutex.id, sqlite3_mutex.nRef, and sqlite3_mutex.owner fields
 ** are necessary under two conditions:  (1) Debug builds and (2) using
 ** home-grown mutexes.  Encapsulate these conditions into a single #define.
 */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HOMEGROWN_RECURSIVE_MUTEX)
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_HOMEGROWN_RECURSIVE_MUTEX)
 # define SQLITE_MUTEX_NREF 1
-#else
+#وإلا
 # define SQLITE_MUTEX_NREF 0
-#endif
+#پایان_اگر
 
-#if GCC_VERSION>0
+#إذا GCC_نسخه>0
 # define ALIGN128 __attribute__((aligned(128)))
-#else
+#وإلا
 # define ALIGN128
-#endif
+#پایان_اگر
 
 /*
 ** Each SQLite mutex is an instance of the following structure.
 **
 */
-struct sqlite3_mutex {
+بنية sqlite3_mutex {
   pthread_mutex_t mutex;     /* Mutex controlling the lock */
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
-  int id;                    /* Mutex type */
-#endif
-#if SQLITE_MUTEX_NREF
-  volatile int nRef;         /* Number of entrances */
-  volatile pthread_t owner;  /* Thread that is within this mutex */
-  int trace;                 /* True to trace changes */
-#endif
+#إذا SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+  صحيح id;                    /* Mutex type */
+#پایان_اگر
+#إذا SQLITE_MUTEX_NREF
+  متطاير صحيح nRef;         /* Number of entrances */
+  متطاير pthread_t owner;  /* Thread that is within this mutex */
+  صحيح trace;                 /* True to trace changes */
+#پایان_اگر
 };
-#if SQLITE_MUTEX_NREF
+#إذا SQLITE_MUTEX_NREF
 # define SQLITE3_MUTEX_INITIALIZER(id) \
      {PTHREAD_MUTEX_INITIALIZER,id,0,(pthread_t)0,0}
-#elif defined(SQLITE_ENABLE_API_ARMOR)
+#وإلاإذا defined(SQLITE_ENABLE_API_ARMOR)
 # define SQLITE3_MUTEX_INITIALIZER(id) { PTHREAD_MUTEX_INITIALIZER, id }
-#else
-#define SQLITE3_MUTEX_INITIALIZER(id) { PTHREAD_MUTEX_INITIALIZER }
-#endif
+#وإلا
+#تعریف_کن SQLITE3_MUTEX_INITIALIZER(id) { PTHREAD_MUTEX_INITIALIZER }
+#پایان_اگر
 
 /*
 ** The sqlite3_mutex_held() and sqlite3_mutex_notheld() routine are
@@ -81,33 +81,33 @@ struct sqlite3_mutex {
 ** make sure no assert() statements are evaluated and hence these
 ** routines are never called.
 */
-#if !defined(NDEBUG) || defined(SQLITE_DEBUG)
-static int pthreadMutexHeld(sqlite3_mutex *p){
-  return (p->nRef!=0 && pthread_equal(p->owner, pthread_self()));
+#إذا !defined(NDEBUG) || defined(SQLITE_DEBUG)
+ساكن صحيح pthreadMutexHeld(sqlite3_mutex *p){
+  أرجع (p->nRef!=0 && pthread_equal(p->owner, pthread_self()));
 }
-static int pthreadMutexNotheld(sqlite3_mutex *p){
-  return p->nRef==0 || pthread_equal(p->owner, pthread_self())==0;
+ساكن صحيح pthreadMutexNotheld(sqlite3_mutex *p){
+  أرجع p->nRef==0 || pthread_equal(p->owner, pthread_self())==0;
 }
-#endif
+#پایان_اگر
 
 /*
 ** Try to provide a memory barrier operation, needed for initialization
 ** and also for the implementation of xShmBarrier in the VFS in cases
 ** where SQLite is compiled without mutexes.
 */
-void sqlite3MemoryBarrier(void){
-#if defined(SQLITE_MEMORY_BARRIER)
-  SQLITE_MEMORY_BARRIER;
-#elif defined(__GNUC__) && GCC_VERSION>=4001000
+فراغ sqlite3_حافظه_Barrier(فراغ){
+#إذا defined(SQLITE_حافظه_BARRIER)
+  SQLITE_حافظه_BARRIER;
+#وإلاإذا defined(__GNUC__) && GCC_نسخه>=4001000
   __sync_synchronize();
-#endif
+#پایان_اگر
 }
 
 /*
 ** Initialize and deinitialize the mutex subsystem.
 */
-static int pthreadMutexInit(void){ return SQLITE_OK; }
-static int pthreadMutexEnd(void){ return SQLITE_OK; }
+ساكن صحيح pthreadMutexInit(فراغ){ أرجع SQLITE_OK; }
+ساكن صحيح pthread_Mutex_انتها(فراغ){ أرجع SQLITE_OK; }
 
 /*
 ** The sqlite3_mutex_alloc() routine allocates a new
@@ -157,7 +157,7 @@ static int pthreadMutexEnd(void){ return SQLITE_OK; }
 ** mutex types, the same mutex is returned on every call that has
 ** the same type number.
 */
-static sqlite3_mutex *pthreadMutexAlloc(int iType){
+ساكن sqlite3_mutex *pthreadMutexAlloc(صحيح iType){
   /* Static mutexes - those with IDs of 2 or more...
   **
   ** The ALIGN128 macro attempts to force 128-byte alignment on mutexes,
@@ -167,9 +167,9 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
   ** that 64 works just as well most of the time, but the internet says
   ** that 128-byte alignment works better.
   */
-  static ALIGN128 union staticMutex {
+  ساكن ALIGN128 اتحاد staticMutex {
      sqlite3_mutex m;
-     char aSpacer[128];
+     حرف aSpacer[128];
   } aMutex[] = {
     { .m = SQLITE3_MUTEX_INITIALIZER(2) },
     { .m = SQLITE3_MUTEX_INITIALIZER(3) },
@@ -185,53 +185,53 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
     { .m = SQLITE3_MUTEX_INITIALIZER(13) },
   };
   sqlite3_mutex *p;
-  switch( iType ){
-    case SQLITE_MUTEX_RECURSIVE: {
-      p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
-#ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
+  بدل( iType ){
+    حالة SQLITE_MUTEX_RECURSIVE: {
+      p = sqlite3MallocZero( حجم(*p) );
+      إذا( p ){
+#اگر_تعریف_شده SQLITE_HOMEGROWN_RECURSIVE_MUTEX
         /* If recursive mutexes are not available, we will have to
         ** build our own.  See below. */
         pthread_mutex_init(&p->mutex, 0);
-#else
+#وإلا
         /* Use a recursive mutex if it is available */
         pthread_mutexattr_t recursiveAttr;
         pthread_mutexattr_init(&recursiveAttr);
         pthread_mutexattr_settype(&recursiveAttr, PTHREAD_MUTEX_RECURSIVE);
         pthread_mutex_init(&p->mutex, &recursiveAttr);
         pthread_mutexattr_destroy(&recursiveAttr);
-#endif
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+#پایان_اگر
+#إذا SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
         p->id = SQLITE_MUTEX_RECURSIVE;
-#endif
+#پایان_اگر
       }
-      break;
+      اكسر;
     }
-    case SQLITE_MUTEX_FAST: {
-      p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
+    حالة SQLITE_MUTEX_FAST: {
+      p = sqlite3MallocZero( حجم(*p) );
+      إذا( p ){
         pthread_mutex_init(&p->mutex, 0);
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+#إذا SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
         p->id = SQLITE_MUTEX_FAST;
-#endif
+#پایان_اگر
       }
-      break;
+      اكسر;
     }
-    default: {
-#ifdef SQLITE_ENABLE_API_ARMOR
-      if( iType-2<0 || iType-2>=ArraySize(aMutex) ){
-        (void)SQLITE_MISUSE_BKPT;
-        return 0;
+    افتراضي: {
+#اگر_تعریف_شده SQLITE_ENABLE_API_ARMOR
+      إذا( iType-2<0 || iType-2>=Array_اندازه(aMutex) ){
+        (فراغ)SQLITE_MISUSE_BKPT;
+        أرجع 0;
       }
-#endif
+#پایان_اگر
       p = &aMutex[iType-2].m;
-      break;
+      اكسر;
     }
   }
-#if SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
-  assert( p==0 || p->id==iType );
-#endif
-  return p;
+#إذا SQLITE_MUTEX_NREF || defined(SQLITE_ENABLE_API_ARMOR)
+  أكد( p==0 || p->id==iType );
+#پایان_اگر
+  أرجع p;
 }
 
 
@@ -240,20 +240,20 @@ static sqlite3_mutex *pthreadMutexAlloc(int iType){
 ** allocated mutex.  SQLite is careful to deallocate every
 ** mutex that it allocates.
 */
-static void pthreadMutexFree(sqlite3_mutex *p){
-  assert( p->nRef==0 );
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( p->id==SQLITE_MUTEX_FAST || p->id==SQLITE_MUTEX_RECURSIVE )
-#endif
+ساكن فراغ pthreadMutexFree(sqlite3_mutex *p){
+  أكد( p->nRef==0 );
+#اگر_تعریف_شده SQLITE_ENABLE_API_ARMOR
+  إذا( p->id==SQLITE_MUTEX_FAST || p->id==SQLITE_MUTEX_RECURSIVE )
+#پایان_اگر
   {
     pthread_mutex_destroy(&p->mutex);
     sqlite3_free(p);
   }
-#ifdef SQLITE_ENABLE_API_ARMOR
-  else{
-    (void)SQLITE_MISUSE_BKPT;
+#اگر_تعریف_شده SQLITE_ENABLE_API_ARMOR
+  وإلا{
+    (فراغ)SQLITE_MISUSE_BKPT;
   }
-#endif
+#پایان_اگر
 }
 
 /*
@@ -267,10 +267,10 @@ static void pthreadMutexFree(sqlite3_mutex *p){
 ** can enter.  If the same thread tries to enter any other kind of mutex
 ** more than once, the behavior is undefined.
 */
-static void pthreadMutexEnter(sqlite3_mutex *p){
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
+ساكن فراغ pthreadMutexEnter(sqlite3_mutex *p){
+  أكد( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
 
-#ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
+#اگر_تعریف_شده SQLITE_HOMEGROWN_RECURSIVE_MUTEX
   /* If recursive mutexes are not available, then we have to grow
   ** our own.  This implementation assumes that pthread_equal()
   ** is atomic - that it cannot be deceived into thinking self
@@ -283,37 +283,37 @@ static void pthreadMutexEnter(sqlite3_mutex *p){
   */
   {
     pthread_t self = pthread_self();
-    if( p->nRef>0 && pthread_equal(p->owner, self) ){
+    إذا( p->nRef>0 && pthread_equal(p->owner, self) ){
       p->nRef++;
-    }else{
-      pthread_mutex_lock(&p->mutex);
-      assert( p->nRef==0 );
+    }وإلا{
+      pthread_mutex_قفل(&p->mutex);
+      أكد( p->nRef==0 );
       p->owner = self;
       p->nRef = 1;
     }
   }
-#else
+#وإلا
   /* Use the built-in recursive mutexes if they are available.
   */
-  pthread_mutex_lock(&p->mutex);
-#if SQLITE_MUTEX_NREF
-  assert( p->nRef>0 || p->owner==0 );
+  pthread_mutex_قفل(&p->mutex);
+#إذا SQLITE_MUTEX_NREF
+  أكد( p->nRef>0 || p->owner==0 );
   p->owner = pthread_self();
   p->nRef++;
-#endif
-#endif
+#پایان_اگر
+#پایان_اگر
 
-#ifdef SQLITE_DEBUG
-  if( p->trace ){
-    printf("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
+#اگر_تعریف_شده SQLITE_DEBUG
+  إذا( p->trace ){
+    چاپ_کن("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
-#endif
+#پایان_اگر
 }
-static int pthreadMutexTry(sqlite3_mutex *p){
-  int rc;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
+ساكن صحيح pthreadMutexTry(sqlite3_mutex *p){
+  صحيح rc;
+  أكد( p->id==SQLITE_MUTEX_RECURSIVE || pthreadMutexNotheld(p) );
 
-#ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
+#اگر_تعریف_شده SQLITE_HOMEGROWN_RECURSIVE_MUTEX
   /* If recursive mutexes are not available, then we have to grow
   ** our own.  This implementation assumes that pthread_equal()
   ** is atomic - that it cannot be deceived into thinking self
@@ -326,38 +326,38 @@ static int pthreadMutexTry(sqlite3_mutex *p){
   */
   {
     pthread_t self = pthread_self();
-    if( p->nRef>0 && pthread_equal(p->owner, self) ){
+    إذا( p->nRef>0 && pthread_equal(p->owner, self) ){
       p->nRef++;
       rc = SQLITE_OK;
-    }else if( pthread_mutex_trylock(&p->mutex)==0 ){
-      assert( p->nRef==0 );
+    }وإلا إذا( pthread_mutex_trylock(&p->mutex)==0 ){
+      أكد( p->nRef==0 );
       p->owner = self;
       p->nRef = 1;
       rc = SQLITE_OK;
-    }else{
+    }وإلا{
       rc = SQLITE_BUSY;
     }
   }
-#else
+#وإلا
   /* Use the built-in recursive mutexes if they are available.
   */
-  if( pthread_mutex_trylock(&p->mutex)==0 ){
-#if SQLITE_MUTEX_NREF
+  إذا( pthread_mutex_trylock(&p->mutex)==0 ){
+#إذا SQLITE_MUTEX_NREF
     p->owner = pthread_self();
     p->nRef++;
-#endif
+#پایان_اگر
     rc = SQLITE_OK;
-  }else{
+  }وإلا{
     rc = SQLITE_BUSY;
   }
-#endif
+#پایان_اگر
 
-#ifdef SQLITE_DEBUG
-  if( rc==SQLITE_OK && p->trace ){
-    printf("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
+#اگر_تعریف_شده SQLITE_DEBUG
+  إذا( rc==SQLITE_OK && p->trace ){
+    چاپ_کن("enter mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
-#endif
-  return rc;
+#پایان_اگر
+  أرجع rc;
 }
 
 /*
@@ -366,48 +366,48 @@ static int pthreadMutexTry(sqlite3_mutex *p){
 ** is undefined if the mutex is not currently entered or
 ** is not currently allocated.  SQLite will never do either.
 */
-static void pthreadMutexLeave(sqlite3_mutex *p){
-  assert( pthreadMutexHeld(p) );
-#if SQLITE_MUTEX_NREF
+ساكن فراغ pthreadMutexLeave(sqlite3_mutex *p){
+  أكد( pthreadMutexHeld(p) );
+#إذا SQLITE_MUTEX_NREF
   p->nRef--;
-  if( p->nRef==0 ) p->owner = 0;
-#endif
-  assert( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
+  إذا( p->nRef==0 ) p->owner = 0;
+#پایان_اگر
+  أكد( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
 
-#ifdef SQLITE_HOMEGROWN_RECURSIVE_MUTEX
-  if( p->nRef==0 ){
+#اگر_تعریف_شده SQLITE_HOMEGROWN_RECURSIVE_MUTEX
+  إذا( p->nRef==0 ){
     pthread_mutex_unlock(&p->mutex);
   }
-#else
+#وإلا
   pthread_mutex_unlock(&p->mutex);
-#endif
+#پایان_اگر
 
-#ifdef SQLITE_DEBUG
-  if( p->trace ){
-    printf("leave mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
+#اگر_تعریف_شده SQLITE_DEBUG
+  إذا( p->trace ){
+    چاپ_کن("leave mutex %p (%d) with nRef=%d\n", p, p->trace, p->nRef);
   }
-#endif
+#پایان_اگر
 }
 
-sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods ثابت *sqlite3DefaultMutex(فراغ){
+  ساكن ثابت sqlite3_mutex_methods sMutex = {
     pthreadMutexInit,
-    pthreadMutexEnd,
+    pthread_Mutex_انتها,
     pthreadMutexAlloc,
     pthreadMutexFree,
     pthreadMutexEnter,
     pthreadMutexTry,
     pthreadMutexLeave,
-#ifdef SQLITE_DEBUG
+#اگر_تعریف_شده SQLITE_DEBUG
     pthreadMutexHeld,
     pthreadMutexNotheld
-#else
+#وإلا
     0,
     0
-#endif
+#پایان_اگر
   };
 
-  return &sMutex;
+  أرجع &sMutex;
 }
 
-#endif /* SQLITE_MUTEX_PTHREADS */
+#پایان_اگر /* SQLITE_MUTEX_PTHREADS */

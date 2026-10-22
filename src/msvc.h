@@ -12,34 +12,34 @@
 **
 ** This file contains code that is specific to MSVC.
 */
-#ifndef SQLITE_MSVC_H
-#define SQLITE_MSVC_H
+#اگر_تعریف_نشده SQLITE_MSVC_H
+#تعریف_کن SQLITE_MSVC_H
 
-#if defined(_MSC_VER)
-#pragma warning(disable : 4054)
-#pragma warning(disable : 4055)
-#pragma warning(disable : 4100)
-#pragma warning(disable : 4127)
-#pragma warning(disable : 4130)
-#pragma warning(disable : 4152)
-#pragma warning(disable : 4189)
-#pragma warning(disable : 4206)
-#pragma warning(disable : 4210)
-#pragma warning(disable : 4232)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4305)
-#pragma warning(disable : 4306)
-#pragma warning(disable : 4702)
-#pragma warning(disable : 4706)
-#endif /* defined(_MSC_VER) */
+#إذا defined(_MSC_VER)
+#رهنمود warning(disable : 4054)
+#رهنمود warning(disable : 4055)
+#رهنمود warning(disable : 4100)
+#رهنمود warning(disable : 4127)
+#رهنمود warning(disable : 4130)
+#رهنمود warning(disable : 4152)
+#رهنمود warning(disable : 4189)
+#رهنمود warning(disable : 4206)
+#رهنمود warning(disable : 4210)
+#رهنمود warning(disable : 4232)
+#رهنمود warning(disable : 4244)
+#رهنمود warning(disable : 4305)
+#رهنمود warning(disable : 4306)
+#رهنمود warning(disable : 4702)
+#رهنمود warning(disable : 4706)
+#پایان_اگر /* defined(_MSC_VER) */
 
-#if defined(_MSC_VER) && !defined(_WIN64)
-#undef SQLITE_4_BYTE_ALIGNED_MALLOC
-#define SQLITE_4_BYTE_ALIGNED_MALLOC
-#endif /* defined(_MSC_VER) && !defined(_WIN64) */
+#إذا defined(_MSC_VER) && !defined(_WIN64)
+#لغو_تعریف SQLITE_4_BYTE_ALIGNED_MALLOC
+#تعریف_کن SQLITE_4_BYTE_ALIGNED_MALLOC
+#پایان_اگر /* defined(_MSC_VER) && !defined(_WIN64) */
 
-#if !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
-#define HAVE_LOG2 0
-#endif /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
+#إذا !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
+#تعریف_کن HAVE_LOG2 0
+#پایان_اگر /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
 
-#endif /* SQLITE_MSVC_H */
+#پایان_اگر /* SQLITE_MSVC_H */

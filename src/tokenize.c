@@ -15,8 +15,8 @@
 ** individual tokens and sends those tokens one-by-one over to the
 ** parser for analysis.
 */
-#include "sqliteInt.h"
-#include <stdlib.h>
+#ضمن "sqliteInt.h"
+#ضمن <stdlib.h>
 
 /* Character classes for tokenizing
 **
@@ -26,40 +26,40 @@
 ** a lookup table is used, all of the classes need to be small integers and
 ** all of them need to be used within the switch.
 */
-#define CC_X          0    /* The letter 'x', or start of BLOB literal */
-#define CC_KYWD0      1    /* First letter of a keyword */
-#define CC_KYWD       2    /* Alphabetics or '_'.  Usable in a keyword */
-#define CC_DIGIT      3    /* Digits */
-#define CC_DOLLAR     4    /* '$' */
-#define CC_VARALPHA   5    /* '@', '#', ':'.  Alphabetic SQL variables */
-#define CC_VARNUM     6    /* '?'.  Numeric SQL variables */
-#define CC_SPACE      7    /* Space characters */
-#define CC_QUOTE      8    /* '"', '\'', or '`'.  String literals, quoted ids */
-#define CC_QUOTE2     9    /* '['.   [...] style quoted ids */
-#define CC_PIPE      10    /* '|'.   Bitwise OR or concatenate */
-#define CC_MINUS     11    /* '-'.  Minus or SQL-style comment */
-#define CC_LT        12    /* '<'.  Part of < or <= or <> */
-#define CC_GT        13    /* '>'.  Part of > or >= */
-#define CC_EQ        14    /* '='.  Part of = or == */
-#define CC_BANG      15    /* '!'.  Part of != */
-#define CC_SLASH     16    /* '/'.  / or c-style comment */
-#define CC_LP        17    /* '(' */
-#define CC_RP        18    /* ')' */
-#define CC_SEMI      19    /* ';' */
-#define CC_PLUS      20    /* '+' */
-#define CC_STAR      21    /* '*' */
-#define CC_PERCENT   22    /* '%' */
-#define CC_COMMA     23    /* ',' */
-#define CC_AND       24    /* '&' */
-#define CC_TILDA     25    /* '~' */
-#define CC_DOT       26    /* '.' */
-#define CC_ID        27    /* unicode characters usable in IDs */
-#define CC_ILLEGAL   28    /* Illegal character */
-#define CC_NUL       29    /* 0x00 */
-#define CC_BOM       30    /* First byte of UTF8 BOM:  0xEF 0xBB 0xBF */
+#تعریف_کن CC_X          0    /* The letter 'x', or start of BLOB literal */
+#تعریف_کن CC_KYWD0      1    /* First letter of a keyword */
+#تعریف_کن CC_KYWD       2    /* Alphabetics or '_'.  Usable in a keyword */
+#تعریف_کن CC_DIGIT      3    /* Digits */
+#تعریف_کن CC_DOLLAR     4    /* '$' */
+#تعریف_کن CC_VARALPHA   5    /* '@', '#', ':'.  Alphabetic SQL variables */
+#تعریف_کن CC_VARNUM     6    /* '?'.  Numeric SQL variables */
+#تعریف_کن CC_SPACE      7    /* Space characters */
+#تعریف_کن CC_QUOTE      8    /* '"', '\'', or '`'.  String literals, quoted ids */
+#تعریف_کن CC_QUOTE2     9    /* '['.   [...] style quoted ids */
+#تعریف_کن CC_PIPE      10    /* '|'.   Bitwise OR or concatenate */
+#تعریف_کن CC_MINUS     11    /* '-'.  Minus or SQL-style comment */
+#تعریف_کن CC_LT        12    /* '<'.  Part of < or <= or <> */
+#تعریف_کن CC_GT        13    /* '>'.  Part of > or >= */
+#تعریف_کن CC_EQ        14    /* '='.  Part of = or == */
+#تعریف_کن CC_BANG      15    /* '!'.  Part of != */
+#تعریف_کن CC_SLASH     16    /* '/'.  / or c-style comment */
+#تعریف_کن CC_LP        17    /* '(' */
+#تعریف_کن CC_RP        18    /* ')' */
+#تعریف_کن CC_SEMI      19    /* ';' */
+#تعریف_کن CC_PLUS      20    /* '+' */
+#تعریف_کن CC_ستاره      21    /* '*' */
+#تعریف_کن CC_PERCENT   22    /* '%' */
+#تعریف_کن CC_COMMA     23    /* ',' */
+#تعریف_کن CC_AND       24    /* '&' */
+#تعریف_کن CC_TILDA     25    /* '~' */
+#تعریف_کن CC_DOT       26    /* '.' */
+#تعریف_کن CC_ID        27    /* unicode characters usable in IDs */
+#تعریف_کن CC_ILLEGAL   28    /* Illegal character */
+#تعریف_کن CC_NUL       29    /* 0x00 */
+#تعریف_کن CC_BOM       30    /* First byte of UTF8 BOM:  0xEF 0xBB 0xBF */
 
-static const unsigned char aiClass[] = {
-#ifdef SQLITE_ASCII
+ساكن ثابت بیعلامت حرف aiClass[] = {
+#اگر_تعریف_شده SQLITE_ASCII
 /*         x0  x1  x2  x3  x4  x5  x6  x7  x8  x9  xa  xb  xc  xd  xe  xf */
 /* 0x */   29, 28, 28, 28, 28, 28, 28, 28, 28,  7,  7, 28,  7,  7, 28, 28,
 /* 1x */   28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
@@ -77,8 +77,8 @@ static const unsigned char aiClass[] = {
 /* Dx */   27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
 /* Ex */   27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 30,
 /* Fx */   27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27
-#endif
-#ifdef SQLITE_EBCDIC
+#پایان_اگر
+#اگر_تعریف_شده SQLITE_EBCDIC
 /*         x0  x1  x2  x3  x4  x5  x6  x7  x8  x9  xa  xb  xc  xd  xe  xf */
 /* 0x */   29, 28, 28, 28, 28,  7, 28, 28, 28, 28, 28, 28,  7,  7, 28, 28,
 /* 1x */   28, 28, 28, 28, 28,  7, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
@@ -96,7 +96,7 @@ static const unsigned char aiClass[] = {
 /* Dx */   28,  1,  1,  1,  1,  1,  1,  1,  1,  1, 28, 28, 28, 28, 28, 28,
 /* Ex */   28, 28,  1,  1,  1,  1,  1,  0,  2,  2, 28, 28, 28, 28, 28, 28,
 /* Fx */    3,  3,  3,  3,  3,  3,  3,  3,  3,  3, 28, 28, 28, 28, 28, 28,
-#endif
+#پایان_اگر
 };
 
 /*
@@ -108,12 +108,12 @@ static const unsigned char aiClass[] = {
 **
 ** Used by keywordhash.h
 */
-#ifdef SQLITE_ASCII
-# define charMap(X) sqlite3UpperToLower[(unsigned char)X]
-#endif
-#ifdef SQLITE_EBCDIC
-# define charMap(X) ebcdicToAscii[(unsigned char)X]
-const unsigned char ebcdicToAscii[] = {
+#اگر_تعریف_شده SQLITE_ASCII
+# define charMap(X) sqlite3_فوقانی_مقصد_پایینی[(بیعلامت حرف)X]
+#پایان_اگر
+#اگر_تعریف_شده SQLITE_EBCDIC
+# define charMap(X) ebcdic_مقصد_Ascii[(بیعلامت حرف)X]
+ثابت بیعلامت حرف ebcdic_مقصد_Ascii[] = {
 /* 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F */
    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 0x */
    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* 1x */
@@ -132,7 +132,7 @@ const unsigned char ebcdicToAscii[] = {
    0,  0,115,116,117,118,119,120,121,122,  0,  0,  0,  0,  0,  0,  /* Ex */
    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  /* Fx */
 };
-#endif
+#پایان_اگر
 
 /*
 ** The sqlite3KeywordCode function looks up an identifier to determine if
@@ -145,7 +145,7 @@ const unsigned char ebcdicToAscii[] = {
 ** named keywordhash.h and then included into this source file by
 ** the #include below.
 */
-#include "keywordhash.h"
+#ضمن "keywordhash.h"
 
 
 /*
@@ -164,11 +164,11 @@ const unsigned char ebcdicToAscii[] = {
 ** SQLite will allow '$' in identifiers for compatibility.
 ** But the feature is undocumented.
 */
-#ifdef SQLITE_ASCII
-#define IdChar(C)  ((sqlite3CtypeMap[(unsigned char)C]&0x46)!=0)
-#endif
-#ifdef SQLITE_EBCDIC
-const char sqlite3IsEbcdicIdChar[] = {
+#اگر_تعریف_شده SQLITE_ASCII
+#تعریف_کن IdChar(C)  ((sqlite3CtypeMap[(بیعلامت حرف)C]&0x46)!=0)
+#پایان_اگر
+#اگر_تعریف_شده SQLITE_EBCDIC
+ثابت حرف sqlite3IsEbcdicIdChar[] = {
 /* x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xA xB xC xD xE xF */
     0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,  /* 4x */
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0,  /* 5x */
@@ -183,34 +183,34 @@ const char sqlite3IsEbcdicIdChar[] = {
     0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,  /* Ex */
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0,  /* Fx */
 };
-#define IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
-#endif
+#تعریف_کن IdChar(C)  (((c=C)>=0x42 && sqlite3IsEbcdicIdChar[c-0x40]))
+#پایان_اگر
 
 /* Make the IdChar function accessible from ctime.c and alter.c */
-int sqlite3IsIdChar(u8 c){ return IdChar(c); }
+صحيح sqlite3IsIdChar(u8 c){ أرجع IdChar(c); }
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
+#اگر_تعریف_نشده SQLITE_OMIT_WINDOWFUNC
 /*
 ** Return the id of the next token in string (*pz). Before returning, set
 ** (*pz) to point to the byte following the parsed token.
 */
-static int getToken(const unsigned char **pz){
-  const unsigned char *z = *pz;
-  int t;                          /* Token type to return */
-  do {
+ساكن صحيح getToken(ثابت بیعلامت حرف **pz){
+  ثابت بیعلامت حرف *z = *pz;
+  صحيح t;                          /* Token type to return */
+  افعل {
     z += sqlite3GetToken(z, &t);
-  }while( t==TK_SPACE || t==TK_COMMENT );
-  if( t==TK_ID 
+  }طالما( t==TK_SPACE || t==TK_COMMENT );
+  إذا( t==TK_ID 
    || t==TK_STRING 
    || t==TK_JOIN_KW 
-   || t==TK_WINDOW 
+   || t==TK_پنجره 
    || t==TK_OVER 
    || sqlite3ParserFallback(t)==TK_ID 
   ){
     t = TK_ID;
   }
   *pz = z;
-  return t;
+  أرجع t;
 }
 
 /*
@@ -243,533 +243,533 @@ static int getToken(const unsigned char **pz){
 **   * the previous token was TK_RP, and
 **   * the next token is TK_LP.
 */
-static int analyzeWindowKeyword(const unsigned char *z){
-  int t;
+ساكن صحيح analyze_پنجره_Keyword(ثابت بیعلامت حرف *z){
+  صحيح t;
   t = getToken(&z);
-  if( t!=TK_ID ) return TK_ID;
+  إذا( t!=TK_ID ) أرجع TK_ID;
   t = getToken(&z);
-  if( t!=TK_AS ) return TK_ID;
-  return TK_WINDOW;
+  إذا( t!=TK_AS ) أرجع TK_ID;
+  أرجع TK_پنجره;
 }
-static int analyzeOverKeyword(const unsigned char *z, int lastToken){
-  if( lastToken==TK_RP ){
-    int t = getToken(&z);
-    if( t==TK_LP || t==TK_ID ) return TK_OVER;
+ساكن صحيح analyzeOverKeyword(ثابت بیعلامت حرف *z, صحيح آخرین_Token){
+  إذا( آخرین_Token==TK_RP ){
+    صحيح t = getToken(&z);
+    إذا( t==TK_LP || t==TK_ID ) أرجع TK_OVER;
   }
-  return TK_ID;
+  أرجع TK_ID;
 }
-static int analyzeFilterKeyword(const unsigned char *z, int lastToken){
-  if( lastToken==TK_RP && getToken(&z)==TK_LP ){
-    return TK_FILTER;
+ساكن صحيح analyzeFilterKeyword(ثابت بیعلامت حرف *z, صحيح آخرین_Token){
+  إذا( آخرین_Token==TK_RP && getToken(&z)==TK_LP ){
+    أرجع TK_FILTER;
   }
-  return TK_ID;
+  أرجع TK_ID;
 }
-#endif /* SQLITE_OMIT_WINDOWFUNC */
+#پایان_اگر /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
 ** Return the length (in bytes) of the token that begins at z[0]. 
 ** Store the token type in *tokenType before returning.
 */
-i64 sqlite3GetToken(const unsigned char *z, int *tokenType){
+i64 sqlite3GetToken(ثابت بیعلامت حرف *z, صحيح *tokenType){
   i64 i;
-  int c;
-  switch( aiClass[*z] ){  /* Switch on the character-class of the first byte
+  صحيح c;
+  بدل( aiClass[*z] ){  /* Switch on the character-class of the first byte
                           ** of the token. See the comment on the CC_ defines
                           ** above. */
-    case CC_SPACE: {
+    حالة CC_SPACE: {
       testcase( z[0]==' ' );
       testcase( z[0]=='\t' );
       testcase( z[0]=='\n' );
       testcase( z[0]=='\f' );
       testcase( z[0]=='\r' );
-      for(i=1; sqlite3Isspace(z[i]); i++){}
+      لكل(i=1; sqlite3Isspace(z[i]); i++){}
       *tokenType = TK_SPACE;
-      return i;
+      أرجع i;
     }
-    case CC_MINUS: {
-      if( z[1]=='-' ){
-        for(i=2; (c=z[i])!=0 && c!='\n'; i++){}
+    حالة CC_MINUS: {
+      إذا( z[1]=='-' ){
+        لكل(i=2; (c=z[i])!=0 && c!='\n'; i++){}
         *tokenType = TK_COMMENT;
-        return i;
-      }else if( z[1]=='>' ){
+        أرجع i;
+      }وإلا إذا( z[1]=='>' ){
         *tokenType = TK_PTR;
-        return 2 + (z[2]=='>');
+        أرجع 2 + (z[2]=='>');
       }
       *tokenType = TK_MINUS;
-      return 1;
+      أرجع 1;
     }
-    case CC_LP: {
+    حالة CC_LP: {
       *tokenType = TK_LP;
-      return 1;
+      أرجع 1;
     }
-    case CC_RP: {
+    حالة CC_RP: {
       *tokenType = TK_RP;
-      return 1;
+      أرجع 1;
     }
-    case CC_SEMI: {
+    حالة CC_SEMI: {
       *tokenType = TK_SEMI;
-      return 1;
+      أرجع 1;
     }
-    case CC_PLUS: {
+    حالة CC_PLUS: {
       *tokenType = TK_PLUS;
-      return 1;
+      أرجع 1;
     }
-    case CC_STAR: {
-      *tokenType = TK_STAR;
-      return 1;
+    حالة CC_ستاره: {
+      *tokenType = TK_ستاره;
+      أرجع 1;
     }
-    case CC_SLASH: {
-      if( z[1]!='*' || z[2]==0 ){
+    حالة CC_SLASH: {
+      إذا( z[1]!='*' || z[2]==0 ){
         *tokenType = TK_SLASH;
-        return 1;
+        أرجع 1;
       }
-      for(i=3, c=z[2]; (c!='*' || z[i]!='/') && (c=z[i])!=0; i++){}
-      if( c ) i++;
+      لكل(i=3, c=z[2]; (c!='*' || z[i]!='/') && (c=z[i])!=0; i++){}
+      إذا( c ) i++;
       *tokenType = TK_COMMENT;
-      return i;
+      أرجع i;
     }
-    case CC_PERCENT: {
+    حالة CC_PERCENT: {
       *tokenType = TK_REM;
-      return 1;
+      أرجع 1;
     }
-    case CC_EQ: {
+    حالة CC_EQ: {
       *tokenType = TK_EQ;
-      return 1 + (z[1]=='=');
+      أرجع 1 + (z[1]=='=');
     }
-    case CC_LT: {
-      if( (c=z[1])=='=' ){
+    حالة CC_LT: {
+      إذا( (c=z[1])=='=' ){
         *tokenType = TK_LE;
-        return 2;
-      }else if( c=='>' ){
+        أرجع 2;
+      }وإلا إذا( c=='>' ){
         *tokenType = TK_NE;
-        return 2;
-      }else if( c=='<' ){
+        أرجع 2;
+      }وإلا إذا( c=='<' ){
         *tokenType = TK_LSHIFT;
-        return 2;
-      }else{
+        أرجع 2;
+      }وإلا{
         *tokenType = TK_LT;
-        return 1;
+        أرجع 1;
       }
     }
-    case CC_GT: {
-      if( (c=z[1])=='=' ){
+    حالة CC_GT: {
+      إذا( (c=z[1])=='=' ){
         *tokenType = TK_GE;
-        return 2;
-      }else if( c=='>' ){
+        أرجع 2;
+      }وإلا إذا( c=='>' ){
         *tokenType = TK_RSHIFT;
-        return 2;
-      }else{
+        أرجع 2;
+      }وإلا{
         *tokenType = TK_GT;
-        return 1;
+        أرجع 1;
       }
     }
-    case CC_BANG: {
-      if( z[1]!='=' ){
+    حالة CC_BANG: {
+      إذا( z[1]!='=' ){
         *tokenType = TK_ILLEGAL;
-        return 1;
-      }else{
+        أرجع 1;
+      }وإلا{
         *tokenType = TK_NE;
-        return 2;
+        أرجع 2;
       }
     }
-    case CC_PIPE: {
-      if( z[1]!='|' ){
+    حالة CC_PIPE: {
+      إذا( z[1]!='|' ){
         *tokenType = TK_BITOR;
-        return 1;
-      }else{
+        أرجع 1;
+      }وإلا{
         *tokenType = TK_CONCAT;
-        return 2;
+        أرجع 2;
       }
     }
-    case CC_COMMA: {
+    حالة CC_COMMA: {
       *tokenType = TK_COMMA;
-      return 1;
+      أرجع 1;
     }
-    case CC_AND: {
+    حالة CC_AND: {
       *tokenType = TK_BITAND;
-      return 1;
+      أرجع 1;
     }
-    case CC_TILDA: {
+    حالة CC_TILDA: {
       *tokenType = TK_BITNOT;
-      return 1;
+      أرجع 1;
     }
-    case CC_QUOTE: {
-      int delim = z[0];
+    حالة CC_QUOTE: {
+      صحيح delim = z[0];
       testcase( delim=='`' );
       testcase( delim=='\'' );
       testcase( delim=='"' );
-      for(i=1; (c=z[i])!=0; i++){
-        if( c==delim ){
-          if( z[i+1]==delim ){
+      لكل(i=1; (c=z[i])!=0; i++){
+        إذا( c==delim ){
+          إذا( z[i+1]==delim ){
             i++;
-          }else{
-            break;
+          }وإلا{
+            اكسر;
           }
         }
       }
-      if( c=='\'' ){
+      إذا( c=='\'' ){
         *tokenType = TK_STRING;
-        return i+1;
-      }else if( c!=0 ){
+        أرجع i+1;
+      }وإلا إذا( c!=0 ){
         *tokenType = TK_ID;
-        return i+1;
-      }else{
+        أرجع i+1;
+      }وإلا{
         *tokenType = TK_ILLEGAL;
-        return i;
+        أرجع i;
       }
     }
-    case CC_DOT: {
-#ifndef SQLITE_OMIT_FLOATING_POINT
-      if( !sqlite3Isdigit(z[1]) )
-#endif
+    حالة CC_DOT: {
+#اگر_تعریف_نشده SQLITE_OMIT_FLOATING_نقطه
+      إذا( !sqlite3Isdigit(z[1]) )
+#پایان_اگر
       {
         *tokenType = TK_DOT;
-        return 1;
+        أرجع 1;
       }
       /* If the next character is a digit, this is a floating point
       ** number that begins with ".".  Fall thru into the next case */
       /* no break */ deliberate_fall_through
     }
-    case CC_DIGIT: {
+    حالة CC_DIGIT: {
       testcase( z[0]=='0' );  testcase( z[0]=='1' );  testcase( z[0]=='2' );
       testcase( z[0]=='3' );  testcase( z[0]=='4' );  testcase( z[0]=='5' );
       testcase( z[0]=='6' );  testcase( z[0]=='7' );  testcase( z[0]=='8' );
       testcase( z[0]=='9' );  testcase( z[0]=='.' );
       *tokenType = TK_INTEGER;
-#ifndef SQLITE_OMIT_HEX_INTEGER
-      if( z[0]=='0' && (z[1]=='x' || z[1]=='X') && sqlite3Isxdigit(z[2]) ){
-        for(i=3; 1; i++){
-          if( sqlite3Isxdigit(z[i])==0 ){
-            if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+#اگر_تعریف_نشده SQLITE_OMIT_HEX_INTEGER
+      إذا( z[0]=='0' && (z[1]=='x' || z[1]=='X') && sqlite3Isxdigit(z[2]) ){
+        لكل(i=3; 1; i++){
+          إذا( sqlite3Isxdigit(z[i])==0 ){
+            إذا( z[i]==SQLITE_DIGIT_SEPARATOR ){
               *tokenType = TK_QNUMBER;
-            }else{
-              break;
+            }وإلا{
+              اكسر;
             }
           }
         }
-      }else
-#endif
+      }وإلا
+#پایان_اگر
         {
-        for(i=0; 1; i++){
-          if( sqlite3Isdigit(z[i])==0 ){
-            if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+        لكل(i=0; 1; i++){
+          إذا( sqlite3Isdigit(z[i])==0 ){
+            إذا( z[i]==SQLITE_DIGIT_SEPARATOR ){
               *tokenType = TK_QNUMBER;
-            }else{
-              break;
+            }وإلا{
+              اكسر;
             }
           }
         }
-#ifndef SQLITE_OMIT_FLOATING_POINT
-        if( z[i]=='.' ){
-          if( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
-          for(i++; 1; i++){
-            if( sqlite3Isdigit(z[i])==0 ){
-              if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+#اگر_تعریف_نشده SQLITE_OMIT_FLOATING_نقطه
+        إذا( z[i]=='.' ){
+          إذا( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
+          لكل(i++; 1; i++){
+            إذا( sqlite3Isdigit(z[i])==0 ){
+              إذا( z[i]==SQLITE_DIGIT_SEPARATOR ){
                 *tokenType = TK_QNUMBER;
-              }else{
-                break;
+              }وإلا{
+                اكسر;
               }
             }
           }
         }
-        if( (z[i]=='e' || z[i]=='E') &&
+        إذا( (z[i]=='e' || z[i]=='E') &&
              ( sqlite3Isdigit(z[i+1]) 
               || ((z[i+1]=='+' || z[i+1]=='-') && sqlite3Isdigit(z[i+2]))
              )
         ){
-          if( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
-          for(i+=2; 1; i++){
-            if( sqlite3Isdigit(z[i])==0 ){
-              if( z[i]==SQLITE_DIGIT_SEPARATOR ){
+          إذا( *tokenType==TK_INTEGER ) *tokenType = TK_FLOAT;
+          لكل(i+=2; 1; i++){
+            إذا( sqlite3Isdigit(z[i])==0 ){
+              إذا( z[i]==SQLITE_DIGIT_SEPARATOR ){
                 *tokenType = TK_QNUMBER;
-              }else{
-                break;
+              }وإلا{
+                اكسر;
               }
             }
           }
         }
-#endif
+#پایان_اگر
       }
-      while( IdChar(z[i]) ){
+      طالما( IdChar(z[i]) ){
         *tokenType = TK_ILLEGAL;
         i++;
       }
-      return i;
+      أرجع i;
     }
-    case CC_QUOTE2: {
-      for(i=1, c=z[0]; c!=']' && (c=z[i])!=0; i++){}
+    حالة CC_QUOTE2: {
+      لكل(i=1, c=z[0]; c!=']' && (c=z[i])!=0; i++){}
       *tokenType = c==']' ? TK_ID : TK_ILLEGAL;
-      return i;
+      أرجع i;
     }
-    case CC_VARNUM: {
+    حالة CC_VARNUM: {
       *tokenType = TK_VARIABLE;
-      for(i=1; sqlite3Isdigit(z[i]); i++){}
-      return i;
+      لكل(i=1; sqlite3Isdigit(z[i]); i++){}
+      أرجع i;
     }
-    case CC_DOLLAR:
-    case CC_VARALPHA: {
+    حالة CC_DOLLAR:
+    حالة CC_VARALPHA: {
       i64 n = 0;
       testcase( z[0]=='$' );  testcase( z[0]=='@' );
       testcase( z[0]==':' );  testcase( z[0]=='#' );
       *tokenType = TK_VARIABLE;
-      for(i=1; (c=z[i])!=0; i++){
-        if( IdChar(c) ){
+      لكل(i=1; (c=z[i])!=0; i++){
+        إذا( IdChar(c) ){
           n++;
-#ifndef SQLITE_OMIT_TCL_VARIABLE
-        }else if( c=='(' && n>0 ){
-          do{
+#اگر_تعریف_نشده SQLITE_OMIT_TCL_VARIABLE
+        }وإلا إذا( c=='(' && n>0 ){
+          افعل{
             i++;
-          }while( (c=z[i])!=0 && !sqlite3Isspace(c) && c!=')' );
-          if( c==')' ){
+          }طالما( (c=z[i])!=0 && !sqlite3Isspace(c) && c!=')' );
+          إذا( c==')' ){
             i++;
-          }else{
+          }وإلا{
             *tokenType = TK_ILLEGAL;
           }
-          break;
-        }else if( c==':' && z[i+1]==':' ){
+          اكسر;
+        }وإلا إذا( c==':' && z[i+1]==':' ){
           i++;
-#endif
-        }else{
-          break;
+#پایان_اگر
+        }وإلا{
+          اكسر;
         }
       }
-      if( n==0 ) *tokenType = TK_ILLEGAL;
-      return i;
+      إذا( n==0 ) *tokenType = TK_ILLEGAL;
+      أرجع i;
     }
-    case CC_KYWD0: {
-      if( aiClass[z[1]]>CC_KYWD ){ i = 1;  break; }
-      for(i=2; aiClass[z[i]]<=CC_KYWD; i++){}
-      if( IdChar(z[i]) ){
+    حالة CC_KYWD0: {
+      إذا( aiClass[z[1]]>CC_KYWD ){ i = 1;  اكسر; }
+      لكل(i=2; aiClass[z[i]]<=CC_KYWD; i++){}
+      إذا( IdChar(z[i]) ){
         /* This token started out using characters that can appear in keywords,
         ** but z[i] is a character not allowed within keywords, so this must
         ** be an identifier instead */
         i++;
-        break;
+        اكسر;
       }
       *tokenType = TK_ID;
-      return keywordCode((char*)z, i, tokenType);
+      أرجع keyword_کد((حرف*)z, i, tokenType);
     }
-    case CC_X: {
-#ifndef SQLITE_OMIT_BLOB_LITERAL
+    حالة CC_X: {
+#اگر_تعریف_نشده SQLITE_OMIT_BLOB_LITERAL
       testcase( z[0]=='x' ); testcase( z[0]=='X' );
-      if( z[1]=='\'' ){
+      إذا( z[1]=='\'' ){
         *tokenType = TK_BLOB;
-        for(i=2; sqlite3Isxdigit(z[i]); i++){}
-        if( z[i]!='\'' || i%2 ){
+        لكل(i=2; sqlite3Isxdigit(z[i]); i++){}
+        إذا( z[i]!='\'' || i%2 ){
           *tokenType = TK_ILLEGAL;
-          while( z[i] && z[i]!='\'' ){ i++; }
+          طالما( z[i] && z[i]!='\'' ){ i++; }
         }
-        if( z[i] ) i++;
-        return i;
+        إذا( z[i] ) i++;
+        أرجع i;
       }
-#endif
+#پایان_اگر
       /* If it is not a BLOB literal, then it must be an ID, since no
       ** SQL keywords start with the letter 'x'.  Fall through */
       /* no break */ deliberate_fall_through
     }
-    case CC_KYWD:
-    case CC_ID: {
+    حالة CC_KYWD:
+    حالة CC_ID: {
       i = 1;
-      break;
+      اكسر;
     }
-    case CC_BOM: {
-      if( z[1]==0xbb && z[2]==0xbf ){
+    حالة CC_BOM: {
+      إذا( z[1]==0xbb && z[2]==0xbf ){
         *tokenType = TK_SPACE;
-        return 3;
+        أرجع 3;
       }
       i = 1;
-      break;
+      اكسر;
     }
-    case CC_NUL: {
+    حالة CC_NUL: {
       *tokenType = TK_ILLEGAL;
-      return 0;
+      أرجع 0;
     }
-    default: {
+    افتراضي: {
       *tokenType = TK_ILLEGAL;
-      return 1;
+      أرجع 1;
     }
   }
-  while( IdChar(z[i]) ){ i++; }
+  طالما( IdChar(z[i]) ){ i++; }
   *tokenType = TK_ID;
-  return i;
+  أرجع i;
 }
 
 /*
 ** Run the parser on the given SQL string.
 */
-int sqlite3RunParser(Parse *pParse, const char *zSql){
-  int nErr = 0;                   /* Number of errors encountered */
-  void *pEngine;                  /* The LEMON-generated LALR(1) parser */
+صحيح sqlite3_پیاپی_Parser(Parse *pParse, ثابت حرف *zSql){
+  صحيح nErr = 0;                   /* Number of errors encountered */
+  فراغ *pEngine;                  /* The LEMON-generated LALR(1) parser */
   i64 n = 0;                      /* Length of the next token token */
-  int tokenType;                  /* type of the next token */
-  int lastTokenParsed = -1;       /* type of the previous token */
+  صحيح tokenType;                  /* type of the next token */
+  صحيح آخرین_Token_Parsed = -1;       /* type of the previous token */
   sqlite3 *db = pParse->db;       /* The database connection */
   i64 mxSqlLen;                   /* Max length of an SQL string */
-  Parse *pParentParse = 0;        /* Outer parse context, if any */
-#ifdef sqlite3Parser_ENGINEALWAYSONSTACK
+  Parse *p_والد_Parse = 0;        /* Outer parse context, if any */
+#اگر_تعریف_شده sqlite3Parser_ENGINEALWAYSONSTACK
   yyParser sEngine;    /* Space to hold the Lemon-generated Parser object */
-#endif
+#پایان_اگر
   VVA_ONLY( u8 startedWithOom = db->mallocFailed );
 
-  assert( zSql!=0 );
-  mxSqlLen = db->aLimit[SQLITE_LIMIT_SQL_LENGTH];
-  if( db->nVdbeActive==0 ){
+  أكد( zSql!=0 );
+  mxSqlLen = db->a_حد[SQLITE_حد_SQL_درازی];
+  إذا( db->n_Vdbe_فعال==0 ){
     AtomicStore(&db->u1.isInterrupted, 0);
   }
   pParse->rc = SQLITE_OK;
-  pParse->zTail = zSql;
-#ifdef SQLITE_DEBUG
-  if( db->flags & SQLITE_ParserTrace ){
-    printf("parser: [[[%s]]]\n", zSql);
+  pParse->z_دم = zSql;
+#اگر_تعریف_شده SQLITE_DEBUG
+  إذا( db->flags & SQLITE_ParserTrace ){
+    چاپ_کن("parser: [[[%s]]]\n", zSql);
     sqlite3ParserTrace(stdout, "parser: ");
-  }else{
+  }وإلا{
     sqlite3ParserTrace(0, 0);
   }
-#endif
-#ifdef sqlite3Parser_ENGINEALWAYSONSTACK
+#پایان_اگر
+#اگر_تعریف_شده sqlite3Parser_ENGINEALWAYSONSTACK
   pEngine = &sEngine;
   sqlite3ParserInit(pEngine, pParse);
-#else
+#وإلا
   pEngine = sqlite3ParserAlloc(sqlite3Malloc, pParse);
-  if( pEngine==0 ){
+  إذا( pEngine==0 ){
     sqlite3OomFault(db);
-    return SQLITE_NOMEM_BKPT;
+    أرجع SQLITE_NOMEM_BKPT;
   }
-#endif
-  assert( pParse->pNewTable==0 );
-  assert( pParse->pNewTrigger==0 );
-  assert( pParse->nVar==0 );
-  assert( pParse->pVList==0 );
-  pParentParse = db->pParse;
+#پایان_اگر
+  أكد( pParse->p_New_جدول==0 );
+  أكد( pParse->pNewTrigger==0 );
+  أكد( pParse->nVar==0 );
+  أكد( pParse->pVList==0 );
+  p_والد_Parse = db->pParse;
   db->pParse = pParse;
-  while( 1 ){
+  طالما( 1 ){
     n = sqlite3GetToken((u8*)zSql, &tokenType);
     mxSqlLen -= n;
-    if( mxSqlLen<0 ){
+    إذا( mxSqlLen<0 ){
       pParse->rc = SQLITE_TOOBIG;
       pParse->nErr++;
-      break;
+      اكسر;
     }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-    if( tokenType>=TK_WINDOW ){
-      assert( tokenType==TK_SPACE || tokenType==TK_OVER || tokenType==TK_FILTER
-           || tokenType==TK_ILLEGAL || tokenType==TK_WINDOW 
+#اگر_تعریف_نشده SQLITE_OMIT_WINDOWFUNC
+    إذا( tokenType>=TK_پنجره ){
+      أكد( tokenType==TK_SPACE || tokenType==TK_OVER || tokenType==TK_FILTER
+           || tokenType==TK_ILLEGAL || tokenType==TK_پنجره 
            || tokenType==TK_QNUMBER || tokenType==TK_COMMENT
       );
-#else
-    if( tokenType>=TK_SPACE ){
-      assert( tokenType==TK_SPACE || tokenType==TK_ILLEGAL 
+#وإلا
+    إذا( tokenType>=TK_SPACE ){
+      أكد( tokenType==TK_SPACE || tokenType==TK_ILLEGAL 
            || tokenType==TK_QNUMBER || tokenType==TK_COMMENT
       );
-#endif /* SQLITE_OMIT_WINDOWFUNC */
-      if( AtomicLoad(&db->u1.isInterrupted) ){
-        pParse->rc = SQLITE_INTERRUPT;
+#پایان_اگر /* SQLITE_OMIT_WINDOWFUNC */
+      إذا( Atomic_بارگیری(&db->u1.isInterrupted) ){
+        pParse->rc = SQLITE_وقفه;
         pParse->nErr++;
-        break;
+        اكسر;
       }
-      if( tokenType==TK_SPACE ){
+      إذا( tokenType==TK_SPACE ){
         zSql += n;
-        continue;
+        استمر;
       }
-      if( zSql[0]==0 ){
+      إذا( zSql[0]==0 ){
         /* Upon reaching the end of input, call the parser two more times
         ** with tokens TK_SEMI and 0, in that order. */
-        if( lastTokenParsed==TK_SEMI ){
+        إذا( آخرین_Token_Parsed==TK_SEMI ){
           tokenType = 0;
-        }else if( lastTokenParsed==0 ){
-          break;
-        }else{
+        }وإلا إذا( آخرین_Token_Parsed==0 ){
+          اكسر;
+        }وإلا{
           tokenType = TK_SEMI;
         }
         n = 0;
-#ifndef SQLITE_OMIT_WINDOWFUNC
-      }else if( tokenType==TK_WINDOW ){
-        assert( n==6 );
-        tokenType = analyzeWindowKeyword((const u8*)&zSql[6]);
-      }else if( tokenType==TK_OVER ){
-        assert( n==4 );
-        tokenType = analyzeOverKeyword((const u8*)&zSql[4], lastTokenParsed);
-      }else if( tokenType==TK_FILTER ){
-        assert( n==6 );
-        tokenType = analyzeFilterKeyword((const u8*)&zSql[6], lastTokenParsed);
-#endif /* SQLITE_OMIT_WINDOWFUNC */
-      }else if( tokenType==TK_COMMENT
+#اگر_تعریف_نشده SQLITE_OMIT_WINDOWFUNC
+      }وإلا إذا( tokenType==TK_پنجره ){
+        أكد( n==6 );
+        tokenType = analyze_پنجره_Keyword((ثابت u8*)&zSql[6]);
+      }وإلا إذا( tokenType==TK_OVER ){
+        أكد( n==4 );
+        tokenType = analyzeOverKeyword((ثابت u8*)&zSql[4], آخرین_Token_Parsed);
+      }وإلا إذا( tokenType==TK_FILTER ){
+        أكد( n==6 );
+        tokenType = analyzeFilterKeyword((ثابت u8*)&zSql[6], آخرین_Token_Parsed);
+#پایان_اگر /* SQLITE_OMIT_WINDOWFUNC */
+      }وإلا إذا( tokenType==TK_COMMENT
              && (db->init.busy || (db->flags & SQLITE_Comments)!=0)
       ){
         /* Ignore SQL comments if either (1) we are reparsing the schema or
         ** (2) SQLITE_DBCONFIG_ENABLE_COMMENTS is turned on (the default). */
         zSql += n;
-        continue;
-      }else if( tokenType!=TK_QNUMBER ){
+        استمر;
+      }وإلا إذا( tokenType!=TK_QNUMBER ){
         Token x;
         x.z = zSql;
         x.n = (u32)n;
-        sqlite3ErrorMsg(pParse, "unrecognized token: \"%T\"", &x);
-        break;
+        sqlite3_Error_پیام(pParse, "unrecognized token: \"%T\"", &x);
+        اكسر;
       }
     }
-    pParse->sLastToken.z = zSql;
-    pParse->sLastToken.n = (u32)n;
-    sqlite3Parser(pEngine, tokenType, pParse->sLastToken);
-    lastTokenParsed = tokenType;
+    pParse->s_آخرین_Token.z = zSql;
+    pParse->s_آخرین_Token.n = (u32)n;
+    sqlite3Parser(pEngine, tokenType, pParse->s_آخرین_Token);
+    آخرین_Token_Parsed = tokenType;
     zSql += n;
-    assert( db->mallocFailed==0 || pParse->rc!=SQLITE_OK || startedWithOom );
-    if( pParse->rc!=SQLITE_OK ) break;
+    أكد( db->mallocFailed==0 || pParse->rc!=SQLITE_OK || startedWithOom );
+    إذا( pParse->rc!=SQLITE_OK ) اكسر;
   }
-  assert( nErr==0 );
-#ifdef YYTRACKMAXSTACKDEPTH
+  أكد( nErr==0 );
+#اگر_تعریف_شده YYTRACKMAXSTACKDEPTH
   sqlite3_mutex_enter(sqlite3MallocMutex());
-  sqlite3StatusHighwater(SQLITE_STATUS_PARSER_STACK,
-      sqlite3ParserStackPeak(pEngine)
+  sqlite3_وضعیت_Highwater(SQLITE_وضعیت_PARSER_پشته,
+      sqlite3_Parser_پشته_Peak(pEngine)
   );
   sqlite3_mutex_leave(sqlite3MallocMutex());
-#endif /* YYDEBUG */
-#ifdef sqlite3Parser_ENGINEALWAYSONSTACK
+#پایان_اگر /* YYDEBUG */
+#اگر_تعریف_شده sqlite3Parser_ENGINEALWAYSONSTACK
   sqlite3ParserFinalize(pEngine);
-#else
+#وإلا
   sqlite3ParserFree(pEngine, sqlite3_free);
-#endif
-  if( db->mallocFailed ){
+#پایان_اگر
+  إذا( db->mallocFailed ){
     pParse->rc = SQLITE_NOMEM_BKPT;
   }
-  if( pParse->zErrMsg || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_DONE) ){
-    if( pParse->zErrMsg==0 ){
-      pParse->zErrMsg = sqlite3DbStrDup(db, sqlite3ErrStr(pParse->rc));
+  إذا( pParse->z_Err_پیام || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_انجامشده) ){
+    إذا( pParse->z_Err_پیام==0 ){
+      pParse->z_Err_پیام = sqlite3DbStrDup(db, sqlite3ErrStr(pParse->rc));
     }
-    if( (pParse->prepFlags & SQLITE_PREPARE_DONT_LOG)==0 ){
-      sqlite3_log(pParse->rc, "%s in \"%s\"", pParse->zErrMsg, pParse->zTail);
+    إذا( (pParse->prepFlags & SQLITE_PREPARE_DONT_LOG)==0 ){
+      sqlite3_log(pParse->rc, "%s in \"%s\"", pParse->z_Err_پیام, pParse->z_دم);
     }
     nErr++;
   }
-  pParse->zTail = zSql;
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  sqlite3_free(pParse->apVtabLock);
-#endif
+  pParse->z_دم = zSql;
+#اگر_تعریف_نشده SQLITE_OMIT_VIRTUALTABLE
+  sqlite3_free(pParse->ap_Vtab_قفل);
+#پایان_اگر
 
-  if( pParse->pNewTable && !IN_SPECIAL_PARSE ){
+  إذا( pParse->p_New_جدول && !درون_SPECIAL_PARSE ){
     /* If the pParse->declareVtab flag is set, do not delete any table 
     ** structure built up in pParse->pNewTable. The calling code (see vtab.c)
     ** will take responsibility for freeing the Table structure.
     */
-    sqlite3DeleteTable(db, pParse->pNewTable);
+    sqlite3_Delete_جدول(db, pParse->p_New_جدول);
   }
-  if( pParse->pNewTrigger && !IN_RENAME_OBJECT ){
+  إذا( pParse->pNewTrigger && !درون_RENAME_OBJECT ){
     sqlite3DeleteTrigger(db, pParse->pNewTrigger);
   }
-  if( pParse->pVList ) sqlite3DbNNFreeNN(db, pParse->pVList);
-  db->pParse = pParentParse;
-  assert( nErr==0 || pParse->rc!=SQLITE_OK );
-  return nErr;
+  إذا( pParse->pVList ) sqlite3DbNNFreeNN(db, pParse->pVList);
+  db->pParse = p_والد_Parse;
+  أكد( nErr==0 || pParse->rc!=SQLITE_OK );
+  أرجع nErr;
 }
 
 
-#ifdef SQLITE_ENABLE_NORMALIZE
+#اگر_تعریف_شده SQLITE_ENABLE_NORMALIZE
 /*
 ** Insert a single space character into pStr if the current string
 ** ends with an identifier
 */
-static void addSpaceSeparator(sqlite3_str *pStr){
-  if( pStr->nChar && sqlite3IsIdChar(pStr->zText[pStr->nChar-1]) ){
+ساكن فراغ جمع_کن_Space_Separator(sqlite3_str *pStr){
+  إذا( pStr->nChar && sqlite3IsIdChar(pStr->z_متن[pStr->nChar-1]) ){
     sqlite3_str_append(pStr, " ", 1);
   }
 }
@@ -779,121 +779,121 @@ static void addSpaceSeparator(sqlite3_str *pStr){
 ** the normalization in space obtained from sqlite3DbMalloc().  Or return
 ** NULL if anything goes wrong or if zSql is NULL.
 */
-char *sqlite3Normalize(
+حرف *sqlite3Normalize(
   Vdbe *pVdbe,       /* VM being reprepared */
-  const char *zSql   /* The original SQL string */
+  ثابت حرف *zSql   /* The original SQL string */
 ){
   sqlite3 *db;       /* The database connection */
-  int i;             /* Next unread byte of zSql[] */
+  صحيح i;             /* Next unread byte of zSql[] */
   i64 n;             /* length of current token */
-  int tokenType;     /* type of current token */
-  int prevType = 0;  /* Previous non-whitespace token */
-  int nParen;        /* Number of nested levels of parentheses */
-  int iStartIN;      /* Start of RHS of IN operator in z[] */
-  int nParenAtIN;    /* Value of nParent at start of RHS of IN operator */
+  صحيح tokenType;     /* type of current token */
+  صحيح prevType = 0;  /* Previous non-whitespace token */
+  صحيح nParen;        /* Number of nested levels of parentheses */
+  صحيح i_شروع_درون;      /* Start of RHS of IN operator in z[] */
+  صحيح n_Paren_At_درون;    /* Value of nParent at start of RHS of IN operator */
   u32 j;             /* Bytes of normalized SQL generated so far */
   sqlite3_str *pStr; /* The normalized SQL string under construction */
 
   db = sqlite3VdbeDb(pVdbe);
   tokenType = -1;
-  nParen = iStartIN = nParenAtIN = 0;
+  nParen = i_شروع_درون = n_Paren_At_درون = 0;
   pStr = sqlite3_str_new(db);
-  assert( pStr!=0 );  /* sqlite3_str_new() never returns NULL */
-  for(i=0; zSql[i] && pStr->accError==0; i+=n){
-    if( tokenType!=TK_SPACE ){
+  أكد( pStr!=0 );  /* sqlite3_str_new() never returns NULL */
+  لكل(i=0; zSql[i] && pStr->accError==0; i+=n){
+    إذا( tokenType!=TK_SPACE ){
       prevType = tokenType;
     }
-    n = sqlite3GetToken((unsigned char*)zSql+i, &tokenType);
-    if( NEVER(n<=0) ) break;
-    switch( tokenType ){
-      case TK_COMMENT:
-      case TK_SPACE: {
-        break;
+    n = sqlite3GetToken((بیعلامت حرف*)zSql+i, &tokenType);
+    إذا( NEVER(n<=0) ) اكسر;
+    بدل( tokenType ){
+      حالة TK_COMMENT:
+      حالة TK_SPACE: {
+        اكسر;
       }
-      case TK_NULL: {
-        if( prevType==TK_IS || prevType==TK_NOT ){
+      حالة TK_NULL: {
+        إذا( prevType==TK_IS || prevType==TK_NOT ){
           sqlite3_str_append(pStr, " NULL", 5);
-          break;
+          اكسر;
         }
         /* no break */ deliberate_fall_through
       }
-      case TK_STRING:
-      case TK_INTEGER:
-      case TK_FLOAT:
-      case TK_VARIABLE:
-      case TK_BLOB: {
+      حالة TK_STRING:
+      حالة TK_INTEGER:
+      حالة TK_FLOAT:
+      حالة TK_VARIABLE:
+      حالة TK_BLOB: {
         sqlite3_str_append(pStr, "?", 1);
-        break;
+        اكسر;
       }
-      case TK_LP: {
+      حالة TK_LP: {
         nParen++;
-        if( prevType==TK_IN ){
-          iStartIN = pStr->nChar;
-          nParenAtIN = nParen;
+        إذا( prevType==TK_درون ){
+          i_شروع_درون = pStr->nChar;
+          n_Paren_At_درون = nParen;
         }
         sqlite3_str_append(pStr, "(", 1);
-        break;
+        اكسر;
       }
-      case TK_RP: {
-        if( iStartIN>0 && nParen==nParenAtIN ){
-          assert( pStr->nChar>=(u32)iStartIN );
-          pStr->nChar = iStartIN+1;
+      حالة TK_RP: {
+        إذا( i_شروع_درون>0 && nParen==n_Paren_At_درون ){
+          أكد( pStr->nChar>=(u32)i_شروع_درون );
+          pStr->nChar = i_شروع_درون+1;
           sqlite3_str_append(pStr, "?,?,?", 5);
-          iStartIN = 0;
+          i_شروع_درون = 0;
         }
         nParen--;
         sqlite3_str_append(pStr, ")", 1);
-        break;
+        اكسر;
       }
-      case TK_ID: {
-        iStartIN = 0;
+      حالة TK_ID: {
+        i_شروع_درون = 0;
         j = pStr->nChar;
-        if( sqlite3Isquote(zSql[i]) ){
-          char *zId = sqlite3DbStrNDup(db, zSql+i, n);
-          int nId;
-          int eType = 0;
-          if( zId==0 ) break;
+        إذا( sqlite3Isquote(zSql[i]) ){
+          حرف *zId = sqlite3DbStrNDup(db, zSql+i, n);
+          صحيح nId;
+          صحيح eType = 0;
+          إذا( zId==0 ) اكسر;
           sqlite3Dequote(zId);
-          if( zSql[i]=='"' && sqlite3VdbeUsesDoubleQuotedString(pVdbe, zId) ){
+          إذا( zSql[i]=='"' && sqlite3_Vdbe_استفاده_میکند_Double_Quoted_String(pVdbe, zId) ){
             sqlite3_str_append(pStr, "?", 1);
             sqlite3DbFree(db, zId);
-            break;
+            اكسر;
           }
           nId = sqlite3Strlen30(zId);
-          if( sqlite3GetToken((u8*)zId, &eType)==nId && eType==TK_ID ){
-            addSpaceSeparator(pStr);
+          إذا( sqlite3GetToken((u8*)zId, &eType)==nId && eType==TK_ID ){
+            جمع_کن_Space_Separator(pStr);
             sqlite3_str_append(pStr, zId, nId);
-          }else{
+          }وإلا{
             sqlite3_str_appendf(pStr, "\"%w\"", zId);
           }
           sqlite3DbFree(db, zId);
-        }else{
-          addSpaceSeparator(pStr);
+        }وإلا{
+          جمع_کن_Space_Separator(pStr);
           sqlite3_str_append(pStr, zSql+i, n);
         }
-        while( j<pStr->nChar ){
-          pStr->zText[j] = sqlite3Tolower(pStr->zText[j]);
+        طالما( j<pStr->nChar ){
+          pStr->z_متن[j] = sqlite3Tolower(pStr->z_متن[j]);
           j++;
         }
-        break;
+        اكسر;
       }
-      case TK_SELECT: {
-        iStartIN = 0;
+      حالة TK_SELECT: {
+        i_شروع_درون = 0;
         /* no break */ deliberate_fall_through
       }
-      default: {
-        if( sqlite3IsIdChar(zSql[i]) ) addSpaceSeparator(pStr);
+      افتراضي: {
+        إذا( sqlite3IsIdChar(zSql[i]) ) جمع_کن_Space_Separator(pStr);
         j = pStr->nChar;
         sqlite3_str_append(pStr, zSql+i, n);
-        while( j<pStr->nChar ){
-          pStr->zText[j] = sqlite3Toupper(pStr->zText[j]);
+        طالما( j<pStr->nChar ){
+          pStr->z_متن[j] = sqlite3Toupper(pStr->z_متن[j]);
           j++;
         }
-        break;
+        اكسر;
       }
     }
   }
-  if( tokenType!=TK_SEMI ) sqlite3_str_append(pStr, ";", 1);
-  return sqlite3_str_finish(pStr);
+  إذا( tokenType!=TK_SEMI ) sqlite3_str_append(pStr, ";", 1);
+  أرجع sqlite3_str_پایان(pStr);
 }
-#endif /* SQLITE_ENABLE_NORMALIZE */
+#پایان_اگر /* SQLITE_ENABLE_NORMALIZE */
