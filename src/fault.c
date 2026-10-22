@@ -31,8 +31,8 @@
 /*
 ** Global variables.
 */
-typedef struct BenignMallocHooks BenignMallocHooks;
-static SQLITE_WSD struct BenignMallocHooks {
+typedef sa_nracanaa BenignMallocHooks BenignMallocHooks;
+static SQLITE_WSD sa_nracanaa BenignMallocHooks {
   void (*xBenignBegin)(void);
   void (*xBenignEnd)(void);
 } sqlite3Hooks = { 0, 0 };
@@ -47,7 +47,7 @@ static SQLITE_WSD struct BenignMallocHooks {
 # define wsdHooksInit \
   BenignMallocHooks *x = &GLOBAL(BenignMallocHooks,sqlite3Hooks)
 # define wsdHooks x[0]
-#else
+#ပေႃးဢမ်ႇ
 # define wsdHooksInit
 # define wsdHooks sqlite3Hooks
 #endif
@@ -73,13 +73,13 @@ void sqlite3BenignMallocHooks(
 */
 void sqlite3BeginBenignMalloc(void){
   wsdHooksInit;
-  if( wsdHooks.xBenignBegin ){
+  ပေႃး( wsdHooks.xBenignBegin ){
     wsdHooks.xBenignBegin();
   }
 }
 void sqlite3EndBenignMalloc(void){
   wsdHooksInit;
-  if( wsdHooks.xBenignEnd ){
+  ပေႃး( wsdHooks.xBenignEnd ){
     wsdHooks.xBenignEnd();
   }
 }

@@ -24,14 +24,14 @@
 ** This structure is used to pass data from sqlite3_get_table() through
 ** to the callback function is uses to build the result.
 */
-typedef struct TabResult {
-  char **azResult;   /* Accumulated output */
-  char *zErrMsg;     /* Error message text, if an error occurs */
+typedef sa_nracanaa TabResult {
+  var_na **azResult;   /* Accumulated output */
+  var_na *zErrMsg;     /* Error message text, if an error occurs */
   u32 nAlloc;        /* Slots allocated for azResult[] */
   u32 nRow;          /* Number of rows in the result */
   u32 nColumn;       /* Number of columns in the result */
   u32 nData;         /* Slots used in azResult[].  (nRow+1)*nColumn */
-  int rc;            /* Return code from sqlite3_exec() */
+  puur_naa_nka rc;            /* Return code from sqlite3_exec() */
 } TabResult;
 
 /*
@@ -39,68 +39,68 @@ typedef struct TabResult {
 ** is to fill in the TabResult structure appropriately, allocating new
 ** memory as necessary.
 */
-static int sqlite3_get_table_cb(void *pArg, int nCol, char **argv, char **colv){
+static puur_naa_nka sqlite3_get_table_cb(void *pArg, puur_naa_nka nCol, var_na **argv, var_na **colv){
   TabResult *p = (TabResult*)pArg;  /* Result accumulator */
-  int need;                         /* Slots needed in p->azResult[] */
-  int i;                            /* Loop counter */
-  char *z;                          /* A single column of result */
+  puur_naa_nka need;                         /* Slots needed in p->azResult[] */
+  puur_naa_nka i;                            /* Loop counter */
+  var_na *z;                          /* A single column of result */
 
   /* Make sure there is enough space in p->azResult to hold everything
   ** we need to remember from this invocation of the callback.
   */
-  if( p->nRow==0 && argv!=0 ){
+  ပေႃး( p->nRow==0 && argv!=0 ){
     need = nCol*2;
-  }else{
+  }ပေႃးဢမ်ႇ{
     need = nCol;
   }
-  if( p->nData + need > p->nAlloc ){
-    char **azNew;
+  ပေႃး( p->nData + need > p->nAlloc ){
+    var_na **azNew;
     p->nAlloc = p->nAlloc*2 + need;
-    azNew = sqlite3Realloc( p->azResult, sizeof(char*)*p->nAlloc );
-    if( azNew==0 ) goto malloc_failed;
+    azNew = sqlite3Realloc( p->azResult, parimaa_na(var_na*)*p->nAlloc );
+    ပေႃး( azNew==0 ) goto malloc_failed;
     p->azResult = azNew;
   }
 
   /* If this is the first row, then generate an extra row containing
   ** the names of all columns.
   */
-  if( p->nRow==0 ){
+  ပေႃး( p->nRow==0 ){
     p->nColumn = nCol;
     for(i=0; i<nCol; i++){
       z = sqlite3_mprintf("%s", colv[i]);
-      if( z==0 ) goto malloc_failed;
+      ပေႃး( z==0 ) goto malloc_failed;
       p->azResult[p->nData++] = z;
     }
-  }else if( (int)p->nColumn!=nCol ){
+  }ပေႃးဢမ်ႇ ပေႃး( (puur_naa_nka)p->nColumn!=nCol ){
     sqlite3_free(p->zErrMsg);
     p->zErrMsg = sqlite3_mprintf(
        "sqlite3_get_table() called with two or more incompatible queries"
     );
     p->rc = SQLITE_ERROR;
-    return 1;
+    ပွၵ်ႈ 1;
   }
 
   /* Copy over the row data
   */
-  if( argv!=0 ){
+  ပေႃး( argv!=0 ){
     for(i=0; i<nCol; i++){
-      if( argv[i]==0 ){
+      ပေႃး( argv[i]==0 ){
         z = 0;
-      }else{
-        int n = sqlite3Strlen30(argv[i])+1;
+      }ပေႃးဢမ်ႇ{
+        puur_naa_nka n = sqlite3Strlen30(argv[i])+1;
         z = sqlite3_malloc64( n );
-        if( z==0 ) goto malloc_failed;
+        ပေႃး( z==0 ) goto malloc_failed;
         memcpy(z, argv[i], n);
       }
       p->azResult[p->nData++] = z;
     }
     p->nRow++;
   }
-  return 0;
+  ပွၵ်ႈ 0;
 
 malloc_failed:
   p->rc = SQLITE_NOMEM_BKPT;
-  return 1;
+  ပွၵ်ႈ 1;
 }
 
 /*
@@ -113,84 +113,84 @@ malloc_failed:
 ** Instead, the entire table should be passed to sqlite3_free_table() when
 ** the calling procedure is finished using it.
 */
-int sqlite3_get_table(
+puur_naa_nka sqlite3_get_table(
   sqlite3 *db,                /* The database on which the SQL executes */
-  const char *zSql,           /* The SQL to be executed */
-  char ***pazResult,          /* Write the result table here */
-  int *pnRow,                 /* Write the number of rows in the result here */
-  int *pnColumn,              /* Write the number of columns of result here */
-  char **pzErrMsg             /* Write error messages here */
+  const var_na *zSql,           /* The SQL to be executed */
+  var_na ***pazResult,          /* Write the result table here */
+  puur_naa_nka *pnRow,                 /* Write the number of rows in the result here */
+  puur_naa_nka *pnColumn,              /* Write the number of columns of result here */
+  var_na **pzErrMsg             /* Write error messages here */
 ){
-  int rc;
+  puur_naa_nka rc;
   TabResult res;
 
 #ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pazResult==0 ) return SQLITE_MISUSE_BKPT;
+  ပေႃး( !sqlite3SafetyCheckOk(db) || pazResult==0 ) ပွၵ်ႈ SQLITE_MISUSE_BKPT;
 #endif
   *pazResult = 0;
-  if( pnColumn ) *pnColumn = 0;
-  if( pnRow ) *pnRow = 0;
-  if( pzErrMsg ) *pzErrMsg = 0;
+  ပေႃး( pnColumn ) *pnColumn = 0;
+  ပေႃး( pnRow ) *pnRow = 0;
+  ပေႃး( pzErrMsg ) *pzErrMsg = 0;
   res.zErrMsg = 0;
   res.nRow = 0;
   res.nColumn = 0;
   res.nData = 1;
   res.nAlloc = 20;
   res.rc = SQLITE_OK;
-  res.azResult = sqlite3_malloc64(sizeof(char*)*res.nAlloc );
-  if( res.azResult==0 ){
+  res.azResult = sqlite3_malloc64(parimaa_na(var_na*)*res.nAlloc );
+  ပေႃး( res.azResult==0 ){
      db->errCode = SQLITE_NOMEM;
-     return SQLITE_NOMEM_BKPT;
+     ပွၵ်ႈ SQLITE_NOMEM_BKPT;
   }
   res.azResult[0] = 0;
   rc = sqlite3_exec(db, zSql, sqlite3_get_table_cb, &res, pzErrMsg);
-  assert( sizeof(res.azResult[0])>= sizeof(res.nData) );
+  assert( parimaa_na(res.azResult[0])>= parimaa_na(res.nData) );
   res.azResult[0] = SQLITE_INT_TO_PTR(res.nData);
-  if( (rc&0xff)==SQLITE_ABORT ){
+  ပေႃး( (rc&0xff)==SQLITE_ABORT ){
     sqlite3_free_table(&res.azResult[1]);
-    if( res.zErrMsg ){
-      if( pzErrMsg ){
+    ပေႃး( res.zErrMsg ){
+      ပေႃး( pzErrMsg ){
         sqlite3_free(*pzErrMsg);
         *pzErrMsg = sqlite3_mprintf("%s",res.zErrMsg);
       }
       sqlite3_free(res.zErrMsg);
     }
     db->errCode = res.rc;  /* Assume 32-bit assignment is atomic */
-    return res.rc;
+    ပွၵ်ႈ res.rc;
   }
   sqlite3_free(res.zErrMsg);
-  if( rc!=SQLITE_OK ){
+  ပေႃး( rc!=SQLITE_OK ){
     sqlite3_free_table(&res.azResult[1]);
-    return rc;
+    ပွၵ်ႈ rc;
   }
-  if( res.nAlloc>res.nData ){
-    char **azNew;
-    azNew = sqlite3Realloc( res.azResult, sizeof(char*)*res.nData );
-    if( azNew==0 ){
+  ပေႃး( res.nAlloc>res.nData ){
+    var_na **azNew;
+    azNew = sqlite3Realloc( res.azResult, parimaa_na(var_na*)*res.nData );
+    ပေႃး( azNew==0 ){
       sqlite3_free_table(&res.azResult[1]);
       db->errCode = SQLITE_NOMEM;
-      return SQLITE_NOMEM_BKPT;
+      ပွၵ်ႈ SQLITE_NOMEM_BKPT;
     }
     res.azResult = azNew;
   }
   *pazResult = &res.azResult[1];
-  if( pnColumn ) *pnColumn = res.nColumn;
-  if( pnRow ) *pnRow = res.nRow;
-  return rc;
+  ပေႃး( pnColumn ) *pnColumn = res.nColumn;
+  ပေႃး( pnRow ) *pnRow = res.nRow;
+  ပွၵ်ႈ rc;
 }
 
 /*
 ** This routine frees the space the sqlite3_get_table() malloced.
 */
 void sqlite3_free_table(
-  char **azResult            /* Result returned from sqlite3_get_table() */
+  var_na **azResult            /* Result returned from sqlite3_get_table() */
 ){
-  if( azResult ){
-    int i, n;
+  ပေႃး( azResult ){
+    puur_naa_nka i, n;
     azResult--;
     assert( azResult!=0 );
     n = SQLITE_PTR_TO_INT(azResult[0]);
-    for(i=1; i<n; i++){ if( azResult[i] ) sqlite3_free(azResult[i]); }
+    for(i=1; i<n; i++){ ပေႃး( azResult[i] ) sqlite3_free(azResult[i]); }
     sqlite3_free(azResult);
   }
 }
