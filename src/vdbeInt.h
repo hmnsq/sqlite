@@ -15,55 +15,55 @@
 ** 6000 lines long) it was split up into several smaller files and
 ** this header information was factored out.
 */
-#ifndef SQLITE_VDBEINT_H
-#define SQLITE_VDBEINT_H
+#جے_بنا_تعریف SQLITE_VDBEINT_H
+#تعریف_کرو SQLITE_VDBEINT_H
 
 /*
 ** The maximum number of times that a statement will try to reparse
 ** itself before giving up and returning SQLITE_SCHEMA.
 */
-#ifndef SQLITE_MAX_SCHEMA_RETRY
+#جے_بنا_تعریف SQLITE_MAX_SCHEMA_RETRY
 # define SQLITE_MAX_SCHEMA_RETRY 50
-#endif
+#جے_انت
 
 /*
 ** VDBE_DISPLAY_P4 is true or false depending on whether or not the
 ** "explain" P4 display logic is enabled.
 */
-#if !defined(SQLITE_OMIT_EXPLAIN) || !defined(NDEBUG) \
+#إذا !defined(SQLITE_OMIT_EXPLAIN) || !defined(NDEBUG) \
      || defined(VDBE_PROFILE) || defined(SQLITE_DEBUG) \
      || defined(SQLITE_ENABLE_BYTECODE_VTAB)
 # define VDBE_DISPLAY_P4 1
-#else
+#وإلا
 # define VDBE_DISPLAY_P4 0
-#endif
+#جے_انت
 
 /*
 ** SQL is translated into a sequence of instructions to be
 ** executed by a virtual machine.  Each instruction is an instance
 ** of the following structure.
 */
-typedef struct VdbeOp Op;
+تعريفنوع بنية VdbeOp Op;
 
 /*
 ** Boolean values
 */
-typedef unsigned Bool;
+تعريفنوع بنانشانی Bool;
 
 /* Opaque type used by code in vdbesort.c */
-typedef struct VdbeSorter VdbeSorter;
+تعريفنوع بنية VdbeSorter VdbeSorter;
 
 /* Elements of the linked list at Vdbe.pAuxData */
-typedef struct AuxData AuxData;
+تعريفنوع بنية Aux_انکڑے Aux_انکڑے;
 
 /* A cache of large TEXT or BLOB values in a VdbeCursor */
-typedef struct VdbeTxtBlbCache VdbeTxtBlbCache;
+تعريفنوع بنية VdbeTxtBlbCache VdbeTxtBlbCache;
 
 /* Types of VDBE cursors */
-#define CURTYPE_BTREE       0
-#define CURTYPE_SORTER      1
-#define CURTYPE_VTAB        2
-#define CURTYPE_PSEUDO      3
+#تعریف_کرو CURTYPE_BTREE       0
+#تعریف_کرو CURTYPE_SORTER      1
+#تعریف_کرو CURTYPE_VTAB        2
+#تعریف_کرو CURTYPE_PSEUDO      3
 
 /*
 ** A VdbeCursor is an superclass (a wrapper) for various cursor objects:
@@ -75,35 +75,35 @@ typedef struct VdbeTxtBlbCache VdbeTxtBlbCache;
 **      * A virtual table
 **      * A one-row "pseudotable" stored in a single register
 */
-typedef struct VdbeCursor VdbeCursor;
-struct VdbeCursor {
+تعريفنوع بنية VdbeCursor VdbeCursor;
+بنية VdbeCursor {
   u8 eCurType;            /* One of the CURTYPE_* values above */
   i8 iDb;                 /* Index of cursor database in db->aDb[] */
-  u8 nullRow;             /* True if pointing to a row with no data */
+  u8 null_صف;             /* True if pointing to a row with no data */
   u8 deferredMoveto;      /* A call to sqlite3BtreeMoveto() is needed */
-  u8 isTable;             /* True for rowid tables.  False for indexes */
-#ifdef SQLITE_DEBUG
+  u8 is_جدول;             /* True for rowid tables.  False for indexes */
+#جے_تعریف_شدہ SQLITE_DEBUG
   u8 seekOp;              /* Most recent seek operation on this cursor */
   u8 wrFlag;              /* The wrFlag argument to sqlite3BtreeCursor() */
-#endif
+#جے_انت
   Bool isEphemeral:1;     /* True for an ephemeral table */
   Bool useRandomRowid:1;  /* Generate new record numbers semi-randomly */
   Bool isOrdered:1;       /* True if the table is not BTREE_UNORDERED */
   Bool noReuse:1;         /* OpenEphemeral may not reuse this cursor */
-  Bool colCache:1;        /* pCache pointer is initialized and non-NULL */
-  u16 seekHit;            /* See the OP_SeekHit and OP_IfNoHope opcodes */
-  union {                 /* pBtx for isEphermeral.  pAltMap otherwise */
+  Bool خانہ_Cache:1;        /* pCache pointer is initialized and non-NULL */
+  u16 seek_کامیابی;            /* See the OP_SeekHit and OP_IfNoHope opcodes */
+  اتحاد {                 /* pBtx for isEphermeral.  pAltMap otherwise */
     Btree *pBtx;            /* Separate file holding temporary table */
     u32 *aAltMap;           /* Mapping from table to index column numbers */
   } ub;
-  i64 seqCount;           /* Sequence counter */
+  i64 seq_گنتی;           /* Sequence counter */
 
   /* Cached OP_Column parse information is only valid if cacheStatus matches
   ** Vdbe.cacheCtr.  Vdbe.cacheCtr will never take on the value of
   ** CACHE_STALE (0) and so setting cacheStatus=CACHE_STALE guarantees that
   ** the cache is out of date. */
-  u32 cacheStatus;        /* Cache is valid if this matches Vdbe.cacheCtr */
-  int seekResult;         /* Result of previous sqlite3BtreeMoveto() or 0
+  u32 cache_حالت;        /* Cache is valid if this matches Vdbe.cacheCtr */
+  صحيح seek_نتیجہ;         /* Result of previous sqlite3BtreeMoveto() or 0
                           ** if there have been no prior seeks on the cursor. */
   /* seekResult does not distinguish between "no seeks have ever occurred
   ** on this cursor" and "the most recent seek was an exact match".
@@ -113,24 +113,24 @@ struct VdbeCursor {
   ** The fields that follow are uninitialized, and must be individually
   ** initialized prior to first use. */
   VdbeCursor *pAltCursor; /* Associated index cursor from which to read */
-  union {
+  اتحاد {
     BtCursor *pCursor;          /* CURTYPE_BTREE or _PSEUDO.  Btree cursor */
     sqlite3_vtab_cursor *pVCur; /* CURTYPE_VTAB.              Vtab cursor */
     VdbeSorter *pSorter;        /* CURTYPE_SORTER.            Sorter object */
   } uc;
-  KeyInfo *pKeyInfo;      /* Info about index keys needed by index cursors */
-  u32 iHdrOffset;         /* Offset to next unparsed byte of the header */
-  Pgno pgnoRoot;          /* Root page of the open btree cursor */
-  i16 nField;             /* Number of fields in the header */
+  کلید_Info *p_کلید_Info;      /* Info about index keys needed by index cursors */
+  u32 i_Hdr_وتھ;         /* Offset to next unparsed byte of the header */
+  Pgno pgno_جڑ;          /* Root page of the open btree cursor */
+  i16 n_میدان;             /* Number of fields in the header */
   u16 nHdrParsed;         /* Number of header fields parsed so far */
-  i64 movetoTarget;       /* Argument to the deferred sqlite3BtreeMoveto() */
-  u32 *aOffset;           /* Pointer to aType[nField] */
-  const u8 *aRow;         /* Data for the current row, if all on one page */
-  u32 payloadSize;        /* Total number of bytes in the record */
-  u32 szRow;              /* Byte available in aRow */
-#ifdef SQLITE_ENABLE_COLUMN_USED_MASK
-  u64 maskUsed;           /* Mask of columns used by this cursor */
-#endif
+  i64 moveto_نشانہ;       /* Argument to the deferred sqlite3BtreeMoveto() */
+  u32 *a_وتھ;           /* Pointer to aType[nField] */
+  ثابت u8 *a_صف;         /* Data for the current row, if all on one page */
+  u32 payload_ناپ;        /* Total number of bytes in the record */
+  u32 sz_صف;              /* Byte available in aRow */
+#جے_تعریف_شدہ SQLITE_ENABLE_کالم_ورتیا_نقاب
+  u64 نقاب_ورتیا;           /* Mask of columns used by this cursor */
+#جے_انت
   VdbeTxtBlbCache *pCache; /* Cache of large TEXT or BLOB values */
 
   /* Space is allocated for aType to hold at least 2*nField+1 entries:
@@ -143,18 +143,18 @@ struct VdbeCursor {
 ** or less.  The value of SZ_VDBECURSOR(n) is guaranteed to be a multiple
 ** of 8.
 */
-#define SZ_VDBECURSOR(N) \
-    (ROUND8(offsetof(VdbeCursor,aType)) + ((N)+1)*sizeof(u64))
+#تعریف_کرو SZ_VDBECURSOR(N) \
+    (ROUND8(offsetof(VdbeCursor,aType)) + ((N)+1)*حجم(u64))
 
 /* Return true if P is a null-only cursor
 */
-#define IsNullCursor(P) \
-  ((P)->eCurType==CURTYPE_PSEUDO && (P)->nullRow && (P)->seekResult==0)
+#تعریف_کرو IsNullCursor(P) \
+  ((P)->eCurType==CURTYPE_PSEUDO && (P)->null_صف && (P)->seek_نتیجہ==0)
 
 /*
 ** A value for VdbeCursor.cacheStatus that means the cache is always invalid.
 */
-#define CACHE_STALE 0
+#تعریف_کرو CACHE_STALE 0
 
 /*
 ** Large TEXT or BLOB values can be slow to load, so we want to avoid
@@ -162,12 +162,12 @@ struct VdbeCursor {
 ** can be stored in a cache defined by this object, and attached to the
 ** VdbeCursor using the pCache field.
 */
-struct VdbeTxtBlbCache {
-  char *pCValue;        /* A RCStr buffer to hold the value */
-  i64 iOffset;          /* File offset of the row being cached */
-  int iCol;             /* Column for which the cache is valid */
-  u32 cacheStatus;      /* Vdbe.cacheCtr value */
-  u32 colCacheCtr;      /* Column cache counter */
+بنية VdbeTxtBlbCache {
+  حرف *pCValue;        /* A RCStr buffer to hold the value */
+  i64 i_وتھ;          /* File offset of the row being cached */
+  صحيح i_خانہ;             /* Column for which the cache is valid */
+  u32 cache_حالت;      /* Vdbe.cacheCtr value */
+  u32 خانہ_Cache_Ctr;      /* Column cache counter */
 };
 
 /*
@@ -191,75 +191,75 @@ struct VdbeTxtBlbCache {
 ** The currently executing frame is stored in Vdbe.pFrame. Vdbe.pFrame is
 ** set to NULL if the currently executing frame is the main program.
 */
-typedef struct VdbeFrame VdbeFrame;
-struct VdbeFrame {
+تعريفنوع بنية Vdbe_چوکھٹا Vdbe_چوکھٹا;
+بنية Vdbe_چوکھٹا {
   Vdbe *v;                /* VM this frame belongs to */
-  VdbeFrame *pParent;     /* Parent of this frame, or NULL if parent is main */
+  Vdbe_چوکھٹا *p_ماپا;     /* Parent of this frame, or NULL if parent is main */
   Op *aOp;                /* Program instructions for parent frame */
   Mem *aMem;              /* Array of memory cells for parent frame */
   VdbeCursor **apCsr;     /* Array of Vdbe cursors for parent frame */
   u8 *aOnce;              /* Bitmask used by OP_Once */
-  void *token;            /* Copy of SubProgram.token */
-  i64 lastRowid;          /* Last insert rowid (sqlite3.lastRowid) */
-  AuxData *pAuxData;      /* Linked list of auxdata allocations */
-#if SQLITE_DEBUG
-  u32 iFrameMagic;        /* magic number for sanity checking */
-#endif
-  int nCursor;            /* Number of entries in apCsr */
-  int pc;                 /* Program Counter in parent (calling) frame */
-  int nOp;                /* Size of aOp array */
-  int nMem;               /* Number of entries in aMem */
-  int nChildMem;          /* Number of memory cells for child frame */
-  int nChildCsr;          /* Number of cursors for child frame */
+  فراغ *token;            /* Copy of SubProgram.token */
+  i64 آخری_Rowid;          /* Last insert rowid (sqlite3.lastRowid) */
+  Aux_انکڑے *p_Aux_انکڑے;      /* Linked list of auxdata allocations */
+#إذا SQLITE_DEBUG
+  u32 i_چوکھٹا_Magic;        /* magic number for sanity checking */
+#جے_انت
+  صحيح nCursor;            /* Number of entries in apCsr */
+  صحيح pc;                 /* Program Counter in parent (calling) frame */
+  صحيح nOp;                /* Size of aOp array */
+  صحيح nMem;               /* Number of entries in aMem */
+  صحيح n_بچہ_Mem;          /* Number of memory cells for child frame */
+  صحيح n_بچہ_Csr;          /* Number of cursors for child frame */
   i64 nChange;            /* Statement changes (Vdbe.nChange)     */
   i64 nDbChange;          /* Value of db->nChange */
 };
 
 /* Magic number for sanity checking on VdbeFrame objects */
-#define SQLITE_FRAME_MAGIC 0x879fb71e
+#تعریف_کرو SQLITE_چوکھٹا_MAGIC 0x879fb71e
 
 /*
 ** Return a pointer to the array of registers allocated for use
 ** by a VdbeFrame.
 */
-#define VdbeFrameMem(p) ((Mem *)&((u8 *)p)[ROUND8(sizeof(VdbeFrame))])
+#تعریف_کرو Vdbe_چوکھٹا_Mem(p) ((Mem *)&((u8 *)p)[ROUND8(حجم(Vdbe_چوکھٹا))])
 
 /*
 ** Internally, the vdbe manipulates nearly all SQL values as Mem
 ** structures. Each Mem struct may cache multiple representations (string,
 ** integer etc.) of the same value.
 */
-struct sqlite3_value {
-  union MemValue {
-    double r;           /* Real value used when MEM_Real is set in flags */
+بنية sqlite3_قدر {
+  اتحاد Mem_قدر {
+    مزدوج r;           /* Real value used when MEM_Real is set in flags */
     i64 i;              /* Integer value used when MEM_Int is set in flags */
-    int nZero;          /* Extra zero bytes when MEM_Zero and MEM_Blob set */
-    const char *zPType; /* Pointer type when MEM_Term|MEM_Subtype|MEM_Null */
+    صحيح nZero;          /* Extra zero bytes when MEM_Zero and MEM_Blob set */
+    ثابت حرف *zPType; /* Pointer type when MEM_Term|MEM_Subtype|MEM_Null */
     FuncDef *pDef;      /* Used only when flags==MEM_Agg */
   } u;
-  char *z;            /* String or BLOB value */
-  int n;              /* Number of characters in string value, excluding '\0' */
+  حرف *z;            /* String or BLOB value */
+  صحيح n;              /* Number of characters in string value, excluding '\0' */
   u16 flags;          /* Some combination of MEM_Null, MEM_Str, MEM_Dyn, etc. */
   u8  enc;            /* SQLITE_UTF8, SQLITE_UTF16BE, SQLITE_UTF16LE */
   u8  eSubtype;       /* Subtype for this value */
   /* ShallowCopy only needs to copy the information above */
   sqlite3 *db;        /* The associated database connection */
-  int szMalloc;       /* Size of the zMalloc allocation */
-  u32 uTemp;          /* Transient storage for serial_type in OP_MakeRecord */
-  char *zMalloc;      /* Space to hold MEM_Str or MEM_Blob if szMalloc>0 */
-  void (*xDel)(void*);/* Destructor for Mem.z - only valid if MEM_Dyn */
-#ifdef SQLITE_DEBUG
+  صحيح szMalloc;       /* Size of the zMalloc allocation */
+  u32 u_عارضی;          /* Transient storage for serial_type in OP_MakeRecord */
+  حرف *zMalloc;      /* Space to hold MEM_Str or MEM_Blob if szMalloc>0 */
+  فراغ (*xDel)(فراغ*);/* Destructor for Mem.z - only valid if MEM_Dyn */
+#جے_تعریف_شدہ SQLITE_DEBUG
   Mem *pScopyFrom;    /* This Mem is a shallow copy of pScopyFrom */
   u16 mScopyFlags;    /* flags value immediately after the shallow copy */
   u8  bScopy;         /* The pScopyFrom of some other Mem *might* point here */
-#endif
+#جے_انت
 };
 
 /*
 ** Size of struct Mem not including the Mem.zMalloc member or anything that
 ** follows.
 */
-#define MEMCELLSIZE offsetof(Mem,db)
+#تعریف_کرو MEMCELLSIZE offsetof(Mem,db)
 
 /* One or more of the following flags are set to indicate the
 ** representations of the value stored in the Mem struct.
@@ -306,50 +306,50 @@ struct sqlite3_value {
 ** set, then the string is nul terminated. The MEM_Int and MEM_Real
 ** flags may coexist with the MEM_Str flag.
 */
-#define MEM_Undefined 0x0000   /* Value is undefined */
-#define MEM_Null      0x0001   /* Value is NULL (or a pointer) */
-#define MEM_Str       0x0002   /* Value is a string */
-#define MEM_Int       0x0004   /* Value is an integer */
-#define MEM_Real      0x0008   /* Value is a real number */
-#define MEM_Blob      0x0010   /* Value is a BLOB */
-#define MEM_IntReal   0x0020   /* MEM_Int that stringifies like MEM_Real */
-#define MEM_AffMask   0x003f   /* Mask of affinity bits */
+#تعریف_کرو MEM_Undefined 0x0000   /* Value is undefined */
+#تعریف_کرو MEM_Null      0x0001   /* Value is NULL (or a pointer) */
+#تعریف_کرو MEM_Str       0x0002   /* Value is a string */
+#تعریف_کرو MEM_Int       0x0004   /* Value is an integer */
+#تعریف_کرو MEM_Real      0x0008   /* Value is a real number */
+#تعریف_کرو MEM_Blob      0x0010   /* Value is a BLOB */
+#تعریف_کرو MEM_IntReal   0x0020   /* MEM_Int that stringifies like MEM_Real */
+#تعریف_کرو MEM_Aff_نقاب   0x003f   /* Mask of affinity bits */
 
 /* Extra bits that modify the meanings of the core datatypes above
 */
-#define MEM_FromBind  0x0040   /* Value originates from sqlite3_bind() */
+#تعریف_کرو MEM_FromBind  0x0040   /* Value originates from sqlite3_bind() */
  /*                   0x0080   // Available */
-#define MEM_Cleared   0x0100   /* NULL set by OP_Null, not from data */
-#define MEM_Term      0x0200   /* String in Mem.z is zero terminated */
-#define MEM_Zero      0x0400   /* Mem.i contains count of 0s appended to blob */
-#define MEM_Subtype   0x0800   /* Mem.eSubtype is valid */
-#define MEM_TypeMask  0x0dbf   /* Mask of type bits */
+#تعریف_کرو MEM_Cleared   0x0100   /* NULL set by OP_Null, not from data */
+#تعریف_کرو MEM_رکن      0x0200   /* String in Mem.z is zero terminated */
+#تعریف_کرو MEM_Zero      0x0400   /* Mem.i contains count of 0s appended to blob */
+#تعریف_کرو MEM_Subtype   0x0800   /* Mem.eSubtype is valid */
+#تعریف_کرو MEM_Type_نقاب  0x0dbf   /* Mask of type bits */
 
 /* Bits that determine the storage for Mem.z for a string or blob or
 ** aggregate accumulator.
 */
-#define MEM_Dyn       0x1000   /* Need to call Mem.xDel() on Mem.z */
-#define MEM_Static    0x2000   /* Mem.z points to a static string */
-#define MEM_Ephem     0x4000   /* Mem.z points to an ephemeral string */
-#define MEM_Agg       0x8000   /* Mem.z points to an agg function context */
+#تعریف_کرو MEM_Dyn       0x1000   /* Need to call Mem.xDel() on Mem.z */
+#تعریف_کرو MEM_Static    0x2000   /* Mem.z points to a static string */
+#تعریف_کرو MEM_Ephem     0x4000   /* Mem.z points to an ephemeral string */
+#تعریف_کرو MEM_Agg       0x8000   /* Mem.z points to an agg function context */
 
 /* Return TRUE if Mem X contains dynamically allocated content - anything
 ** that needs to be deallocated to avoid a leak.
 */
-#define VdbeMemDynamic(X)  \
+#تعریف_کرو VdbeMemDynamic(X)  \
   (((X)->flags&(MEM_Agg|MEM_Dyn))!=0)
 
 /*
 ** Clear any existing type flags from a Mem and replace them with f
 */
-#define MemSetTypeFlag(p, f) \
-   ((p)->flags = ((p)->flags&~(MEM_TypeMask|MEM_Zero))|f)
+#تعریف_کرو Mem_سیٹ_Type_Flag(p, f) \
+   ((p)->flags = ((p)->flags&~(MEM_Type_نقاب|MEM_Zero))|f)
 
 /*
 ** True if Mem X is a NULL-nochng type.
 */
-#define MemNullNochng(X) \
-  (((X)->flags&MEM_TypeMask)==(MEM_Null|MEM_Zero) \
+#تعریف_کرو MemNullNochng(X) \
+  (((X)->flags&MEM_Type_نقاب)==(MEM_Null|MEM_Zero) \
     && (X)->n==0 && (X)->u.nZero==0)
 
 /*
@@ -360,9 +360,9 @@ struct sqlite3_value {
 ** MEM_Null, MEM_Str, MEM_Int, MEM_Real, MEM_Blob, or MEM_IntReal bits
 ** is set.  It is "undefined" if all those bits are zero.
 */
-#ifdef SQLITE_DEBUG
-#define memIsValid(M)  ((M)->flags & MEM_AffMask)!=0
-#endif
+#جے_تعریف_شدہ SQLITE_DEBUG
+#تعریف_کرو memIsValid(M)  ((M)->flags & MEM_Aff_نقاب)!=0
+#جے_انت
 
 /*
 ** Each auxiliary data pointer stored by a user defined function
@@ -371,12 +371,12 @@ struct sqlite3_value {
 ** are stored in a linked list headed at Vdbe.pAuxData. All are destroyed
 ** when the VM is halted (if not before).
 */
-struct AuxData {
-  int iAuxOp;                     /* Instruction number of OP_Function opcode */
-  int iAuxArg;                    /* Index of function argument. */
-  void *pAux;                     /* Aux data pointer */
-  void (*xDeleteAux)(void*);      /* Destructor for the aux data */
-  AuxData *pNextAux;              /* Next element in list */
+بنية Aux_انکڑے {
+  صحيح iAuxOp;                     /* Instruction number of OP_Function opcode */
+  صحيح iAuxArg;                    /* Index of function argument. */
+  فراغ *pAux;                     /* Aux data pointer */
+  فراغ (*xDeleteAux)(فراغ*);      /* Destructor for the aux data */
+  Aux_انکڑے *p_اگلا_Aux;              /* Next element in list */
 };
 
 /*
@@ -392,25 +392,25 @@ struct AuxData {
 ** This structure is defined inside of vdbeInt.h because it uses substructures
 ** (Mem) which are only defined there.
 */
-struct sqlite3_context {
-  Mem *pOut;              /* The return value is stored here */
+بنية sqlite3_context {
+  Mem *p_باہرلا;              /* The return value is stored here */
   FuncDef *pFunc;         /* Pointer to function information */
   Mem *pMem;              /* Memory cell used to store aggregate context */
   Vdbe *pVdbe;            /* The VM that owns this context */
-  int iOp;                /* Instruction number of OP_Function */
-  int isError;            /* Error code returned by the function. */
+  صحيح iOp;                /* Instruction number of OP_Function */
+  صحيح isError;            /* Error code returned by the function. */
   u8 enc;                 /* Encoding to use for results */
   u8 skipFlag;            /* Skip accumulator loading if true */
   u16 argc;               /* Number of arguments */
-  sqlite3_value *argv[FLEXARRAY]; /* Argument set */
+  sqlite3_قدر *argv[FLEXARRAY]; /* Argument set */
 };
 
 /*
 ** The size (in bytes) of an sqlite3_context object that holds N
 ** argv[] arguments.
 */
-#define SZ_CONTEXT(N)  \
-   (offsetof(sqlite3_context,argv)+(N)*sizeof(sqlite3_value*))
+#تعریف_کرو SZ_CONTEXT(N)  \
+   (offsetof(sqlite3_context,argv)+(N)*حجم(sqlite3_قدر*))
 
 
 /* The ScanStatus object holds a single value for the
@@ -424,15 +424,15 @@ struct sqlite3_context {
 **   integer addresses is a start and end address (both inclusive) for a range
 **   instructions. A start value of 0 indicates an empty range.
 */
-typedef struct ScanStatus ScanStatus;
-struct ScanStatus {
-  int addrExplain;                /* OP_Explain for loop */
-  int aAddrRange[6];
-  int addrLoop;                   /* Address of "loops" counter */
-  int addrVisit;                  /* Address of "rows visited" counter */
-  int iSelectID;                  /* The "Select-ID" for this loop */
+تعريفنوع بنية جانچ_حالت جانچ_حالت;
+بنية جانچ_حالت {
+  صحيح addrExplain;                /* OP_Explain for loop */
+  صحيح aAddrRange[6];
+  صحيح addrLoop;                   /* Address of "loops" counter */
+  صحيح addr_ویکھو;                  /* Address of "rows visited" counter */
+  صحيح iSelectID;                  /* The "Select-ID" for this loop */
   LogEst nEst;                    /* Estimated output rows per loop */
-  char *zName;                    /* Name of table or index */
+  حرف *zName;                    /* Name of table or index */
 };
 
 /* The DblquoteStr object holds the text of a double-quoted
@@ -442,10 +442,10 @@ struct ScanStatus {
 ** list is consulted for each double-quoted identifier to see if the
 ** identifier should really be a string literal.
 */
-typedef struct DblquoteStr DblquoteStr;
-struct DblquoteStr {
-  DblquoteStr *pNextStr;   /* Next string literal in the list */
-  char z[8];               /* Dequoted value for the string */
+تعريفنوع بنية DblquoteStr DblquoteStr;
+بنية DblquoteStr {
+  DblquoteStr *p_اگلا_Str;   /* Next string literal in the list */
+  حرف z[8];               /* Dequoted value for the string */
 };
 
 /*
@@ -455,19 +455,19 @@ struct DblquoteStr {
 ** The "sqlite3_stmt" structure pointer that is returned by sqlite3_prepare()
 ** is really a pointer to an instance of this structure.
 */
-struct Vdbe {
+بنية Vdbe {
   sqlite3 *db;            /* The database connection that owns this statement */
   Vdbe **ppVPrev,*pVNext; /* Linked list of VDBEs with the same Vdbe.db */
   Parse *pParse;          /* Parsing context used to create this Vdbe */
   ynVar nVar;             /* Number of entries in aVar[] */
-  int nMem;               /* Number of memory locations currently allocated */
-  int nCursor;            /* Number of slots in apCsr[] */
+  صحيح nMem;               /* Number of memory locations currently allocated */
+  صحيح nCursor;            /* Number of slots in apCsr[] */
   u32 cacheCtr;           /* VdbeCursor row cache generation counter */
-  int pc;                 /* The program counter */
-  int rc;                 /* Value to return */
+  صحيح pc;                 /* The program counter */
+  صحيح rc;                 /* Value to return */
   i64 nChange;            /* Number of db changes made since last reset */
-  int iStatement;         /* Statement number (or 0 if has no opened stmt) */
-  i64 iCurrentTime;       /* Value of julianday('now') for this statement */
+  صحيح iStatement;         /* Statement number (or 0 if has no opened stmt) */
+  i64 i_Current_ویلا;       /* Value of julianday('now') for this statement */
   i64 nFkConstraint;      /* Number of imm. FK constraints this VM */
   i64 nStmtDefCons;       /* Number of def. constraints when stmt started */
   i64 nStmtDefImmCons;    /* Number of def. imm constraints when stmt started */
@@ -480,21 +480,21 @@ struct Vdbe {
   ** initialized to zero or NULL */
 
   Op *aOp;                /* Space to hold the virtual machine's program */
-  int nOp;                /* Number of instructions in the program */
-  int nOpAlloc;           /* Slots allocated for aOp[] */
-  Mem *aColName;          /* Column names to return */
-  Mem *pResultRow;        /* Current output row */
-  char *zErrMsg;          /* Error message written here */
+  صحيح nOp;                /* Number of instructions in the program */
+  صحيح nOpAlloc;           /* Slots allocated for aOp[] */
+  Mem *a_خانہ_Name;          /* Column names to return */
+  Mem *p_نتیجہ_صف;        /* Current output row */
+  حرف *z_Err_پیغام;          /* Error message written here */
   VList *pVList;          /* Name of variables */
-#ifndef SQLITE_OMIT_TRACE
-  i64 startTime;          /* Time when query started - used for profiling */
-#endif
-#ifdef SQLITE_DEBUG
-  int rcApp;              /* errcode set by sqlite3_result_error_code() */
+#جے_بنا_تعریف SQLITE_OMIT_TRACE
+  i64 شروع_ویلا;          /* Time when query started - used for profiling */
+#جے_انت
+#جے_تعریف_شدہ SQLITE_DEBUG
+  صحيح rcApp;              /* errcode set by sqlite3_result_error_code() */
   u32 nWrite;             /* Number of write operations that have occurred */
-  int napArg;             /* Size of the apArg[] array */
-#endif
-  u16 nResColumn;         /* Number of columns in one row of the result set */
+  صحيح napArg;             /* Size of the apArg[] array */
+#جے_انت
+  u16 n_Res_کالم;         /* Number of columns in one row of the result set */
   u16 nResAlloc;          /* Column slots allocated to aColName[] */
   u8 errorAction;         /* Recovery action to do in case of an error */
   u8 minWriteFileFormat;  /* Minimum file format for writable database files */
@@ -503,65 +503,65 @@ struct Vdbe {
   bft expired:2;          /* 1: recompile VM immediately  2: when convenient */
   bft explain:2;          /* 0: normal, 1: EXPLAIN, 2: EXPLAIN QUERY PLAN */
   bft changeCntOn:1;      /* True to update the change-counter */
-  bft usesStmtJournal:1;  /* True if uses a statement journal */
+  bft ورتدا_Stmt_Journal:1;  /* True if uses a statement journal */
   bft readOnly:1;         /* True for statements that do not write */
   bft bIsReader:1;        /* True for statements that read */
   bft haveEqpOps:1;       /* Bytecode supports EXPLAIN QUERY PLAN */
-  yDbMask btreeMask;      /* Bitmask of db->aDb[] entries referenced */
-  yDbMask lockMask;       /* Subset of btreeMask that requires a lock */
+  y_Db_نقاب btree_نقاب;      /* Bitmask of db->aDb[] entries referenced */
+  y_Db_نقاب جندرا_نقاب;       /* Subset of btreeMask that requires a lock */
   u32 aCounter[9];        /* Counters used by sqlite3_stmt_status() */
-  char *zSql;             /* Text of the SQL statement that generated this */
-#ifdef SQLITE_ENABLE_NORMALIZE
-  char *zNormSql;         /* Normalization of the associated SQL statement */
+  حرف *zSql;             /* Text of the SQL statement that generated this */
+#جے_تعریف_شدہ SQLITE_ENABLE_NORMALIZE
+  حرف *zNormSql;         /* Normalization of the associated SQL statement */
   DblquoteStr *pDblStr;   /* List of double-quoted string literals */
-#endif
-  void *pFree;            /* Free this when deleting the vdbe */
-  VdbeFrame *pFrame;      /* Parent frame */
-  VdbeFrame *pDelFrame;   /* List of frame objects to free on VM reset */
-  int nFrame;             /* Number of frames in pFrame list */
+#جے_انت
+  فراغ *pFree;            /* Free this when deleting the vdbe */
+  Vdbe_چوکھٹا *p_چوکھٹا;      /* Parent frame */
+  Vdbe_چوکھٹا *p_Del_چوکھٹا;   /* List of frame objects to free on VM reset */
+  صحيح n_چوکھٹا;             /* Number of frames in pFrame list */
   u32 expmask;            /* Binding to these vars might invalidate VM */
   u32 smimask;            /* Only invalid if changing to/from small integer */
                           /* Note: smimask is always a subset of expmask */
-  SubProgram *pProgram;   /* Linked list of all sub-programs used by VM */
-  AuxData *pAuxData;      /* Linked list of auxdata allocations */
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int nScan;              /* Entries in aScan[] */
-  ScanStatus *aScan;      /* Scan definitions for sqlite3_stmt_scanstatus() */
-#endif
+  Sub_پروگرام *p_پروگرام;   /* Linked list of all sub-programs used by VM */
+  Aux_انکڑے *p_Aux_انکڑے;      /* Linked list of auxdata allocations */
+#جے_تعریف_شدہ SQLITE_ENABLE_STMT_SCANSTATUS
+  صحيح n_جانچ;              /* Entries in aScan[] */
+  جانچ_حالت *a_جانچ;      /* Scan definitions for sqlite3_stmt_scanstatus() */
+#جے_انت
 };
 
 /*
 ** The following are allowed values for Vdbe.eVdbeState
 */
-#define VDBE_INIT_STATE     0   /* Prepared statement under construction */
-#define VDBE_READY_STATE    1   /* Ready to run but not yet started */
-#define VDBE_RUN_STATE      2   /* Run in progress */
-#define VDBE_HALT_STATE     3   /* Finished.  Need reset() or finalize() */
+#تعریف_کرو VDBE_INIT_STATE     0   /* Prepared statement under construction */
+#تعریف_کرو VDBE_READY_STATE    1   /* Ready to run but not yet started */
+#تعریف_کرو VDBE_لگاتار_STATE      2   /* Run in progress */
+#تعریف_کرو VDBE_HALT_STATE     3   /* Finished.  Need reset() or finalize() */
 
 /*
 ** Structure used to store the context required by the
 ** sqlite3_preupdate_*() API functions.
 */
-struct PreUpdate {
+بنية PreUpdate {
   Vdbe *v;
   VdbeCursor *pCsr;               /* Cursor to read old values from */
-  int op;                         /* One of SQLITE_INSERT, UPDATE, DELETE */
-  u8 *aRecord;                    /* old.* database record */
-  KeyInfo *pKeyinfo;              /* Key information */
-  UnpackedRecord *pUnpacked;      /* Unpacked version of aRecord[] */
-  UnpackedRecord *pNewUnpacked;   /* Unpacked version of new.* record */
-  int iNewReg;                    /* Register for new.* values */
-  int iBlobWrite;                 /* Value returned by preupdate_blobwrite() */
+  صحيح op;                         /* One of SQLITE_INSERT, UPDATE, DELETE */
+  u8 *a_ریکارڈ;                    /* old.* database record */
+  کلید_Info *pKeyinfo;              /* Key information */
+  Unpacked_ریکارڈ *pUnpacked;      /* Unpacked version of aRecord[] */
+  Unpacked_ریکارڈ *pNewUnpacked;   /* Unpacked version of new.* record */
+  صحيح iNewReg;                    /* Register for new.* values */
+  صحيح iBlobWrite;                 /* Value returned by preupdate_blobwrite() */
   i64 iKey1;                      /* First key value passed to hook */
   i64 iKey2;                      /* Second key value passed to hook */
   Mem oldipk;                     /* Memory cell holding "old" IPK value */
   Mem *aNew;                      /* Array of new.* values */
-  Table *pTab;                    /* Schema object being updated */
-  Index *pPk;                     /* PK index if pTab is WITHOUT ROWID */
-  sqlite3_value **apDflt;         /* Array of default values, if required */
-  struct {
+  جدول *pTab;                    /* Schema object being updated */
+  اشاریہ *pPk;                     /* PK index if pTab is WITHOUT ROWID */
+  sqlite3_قدر **apDflt;         /* Array of default values, if required */
+  بنية {
     u8 keyinfoSpace[SZ_KEYINFO_0];  /* Space to hold pKeyinfo[0] content */
-  } uKey;
+  } u_کلید;
 };
 
 /*
@@ -576,191 +576,191 @@ struct PreUpdate {
 ** know how to use this object to step through all the values in the
 ** right operand of the IN constraint.
 */
-typedef struct ValueList ValueList;
-struct ValueList {
+تعريفنوع بنية قدر_List قدر_List;
+بنية قدر_List {
   BtCursor *pCsr;          /* An ephemeral table holding all values */
-  sqlite3_value *pOut;     /* Register to hold each decoded output value */
+  sqlite3_قدر *p_باہرلا;     /* Register to hold each decoded output value */
 };
 
 /* Size of content associated with serial types that fit into a
 ** single-byte varint.
 */
-#ifndef SQLITE_AMALGAMATION
-extern const u8 sqlite3SmallTypeSizes[];
-#endif
+#جے_بنا_تعریف SQLITE_AMALGAMATION
+خارجي ثابت u8 sqlite3SmallTypeSizes[];
+#جے_انت
 
 /* Input "x" is a sequence of unsigned characters that represent a
 ** big-endian integer.  Return the equivalent native integer
 */
-#define ONE_BYTE_INT(x)    ((i8)(x)[0])
-#define TWO_BYTE_INT(x)    (256*(i8)((x)[0])|(x)[1])
-#define THREE_BYTE_INT(x)  (65536*(i8)((x)[0])|((x)[1]<<8)|(x)[2])
-#define FOUR_BYTE_UINT(x)  (((u32)(x)[0]<<24)|((x)[1]<<16)|((x)[2]<<8)|(x)[3])
-#define FOUR_BYTE_U64(x)   (((u64)(x)[0]<<24)|((x)[1]<<16)|((x)[2]<<8)|(x)[3])
-#define FOUR_BYTE_INT(x)   ((int)FOUR_BYTE_UINT(x))
-#define SIX_BYTE_INT(x)    (FOUR_BYTE_UINT(x+2)+4294967296LL*TWO_BYTE_INT(x))
+#تعریف_کرو ONE_BYTE_INT(x)    ((i8)(x)[0])
+#تعریف_کرو TWO_BYTE_INT(x)    (256*(i8)((x)[0])|(x)[1])
+#تعریف_کرو THREE_BYTE_INT(x)  (65536*(i8)((x)[0])|((x)[1]<<8)|(x)[2])
+#تعریف_کرو FOUR_BYTE_UINT(x)  (((u32)(x)[0]<<24)|((x)[1]<<16)|((x)[2]<<8)|(x)[3])
+#تعریف_کرو FOUR_BYTE_U64(x)   (((u64)(x)[0]<<24)|((x)[1]<<16)|((x)[2]<<8)|(x)[3])
+#تعریف_کرو FOUR_BYTE_INT(x)   ((صحيح)FOUR_BYTE_UINT(x))
+#تعریف_کرو SIX_BYTE_INT(x)    (FOUR_BYTE_UINT(x+2)+4294967296LL*TWO_BYTE_INT(x))
 
 /*
 ** Function prototypes
 */
-void sqlite3VdbeError(Vdbe*, const char *, ...);
-void sqlite3VdbeFreeCursor(Vdbe *, VdbeCursor*);
-void sqlite3VdbeFreeCursorNN(Vdbe*,VdbeCursor*);
-void sqliteVdbePopStack(Vdbe*,int);
-int SQLITE_NOINLINE sqlite3VdbeHandleMovedCursor(VdbeCursor *p);
-int SQLITE_NOINLINE sqlite3VdbeFinishMoveto(VdbeCursor*);
-int sqlite3VdbeCursorRestore(VdbeCursor*);
+فراغ sqlite3VdbeError(Vdbe*, ثابت حرف *, ...);
+فراغ sqlite3VdbeFreeCursor(Vdbe *, VdbeCursor*);
+فراغ sqlite3VdbeFreeCursorNN(Vdbe*,VdbeCursor*);
+فراغ sqlite_Vdbe_نکالو_ڈھیر(Vdbe*,صحيح);
+صحيح SQLITE_NOINLINE sqlite3VdbeHandleMovedCursor(VdbeCursor *p);
+صحيح SQLITE_NOINLINE sqlite3_Vdbe_انت_Moveto(VdbeCursor*);
+صحيح sqlite3VdbeCursorRestore(VdbeCursor*);
 u32 sqlite3VdbeSerialTypeLen(u32);
 u8 sqlite3VdbeOneByteSerialTypeLen(u8);
-#ifdef SQLITE_MIXED_ENDIAN_64BIT_FLOAT
-  u64 sqlite3FloatSwap(u64 in);
-# define swapMixedEndianFloat(X)  X = sqlite3FloatSwap(X)
-#else
-# define swapMixedEndianFloat(X)
-#endif
-void sqlite3VdbeSerialGet(const unsigned char*, u32, Mem*);
-void sqlite3VdbeDeleteAuxData(sqlite3*, AuxData**, int, int);
+#جے_تعریف_شدہ SQLITE_MIXED_ENDIAN_64_ثنائی_ہندسہ_FLOAT
+  u64 sqlite3_Float_وٹاندرا(u64 وچ);
+# define وٹاندرا_Mixed_Endian_Float(X)  X = sqlite3_Float_وٹاندرا(X)
+#وإلا
+# define وٹاندرا_Mixed_Endian_Float(X)
+#جے_انت
+فراغ sqlite3VdbeSerialGet(ثابت بنانشانی حرف*, u32, Mem*);
+فراغ sqlite3_Vdbe_Delete_Aux_انکڑے(sqlite3*, Aux_انکڑے**, صحيح, صحيح);
 
-int sqlite2BtreeKeyCompare(BtCursor *, const void *, int, int, int *);
-int sqlite3VdbeIdxKeyCompare(sqlite3*,VdbeCursor*,UnpackedRecord*,int*);
-int sqlite3VdbeIdxRowid(sqlite3*, BtCursor*, i64*);
-int sqlite3VdbeExec(Vdbe*);
-#if !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
-int sqlite3VdbeNextOpcode(Vdbe*,Mem*,int,int*,int*,Op**);
-char *sqlite3VdbeDisplayP4(sqlite3*,Op*);
-#endif
-#if defined(SQLITE_ENABLE_EXPLAIN_COMMENTS)
-char *sqlite3VdbeDisplayComment(sqlite3*,const Op*,const char*);
-#endif
-#if !defined(SQLITE_OMIT_EXPLAIN)
-int sqlite3VdbeList(Vdbe*);
-#endif
-int sqlite3VdbeHalt(Vdbe*);
-int sqlite3VdbeChangeEncoding(Mem *, int);
-int sqlite3VdbeMemTooBig(Mem*);
-int sqlite3VdbeMemCopy(Mem*, const Mem*);
-void sqlite3VdbeMemShallowCopy(Mem*, const Mem*, int);
-void sqlite3VdbeMemMove(Mem*, Mem*);
-int sqlite3VdbeMemNulTerminate(Mem*);
-int sqlite3VdbeMemSetStr(Mem*, const char*, i64, u8, void(*)(void*));
-int sqlite3VdbeMemSetText(Mem*, const char*, i64, void(*)(void*));
-void sqlite3VdbeMemSetInt64(Mem*, i64);
-#ifdef SQLITE_OMIT_FLOATING_POINT
-# define sqlite3VdbeMemSetDouble sqlite3VdbeMemSetInt64
-#else
-  void sqlite3VdbeMemSetDouble(Mem*, double);
-#endif
-void sqlite3VdbeMemSetPointer(Mem*, void*, const char*, void(*)(void*));
-void sqlite3VdbeMemInit(Mem*,sqlite3*,u16);
-void sqlite3VdbeMemSetNull(Mem*);
-#ifndef SQLITE_OMIT_INCRBLOB
-void sqlite3VdbeMemSetZeroBlob(Mem*,int);
-#else
-int sqlite3VdbeMemSetZeroBlob(Mem*,int);
-#endif
-#ifdef SQLITE_DEBUG
-int sqlite3VdbeMemIsRowSet(const Mem*);
-#endif
-int sqlite3VdbeMemSetRowSet(Mem*);
-int sqlite3VdbeMemZeroTerminateIfAble(Mem*);
-int sqlite3VdbeMemMakeWriteable(Mem*);
-int sqlite3VdbeMemStringify(Mem*, u8, u8);
-int sqlite3IntFloatCompare(i64,double);
-i64 sqlite3VdbeIntValue(const Mem*);
-int sqlite3VdbeMemIntegerify(Mem*);
-double sqlite3VdbeRealValue(Mem*);
-int sqlite3MemRealValueRC(Mem*, double*);
-int sqlite3VdbeBooleanValue(Mem*, int ifNull);
-void sqlite3VdbeIntegerAffinity(Mem*,int bFromText);
-int sqlite3VdbeMemRealify(Mem*);
-int sqlite3VdbeMemNumerify(Mem*);
-int sqlite3VdbeMemCast(Mem*,u8,u8);
-int sqlite3VdbeMemFromBtree(BtCursor*,u32,u32,Mem*);
-int sqlite3VdbeMemFromBtreeZeroOffset(BtCursor*,u32,Mem*);
-void sqlite3VdbeMemRelease(Mem *p);
-void sqlite3VdbeMemReleaseMalloc(Mem*p);
-int sqlite3VdbeMemFinalize(Mem*, FuncDef*);
-#ifndef SQLITE_OMIT_WINDOWFUNC
-int sqlite3VdbeMemAggValue(Mem*, Mem*, FuncDef*);
-#endif
-#if !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
-const char *sqlite3OpcodeName(int);
-#endif
-int sqlite3VdbeMemGrow(Mem *pMem, int n, int preserve);
-int sqlite3VdbeMemClearAndResize(Mem *pMem, int n);
-int sqlite3VdbeCloseStatement(Vdbe *, int);
-#ifdef SQLITE_DEBUG
-int sqlite3VdbeFrameIsValid(VdbeFrame*);
-#endif
-void sqlite3VdbeFrameMemDel(void*);      /* Destructor on Mem */
-void sqlite3VdbeFrameDelete(VdbeFrame*); /* Actually deletes the Frame */
-int sqlite3VdbeFrameRestore(VdbeFrame *);
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-void sqlite3VdbePreUpdateHook(
-    Vdbe*,VdbeCursor*,int,const char*,Table*,i64,int,int);
-#endif
-int sqlite3VdbeTransferError(Vdbe *p);
-int sqlite3VdbeFindIndexKey(BtCursor*, Index*, UnpackedRecord*, int*, int);
+صحيح sqlite2_Btree_کلید_Compare(BtCursor *, ثابت فراغ *, صحيح, صحيح, صحيح *);
+صحيح sqlite3_Vdbe_Idx_کلید_Compare(sqlite3*,VdbeCursor*,Unpacked_ریکارڈ*,صحيح*);
+صحيح sqlite3VdbeIdxRowid(sqlite3*, BtCursor*, i64*);
+صحيح sqlite3VdbeExec(Vdbe*);
+#إذا !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
+صحيح sqlite3_Vdbe_اگلا_Opcode(Vdbe*,Mem*,صحيح,صحيح*,صحيح*,Op**);
+حرف *sqlite3VdbeDisplayP4(sqlite3*,Op*);
+#جے_انت
+#إذا defined(SQLITE_ENABLE_EXPLAIN_COMMENTS)
+حرف *sqlite3VdbeDisplayComment(sqlite3*,ثابت Op*,ثابت حرف*);
+#جے_انت
+#إذا !defined(SQLITE_OMIT_EXPLAIN)
+صحيح sqlite3VdbeList(Vdbe*);
+#جے_انت
+صحيح sqlite3VdbeHalt(Vdbe*);
+صحيح sqlite3VdbeChangeEncoding(Mem *, صحيح);
+صحيح sqlite3VdbeMemTooBig(Mem*);
+صحيح sqlite3VdbeMemCopy(Mem*, ثابت Mem*);
+فراغ sqlite3VdbeMemShallowCopy(Mem*, ثابت Mem*, صحيح);
+فراغ sqlite3VdbeMemMove(Mem*, Mem*);
+صحيح sqlite3VdbeMemNulTerminate(Mem*);
+صحيح sqlite3_Vdbe_Mem_سیٹ_Str(Mem*, ثابت حرف*, i64, u8, فراغ(*)(فراغ*));
+صحيح sqlite3_Vdbe_Mem_سیٹ_متن(Mem*, ثابت حرف*, i64, فراغ(*)(فراغ*));
+فراغ sqlite3_Vdbe_Mem_سیٹ_Int64(Mem*, i64);
+#جے_تعریف_شدہ SQLITE_OMIT_FLOATING_نقطہ
+# define sqlite3_Vdbe_Mem_سیٹ_Double sqlite3_Vdbe_Mem_سیٹ_Int64
+#وإلا
+  فراغ sqlite3_Vdbe_Mem_سیٹ_Double(Mem*, مزدوج);
+#جے_انت
+فراغ sqlite3_Vdbe_Mem_سیٹ_اشارہ_گر(Mem*, فراغ*, ثابت حرف*, فراغ(*)(فراغ*));
+فراغ sqlite3VdbeMemInit(Mem*,sqlite3*,u16);
+فراغ sqlite3_Vdbe_Mem_سیٹ_Null(Mem*);
+#جے_بنا_تعریف SQLITE_OMIT_INCRBLOB
+فراغ sqlite3_Vdbe_Mem_سیٹ_Zero_Blob(Mem*,صحيح);
+#وإلا
+صحيح sqlite3_Vdbe_Mem_سیٹ_Zero_Blob(Mem*,صحيح);
+#جے_انت
+#جے_تعریف_شدہ SQLITE_DEBUG
+صحيح sqlite3_Vdbe_Mem_Is_صف_سیٹ(ثابت Mem*);
+#جے_انت
+صحيح sqlite3_Vdbe_Mem_سیٹ_صف_سیٹ(Mem*);
+صحيح sqlite3VdbeMemZeroTerminateIfAble(Mem*);
+صحيح sqlite3VdbeMemMakeWriteable(Mem*);
+صحيح sqlite3VdbeMemStringify(Mem*, u8, u8);
+صحيح sqlite3IntFloatCompare(i64,مزدوج);
+i64 sqlite3_Vdbe_Int_قدر(ثابت Mem*);
+صحيح sqlite3VdbeMemIntegerify(Mem*);
+مزدوج sqlite3_Vdbe_Real_قدر(Mem*);
+صحيح sqlite3_Mem_Real_قدر_RC(Mem*, مزدوج*);
+صحيح sqlite3_Vdbe_Boolean_قدر(Mem*, صحيح ifNull);
+فراغ sqlite3VdbeIntegerAffinity(Mem*,صحيح b_From_متن);
+صحيح sqlite3VdbeMemRealify(Mem*);
+صحيح sqlite3VdbeMemNumerify(Mem*);
+صحيح sqlite3VdbeMemCast(Mem*,u8,u8);
+صحيح sqlite3VdbeMemFromBtree(BtCursor*,u32,u32,Mem*);
+صحيح sqlite3_Vdbe_Mem_From_Btree_Zero_وتھ(BtCursor*,u32,Mem*);
+فراغ sqlite3VdbeMemRelease(Mem *p);
+فراغ sqlite3VdbeMemReleaseMalloc(Mem*p);
+صحيح sqlite3VdbeMemFinalize(Mem*, FuncDef*);
+#جے_بنا_تعریف SQLITE_OMIT_WINDOWFUNC
+صحيح sqlite3_Vdbe_Mem_Agg_قدر(Mem*, Mem*, FuncDef*);
+#جے_انت
+#إذا !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
+ثابت حرف *sqlite3OpcodeName(صحيح);
+#جے_انت
+صحيح sqlite3VdbeMemGrow(Mem *pMem, صحيح n, صحيح preserve);
+صحيح sqlite3VdbeMemClearAndResize(Mem *pMem, صحيح n);
+صحيح sqlite3VdbeCloseStatement(Vdbe *, صحيح);
+#جے_تعریف_شدہ SQLITE_DEBUG
+صحيح sqlite3_Vdbe_چوکھٹا_Is_Valid(Vdbe_چوکھٹا*);
+#جے_انت
+فراغ sqlite3_Vdbe_چوکھٹا_Mem_Del(فراغ*);      /* Destructor on Mem */
+فراغ sqlite3_Vdbe_چوکھٹا_Delete(Vdbe_چوکھٹا*); /* Actually deletes the Frame */
+صحيح sqlite3_Vdbe_چوکھٹا_Restore(Vdbe_چوکھٹا *);
+#جے_تعریف_شدہ SQLITE_ENABLE_PREUPDATE_HOOK
+فراغ sqlite3VdbePreUpdateHook(
+    Vdbe*,VdbeCursor*,صحيح,ثابت حرف*,جدول*,i64,صحيح,صحيح);
+#جے_انت
+صحيح sqlite3VdbeTransferError(Vdbe *p);
+صحيح sqlite3_Vdbe_لبھو_اشاریہ_کلید(BtCursor*, اشاریہ*, Unpacked_ریکارڈ*, صحيح*, صحيح);
 
-int sqlite3VdbeSorterInit(sqlite3 *, int, VdbeCursor *);
-void sqlite3VdbeSorterReset(sqlite3 *, VdbeSorter *);
-void sqlite3VdbeSorterClose(sqlite3 *, VdbeCursor *);
-int sqlite3VdbeSorterRowkey(const VdbeCursor *, Mem *);
-int sqlite3VdbeSorterNext(sqlite3 *, const VdbeCursor *);
-int sqlite3VdbeSorterRewind(const VdbeCursor *, int *);
-int sqlite3VdbeSorterWrite(const VdbeCursor *, Mem *);
-int sqlite3VdbeSorterCompare(const VdbeCursor *, Mem *, int, int *);
+صحيح sqlite3VdbeSorterInit(sqlite3 *, صحيح, VdbeCursor *);
+فراغ sqlite3VdbeSorterReset(sqlite3 *, VdbeSorter *);
+فراغ sqlite3VdbeSorterClose(sqlite3 *, VdbeCursor *);
+صحيح sqlite3VdbeSorterRowkey(ثابت VdbeCursor *, Mem *);
+صحيح sqlite3_Vdbe_Sorter_اگلا(sqlite3 *, ثابت VdbeCursor *);
+صحيح sqlite3VdbeSorterRewind(ثابت VdbeCursor *, صحيح *);
+صحيح sqlite3VdbeSorterWrite(ثابت VdbeCursor *, Mem *);
+صحيح sqlite3VdbeSorterCompare(ثابت VdbeCursor *, Mem *, صحيح, صحيح *);
 
-void sqlite3VdbeValueListFree(void*);
+فراغ sqlite3_Vdbe_قدر_List_Free(فراغ*);
 
-#ifdef SQLITE_DEBUG
-  void sqlite3VdbeIncrWriteCounter(Vdbe*, VdbeCursor*);
-  void sqlite3VdbeAssertAbortable(Vdbe*);
-#else
+#جے_تعریف_شدہ SQLITE_DEBUG
+  فراغ sqlite3VdbeIncrWriteCounter(Vdbe*, VdbeCursor*);
+  فراغ sqlite3VdbeAssertAbortable(Vdbe*);
+#وإلا
 # define sqlite3VdbeIncrWriteCounter(V,C)
 # define sqlite3VdbeAssertAbortable(V)
-#endif
+#جے_انت
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE)
-  void sqlite3VdbeEnter(Vdbe*);
-#else
+#إذا !defined(SQLITE_OMIT_SHARED_CACHE)
+  فراغ sqlite3VdbeEnter(Vdbe*);
+#وإلا
 # define sqlite3VdbeEnter(X)
-#endif
+#جے_انت
 
-#if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE>0
-  void sqlite3VdbeLeave(Vdbe*);
-#else
+#إذا !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE>0
+  فراغ sqlite3VdbeLeave(Vdbe*);
+#وإلا
 # define sqlite3VdbeLeave(X)
-#endif
+#جے_انت
 
-#ifdef SQLITE_DEBUG
-void sqlite3VdbeMemAboutToChange(Vdbe*,Mem*);
-int sqlite3VdbeCheckMemInvariants(Mem*);
-#endif
+#جے_تعریف_شدہ SQLITE_DEBUG
+فراغ sqlite3_Vdbe_Mem_About_منزل_Change(Vdbe*,Mem*);
+صحيح sqlite3VdbeCheckMemInvariants(Mem*);
+#جے_انت
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-int sqlite3VdbeCheckFkImmediate(Vdbe*);
-int sqlite3VdbeCheckFkDeferred(Vdbe*);
-#else
-# define sqlite3VdbeCheckFkImmediate(p) 0
+#جے_بنا_تعریف SQLITE_OMIT_FOREIGN_کلید
+صحيح sqlite3_Vdbe_Check_Fk_فوری(Vdbe*);
+صحيح sqlite3VdbeCheckFkDeferred(Vdbe*);
+#وإلا
+# define sqlite3_Vdbe_Check_Fk_فوری(p) 0
 # define sqlite3VdbeCheckFkDeferred(p) 0
-#endif
+#جے_انت
 
-#ifdef SQLITE_DEBUG
-  void sqlite3VdbePrintSql(Vdbe*);
-  void sqlite3VdbeMemPrettyPrint(Mem *pMem, StrAccum *pStr);
-#endif
-#ifndef SQLITE_OMIT_UTF16
-  int sqlite3VdbeMemTranslate(Mem*, u8);
-  int sqlite3VdbeMemHandleBom(Mem *pMem);
-#endif
+#جے_تعریف_شدہ SQLITE_DEBUG
+  فراغ sqlite3VdbePrintSql(Vdbe*);
+  فراغ sqlite3VdbeMemPrettyPrint(Mem *pMem, StrAccum *pStr);
+#جے_انت
+#جے_بنا_تعریف SQLITE_OMIT_UTF16
+  صحيح sqlite3VdbeMemTranslate(Mem*, u8);
+  صحيح sqlite3VdbeMemHandleBom(Mem *pMem);
+#جے_انت
 
-#ifndef SQLITE_OMIT_INCRBLOB
-  int sqlite3VdbeMemExpandBlob(Mem *);
-  #define ExpandBlob(P) (((P)->flags&MEM_Zero)?sqlite3VdbeMemExpandBlob(P):0)
-#else
-  #define sqlite3VdbeMemExpandBlob(x) SQLITE_OK
-  #define ExpandBlob(P) SQLITE_OK
-#endif
+#جے_بنا_تعریف SQLITE_OMIT_INCRBLOB
+  صحيح sqlite3VdbeMemExpandBlob(Mem *);
+  #تعریف_کرو ExpandBlob(P) (((P)->flags&MEM_Zero)?sqlite3VdbeMemExpandBlob(P):0)
+#وإلا
+  #تعریف_کرو sqlite3VdbeMemExpandBlob(x) SQLITE_OK
+  #تعریف_کرو ExpandBlob(P) SQLITE_OK
+#جے_انت
 
-#endif /* !defined(SQLITE_VDBEINT_H) */
+#جے_انت /* !defined(SQLITE_VDBEINT_H) */

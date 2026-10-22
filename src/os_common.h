@@ -17,83 +17,83 @@
 ** This file should be #included by the os_*.c files only.  It is not a
 ** general purpose header file.
 */
-#ifndef _OS_COMMON_H_
-#define _OS_COMMON_H_
+#جے_بنا_تعریف _OS_COMMON_H_
+#تعریف_کرو _OS_COMMON_H_
 
 /*
 ** At least two bugs have slipped in because we changed the MEMORY_DEBUG
 ** macro to SQLITE_DEBUG and some older makefiles have not yet made the
 ** switch.  The following code should catch this problem at compile-time.
 */
-#ifdef MEMORY_DEBUG
+#جے_تعریف_شدہ حافظہ_DEBUG
 # error "The MEMORY_DEBUG macro is obsolete.  Use SQLITE_DEBUG instead."
-#endif
+#جے_انت
 
 /*
 ** Macros for performance tracing.  Normally turned off.  Only works
 ** on i486 hardware.
 */
-#ifdef SQLITE_PERFORMANCE_TRACE
+#جے_تعریف_شدہ SQLITE_PERFORMANCE_TRACE
 
-static sqlite_uint64 g_start;
-static sqlite_uint64 g_elapsed;
-#define TIMER_START       g_start=sqlite3Hwtime()
-#define TIMER_END         g_elapsed=sqlite3Hwtime()-g_start
-#define TIMER_ELAPSED     g_elapsed
-#else
-#define TIMER_START
-#define TIMER_END
-#define TIMER_ELAPSED     ((sqlite_uint64)0)
-#endif
+ساكن sqlite_uint64 g_شروع;
+ساكن sqlite_uint64 g_elapsed;
+#تعریف_کرو TIMER_شروع       g_شروع=sqlite3Hwtime()
+#تعریف_کرو TIMER_سرا         g_elapsed=sqlite3Hwtime()-g_شروع
+#تعریف_کرو TIMER_ELAPSED     g_elapsed
+#وإلا
+#تعریف_کرو TIMER_شروع
+#تعریف_کرو TIMER_سرا
+#تعریف_کرو TIMER_ELAPSED     ((sqlite_uint64)0)
+#جے_انت
 
 /*
 ** If we compile with the SQLITE_TEST macro set, then the following block
 ** of code will give us the ability to simulate a disk I/O error.  This
 ** is used for testing the I/O recovery logic.
 */
-#if defined(SQLITE_TEST)
-extern int sqlite3_io_error_hit;
-extern int sqlite3_io_error_hardhit;
-extern int sqlite3_io_error_pending;
-extern int sqlite3_io_error_persist;
-extern int sqlite3_io_error_benign;
-extern int sqlite3_diskfull_pending;
-extern int sqlite3_diskfull;
-#define SimulateIOErrorBenign(X) sqlite3_io_error_benign=(X)
-#define SimulateIOError(CODE)  \
-  if( (sqlite3_io_error_persist && sqlite3_io_error_hit) \
+#إذا defined(SQLITE_TEST)
+خارجي صحيح sqlite3_io_error_کامیابی;
+خارجي صحيح sqlite3_io_error_hardhit;
+خارجي صحيح sqlite3_io_error_pending;
+خارجي صحيح sqlite3_io_error_persist;
+خارجي صحيح sqlite3_io_error_benign;
+خارجي صحيح sqlite3_diskfull_pending;
+خارجي صحيح sqlite3_diskfull;
+#تعریف_کرو SimulateIOErrorBenign(X) sqlite3_io_error_benign=(X)
+#تعریف_کرو SimulateIOError(کوڈ_2)  \
+  إذا( (sqlite3_io_error_persist && sqlite3_io_error_کامیابی) \
        || sqlite3_io_error_pending-- == 1 )  \
-              { local_ioerr(); CODE; }
-static void local_ioerr(){
+              { local_ioerr(); کوڈ_2; }
+ساكن فراغ local_ioerr(){
   IOTRACE(("IOERR\n"));
-  sqlite3_io_error_hit++;
-  if( !sqlite3_io_error_benign ) sqlite3_io_error_hardhit++;
+  sqlite3_io_error_کامیابی++;
+  إذا( !sqlite3_io_error_benign ) sqlite3_io_error_hardhit++;
 }
-#define SimulateDiskfullError(CODE) \
-   if( sqlite3_diskfull_pending ){ \
-     if( sqlite3_diskfull_pending == 1 ){ \
+#تعریف_کرو SimulateDiskfullError(کوڈ_2) \
+   إذا( sqlite3_diskfull_pending ){ \
+     إذا( sqlite3_diskfull_pending == 1 ){ \
        local_ioerr(); \
        sqlite3_diskfull = 1; \
-       sqlite3_io_error_hit = 1; \
-       CODE; \
-     }else{ \
+       sqlite3_io_error_کامیابی = 1; \
+       کوڈ_2; \
+     }وإلا{ \
        sqlite3_diskfull_pending--; \
      } \
    }
-#else
-#define SimulateIOErrorBenign(X)
-#define SimulateIOError(A)
-#define SimulateDiskfullError(A)
-#endif /* defined(SQLITE_TEST) */
+#وإلا
+#تعریف_کرو SimulateIOErrorBenign(X)
+#تعریف_کرو SimulateIOError(A)
+#تعریف_کرو SimulateDiskfullError(A)
+#جے_انت /* defined(SQLITE_TEST) */
 
 /*
 ** When testing, keep a count of the number of open files.
 */
-#if defined(SQLITE_TEST)
-extern int sqlite3_open_file_count;
-#define OpenCounter(X)  sqlite3_open_file_count+=(X)
-#else
-#define OpenCounter(X)
-#endif /* defined(SQLITE_TEST) */
+#إذا defined(SQLITE_TEST)
+خارجي صحيح sqlite3_open_file_گنتی;
+#تعریف_کرو OpenCounter(X)  sqlite3_open_file_گنتی+=(X)
+#وإلا
+#تعریف_کرو OpenCounter(X)
+#جے_انت /* defined(SQLITE_TEST) */
 
-#endif /* !defined(_OS_COMMON_H_) */
+#جے_انت /* !defined(_OS_COMMON_H_) */

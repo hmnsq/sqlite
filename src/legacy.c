@@ -15,7 +15,7 @@
 ** accessed by users of the library.
 */
 
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 /*
 ** Execute SQL code.  Return one of the SQLITE_ success/failure
@@ -27,75 +27,75 @@
 ** argument to xCallback().  If xCallback=NULL then no callback
 ** is invoked, even for queries.
 */
-int sqlite3_exec(
+صحيح sqlite3_exec(
   sqlite3 *db,                /* The database on which the SQL executes */
-  const char *zSql,           /* The SQL to be executed */
+  ثابت حرف *zSql,           /* The SQL to be executed */
   sqlite3_callback xCallback, /* Invoke this callback routine */
-  void *pArg,                 /* First argument to xCallback() */
-  char **pzErrMsg             /* Write error messages here */
+  فراغ *pArg,                 /* First argument to xCallback() */
+  حرف **pz_Err_پیغام             /* Write error messages here */
 ){
-  int rc = SQLITE_OK;         /* Return code */
-  const char *zLeftover;      /* Tail of unprocessed SQL */
+  صحيح rc = SQLITE_OK;         /* Return code */
+  ثابت حرف *zLeftover;      /* Tail of unprocessed SQL */
   sqlite3_stmt *pStmt = 0;    /* The current SQL statement */
-  char **azCols = 0;          /* Names of result columns */
-  int callbackIsInit;         /* True if callback data is initialized */
+  حرف **az_خانے_گنتی = 0;          /* Names of result columns */
+  صحيح callbackIsInit;         /* True if callback data is initialized */
 
-  if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
-  if( zSql==0 ) zSql = "";
+  إذا( !sqlite3SafetyCheckOk(db) ) أرجع SQLITE_MISUSE_BKPT;
+  إذا( zSql==0 ) zSql = "";
 
   sqlite3_mutex_enter(db->mutex);
   sqlite3Error(db, SQLITE_OK);
-  while( rc==SQLITE_OK && zSql[0] ){
-    int nCol = 0;
-    char **azVals = 0;
+  طالما( rc==SQLITE_OK && zSql[0] ){
+    صحيح n_خانہ = 0;
+    حرف **azVals = 0;
 
     pStmt = 0;
     rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover);
-    assert( rc==SQLITE_OK || pStmt==0 );
-    if( rc!=SQLITE_OK ){
-      continue;
+    أكد( rc==SQLITE_OK || pStmt==0 );
+    إذا( rc!=SQLITE_OK ){
+      استمر;
     }
-    if( !pStmt ){
+    إذا( !pStmt ){
       /* this happens for a comment or white-space */
       zSql = zLeftover;
-      continue;
+      استمر;
     }
     callbackIsInit = 0;
 
-    while( 1 ){
-      int i;
-      rc = sqlite3_step(pStmt);
+    طالما( 1 ){
+      صحيح i;
+      rc = sqlite3_قدم(pStmt);
 
       /* Invoke the callback function if required */
-      if( xCallback && (SQLITE_ROW==rc || 
-          (SQLITE_DONE==rc && !callbackIsInit
+      إذا( xCallback && (SQLITE_صف==rc || 
+          (SQLITE_پورا==rc && !callbackIsInit
                            && db->flags&SQLITE_NullCallback)) ){
-        if( !callbackIsInit ){
-          nCol = sqlite3_column_count(pStmt);
-          azCols = sqlite3DbMallocRaw(db, (2*nCol+1)*sizeof(const char*));
-          if( azCols==0 ){
-            goto exec_out;
+        إذا( !callbackIsInit ){
+          n_خانہ = sqlite3_کالم_گنتی(pStmt);
+          az_خانے_گنتی = sqlite3DbMallocRaw(db, (2*n_خانہ+1)*حجم(ثابت حرف*));
+          إذا( az_خانے_گنتی==0 ){
+            اذهب exec_باہرلا;
           }
-          for(i=0; i<nCol; i++){
-            azCols[i] = (char *)sqlite3_column_name(pStmt, i);
+          لكل(i=0; i<n_خانہ; i++){
+            az_خانے_گنتی[i] = (حرف *)sqlite3_کالم_name(pStmt, i);
             /* sqlite3VdbeSetColName() installs column names as UTF8
             ** strings so there is no way for sqlite3_column_name() to fail. */
-            assert( azCols[i]!=0 );
+            أكد( az_خانے_گنتی[i]!=0 );
           }
           callbackIsInit = 1;
         }
-        if( rc==SQLITE_ROW ){
-          azVals = &azCols[nCol];
-          for(i=0; i<nCol; i++){
-            azVals[i] = (char *)sqlite3_column_text(pStmt, i);
-            if( !azVals[i] && sqlite3_column_type(pStmt, i)!=SQLITE_NULL ){
+        إذا( rc==SQLITE_صف ){
+          azVals = &az_خانے_گنتی[n_خانہ];
+          لكل(i=0; i<n_خانہ; i++){
+            azVals[i] = (حرف *)sqlite3_کالم_متن(pStmt, i);
+            إذا( !azVals[i] && sqlite3_کالم_type(pStmt, i)!=SQLITE_NULL ){
               sqlite3OomFault(db);
-              goto exec_out;
+              اذهب exec_باہرلا;
             }
           }
           azVals[i] = 0;
         }
-        if( xCallback(pArg, nCol, azVals, azCols) ){
+        إذا( xCallback(pArg, n_خانہ, azVals, az_خانے_گنتی) ){
           /* EVIDENCE-OF: R-38229-40159 If the callback function to
           ** sqlite3_exec() returns non-zero, then sqlite3_exec() will
           ** return SQLITE_ABORT. */
@@ -103,39 +103,39 @@ int sqlite3_exec(
           sqlite3VdbeFinalize((Vdbe *)pStmt);
           pStmt = 0;
           sqlite3Error(db, SQLITE_ABORT);
-          goto exec_out;
+          اذهب exec_باہرلا;
         }
       }
 
-      if( rc!=SQLITE_ROW ){
+      إذا( rc!=SQLITE_صف ){
         rc = sqlite3VdbeFinalize((Vdbe *)pStmt);
         pStmt = 0;
         zSql = zLeftover;
-        while( sqlite3Isspace(zSql[0]) ) zSql++;
-        break;
+        طالما( sqlite3Isspace(zSql[0]) ) zSql++;
+        اكسر;
       }
     }
 
-    sqlite3DbFree(db, azCols);
-    azCols = 0;
+    sqlite3DbFree(db, az_خانے_گنتی);
+    az_خانے_گنتی = 0;
   }
 
-exec_out:
-  if( pStmt ) sqlite3VdbeFinalize((Vdbe *)pStmt);
-  sqlite3DbFree(db, azCols);
+exec_باہرلا:
+  إذا( pStmt ) sqlite3VdbeFinalize((Vdbe *)pStmt);
+  sqlite3DbFree(db, az_خانے_گنتی);
 
   rc = sqlite3ApiExit(db, rc);
-  if( rc!=SQLITE_OK && pzErrMsg ){
-    *pzErrMsg = sqlite3DbStrDup(0, sqlite3_errmsg(db));
-    if( *pzErrMsg==0 ){
+  إذا( rc!=SQLITE_OK && pz_Err_پیغام ){
+    *pz_Err_پیغام = sqlite3DbStrDup(0, sqlite3_errmsg(db));
+    إذا( *pz_Err_پیغام==0 ){
       rc = SQLITE_NOMEM_BKPT;
       sqlite3Error(db, SQLITE_NOMEM);
     }
-  }else if( pzErrMsg ){
-    *pzErrMsg = 0;
+  }وإلا إذا( pz_Err_پیغام ){
+    *pz_Err_پیغام = 0;
   }
 
-  assert( (rc&db->errMask)==rc );
+  أكد( (rc&db->err_نقاب)==rc );
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  أرجع rc;
 }

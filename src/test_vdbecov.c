@@ -11,106 +11,106 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#إذا SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#ضمن "sqlite3.h"
+#ضمن "sqliteInt.h"
+#ضمن "tclsqlite.h"
 
-#ifdef SQLITE_VDBE_COVERAGE
+#جے_تعریف_شدہ SQLITE_VDBE_COVERAGE
 
-static u8 aBranchArray[200000];
+ساكن u8 aBranchArray[200000];
 
-static void test_vdbe_branch(
-  void *pCtx, 
-  unsigned int iSrc, 
-  unsigned char iBranch, 
-  unsigned char iType
+ساكن فراغ test_vdbe_branch(
+  فراغ *pCtx, 
+  بنانشانی صحيح iSrc, 
+  بنانشانی حرف iBranch, 
+  بنانشانی حرف iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  إذا( iSrc<حجم(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
-static void appendToList(
+ساكن فراغ append_منزل_List(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
-  const char *zNever
+  صحيح i_سطر, 
+  صحيح i_رستہ, 
+  ثابت حرف *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
-  Tcl_IncrRefCount(pNew);
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iLine));
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iPath));
+  Tcl_Incr_Ref_گنتی(pNew);
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_سطر));
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_رستہ));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zNever, -1));
   Tcl_ListObjAppendElement(0, pList, pNew);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_گنتی(pNew);
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
-  ClientData cd,
+ساكن صحيح SQLITE_TCLAPI test_vdbe_coverage(
+  Client_انکڑے cd,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+  ثابت حرف *aSub[] = { "start", "report", "stop", 0 };
+  صحيح iSub = -1;
+  إذا( objc!=2 ){
+    Tcl_Wrong_عدد_دلیلاں(interp, 1, objv, "sub-command");
+    أرجع TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  إذا( Tcl_Get_اشاریہ_From_Obj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    أرجع TCL_ERROR;
   }
 
-  Tcl_ResetResult(interp);
-  assert( iSub==0 || iSub==1 || iSub==2 );
-  switch( iSub ){
-    case 0:       /* start */
-      memset(aBranchArray, 0, sizeof(aBranchArray));
+  Tcl_Reset_نتیجہ(interp);
+  أكد( iSub==0 || iSub==1 || iSub==2 );
+  بدل( iSub ){
+    حالة 0:       /*شروع*/
+      memset(aBranchArray, 0, حجم(aBranchArray));
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
-      break;
-    case 1: {     /* report */
-      int i;
+      اكسر;
+    حالة 1: {     /* report */
+      صحيح i;
       Tcl_Obj *pRes = Tcl_NewObj();
-      Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      Tcl_Incr_Ref_گنتی(pRes);
+      لكل(i=0; i<حجم(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
-            appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
+        صحيح bFlag = ((b >> 4)==4);
+        إذا( b ){
+          إذا( (b & 0x01)==0 ){
+            append_منزل_List(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
-            appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
+          إذا( (b & 0x02)==0 ){
+            append_منزل_List(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
-            appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
+          إذا( (b & 0x04)==0 ){
+            append_منزل_List(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
       }
-      Tcl_SetObjResult(interp, pRes);
-      Tcl_DecrRefCount(pRes);
-      break;
+      Tcl_سیٹ_Obj_نتیجہ(interp, pRes);
+      Tcl_Decr_Ref_گنتی(pRes);
+      اكسر;
     };
       
-    default:      /* stop */         
+    افتراضي:      /* stop */         
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, 0, 0);
-      break;
+      اكسر;
   }
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-#endif  /* SQLITE_VDBE_COVERAGE */
+#جے_انت  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
-#ifdef SQLITE_VDBE_COVERAGE
+صحيح Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+#جے_تعریف_شدہ SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
-#endif
-  return TCL_OK;
+#جے_انت
+  أرجع TCL_OK;
 }
 
-#endif
+#جے_انت

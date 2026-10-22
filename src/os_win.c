@@ -12,185 +12,185 @@
 **
 ** This file contains code that is specific to Windows.
 */
-#include "sqliteInt.h"
-#if SQLITE_OS_WIN               /* This file is used for Windows only */
+#ضمن "sqliteInt.h"
+#إذا SQLITE_OS_WIN               /* This file is used for Windows only */
 
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#ضمن "os_common.h"
 
 /*
 ** Include the header file for the Windows VFS.
 */
-#include "os_win.h"
+#ضمن "os_win.h"
 
 /*
 ** This constant should already be defined (in the "WinDef.h" SDK file).
 */
-#ifndef MAX_PATH
-#  define MAX_PATH                      (260)
-#endif
+#جے_بنا_تعریف MAX_رستہ
+#  define MAX_رستہ                      (260)
+#جے_انت
 
 /*
 ** Maximum pathname length (in chars) for Win32.  This should normally be
 ** MAX_PATH.
 */
-#ifndef SQLITE_WIN32_MAX_PATH_CHARS
-#  define SQLITE_WIN32_MAX_PATH_CHARS   (MAX_PATH)
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_MAX_رستہ_CHARS
+#  define SQLITE_WIN32_MAX_رستہ_CHARS   (MAX_رستہ)
+#جے_انت
 
 /*
 ** This constant should already be defined (in the "WinNT.h" SDK file).
 */
-#ifndef UNICODE_STRING_MAX_CHARS
+#جے_بنا_تعریف UNICODE_STRING_MAX_CHARS
 #  define UNICODE_STRING_MAX_CHARS      (32767)
-#endif
+#جے_انت
 
 /*
 ** Maximum pathname length (in chars) for WinNT.  This should normally be
 ** UNICODE_STRING_MAX_CHARS.
 */
-#ifndef SQLITE_WINNT_MAX_PATH_CHARS
-#  define SQLITE_WINNT_MAX_PATH_CHARS   (UNICODE_STRING_MAX_CHARS)
-#endif
+#جے_بنا_تعریف SQLITE_WINNT_MAX_رستہ_CHARS
+#  define SQLITE_WINNT_MAX_رستہ_CHARS   (UNICODE_STRING_MAX_CHARS)
+#جے_انت
 
 /*
 ** Maximum pathname length (in bytes) for Win32.  The MAX_PATH macro is in
 ** characters, so we allocate 4 bytes per character assuming worst-case of
 ** 4-bytes-per-character for UTF8.
 */
-#ifndef SQLITE_WIN32_MAX_PATH_BYTES
-#  define SQLITE_WIN32_MAX_PATH_BYTES   (SQLITE_WIN32_MAX_PATH_CHARS*4)
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_MAX_رستہ_بائٹاں
+#  define SQLITE_WIN32_MAX_رستہ_بائٹاں   (SQLITE_WIN32_MAX_رستہ_CHARS*4)
+#جے_انت
 
 /*
 ** Maximum pathname length (in bytes) for WinNT.  This should normally be
 ** UNICODE_STRING_MAX_CHARS * sizeof(WCHAR).
 */
-#ifndef SQLITE_WINNT_MAX_PATH_BYTES
-#  define SQLITE_WINNT_MAX_PATH_BYTES   \
-                            (sizeof(WCHAR) * SQLITE_WINNT_MAX_PATH_CHARS)
-#endif
+#جے_بنا_تعریف SQLITE_WINNT_MAX_رستہ_بائٹاں
+#  define SQLITE_WINNT_MAX_رستہ_بائٹاں   \
+                            (حجم(WCHAR) * SQLITE_WINNT_MAX_رستہ_CHARS)
+#جے_انت
 
 /*
 ** Maximum error message length (in chars) for WinRT.
 */
-#ifndef SQLITE_WIN32_MAX_ERRMSG_CHARS
+#جے_بنا_تعریف SQLITE_WIN32_MAX_ERRMSG_CHARS
 #  define SQLITE_WIN32_MAX_ERRMSG_CHARS (1024)
-#endif
+#جے_انت
 
 /*
 ** Returns non-zero if the character should be treated as a directory
 ** separator.
 */
-#ifndef winIsDirSep
+#جے_بنا_تعریف winIsDirSep
 #  define winIsDirSep(a)                (((a) == '/') || ((a) == '\\'))
-#endif
+#جے_انت
 
 /*
 ** This macro is used when a local variable is set to a value that is
 ** [sometimes] not used by the code (e.g. via conditional compilation).
 */
-#ifndef UNUSED_VARIABLE_VALUE
-#  define UNUSED_VARIABLE_VALUE(x)      (void)(x)
-#endif
+#جے_بنا_تعریف بن_ورتیا_VARIABLE_قدر
+#  define بن_ورتیا_VARIABLE_قدر(x)      (فراغ)(x)
+#جے_انت
 
 /*
 ** Returns the character that should be used as the directory separator.
 */
-#ifndef winGetDirSep
+#جے_بنا_تعریف winGetDirSep
 #  define winGetDirSep()                '\\'
-#endif
+#جے_انت
 
 /*
 ** Some older Microsoft compilers lack the following definition.
 */
-#ifndef INVALID_FILE_ATTRIBUTES
-# define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
-#endif
+#جے_بنا_تعریف INVALID_FILE_گن
+# define INVALID_FILE_گن ((DWORD)-1)
+#جے_انت
 
-#ifndef FILE_FLAG_MASK
-# define FILE_FLAG_MASK          (0xFF3C0000)
-#endif
+#جے_بنا_تعریف FILE_FLAG_نقاب
+# define FILE_FLAG_نقاب          (0xFF3C0000)
+#جے_انت
 
-#ifndef FILE_ATTRIBUTE_MASK
-# define FILE_ATTRIBUTE_MASK     (0x0003FFF7)
-#endif
+#جے_بنا_تعریف FILE_ATTRIBUTE_نقاب
+# define FILE_ATTRIBUTE_نقاب     (0x0003FFF7)
+#جے_انت
 
-#ifndef SQLITE_OMIT_WAL
+#جے_بنا_تعریف SQLITE_OMIT_WAL
 /* Forward references to structures used for WAL */
-typedef struct winShm winShm;           /* A connection to shared-memory */
-typedef struct winShmNode winShmNode;   /* A region of shared-memory */
-#endif
+تعريفنوع بنية winShm winShm;           /* A connection to shared-memory */
+تعريفنوع بنية win_Shm_گرہ win_Shm_گرہ;   /* A region of shared-memory */
+#جے_انت
 
 /*
 ** The winFile structure is a subclass of sqlite3_file* specific to the win32
 ** portability layer.
 */
-typedef struct winFile winFile;
-struct winFile {
-  const sqlite3_io_methods *pMethod; /*** Must be first ***/
+تعريفنوع بنية winFile winFile;
+بنية winFile {
+  ثابت sqlite3_io_methods *p_طریقہ; /*** Must be first ***/
   sqlite3_vfs *pVfs;      /* The VFS used to open this file */
   HANDLE h;               /* Handle for accessing the file */
   u8 locktype;            /* Type of lock currently held on this file */
-  short sharedLockByte;   /* Randomly chosen byte used as a shared lock */
+  چھوٹا shared_جندرا_Byte;   /* Randomly chosen byte used as a shared lock */
   u8 ctrlFlags;           /* Flags.  See WINFILE_* below */
-  DWORD lastErrno;        /* The Windows errno from the last I/O error */
-#ifndef SQLITE_OMIT_WAL
+  DWORD آخری_Errno;        /* The Windows errno from the last I/O error */
+#جے_بنا_تعریف SQLITE_OMIT_WAL
   winShm *pShm;           /* Instance of shared memory on this file */
-#endif
-  const char *zPath;      /* Full pathname of this file */
-  int szChunk;            /* Chunk size configured by FCNTL_CHUNK_SIZE */
-#if SQLITE_MAX_MMAP_SIZE>0
-  int nFetchOut;                /* Number of outstanding xFetch references */
+#جے_انت
+  ثابت حرف *z_رستہ;      /* Full pathname of this file */
+  صحيح szChunk;            /* Chunk size configured by FCNTL_CHUNK_SIZE */
+#إذا SQLITE_MAX_MMAP_ناپ>0
+  صحيح n_Fetch_باہرلا;                /* Number of outstanding xFetch references */
   HANDLE hMap;                  /* Handle for accessing memory mapping */
-  void *pMapRegion;             /* Area memory mapped */
-  sqlite3_int64 mmapSize;       /* Size of mapped region */
-  sqlite3_int64 mmapSizeMax;    /* Configured FCNTL_MMAP_SIZE value */
-#endif
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+  فراغ *pMapRegion;             /* Area memory mapped */
+  sqlite3_int64 mmap_ناپ;       /* Size of mapped region */
+  sqlite3_int64 mmap_ناپ_Max;    /* Configured FCNTL_MMAP_SIZE value */
+#جے_انت
+#جے_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
   DWORD iBusyTimeout;        /* Wait this many millisec on locks */
-  int bBlockOnConnect;
-#endif
+  صحيح b_بلاک_On_Connect;
+#جے_انت
 };
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#جے_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
 # define winFileBusyTimeout(pDbFd) pDbFd->iBusyTimeout
-#else
+#وإلا
 # define winFileBusyTimeout(pDbFd) 0
-#endif
+#جے_انت
 
 /*
 ** The winVfsAppData structure is used for the pAppData member for all of the
 ** Win32 VFS variants.
 */
-typedef struct winVfsAppData winVfsAppData;
-struct winVfsAppData {
-  const sqlite3_io_methods *pMethod; /* The file I/O methods to use. */
-  void *pAppData;                    /* The extra pAppData, if any. */
-  BOOL bNoLock;                      /* Non-zero if locking is disabled. */
+تعريفنوع بنية win_Vfs_App_انکڑے win_Vfs_App_انکڑے;
+بنية win_Vfs_App_انکڑے {
+  ثابت sqlite3_io_methods *p_طریقہ; /* The file I/O methods to use. */
+  فراغ *p_App_انکڑے;                    /* The extra pAppData, if any. */
+  BOOL b_No_جندرا;                      /* Non-zero if locking is disabled. */
 };
 
 /*
 ** Allowed values for winFile.ctrlFlags
 */
-#define WINFILE_RDONLY          0x02   /* Connection is read only */
-#define WINFILE_PERSIST_WAL     0x04   /* Persistent WAL mode */
-#define WINFILE_PSOW            0x10   /* SQLITE_IOCAP_POWERSAFE_OVERWRITE */
+#تعریف_کرو WINFILE_RDONLY          0x02   /* Connection is read only */
+#تعریف_کرو WINFILE_PERSIST_WAL     0x04   /* Persistent WAL mode */
+#تعریف_کرو WINFILE_PSOW            0x10   /* SQLITE_IOCAP_POWERSAFE_OVERWRITE */
 
 /*
  * The size of the buffer used by sqlite3_win32_write_debug().
  */
-#ifndef SQLITE_WIN32_DBG_BUF_SIZE
-#  define SQLITE_WIN32_DBG_BUF_SIZE   ((int)(4096-sizeof(DWORD)))
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_DBG_BUF_ناپ
+#  define SQLITE_WIN32_DBG_BUF_ناپ   ((صحيح)(4096-حجم(DWORD)))
+#جے_انت
 
 /*
  * If compiled with SQLITE_WIN32_MALLOC on Windows, we will use the
  * various Win32 API heap functions instead of our own.
  */
-#ifdef SQLITE_WIN32_MALLOC
+#جے_تعریف_شدہ SQLITE_WIN32_MALLOC
 
 /*
  * If this is non-zero, an isolated heap will be created by the native Win32
@@ -206,141 +206,141 @@ struct winVfsAppData {
  *          data will almost certainly result in an immediate access violation.
  ******************************************************************************
  */
-#ifndef SQLITE_WIN32_HEAP_CREATE
-#  define SQLITE_WIN32_HEAP_CREATE        (TRUE)
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_ڈھیر_CREATE
+#  define SQLITE_WIN32_ڈھیر_CREATE        (TRUE)
+#جے_انت
 
 /*
  * This is the maximum possible initial size of the Win32-specific heap, in
  * bytes.
  */
-#ifndef SQLITE_WIN32_HEAP_MAX_INIT_SIZE
-#  define SQLITE_WIN32_HEAP_MAX_INIT_SIZE (4294967295U)
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_ڈھیر_MAX_INIT_ناپ
+#  define SQLITE_WIN32_ڈھیر_MAX_INIT_ناپ (4294967295U)
+#جے_انت
 
 /*
  * This is the extra space for the initial size of the Win32-specific heap,
  * in bytes.  This value may be zero.
  */
-#ifndef SQLITE_WIN32_HEAP_INIT_EXTRA
-#  define SQLITE_WIN32_HEAP_INIT_EXTRA  (4194304)
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_ڈھیر_INIT_EXTRA
+#  define SQLITE_WIN32_ڈھیر_INIT_EXTRA  (4194304)
+#جے_انت
 
 /*
  * Calculate the maximum legal cache size, in pages, based on the maximum
  * possible initial heap size and the default page size, setting aside the
  * needed extra space.
  */
-#ifndef SQLITE_WIN32_MAX_CACHE_SIZE
-#  define SQLITE_WIN32_MAX_CACHE_SIZE   (((SQLITE_WIN32_HEAP_MAX_INIT_SIZE) - \
-                                          (SQLITE_WIN32_HEAP_INIT_EXTRA)) / \
-                                         (SQLITE_DEFAULT_PAGE_SIZE))
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_MAX_CACHE_ناپ
+#  define SQLITE_WIN32_MAX_CACHE_ناپ   (((SQLITE_WIN32_ڈھیر_MAX_INIT_ناپ) - \
+                                          (SQLITE_WIN32_ڈھیر_INIT_EXTRA)) / \
+                                         (SQLITE_DEFAULT_ورقہ_ناپ))
+#جے_انت
 
 /*
  * This is cache size used in the calculation of the initial size of the
  * Win32-specific heap.  It cannot be negative.
  */
-#ifndef SQLITE_WIN32_CACHE_SIZE
-#  if SQLITE_DEFAULT_CACHE_SIZE>=0
-#    define SQLITE_WIN32_CACHE_SIZE     (SQLITE_DEFAULT_CACHE_SIZE)
-#  else
-#    define SQLITE_WIN32_CACHE_SIZE     (-(SQLITE_DEFAULT_CACHE_SIZE))
+#جے_بنا_تعریف SQLITE_WIN32_CACHE_ناپ
+#  إذا SQLITE_DEFAULT_CACHE_ناپ>=0
+#    define SQLITE_WIN32_CACHE_ناپ     (SQLITE_DEFAULT_CACHE_ناپ)
+#  وإلا
+#    define SQLITE_WIN32_CACHE_ناپ     (-(SQLITE_DEFAULT_CACHE_ناپ))
 #  endif
-#endif
+#جے_انت
 
 /*
  * Make sure that the calculated cache size, in pages, cannot cause the
  * initial size of the Win32-specific heap to exceed the maximum amount
  * of memory that can be specified in the call to HeapCreate.
  */
-#if SQLITE_WIN32_CACHE_SIZE>SQLITE_WIN32_MAX_CACHE_SIZE
-#  undef SQLITE_WIN32_CACHE_SIZE
-#  define SQLITE_WIN32_CACHE_SIZE       (2000)
-#endif
+#إذا SQLITE_WIN32_CACHE_ناپ>SQLITE_WIN32_MAX_CACHE_ناپ
+#  undef SQLITE_WIN32_CACHE_ناپ
+#  define SQLITE_WIN32_CACHE_ناپ       (2000)
+#جے_انت
 
 /*
  * The initial size of the Win32-specific heap.  This value may be zero.
  */
-#ifndef SQLITE_WIN32_HEAP_INIT_SIZE
-#  define SQLITE_WIN32_HEAP_INIT_SIZE   ((SQLITE_WIN32_CACHE_SIZE) * \
-                                         (SQLITE_DEFAULT_PAGE_SIZE) + \
-                                         (SQLITE_WIN32_HEAP_INIT_EXTRA))
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_ڈھیر_INIT_ناپ
+#  define SQLITE_WIN32_ڈھیر_INIT_ناپ   ((SQLITE_WIN32_CACHE_ناپ) * \
+                                         (SQLITE_DEFAULT_ورقہ_ناپ) + \
+                                         (SQLITE_WIN32_ڈھیر_INIT_EXTRA))
+#جے_انت
 
 /*
  * The maximum size of the Win32-specific heap.  This value may be zero.
  */
-#ifndef SQLITE_WIN32_HEAP_MAX_SIZE
-#  define SQLITE_WIN32_HEAP_MAX_SIZE    (0)
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_ڈھیر_MAX_ناپ
+#  define SQLITE_WIN32_ڈھیر_MAX_ناپ    (0)
+#جے_انت
 
 /*
  * The extra flags to use in calls to the Win32 heap APIs.  This value may be
  * zero for the default behavior.
  */
-#ifndef SQLITE_WIN32_HEAP_FLAGS
-#  define SQLITE_WIN32_HEAP_FLAGS       (0)
-#endif
+#جے_بنا_تعریف SQLITE_WIN32_ڈھیر_FLAGS
+#  define SQLITE_WIN32_ڈھیر_FLAGS       (0)
+#جے_انت
 
 
 /*
 ** The winMemData structure stores information required by the Win32-specific
 ** sqlite3_mem_methods implementation.
 */
-typedef struct winMemData winMemData;
-struct winMemData {
-#ifndef NDEBUG
+تعريفنوع بنية win_Mem_انکڑے win_Mem_انکڑے;
+بنية win_Mem_انکڑے {
+#جے_بنا_تعریف NDEBUG
   u32 magic1;   /* Magic number to detect structure corruption. */
-#endif
-  HANDLE hHeap; /* The handle to our heap. */
+#جے_انت
+  HANDLE h_ڈھیر; /* The handle to our heap. */
   BOOL bOwned;  /* Do we own the heap (i.e. destroy it on shutdown)? */
-#ifndef NDEBUG
+#جے_بنا_تعریف NDEBUG
   u32 magic2;   /* Magic number to detect structure corruption. */
-#endif
+#جے_انت
 };
 
-#ifndef NDEBUG
-#define WINMEM_MAGIC1     0x42b2830b
-#define WINMEM_MAGIC2     0xbd4d7cf4
-#endif
+#جے_بنا_تعریف NDEBUG
+#تعریف_کرو WINMEM_MAGIC1     0x42b2830b
+#تعریف_کرو WINMEM_MAGIC2     0xbd4d7cf4
+#جے_انت
 
-static struct winMemData win_mem_data = {
-#ifndef NDEBUG
+ساكن بنية win_Mem_انکڑے win_mem_انکڑے = {
+#جے_بنا_تعریف NDEBUG
   WINMEM_MAGIC1,
-#endif
-  NULL, FALSE
-#ifndef NDEBUG
+#جے_انت
+  عدم, FALSE
+#جے_بنا_تعریف NDEBUG
   ,WINMEM_MAGIC2
-#endif
+#جے_انت
 };
 
-#ifndef NDEBUG
-#define winMemAssertMagic1() assert( win_mem_data.magic1==WINMEM_MAGIC1 )
-#define winMemAssertMagic2() assert( win_mem_data.magic2==WINMEM_MAGIC2 )
-#define winMemAssertMagic()  winMemAssertMagic1(); winMemAssertMagic2();
-#else
-#define winMemAssertMagic()
-#endif
+#جے_بنا_تعریف NDEBUG
+#تعریف_کرو winMemAssertMagic1() أكد( win_mem_انکڑے.magic1==WINMEM_MAGIC1 )
+#تعریف_کرو winMemAssertMagic2() أكد( win_mem_انکڑے.magic2==WINMEM_MAGIC2 )
+#تعریف_کرو winMemAssertMagic()  winMemAssertMagic1(); winMemAssertMagic2();
+#وإلا
+#تعریف_کرو winMemAssertMagic()
+#جے_انت
 
-#define winMemGetDataPtr()  &win_mem_data
-#define winMemGetHeap()     win_mem_data.hHeap
-#define winMemGetOwned()    win_mem_data.bOwned
+#تعریف_کرو win_Mem_Get_انکڑے_Ptr()  &win_mem_انکڑے
+#تعریف_کرو win_Mem_Get_ڈھیر()     win_mem_انکڑے.h_ڈھیر
+#تعریف_کرو winMemGetOwned()    win_mem_انکڑے.bOwned
 
-static void *winMemMalloc(int nBytes);
-static void winMemFree(void *pPrior);
-static void *winMemRealloc(void *pPrior, int nBytes);
-static int winMemSize(void *p);
-static int winMemRoundup(int n);
-static int winMemInit(void *pAppData);
-static void winMemShutdown(void *pAppData);
+ساكن فراغ *winMemMalloc(صحيح n_بائٹاں);
+ساكن فراغ winMemFree(فراغ *p_پہلوں);
+ساكن فراغ *winMemRealloc(فراغ *p_پہلوں, صحيح n_بائٹاں);
+ساكن صحيح win_Mem_ناپ(فراغ *p);
+ساكن صحيح winMemRoundup(صحيح n);
+ساكن صحيح winMemInit(فراغ *p_App_انکڑے);
+ساكن فراغ winMemShutdown(فراغ *p_App_انکڑے);
 
-const sqlite3_mem_methods *sqlite3MemGetWin32(void);
-#endif /* SQLITE_WIN32_MALLOC */
+ثابت sqlite3_mem_methods *sqlite3MemGetWin32(فراغ);
+#جے_انت /* SQLITE_WIN32_MALLOC */
 
-#ifndef SYSCALL
+#جے_بنا_تعریف SYSCALL
 #  define SYSCALL sqlite3_syscall_ptr
-#endif
+#جے_انت
 
 /*
 ** Many system calls are accessed through pointer-to-functions so that
@@ -348,349 +348,349 @@ const sqlite3_mem_methods *sqlite3MemGetWin32(void);
 ** testing and sandboxing.  The following array holds the names and pointers
 ** to all overrideable system calls.
 */
-static struct win_syscall {
-  const char *zName;            /* Name of the system call */
+ساكن بنية win_syscall {
+  ثابت حرف *zName;            /* Name of the system call */
   sqlite3_syscall_ptr pCurrent; /* Current value of the system call */
   sqlite3_syscall_ptr pDefault; /* Default value */
 } aSyscall[] = {
   { "AreFileApisANSI",         (SYSCALL)AreFileApisANSI,         0 },
-#define osAreFileApisANSI ((BOOL(WINAPI*)(VOID))aSyscall[0].pCurrent)
+#تعریف_کرو osAreFileApisANSI ((BOOL(WINAPI*)(VOID))aSyscall[0].pCurrent)
 
   { "CloseHandle",             (SYSCALL)CloseHandle,             0 },
-#define osCloseHandle ((BOOL(WINAPI*)(HANDLE))aSyscall[1].pCurrent)
+#تعریف_کرو osCloseHandle ((BOOL(WINAPI*)(HANDLE))aSyscall[1].pCurrent)
 
 
   { "CreateFileW",             (SYSCALL)CreateFileW,             0 },
-#define osCreateFileW ((HANDLE(WINAPI*)(LPCWSTR,DWORD,DWORD, \
-        LPSECURITY_ATTRIBUTES,DWORD,DWORD,HANDLE))aSyscall[2].pCurrent)
+#تعریف_کرو osCreateFileW ((HANDLE(WINAPI*)(LPCWSTR,DWORD,DWORD, \
+        LPSECURITY_گن,DWORD,DWORD,HANDLE))aSyscall[2].pCurrent)
 
-#if defined(SQLITE_UWP)
+#إذا defined(SQLITE_UWP)
   { "CreateFileMappingFromApp",(SYSCALL)CreateFileMappingFromApp,0 },
-#else
+#وإلا
   { "CreateFileMappingFromApp",(SYSCALL)0,                       0 },
-#endif
-#define osCreateFileMappingFromApp ((HANDLE(WINAPI*)(HANDLE,\
-        PSECURITY_ATTRIBUTES, \
+#جے_انت
+#تعریف_کرو osCreateFileMappingFromApp ((HANDLE(WINAPI*)(HANDLE,\
+        PSECURITY_گن, \
         ULONG,ULONG64,PCWSTR))aSyscall[3].pCurrent)
 
-#if !defined(SQLITE_UWP)
+#إذا !defined(SQLITE_UWP)
   { "CreateFileMappingW",      (SYSCALL)CreateFileMappingW,      0 },
-#else
+#وإلا
   { "CreateFileMappingW",      (SYSCALL)0,                       0 },
-#endif
-#define osCreateFileMappingW ((HANDLE(WINAPI*)(HANDLE,LPSECURITY_ATTRIBUTES, \
+#جے_انت
+#تعریف_کرو osCreateFileMappingW ((HANDLE(WINAPI*)(HANDLE,LPSECURITY_گن, \
         DWORD,DWORD,DWORD,LPCWSTR))aSyscall[4].pCurrent)
 
   { "DeleteFileW",             (SYSCALL)DeleteFileW,             0 },
-#define osDeleteFileW ((BOOL(WINAPI*)(LPCWSTR))aSyscall[5].pCurrent)
+#تعریف_کرو osDeleteFileW ((BOOL(WINAPI*)(LPCWSTR))aSyscall[5].pCurrent)
 
   { "FlushFileBuffers",        (SYSCALL)FlushFileBuffers,        0 },
-#define osFlushFileBuffers ((BOOL(WINAPI*)(HANDLE))aSyscall[6].pCurrent)
+#تعریف_کرو osFlushFileBuffers ((BOOL(WINAPI*)(HANDLE))aSyscall[6].pCurrent)
 
-  { "FormatMessageW",          (SYSCALL)FormatMessageW,          0 },
-#define osFormatMessageW ((DWORD(WINAPI*)(DWORD,LPCVOID,DWORD,DWORD,LPWSTR, \
+  { "FormatMessageW",          (SYSCALL)Format_سنیہا_W,          0 },
+#تعریف_کرو os_Format_سنیہا_W ((DWORD(WINAPI*)(DWORD,LPCVOID,DWORD,DWORD,LPWSTR, \
         DWORD,va_list*))aSyscall[7].pCurrent)
 
-#if !defined(SQLITE_OMIT_LOAD_EXTENSION) && !defined(SQLITE_UWP)
+#إذا !defined(SQLITE_OMIT_لدو_EXTENSION) && !defined(SQLITE_UWP)
   { "FreeLibrary",             (SYSCALL)FreeLibrary,             0 },
-#else
+#وإلا
   { "FreeLibrary",             (SYSCALL)0,                       0 },
-#endif
+#جے_انت
 
-#define osFreeLibrary ((BOOL(WINAPI*)(HMODULE))aSyscall[8].pCurrent)
+#تعریف_کرو osFreeLibrary ((BOOL(WINAPI*)(HMODULE))aSyscall[8].pCurrent)
 
   { "GetCurrentProcessId",     (SYSCALL)GetCurrentProcessId,     0 },
-#define osGetCurrentProcessId ((DWORD(WINAPI*)(VOID))aSyscall[9].pCurrent)
+#تعریف_کرو osGetCurrentProcessId ((DWORD(WINAPI*)(VOID))aSyscall[9].pCurrent)
 
-  { "GetFileAttributesW",      (SYSCALL)GetFileAttributesW,      0 },
-#define osGetFileAttributesW ((DWORD(WINAPI*)(LPCWSTR))aSyscall[10].pCurrent)
+  { "GetFileAttributesW",      (SYSCALL)Get_File_گن_W,      0 },
+#تعریف_کرو os_Get_File_گن_W ((DWORD(WINAPI*)(LPCWSTR))aSyscall[10].pCurrent)
 
-  { "GetFileAttributesExW",    (SYSCALL)GetFileAttributesExW,    0 },
-#define osGetFileAttributesExW ((BOOL(WINAPI*)(LPCWSTR,GET_FILEEX_INFO_LEVELS, \
+  { "GetFileAttributesExW",    (SYSCALL)Get_File_گن_Ex_W,    0 },
+#تعریف_کرو os_Get_File_گن_Ex_W ((BOOL(WINAPI*)(LPCWSTR,GET_FILEEX_INFO_پدھراں, \
         LPVOID))aSyscall[11].pCurrent)
 
-  { "GetFileSizeEx",           (SYSCALL)GetFileSizeEx,           0 },
-#define osGetFileSizeEx ((BOOL(WINAPI*)(HANDLE, \
+  { "GetFileSizeEx",           (SYSCALL)Get_File_ناپ_Ex,           0 },
+#تعریف_کرو os_Get_File_ناپ_Ex ((BOOL(WINAPI*)(HANDLE, \
                         PLARGE_INTEGER))aSyscall[12].pCurrent)
 
-  { "GetFullPathNameW",        (SYSCALL)GetFullPathNameW,        0 },
-#define osGetFullPathNameW ((DWORD(WINAPI*)(LPCWSTR,DWORD,LPWSTR, \
+  { "GetFullPathNameW",        (SYSCALL)Get_بھریا_رستہ_Name_W,        0 },
+#تعریف_کرو os_Get_بھریا_رستہ_Name_W ((DWORD(WINAPI*)(LPCWSTR,DWORD,LPWSTR, \
         LPWSTR*))aSyscall[13].pCurrent)
 
-  { "GetLastError",            (SYSCALL)GetLastError,            0 },
-#define osGetLastError ((DWORD(WINAPI*)(VOID))aSyscall[14].pCurrent)
+  { "GetLastError",            (SYSCALL)Get_آخری_Error,            0 },
+#تعریف_کرو os_Get_آخری_Error ((DWORD(WINAPI*)(VOID))aSyscall[14].pCurrent)
 
-#if !defined(SQLITE_OMIT_LOAD_EXTENSION) && !defined(SQLITE_UWP)
-  { "GetProcAddressA",         (SYSCALL)GetProcAddress,          0 },
-#else
+#إذا !defined(SQLITE_OMIT_لدو_EXTENSION) && !defined(SQLITE_UWP)
+  { "GetProcAddressA",         (SYSCALL)Get_Proc_پتہ,          0 },
+#وإلا
   { "GetProcAddressA",         (SYSCALL)0,                       0 },
-#endif
-#define osGetProcAddressA ((FARPROC(WINAPI*)(HMODULE, \
+#جے_انت
+#تعریف_کرو os_Get_Proc_پتہ_A ((FARPROC(WINAPI*)(HMODULE, \
         LPCSTR))aSyscall[15].pCurrent)
 
   { "GetSystemInfo",           (SYSCALL)GetSystemInfo,           0 },
-#define osGetSystemInfo ((VOID(WINAPI*)(LPSYSTEM_INFO))aSyscall[16].pCurrent)
+#تعریف_کرو osGetSystemInfo ((VOID(WINAPI*)(LPSYSTEM_INFO))aSyscall[16].pCurrent)
 
-  { "GetSystemTimeAsFileTime", (SYSCALL)GetSystemTimeAsFileTime, 0 },
-#define osGetSystemTimeAsFileTime ((VOID(WINAPI*)( \
+  { "GetSystemTimeAsFileTime", (SYSCALL)Get_System_ویلا_As_File_ویلا, 0 },
+#تعریف_کرو os_Get_System_ویلا_As_File_ویلا ((VOID(WINAPI*)( \
         LPFILETIME))aSyscall[17].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "GetTempPathW",            (SYSCALL)0,                       0 },
-#else
-  { "GetTempPathW",            (SYSCALL)GetTempPathW,            0 },
-#endif
-#define osGetTempPathW ((DWORD(WINAPI*)(DWORD,LPWSTR))aSyscall[18].pCurrent)
+#وإلا
+  { "GetTempPathW",            (SYSCALL)Get_عارضی_رستہ_W,            0 },
+#جے_انت
+#تعریف_کرو os_Get_عارضی_رستہ_W ((DWORD(WINAPI*)(DWORD,LPWSTR))aSyscall[18].pCurrent)
 
   { "GetTickCount64",          (SYSCALL)GetTickCount64,          0 },
-#define osGetTickCount64 ((ULONGLONG(WINAPI*)(VOID))aSyscall[19].pCurrent)
+#تعریف_کرو osGetTickCount64 ((ULONGLONG(WINAPI*)(VOID))aSyscall[19].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapAlloc",               (SYSCALL)0,                       0 },
-#else
-  { "HeapAlloc",               (SYSCALL)HeapAlloc,               0 },
-#endif
-#define osHeapAlloc ((LPVOID(WINAPI*)(HANDLE,DWORD, \
-        SIZE_T))aSyscall[20].pCurrent)
+#وإلا
+  { "HeapAlloc",               (SYSCALL)ڈھیر_Alloc,               0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_Alloc ((LPVOID(WINAPI*)(HANDLE,DWORD, \
+        ناپ_T))aSyscall[20].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapCreate",              (SYSCALL)0,                       0 },
-#else
-  { "HeapCreate",              (SYSCALL)HeapCreate,              0 },
-#endif
-#define osHeapCreate ((HANDLE(WINAPI*)(DWORD,SIZE_T, \
-        SIZE_T))aSyscall[21].pCurrent)
+#وإلا
+  { "HeapCreate",              (SYSCALL)ڈھیر_Create,              0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_Create ((HANDLE(WINAPI*)(DWORD,ناپ_T, \
+        ناپ_T))aSyscall[21].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapDestroy",             (SYSCALL)0,                       0 },
-#else
-  { "HeapDestroy",             (SYSCALL)HeapDestroy,             0 },
-#endif
-#define osHeapDestroy ((BOOL(WINAPI*)(HANDLE))aSyscall[22].pCurrent)
+#وإلا
+  { "HeapDestroy",             (SYSCALL)ڈھیر_Destroy,             0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_Destroy ((BOOL(WINAPI*)(HANDLE))aSyscall[22].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapFree",                (SYSCALL)0,                       0 },
-#else
-  { "HeapFree",                (SYSCALL)HeapFree,                0 },
-#endif
-#define osHeapFree ((BOOL(WINAPI*)(HANDLE,DWORD,LPVOID))aSyscall[23].pCurrent)
+#وإلا
+  { "HeapFree",                (SYSCALL)ڈھیر_Free,                0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_Free ((BOOL(WINAPI*)(HANDLE,DWORD,LPVOID))aSyscall[23].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapReAlloc",             (SYSCALL)0,                       0 },
-#else
-  { "HeapReAlloc",             (SYSCALL)HeapReAlloc,             0 },
-#endif
-#define osHeapReAlloc ((LPVOID(WINAPI*)(HANDLE,DWORD,LPVOID, \
-        SIZE_T))aSyscall[24].pCurrent)
+#وإلا
+  { "HeapReAlloc",             (SYSCALL)ڈھیر_Re_Alloc,             0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_Re_Alloc ((LPVOID(WINAPI*)(HANDLE,DWORD,LPVOID, \
+        ناپ_T))aSyscall[24].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapSize",                (SYSCALL)0,                       0 },
-#else
-  { "HeapSize",                (SYSCALL)HeapSize,                0 },
-#endif
-#define osHeapSize ((SIZE_T(WINAPI*)(HANDLE,DWORD, \
+#وإلا
+  { "HeapSize",                (SYSCALL)ڈھیر_ناپ,                0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_ناپ ((ناپ_T(WINAPI*)(HANDLE,DWORD, \
         LPCVOID))aSyscall[25].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapValidate",            (SYSCALL)0,                       0 },
-#else
-  { "HeapValidate",            (SYSCALL)HeapValidate,            0 },
-#endif
-#define osHeapValidate ((BOOL(WINAPI*)(HANDLE,DWORD, \
+#وإلا
+  { "HeapValidate",            (SYSCALL)ڈھیر_Validate,            0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_Validate ((BOOL(WINAPI*)(HANDLE,DWORD, \
         LPCVOID))aSyscall[26].pCurrent)
 
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_UWP
   { "HeapCompact",             (SYSCALL)0,                       0 },
-#else
-  { "HeapCompact",             (SYSCALL)HeapCompact,             0 },
-#endif
-#define osHeapCompact ((UINT(WINAPI*)(HANDLE,DWORD))aSyscall[27].pCurrent)
+#وإلا
+  { "HeapCompact",             (SYSCALL)ڈھیر_Compact,             0 },
+#جے_انت
+#تعریف_کرو os_ڈھیر_Compact ((UINT(WINAPI*)(HANDLE,DWORD))aSyscall[27].pCurrent)
 
 
-#if !defined(SQLITE_OMIT_LOAD_EXTENSION) && !defined(SQLITE_UWP)
-  { "LoadLibraryW",            (SYSCALL)LoadLibraryW,            0 },
-#else
+#إذا !defined(SQLITE_OMIT_لدو_EXTENSION) && !defined(SQLITE_UWP)
+  { "LoadLibraryW",            (SYSCALL)لدو_Library_W,            0 },
+#وإلا
   { "LoadLibraryW",            (SYSCALL)0,                       0 },
-#endif
-#define osLoadLibraryW ((HMODULE(WINAPI*)(LPCWSTR))aSyscall[28].pCurrent)
+#جے_انت
+#تعریف_کرو os_لدو_Library_W ((HMODULE(WINAPI*)(LPCWSTR))aSyscall[28].pCurrent)
 
   { "LocalFree",               (SYSCALL)LocalFree,               0 },
-#define osLocalFree ((HLOCAL(WINAPI*)(HLOCAL))aSyscall[29].pCurrent)
+#تعریف_کرو osLocalFree ((HLOCAL(WINAPI*)(HLOCAL))aSyscall[29].pCurrent)
 
-  { "LockFileEx",              (SYSCALL)LockFileEx,              0 },
-#define osLockFileEx ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD,DWORD, \
+  { "LockFileEx",              (SYSCALL)جندرا_File_Ex,              0 },
+#تعریف_کرو os_جندرا_File_Ex ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD,DWORD, \
         LPOVERLAPPED))aSyscall[30].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#إذا (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_ناپ>0) \
  && !defined(SQLITE_UWP)
-  { "MapViewOfFile",           (SYSCALL)MapViewOfFile,           0 },
-#else
+  { "MapViewOfFile",           (SYSCALL)Map_View_دا_File,           0 },
+#وإلا
   { "MapViewOfFile",           (SYSCALL)0,                       0 },
-#endif
-#define osMapViewOfFile ((LPVOID(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
-        SIZE_T))aSyscall[31].pCurrent)
+#جے_انت
+#تعریف_کرو os_Map_View_دا_File ((LPVOID(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
+        ناپ_T))aSyscall[31].pCurrent)
 
-#if (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0) \
+#إذا (!defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_ناپ>0) \
  && defined(SQLITE_UWP)
-  { "MapViewOfFileFromApp",    (SYSCALL)MapViewOfFileFromApp,   0 },
-#else
+  { "MapViewOfFileFromApp",    (SYSCALL)Map_View_دا_File_From_App,   0 },
+#وإلا
   { "MapViewOfFileFromApp",    (SYSCALL)0,                      0 },
-#endif
-#define osMapViewOfFileFromApp ((LPVOID(WINAPI*)(HANDLE,ULONG,ULONG64, \
-        SIZE_T))aSyscall[32].pCurrent)
+#جے_انت
+#تعریف_کرو os_Map_View_دا_File_From_App ((LPVOID(WINAPI*)(HANDLE,ULONG,ULONG64, \
+        ناپ_T))aSyscall[32].pCurrent)
 
-  { "MultiByteToWideChar",     (SYSCALL)MultiByteToWideChar,     0 },
-#define osMultiByteToWideChar ((int(WINAPI*)(UINT,DWORD,LPCSTR,int,LPWSTR, \
-        int))aSyscall[33].pCurrent)
+  { "MultiByteToWideChar",     (SYSCALL)Multi_Byte_منزل_Wide_Char,     0 },
+#تعریف_کرو os_Multi_Byte_منزل_Wide_Char ((صحيح(WINAPI*)(UINT,DWORD,LPCSTR,صحيح,LPWSTR, \
+        صحيح))aSyscall[33].pCurrent)
 
   { "QueryPerformanceCounter", (SYSCALL)QueryPerformanceCounter, 0 },
-#define osQueryPerformanceCounter ((BOOL(WINAPI*)( \
+#تعریف_کرو osQueryPerformanceCounter ((BOOL(WINAPI*)( \
         LARGE_INTEGER*))aSyscall[34].pCurrent)
 
   { "ReadFile",                (SYSCALL)ReadFile,                0 },
-#define osReadFile ((BOOL(WINAPI*)(HANDLE,LPVOID,DWORD,LPDWORD, \
+#تعریف_کرو osReadFile ((BOOL(WINAPI*)(HANDLE,LPVOID,DWORD,LPDWORD, \
         LPOVERLAPPED))aSyscall[35].pCurrent)
 
-  { "SetEndOfFile",            (SYSCALL)SetEndOfFile,            0 },
-#define osSetEndOfFile ((BOOL(WINAPI*)(HANDLE))aSyscall[36].pCurrent)
+  { "SetEndOfFile",            (SYSCALL)سیٹ_سرا_دا_File,            0 },
+#تعریف_کرو os_سیٹ_سرا_دا_File ((BOOL(WINAPI*)(HANDLE))aSyscall[36].pCurrent)
 
-  { "SetFilePointerEx",        (SYSCALL)SetFilePointerEx,        0 },
-#define osSetFilePointerEx ((BOOL(WINAPI*)(HANDLE,LARGE_INTEGER,\
+  { "SetFilePointerEx",        (SYSCALL)سیٹ_File_اشارہ_گر_Ex,        0 },
+#تعریف_کرو os_سیٹ_File_اشارہ_گر_Ex ((BOOL(WINAPI*)(HANDLE,LARGE_INTEGER,\
         PLARGE_INTEGER,DWORD))aSyscall[37].pCurrent)
 
   { "Sleep",                   (SYSCALL)Sleep,                   0 },
-#define osSleep ((VOID(WINAPI*)(DWORD))aSyscall[38].pCurrent)
+#تعریف_کرو osSleep ((VOID(WINAPI*)(DWORD))aSyscall[38].pCurrent)
 
   { "UnlockFileEx",            (SYSCALL)UnlockFileEx,            0 },
-#define osUnlockFileEx ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
+#تعریف_کرو osUnlockFileEx ((BOOL(WINAPI*)(HANDLE,DWORD,DWORD,DWORD, \
         LPOVERLAPPED))aSyscall[39].pCurrent)
 
-#if !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_SIZE>0
-  { "UnmapViewOfFile",         (SYSCALL)UnmapViewOfFile,         0 },
-#else
+#إذا !defined(SQLITE_OMIT_WAL) || SQLITE_MAX_MMAP_ناپ>0
+  { "UnmapViewOfFile",         (SYSCALL)Unmap_View_دا_File,         0 },
+#وإلا
   { "UnmapViewOfFile",         (SYSCALL)0,                       0 },
-#endif
-#define osUnmapViewOfFile ((BOOL(WINAPI*)(LPCVOID))aSyscall[40].pCurrent)
+#جے_انت
+#تعریف_کرو os_Unmap_View_دا_File ((BOOL(WINAPI*)(LPCVOID))aSyscall[40].pCurrent)
 
-  { "WideCharToMultiByte",     (SYSCALL)WideCharToMultiByte,     0 },
-#define osWideCharToMultiByte ((int(WINAPI*)(UINT,DWORD,LPCWSTR,int,LPSTR,int, \
+  { "WideCharToMultiByte",     (SYSCALL)Wide_Char_منزل_Multi_Byte,     0 },
+#تعریف_کرو os_Wide_Char_منزل_Multi_Byte ((صحيح(WINAPI*)(UINT,DWORD,LPCWSTR,صحيح,LPSTR,صحيح, \
         LPCSTR,LPBOOL))aSyscall[41].pCurrent)
 
   { "WriteFile",               (SYSCALL)WriteFile,               0 },
-#define osWriteFile ((BOOL(WINAPI*)(HANDLE,LPCVOID,DWORD,LPDWORD, \
+#تعریف_کرو osWriteFile ((BOOL(WINAPI*)(HANDLE,LPCVOID,DWORD,LPDWORD, \
         LPOVERLAPPED))aSyscall[42].pCurrent)
 
   { "WaitForSingleObject",     (SYSCALL)WaitForSingleObject,     0 },
-#define osWaitForSingleObject ((DWORD(WINAPI*)(HANDLE, \
+#تعریف_کرو osWaitForSingleObject ((DWORD(WINAPI*)(HANDLE, \
         DWORD))aSyscall[43].pCurrent)
 
   { "WaitForSingleObjectEx",   (SYSCALL)WaitForSingleObjectEx,   0 },
-#define osWaitForSingleObjectEx ((DWORD(WINAPI*)(HANDLE,DWORD, \
+#تعریف_کرو osWaitForSingleObjectEx ((DWORD(WINAPI*)(HANDLE,DWORD, \
         BOOL))aSyscall[44].pCurrent)
 
   { "OutputDebugStringA",      (SYSCALL)OutputDebugStringA,      0 },
-#define osOutputDebugStringA ((VOID(WINAPI*)(LPCSTR))aSyscall[45].pCurrent)
+#تعریف_کرو osOutputDebugStringA ((VOID(WINAPI*)(LPCSTR))aSyscall[45].pCurrent)
 
-  { "GetProcessHeap",          (SYSCALL)GetProcessHeap,          0 },
-#define osGetProcessHeap ((HANDLE(WINAPI*)(VOID))aSyscall[46].pCurrent)
+  { "GetProcessHeap",          (SYSCALL)Get_Process_ڈھیر,          0 },
+#تعریف_کرو os_Get_Process_ڈھیر ((HANDLE(WINAPI*)(VOID))aSyscall[46].pCurrent)
 
 /*
 ** NOTE: On some sub-platforms, the InterlockedCompareExchange "function"
 **       is really just a macro that uses a compiler intrinsic (e.g. x64).
 **       So do not try to make this is into a redefinable interface.
 */
-#if defined(InterlockedCompareExchange)
+#إذا defined(InterlockedCompareExchange)
   { "InterlockedCompareExchange", (SYSCALL)0,                    0 },
-#define osInterlockedCompareExchange InterlockedCompareExchange
-#else
+#تعریف_کرو osInterlockedCompareExchange InterlockedCompareExchange
+#وإلا
   { "InterlockedCompareExchange", (SYSCALL)InterlockedCompareExchange, 0 },
-#define osInterlockedCompareExchange ((LONG(WINAPI*)(LONG volatile*,\
+#تعریف_کرو osInterlockedCompareExchange ((LONG(WINAPI*)(LONG متطاير*,\
         LONG,LONG))aSyscall[47].pCurrent)
-#endif /* defined(InterlockedCompareExchange) */
+#جے_انت /* defined(InterlockedCompareExchange) */
 
-#if SQLITE_WIN32_USE_UUID
+#إذا SQLITE_WIN32_USE_UUID
   { "UuidCreate",               (SYSCALL)UuidCreate,             0 },
-#else
+#وإلا
   { "UuidCreate",               (SYSCALL)0,                      0 },
-#endif
-#define osUuidCreate ((RPC_STATUS(RPC_ENTRY*)(UUID*))aSyscall[48].pCurrent)
+#جے_انت
+#تعریف_کرو osUuidCreate ((RPC_حالت(RPC_اندراج*)(UUID*))aSyscall[48].pCurrent)
 
-#if SQLITE_WIN32_USE_UUID
+#إذا SQLITE_WIN32_USE_UUID
   { "UuidCreateSequential",     (SYSCALL)UuidCreateSequential,   0 },
-#else
+#وإلا
   { "UuidCreateSequential",     (SYSCALL)0,                      0 },
-#endif
-#define osUuidCreateSequential \
-        ((RPC_STATUS(RPC_ENTRY*)(UUID*))aSyscall[49].pCurrent)
+#جے_انت
+#تعریف_کرو osUuidCreateSequential \
+        ((RPC_حالت(RPC_اندراج*)(UUID*))aSyscall[49].pCurrent)
 
-#if !defined(SQLITE_NO_SYNC) && SQLITE_MAX_MMAP_SIZE>0
-  { "FlushViewOfFile",          (SYSCALL)FlushViewOfFile,        0 },
-#else
+#إذا !defined(SQLITE_NO_SYNC) && SQLITE_MAX_MMAP_ناپ>0
+  { "FlushViewOfFile",          (SYSCALL)Flush_View_دا_File,        0 },
+#وإلا
   { "FlushViewOfFile",          (SYSCALL)0,                      0 },
-#endif
-#define osFlushViewOfFile \
-        ((BOOL(WINAPI*)(LPCVOID,SIZE_T))aSyscall[50].pCurrent)
+#جے_انت
+#تعریف_کرو os_Flush_View_دا_File \
+        ((BOOL(WINAPI*)(LPCVOID,ناپ_T))aSyscall[50].pCurrent)
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#جے_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
   { "CreateEvent",              (SYSCALL)CreateEvent,            0 },
-#else
+#وإلا
   { "CreateEvent",              (SYSCALL)0,                      0 },
-#endif
-#define osCreateEvent ((HANDLE(WINAPI*)(LPSECURITY_ATTRIBUTES,BOOL, \
+#جے_انت
+#تعریف_کرو osCreateEvent ((HANDLE(WINAPI*)(LPSECURITY_گن,BOOL, \
                         BOOL,LPCSTR))aSyscall[51].pCurrent)
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
+#جے_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
   { "CancelIo",                 (SYSCALL)CancelIo,               0 },
-#else
+#وإلا
   { "CancelIo",                 (SYSCALL)0,                      0 },
-#endif
-#define osCancelIo ((BOOL(WINAPI*)(HANDLE))aSyscall[52].pCurrent)
+#جے_انت
+#تعریف_کرو osCancelIo ((BOOL(WINAPI*)(HANDLE))aSyscall[52].pCurrent)
 
-#ifndef _WIN32
+#جے_بنا_تعریف _WIN32
   { "getenv",                   (SYSCALL)getenv,                 0 },
-#else
+#وإلا
   { "getenv",                   (SYSCALL)0,                      0 },
-#endif
-#define osGetenv ((const char *(*)(const char *))aSyscall[53].pCurrent)
+#جے_انت
+#تعریف_کرو osGetenv ((ثابت حرف *(*)(ثابت حرف *))aSyscall[53].pCurrent)
 
-#ifndef _WIN32
+#جے_بنا_تعریف _WIN32
   { "getcwd",                   (SYSCALL)getcwd,                 0 },
-#else
+#وإلا
   { "getcwd",                   (SYSCALL)0,                      0 },
-#endif
-#define osGetcwd ((char*(*)(char*,size_t))aSyscall[54].pCurrent)
+#جے_انت
+#تعریف_کرو osGetcwd ((حرف*(*)(حرف*,size_t))aSyscall[54].pCurrent)
 
-#ifndef _WIN32
+#جے_بنا_تعریف _WIN32
   { "readlink",                 (SYSCALL)readlink,               0 },
-#else
+#وإلا
   { "readlink",                 (SYSCALL)0,                      0 },
-#endif
-#define osReadlink ((ssize_t(*)(const char*,char*,size_t))aSyscall[55].pCurrent)
+#جے_انت
+#تعریف_کرو osReadlink ((ssize_t(*)(ثابت حرف*,حرف*,size_t))aSyscall[55].pCurrent)
 
-#ifndef _WIN32
+#جے_بنا_تعریف _WIN32
   { "lstat",                    (SYSCALL)lstat,                  0 },
-#else
+#وإلا
   { "lstat",                    (SYSCALL)0,                      0 },
-#endif
-#define osLstat ((int(*)(const char*,struct stat*))aSyscall[56].pCurrent)
+#جے_انت
+#تعریف_کرو osLstat ((صحيح(*)(ثابت حرف*,بنية stat*))aSyscall[56].pCurrent)
 
-#ifndef _WIN32
+#جے_بنا_تعریف _WIN32
   { "__errno",                  (SYSCALL)__errno,                0 },
-#else
+#وإلا
   { "__errno",                  (SYSCALL)0,                      0 },
-#endif
-#define osErrno (*((int*(*)(void))aSyscall[57].pCurrent)())
+#جے_انت
+#تعریف_کرو osErrno (*((صحيح*(*)(فراغ))aSyscall[57].pCurrent)())
 
-#ifndef _WIN32
-  { "cygwin_conv_path",         (SYSCALL)cygwin_conv_path,       0 },
-#else
+#جے_بنا_تعریف _WIN32
+  { "cygwin_conv_path",         (SYSCALL)cygwin_conv_رستہ,       0 },
+#وإلا
   { "cygwin_conv_path",         (SYSCALL)0,                      0 },
-#endif
-#define osCygwin_conv_path ((size_t(*)(unsigned int, \
-    const void *, void *, size_t))aSyscall[58].pCurrent)
+#جے_انت
+#تعریف_کرو os_Cygwin_conv_رستہ ((size_t(*)(بنانشانی صحيح, \
+    ثابت فراغ *, فراغ *, size_t))aSyscall[58].pCurrent)
 
   { "GetDriveTypeW",            (SYSCALL)GetDriveTypeW,          0 },
-#define osGetDriveTypeW ((UINT(WINAPI*)(LPCWSTR))aSyscall[59].pCurrent)
+#تعریف_کرو osGetDriveTypeW ((UINT(WINAPI*)(LPCWSTR))aSyscall[59].pCurrent)
 
 }; /* End of the overrideable system calls */
 
@@ -700,42 +700,42 @@ static struct win_syscall {
 ** system call pointer, or SQLITE_NOTFOUND if there is no configurable
 ** system call named zName.
 */
-static int winSetSystemCall(
-  sqlite3_vfs *pNotUsed,        /* The VFS pointer.  Not used */
-  const char *zName,            /* Name of system call to override */
+ساكن صحيح win_سیٹ_System_Call(
+  sqlite3_vfs *p_Not_ورتیا,        /* The VFS pointer.  Not used */
+  ثابت حرف *zName,            /* Name of system call to override */
   sqlite3_syscall_ptr pNewFunc  /* Pointer to new system call value */
 ){
-  unsigned int i;
-  int rc = SQLITE_NOTFOUND;
+  بنانشانی صحيح i;
+  صحيح rc = SQLITE_NOTFOUND;
 
-  UNUSED_PARAMETER(pNotUsed);
-  if( zName==0 ){
+  بن_ورتیا_PARAMETER(p_Not_ورتیا);
+  إذا( zName==0 ){
     /* If no zName is given, restore all system calls to their default
     ** settings and return NULL
     */
     rc = SQLITE_OK;
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( aSyscall[i].pDefault ){
+    لكل(i=0; i<حجم(aSyscall)/حجم(aSyscall[0]); i++){
+      إذا( aSyscall[i].pDefault ){
         aSyscall[i].pCurrent = aSyscall[i].pDefault;
       }
     }
-  }else{
+  }وإلا{
     /* If zName is specified, operate on only the one system call
     ** specified.
     */
-    for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ){
-        if( aSyscall[i].pDefault==0 ){
+    لكل(i=0; i<حجم(aSyscall)/حجم(aSyscall[0]); i++){
+      إذا( strcmp(zName, aSyscall[i].zName)==0 ){
+        إذا( aSyscall[i].pDefault==0 ){
           aSyscall[i].pDefault = aSyscall[i].pCurrent;
         }
         rc = SQLITE_OK;
-        if( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
+        إذا( pNewFunc==0 ) pNewFunc = aSyscall[i].pDefault;
         aSyscall[i].pCurrent = pNewFunc;
-        break;
+        اكسر;
       }
     }
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -743,17 +743,17 @@ static int winSetSystemCall(
 ** recognized system call name.  NULL is also returned if the system call
 ** is currently undefined.
 */
-static sqlite3_syscall_ptr winGetSystemCall(
-  sqlite3_vfs *pNotUsed,
-  const char *zName
+ساكن sqlite3_syscall_ptr winGetSystemCall(
+  sqlite3_vfs *p_Not_ورتیا,
+  ثابت حرف *zName
 ){
-  unsigned int i;
+  بنانشانی صحيح i;
 
-  UNUSED_PARAMETER(pNotUsed);
-  for(i=0; i<sizeof(aSyscall)/sizeof(aSyscall[0]); i++){
-    if( strcmp(zName, aSyscall[i].zName)==0 ) return aSyscall[i].pCurrent;
+  بن_ورتیا_PARAMETER(p_Not_ورتیا);
+  لكل(i=0; i<حجم(aSyscall)/حجم(aSyscall[0]); i++){
+    إذا( strcmp(zName, aSyscall[i].zName)==0 ) أرجع aSyscall[i].pCurrent;
   }
-  return 0;
+  أرجع 0;
 }
 
 /*
@@ -762,25 +762,25 @@ static sqlite3_syscall_ptr winGetSystemCall(
 ** is the last system call or if zName is not the name of a valid
 ** system call.
 */
-static const char *winNextSystemCall(sqlite3_vfs *p, const char *zName){
-  int i = -1;
+ساكن ثابت حرف *win_اگلا_System_Call(sqlite3_vfs *p, ثابت حرف *zName){
+  صحيح i = -1;
 
-  UNUSED_PARAMETER(p);
-  if( zName ){
-    for(i=0; i<ArraySize(aSyscall)-1; i++){
-      if( strcmp(zName, aSyscall[i].zName)==0 ) break;
+  بن_ورتیا_PARAMETER(p);
+  إذا( zName ){
+    لكل(i=0; i<Array_ناپ(aSyscall)-1; i++){
+      إذا( strcmp(zName, aSyscall[i].zName)==0 ) اكسر;
     }
   }
-  for(i++; i<ArraySize(aSyscall); i++){
-    if( aSyscall[i].pCurrent!=0 ) return aSyscall[i].zName;
+  لكل(i++; i<Array_ناپ(aSyscall); i++){
+    إذا( aSyscall[i].pCurrent!=0 ) أرجع aSyscall[i].zName;
   }
-  return 0;
+  أرجع 0;
 }
 
-#ifdef SQLITE_WIN32_MALLOC
-#ifdef SQLITE_UWP
+#جے_تعریف_شدہ SQLITE_WIN32_MALLOC
+#جے_تعریف_شدہ SQLITE_UWP
 # error SQLITE_WIN32_MALLOC is incompatible with SQLITE_UWP
-#endif
+#جے_انت
 /*
 ** If a Win32 native heap has been configured, this function will attempt to
 ** compact it.  Upon success, SQLITE_OK will be returned.  Upon failure, one
@@ -788,32 +788,32 @@ static const char *winNextSystemCall(sqlite3_vfs *p, const char *zName){
 ** "pnLargest" argument, if non-zero, will be used to return the size of the
 ** largest committed free block in the heap, in bytes.
 */
-int sqlite3_win32_compact_heap(LPUINT pnLargest){
-  int rc = SQLITE_OK;
-  UINT nLargest = 0;
-  HANDLE hHeap;
+صحيح sqlite3_win32_compact_ڈھیر(LPUINT pn_سبھ_توں_وڈا){
+  صحيح rc = SQLITE_OK;
+  UINT n_سبھ_توں_وڈا = 0;
+  HANDLE h_ڈھیر;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-  if( (nLargest=osHeapCompact(hHeap, SQLITE_WIN32_HEAP_FLAGS))==0 ){
-    DWORD lastErrno = osGetLastError();
-    if( lastErrno==NO_ERROR ){
+  h_ڈھیر = win_Mem_Get_ڈھیر();
+  أكد( h_ڈھیر!=0 );
+  أكد( h_ڈھیر!=INVALID_HANDLE_قدر );
+#إذا defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  أكد( os_ڈھیر_Validate(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, عدم) );
+#جے_انت
+  إذا( (n_سبھ_توں_وڈا=os_ڈھیر_Compact(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS))==0 ){
+    DWORD آخری_Errno = os_Get_آخری_Error();
+    إذا( آخری_Errno==NO_ERROR ){
       sqlite3_log(SQLITE_NOMEM, "failed to HeapCompact (no space), heap=%p",
-                  (void*)hHeap);
+                  (فراغ*)h_ڈھیر);
       rc = SQLITE_NOMEM_BKPT;
-    }else{
+    }وإلا{
       sqlite3_log(SQLITE_ERROR, "failed to HeapCompact (%lu), heap=%p",
-                  osGetLastError(), (void*)hHeap);
+                  os_Get_آخری_Error(), (فراغ*)h_ڈھیر);
       rc = SQLITE_ERROR;
     }
   }
-  if( pnLargest ) *pnLargest = nLargest;
-  return rc;
+  إذا( pn_سبھ_توں_وڈا ) *pn_سبھ_توں_وڈا = n_سبھ_توں_وڈا;
+  أرجع rc;
 }
 
 /*
@@ -822,8 +822,8 @@ int sqlite3_win32_compact_heap(LPUINT pnLargest){
 ** the sqlite3_memory_used() function does not return zero, SQLITE_BUSY will
 ** be returned and no changes will be made to the Win32 native heap.
 */
-int sqlite3_win32_reset_heap(){
-  int rc;
+صحيح sqlite3_win32_reset_ڈھیر(){
+  صحيح rc;
   MUTEX_LOGIC( sqlite3_mutex *pMainMtx; ) /* The main static mutex */
   MUTEX_LOGIC( sqlite3_mutex *pMem; )    /* The memsys static mutex */
   MUTEX_LOGIC( pMainMtx = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MAIN); )
@@ -831,7 +831,7 @@ int sqlite3_win32_reset_heap(){
   sqlite3_mutex_enter(pMainMtx);
   sqlite3_mutex_enter(pMem);
   winMemAssertMagic();
-  if( winMemGetHeap()!=NULL && winMemGetOwned() && sqlite3_memory_used()==0 ){
+  إذا( win_Mem_Get_ڈھیر()!=عدم && winMemGetOwned() && sqlite3_حافظہ_ورتیا()==0 ){
     /*
     ** At this point, there should be no outstanding memory allocations on
     ** the heap.  Also, since both the main and memsys locks are currently
@@ -839,18 +839,18 @@ int sqlite3_win32_reset_heap(){
     ** be able to even access the heap.  Attempt to destroy and recreate our
     ** isolated Win32 native heap now.
     */
-    assert( winMemGetHeap()!=NULL );
-    assert( winMemGetOwned() );
-    assert( sqlite3_memory_used()==0 );
-    winMemShutdown(winMemGetDataPtr());
-    assert( winMemGetHeap()==NULL );
-    assert( !winMemGetOwned() );
-    assert( sqlite3_memory_used()==0 );
-    rc = winMemInit(winMemGetDataPtr());
-    assert( rc!=SQLITE_OK || winMemGetHeap()!=NULL );
-    assert( rc!=SQLITE_OK || winMemGetOwned() );
-    assert( rc!=SQLITE_OK || sqlite3_memory_used()==0 );
-  }else{
+    أكد( win_Mem_Get_ڈھیر()!=عدم );
+    أكد( winMemGetOwned() );
+    أكد( sqlite3_حافظہ_ورتیا()==0 );
+    winMemShutdown(win_Mem_Get_انکڑے_Ptr());
+    أكد( win_Mem_Get_ڈھیر()==عدم );
+    أكد( !winMemGetOwned() );
+    أكد( sqlite3_حافظہ_ورتیا()==0 );
+    rc = winMemInit(win_Mem_Get_انکڑے_Ptr());
+    أكد( rc!=SQLITE_OK || win_Mem_Get_ڈھیر()!=عدم );
+    أكد( rc!=SQLITE_OK || winMemGetOwned() );
+    أكد( rc!=SQLITE_OK || sqlite3_حافظہ_ورتیا()==0 );
+  }وإلا{
     /*
     ** The Win32 native heap cannot be modified because it may be in use.
     */
@@ -858,224 +858,224 @@ int sqlite3_win32_reset_heap(){
   }
   sqlite3_mutex_leave(pMem);
   sqlite3_mutex_leave(pMainMtx);
-  return rc;
+  أرجع rc;
 }
-#endif /* SQLITE_WIN32_MALLOC */
+#جے_انت /* SQLITE_WIN32_MALLOC */
 
-#ifdef _WIN32
+#جے_تعریف_شدہ _WIN32
 /*
 ** This function outputs the specified (ANSI) string to the Win32 debugger
 ** (if available).  Undocumented.  Might go away at any moment.
 */
-void sqlite3_win32_write_debug(const char *zBuf, int nBuf){
-  char zDbgBuf[SQLITE_WIN32_DBG_BUF_SIZE];
-  int nMin = MIN(nBuf, (SQLITE_WIN32_DBG_BUF_SIZE - 1)); /* may be negative. */
-  if( nMin<-1 ) nMin = -1; /* all negative values become -1. */
-  assert( nMin==-1 || nMin==0 || nMin<SQLITE_WIN32_DBG_BUF_SIZE );
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zBuf ){
-    (void)SQLITE_MISUSE_BKPT;
-    return;
+فراغ sqlite3_win32_write_debug(ثابت حرف *zBuf, صحيح nBuf){
+  حرف zDbgBuf[SQLITE_WIN32_DBG_BUF_ناپ];
+  صحيح nMin = MIN(nBuf, (SQLITE_WIN32_DBG_BUF_ناپ - 1)); /* may be negative. */
+  إذا( nMin<-1 ) nMin = -1; /* all negative values become -1. */
+  أكد( nMin==-1 || nMin==0 || nMin<SQLITE_WIN32_DBG_BUF_ناپ );
+#جے_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  إذا( !zBuf ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    أرجع;
   }
-#endif
-  if( nMin>0 ){
-    memset(zDbgBuf, 0, SQLITE_WIN32_DBG_BUF_SIZE);
-    memcpy(zDbgBuf, zBuf, nMin);
+#جے_انت
+  إذا( nMin>0 ){
+    memset(zDbgBuf, 0, SQLITE_WIN32_DBG_BUF_ناپ);
+    حافظہ_نقل(zDbgBuf, zBuf, nMin);
     osOutputDebugStringA(zDbgBuf);
-  }else{
+  }وإلا{
     osOutputDebugStringA(zBuf);
   }
 }
 
-void sqlite3_win32_sleep(DWORD milliseconds){
+فراغ sqlite3_win32_sleep(DWORD milliseconds){
   osSleep(milliseconds);
 }
 
-#if SQLITE_MAX_WORKER_THREADS>0 && SQLITE_THREADSAFE>0
+#إذا SQLITE_MAX_کامہ_دھاگے>0 && SQLITE_THREADSAFE>0
 DWORD sqlite3Win32Wait(HANDLE hObject){
   DWORD rc;
-  while( (rc = osWaitForSingleObjectEx(hObject, INFINITE,
+  طالما( (rc = osWaitForSingleObjectEx(hObject, INFINITE,
                                        TRUE))==WAIT_IO_COMPLETION ){}
-  return rc;
+  أرجع rc;
 }
-#endif
-#endif /* _WIN32 */
+#جے_انت
+#جے_انت /* _WIN32 */
 
-#ifdef SQLITE_WIN32_MALLOC
+#جے_تعریف_شدہ SQLITE_WIN32_MALLOC
 /*
 ** Allocate nBytes of memory.
 */
-static void *winMemMalloc(int nBytes){
-  HANDLE hHeap;
-  void *p;
+ساكن فراغ *winMemMalloc(صحيح n_بائٹاں){
+  HANDLE h_ڈھیر;
+  فراغ *p;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-  assert( nBytes>=0 );
-  p = osHeapAlloc(hHeap, SQLITE_WIN32_HEAP_FLAGS, (SIZE_T)nBytes);
-  if( !p ){
+  h_ڈھیر = win_Mem_Get_ڈھیر();
+  أكد( h_ڈھیر!=0 );
+  أكد( h_ڈھیر!=INVALID_HANDLE_قدر );
+#إذا defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  أكد( os_ڈھیر_Validate(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, عدم) );
+#جے_انت
+  أكد( n_بائٹاں>=0 );
+  p = os_ڈھیر_Alloc(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, (ناپ_T)n_بائٹاں);
+  إذا( !p ){
     sqlite3_log(SQLITE_NOMEM, "failed to HeapAlloc %u bytes (%lu), heap=%p",
-                nBytes, osGetLastError(), (void*)hHeap);
+                n_بائٹاں, os_Get_آخری_Error(), (فراغ*)h_ڈھیر);
   }
-  return p;
+  أرجع p;
 }
 
 /*
 ** Free memory.
 */
-static void winMemFree(void *pPrior){
-  HANDLE hHeap;
+ساكن فراغ winMemFree(فراغ *p_پہلوں){
+  HANDLE h_ڈھیر;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior) );
-#endif
-  if( !pPrior ) return; /* Passing NULL to HeapFree is undefined. */
-  if( !osHeapFree(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior) ){
+  h_ڈھیر = win_Mem_Get_ڈھیر();
+  أكد( h_ڈھیر!=0 );
+  أكد( h_ڈھیر!=INVALID_HANDLE_قدر );
+#إذا defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  أكد( os_ڈھیر_Validate(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, p_پہلوں) );
+#جے_انت
+  إذا( !p_پہلوں ) أرجع; /* Passing NULL to HeapFree is undefined. */
+  إذا( !os_ڈھیر_Free(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, p_پہلوں) ){
     sqlite3_log(SQLITE_NOMEM, "failed to HeapFree block %p (%lu), heap=%p",
-                pPrior, osGetLastError(), (void*)hHeap);
+                p_پہلوں, os_Get_آخری_Error(), (فراغ*)h_ڈھیر);
   }
 }
 
 /*
 ** Change the size of an existing memory allocation
 */
-static void *winMemRealloc(void *pPrior, int nBytes){
-  HANDLE hHeap;
-  void *p;
+ساكن فراغ *winMemRealloc(فراغ *p_پہلوں, صحيح n_بائٹاں){
+  HANDLE h_ڈھیر;
+  فراغ *p;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior) );
-#endif
-  assert( nBytes>=0 );
-  if( !pPrior ){
-    p = osHeapAlloc(hHeap, SQLITE_WIN32_HEAP_FLAGS, (SIZE_T)nBytes);
-  }else{
-    p = osHeapReAlloc(hHeap, SQLITE_WIN32_HEAP_FLAGS, pPrior, (SIZE_T)nBytes);
+  h_ڈھیر = win_Mem_Get_ڈھیر();
+  أكد( h_ڈھیر!=0 );
+  أكد( h_ڈھیر!=INVALID_HANDLE_قدر );
+#إذا defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  أكد( os_ڈھیر_Validate(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, p_پہلوں) );
+#جے_انت
+  أكد( n_بائٹاں>=0 );
+  إذا( !p_پہلوں ){
+    p = os_ڈھیر_Alloc(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, (ناپ_T)n_بائٹاں);
+  }وإلا{
+    p = os_ڈھیر_Re_Alloc(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, p_پہلوں, (ناپ_T)n_بائٹاں);
   }
-  if( !p ){
+  إذا( !p ){
     sqlite3_log(SQLITE_NOMEM, "failed to %s %u bytes (%lu), heap=%p",
-                pPrior ? "HeapReAlloc" : "HeapAlloc", nBytes, osGetLastError(),
-                (void*)hHeap);
+                p_پہلوں ? "HeapReAlloc" : "HeapAlloc", n_بائٹاں, os_Get_آخری_Error(),
+                (فراغ*)h_ڈھیر);
   }
-  return p;
+  أرجع p;
 }
 
 /*
 ** Return the size of an outstanding allocation, in bytes.
 */
-static int winMemSize(void *p){
-  HANDLE hHeap;
-  SIZE_T n;
+ساكن صحيح win_Mem_ناپ(فراغ *p){
+  HANDLE h_ڈھیر;
+  ناپ_T n;
 
   winMemAssertMagic();
-  hHeap = winMemGetHeap();
-  assert( hHeap!=0 );
-  assert( hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(hHeap, SQLITE_WIN32_HEAP_FLAGS, p) );
-#endif
-  if( !p ) return 0;
-  n = osHeapSize(hHeap, SQLITE_WIN32_HEAP_FLAGS, p);
-  if( n==(SIZE_T)-1 ){
+  h_ڈھیر = win_Mem_Get_ڈھیر();
+  أكد( h_ڈھیر!=0 );
+  أكد( h_ڈھیر!=INVALID_HANDLE_قدر );
+#إذا defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  أكد( os_ڈھیر_Validate(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, p) );
+#جے_انت
+  إذا( !p ) أرجع 0;
+  n = os_ڈھیر_ناپ(h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, p);
+  إذا( n==(ناپ_T)-1 ){
     sqlite3_log(SQLITE_NOMEM, "failed to HeapSize block %p (%lu), heap=%p",
-                p, osGetLastError(), (void*)hHeap);
-    return 0;
+                p, os_Get_آخری_Error(), (فراغ*)h_ڈھیر);
+    أرجع 0;
   }
-  return (int)n;
+  أرجع (صحيح)n;
 }
 
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int winMemRoundup(int n){
-  return n;
+ساكن صحيح winMemRoundup(صحيح n){
+  أرجع n;
 }
 
 /*
 ** Initialize this module.
 */
-static int winMemInit(void *pAppData){
-  winMemData *pWinMemData = (winMemData *)pAppData;
+ساكن صحيح winMemInit(فراغ *p_App_انکڑے){
+  win_Mem_انکڑے *p_Win_Mem_انکڑے = (win_Mem_انکڑے *)p_App_انکڑے;
 
-  if( !pWinMemData ) return SQLITE_ERROR;
-  assert( pWinMemData->magic1==WINMEM_MAGIC1 );
-  assert( pWinMemData->magic2==WINMEM_MAGIC2 );
+  إذا( !p_Win_Mem_انکڑے ) أرجع SQLITE_ERROR;
+  أكد( p_Win_Mem_انکڑے->magic1==WINMEM_MAGIC1 );
+  أكد( p_Win_Mem_انکڑے->magic2==WINMEM_MAGIC2 );
 
-#if SQLITE_WIN32_HEAP_CREATE
-  if( !pWinMemData->hHeap ){
-    DWORD dwInitialSize = SQLITE_WIN32_HEAP_INIT_SIZE;
-    DWORD dwMaximumSize = (DWORD)sqlite3GlobalConfig.nHeap;
-    if( dwMaximumSize==0 ){
-      dwMaximumSize = SQLITE_WIN32_HEAP_MAX_SIZE;
-    }else if( dwInitialSize>dwMaximumSize ){
-      dwInitialSize = dwMaximumSize;
+#إذا SQLITE_WIN32_ڈھیر_CREATE
+  إذا( !p_Win_Mem_انکڑے->h_ڈھیر ){
+    DWORD dw_Initial_ناپ = SQLITE_WIN32_ڈھیر_INIT_ناپ;
+    DWORD dw_ودھ_توں_ودھ_ناپ = (DWORD)sqlite3GlobalConfig.n_ڈھیر;
+    إذا( dw_ودھ_توں_ودھ_ناپ==0 ){
+      dw_ودھ_توں_ودھ_ناپ = SQLITE_WIN32_ڈھیر_MAX_ناپ;
+    }وإلا إذا( dw_Initial_ناپ>dw_ودھ_توں_ودھ_ناپ ){
+      dw_Initial_ناپ = dw_ودھ_توں_ودھ_ناپ;
     }
-    pWinMemData->hHeap = osHeapCreate(SQLITE_WIN32_HEAP_FLAGS,
-                                      dwInitialSize, dwMaximumSize);
-    if( !pWinMemData->hHeap ){
+    p_Win_Mem_انکڑے->h_ڈھیر = os_ڈھیر_Create(SQLITE_WIN32_ڈھیر_FLAGS,
+                                      dw_Initial_ناپ, dw_ودھ_توں_ودھ_ناپ);
+    إذا( !p_Win_Mem_انکڑے->h_ڈھیر ){
       sqlite3_log(SQLITE_NOMEM,
           "failed to HeapCreate (%lu), flags=%u, initSize=%lu, maxSize=%lu",
-          osGetLastError(), SQLITE_WIN32_HEAP_FLAGS, dwInitialSize,
-          dwMaximumSize);
-      return SQLITE_NOMEM_BKPT;
+          os_Get_آخری_Error(), SQLITE_WIN32_ڈھیر_FLAGS, dw_Initial_ناپ,
+          dw_ودھ_توں_ودھ_ناپ);
+      أرجع SQLITE_NOMEM_BKPT;
     }
-    pWinMemData->bOwned = TRUE;
-    assert( pWinMemData->bOwned );
+    p_Win_Mem_انکڑے->bOwned = TRUE;
+    أكد( p_Win_Mem_انکڑے->bOwned );
   }
-#else
-  pWinMemData->hHeap = osGetProcessHeap();
-  if( !pWinMemData->hHeap ){
+#وإلا
+  p_Win_Mem_انکڑے->h_ڈھیر = os_Get_Process_ڈھیر();
+  إذا( !p_Win_Mem_انکڑے->h_ڈھیر ){
     sqlite3_log(SQLITE_NOMEM,
-        "failed to GetProcessHeap (%lu)", osGetLastError());
-    return SQLITE_NOMEM_BKPT;
+        "failed to GetProcessHeap (%lu)", os_Get_آخری_Error());
+    أرجع SQLITE_NOMEM_BKPT;
   }
-  pWinMemData->bOwned = FALSE;
-  assert( !pWinMemData->bOwned );
-#endif
-  assert( pWinMemData->hHeap!=0 );
-  assert( pWinMemData->hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-  assert( osHeapValidate(pWinMemData->hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-  return SQLITE_OK;
+  p_Win_Mem_انکڑے->bOwned = FALSE;
+  أكد( !p_Win_Mem_انکڑے->bOwned );
+#جے_انت
+  أكد( p_Win_Mem_انکڑے->h_ڈھیر!=0 );
+  أكد( p_Win_Mem_انکڑے->h_ڈھیر!=INVALID_HANDLE_قدر );
+#إذا defined(SQLITE_WIN32_MALLOC_VALIDATE)
+  أكد( os_ڈھیر_Validate(p_Win_Mem_انکڑے->h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, عدم) );
+#جے_انت
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Deinitialize this module.
 */
-static void winMemShutdown(void *pAppData){
-  winMemData *pWinMemData = (winMemData *)pAppData;
+ساكن فراغ winMemShutdown(فراغ *p_App_انکڑے){
+  win_Mem_انکڑے *p_Win_Mem_انکڑے = (win_Mem_انکڑے *)p_App_انکڑے;
 
-  if( !pWinMemData ) return;
-  assert( pWinMemData->magic1==WINMEM_MAGIC1 );
-  assert( pWinMemData->magic2==WINMEM_MAGIC2 );
+  إذا( !p_Win_Mem_انکڑے ) أرجع;
+  أكد( p_Win_Mem_انکڑے->magic1==WINMEM_MAGIC1 );
+  أكد( p_Win_Mem_انکڑے->magic2==WINMEM_MAGIC2 );
 
-  if( pWinMemData->hHeap ){
-    assert( pWinMemData->hHeap!=INVALID_HANDLE_VALUE );
-#if defined(SQLITE_WIN32_MALLOC_VALIDATE)
-    assert( osHeapValidate(pWinMemData->hHeap, SQLITE_WIN32_HEAP_FLAGS, NULL) );
-#endif
-    if( pWinMemData->bOwned ){
-      if( !osHeapDestroy(pWinMemData->hHeap) ){
+  إذا( p_Win_Mem_انکڑے->h_ڈھیر ){
+    أكد( p_Win_Mem_انکڑے->h_ڈھیر!=INVALID_HANDLE_قدر );
+#إذا defined(SQLITE_WIN32_MALLOC_VALIDATE)
+    أكد( os_ڈھیر_Validate(p_Win_Mem_انکڑے->h_ڈھیر, SQLITE_WIN32_ڈھیر_FLAGS, عدم) );
+#جے_انت
+    إذا( p_Win_Mem_انکڑے->bOwned ){
+      إذا( !os_ڈھیر_Destroy(p_Win_Mem_انکڑے->h_ڈھیر) ){
         sqlite3_log(SQLITE_NOMEM, "failed to HeapDestroy (%lu), heap=%p",
-                    osGetLastError(), (void*)pWinMemData->hHeap);
+                    os_Get_آخری_Error(), (فراغ*)p_Win_Mem_انکڑے->h_ڈھیر);
       }
-      pWinMemData->bOwned = FALSE;
+      p_Win_Mem_انکڑے->bOwned = FALSE;
     }
-    pWinMemData->hHeap = NULL;
+    p_Win_Mem_انکڑے->h_ڈھیر = عدم;
   }
 }
 
@@ -1087,107 +1087,107 @@ static void winMemShutdown(void *pAppData){
 ** This routine is only called by sqlite3_config(), and therefore
 ** is not required to be threadsafe (it is not).
 */
-const sqlite3_mem_methods *sqlite3MemGetWin32(void){
-  static const sqlite3_mem_methods winMemMethods = {
+ثابت sqlite3_mem_methods *sqlite3MemGetWin32(فراغ){
+  ساكن ثابت sqlite3_mem_methods winMemMethods = {
     winMemMalloc,
     winMemFree,
     winMemRealloc,
-    winMemSize,
+    win_Mem_ناپ,
     winMemRoundup,
     winMemInit,
     winMemShutdown,
-    &win_mem_data
+    &win_mem_انکڑے
   };
-  return &winMemMethods;
+  أرجع &winMemMethods;
 }
 
-void sqlite3MemSetDefault(void){
+فراغ sqlite3_Mem_سیٹ_Default(فراغ){
   sqlite3_config(SQLITE_CONFIG_MALLOC, sqlite3MemGetWin32());
 }
-#endif /* SQLITE_WIN32_MALLOC */
+#جے_انت /* SQLITE_WIN32_MALLOC */
 
-#ifdef _WIN32
+#جے_تعریف_شدہ _WIN32
 /*
 ** Convert a UTF-8 string to Microsoft Unicode.
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static LPWSTR winUtf8ToUnicode(const char *zText){
-  int nChar;
-  LPWSTR zWideText;
+ساكن LPWSTR win_Utf8_منزل_Unicode(ثابت حرف *z_متن){
+  صحيح nChar;
+  LPWSTR z_Wide_متن;
 
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zText, -1, NULL, 0);
-  if( nChar==0 ){
-    return 0;
+  nChar = os_Multi_Byte_منزل_Wide_Char(CP_UTF8, 0, z_متن, -1, عدم, 0);
+  إذا( nChar==0 ){
+    أرجع 0;
   }
-  zWideText = sqlite3MallocZero( nChar*sizeof(WCHAR) );
-  if( zWideText==0 ){
-    return 0;
+  z_Wide_متن = sqlite3MallocZero( nChar*حجم(WCHAR) );
+  إذا( z_Wide_متن==0 ){
+    أرجع 0;
   }
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zText, -1, zWideText,
+  nChar = os_Multi_Byte_منزل_Wide_Char(CP_UTF8, 0, z_متن, -1, z_Wide_متن,
                                 nChar);
-  if( nChar==0 ){
-    sqlite3_free(zWideText);
-    zWideText = 0;
+  إذا( nChar==0 ){
+    sqlite3_free(z_Wide_متن);
+    z_Wide_متن = 0;
   }
-  return zWideText;
+  أرجع z_Wide_متن;
 }
-#endif /* _WIN32 */
+#جے_انت /* _WIN32 */
 
 /*
 ** Convert a Microsoft Unicode string to UTF-8.
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winUnicodeToUtf8(LPCWSTR zWideText){
-  int nByte;
-  char *zText;
+ساكن حرف *win_Unicode_منزل_Utf8(LPCWSTR z_Wide_متن){
+  صحيح nByte;
+  حرف *z_متن;
 
-  nByte = osWideCharToMultiByte(CP_UTF8, 0, zWideText, -1, 0, 0, 0, 0);
-  if( nByte == 0 ){
-    return 0;
+  nByte = os_Wide_Char_منزل_Multi_Byte(CP_UTF8, 0, z_Wide_متن, -1, 0, 0, 0, 0);
+  إذا( nByte == 0 ){
+    أرجع 0;
   }
-  zText = sqlite3MallocZero( nByte );
-  if( zText==0 ){
-    return 0;
+  z_متن = sqlite3MallocZero( nByte );
+  إذا( z_متن==0 ){
+    أرجع 0;
   }
-  nByte = osWideCharToMultiByte(CP_UTF8, 0, zWideText, -1, zText, nByte,
+  nByte = os_Wide_Char_منزل_Multi_Byte(CP_UTF8, 0, z_Wide_متن, -1, z_متن, nByte,
                                 0, 0);
-  if( nByte == 0 ){
-    sqlite3_free(zText);
-    zText = 0;
+  إذا( nByte == 0 ){
+    sqlite3_free(z_متن);
+    z_متن = 0;
   }
-  return zText;
+  أرجع z_متن;
 }
 
-#ifdef _WIN32
+#جے_تعریف_شدہ _WIN32
 /*
 ** Convert an ANSI string to Microsoft Unicode, using the ANSI or OEM
 ** code page.
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static LPWSTR winMbcsToUnicode(const char *zText, int useAnsi){
-  int nWideChar;
-  LPWSTR zMbcsText;
-  int codepage = useAnsi ? CP_ACP : CP_OEMCP;
+ساكن LPWSTR win_Mbcs_منزل_Unicode(ثابت حرف *z_متن, صحيح useAnsi){
+  صحيح nWideChar;
+  LPWSTR z_Mbcs_متن;
+  صحيح codepage = useAnsi ? CP_ACP : CP_OEMCP;
 
-  nWideChar = osMultiByteToWideChar(codepage, 0, zText, -1, NULL,
+  nWideChar = os_Multi_Byte_منزل_Wide_Char(codepage, 0, z_متن, -1, عدم,
                                 0);
-  if( nWideChar==0 ){
-    return 0;
+  إذا( nWideChar==0 ){
+    أرجع 0;
   }
-  zMbcsText = sqlite3MallocZero( nWideChar*sizeof(WCHAR) );
-  if( zMbcsText==0 ){
-    return 0;
+  z_Mbcs_متن = sqlite3MallocZero( nWideChar*حجم(WCHAR) );
+  إذا( z_Mbcs_متن==0 ){
+    أرجع 0;
   }
-  nWideChar = osMultiByteToWideChar(codepage, 0, zText, -1, zMbcsText,
+  nWideChar = os_Multi_Byte_منزل_Wide_Char(codepage, 0, z_متن, -1, z_Mbcs_متن,
                                 nWideChar);
-  if( nWideChar==0 ){
-    sqlite3_free(zMbcsText);
-    zMbcsText = 0;
+  إذا( nWideChar==0 ){
+    sqlite3_free(z_Mbcs_متن);
+    z_Mbcs_متن = 0;
   }
-  return zMbcsText;
+  أرجع z_Mbcs_متن;
 }
 
 /*
@@ -1196,26 +1196,26 @@ static LPWSTR winMbcsToUnicode(const char *zText, int useAnsi){
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winUnicodeToMbcs(LPCWSTR zWideText, int useAnsi){
-  int nByte;
-  char *zText;
-  int codepage = useAnsi ? CP_ACP : CP_OEMCP;
+ساكن حرف *win_Unicode_منزل_Mbcs(LPCWSTR z_Wide_متن, صحيح useAnsi){
+  صحيح nByte;
+  حرف *z_متن;
+  صحيح codepage = useAnsi ? CP_ACP : CP_OEMCP;
 
-  nByte = osWideCharToMultiByte(codepage, 0, zWideText, -1, 0, 0, 0, 0);
-  if( nByte == 0 ){
-    return 0;
+  nByte = os_Wide_Char_منزل_Multi_Byte(codepage, 0, z_Wide_متن, -1, 0, 0, 0, 0);
+  إذا( nByte == 0 ){
+    أرجع 0;
   }
-  zText = sqlite3MallocZero( nByte );
-  if( zText==0 ){
-    return 0;
+  z_متن = sqlite3MallocZero( nByte );
+  إذا( z_متن==0 ){
+    أرجع 0;
   }
-  nByte = osWideCharToMultiByte(codepage, 0, zWideText, -1, zText,
+  nByte = os_Wide_Char_منزل_Multi_Byte(codepage, 0, z_Wide_متن, -1, z_متن,
                                 nByte, 0, 0);
-  if( nByte == 0 ){
-    sqlite3_free(zText);
-    zText = 0;
+  إذا( nByte == 0 ){
+    sqlite3_free(z_متن);
+    z_متن = 0;
   }
-  return zText;
+  أرجع z_متن;
 }
 
 /*
@@ -1223,17 +1223,17 @@ static char *winUnicodeToMbcs(LPCWSTR zWideText, int useAnsi){
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winMbcsToUtf8(const char *zText, int useAnsi){
-  char *zTextUtf8;
+ساكن حرف *win_Mbcs_منزل_Utf8(ثابت حرف *z_متن, صحيح useAnsi){
+  حرف *z_متن_Utf8;
   LPWSTR zTmpWide;
 
-  zTmpWide = winMbcsToUnicode(zText, useAnsi);
-  if( zTmpWide==0 ){
-    return 0;
+  zTmpWide = win_Mbcs_منزل_Unicode(z_متن, useAnsi);
+  إذا( zTmpWide==0 ){
+    أرجع 0;
   }
-  zTextUtf8 = winUnicodeToUtf8(zTmpWide);
+  z_متن_Utf8 = win_Unicode_منزل_Utf8(zTmpWide);
   sqlite3_free(zTmpWide);
-  return zTextUtf8;
+  أرجع z_متن_Utf8;
 }
 
 /*
@@ -1241,176 +1241,176 @@ static char *winMbcsToUtf8(const char *zText, int useAnsi){
 **
 ** Space to hold the returned string is obtained from sqlite3_malloc().
 */
-static char *winUtf8ToMbcs(const char *zText, int useAnsi){
-  char *zTextMbcs;
+ساكن حرف *win_Utf8_منزل_Mbcs(ثابت حرف *z_متن, صحيح useAnsi){
+  حرف *z_متن_Mbcs;
   LPWSTR zTmpWide;
 
-  zTmpWide = winUtf8ToUnicode(zText);
-  if( zTmpWide==0 ){
-    return 0;
+  zTmpWide = win_Utf8_منزل_Unicode(z_متن);
+  إذا( zTmpWide==0 ){
+    أرجع 0;
   }
-  zTextMbcs = winUnicodeToMbcs(zTmpWide, useAnsi);
+  z_متن_Mbcs = win_Unicode_منزل_Mbcs(zTmpWide, useAnsi);
   sqlite3_free(zTmpWide);
-  return zTextMbcs;
+  أرجع z_متن_Mbcs;
 }
 
 /*
 ** This is a public wrapper for the winUtf8ToUnicode() function.
 */
-LPWSTR sqlite3_win32_utf8_to_unicode(const char *zText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+LPWSTR sqlite3_win32_utf8_منزل_unicode(ثابت حرف *z_متن){
+#جے_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  إذا( !z_متن ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    أرجع 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUtf8ToUnicode(zText);
+#جے_انت
+#جے_بنا_تعریف SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize() ) أرجع 0;
+#جے_انت
+  أرجع win_Utf8_منزل_Unicode(z_متن);
 }
 
 /*
 ** This is a public wrapper for the winUnicodeToUtf8() function.
 */
-char *sqlite3_win32_unicode_to_utf8(LPCWSTR zWideText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zWideText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+حرف *sqlite3_win32_unicode_منزل_utf8(LPCWSTR z_Wide_متن){
+#جے_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  إذا( !z_Wide_متن ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    أرجع 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUnicodeToUtf8(zWideText);
+#جے_انت
+#جے_بنا_تعریف SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize() ) أرجع 0;
+#جے_انت
+  أرجع win_Unicode_منزل_Utf8(z_Wide_متن);
 }
 
 /*
 ** This is a public wrapper for the winMbcsToUtf8() function.
 */
-char *sqlite3_win32_mbcs_to_utf8(const char *zText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+حرف *sqlite3_win32_mbcs_منزل_utf8(ثابت حرف *z_متن){
+#جے_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  إذا( !z_متن ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    أرجع 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winMbcsToUtf8(zText, osAreFileApisANSI());
+#جے_انت
+#جے_بنا_تعریف SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize() ) أرجع 0;
+#جے_انت
+  أرجع win_Mbcs_منزل_Utf8(z_متن, osAreFileApisANSI());
 }
 
 /*
 ** This is a public wrapper for the winMbcsToUtf8() function.
 */
-char *sqlite3_win32_mbcs_to_utf8_v2(const char *zText, int useAnsi){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+حرف *sqlite3_win32_mbcs_منزل_utf8_v2(ثابت حرف *z_متن, صحيح useAnsi){
+#جے_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  إذا( !z_متن ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    أرجع 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winMbcsToUtf8(zText, useAnsi);
+#جے_انت
+#جے_بنا_تعریف SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize() ) أرجع 0;
+#جے_انت
+  أرجع win_Mbcs_منزل_Utf8(z_متن, useAnsi);
 }
 
 /*
 ** This is a public wrapper for the winUtf8ToMbcs() function.
 */
-char *sqlite3_win32_utf8_to_mbcs(const char *zText){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+حرف *sqlite3_win32_utf8_منزل_mbcs(ثابت حرف *z_متن){
+#جے_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  إذا( !z_متن ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    أرجع 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUtf8ToMbcs(zText, osAreFileApisANSI());
+#جے_انت
+#جے_بنا_تعریف SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize() ) أرجع 0;
+#جے_انت
+  أرجع win_Utf8_منزل_Mbcs(z_متن, osAreFileApisANSI());
 }
 
 /*
 ** This is a public wrapper for the winUtf8ToMbcs() function.
 */
-char *sqlite3_win32_utf8_to_mbcs_v2(const char *zText, int useAnsi){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !zText ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+حرف *sqlite3_win32_utf8_منزل_mbcs_v2(ثابت حرف *z_متن, صحيح useAnsi){
+#جے_تعریف_شدہ SQLITE_ENABLE_API_ARMOR
+  إذا( !z_متن ){
+    (فراغ)SQLITE_MISUSE_BKPT;
+    أرجع 0;
   }
-#endif
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return winUtf8ToMbcs(zText, useAnsi);
+#جے_انت
+#جے_بنا_تعریف SQLITE_OMIT_AUTOINIT
+  إذا( sqlite3_initialize() ) أرجع 0;
+#جے_انت
+  أرجع win_Utf8_منزل_Mbcs(z_متن, useAnsi);
 }
 
 /*
 ** This function is the same as sqlite3_win32_set_directory (below); however,
 ** it accepts a UTF-8 string.
 */
-int sqlite3_win32_set_directory8(
-  unsigned long type, /* Identifier for directory being set or reset */
-  const char *zValue  /* New value for directory being set or reset */
+صحيح sqlite3_win32_سیٹ_directory8(
+  بنانشانی لما type, /* Identifier for directory being set or reset */
+  ثابت حرف *z_قدر  /* New value for directory being set or reset */
 ){
-  char **ppDirectory = 0;
-  int rc;
-#ifndef SQLITE_OMIT_AUTOINIT
+  حرف **ppDirectory = 0;
+  صحيح rc;
+#جے_بنا_تعریف SQLITE_OMIT_AUTOINIT
   rc = sqlite3_initialize();
-  if( rc ) return rc;
-#endif
+  إذا( rc ) أرجع rc;
+#جے_انت
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  if( type==SQLITE_WIN32_DATA_DIRECTORY_TYPE ){
-    ppDirectory = &sqlite3_data_directory;
-  }else if( type==SQLITE_WIN32_TEMP_DIRECTORY_TYPE ){
-    ppDirectory = &sqlite3_temp_directory;
+  إذا( type==SQLITE_WIN32_انکڑے_DIRECTORY_TYPE ){
+    ppDirectory = &sqlite3_انکڑے_directory;
+  }وإلا إذا( type==SQLITE_WIN32_عارضی_DIRECTORY_TYPE ){
+    ppDirectory = &sqlite3_عارضی_directory;
   }
-  assert( !ppDirectory || type==SQLITE_WIN32_DATA_DIRECTORY_TYPE
-          || type==SQLITE_WIN32_TEMP_DIRECTORY_TYPE
+  أكد( !ppDirectory || type==SQLITE_WIN32_انکڑے_DIRECTORY_TYPE
+          || type==SQLITE_WIN32_عارضی_DIRECTORY_TYPE
   );
-  assert( !ppDirectory || sqlite3MemdebugHasType(*ppDirectory, MEMTYPE_HEAP) );
-  if( ppDirectory ){
-    char *zCopy = 0;
-    if( zValue && zValue[0] ){
-      zCopy = sqlite3_mprintf("%s", zValue);
-      if ( zCopy==0 ){
+  أكد( !ppDirectory || sqlite3MemdebugHasType(*ppDirectory, MEMTYPE_ڈھیر) );
+  إذا( ppDirectory ){
+    حرف *zCopy = 0;
+    إذا( z_قدر && z_قدر[0] ){
+      zCopy = sqlite3_mprintf("%s", z_قدر);
+      إذا ( zCopy==0 ){
         rc = SQLITE_NOMEM_BKPT;
-        goto set_directory8_done;
+        اذهب سیٹ_directory8_پورا;
       }
     }
     sqlite3_free(*ppDirectory);
     *ppDirectory = zCopy;
     rc = SQLITE_OK;
-  }else{
+  }وإلا{
     rc = SQLITE_ERROR;
   }
-set_directory8_done:
+سیٹ_directory8_پورا:
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** This function is the same as sqlite3_win32_set_directory (below); however,
 ** it accepts a UTF-16 string.
 */
-int sqlite3_win32_set_directory16(
-  unsigned long type, /* Identifier for directory being set or reset */
-  const void *zValue  /* New value for directory being set or reset */
+صحيح sqlite3_win32_سیٹ_directory16(
+  بنانشانی لما type, /* Identifier for directory being set or reset */
+  ثابت فراغ *z_قدر  /* New value for directory being set or reset */
 ){
-  int rc;
-  char *zUtf8 = 0;
-  if( zValue ){
-    zUtf8 = sqlite3_win32_unicode_to_utf8(zValue);
-    if( zUtf8==0 ) return SQLITE_NOMEM_BKPT;
+  صحيح rc;
+  حرف *zUtf8 = 0;
+  إذا( z_قدر ){
+    zUtf8 = sqlite3_win32_unicode_منزل_utf8(z_قدر);
+    إذا( zUtf8==0 ) أرجع SQLITE_NOMEM_BKPT;
   }
-  rc = sqlite3_win32_set_directory8(type, zUtf8);
-  if( zUtf8 ) sqlite3_free(zUtf8);
-  return rc;
+  rc = sqlite3_win32_سیٹ_directory8(type, zUtf8);
+  إذا( zUtf8 ) sqlite3_free(zUtf8);
+  أرجع rc;
 }
 
 /*
@@ -1420,53 +1420,53 @@ int sqlite3_win32_set_directory16(
 ** argument is the name of the directory to use.  The return value will be
 ** SQLITE_OK if successful.
 */
-int sqlite3_win32_set_directory(
-  unsigned long type, /* Identifier for directory being set or reset */
-  void *zValue        /* New value for directory being set or reset */
+صحيح sqlite3_win32_سیٹ_directory(
+  بنانشانی لما type, /* Identifier for directory being set or reset */
+  فراغ *z_قدر        /* New value for directory being set or reset */
 ){
-  return sqlite3_win32_set_directory16(type, zValue);
+  أرجع sqlite3_win32_سیٹ_directory16(type, z_قدر);
 }
-#endif /* _WIN32 */
+#جے_انت /* _WIN32 */
 
 /*
 ** The return value of winGetLastErrorMsg
 ** is zero if the error message fits in the buffer, or non-zero
 ** otherwise (if the message was truncated).
 */
-static int winGetLastErrorMsg(DWORD lastErrno, int nBuf, char *zBuf){
+ساكن صحيح win_Get_آخری_Error_پیغام(DWORD آخری_Errno, صحيح nBuf, حرف *zBuf){
   /* FormatMessage returns 0 on failure.  Otherwise it
   ** returns the number of TCHARs written to the output
   ** buffer, excluding the terminating null char.
   */
   DWORD dwLen = 0;
-  char *zOut = 0;
-  LPWSTR zTempWide = NULL;
-  dwLen = osFormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                           FORMAT_MESSAGE_FROM_SYSTEM |
-                           FORMAT_MESSAGE_IGNORE_INSERTS,
-                           NULL,
-                           lastErrno,
+  حرف *z_باہرلا = 0;
+  LPWSTR z_عارضی_Wide = عدم;
+  dwLen = os_Format_سنیہا_W(FORMAT_سنیہا_ALLOCATE_بفر |
+                           FORMAT_سنیہا_FROM_SYSTEM |
+                           FORMAT_سنیہا_IGNORE_INSERTS,
+                           عدم,
+                           آخری_Errno,
                            0,
-                           (LPWSTR) &zTempWide,
+                           (LPWSTR) &z_عارضی_Wide,
                            0,
                            0);
-  if( dwLen > 0 ){
+  إذا( dwLen > 0 ){
     /* allocate a buffer and convert to UTF8 */
     sqlite3BeginBenignMalloc();
-    zOut = winUnicodeToUtf8(zTempWide);
-    sqlite3EndBenignMalloc();
+    z_باہرلا = win_Unicode_منزل_Utf8(z_عارضی_Wide);
+    sqlite3_سرا_Benign_Malloc();
     /* free the system buffer allocated by FormatMessage */
-    osLocalFree(zTempWide);
+    osLocalFree(z_عارضی_Wide);
   }
-  if( 0 == dwLen ){
-    sqlite3_snprintf(nBuf, zBuf, "OsError 0x%lx (%lu)", lastErrno, lastErrno);
-  }else{
+  إذا( 0 == dwLen ){
+    sqlite3_snprintf(nBuf, zBuf, "OsError 0x%lx (%lu)", آخری_Errno, آخری_Errno);
+  }وإلا{
     /* copy a maximum of nBuf chars to output buffer */
-    sqlite3_snprintf(nBuf, zBuf, "%s", zOut);
+    sqlite3_snprintf(nBuf, zBuf, "%s", z_باہرلا);
     /* free the UTF8 buffer */
-    sqlite3_free(zOut);
+    sqlite3_free(z_باہرلا);
   }
-  return 0;
+  أرجع 0;
 }
 
 /*
@@ -1484,29 +1484,29 @@ static int winGetLastErrorMsg(DWORD lastErrno, int nBuf, char *zBuf){
 ** The two subsequent arguments should be the name of the OS function that
 ** failed and the associated file-system path, if any.
 */
-#define winLogError(a,b,c,d)   winLogErrorAtLine(a,b,c,d,__LINE__)
-static int winLogErrorAtLine(
-  int errcode,                    /* SQLite error code */
-  DWORD lastErrno,                /* Win32 last error */
-  const char *zFunc,              /* Name of OS function that failed */
-  const char *zPath,              /* File path associated with error */
-  int iLine                       /* Source line number where error occurred */
+#تعریف_کرو winLogError(a,b,c,d)   win_Log_Error_At_سطر(a,b,c,d,__LINE__)
+ساكن صحيح win_Log_Error_At_سطر(
+  صحيح errcode,                    /* SQLite error code */
+  DWORD آخری_Errno,                /* Win32 last error */
+  ثابت حرف *zFunc,              /* Name of OS function that failed */
+  ثابت حرف *z_رستہ,              /* File path associated with error */
+  صحيح i_سطر                       /* Source line number where error occurred */
 ){
-  char zMsg[500];                 /* Human readable error text */
-  int i;                          /* Loop counter */
+  حرف z_پیغام[500];                 /* Human readable error text */
+  صحيح i;                          /* Loop counter */
 
-  zMsg[0] = 0;
-  winGetLastErrorMsg(lastErrno, sizeof(zMsg), zMsg);
-  assert( errcode!=SQLITE_OK );
-  if( zPath==0 ) zPath = "";
-  for(i=0; zMsg[i] && zMsg[i]!='\r' && zMsg[i]!='\n'; i++){}
-  zMsg[i] = 0;
+  z_پیغام[0] = 0;
+  win_Get_آخری_Error_پیغام(آخری_Errno, حجم(z_پیغام), z_پیغام);
+  أكد( errcode!=SQLITE_OK );
+  إذا( z_رستہ==0 ) z_رستہ = "";
+  لكل(i=0; z_پیغام[i] && z_پیغام[i]!='\r' && z_پیغام[i]!='\n'; i++){}
+  z_پیغام[i] = 0;
   sqlite3_log(errcode,
       "os_win.c:%d: (%lu) %s(%s) - %s",
-      iLine, lastErrno, zFunc, zPath, zMsg
+      i_سطر, آخری_Errno, zFunc, z_رستہ, z_پیغام
   );
 
-  return errcode;
+  أرجع errcode;
 }
 
 /*
@@ -1515,14 +1515,14 @@ static int winLogErrorAtLine(
 ** antivirus software.  Also the initial delay before the first retry.
 ** The delay increases linearly with each retry.
 */
-#ifndef SQLITE_WIN32_IOERR_RETRY
+#جے_بنا_تعریف SQLITE_WIN32_IOERR_RETRY
 # define SQLITE_WIN32_IOERR_RETRY 10
-#endif
-#ifndef SQLITE_WIN32_IOERR_RETRY_DELAY
+#جے_انت
+#جے_بنا_تعریف SQLITE_WIN32_IOERR_RETRY_DELAY
 # define SQLITE_WIN32_IOERR_RETRY_DELAY 25
-#endif
-static int winIoerrRetry = SQLITE_WIN32_IOERR_RETRY;
-static int winIoerrRetryDelay = SQLITE_WIN32_IOERR_RETRY_DELAY;
+#جے_انت
+ساكن صحيح winIoerrRetry = SQLITE_WIN32_IOERR_RETRY;
+ساكن صحيح winIoerrRetryDelay = SQLITE_WIN32_IOERR_RETRY_DELAY;
 
 /*
 ** The "winIoerrCanRetry1" macro is used to determine if a particular I/O
@@ -1540,52 +1540,52 @@ static int winIoerrRetryDelay = SQLITE_WIN32_IOERR_RETRY_DELAY;
 ** defined, the "winIoerrCanRetry2" macro must exhibit external semantics
 ** identical to those of the "winIoerrCanRetry1" macro.
 */
-#if !defined(winIoerrCanRetry1)
-#define winIoerrCanRetry1(a) (((a)==ERROR_ACCESS_DENIED)        || \
+#إذا !defined(winIoerrCanRetry1)
+#تعریف_کرو winIoerrCanRetry1(a) (((a)==ERROR_ACCESS_DENIED)        || \
                               ((a)==ERROR_SHARING_VIOLATION)    || \
-                              ((a)==ERROR_LOCK_VIOLATION)       || \
+                              ((a)==ERROR_جندرا_VIOLATION)       || \
                               ((a)==ERROR_DEV_NOT_EXIST)        || \
                               ((a)==ERROR_NETNAME_DELETED)      || \
                               ((a)==ERROR_SEM_TIMEOUT)          || \
-                              ((a)==ERROR_NETWORK_UNREACHABLE))
-#endif
+                              ((a)==ERROR_جال_UNREACHABLE))
+#جے_انت
 
 /*
 ** If a ReadFile() or WriteFile() error occurs, invoke this routine
 ** to see if it should be retried.  Return TRUE to retry.  Return FALSE
 ** to give up with an error.
 */
-static int winRetryIoerr(int *pnRetry, DWORD *pError){
-  DWORD e = osGetLastError();
-  if( *pnRetry>=winIoerrRetry ){
-    if( pError ){
+ساكن صحيح winRetryIoerr(صحيح *pnRetry, DWORD *pError){
+  DWORD e = os_Get_آخری_Error();
+  إذا( *pnRetry>=winIoerrRetry ){
+    إذا( pError ){
       *pError = e;
     }
-    return 0;
+    أرجع 0;
   }
-  if( winIoerrCanRetry1(e) ){
+  إذا( winIoerrCanRetry1(e) ){
     osSleep(winIoerrRetryDelay*(1+*pnRetry));
     ++*pnRetry;
-    return 1;
+    أرجع 1;
   }
-#if defined(winIoerrCanRetry2)
-  else if( winIoerrCanRetry2(e) ){
+#إذا defined(winIoerrCanRetry2)
+  وإلا إذا( winIoerrCanRetry2(e) ){
     osSleep(winIoerrRetryDelay*(1+*pnRetry));
     ++*pnRetry;
-    return 1;
+    أرجع 1;
   }
-#endif
-  if( pError ){
+#جے_انت
+  إذا( pError ){
     *pError = e;
   }
-  return 0;
+  أرجع 0;
 }
 
 /*
 ** Log a I/O error retry episode.
 */
-static void winLogIoerr(int nRetry, int lineno){
-  if( nRetry ){
+ساكن فراغ winLogIoerr(صحيح nRetry, صحيح lineno){
+  إذا( nRetry ){
     sqlite3_log(SQLITE_NOTICE,
       "delayed %dms for lock/sharing conflict at line %d",
       winIoerrRetryDelay*nRetry*(nRetry+1)/2, lineno
@@ -1597,22 +1597,22 @@ static void winLogIoerr(int nRetry, int lineno){
 /*
 ** Lock a file region.
 */
-static BOOL winLockFile(
+ساكن BOOL win_جندرا_File(
   LPHANDLE phFile,
   DWORD flags,
-  DWORD offsetLow,
-  DWORD offsetHigh,
-  DWORD numBytesLow,
-  DWORD numBytesHigh
+  DWORD وتھ_کم,
+  DWORD وتھ_بلند,
+  DWORD عدد_بائٹاں_کم,
+  DWORD عدد_بائٹاں_بلند
 ){
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  ovlp.Offset = offsetLow;
-  ovlp.OffsetHigh = offsetHigh;
-  return osLockFileEx(*phFile, flags, 0, numBytesLow, numBytesHigh, &ovlp);
+  memset(&ovlp, 0, حجم(OVERLAPPED));
+  ovlp.وتھ_2 = وتھ_کم;
+  ovlp.وتھ_بلند_2 = وتھ_بلند;
+  أرجع os_جندرا_File_Ex(*phFile, flags, 0, عدد_بائٹاں_کم, عدد_بائٹاں_بلند, &ovlp);
 }
 
-#ifndef SQLITE_OMIT_WAL
+#جے_بنا_تعریف SQLITE_OMIT_WAL
 /*
 ** Lock a region of nByte bytes starting at offset offset of file hFile.
 ** Take an EXCLUSIVE lock if parameter bExclusive is true, or a SHARED lock
@@ -1623,31 +1623,31 @@ static BOOL winLockFile(
 ** some other process holds the lock, SQLITE_BUSY is returned if nMs==0, or
 ** SQLITE_BUSY_TIMEOUT otherwise. Or, if an error occurs, SQLITE_IOERR.
 */
-static int winHandleLockTimeout(
+ساكن صحيح win_Handle_جندرا_Timeout(
   HANDLE hFile,
-  DWORD offset,
+  DWORD وتھ,
   DWORD nByte,
-  int bExcl,
+  صحيح bExcl,
   DWORD nMs
 ){
-  DWORD flags = LOCKFILE_FAIL_IMMEDIATELY | (bExcl?LOCKFILE_EXCLUSIVE_LOCK:0);
-  int rc = SQLITE_OK;
+  DWORD flags = LOCKFILE_FAIL_IMMEDIATELY | (bExcl?LOCKFILE_EXCLUSIVE_جندرا:0);
+  صحيح rc = SQLITE_OK;
   BOOL ret;
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  ovlp.Offset = offset;
+  memset(&ovlp, 0, حجم(OVERLAPPED));
+  ovlp.وتھ_2 = وتھ;
 
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT)
-  if( nMs!=0 ){
+#إذا defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+  إذا( nMs!=0 ){
     flags &= ~LOCKFILE_FAIL_IMMEDIATELY;
   }
-  ovlp.hEvent = osCreateEvent(NULL, TRUE, FALSE, NULL);
-  if( ovlp.hEvent==NULL ){
-    return SQLITE_IOERR_LOCK;
+  ovlp.hEvent = osCreateEvent(عدم, TRUE, FALSE, عدم);
+  إذا( ovlp.hEvent==عدم ){
+    أرجع SQLITE_IOERR_جندرا;
   }
-#endif
-  ret = osLockFileEx(hFile, flags, 0, nByte, 0, &ovlp);
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT)
+#جے_انت
+  ret = os_جندرا_File_Ex(hFile, flags, 0, nByte, 0, &ovlp);
+#إذا defined(SQLITE_ENABLE_SETLK_TIMEOUT)
   /* If SQLITE_ENABLE_SETLK_TIMEOUT is defined, then the file-handle was
   ** opened with FILE_FLAG_OVERHEAD specified. In this case, the call to
   ** LockFileEx() may fail because the request is still pending. This can
@@ -1660,20 +1660,20 @@ static int winHandleLockTimeout(
   ** Otherwise, wait for up to nMs ms for the operation to finish. nMs
   ** may be set to INFINITE.
   */
-  if( !ret && GetLastError()==ERROR_IO_PENDING ){
+  إذا( !ret && Get_آخری_Error()==ERROR_IO_PENDING ){
     DWORD nDelay = (nMs==0 ? INFINITE : nMs);
     DWORD res = osWaitForSingleObject(ovlp.hEvent, nDelay);
-    if( res==WAIT_OBJECT_0 ){
+    إذا( res==WAIT_OBJECT_0 ){
       ret = TRUE;
-    }else if( res==WAIT_TIMEOUT ){
-#if SQLITE_ENABLE_SETLK_TIMEOUT==1
+    }وإلا إذا( res==WAIT_TIMEOUT ){
+#إذا SQLITE_ENABLE_SETLK_TIMEOUT==1
       rc = SQLITE_BUSY_TIMEOUT;
-#else
+#وإلا
       rc = SQLITE_BUSY;
-#endif
-    }else{
+#جے_انت
+    }وإلا{
       /* Some other error has occurred */
-      rc = SQLITE_IOERR_LOCK;
+      rc = SQLITE_IOERR_جندرا;
     }
 
     /* If it is still pending, cancel the LockFileEx() call. */
@@ -1681,41 +1681,41 @@ static int winHandleLockTimeout(
   }
 
   osCloseHandle(ovlp.hEvent);
-#endif /* defined(SQLITE_ENABLE_SETLK_TIMEOUT) */
+#جے_انت /* defined(SQLITE_ENABLE_SETLK_TIMEOUT) */
 
-  if( rc==SQLITE_OK && !ret ){
+  إذا( rc==SQLITE_OK && !ret ){
     rc = SQLITE_BUSY;
   }
-  return rc;
+  أرجع rc;
 }
-#endif /* #ifndef SQLITE_OMIT_WAL */
+#جے_انت /* #ifndef SQLITE_OMIT_WAL */
 
 /*
 ** Unlock a file region.
  */
-static BOOL winUnlockFile(
+ساكن BOOL winUnlockFile(
   LPHANDLE phFile,
-  DWORD offsetLow,
-  DWORD offsetHigh,
-  DWORD numBytesLow,
-  DWORD numBytesHigh
+  DWORD وتھ_کم,
+  DWORD وتھ_بلند,
+  DWORD عدد_بائٹاں_کم,
+  DWORD عدد_بائٹاں_بلند
 ){
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  ovlp.Offset = offsetLow;
-  ovlp.OffsetHigh = offsetHigh;
-  return osUnlockFileEx(*phFile, 0, numBytesLow, numBytesHigh, &ovlp);
+  memset(&ovlp, 0, حجم(OVERLAPPED));
+  ovlp.وتھ_2 = وتھ_کم;
+  ovlp.وتھ_بلند_2 = وتھ_بلند;
+  أرجع osUnlockFileEx(*phFile, 0, عدد_بائٹاں_کم, عدد_بائٹاں_بلند, &ovlp);
 }
 
-#ifndef SQLITE_OMIT_WAL
+#جے_بنا_تعریف SQLITE_OMIT_WAL
 /*
 ** Remove an nByte lock starting at offset iOff from HANDLE h.
 */
-static int winHandleUnlock(HANDLE h, int iOff, int nByte){
+ساكن صحيح winHandleUnlock(HANDLE h, صحيح iOff, صحيح nByte){
   BOOL ret = winUnlockFile(&h, iOff, 0, nByte, 0);
-  return (ret ? SQLITE_OK : SQLITE_IOERR_UNLOCK);
+  أرجع (ret ? SQLITE_OK : SQLITE_IOERR_UNLOCK);
 }
-#endif
+#جے_انت
 
 /*****************************************************************************
 ** The next group of routines implement the I/O methods specified
@@ -1725,9 +1725,9 @@ static int winHandleUnlock(HANDLE h, int iOff, int nByte){
 /*
 ** Some Microsoft compilers lack this definition.
 */
-#ifndef INVALID_SET_FILE_POINTER
-# define INVALID_SET_FILE_POINTER ((DWORD)-1)
-#endif
+#جے_بنا_تعریف INVALID_سیٹ_FILE_اشارہ_گر
+# define INVALID_سیٹ_FILE_اشارہ_گر ((DWORD)-1)
+#جے_انت
 
 /*
 ** Seek the file handle h to offset nByte of the file.
@@ -1735,16 +1735,16 @@ static int winHandleUnlock(HANDLE h, int iOff, int nByte){
 ** If successful, return SQLITE_OK. Or, if an error occurs, return an SQLite
 ** error code.
 */
-static int winHandleSeek(HANDLE h, sqlite3_int64 iOffset){
-  int rc = SQLITE_OK;             /* Return value */
+ساكن صحيح winHandleSeek(HANDLE h, sqlite3_int64 i_وتھ){
+  صحيح rc = SQLITE_OK;             /* Return value */
   LARGE_INTEGER x;                /* The offset */
 
-  x.QuadPart = iOffset;
-  if( osSetFilePointerEx(h, x, 0, FILE_BEGIN)==0 ){
+  x.QuadPart = i_وتھ;
+  إذا( os_سیٹ_File_اشارہ_گر_Ex(h, x, 0, FILE_BEGIN)==0 ){
     rc = SQLITE_IOERR_SEEK;
   }
-  OSTRACE(("SEEK file=%p, offset=%lld rc=%s\n", h, iOffset,sqlite3ErrName(rc)));
-  return rc;
+  OSTRACE(("SEEK file=%p, offset=%lld rc=%s\n", h, i_وتھ,sqlite3ErrName(rc)));
+  أرجع rc;
 }
 
 /*
@@ -1752,23 +1752,23 @@ static int winHandleSeek(HANDLE h, sqlite3_int64 iOffset){
 ** argument to offset iOffset within the file. If successful, return 0.
 ** Otherwise, set pFile->lastErrno and return non-zero.
 */
-static int winSeekFile(winFile *pFile, sqlite3_int64 iOffset){
-  int rc;
+ساكن صحيح winSeekFile(winFile *pFile, sqlite3_int64 i_وتھ){
+  صحيح rc;
 
-  rc = winHandleSeek(pFile->h, iOffset);
-  if( rc!=SQLITE_OK ){
-    pFile->lastErrno = osGetLastError();
-    winLogError(rc, pFile->lastErrno, "winSeekFile", pFile->zPath);
+  rc = winHandleSeek(pFile->h, i_وتھ);
+  إذا( rc!=SQLITE_OK ){
+    pFile->آخری_Errno = os_Get_آخری_Error();
+    winLogError(rc, pFile->آخری_Errno, "winSeekFile", pFile->z_رستہ);
   }
-  return rc;
+  أرجع rc;
 }
 
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#إذا SQLITE_MAX_MMAP_ناپ>0
 /* Forward references to VFS helper methods used for memory mapped files */
-static int winMapfile(winFile*, sqlite3_int64);
-static int winUnmapfile(winFile*);
-#endif
+ساكن صحيح winMapfile(winFile*, sqlite3_int64);
+ساكن صحيح winUnmapfile(winFile*);
+#جے_انت
 
 /*
 ** Close a file.
@@ -1780,36 +1780,36 @@ static int winUnmapfile(winFile*);
 ** many as MX_CLOSE_ATTEMPT attempts to close the handle are made before
 ** giving up and returning an error.
 */
-#define MX_CLOSE_ATTEMPT 3
-static int winClose(sqlite3_file *id){
-  int rc, cnt = 0;
+#تعریف_کرو MX_CLOSE_ATTEMPT 3
+ساكن صحيح winClose(sqlite3_file *id){
+  صحيح rc, cnt = 0;
   winFile *pFile = (winFile*)id;
 
-  assert( id!=0 );
-#ifndef SQLITE_OMIT_WAL
-  assert( pFile->pShm==0 );
-#endif
-  assert( pFile->h!=NULL && pFile->h!=INVALID_HANDLE_VALUE );
+  أكد( id!=0 );
+#جے_بنا_تعریف SQLITE_OMIT_WAL
+  أكد( pFile->pShm==0 );
+#جے_انت
+  أكد( pFile->h!=عدم && pFile->h!=INVALID_HANDLE_قدر );
   OSTRACE(("CLOSE pid=%lu, pFile=%p, file=%p\n",
            osGetCurrentProcessId(), pFile, pFile->h));
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#إذا SQLITE_MAX_MMAP_ناپ>0
   winUnmapfile(pFile);
-#endif
+#جے_انت
 
-  do{
+  افعل{
     rc = osCloseHandle(pFile->h);
     /* SimulateIOError( rc=0; cnt=MX_CLOSE_ATTEMPT; ); */
-  }while( rc==0 && ++cnt < MX_CLOSE_ATTEMPT && (osSleep(100), 1) );
-  if( rc ){
-    pFile->h = NULL;
+  }طالما( rc==0 && ++cnt < MX_CLOSE_ATTEMPT && (osSleep(100), 1) );
+  إذا( rc ){
+    pFile->h = عدم;
   }
   OpenCounter(-1);
   OSTRACE(("CLOSE pid=%lu, pFile=%p, file=%p, rc=%s\n",
            osGetCurrentProcessId(), pFile, pFile->h, rc ? "ok" : "failed"));
-  return rc ? SQLITE_OK
-            : winLogError(SQLITE_IOERR_CLOSE, osGetLastError(),
-                          "winClose", pFile->zPath);
+  أرجع rc ? SQLITE_OK
+            : winLogError(SQLITE_IOERR_CLOSE, os_Get_آخری_Error(),
+                          "winClose", pFile->z_رستہ);
 }
 
 /*
@@ -1817,244 +1817,244 @@ static int winClose(sqlite3_file *id){
 ** bytes were read successfully and SQLITE_IOERR if anything goes
 ** wrong.
 */
-static int winRead(
+ساكن صحيح winRead(
   sqlite3_file *id,          /* File to read from */
-  void *pBuf,                /* Write content into this buffer */
-  int amt,                   /* Number of bytes to read */
-  sqlite3_int64 offset       /* Begin reading at this offset */
+  فراغ *pBuf,                /* Write content into this buffer */
+  صحيح amt,                   /* Number of bytes to read */
+  sqlite3_int64 وتھ       /* Begin reading at this offset */
 ){
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
+#إذا !defined(SQLITE_WIN32_NO_OVERLAPPED)
   OVERLAPPED overlapped;          /* The offset for ReadFile. */
-#endif
+#جے_انت
   winFile *pFile = (winFile*)id;  /* file handle */
   DWORD nRead;                    /* Number of bytes actually read from file */
-  int nRetry = 0;                 /* Number of retrys */
+  صحيح nRetry = 0;                 /* Number of retrys */
 
-  assert( id!=0 );
-  assert( amt>0 );
-  assert( offset>=0 );
-  SimulateIOError(return SQLITE_IOERR_READ);
+  أكد( id!=0 );
+  أكد( amt>0 );
+  أكد( وتھ>=0 );
+  SimulateIOError(أرجع SQLITE_IOERR_READ);
   OSTRACE(("READ pid=%lu, pFile=%p, file=%p, buffer=%p, amount=%d, "
            "offset=%lld, lock=%d\n", osGetCurrentProcessId(), pFile,
-           pFile->h, pBuf, amt, offset, pFile->locktype));
+           pFile->h, pBuf, amt, وتھ, pFile->locktype));
 
-#if SQLITE_MAX_MMAP_SIZE>0
+#إذا SQLITE_MAX_MMAP_ناپ>0
   /* Deal with as much of this read request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
-      memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], amt);
+  إذا( وتھ<pFile->mmap_ناپ ){
+    إذا( وتھ+amt <= pFile->mmap_ناپ ){
+      حافظہ_نقل(pBuf, &((u8 *)(pFile->pMapRegion))[وتھ], amt);
       OSTRACE(("READ-MMAP pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
                osGetCurrentProcessId(), pFile, pFile->h));
-      return SQLITE_OK;
-    }else{
-      int nCopy = (int)(pFile->mmapSize - offset);
-      memcpy(pBuf, &((u8 *)(pFile->pMapRegion))[offset], nCopy);
+      أرجع SQLITE_OK;
+    }وإلا{
+      صحيح nCopy = (صحيح)(pFile->mmap_ناپ - وتھ);
+      حافظہ_نقل(pBuf, &((u8 *)(pFile->pMapRegion))[وتھ], nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
-      offset += nCopy;
+      وتھ += nCopy;
     }
   }
-#endif
+#جے_انت
 
-#if defined(SQLITE_WIN32_NO_OVERLAPPED)
-  if( winSeekFile(pFile, offset) ){
+#إذا defined(SQLITE_WIN32_NO_OVERLAPPED)
+  إذا( winSeekFile(pFile, وتھ) ){
     OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_FULL\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return SQLITE_FULL;
+    أرجع SQLITE_بھریا;
   }
-  while( !osReadFile(pFile->h, pBuf, amt, &nRead, 0) ){
-#else
-  memset(&overlapped, 0, sizeof(OVERLAPPED));
-  overlapped.Offset = (LONG)(offset & 0xffffffff);
-  overlapped.OffsetHigh = (LONG)((offset>>32) & 0x7fffffff);
-  while( !osReadFile(pFile->h, pBuf, amt, &nRead, &overlapped) &&
-         osGetLastError()!=ERROR_HANDLE_EOF ){
-#endif
-    DWORD lastErrno;
-    if( winRetryIoerr(&nRetry, &lastErrno) ) continue;
-    pFile->lastErrno = lastErrno;
+  طالما( !osReadFile(pFile->h, pBuf, amt, &nRead, 0) ){
+#وإلا
+  memset(&overlapped, 0, حجم(OVERLAPPED));
+  overlapped.وتھ_2 = (LONG)(وتھ & 0xffffffff);
+  overlapped.وتھ_بلند_2 = (LONG)((وتھ>>32) & 0x7fffffff);
+  طالما( !osReadFile(pFile->h, pBuf, amt, &nRead, &overlapped) &&
+         os_Get_آخری_Error()!=ERROR_HANDLE_EOF ){
+#جے_انت
+    DWORD آخری_Errno;
+    إذا( winRetryIoerr(&nRetry, &آخری_Errno) ) استمر;
+    pFile->آخری_Errno = آخری_Errno;
     OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_READ\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return winLogError(SQLITE_IOERR_READ, pFile->lastErrno,
-                       "winRead", pFile->zPath);
+    أرجع winLogError(SQLITE_IOERR_READ, pFile->آخری_Errno,
+                       "winRead", pFile->z_رستہ);
   }
   winLogIoerr(nRetry, __LINE__);
-  if( nRead<(DWORD)amt ){
+  إذا( nRead<(DWORD)amt ){
     /* Unread parts of the buffer must be zero-filled */
-    memset(&((char*)pBuf)[nRead], 0, amt-nRead);
+    memset(&((حرف*)pBuf)[nRead], 0, amt-nRead);
     OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_SHORT_READ\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return SQLITE_IOERR_SHORT_READ;
+    أرجع SQLITE_IOERR_SHORT_READ;
   }
 
   OSTRACE(("READ pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile, pFile->h));
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Write data from a buffer into a file.  Return SQLITE_OK on success
 ** or some other error code on failure.
 */
-static int winWrite(
+ساكن صحيح winWrite(
   sqlite3_file *id,               /* File to write into */
-  const void *pBuf,               /* The bytes to be written */
-  int amt,                        /* Number of bytes to write */
-  sqlite3_int64 offset            /* Offset into the file to begin writing at */
+  ثابت فراغ *pBuf,               /* The bytes to be written */
+  صحيح amt,                        /* Number of bytes to write */
+  sqlite3_int64 وتھ            /* Offset into the file to begin writing at */
 ){
-  int rc = 0;                     /* True if error has occurred, else false */
+  صحيح rc = 0;                     /* True if error has occurred, else false */
   winFile *pFile = (winFile*)id;  /* File handle */
-  int nRetry = 0;                 /* Number of retries */
+  صحيح nRetry = 0;                 /* Number of retries */
 
-  assert( amt>0 );
-  assert( pFile );
-  SimulateIOError(return SQLITE_IOERR_WRITE);
-  SimulateDiskfullError(return SQLITE_FULL);
+  أكد( amt>0 );
+  أكد( pFile );
+  SimulateIOError(أرجع SQLITE_IOERR_WRITE);
+  SimulateDiskfullError(أرجع SQLITE_بھریا);
 
   OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, buffer=%p, amount=%d, "
            "offset=%lld, lock=%d\n", osGetCurrentProcessId(), pFile,
-           pFile->h, pBuf, amt, offset, pFile->locktype));
+           pFile->h, pBuf, amt, وتھ, pFile->locktype));
 
-#if defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_SIZE>0
+#إذا defined(SQLITE_MMAP_READWRITE) && SQLITE_MAX_MMAP_ناپ>0
   /* Deal with as much of this write request as possible by transferring
   ** data from the memory mapping using memcpy().  */
-  if( offset<pFile->mmapSize ){
-    if( offset+amt <= pFile->mmapSize ){
-      memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, amt);
+  إذا( وتھ<pFile->mmap_ناپ ){
+    إذا( وتھ+amt <= pFile->mmap_ناپ ){
+      حافظہ_نقل(&((u8 *)(pFile->pMapRegion))[وتھ], pBuf, amt);
       OSTRACE(("WRITE-MMAP pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
                osGetCurrentProcessId(), pFile, pFile->h));
-      return SQLITE_OK;
-    }else{
-      int nCopy = (int)(pFile->mmapSize - offset);
-      memcpy(&((u8 *)(pFile->pMapRegion))[offset], pBuf, nCopy);
+      أرجع SQLITE_OK;
+    }وإلا{
+      صحيح nCopy = (صحيح)(pFile->mmap_ناپ - وتھ);
+      حافظہ_نقل(&((u8 *)(pFile->pMapRegion))[وتھ], pBuf, nCopy);
       pBuf = &((u8 *)pBuf)[nCopy];
       amt -= nCopy;
-      offset += nCopy;
+      وتھ += nCopy;
     }
   }
-#endif
+#جے_انت
 
-#if defined(SQLITE_WIN32_NO_OVERLAPPED)
-  rc = winSeekFile(pFile, offset);
-  if( rc==0 ){
-#else
+#إذا defined(SQLITE_WIN32_NO_OVERLAPPED)
+  rc = winSeekFile(pFile, وتھ);
+  إذا( rc==0 ){
+#وإلا
   {
-#endif
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
+#جے_انت
+#إذا !defined(SQLITE_WIN32_NO_OVERLAPPED)
     OVERLAPPED overlapped;        /* The offset for WriteFile. */
-#endif
+#جے_انت
     u8 *aRem = (u8 *)pBuf;        /* Data yet to be written */
-    int nRem = amt;               /* Number of bytes yet to be written */
+    صحيح nRem = amt;               /* Number of bytes yet to be written */
     DWORD nWrite;                 /* Bytes written by each WriteFile() call */
-    DWORD lastErrno = NO_ERROR;   /* Value returned by GetLastError() */
+    DWORD آخری_Errno = NO_ERROR;   /* Value returned by GetLastError() */
 
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
-    memset(&overlapped, 0, sizeof(OVERLAPPED));
-    overlapped.Offset = (LONG)(offset & 0xffffffff);
-    overlapped.OffsetHigh = (LONG)((offset>>32) & 0x7fffffff);
-#endif
+#إذا !defined(SQLITE_WIN32_NO_OVERLAPPED)
+    memset(&overlapped, 0, حجم(OVERLAPPED));
+    overlapped.وتھ_2 = (LONG)(وتھ & 0xffffffff);
+    overlapped.وتھ_بلند_2 = (LONG)((وتھ>>32) & 0x7fffffff);
+#جے_انت
 
-    while( nRem>0 ){
-#if defined(SQLITE_WIN32_NO_OVERLAPPED)
-      if( !osWriteFile(pFile->h, aRem, nRem, &nWrite, 0) ){
-#else
-      if( !osWriteFile(pFile->h, aRem, nRem, &nWrite, &overlapped) ){
-#endif
-        if( winRetryIoerr(&nRetry, &lastErrno) ) continue;
-        break;
+    طالما( nRem>0 ){
+#إذا defined(SQLITE_WIN32_NO_OVERLAPPED)
+      إذا( !osWriteFile(pFile->h, aRem, nRem, &nWrite, 0) ){
+#وإلا
+      إذا( !osWriteFile(pFile->h, aRem, nRem, &nWrite, &overlapped) ){
+#جے_انت
+        إذا( winRetryIoerr(&nRetry, &آخری_Errno) ) استمر;
+        اكسر;
       }
-      assert( nWrite==0 || nWrite<=(DWORD)nRem );
-      if( nWrite==0 || nWrite>(DWORD)nRem ){
-        lastErrno = osGetLastError();
-        break;
+      أكد( nWrite==0 || nWrite<=(DWORD)nRem );
+      إذا( nWrite==0 || nWrite>(DWORD)nRem ){
+        آخری_Errno = os_Get_آخری_Error();
+        اكسر;
       }
-#if !defined(SQLITE_WIN32_NO_OVERLAPPED)
-      offset += nWrite;
-      overlapped.Offset = (LONG)(offset & 0xffffffff);
-      overlapped.OffsetHigh = (LONG)((offset>>32) & 0x7fffffff);
-#endif
+#إذا !defined(SQLITE_WIN32_NO_OVERLAPPED)
+      وتھ += nWrite;
+      overlapped.وتھ_2 = (LONG)(وتھ & 0xffffffff);
+      overlapped.وتھ_بلند_2 = (LONG)((وتھ>>32) & 0x7fffffff);
+#جے_انت
       aRem += nWrite;
       nRem -= nWrite;
     }
-    if( nRem>0 ){
-      pFile->lastErrno = lastErrno;
+    إذا( nRem>0 ){
+      pFile->آخری_Errno = آخری_Errno;
       rc = 1;
     }
   }
 
-  if( rc ){
-    if(   ( pFile->lastErrno==ERROR_HANDLE_DISK_FULL )
-       || ( pFile->lastErrno==ERROR_DISK_FULL )){
+  إذا( rc ){
+    إذا(   ( pFile->آخری_Errno==ERROR_HANDLE_DISK_بھریا )
+       || ( pFile->آخری_Errno==ERROR_DISK_بھریا )){
       OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, rc=SQLITE_FULL\n",
                osGetCurrentProcessId(), pFile, pFile->h));
-      return winLogError(SQLITE_FULL, pFile->lastErrno,
-                         "winWrite1", pFile->zPath);
+      أرجع winLogError(SQLITE_بھریا, pFile->آخری_Errno,
+                         "winWrite1", pFile->z_رستہ);
     }
     OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_WRITE\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return winLogError(SQLITE_IOERR_WRITE, pFile->lastErrno,
-                       "winWrite2", pFile->zPath);
-  }else{
+    أرجع winLogError(SQLITE_IOERR_WRITE, pFile->آخری_Errno,
+                       "winWrite2", pFile->z_رستہ);
+  }وإلا{
     winLogIoerr(nRetry, __LINE__);
   }
   OSTRACE(("WRITE pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile, pFile->h));
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
-#ifndef SQLITE_OMIT_WAL
+#جے_بنا_تعریف SQLITE_OMIT_WAL
 /*
 ** Truncate the file opened by handle h to nByte bytes in size.
 */
-static int winHandleTruncate(HANDLE h, sqlite3_int64 nByte){ 
-  int rc = SQLITE_OK;             /* Return code */
+ساكن صحيح winHandleTruncate(HANDLE h, sqlite3_int64 nByte){ 
+  صحيح rc = SQLITE_OK;             /* Return code */
   rc = winHandleSeek(h, nByte);
-  if( rc==SQLITE_OK ){
-    if( 0==osSetEndOfFile(h) ){
+  إذا( rc==SQLITE_OK ){
+    إذا( 0==os_سیٹ_سرا_دا_File(h) ){
       rc = SQLITE_IOERR_TRUNCATE;
     }
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Determine the size in bytes of the file opened by the handle passed as 
 ** the first argument.
 */
-static int winHandleSize(HANDLE h, sqlite3_int64 *pnByte){ 
-  int rc = SQLITE_OK;
+ساكن صحيح win_Handle_ناپ(HANDLE h, sqlite3_int64 *pnByte){ 
+  صحيح rc = SQLITE_OK;
   LARGE_INTEGER x;
-  assert( pnByte );
-  if( osGetFileSizeEx(h, &x)==0 ){
+  أكد( pnByte );
+  إذا( os_Get_File_ناپ_Ex(h, &x)==0 ){
     rc = SQLITE_IOERR_FSTAT;
     *pnByte = 0;
-  }else{
+  }وإلا{
     *pnByte = x.QuadPart;
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Close the handle passed as the only argument.
 */
-static void winHandleClose(HANDLE h){
-  if( h!=INVALID_HANDLE_VALUE ){
+ساكن فراغ winHandleClose(HANDLE h){
+  إذا( h!=INVALID_HANDLE_قدر ){
     osCloseHandle(h);
   }
 }
-#endif /* #ifndef SQLITE_OMIT_WAL */
+#جے_انت /* #ifndef SQLITE_OMIT_WAL */
 
 /*
 ** Truncate an open file to a specified size
 */
-static int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
+ساكن صحيح winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
   winFile *pFile = (winFile*)id;  /* File handle object */
-  int rc = SQLITE_OK;             /* Return code for this function */
-  DWORD lastErrno;
-#if SQLITE_MAX_MMAP_SIZE>0
-  sqlite3_int64 oldMmapSize;
-  if( pFile->nFetchOut>0 ){
+  صحيح rc = SQLITE_OK;             /* Return code for this function */
+  DWORD آخری_Errno;
+#إذا SQLITE_MAX_MMAP_ناپ>0
+  sqlite3_int64 old_Mmap_ناپ;
+  إذا( pFile->n_Fetch_باہرلا>0 ){
     /* File truncation is a no-op if there are outstanding memory mapped
     ** pages.  This is because truncating the file means temporarily unmapping
     ** the file, and that might delete memory out from under existing cursors.
@@ -2072,12 +2072,12 @@ static int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
     ** now to simply make transactions a no-op if there are pending reads.  We
     ** can maybe revisit this decision in the future.
     */
-    return SQLITE_OK;
+    أرجع SQLITE_OK;
   }
-#endif
+#جے_انت
 
-  assert( pFile );
-  SimulateIOError(return SQLITE_IOERR_TRUNCATE);
+  أكد( pFile );
+  SimulateIOError(أرجع SQLITE_IOERR_TRUNCATE);
   OSTRACE(("TRUNCATE pid=%lu, pFile=%p, file=%p, size=%lld, lock=%d\n",
            osGetCurrentProcessId(), pFile, pFile->h, nByte, pFile->locktype));
 
@@ -2086,176 +2086,176 @@ static int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
   ** actual file size after the operation may be larger than the requested
   ** size).
   */
-  if( pFile->szChunk>0 ){
+  إذا( pFile->szChunk>0 ){
     nByte = ((nByte + pFile->szChunk - 1)/pFile->szChunk) * pFile->szChunk;
   }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFile->pMapRegion ){
-    oldMmapSize = pFile->mmapSize;
-  }else{
-    oldMmapSize = 0;
+#إذا SQLITE_MAX_MMAP_ناپ>0
+  إذا( pFile->pMapRegion ){
+    old_Mmap_ناپ = pFile->mmap_ناپ;
+  }وإلا{
+    old_Mmap_ناپ = 0;
   }
   winUnmapfile(pFile);
-#endif
+#جے_انت
 
   /* SetEndOfFile() returns non-zero when successful, or zero when it fails. */
-  if( winSeekFile(pFile, nByte) ){
-    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->lastErrno,
-                     "winTruncate1", pFile->zPath);
-  }else if( 0==osSetEndOfFile(pFile->h) &&
-            ((lastErrno = osGetLastError())!=ERROR_USER_MAPPED_FILE) ){
-    pFile->lastErrno = lastErrno;
-    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->lastErrno,
-                     "winTruncate2", pFile->zPath);
+  إذا( winSeekFile(pFile, nByte) ){
+    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->آخری_Errno,
+                     "winTruncate1", pFile->z_رستہ);
+  }وإلا إذا( 0==os_سیٹ_سرا_دا_File(pFile->h) &&
+            ((آخری_Errno = os_Get_آخری_Error())!=ERROR_USER_MAPPED_FILE) ){
+    pFile->آخری_Errno = آخری_Errno;
+    rc = winLogError(SQLITE_IOERR_TRUNCATE, pFile->آخری_Errno,
+                     "winTruncate2", pFile->z_رستہ);
   }
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( rc==SQLITE_OK && oldMmapSize>0 ){
-    if( oldMmapSize>nByte ){
+#إذا SQLITE_MAX_MMAP_ناپ>0
+  إذا( rc==SQLITE_OK && old_Mmap_ناپ>0 ){
+    إذا( old_Mmap_ناپ>nByte ){
       winMapfile(pFile, -1);
-    }else{
-      winMapfile(pFile, oldMmapSize);
+    }وإلا{
+      winMapfile(pFile, old_Mmap_ناپ);
     }
   }
-#endif
+#جے_انت
 
   OSTRACE(("TRUNCATE pid=%lu, pFile=%p, file=%p, rc=%s\n",
            osGetCurrentProcessId(), pFile, pFile->h, sqlite3ErrName(rc)));
-  return rc;
+  أرجع rc;
 }
 
-#ifdef SQLITE_TEST
+#جے_تعریف_شدہ SQLITE_TEST
 /*
 ** Count the number of fullsyncs and normal syncs.  This is used to test
 ** that syncs and fullsyncs are occurring at the right times.
 */
-int sqlite3_sync_count = 0;
-int sqlite3_fullsync_count = 0;
-#endif
+صحيح sqlite3_sync_گنتی = 0;
+صحيح sqlite3_fullsync_گنتی = 0;
+#جے_انت
 
 /*
 ** Make sure all writes to a particular file are committed to disk.
 */
-static int winSync(sqlite3_file *id, int flags){
-#ifndef SQLITE_NO_SYNC
+ساكن صحيح winSync(sqlite3_file *id, صحيح flags){
+#جے_بنا_تعریف SQLITE_NO_SYNC
   /*
   ** Used only when SQLITE_NO_SYNC is not defined.
    */
   BOOL rc;
-#endif
-#if !defined(NDEBUG) || !defined(SQLITE_NO_SYNC) || \
+#جے_انت
+#إذا !defined(NDEBUG) || !defined(SQLITE_NO_SYNC) || \
     defined(SQLITE_HAVE_OS_TRACE)
   /*
   ** Used when SQLITE_NO_SYNC is not defined and by the assert() and/or
   ** OSTRACE() macros.
    */
   winFile *pFile = (winFile*)id;
-#else
-  UNUSED_PARAMETER(id);
-#endif
+#وإلا
+  بن_ورتیا_PARAMETER(id);
+#جے_انت
 
-  assert( pFile );
+  أكد( pFile );
   /* Check that one of SQLITE_SYNC_NORMAL or FULL was passed */
-  assert((flags&0x0F)==SQLITE_SYNC_NORMAL
-      || (flags&0x0F)==SQLITE_SYNC_FULL
+  أكد((flags&0x0F)==SQLITE_SYNC_عام
+      || (flags&0x0F)==SQLITE_SYNC_بھریا
   );
 
   /* Unix cannot, but some systems may return SQLITE_FULL from here. This
   ** line is to test that doing so does not cause any problems.
   */
-  SimulateDiskfullError( return SQLITE_FULL );
+  SimulateDiskfullError( أرجع SQLITE_بھریا );
 
   OSTRACE(("SYNC pid=%lu, pFile=%p, file=%p, flags=%x, lock=%d\n",
            osGetCurrentProcessId(), pFile, pFile->h, flags,
            pFile->locktype));
 
-#ifndef SQLITE_TEST
-  UNUSED_PARAMETER(flags);
-#else
-  if( (flags&0x0F)==SQLITE_SYNC_FULL ){
-    sqlite3_fullsync_count++;
+#جے_بنا_تعریف SQLITE_TEST
+  بن_ورتیا_PARAMETER(flags);
+#وإلا
+  إذا( (flags&0x0F)==SQLITE_SYNC_بھریا ){
+    sqlite3_fullsync_گنتی++;
   }
-  sqlite3_sync_count++;
-#endif
+  sqlite3_sync_گنتی++;
+#جے_انت
 
   /* If we compiled with the SQLITE_NO_SYNC flag, then syncing is a
   ** no-op
   */
-#ifdef SQLITE_NO_SYNC
+#جے_تعریف_شدہ SQLITE_NO_SYNC
   OSTRACE(("SYNC-NOP pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile, pFile->h));
-  return SQLITE_OK;
-#else
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFile->pMapRegion ){
-    if( osFlushViewOfFile(pFile->pMapRegion, 0) ){
+  أرجع SQLITE_OK;
+#وإلا
+#إذا SQLITE_MAX_MMAP_ناپ>0
+  إذا( pFile->pMapRegion ){
+    إذا( os_Flush_View_دا_File(pFile->pMapRegion, 0) ){
       OSTRACE(("SYNC-MMAP pid=%lu, pFile=%p, pMapRegion=%p, "
                "rc=SQLITE_OK\n", osGetCurrentProcessId(),
                pFile, pFile->pMapRegion));
-    }else{
-      pFile->lastErrno = osGetLastError();
+    }وإلا{
+      pFile->آخری_Errno = os_Get_آخری_Error();
       OSTRACE(("SYNC-MMAP pid=%lu, pFile=%p, pMapRegion=%p, "
                "rc=SQLITE_IOERR_MMAP\n", osGetCurrentProcessId(),
                pFile, pFile->pMapRegion));
-      return winLogError(SQLITE_IOERR_MMAP, pFile->lastErrno,
-                         "winSync1", pFile->zPath);
+      أرجع winLogError(SQLITE_IOERR_MMAP, pFile->آخری_Errno,
+                         "winSync1", pFile->z_رستہ);
     }
   }
-#endif
+#جے_انت
   rc = osFlushFileBuffers(pFile->h);
   SimulateIOError( rc=FALSE );
-  if( rc ){
+  إذا( rc ){
     OSTRACE(("SYNC pid=%lu, pFile=%p, file=%p, rc=SQLITE_OK\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return SQLITE_OK;
-  }else{
-    pFile->lastErrno = osGetLastError();
+    أرجع SQLITE_OK;
+  }وإلا{
+    pFile->آخری_Errno = os_Get_آخری_Error();
     OSTRACE(("SYNC pid=%lu, pFile=%p, file=%p, rc=SQLITE_IOERR_FSYNC\n",
              osGetCurrentProcessId(), pFile, pFile->h));
-    return winLogError(SQLITE_IOERR_FSYNC, pFile->lastErrno,
-                       "winSync2", pFile->zPath);
+    أرجع winLogError(SQLITE_IOERR_FSYNC, pFile->آخری_Errno,
+                       "winSync2", pFile->z_رستہ);
   }
-#endif
+#جے_انت
 }
 
 /*
 ** Determine the current size of a file in bytes
 */
-static int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
+ساكن صحيح win_File_ناپ(sqlite3_file *id, sqlite3_int64 *p_ناپ){
   winFile *pFile = (winFile*)id;
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
 
-  assert( id!=0 );
-  assert( pSize!=0 );
-  SimulateIOError(return SQLITE_IOERR_FSTAT);
-  OSTRACE(("SIZE file=%p, pSize=%p\n", pFile->h, pSize));
+  أكد( id!=0 );
+  أكد( p_ناپ!=0 );
+  SimulateIOError(أرجع SQLITE_IOERR_FSTAT);
+  OSTRACE(("SIZE file=%p, pSize=%p\n", pFile->h, p_ناپ));
   {
     LARGE_INTEGER x;
-    if( osGetFileSizeEx(pFile->h, &x)==0 ){
-      *pSize = 0;
-      pFile->lastErrno = osGetLastError();
-      rc = winLogError(SQLITE_IOERR_FSTAT, pFile->lastErrno,
-                       "winFileSize", pFile->zPath);
-    }else{
-      *pSize = x.QuadPart;
+    إذا( os_Get_File_ناپ_Ex(pFile->h, &x)==0 ){
+      *p_ناپ = 0;
+      pFile->آخری_Errno = os_Get_آخری_Error();
+      rc = winLogError(SQLITE_IOERR_FSTAT, pFile->آخری_Errno,
+                       "winFileSize", pFile->z_رستہ);
+    }وإلا{
+      *p_ناپ = x.QuadPart;
     }
   }
   OSTRACE(("SIZE file=%p, pSize=%p, *pSize=%lld, rc=%s\n",
-           pFile->h, pSize, *pSize, sqlite3ErrName(rc)));
-  return rc;
+           pFile->h, p_ناپ, *p_ناپ, sqlite3ErrName(rc)));
+  أرجع rc;
 }
 
 /*
 ** LOCKFILE_FAIL_IMMEDIATELY is undefined on some Windows systems.
 */
-#ifndef LOCKFILE_FAIL_IMMEDIATELY
+#جے_بنا_تعریف LOCKFILE_FAIL_IMMEDIATELY
 # define LOCKFILE_FAIL_IMMEDIATELY 1
-#endif
+#جے_انت
 
-#ifndef LOCKFILE_EXCLUSIVE_LOCK
-# define LOCKFILE_EXCLUSIVE_LOCK 2
-#endif
+#جے_بنا_تعریف LOCKFILE_EXCLUSIVE_جندرا
+# define LOCKFILE_EXCLUSIVE_جندرا 2
+#جے_انت
 
 /*
 ** Historically, SQLite has used both the LockFile and LockFileEx functions.
@@ -2264,53 +2264,53 @@ static int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
 ** obtain an exclusive lock.  These flags are used with the LockFileEx function
 ** and reflect those expectations; therefore, they should not be changed.
 */
-#ifndef SQLITE_LOCKFILE_FLAGS
+#جے_بنا_تعریف SQLITE_LOCKFILE_FLAGS
 # define SQLITE_LOCKFILE_FLAGS   (LOCKFILE_FAIL_IMMEDIATELY | \
-                                  LOCKFILE_EXCLUSIVE_LOCK)
-#endif
+                                  LOCKFILE_EXCLUSIVE_جندرا)
+#جے_انت
 
 /*
 ** Currently, SQLite never calls the LockFileEx function without wanting the
 ** call to fail immediately if the lock cannot be obtained.
 */
-#ifndef SQLITE_LOCKFILEEX_FLAGS
+#جے_بنا_تعریف SQLITE_LOCKFILEEX_FLAGS
 # define SQLITE_LOCKFILEEX_FLAGS (LOCKFILE_FAIL_IMMEDIATELY)
-#endif
+#جے_انت
 
 /*
 ** Acquire a reader lock.
 ** Different API routines are called depending on whether or not this
 ** is Win9x or WinNT.
 */
-static int winGetReadLock(winFile *pFile, int bBlock){
-  int res;
-  DWORD mask = ~(bBlock ? LOCKFILE_FAIL_IMMEDIATELY : 0);
+ساكن صحيح win_Get_Read_جندرا(winFile *pFile, صحيح b_بلاک){
+  صحيح res;
+  DWORD نقاب = ~(b_بلاک ? LOCKFILE_FAIL_IMMEDIATELY : 0);
   OSTRACE(("READ-LOCK file=%p, lock=%d\n", pFile->h, pFile->locktype));
-  res = winLockFile(&pFile->h, SQLITE_LOCKFILEEX_FLAGS&mask, SHARED_FIRST, 0,
-                    SHARED_SIZE, 0);
-  if( res == 0 ){
-    pFile->lastErrno = osGetLastError();
+  res = win_جندرا_File(&pFile->h, SQLITE_LOCKFILEEX_FLAGS&نقاب, SHARED_پہلا, 0,
+                    SHARED_ناپ, 0);
+  إذا( res == 0 ){
+    pFile->آخری_Errno = os_Get_آخری_Error();
     /* No need to log a failure to lock */
   }
   OSTRACE(("READ-LOCK file=%p, result=%d\n", pFile->h, res));
-  return res;
+  أرجع res;
 }
 
 /*
 ** Undo a readlock
 */
-static int winUnlockReadLock(winFile *pFile){
-  int res;
-  DWORD lastErrno;
+ساكن صحيح win_Unlock_Read_جندرا(winFile *pFile){
+  صحيح res;
+  DWORD آخری_Errno;
   OSTRACE(("READ-UNLOCK file=%p, lock=%d\n", pFile->h, pFile->locktype));
-  res = winUnlockFile(&pFile->h, SHARED_FIRST, 0, SHARED_SIZE, 0);
-  if( res==0 && ((lastErrno = osGetLastError())!=ERROR_NOT_LOCKED) ){
-    pFile->lastErrno = lastErrno;
-    winLogError(SQLITE_IOERR_UNLOCK, pFile->lastErrno,
-                "winUnlockReadLock", pFile->zPath);
+  res = winUnlockFile(&pFile->h, SHARED_پہلا, 0, SHARED_ناپ, 0);
+  إذا( res==0 && ((آخری_Errno = os_Get_آخری_Error())!=ERROR_NOT_LOCKED) ){
+    pFile->آخری_Errno = آخری_Errno;
+    winLogError(SQLITE_IOERR_UNLOCK, pFile->آخری_Errno,
+                "winUnlockReadLock", pFile->z_رستہ);
   }
   OSTRACE(("READ-UNLOCK file=%p, result=%d\n", pFile->h, res));
-  return res;
+  أرجع res;
 }
 
 /*
@@ -2339,150 +2339,150 @@ static int winUnlockReadLock(winFile *pFile){
 ** It is not possible to lower the locking level one step at a time.  You
 ** must go straight to locking level 0.
 */
-static int winLock(sqlite3_file *id, int locktype){
-  int rc = SQLITE_OK;    /* Return code from subroutines */
-  int res = 1;           /* Result of a Windows lock call */
-  int newLocktype;       /* Set pFile->locktype to this value before exiting */
-  int gotPendingLock = 0;/* True if we acquired a PENDING lock this time */
+ساكن صحيح win_جندرا(sqlite3_file *id, صحيح locktype){
+  صحيح rc = SQLITE_OK;    /* Return code from subroutines */
+  صحيح res = 1;           /* Result of a Windows lock call */
+  صحيح newLocktype;       /* Set pFile->locktype to this value before exiting */
+  صحيح got_Pending_جندرا = 0;/* True if we acquired a PENDING lock this time */
   winFile *pFile = (winFile*)id;
-  DWORD lastErrno = NO_ERROR;
+  DWORD آخری_Errno = NO_ERROR;
 
-  assert( id!=0 );
+  أكد( id!=0 );
   OSTRACE(("LOCK file=%p, oldLock=%d(%d), newLock=%d\n",
-           pFile->h, pFile->locktype, pFile->sharedLockByte, locktype));
+           pFile->h, pFile->locktype, pFile->shared_جندرا_Byte, locktype));
 
   /* If there is already a lock of this type or more restrictive on the
   ** OsFile, do nothing. Don't use the end_lock: exit path, as
   ** sqlite3OsEnterMutex() hasn't been called yet.
   */
-  if( pFile->locktype>=locktype ){
+  إذا( pFile->locktype>=locktype ){
     OSTRACE(("LOCK-HELD file=%p, rc=SQLITE_OK\n", pFile->h));
-    return SQLITE_OK;
+    أرجع SQLITE_OK;
   }
 
   /* Do not allow any kind of write-lock on a read-only database
   */
-  if( (pFile->ctrlFlags & WINFILE_RDONLY)!=0 && locktype>=RESERVED_LOCK ){
-    return SQLITE_IOERR_LOCK;
+  إذا( (pFile->ctrlFlags & WINFILE_RDONLY)!=0 && locktype>=RESERVED_جندرا ){
+    أرجع SQLITE_IOERR_جندرا;
   }
 
   /* Make sure the locking sequence is correct
   */
-  assert( pFile->locktype!=NO_LOCK || locktype==SHARED_LOCK );
-  assert( locktype!=PENDING_LOCK );
-  assert( locktype!=RESERVED_LOCK || pFile->locktype==SHARED_LOCK );
+  أكد( pFile->locktype!=NO_جندرا || locktype==SHARED_جندرا );
+  أكد( locktype!=PENDING_جندرا );
+  أكد( locktype!=RESERVED_جندرا || pFile->locktype==SHARED_جندرا );
 
   /* Lock the PENDING_LOCK byte if we need to acquire an EXCLUSIVE lock or
   ** a SHARED lock.  If we are acquiring a SHARED lock, the acquisition of
   ** the PENDING_LOCK byte is temporary.
   */
   newLocktype = pFile->locktype;
-  if( locktype==SHARED_LOCK
-   || (locktype==EXCLUSIVE_LOCK && pFile->locktype==RESERVED_LOCK)
+  إذا( locktype==SHARED_جندرا
+   || (locktype==EXCLUSIVE_جندرا && pFile->locktype==RESERVED_جندرا)
   ){
-    int cnt = 3;
+    صحيح cnt = 3;
 
     /* Flags for the LockFileEx() call. This should be an exclusive lock if
     ** this call is to obtain EXCLUSIVE, or a shared lock if this call is to
     ** obtain SHARED.  */
-    int flags = LOCKFILE_FAIL_IMMEDIATELY;
-    if( locktype==EXCLUSIVE_LOCK ){
-      flags |= LOCKFILE_EXCLUSIVE_LOCK;
+    صحيح flags = LOCKFILE_FAIL_IMMEDIATELY;
+    إذا( locktype==EXCLUSIVE_جندرا ){
+      flags |= LOCKFILE_EXCLUSIVE_جندرا;
     }
-    while( cnt>0 ){
+    طالما( cnt>0 ){
       /* Try 3 times to get the pending lock.  This is needed to work
       ** around problems caused by indexing and/or anti-virus software on
       ** Windows systems.
       **
       ** If you are using this code as a model for alternative VFSes, do not
       ** copy this retry logic.  It is a hack intended for Windows only.  */
-      res = winLockFile(&pFile->h, flags, PENDING_BYTE, 0, 1, 0);
-      if( res ) break;
+      res = win_جندرا_File(&pFile->h, flags, PENDING_BYTE, 0, 1, 0);
+      إذا( res ) اكسر;
 
-      lastErrno = osGetLastError();
+      آخری_Errno = os_Get_آخری_Error();
       OSTRACE(("LOCK-PENDING-FAIL file=%p, count=%d, result=%d\n", 
             pFile->h, cnt, res
       ));
 
-      if( lastErrno==ERROR_INVALID_HANDLE ){
-        pFile->lastErrno = lastErrno;
-        rc = SQLITE_IOERR_LOCK;
+      إذا( آخری_Errno==ERROR_INVALID_HANDLE ){
+        pFile->آخری_Errno = آخری_Errno;
+        rc = SQLITE_IOERR_جندرا;
         OSTRACE(("LOCK-FAIL file=%p, count=%d, rc=%s\n", 
               pFile->h, cnt, sqlite3ErrName(rc)
         ));
-        return rc;
+        أرجع rc;
       }
 
       cnt--;
-      if( cnt>0 ) osSleep(1);
+      إذا( cnt>0 ) osSleep(1);
     }
-    gotPendingLock = res;
+    got_Pending_جندرا = res;
   }
 
   /* Acquire a shared lock
   */
-  if( locktype==SHARED_LOCK && res ){
-    assert( pFile->locktype==NO_LOCK );
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    res = winGetReadLock(pFile, pFile->bBlockOnConnect);
-#else
-    res = winGetReadLock(pFile, 0);
-#endif
-    if( res ){
-      newLocktype = SHARED_LOCK;
-    }else{
-      lastErrno = osGetLastError();
+  إذا( locktype==SHARED_جندرا && res ){
+    أكد( pFile->locktype==NO_جندرا );
+#جے_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+    res = win_Get_Read_جندرا(pFile, pFile->b_بلاک_On_Connect);
+#وإلا
+    res = win_Get_Read_جندرا(pFile, 0);
+#جے_انت
+    إذا( res ){
+      newLocktype = SHARED_جندرا;
+    }وإلا{
+      آخری_Errno = os_Get_آخری_Error();
     }
   }
 
   /* Acquire a RESERVED lock
   */
-  if( locktype==RESERVED_LOCK && res ){
-    assert( pFile->locktype==SHARED_LOCK );
-    res = winLockFile(&pFile->h, SQLITE_LOCKFILE_FLAGS, RESERVED_BYTE, 0, 1, 0);
-    if( res ){
-      newLocktype = RESERVED_LOCK;
-    }else{
-      lastErrno = osGetLastError();
+  إذا( locktype==RESERVED_جندرا && res ){
+    أكد( pFile->locktype==SHARED_جندرا );
+    res = win_جندرا_File(&pFile->h, SQLITE_LOCKFILE_FLAGS, RESERVED_BYTE, 0, 1, 0);
+    إذا( res ){
+      newLocktype = RESERVED_جندرا;
+    }وإلا{
+      آخری_Errno = os_Get_آخری_Error();
     }
   }
 
   /* Acquire a PENDING lock
   */
-  if( locktype==EXCLUSIVE_LOCK && res ){
-    newLocktype = PENDING_LOCK;
-    gotPendingLock = 0;
+  إذا( locktype==EXCLUSIVE_جندرا && res ){
+    newLocktype = PENDING_جندرا;
+    got_Pending_جندرا = 0;
   }
 
   /* Acquire an EXCLUSIVE lock
   */
-  if( locktype==EXCLUSIVE_LOCK && res ){
-    assert( pFile->locktype>=SHARED_LOCK );
-    (void)winUnlockReadLock(pFile);
-    res = winLockFile(&pFile->h, SQLITE_LOCKFILE_FLAGS, SHARED_FIRST, 0,
-                      SHARED_SIZE, 0);
-    if( res ){
-      newLocktype = EXCLUSIVE_LOCK;
-    }else{
-      lastErrno = osGetLastError();
-      winGetReadLock(pFile, 0);
+  إذا( locktype==EXCLUSIVE_جندرا && res ){
+    أكد( pFile->locktype>=SHARED_جندرا );
+    (فراغ)win_Unlock_Read_جندرا(pFile);
+    res = win_جندرا_File(&pFile->h, SQLITE_LOCKFILE_FLAGS, SHARED_پہلا, 0,
+                      SHARED_ناپ, 0);
+    إذا( res ){
+      newLocktype = EXCLUSIVE_جندرا;
+    }وإلا{
+      آخری_Errno = os_Get_آخری_Error();
+      win_Get_Read_جندرا(pFile, 0);
     }
   }
 
   /* If we are holding a PENDING lock that ought to be released, then
   ** release it now.
   */
-  if( gotPendingLock && locktype==SHARED_LOCK ){
+  إذا( got_Pending_جندرا && locktype==SHARED_جندرا ){
     winUnlockFile(&pFile->h, PENDING_BYTE, 0, 1, 0);
   }
 
   /* Update the state of the lock has held in the file descriptor then
   ** return the appropriate result code.
   */
-  if( res ){
+  إذا( res ){
     rc = SQLITE_OK;
-  }else{
-    pFile->lastErrno = lastErrno;
+  }وإلا{
+    pFile->آخری_Errno = آخری_Errno;
     rc = SQLITE_BUSY;
     OSTRACE(("LOCK-FAIL file=%p, wanted=%d, got=%d\n",
              pFile->h, locktype, newLocktype));
@@ -2490,7 +2490,7 @@ static int winLock(sqlite3_file *id, int locktype){
   pFile->locktype = (u8)newLocktype;
   OSTRACE(("LOCK file=%p, lock=%d, rc=%s\n",
            pFile->h, pFile->locktype, sqlite3ErrName(rc)));
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -2498,29 +2498,29 @@ static int winLock(sqlite3_file *id, int locktype){
 ** file by this or any other process. If such a lock is held, return
 ** non-zero, otherwise zero.
 */
-static int winCheckReservedLock(sqlite3_file *id, int *pResOut){
-  int res;
+ساكن صحيح win_Check_Reserved_جندرا(sqlite3_file *id, صحيح *p_Res_باہرلا){
+  صحيح res;
   winFile *pFile = (winFile*)id;
 
-  SimulateIOError( return SQLITE_IOERR_CHECKRESERVEDLOCK; );
-  OSTRACE(("TEST-WR-LOCK file=%p, pResOut=%p\n", pFile->h, pResOut));
+  SimulateIOError( أرجع SQLITE_IOERR_CHECKRESERVEDLOCK; );
+  OSTRACE(("TEST-WR-LOCK file=%p, pResOut=%p\n", pFile->h, p_Res_باہرلا));
 
-  assert( id!=0 );
-  if( pFile->locktype>=RESERVED_LOCK ){
+  أكد( id!=0 );
+  إذا( pFile->locktype>=RESERVED_جندرا ){
     res = 1;
     OSTRACE(("TEST-WR-LOCK file=%p, result=%d (local)\n", pFile->h, res));
-  }else{
-    res = winLockFile(&pFile->h, SQLITE_LOCKFILEEX_FLAGS,RESERVED_BYTE,0,1,0);
-    if( res ){
+  }وإلا{
+    res = win_جندرا_File(&pFile->h, SQLITE_LOCKFILEEX_FLAGS,RESERVED_BYTE,0,1,0);
+    إذا( res ){
       winUnlockFile(&pFile->h, RESERVED_BYTE, 0, 1, 0);
     }
     res = !res;
     OSTRACE(("TEST-WR-LOCK file=%p, result=%d (remote)\n", pFile->h, res));
   }
-  *pResOut = res;
+  *p_Res_باہرلا = res;
   OSTRACE(("TEST-WR-LOCK file=%p, pResOut=%p, *pResOut=%d, rc=SQLITE_OK\n",
-           pFile->h, pResOut, *pResOut));
-  return SQLITE_OK;
+           pFile->h, p_Res_باہرلا, *p_Res_باہرلا));
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -2534,37 +2534,37 @@ static int winCheckReservedLock(sqlite3_file *id, int *pResOut){
 ** is NO_LOCK.  If the second argument is SHARED_LOCK then this routine
 ** might return SQLITE_IOERR;
 */
-static int winUnlock(sqlite3_file *id, int locktype){
-  int type;
+ساكن صحيح winUnlock(sqlite3_file *id, صحيح locktype){
+  صحيح type;
   winFile *pFile = (winFile*)id;
-  int rc = SQLITE_OK;
-  assert( pFile!=0 );
-  assert( locktype<=SHARED_LOCK );
+  صحيح rc = SQLITE_OK;
+  أكد( pFile!=0 );
+  أكد( locktype<=SHARED_جندرا );
   OSTRACE(("UNLOCK file=%p, oldLock=%d(%d), newLock=%d\n",
-           pFile->h, pFile->locktype, pFile->sharedLockByte, locktype));
+           pFile->h, pFile->locktype, pFile->shared_جندرا_Byte, locktype));
   type = pFile->locktype;
-  if( type>=EXCLUSIVE_LOCK ){
-    winUnlockFile(&pFile->h, SHARED_FIRST, 0, SHARED_SIZE, 0);
-    if( locktype==SHARED_LOCK && !winGetReadLock(pFile, 0) ){
+  إذا( type>=EXCLUSIVE_جندرا ){
+    winUnlockFile(&pFile->h, SHARED_پہلا, 0, SHARED_ناپ, 0);
+    إذا( locktype==SHARED_جندرا && !win_Get_Read_جندرا(pFile, 0) ){
       /* This should never happen.  We should always be able to
       ** reacquire the read lock */
-      rc = winLogError(SQLITE_IOERR_UNLOCK, osGetLastError(),
-                       "winUnlock", pFile->zPath);
+      rc = winLogError(SQLITE_IOERR_UNLOCK, os_Get_آخری_Error(),
+                       "winUnlock", pFile->z_رستہ);
     }
   }
-  if( type>=RESERVED_LOCK ){
+  إذا( type>=RESERVED_جندرا ){
     winUnlockFile(&pFile->h, RESERVED_BYTE, 0, 1, 0);
   }
-  if( locktype==NO_LOCK && type>=SHARED_LOCK ){
-    winUnlockReadLock(pFile);
+  إذا( locktype==NO_جندرا && type>=SHARED_جندرا ){
+    win_Unlock_Read_جندرا(pFile);
   }
-  if( type>=PENDING_LOCK ){
+  إذا( type>=PENDING_جندرا ){
     winUnlockFile(&pFile->h, PENDING_BYTE, 0, 1, 0);
   }
   pFile->locktype = (u8)locktype;
   OSTRACE(("UNLOCK file=%p, lock=%d, rc=%s\n",
            pFile->h, pFile->locktype, sqlite3ErrName(rc)));
-  return rc;
+  أرجع rc;
 }
 
 /******************************************************************************
@@ -2584,22 +2584,22 @@ static int winUnlock(sqlite3_file *id, int locktype){
 ** time and one or more of those connections are writing.
 */
 
-static int winNolockLock(sqlite3_file *id, int locktype){
-  UNUSED_PARAMETER(id);
-  UNUSED_PARAMETER(locktype);
-  return SQLITE_OK;
+ساكن صحيح win_Nolock_جندرا(sqlite3_file *id, صحيح locktype){
+  بن_ورتیا_PARAMETER(id);
+  بن_ورتیا_PARAMETER(locktype);
+  أرجع SQLITE_OK;
 }
 
-static int winNolockCheckReservedLock(sqlite3_file *id, int *pResOut){
-  UNUSED_PARAMETER(id);
-  UNUSED_PARAMETER(pResOut);
-  return SQLITE_OK;
+ساكن صحيح win_Nolock_Check_Reserved_جندرا(sqlite3_file *id, صحيح *p_Res_باہرلا){
+  بن_ورتیا_PARAMETER(id);
+  بن_ورتیا_PARAMETER(p_Res_باہرلا);
+  أرجع SQLITE_OK;
 }
 
-static int winNolockUnlock(sqlite3_file *id, int locktype){
-  UNUSED_PARAMETER(id);
-  UNUSED_PARAMETER(locktype);
-  return SQLITE_OK;
+ساكن صحيح winNolockUnlock(sqlite3_file *id, صحيح locktype){
+  بن_ورتیا_PARAMETER(id);
+  بن_ورتیا_PARAMETER(locktype);
+  أرجع SQLITE_OK;
 }
 
 /******************* End of the no-op lock implementation *********************
@@ -2611,197 +2611,197 @@ static int winNolockUnlock(sqlite3_file *id, int locktype){
 **
 ** If *pArg is 0 or 1, then clear or set the mask bit of pFile->ctrlFlags.
 */
-static void winModeBit(winFile *pFile, unsigned char mask, int *pArg){
-  if( *pArg<0 ){
-    *pArg = (pFile->ctrlFlags & mask)!=0;
-  }else if( (*pArg)==0 ){
-    pFile->ctrlFlags &= ~mask;
-  }else{
-    pFile->ctrlFlags |= mask;
+ساكن فراغ win_منوال_ثنائی_ہندسہ(winFile *pFile, بنانشانی حرف نقاب, صحيح *pArg){
+  إذا( *pArg<0 ){
+    *pArg = (pFile->ctrlFlags & نقاب)!=0;
+  }وإلا إذا( (*pArg)==0 ){
+    pFile->ctrlFlags &= ~نقاب;
+  }وإلا{
+    pFile->ctrlFlags |= نقاب;
   }
 }
 
 /* Forward references to VFS helper methods used for temporary files */
-static int winGetTempname(sqlite3_vfs *, char **);
-static int winIsDir(LPCWSTR);
-static BOOL winIsLongPathPrefix(const char *);
-static BOOL winIsDriveLetterAndColon(const char *);
+ساكن صحيح winGetTempname(sqlite3_vfs *, حرف **);
+ساكن صحيح winIsDir(LPCWSTR);
+ساكن BOOL win_Is_Long_رستہ_اگیتر(ثابت حرف *);
+ساكن BOOL winIsDriveLetterAndColon(ثابت حرف *);
 
 /*
 ** Control and query of the open file handle.
 */
-static int winFileControl(sqlite3_file *id, int op, void *pArg){
+ساكن صحيح winFileControl(sqlite3_file *id, صحيح op, فراغ *pArg){
   winFile *pFile = (winFile*)id;
   OSTRACE(("FCNTL file=%p, op=%d, pArg=%p\n", pFile->h, op, pArg));
-  switch( op ){
-    case SQLITE_FCNTL_LOCKSTATE: {
-      *(int*)pArg = pFile->locktype;
+  بدل( op ){
+    حالة SQLITE_FCNTL_LOCKSTATE: {
+      *(صحيح*)pArg = pFile->locktype;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_LAST_ERRNO: {
-      *(int*)pArg = (int)pFile->lastErrno;
+    حالة SQLITE_FCNTL_آخری_ERRNO: {
+      *(صحيح*)pArg = (صحيح)pFile->آخری_Errno;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_CHUNK_SIZE: {
-      pFile->szChunk = *(int *)pArg;
+    حالة SQLITE_FCNTL_CHUNK_ناپ: {
+      pFile->szChunk = *(صحيح *)pArg;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_SIZE_HINT: {
-      if( pFile->szChunk>0 ){
+    حالة SQLITE_FCNTL_ناپ_HINT: {
+      إذا( pFile->szChunk>0 ){
         sqlite3_int64 oldSz;
-        int rc = winFileSize(id, &oldSz);
-        if( rc==SQLITE_OK ){
+        صحيح rc = win_File_ناپ(id, &oldSz);
+        إذا( rc==SQLITE_OK ){
           sqlite3_int64 newSz = *(sqlite3_int64*)pArg;
-          if( newSz>oldSz ){
+          إذا( newSz>oldSz ){
             SimulateIOErrorBenign(1);
             rc = winTruncate(id, newSz);
             SimulateIOErrorBenign(0);
           }
         }
         OSTRACE(("FCNTL file=%p, rc=%s\n", pFile->h, sqlite3ErrName(rc)));
-        return rc;
+        أرجع rc;
       }
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_PERSIST_WAL: {
-      winModeBit(pFile, WINFILE_PERSIST_WAL, (int*)pArg);
+    حالة SQLITE_FCNTL_PERSIST_WAL: {
+      win_منوال_ثنائی_ہندسہ(pFile, WINFILE_PERSIST_WAL, (صحيح*)pArg);
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
-      winModeBit(pFile, WINFILE_PSOW, (int*)pArg);
+    حالة SQLITE_FCNTL_POWERSAFE_OVERWRITE: {
+      win_منوال_ثنائی_ہندسہ(pFile, WINFILE_PSOW, (صحيح*)pArg);
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_VFSNAME: {
-      *(char**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
+    حالة SQLITE_FCNTL_VFSNAME: {
+      *(حرف**)pArg = sqlite3_mprintf("%s", pFile->pVfs->zName);
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_WIN32_AV_RETRY: {
-      int *a = (int*)pArg;
-      if( a[0]>0 ){
+    حالة SQLITE_FCNTL_WIN32_AV_RETRY: {
+      صحيح *a = (صحيح*)pArg;
+      إذا( a[0]>0 ){
         winIoerrRetry = a[0];
-      }else{
+      }وإلا{
         a[0] = winIoerrRetry;
       }
-      if( a[1]>0 ){
+      إذا( a[1]>0 ){
         winIoerrRetryDelay = a[1];
-      }else{
+      }وإلا{
         a[1] = winIoerrRetryDelay;
       }
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_WIN32_GET_HANDLE: {
+    حالة SQLITE_FCNTL_WIN32_GET_HANDLE: {
       LPHANDLE phFile = (LPHANDLE)pArg;
       *phFile = pFile->h;
       OSTRACE(("FCNTL file=%p, rc=SQLITE_OK\n", pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-#ifdef SQLITE_TEST
-    case SQLITE_FCNTL_WIN32_SET_HANDLE: {
+#جے_تعریف_شدہ SQLITE_TEST
+    حالة SQLITE_FCNTL_WIN32_سیٹ_HANDLE: {
       LPHANDLE phFile = (LPHANDLE)pArg;
       HANDLE hOldFile = pFile->h;
       pFile->h = *phFile;
       *phFile = hOldFile;
       OSTRACE(("FCNTL oldFile=%p, newFile=%p, rc=SQLITE_OK\n",
                hOldFile, pFile->h));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-#endif
-    case SQLITE_FCNTL_NULL_IO: {
-      (void)osCloseHandle(pFile->h);
-      pFile->h = NULL;
-      return SQLITE_OK;
+#جے_انت
+    حالة SQLITE_FCNTL_NULL_IO: {
+      (فراغ)osCloseHandle(pFile->h);
+      pFile->h = عدم;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_TEMPFILENAME: {
-      char *zTFile = 0;
-      int rc = winGetTempname(pFile->pVfs, &zTFile);
-      if( rc==SQLITE_OK ){
-        *(char**)pArg = zTFile;
+    حالة SQLITE_FCNTL_TEMPFILENAME: {
+      حرف *zTFile = 0;
+      صحيح rc = winGetTempname(pFile->pVfs, &zTFile);
+      إذا( rc==SQLITE_OK ){
+        *(حرف**)pArg = zTFile;
       }
       OSTRACE(("FCNTL file=%p, rc=%s\n", pFile->h, sqlite3ErrName(rc)));
-      return rc;
+      أرجع rc;
     }
-#if SQLITE_MAX_MMAP_SIZE>0
-    case SQLITE_FCNTL_MMAP_SIZE: {
-      i64 newLimit = *(i64*)pArg;
-      int rc = SQLITE_OK;
-      if( newLimit>sqlite3GlobalConfig.mxMmap ){
-        newLimit = sqlite3GlobalConfig.mxMmap;
+#إذا SQLITE_MAX_MMAP_ناپ>0
+    حالة SQLITE_FCNTL_MMAP_ناپ: {
+      i64 new_حد_بندی = *(i64*)pArg;
+      صحيح rc = SQLITE_OK;
+      إذا( new_حد_بندی>sqlite3GlobalConfig.mxMmap ){
+        new_حد_بندی = sqlite3GlobalConfig.mxMmap;
       }
 
       /* The value of newLimit may be eventually cast to (SIZE_T) and passed
       ** to MapViewOfFile(). Restrict its value to 2GB if (SIZE_T) is not at
       ** least a 64-bit type. */
-      if( newLimit>0 && sizeof(SIZE_T)<8 ){
-        newLimit = (newLimit & 0x7FFFFFFF);
+      إذا( new_حد_بندی>0 && حجم(ناپ_T)<8 ){
+        new_حد_بندی = (new_حد_بندی & 0x7FFFFFFF);
       }
 
-      *(i64*)pArg = pFile->mmapSizeMax;
-      if( newLimit>=0 && newLimit!=pFile->mmapSizeMax && pFile->nFetchOut==0 ){
-        pFile->mmapSizeMax = newLimit;
-        if( pFile->mmapSize>0 ){
+      *(i64*)pArg = pFile->mmap_ناپ_Max;
+      إذا( new_حد_بندی>=0 && new_حد_بندی!=pFile->mmap_ناپ_Max && pFile->n_Fetch_باہرلا==0 ){
+        pFile->mmap_ناپ_Max = new_حد_بندی;
+        إذا( pFile->mmap_ناپ>0 ){
           winUnmapfile(pFile);
           rc = winMapfile(pFile, -1);
         }
       }
       OSTRACE(("FCNTL file=%p, rc=%s\n", pFile->h, sqlite3ErrName(rc)));
-      return rc;
+      أرجع rc;
     }
-#endif
+#جے_انت
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    case SQLITE_FCNTL_LOCK_TIMEOUT: {
-      int iOld = pFile->iBusyTimeout;
-      int iNew = *(int*)pArg;
-#if SQLITE_ENABLE_SETLK_TIMEOUT==1
+#جے_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+    حالة SQLITE_FCNTL_جندرا_TIMEOUT: {
+      صحيح iOld = pFile->iBusyTimeout;
+      صحيح iNew = *(صحيح*)pArg;
+#إذا SQLITE_ENABLE_SETLK_TIMEOUT==1
       pFile->iBusyTimeout = (iNew < 0) ? INFINITE : (DWORD)iNew;
-#elif SQLITE_ENABLE_SETLK_TIMEOUT==2
+#وإلاإذا SQLITE_ENABLE_SETLK_TIMEOUT==2
       pFile->iBusyTimeout = (DWORD)(!!iNew);
-#else
+#وإلا
 # error "SQLITE_ENABLE_SETLK_TIMEOUT must be set to 1 or 2"
-#endif
-      *(int*)pArg = iOld;
-      return SQLITE_OK;
+#جے_انت
+      *(صحيح*)pArg = iOld;
+      أرجع SQLITE_OK;
     }
-    case SQLITE_FCNTL_BLOCK_ON_CONNECT: {
-      int iNew = *(int*)pArg;
-      pFile->bBlockOnConnect = iNew;
-      return SQLITE_OK;
+    حالة SQLITE_FCNTL_بلاک_ON_CONNECT: {
+      صحيح iNew = *(صحيح*)pArg;
+      pFile->b_بلاک_On_Connect = iNew;
+      أرجع SQLITE_OK;
     }
-#endif /* SQLITE_ENABLE_SETLK_TIMEOUT */
+#جے_انت /* SQLITE_ENABLE_SETLK_TIMEOUT */
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
-    case SQLITE_FCNTL_FILESTAT: {
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_FILESTAT)
+    حالة SQLITE_FCNTL_FILESTAT: {
       sqlite3_str *pStr = (sqlite3_str*)pArg;
       sqlite3_str_appendf(pStr, "{\"h\":%llu", (sqlite3_uint64)pFile->h);
       sqlite3_str_appendf(pStr, ",\"vfs\":\"%s\"", pFile->pVfs->zName);
-      if( pFile->locktype ){
-        static const char *azLock[] = { "SHARED", "RESERVED",
+      إذا( pFile->locktype ){
+        ساكن ثابت حرف *az_جندرا[] = { "SHARED", "RESERVED",
                                       "PENDING", "EXCLUSIVE" };
         sqlite3_str_appendf(pStr, ",\"locktype\":\"%s\"", 
-                                  azLock[pFile->locktype-1]);
+                                  az_جندرا[pFile->locktype-1]);
       }
-#if SQLITE_MAX_MMAP_SIZE>0
-      if( pFile->mmapSize ){
-        sqlite3_str_appendf(pStr, ",\"mmapSize\":%lld", pFile->mmapSize);
-        sqlite3_str_appendf(pStr, ",\"nFetchOut\":%d", pFile->nFetchOut);
+#إذا SQLITE_MAX_MMAP_ناپ>0
+      إذا( pFile->mmap_ناپ ){
+        sqlite3_str_appendf(pStr, ",\"mmapSize\":%lld", pFile->mmap_ناپ);
+        sqlite3_str_appendf(pStr, ",\"nFetchOut\":%d", pFile->n_Fetch_باہرلا);
       }
-#endif
+#جے_انت
       sqlite3_str_append(pStr, "}", 1);
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-#endif /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
+#جے_انت /* SQLITE_DEBUG || SQLITE_ENABLE_FILESTAT */
 
   }
   OSTRACE(("FCNTL file=%p, rc=SQLITE_NOTFOUND\n", pFile->h));
-  return SQLITE_NOTFOUND;
+  أرجع SQLITE_NOTFOUND;
 }
 
 /*
@@ -2814,17 +2814,17 @@ static int winFileControl(sqlite3_file *id, int op, void *pArg){
 ** a database and its journal file) that the sector size will be the
 ** same for both.
 */
-static int winSectorSize(sqlite3_file *id){
-  (void)id;
-  return SQLITE_DEFAULT_SECTOR_SIZE;
+ساكن صحيح win_Sector_ناپ(sqlite3_file *id){
+  (فراغ)id;
+  أرجع SQLITE_DEFAULT_SECTOR_ناپ;
 }
 
 /*
 ** Return a vector of device characteristics.
 */
-static int winDeviceCharacteristics(sqlite3_file *id){
+ساكن صحيح winDeviceCharacteristics(sqlite3_file *id){
   winFile *p = (winFile*)id;
-  return SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN | SQLITE_IOCAP_SUBPAGE_READ |
+  أرجع SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN | SQLITE_IOCAP_SUBPAGE_READ |
          ((p->ctrlFlags & WINFILE_PSOW)?SQLITE_IOCAP_POWERSAFE_OVERWRITE:0);
 }
 
@@ -2834,7 +2834,7 @@ static int winDeviceCharacteristics(sqlite3_file *id){
 ** During sqlite3_os_init() we do a GetSystemInfo()
 ** to get the granularity size.
 */
-static SYSTEM_INFO winSysInfo;
+ساكن SYSTEM_INFO winSysInfo;
 
 /*
 ** Convert a UTF-8 filename into whatever form the underlying
@@ -2855,75 +2855,75 @@ static SYSTEM_INFO winSysInfo;
 **   happen when the file path >32k, in which case winUtf8ToUnicode()
 **   will fail too.
 */
-static LPWSTR winConvertFromUtf8Filename(const char *zFilename){
+ساكن LPWSTR winConvertFromUtf8Filename(ثابت حرف *zFilename){
   LPWSTR zConverted = 0;
-#ifdef __CYGWIN__
-  int nChar;
+#جے_تعریف_شدہ __CYGWIN__
+  صحيح nChar;
 
-  if( osCygwin_conv_path && !(winIsDriveLetterAndColon(zFilename)
+  إذا( os_Cygwin_conv_رستہ && !(winIsDriveLetterAndColon(zFilename)
       && winIsDirSep(zFilename[2])) ){
     i64 nByte;
-    int convertflag = CCP_POSIX_TO_WIN_W;
-    if( !strchr(zFilename, '/') ) convertflag |= CCP_RELATIVE;
-    nByte = (i64)osCygwin_conv_path(convertflag,
+    صحيح convertflag = CCP_POSIX_منزل_WIN_W;
+    إذا( !strchr(zFilename, '/') ) convertflag |= CCP_RELATIVE;
+    nByte = (i64)os_Cygwin_conv_رستہ(convertflag,
         zFilename, 0, 0);
-    if( nByte>0 ){
+    إذا( nByte>0 ){
       zConverted = sqlite3MallocZero(12+(u64)nByte);
-      if ( zConverted==0 ){
-        return zConverted;
+      إذا ( zConverted==0 ){
+        أرجع zConverted;
       }
       /* Filenames should be prefixed, except when converted
        * full path already starts with "\\?\". */
-      if( osCygwin_conv_path(convertflag, zFilename,
+      إذا( os_Cygwin_conv_رستہ(convertflag, zFilename,
                            zConverted+4, nByte)==0 ){
-        if( (convertflag&CCP_RELATIVE) ){
+        إذا( (convertflag&CCP_RELATIVE) ){
           memmove(zConverted, zConverted+4, nByte);
-        }else if( memcmp(zConverted+4, L"\\\\", 4) ){
-          memcpy(zConverted, L"\\\\?\\", 8);
-        }else if( zConverted[6]!='?' ){
+        }وإلا إذا( memcmp(zConverted+4, L"\\\\", 4) ){
+          حافظہ_نقل(zConverted, L"\\\\?\\", 8);
+        }وإلا إذا( zConverted[6]!='?' ){
           memmove(zConverted+6, zConverted+4, nByte);
-          memcpy(zConverted, L"\\\\?\\UNC", 14);
-        }else{
+          حافظہ_نقل(zConverted, L"\\\\?\\UNC", 14);
+        }وإلا{
           memmove(zConverted, zConverted+4, nByte);
         }
-        return zConverted;
+        أرجع zConverted;
       }
       sqlite3_free(zConverted);
     }
   }
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zFilename, -1, NULL, 0);
-  if( nChar==0 ){
-    return 0;
+  nChar = os_Multi_Byte_منزل_Wide_Char(CP_UTF8, 0, zFilename, -1, عدم, 0);
+  إذا( nChar==0 ){
+    أرجع 0;
   }
-  zConverted = sqlite3MallocZero( ((u64)nChar+6)*sizeof(WCHAR) );
-  if( zConverted==0 ){
-    return 0;
+  zConverted = sqlite3MallocZero( ((u64)nChar+6)*حجم(WCHAR) );
+  إذا( zConverted==0 ){
+    أرجع 0;
   }
-  nChar = osMultiByteToWideChar(CP_UTF8, 0, zFilename, -1,
+  nChar = os_Multi_Byte_منزل_Wide_Char(CP_UTF8, 0, zFilename, -1,
                                 zConverted, nChar);
-  if( nChar==0 ){
+  إذا( nChar==0 ){
     sqlite3_free(zConverted);
     zConverted = 0;
-  }else if( nChar>MAX_PATH
+  }وإلا إذا( nChar>MAX_رستہ
       && winIsDriveLetterAndColon(zFilename)
       && winIsDirSep(zFilename[2]) ){
-    memmove(zConverted+4, zConverted, nChar*sizeof(WCHAR));
+    memmove(zConverted+4, zConverted, nChar*حجم(WCHAR));
     zConverted[2] = '\\';
-    memcpy(zConverted, L"\\\\?\\", 8);
-  }else if( nChar>MAX_PATH
+    حافظہ_نقل(zConverted, L"\\\\?\\", 8);
+  }وإلا إذا( nChar>MAX_رستہ
       && winIsDirSep(zFilename[0]) && winIsDirSep(zFilename[1])
       && zFilename[2] != '?' ){
-    memmove(zConverted+6, zConverted, nChar*sizeof(WCHAR));
-    memcpy(zConverted, L"\\\\?\\UNC", 14);
+    memmove(zConverted+6, zConverted, nChar*حجم(WCHAR));
+    حافظہ_نقل(zConverted, L"\\\\?\\UNC", 14);
   }
-#else /* if !defined(__CYGWIN__) */
-  zConverted = winUtf8ToUnicode(zFilename);
-#endif /* __CYGWIN__ */
+#وإلا /* if !defined(__CYGWIN__) */
+  zConverted = win_Utf8_منزل_Unicode(zFilename);
+#جے_انت /* __CYGWIN__ */
   /* caller will handle out of memory */
-  return zConverted;
+  أرجع zConverted;
 }
 
-#ifndef SQLITE_OMIT_WAL
+#جے_بنا_تعریف SQLITE_OMIT_WAL
 
 /*
 ** Helper functions to obtain and relinquish the global mutex. The
@@ -2938,18 +2938,18 @@ static LPWSTR winConvertFromUtf8Filename(const char *zFilename){
 **     assert( winShmMutexHeld() );
 **   winShmLeaveMutex()
 */
-static sqlite3_mutex *winBigLock = 0;
-static void winShmEnterMutex(void){
-  sqlite3_mutex_enter(winBigLock);
+ساكن sqlite3_mutex *win_Big_جندرا = 0;
+ساكن فراغ winShmEnterMutex(فراغ){
+  sqlite3_mutex_enter(win_Big_جندرا);
 }
-static void winShmLeaveMutex(void){
-  sqlite3_mutex_leave(winBigLock);
+ساكن فراغ winShmLeaveMutex(فراغ){
+  sqlite3_mutex_leave(win_Big_جندرا);
 }
-#ifndef NDEBUG
-static int winShmMutexHeld(void) {
-  return sqlite3_mutex_held(winBigLock);
+#جے_بنا_تعریف NDEBUG
+ساكن صحيح winShmMutexHeld(فراغ) {
+  أرجع sqlite3_mutex_held(win_Big_جندرا);
 }
-#endif
+#جے_انت
 
 /*
 ** Object used to represent a single file opened and mmapped to provide
@@ -2983,29 +2983,29 @@ static int winShmMutexHeld(void) {
 ** taken on hSharedShm. Or, if bUseSharedLockHandle is false, then other 
 ** locks are taken using each connection's winShm.hShm handles.
 */
-struct winShmNode {
+بنية win_Shm_گرہ {
   sqlite3_mutex *mutex;      /* Mutex to access this object */
-  char *zFilename;           /* Name of the file */
+  حرف *zFilename;           /* Name of the file */
   HANDLE hSharedShm;         /* File handle open on zFilename */
-  int bUseSharedLockHandle;  /* True to use hSharedShm for everything */
+  صحيح b_Use_Shared_جندرا_Handle;  /* True to use hSharedShm for everything */
 
-  int isUnlocked;            /* DMS lock has not yet been obtained */
-  int isReadonly;            /* True if read-only */
-  int szRegion;              /* Size of shared-memory regions */
-  int nRegion;               /* Size of array apRegion */
+  صحيح isUnlocked;            /* DMS lock has not yet been obtained */
+  صحيح isReadonly;            /* True if read-only */
+  صحيح szRegion;              /* Size of shared-memory regions */
+  صحيح nRegion;               /* Size of array apRegion */
 
-  struct ShmRegion {
+  بنية ShmRegion {
     HANDLE hMap;             /* File handle from CreateFileMapping */
-    void *pMap;
+    فراغ *pMap;
   } *aRegion;
-  DWORD lastErrno;           /* The Windows errno from the last I/O error */
+  DWORD آخری_Errno;           /* The Windows errno from the last I/O error */
 
   winShm *pWinShmList;       /* List of winShm objects with ptrs to this */
 
-  winShmNode *pNext;         /* Next in list of all winShmNode objects */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
-  u8 nextShmId;              /* Next available winShm.id value */
-#endif
+  win_Shm_گرہ *p_اگلا;         /* Next in list of all winShmNode objects */
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+  u8 اگلا_Shm_Id;              /* Next available winShm.id value */
+#جے_انت
 };
 
 /*
@@ -3013,34 +3013,34 @@ struct winShmNode {
 **
 ** The winShmMutexHeld() must be true while reading or writing this list.
 */
-static winShmNode *winShmNodeList = 0;
+ساكن win_Shm_گرہ *win_Shm_گرہ_List = 0;
 
 /*
 ** Structure used internally by this VFS to record the state of an
 ** open shared memory connection. There is one such structure for each
 ** winFile open on a wal mode database.
 */
-struct winShm {
-  winShmNode *pShmNode;      /* The underlying winShmNode object */
-  u16 sharedMask;            /* Mask of shared locks held */
-  u16 exclMask;              /* Mask of exclusive locks held */
+بنية winShm {
+  win_Shm_گرہ *p_Shm_گرہ;      /* The underlying winShmNode object */
+  u16 shared_نقاب;            /* Mask of shared locks held */
+  u16 excl_نقاب;              /* Mask of exclusive locks held */
   HANDLE hShm;               /* File-handle on *-shm file. For locking. */
-  int bReadonly;             /* True if hShm is opened read-only */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+  صحيح bReadonly;             /* True if hShm is opened read-only */
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
   u8 id;                     /* Id of this connection with its winShmNode */
-#endif
-  winShm *pWinShmNext;       /* Next winShm object on same winShmNode */
+#جے_انت
+  winShm *p_Win_Shm_اگلا;       /* Next winShm object on same winShmNode */
 };
 
 /*
 ** Constants used for locking
 */
-#define WIN_SHM_BASE   ((22+SQLITE_SHM_NLOCK)*4)        /* first lock byte */
-#define WIN_SHM_DMS    (WIN_SHM_BASE+SQLITE_SHM_NLOCK)  /* deadman switch */
+#تعریف_کرو WIN_SHM_ادھار   ((22+SQLITE_SHM_NLOCK)*4)        /* first lock byte */
+#تعریف_کرو WIN_SHM_DMS    (WIN_SHM_ادھار+SQLITE_SHM_NLOCK)  /* deadman switch */
 
 /* Forward references to VFS methods */
-static int winOpen(sqlite3_vfs*,const char*,sqlite3_file*,int,int*);
-static int winDelete(sqlite3_vfs *,const char*,int);
+ساكن صحيح winOpen(sqlite3_vfs*,ثابت حرف*,sqlite3_file*,صحيح,صحيح*);
+ساكن صحيح winDelete(sqlite3_vfs *,ثابت حرف*,صحيح);
 
 /*
 ** Purge the winShmNodeList list of all entries with winShmNode.pWinShmList==0.
@@ -3048,40 +3048,40 @@ static int winDelete(sqlite3_vfs *,const char*,int);
 ** This is not a VFS shared-memory method; it is a utility function called
 ** by VFS shared-memory methods.
 */
-static void winShmPurge(sqlite3_vfs *pVfs, int deleteFlag){
-  winShmNode **pp;
-  winShmNode *p;
-  assert( winShmMutexHeld() );
+ساكن فراغ winShmPurge(sqlite3_vfs *pVfs, صحيح deleteFlag){
+  win_Shm_گرہ **pp;
+  win_Shm_گرہ *p;
+  أكد( winShmMutexHeld() );
   OSTRACE(("SHM-PURGE pid=%lu, deleteFlag=%d\n",
            osGetCurrentProcessId(), deleteFlag));
-  pp = &winShmNodeList;
-  while( (p = *pp)!=0 ){
-    if( p->pWinShmList==0 ){
-      int i;
-      if( p->mutex ){ sqlite3_mutex_free(p->mutex); }
-      for(i=0; i<p->nRegion; i++){
-        BOOL bRc = osUnmapViewOfFile(p->aRegion[i].pMap);
+  pp = &win_Shm_گرہ_List;
+  طالما( (p = *pp)!=0 ){
+    إذا( p->pWinShmList==0 ){
+      صحيح i;
+      إذا( p->mutex ){ sqlite3_mutex_free(p->mutex); }
+      لكل(i=0; i<p->nRegion; i++){
+        BOOL bRc = os_Unmap_View_دا_File(p->aRegion[i].pMap);
         OSTRACE(("SHM-PURGE-UNMAP pid=%lu, region=%d, rc=%s\n",
                  osGetCurrentProcessId(), i, bRc ? "ok" : "failed"));
-        UNUSED_VARIABLE_VALUE(bRc);
+        بن_ورتیا_VARIABLE_قدر(bRc);
         bRc = osCloseHandle(p->aRegion[i].hMap);
         OSTRACE(("SHM-PURGE-CLOSE pid=%lu, region=%d, rc=%s\n",
                  osGetCurrentProcessId(), i, bRc ? "ok" : "failed"));
-        UNUSED_VARIABLE_VALUE(bRc);
+        بن_ورتیا_VARIABLE_قدر(bRc);
       }
       winHandleClose(p->hSharedShm);
-      if( deleteFlag ){
+      إذا( deleteFlag ){
         SimulateIOErrorBenign(1);
         sqlite3BeginBenignMalloc();
         winDelete(pVfs, p->zFilename, 0);
-        sqlite3EndBenignMalloc();
+        sqlite3_سرا_Benign_Malloc();
         SimulateIOErrorBenign(0);
       }
-      *pp = p->pNext;
+      *pp = p->p_اگلا;
       sqlite3_free(p->aRegion);
       sqlite3_free(p);
-    }else{
-      pp = &p->pNext;
+    }وإلا{
+      pp = &p->p_اگلا;
     }
   }
 }
@@ -3091,21 +3091,21 @@ static void winShmPurge(sqlite3_vfs *pVfs, int deleteFlag){
 ** 8 bytes of the file. If SQLITE_ENABLE_SETLK_TIMEOUT is defined, h may 
 ** have been opened with FILE_FLAG_OVERLAPPED.
 */
-static int winZeroSharedMemory(HANDLE h){
+ساكن صحيح win_Zero_Shared_حافظہ(HANDLE h){
   u8 aZero[8] = {0,0,0,0,0,0,0,0};
   DWORD nWrite = 0;
   OVERLAPPED ovlp;
-  memset(&ovlp, 0, sizeof(OVERLAPPED));
-  if( !osWriteFile(h, aZero, sizeof(aZero), &nWrite, &ovlp) ){
+  memset(&ovlp, 0, حجم(OVERLAPPED));
+  إذا( !osWriteFile(h, aZero, حجم(aZero), &nWrite, &ovlp) ){
     /* If the file was opened with FILE_FLAG_OVERLAPPED, the write may still
     ** be pending. Wait for it with GetOverlappedResult().  */
-    if( osGetLastError()!=ERROR_IO_PENDING
-     || !GetOverlappedResult(h, &ovlp, &nWrite, TRUE)
+    إذا( os_Get_آخری_Error()!=ERROR_IO_PENDING
+     || !Get_Overlapped_نتیجہ(h, &ovlp, &nWrite, TRUE)
     ){
       nWrite = 0;
     }
   }
-  return (nWrite==sizeof(aZero) ? SQLITE_OK : SQLITE_IOERR_WRITE);
+  أرجع (nWrite==حجم(aZero) ? SQLITE_OK : SQLITE_IOERR_WRITE);
 }
 
 /*
@@ -3113,42 +3113,42 @@ static int winZeroSharedMemory(HANDLE h){
 ** pShmNode. Take the lock. Truncate the *-shm file if required.
 ** Return SQLITE_OK if successful, or an SQLite error code otherwise.
 */
-static int winLockSharedMemory(winShmNode *pShmNode, DWORD nMs){
-  HANDLE h = pShmNode->hSharedShm;
-  int rc = SQLITE_OK;
+ساكن صحيح win_جندرا_Shared_حافظہ(win_Shm_گرہ *p_Shm_گرہ, DWORD nMs){
+  HANDLE h = p_Shm_گرہ->hSharedShm;
+  صحيح rc = SQLITE_OK;
 
-  assert( sqlite3_mutex_held(pShmNode->mutex) );
-  rc = winHandleLockTimeout(h, WIN_SHM_DMS, 1, 1, 0);
-  if( rc==SQLITE_OK ){
+  أكد( sqlite3_mutex_held(p_Shm_گرہ->mutex) );
+  rc = win_Handle_جندرا_Timeout(h, WIN_SHM_DMS, 1, 1, 0);
+  إذا( rc==SQLITE_OK ){
     /* We have an EXCLUSIVE lock on the DMS byte. This means that this
     ** is the first process to open the file. Truncate it to zero bytes
     ** in this case.  */
-    if( pShmNode->isReadonly ){
+    إذا( p_Shm_گرہ->isReadonly ){
       rc = SQLITE_READONLY_CANTINIT;
-    }else{
-      if( SQLITE_OK!=winHandleTruncate(h, 0) ){
+    }وإلا{
+      إذا( SQLITE_OK!=winHandleTruncate(h, 0) ){
         /* Sometimes the truncate operation may fail because some other
         ** process is still holding an open mapping. So try to write
         ** zeroes into the start of the file instead. */
-        rc = winZeroSharedMemory(h);
+        rc = win_Zero_Shared_حافظہ(h);
       }
     }
 
     /* Release the EXCLUSIVE lock acquired above. */
     winUnlockFile(&h, WIN_SHM_DMS, 0, 1, 0);
-  }else if( (rc & 0xFF)==SQLITE_BUSY ){
+  }وإلا إذا( (rc & 0xFF)==SQLITE_BUSY ){
     rc = SQLITE_OK;
   }
 
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     /* Take a SHARED lock on the DMS byte. */
-    rc = winHandleLockTimeout(h, WIN_SHM_DMS, 1, 0, nMs);
-    if( rc==SQLITE_OK ){
-      pShmNode->isUnlocked = 0;
+    rc = win_Handle_جندرا_Timeout(h, WIN_SHM_DMS, 1, 0, nMs);
+    إذا( rc==SQLITE_OK ){
+      p_Shm_گرہ->isUnlocked = 0;
     }
   }
 
-  return rc;
+  أرجع rc;
 }
 
 
@@ -3158,35 +3158,35 @@ static int winLockSharedMemory(winShmNode *pShmNode, DWORD nMs){
 ** If SQLITE_ENABLE_SETLK_TIMEOUT is defined at build time, then the file
 ** is opened with FILE_FLAG_OVERLAPPED specified. If not, it is not.
 */
-static int winHandleOpen(
-  const char *zUtf8,              /* File to open */
-  int *pbReadonly,                /* IN/OUT: True for readonly handle */
+ساكن صحيح winHandleOpen(
+  ثابت حرف *zUtf8,              /* File to open */
+  صحيح *pbReadonly,                /* IN/OUT: True for readonly handle */
   HANDLE *ph                      /* OUT: New HANDLE for file */
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   LPWSTR zConverted = 0;
-  int bReadonly = *pbReadonly;
-  HANDLE h = INVALID_HANDLE_VALUE;
+  صحيح bReadonly = *pbReadonly;
+  HANDLE h = INVALID_HANDLE_قدر;
 
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  const DWORD flag_overlapped = FILE_FLAG_OVERLAPPED;
-#else
-  const DWORD flag_overlapped = 0;
-#endif
+#جے_تعریف_شدہ SQLITE_ENABLE_SETLK_TIMEOUT
+  ثابت DWORD flag_overlapped = FILE_FLAG_OVERLAPPED;
+#وإلا
+  ثابت DWORD flag_overlapped = 0;
+#جے_انت
 
   /* Convert the filename to the system encoding. */
   zConverted = winConvertFromUtf8Filename(zUtf8);
-  if( zConverted==0 ){
+  إذا( zConverted==0 ){
     OSTRACE(("OPEN name=%s, rc=SQLITE_IOERR_NOMEM", zUtf8));
     rc = SQLITE_IOERR_NOMEM_BKPT;
-    goto winopenfile_out;
+    اذهب winopenfile_باہرلا;
   }
 
   /* Ensure the file we are trying to open is not actually a directory. */
-  if( winIsDir(zConverted) ){
+  إذا( winIsDir(zConverted) ){
     OSTRACE(("OPEN name=%s, rc=SQLITE_CANTOPEN_ISDIR", zUtf8));
     rc = SQLITE_CANTOPEN_ISDIR;
-    goto winopenfile_out;
+    اذهب winopenfile_باہرلا;
   }
 
   /* TODO: platforms.
@@ -3195,51 +3195,51 @@ static int winHandleOpen(
   h = osCreateFileW(zConverted,         /* lpFileName */
       (GENERIC_READ | (bReadonly ? 0 : GENERIC_WRITE)),  /* dwDesiredAccess */
       FILE_SHARE_READ | FILE_SHARE_WRITE,        /* dwShareMode */
-      NULL,                                      /* lpSecurityAttributes */
+      عدم,                                      /* lpSecurityAttributes */
       OPEN_ALWAYS,                               /* dwCreationDisposition */
-      FILE_ATTRIBUTE_NORMAL|flag_overlapped,
-      NULL
+      FILE_ATTRIBUTE_عام|flag_overlapped,
+      عدم
   );
 
-  if( h==INVALID_HANDLE_VALUE ){
-    if( bReadonly==0 ){
+  إذا( h==INVALID_HANDLE_قدر ){
+    إذا( bReadonly==0 ){
       bReadonly = 1;
       rc = winHandleOpen(zUtf8, &bReadonly, &h);
-    }else{
+    }وإلا{
       rc = SQLITE_CANTOPEN_BKPT;
     }
   }
 
- winopenfile_out:
+ winopenfile_باہرلا:
   sqlite3_free(zConverted);
   *pbReadonly = bReadonly;
   *ph = h;
-  return rc;
+  أرجع rc;
 }
  
 /*
 ** Close pDbFd's connection to shared-memory.  Delete the underlying
 ** *-shm file if deleteFlag is true.
 */
-static int winCloseSharedMemory(winFile *pDbFd, int deleteFlag){
+ساكن صحيح win_Close_Shared_حافظہ(winFile *pDbFd, صحيح deleteFlag){
   winShm *p;            /* The connection to be closed */
   winShm **pp;          /* Iterator for pShmNode->pWinShmList */
-  winShmNode *pShmNode; /* The underlying shared-memory file */
+  win_Shm_گرہ *p_Shm_گرہ; /* The underlying shared-memory file */
 
   p = pDbFd->pShm;
-  if( p==0 ) return SQLITE_OK;
-  if( p->hShm!=INVALID_HANDLE_VALUE ){
+  إذا( p==0 ) أرجع SQLITE_OK;
+  إذا( p->hShm!=INVALID_HANDLE_قدر ){
     osCloseHandle(p->hShm);
   }
 
   winShmEnterMutex();
-  pShmNode = p->pShmNode;
+  p_Shm_گرہ = p->p_Shm_گرہ;
 
   /* Remove this connection from the winShmNode.pWinShmList list */
-  sqlite3_mutex_enter(pShmNode->mutex);
-  for(pp=&pShmNode->pWinShmList; *pp!=p; pp=&(*pp)->pWinShmNext){}
-  *pp = p->pWinShmNext;
-  sqlite3_mutex_leave(pShmNode->mutex);
+  sqlite3_mutex_enter(p_Shm_گرہ->mutex);
+  لكل(pp=&p_Shm_گرہ->pWinShmList; *pp!=p; pp=&(*pp)->p_Win_Shm_اگلا){}
+  *pp = p->p_Win_Shm_اگلا;
+  sqlite3_mutex_leave(p_Shm_گرہ->mutex);
 
   winShmPurge(pDbFd->pVfs, deleteFlag);
   winShmLeaveMutex();
@@ -3247,7 +3247,7 @@ static int winCloseSharedMemory(winFile *pDbFd, int deleteFlag){
   /* Free the connection p */
   sqlite3_free(p);
   pDbFd->pShm = 0;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -3255,11 +3255,11 @@ static int winCloseSharedMemory(winFile *pDbFd, int deleteFlag){
 ** Tcl interface. This forces the VFS to use the locking normally
 ** only used for UNC paths for all files.
 */
-#ifdef SQLITE_TEST
-int sqlite3_win_test_unc_locking = 0;
-#else
+#جے_تعریف_شدہ SQLITE_TEST
+صحيح sqlite3_win_test_unc_locking = 0;
+#وإلا
 # define sqlite3_win_test_unc_locking 0
-#endif
+#جے_انت
 
 /*
 ** Return true if the string passed as the only argument is likely
@@ -3274,183 +3274,183 @@ int sqlite3_win_test_unc_locking = 0;
 ** For testing, also return true in all cases if the global variable
 ** sqlite3_win_test_unc_locking is true.
 */
-static int winIsUNCPath(const char *zFile){
-  if( zFile[0]=='\\' && zFile[1]=='\\' ){
-    if( zFile[2]=='?'
+ساكن صحيح winIsUNCPath(ثابت حرف *zFile){
+  إذا( zFile[0]=='\\' && zFile[1]=='\\' ){
+    إذا( zFile[2]=='?'
      && zFile[3]=='\\'
      && sqlite3Isalpha(zFile[4])
      && zFile[5]==':'
      && winIsDirSep(zFile[6])
     ){
-      return sqlite3_win_test_unc_locking;
-    }else{
-      return 1;
+      أرجع sqlite3_win_test_unc_locking;
+    }وإلا{
+      أرجع 1;
     }
   }
-  return sqlite3_win_test_unc_locking;
+  أرجع sqlite3_win_test_unc_locking;
 }
 
 /*
 ** Return true if the string passed in is the name of a file on a
 ** remote (network-mounted) volume.
 */
-static int winIsRemoteVolume(const char *zFile){
-  WCHAR zRoot[4];
-  if( strncmp(zFile, "\\\\?\\",4)==0 ) zFile += 4;
-  if( !sqlite3Isalpha(zFile[0]) ) return 0;
-  if( zFile[1]!=':' ) return 0;
-  if( !winIsDirSep(zFile[2]) ) return 0;
-  zRoot[0] = (WCHAR)zFile[0];
-  zRoot[1] = ':';
-  zRoot[2] = '\\';
-  zRoot[3] = 0;
-  return osGetDriveTypeW(zRoot)==DRIVE_REMOTE;
+ساكن صحيح winIsRemoteVolume(ثابت حرف *zFile){
+  WCHAR z_جڑ[4];
+  إذا( لڑی_مقابلہ(zFile, "\\\\?\\",4)==0 ) zFile += 4;
+  إذا( !sqlite3Isalpha(zFile[0]) ) أرجع 0;
+  إذا( zFile[1]!=':' ) أرجع 0;
+  إذا( !winIsDirSep(zFile[2]) ) أرجع 0;
+  z_جڑ[0] = (WCHAR)zFile[0];
+  z_جڑ[1] = ':';
+  z_جڑ[2] = '\\';
+  z_جڑ[3] = 0;
+  أرجع osGetDriveTypeW(z_جڑ)==DRIVE_REMOTE;
 }
 
 /*
 ** Open the shared-memory area associated with database file pDbFd.
 */
-static int winOpenSharedMemory(winFile *pDbFd){
-  struct winShm *p;                  /* The connection to be opened */
-  winShmNode *pShmNode = 0;          /* The underlying mmapped file */
-  int rc = SQLITE_OK;                /* Result code */
-  winShmNode *pNew;                  /* Newly allocated winShmNode */
-  int nName;                         /* Size of zName in bytes */
+ساكن صحيح win_Open_Shared_حافظہ(winFile *pDbFd){
+  بنية winShm *p;                  /* The connection to be opened */
+  win_Shm_گرہ *p_Shm_گرہ = 0;          /* The underlying mmapped file */
+  صحيح rc = SQLITE_OK;                /* Result code */
+  win_Shm_گرہ *pNew;                  /* Newly allocated winShmNode */
+  صحيح nName;                         /* Size of zName in bytes */
 
-  assert( pDbFd->pShm==0 );    /* Not previously opened */
+  أكد( pDbFd->pShm==0 );    /* Not previously opened */
 
   /* Allocate space for the new sqlite3_shm object.  Also speculatively
   ** allocate space for a new winShmNode and filename.  */
-  p = sqlite3MallocZero( sizeof(*p) );
-  if( p==0 ) return SQLITE_IOERR_NOMEM_BKPT;
-  nName = sqlite3Strlen30(pDbFd->zPath);
-  pNew = sqlite3MallocZero( sizeof(*pShmNode) + (i64)nName + 17 );
-  if( pNew==0 ){
+  p = sqlite3MallocZero( حجم(*p) );
+  إذا( p==0 ) أرجع SQLITE_IOERR_NOMEM_BKPT;
+  nName = sqlite3Strlen30(pDbFd->z_رستہ);
+  pNew = sqlite3MallocZero( حجم(*p_Shm_گرہ) + (i64)nName + 17 );
+  إذا( pNew==0 ){
     sqlite3_free(p);
-    return SQLITE_IOERR_NOMEM_BKPT;
+    أرجع SQLITE_IOERR_NOMEM_BKPT;
   }
-  pNew->zFilename = (char*)&pNew[1];
-  pNew->hSharedShm = INVALID_HANDLE_VALUE;
+  pNew->zFilename = (حرف*)&pNew[1];
+  pNew->hSharedShm = INVALID_HANDLE_قدر;
   pNew->isUnlocked = 1;
-  if( winIsUNCPath(pDbFd->zPath) || winIsRemoteVolume(pDbFd->zPath) ){
-    pNew->bUseSharedLockHandle = 1;
-  }else{
-    pNew->bUseSharedLockHandle = 0;
+  إذا( winIsUNCPath(pDbFd->z_رستہ) || winIsRemoteVolume(pDbFd->z_رستہ) ){
+    pNew->b_Use_Shared_جندرا_Handle = 1;
+  }وإلا{
+    pNew->b_Use_Shared_جندرا_Handle = 0;
   }
-  sqlite3_snprintf(nName+15, pNew->zFilename, "%s-shm", pDbFd->zPath);
-  sqlite3FileSuffix3(pDbFd->zPath, pNew->zFilename);
+  sqlite3_snprintf(nName+15, pNew->zFilename, "%s-shm", pDbFd->z_رستہ);
+  sqlite3FileSuffix3(pDbFd->z_رستہ, pNew->zFilename);
 
   /* Look to see if there is an existing winShmNode that can be used.
   ** If no matching winShmNode currently exists, then create a new one.  */
   winShmEnterMutex();
-  for(pShmNode = winShmNodeList; pShmNode; pShmNode=pShmNode->pNext){
+  لكل(p_Shm_گرہ = win_Shm_گرہ_List; p_Shm_گرہ; p_Shm_گرہ=p_Shm_گرہ->p_اگلا){
     /* TBD need to come up with better match here.  Perhaps
     ** use FILE_ID_BOTH_DIR_INFO Structure.  */
-    if( sqlite3StrICmp(pShmNode->zFilename, pNew->zFilename)==0 ) break;
+    إذا( sqlite3StrICmp(p_Shm_گرہ->zFilename, pNew->zFilename)==0 ) اكسر;
   }
-  if( pShmNode==0 ){
-    pShmNode = pNew;
+  إذا( p_Shm_گرہ==0 ){
+    p_Shm_گرہ = pNew;
 
     /* Allocate a mutex for this winShmNode object, if one is required. */
-    if( sqlite3GlobalConfig.bCoreMutex ){
-      pShmNode->mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( pShmNode->mutex==0 ) rc = SQLITE_IOERR_NOMEM_BKPT;
+    إذا( sqlite3GlobalConfig.bCoreMutex ){
+      p_Shm_گرہ->mutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+      إذا( p_Shm_گرہ->mutex==0 ) rc = SQLITE_IOERR_NOMEM_BKPT;
     }
 
     /* Open a file-handle to use for mappings, and for the DMS lock. */
-    if( rc==SQLITE_OK ){
-      HANDLE h = INVALID_HANDLE_VALUE;
-      pShmNode->isReadonly = sqlite3_uri_boolean(pDbFd->zPath,"readonly_shm",0);
-      rc = winHandleOpen(pNew->zFilename, &pShmNode->isReadonly, &h);
-      pShmNode->hSharedShm = h;
+    إذا( rc==SQLITE_OK ){
+      HANDLE h = INVALID_HANDLE_قدر;
+      p_Shm_گرہ->isReadonly = sqlite3_uri_boolean(pDbFd->z_رستہ,"readonly_shm",0);
+      rc = winHandleOpen(pNew->zFilename, &p_Shm_گرہ->isReadonly, &h);
+      p_Shm_گرہ->hSharedShm = h;
     }
 
     /* If successful, link the new winShmNode into the global list. If an 
     ** error occurred, free the object. */
-    if( rc==SQLITE_OK ){
-      pShmNode->pNext = winShmNodeList;
-      winShmNodeList = pShmNode;
+    إذا( rc==SQLITE_OK ){
+      p_Shm_گرہ->p_اگلا = win_Shm_گرہ_List;
+      win_Shm_گرہ_List = p_Shm_گرہ;
       pNew = 0;
-    }else{
-      sqlite3_mutex_free(pShmNode->mutex);
-      if( pShmNode->hSharedShm!=INVALID_HANDLE_VALUE ){
-        osCloseHandle(pShmNode->hSharedShm);
+    }وإلا{
+      sqlite3_mutex_free(p_Shm_گرہ->mutex);
+      إذا( p_Shm_گرہ->hSharedShm!=INVALID_HANDLE_قدر ){
+        osCloseHandle(p_Shm_گرہ->hSharedShm);
       }
     }
   }
 
   /* If no error has occurred, link the winShm object to the winShmNode and
   ** the winShm to pDbFd.  */
-  if( rc==SQLITE_OK ){
-    sqlite3_mutex_enter(pShmNode->mutex);
-    p->pShmNode = pShmNode;
-    p->pWinShmNext = pShmNode->pWinShmList;
-    pShmNode->pWinShmList = p;
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
-    p->id = pShmNode->nextShmId++;
-#endif
+  إذا( rc==SQLITE_OK ){
+    sqlite3_mutex_enter(p_Shm_گرہ->mutex);
+    p->p_Shm_گرہ = p_Shm_گرہ;
+    p->p_Win_Shm_اگلا = p_Shm_گرہ->pWinShmList;
+    p_Shm_گرہ->pWinShmList = p;
+#إذا defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+    p->id = p_Shm_گرہ->اگلا_Shm_Id++;
+#جے_انت
     pDbFd->pShm = p;
-    sqlite3_mutex_leave(pShmNode->mutex);
-  }else if( p ){
+    sqlite3_mutex_leave(p_Shm_گرہ->mutex);
+  }وإلا إذا( p ){
     sqlite3_free(p);
   }
 
-  assert( rc!=SQLITE_OK || pShmNode->isUnlocked==0 || pShmNode->nRegion==0 );
+  أكد( rc!=SQLITE_OK || p_Shm_گرہ->isUnlocked==0 || p_Shm_گرہ->nRegion==0 );
   winShmLeaveMutex();
   sqlite3_free(pNew);
 
   /* Open a file-handle on the *-shm file for this connection. This file-handle
   ** is only used for locking. The mapping of the *-shm file is created using
   ** the shared file handle in winShmNode.hSharedShm.  */
-  if( rc==SQLITE_OK && pShmNode->bUseSharedLockHandle==0 ){
-    p->bReadonly = sqlite3_uri_boolean(pDbFd->zPath, "readonly_shm", 0);
-    rc = winHandleOpen(pShmNode->zFilename, &p->bReadonly, &p->hShm);
-    if( rc!=SQLITE_OK ){
-      assert( p->hShm==INVALID_HANDLE_VALUE );
-      winCloseSharedMemory(pDbFd, 0);
+  إذا( rc==SQLITE_OK && p_Shm_گرہ->b_Use_Shared_جندرا_Handle==0 ){
+    p->bReadonly = sqlite3_uri_boolean(pDbFd->z_رستہ, "readonly_shm", 0);
+    rc = winHandleOpen(p_Shm_گرہ->zFilename, &p->bReadonly, &p->hShm);
+    إذا( rc!=SQLITE_OK ){
+      أكد( p->hShm==INVALID_HANDLE_قدر );
+      win_Close_Shared_حافظہ(pDbFd, 0);
     }
   }
 
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Close a connection to shared-memory.  Delete the underlying
 ** storage if deleteFlag is true.
 */
-static int winShmUnmap(
+ساكن صحيح winShmUnmap(
   sqlite3_file *fd,          /* Database holding shared memory */
-  int deleteFlag             /* Delete after closing if true */
+  صحيح deleteFlag             /* Delete after closing if true */
 ){
-  return winCloseSharedMemory((winFile*)fd, deleteFlag);
+  أرجع win_Close_Shared_حافظہ((winFile*)fd, deleteFlag);
 }
 
 /*
 ** Change the lock state for a shared-memory segment.
 */
-static int winShmLock(
+ساكن صحيح win_Shm_جندرا(
   sqlite3_file *fd,          /* Database file holding the shared memory */
-  int ofst,                  /* First lock to acquire or release */
-  int n,                     /* Number of locks to acquire or release */
-  int flags                  /* What to do with the lock */
+  صحيح ofst,                  /* First lock to acquire or release */
+  صحيح n,                     /* Number of locks to acquire or release */
+  صحيح flags                  /* What to do with the lock */
 ){
   winFile *pDbFd = (winFile*)fd;        /* Connection holding shared memory */
   winShm *p = pDbFd->pShm;              /* The shared memory being locked */
-  winShmNode *pShmNode;
-  int rc = SQLITE_OK;                   /* Result code */
-  u16 mask = (u16)((1U<<(ofst+n)) - (1U<<ofst)); /* Mask of locks to [un]take */
+  win_Shm_گرہ *p_Shm_گرہ;
+  صحيح rc = SQLITE_OK;                   /* Result code */
+  u16 نقاب = (u16)((1U<<(ofst+n)) - (1U<<ofst)); /* Mask of locks to [un]take */
 
-  if( p==0 ) return SQLITE_IOERR_SHMLOCK;
-  pShmNode = p->pShmNode;
-  if( NEVER(pShmNode==0) ) return SQLITE_IOERR_SHMLOCK;
+  إذا( p==0 ) أرجع SQLITE_IOERR_SHMLOCK;
+  p_Shm_گرہ = p->p_Shm_گرہ;
+  إذا( NEVER(p_Shm_گرہ==0) ) أرجع SQLITE_IOERR_SHMLOCK;
 
-  assert( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
-  assert( n>=1 );
-  assert( flags==(SQLITE_SHM_LOCK | SQLITE_SHM_SHARED)
-       || flags==(SQLITE_SHM_LOCK | SQLITE_SHM_EXCLUSIVE)
+  أكد( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
+  أكد( n>=1 );
+  أكد( flags==(SQLITE_SHM_جندرا | SQLITE_SHM_SHARED)
+       || flags==(SQLITE_SHM_جندرا | SQLITE_SHM_EXCLUSIVE)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_SHARED)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE) );
-  assert( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
+  أكد( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
 
   /* Check that, if this to be a blocking lock, no locks that occur later
   ** in the following list than the lock being obtained are already held:
@@ -3464,17 +3464,17 @@ static int winShmLock(
   ** occur later in the above list than the lock being obtained may be
   ** held.
   */
-#if defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
+#إذا defined(SQLITE_ENABLE_SETLK_TIMEOUT) && defined(SQLITE_DEBUG)
   {
-    u16 lockMask = (p->exclMask|p->sharedMask);
-    assert( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
-          (ofst!=2 || lockMask==0)
-       && (ofst!=1 || lockMask==0 || lockMask==2)
-       && (ofst!=0 || lockMask<3)
-       && (ofst<3  || lockMask<(1<<ofst))
+    u16 جندرا_نقاب = (p->excl_نقاب|p->shared_نقاب);
+    أكد( (flags & SQLITE_SHM_UNLOCK) || pDbFd->iBusyTimeout==0 || (
+          (ofst!=2 || جندرا_نقاب==0)
+       && (ofst!=1 || جندرا_نقاب==0 || جندرا_نقاب==2)
+       && (ofst!=0 || جندرا_نقاب<3)
+       && (ofst<3  || جندرا_نقاب<(1<<ofst))
     ));
   }
-#endif
+#جے_انت
 
   /* Check if there is any work to do. There are three cases:
   **
@@ -3484,83 +3484,83 @@ static int winShmLock(
   **
   ** The SQLite core never requests an exclusive lock that it already holds.
   ** This is assert()ed immediately below.  */
-  assert( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK) 
-       || 0==(p->exclMask & mask)
+  أكد( flags!=(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_جندرا) 
+       || 0==(p->excl_نقاب & نقاب)
   );
-  if( ((flags & SQLITE_SHM_UNLOCK) && ((p->exclMask|p->sharedMask) & mask))
-   || (flags==(SQLITE_SHM_SHARED|SQLITE_SHM_LOCK) && 0==(p->sharedMask & mask))
-   || (flags==(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_LOCK))
+  إذا( ((flags & SQLITE_SHM_UNLOCK) && ((p->excl_نقاب|p->shared_نقاب) & نقاب))
+   || (flags==(SQLITE_SHM_SHARED|SQLITE_SHM_جندرا) && 0==(p->shared_نقاب & نقاب))
+   || (flags==(SQLITE_SHM_EXCLUSIVE|SQLITE_SHM_جندرا))
   ){
     HANDLE h = p->hShm;
 
-    if( flags & SQLITE_SHM_UNLOCK ){
+    إذا( flags & SQLITE_SHM_UNLOCK ){
       /* Case (a) - unlock.  */
 
-      assert( (p->exclMask & p->sharedMask)==0 );
-      assert( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->exclMask & mask)==mask );
-      assert( !(flags & SQLITE_SHM_SHARED) || (p->sharedMask & mask)==mask );
+      أكد( (p->excl_نقاب & p->shared_نقاب)==0 );
+      أكد( !(flags & SQLITE_SHM_EXCLUSIVE) || (p->excl_نقاب & نقاب)==نقاب );
+      أكد( !(flags & SQLITE_SHM_SHARED) || (p->shared_نقاب & نقاب)==نقاب );
 
-      assert( !(flags & SQLITE_SHM_SHARED) || n==1 );
-      if( pShmNode->bUseSharedLockHandle ){
-        h = pShmNode->hSharedShm;
-        if( flags & SQLITE_SHM_SHARED ){
+      أكد( !(flags & SQLITE_SHM_SHARED) || n==1 );
+      إذا( p_Shm_گرہ->b_Use_Shared_جندرا_Handle ){
+        h = p_Shm_گرہ->hSharedShm;
+        إذا( flags & SQLITE_SHM_SHARED ){
           winShm *pShm;
-          sqlite3_mutex_enter(pShmNode->mutex);
-          for(pShm=pShmNode->pWinShmList; pShm; pShm=pShm->pWinShmNext){
-            if( pShm!=p && (pShm->sharedMask & mask) ){
+          sqlite3_mutex_enter(p_Shm_گرہ->mutex);
+          لكل(pShm=p_Shm_گرہ->pWinShmList; pShm; pShm=pShm->p_Win_Shm_اگلا){
+            إذا( pShm!=p && (pShm->shared_نقاب & نقاب) ){
               /* Another connection within this process is also holding this
               ** SHARED lock. So do not actually release the OS lock.  */
-              h = INVALID_HANDLE_VALUE;
-              break;
+              h = INVALID_HANDLE_قدر;
+              اكسر;
             }
           }
-          sqlite3_mutex_leave(pShmNode->mutex);
+          sqlite3_mutex_leave(p_Shm_گرہ->mutex);
         }
       }
 
-      if( h!=INVALID_HANDLE_VALUE ){
-        rc = winHandleUnlock(h, ofst+WIN_SHM_BASE, n);
+      إذا( h!=INVALID_HANDLE_قدر ){
+        rc = winHandleUnlock(h, ofst+WIN_SHM_ادھار, n);
       }
 
       /* If successful, also clear the bits in sharedMask/exclMask */
-      if( rc==SQLITE_OK ){
-        p->exclMask = (p->exclMask & ~mask);
-        p->sharedMask = (p->sharedMask & ~mask);
+      إذا( rc==SQLITE_OK ){
+        p->excl_نقاب = (p->excl_نقاب & ~نقاب);
+        p->shared_نقاب = (p->shared_نقاب & ~نقاب);
       }
-    }else{
-      int bExcl = ((flags & SQLITE_SHM_EXCLUSIVE) ? 1 : 0);
+    }وإلا{
+      صحيح bExcl = ((flags & SQLITE_SHM_EXCLUSIVE) ? 1 : 0);
       DWORD nMs = winFileBusyTimeout(pDbFd);
 
-      if( pShmNode->bUseSharedLockHandle ){
+      إذا( p_Shm_گرہ->b_Use_Shared_جندرا_Handle ){
         winShm *pShm;
-        h = pShmNode->hSharedShm;
-        sqlite3_mutex_enter(pShmNode->mutex);
-        for(pShm=pShmNode->pWinShmList; pShm; pShm=pShm->pWinShmNext){
-          if( bExcl ){
-            if( (pShm->sharedMask|pShm->exclMask) & mask ){
+        h = p_Shm_گرہ->hSharedShm;
+        sqlite3_mutex_enter(p_Shm_گرہ->mutex);
+        لكل(pShm=p_Shm_گرہ->pWinShmList; pShm; pShm=pShm->p_Win_Shm_اگلا){
+          إذا( bExcl ){
+            إذا( (pShm->shared_نقاب|pShm->excl_نقاب) & نقاب ){
               rc = SQLITE_BUSY;
-              h = INVALID_HANDLE_VALUE;
+              h = INVALID_HANDLE_قدر;
             }
-          }else{
-            if( pShm->sharedMask & mask ){
-              h = INVALID_HANDLE_VALUE;
-            }else if( pShm->exclMask & mask ){
+          }وإلا{
+            إذا( pShm->shared_نقاب & نقاب ){
+              h = INVALID_HANDLE_قدر;
+            }وإلا إذا( pShm->excl_نقاب & نقاب ){
               rc = SQLITE_BUSY;
-              h = INVALID_HANDLE_VALUE;
+              h = INVALID_HANDLE_قدر;
             }
           }
         }
-        sqlite3_mutex_leave(pShmNode->mutex);
+        sqlite3_mutex_leave(p_Shm_گرہ->mutex);
       }
 
-      if( h!=INVALID_HANDLE_VALUE ){
-        rc = winHandleLockTimeout(h, ofst+WIN_SHM_BASE, n, bExcl, nMs);
+      إذا( h!=INVALID_HANDLE_قدر ){
+        rc = win_Handle_جندرا_Timeout(h, ofst+WIN_SHM_ادھار, n, bExcl, nMs);
       }
-      if( rc==SQLITE_OK ){
-        if( bExcl ){
-          p->exclMask = (p->exclMask | mask);
-        }else{
-          p->sharedMask = (p->sharedMask | mask);
+      إذا( rc==SQLITE_OK ){
+        إذا( bExcl ){
+          p->excl_نقاب = (p->excl_نقاب | نقاب);
+        }وإلا{
+          p->shared_نقاب = (p->shared_نقاب | نقاب);
         }
       }
     }
@@ -3570,10 +3570,10 @@ static int winShmLock(
       "SHM-LOCK(%d,%d,%d) pid=%lu, id=%d, sharedMask=%03x, exclMask=%03x,"
       " rc=%s\n",
       ofst, n, flags, 
-      osGetCurrentProcessId(), p->id, p->sharedMask, p->exclMask,
+      osGetCurrentProcessId(), p->id, p->shared_نقاب, p->excl_نقاب,
       sqlite3ErrName(rc))
   );
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -3582,11 +3582,11 @@ static int winShmLock(
 ** All loads and stores begun before the barrier must complete before
 ** any load or store begun after the barrier.
 */
-static void winShmBarrier(
+ساكن فراغ winShmBarrier(
   sqlite3_file *fd          /* Database holding the shared memory */
 ){
-  UNUSED_PARAMETER(fd);
-  sqlite3MemoryBarrier();   /* compiler-defined memory barrier */
+  بن_ورتیا_PARAMETER(fd);
+  sqlite3_حافظہ_Barrier();   /* compiler-defined memory barrier */
   winShmEnterMutex();       /* Also mutex, for redundancy */
   winShmLeaveMutex();
 }
@@ -3610,184 +3610,184 @@ static void winShmBarrier(
 ** address space (if it is not already), *pp is set to point to the mapped
 ** memory and SQLITE_OK returned.
 */
-static int winShmMap(
+ساكن صحيح winShmMap(
   sqlite3_file *fd,               /* Handle open on database file */
-  int iRegion,                    /* Region to retrieve */
-  int szRegion,                   /* Size of regions */
-  int isWrite,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Mapped memory */
+  صحيح iRegion,                    /* Region to retrieve */
+  صحيح szRegion,                   /* Size of regions */
+  صحيح isWrite,                    /* True to extend file if necessary */
+  فراغ متطاير **pp              /* OUT: Mapped memory */
 ){
   winFile *pDbFd = (winFile*)fd;
   winShm *pShm = pDbFd->pShm;
-  winShmNode *pShmNode;
-  DWORD protect = PAGE_READWRITE;
+  win_Shm_گرہ *p_Shm_گرہ;
+  DWORD protect = ورقہ_READWRITE;
   DWORD flags = FILE_MAP_WRITE | FILE_MAP_READ;
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
 
-  if( !pShm ){
-    rc = winOpenSharedMemory(pDbFd);
-    if( rc!=SQLITE_OK ) return rc;
+  إذا( !pShm ){
+    rc = win_Open_Shared_حافظہ(pDbFd);
+    إذا( rc!=SQLITE_OK ) أرجع rc;
     pShm = pDbFd->pShm;
-    assert( pShm!=0 );
+    أكد( pShm!=0 );
   }
-  pShmNode = pShm->pShmNode;
+  p_Shm_گرہ = pShm->p_Shm_گرہ;
 
-  sqlite3_mutex_enter(pShmNode->mutex);
-  if( pShmNode->isUnlocked ){
+  sqlite3_mutex_enter(p_Shm_گرہ->mutex);
+  إذا( p_Shm_گرہ->isUnlocked ){
     /* Take the DMS lock. */
-    assert( pShmNode->nRegion==0 );
-    rc = winLockSharedMemory(pShmNode, winFileBusyTimeout(pDbFd));
-    if( rc!=SQLITE_OK ) goto shmpage_out;
+    أكد( p_Shm_گرہ->nRegion==0 );
+    rc = win_جندرا_Shared_حافظہ(p_Shm_گرہ, winFileBusyTimeout(pDbFd));
+    إذا( rc!=SQLITE_OK ) اذهب shmpage_باہرلا;
   }
 
-  assert( szRegion==pShmNode->szRegion || pShmNode->nRegion==0 );
-  if( pShmNode->nRegion<=iRegion ){
-    HANDLE hShared = pShmNode->hSharedShm;
-    struct ShmRegion *apNew;           /* New aRegion[] array */
+  أكد( szRegion==p_Shm_گرہ->szRegion || p_Shm_گرہ->nRegion==0 );
+  إذا( p_Shm_گرہ->nRegion<=iRegion ){
+    HANDLE hShared = p_Shm_گرہ->hSharedShm;
+    بنية ShmRegion *apNew;           /* New aRegion[] array */
     i64 nByte = ((i64)iRegion+1)*(i64)szRegion;  /* Minimum file size */
     sqlite3_int64 sz;                  /* Current size of wal-index file */
 
-    pShmNode->szRegion = szRegion;
+    p_Shm_گرہ->szRegion = szRegion;
 
     /* The requested region is not mapped into this processes address space.
     ** Check to see if it has been allocated (i.e. if the wal-index file is
     ** large enough to contain the requested region).
     */
-    rc = winHandleSize(hShared, &sz);
-    if( rc!=SQLITE_OK ){
-      rc = winLogError(rc, osGetLastError(), "winShmMap1", pDbFd->zPath);
-      goto shmpage_out;
+    rc = win_Handle_ناپ(hShared, &sz);
+    إذا( rc!=SQLITE_OK ){
+      rc = winLogError(rc, os_Get_آخری_Error(), "winShmMap1", pDbFd->z_رستہ);
+      اذهب shmpage_باہرلا;
     }
 
-    if( sz<nByte ){
+    إذا( sz<nByte ){
       /* The requested memory region does not exist. If isWrite is set to
       ** zero, exit early. *pp will be set to NULL and SQLITE_OK returned.
       **
       ** Alternatively, if isWrite is non-zero, use ftruncate() to allocate
       ** the requested memory region.  */
-      if( !isWrite ) goto shmpage_out;
+      إذا( !isWrite ) اذهب shmpage_باہرلا;
       rc = winHandleTruncate(hShared, nByte);
-      if( rc!=SQLITE_OK ){
-        rc = winLogError(rc, osGetLastError(), "winShmMap2", pDbFd->zPath);
-        goto shmpage_out;
+      إذا( rc!=SQLITE_OK ){
+        rc = winLogError(rc, os_Get_آخری_Error(), "winShmMap2", pDbFd->z_رستہ);
+        اذهب shmpage_باہرلا;
       }
     }
 
     /* Map the requested memory region into this processes address space. */
-    apNew = (struct ShmRegion*)sqlite3_realloc64(
-        pShmNode->aRegion, ((i64)iRegion+1)*sizeof(apNew[0])
+    apNew = (بنية ShmRegion*)sqlite3_realloc64(
+        p_Shm_گرہ->aRegion, ((i64)iRegion+1)*حجم(apNew[0])
     );
-    if( !apNew ){
+    إذا( !apNew ){
       rc = SQLITE_IOERR_NOMEM_BKPT;
-      goto shmpage_out;
+      اذهب shmpage_باہرلا;
     }
-    pShmNode->aRegion = apNew;
+    p_Shm_گرہ->aRegion = apNew;
 
-    if( pShmNode->isReadonly ){
-      protect = PAGE_READONLY;
+    إذا( p_Shm_گرہ->isReadonly ){
+      protect = ورقہ_READONLY;
       flags = FILE_MAP_READ;
     }
 
-    while( pShmNode->nRegion<=iRegion ){
-      HANDLE hMap = NULL;         /* file-mapping handle */
-      void *pMap = 0;             /* Mapped memory region */
+    طالما( p_Shm_گرہ->nRegion<=iRegion ){
+      HANDLE hMap = عدم;         /* file-mapping handle */
+      فراغ *pMap = 0;             /* Mapped memory region */
 
-#ifdef SQLITE_UWP
-      hMap = osCreateFileMappingFromApp(hShared, NULL, protect, nByte, NULL);
-#else
-      hMap = osCreateFileMappingW(hShared, NULL, protect, 0, nByte, NULL);
-#endif
+#جے_تعریف_شدہ SQLITE_UWP
+      hMap = osCreateFileMappingFromApp(hShared, عدم, protect, nByte, عدم);
+#وإلا
+      hMap = osCreateFileMappingW(hShared, عدم, protect, 0, nByte, عدم);
+#جے_انت
       OSTRACE(("SHM-MAP-CREATE pid=%lu, region=%d, size=%lld, rc=%s\n",
-               osGetCurrentProcessId(), pShmNode->nRegion, nByte,
+               osGetCurrentProcessId(), p_Shm_گرہ->nRegion, nByte,
                hMap ? "ok" : "failed"));
-      if( hMap ){
-        i64 iOffset = pShmNode->nRegion*szRegion;
-        int iOffsetShift = iOffset % winSysInfo.dwAllocationGranularity;
-#ifdef SQLITE_UWP
-        pMap = osMapViewOfFileFromApp(hMap, flags,
-            iOffset - iOffsetShift, (i64)szRegion + iOffsetShift
+      إذا( hMap ){
+        i64 i_وتھ = p_Shm_گرہ->nRegion*szRegion;
+        صحيح i_وتھ_کھسکاؤ = i_وتھ % winSysInfo.dw_ونڈ_Granularity;
+#جے_تعریف_شدہ SQLITE_UWP
+        pMap = os_Map_View_دا_File_From_App(hMap, flags,
+            i_وتھ - i_وتھ_کھسکاؤ, (i64)szRegion + i_وتھ_کھسکاؤ
         );
-#else
-        pMap = osMapViewOfFile(hMap, flags,
-            0, iOffset - iOffsetShift, (i64)szRegion + iOffsetShift
+#وإلا
+        pMap = os_Map_View_دا_File(hMap, flags,
+            0, i_وتھ - i_وتھ_کھسکاؤ, (i64)szRegion + i_وتھ_کھسکاؤ
         );
-#endif
+#جے_انت
         OSTRACE(("SHM-MAP-MAP pid=%lu, region=%d, offset=%d, size=%d, rc=%s\n",
-                 osGetCurrentProcessId(), pShmNode->nRegion, iOffset,
+                 osGetCurrentProcessId(), p_Shm_گرہ->nRegion, i_وتھ,
                  szRegion, pMap ? "ok" : "failed"));
       }
-      if( !pMap ){
-        pShmNode->lastErrno = osGetLastError();
-        rc = winLogError(SQLITE_IOERR_SHMMAP, pShmNode->lastErrno,
-                         "winShmMap3", pDbFd->zPath);
-        if( hMap ) osCloseHandle(hMap);
-        goto shmpage_out;
+      إذا( !pMap ){
+        p_Shm_گرہ->آخری_Errno = os_Get_آخری_Error();
+        rc = winLogError(SQLITE_IOERR_SHMMAP, p_Shm_گرہ->آخری_Errno,
+                         "winShmMap3", pDbFd->z_رستہ);
+        إذا( hMap ) osCloseHandle(hMap);
+        اذهب shmpage_باہرلا;
       }
 
-      pShmNode->aRegion[pShmNode->nRegion].pMap = pMap;
-      pShmNode->aRegion[pShmNode->nRegion].hMap = hMap;
-      pShmNode->nRegion++;
+      p_Shm_گرہ->aRegion[p_Shm_گرہ->nRegion].pMap = pMap;
+      p_Shm_گرہ->aRegion[p_Shm_گرہ->nRegion].hMap = hMap;
+      p_Shm_گرہ->nRegion++;
     }
   }
 
-shmpage_out:
-  if( pShmNode->nRegion>iRegion ){
-    i64 iOffset = (i64)iRegion*(i64)szRegion;
-    int iOffsetShift = iOffset % winSysInfo.dwAllocationGranularity;
-    char *p = (char *)pShmNode->aRegion[iRegion].pMap;
-    *pp = (void *)&p[iOffsetShift];
-  }else{
+shmpage_باہرلا:
+  إذا( p_Shm_گرہ->nRegion>iRegion ){
+    i64 i_وتھ = (i64)iRegion*(i64)szRegion;
+    صحيح i_وتھ_کھسکاؤ = i_وتھ % winSysInfo.dw_ونڈ_Granularity;
+    حرف *p = (حرف *)p_Shm_گرہ->aRegion[iRegion].pMap;
+    *pp = (فراغ *)&p[i_وتھ_کھسکاؤ];
+  }وإلا{
     *pp = 0;
   }
-  if( pShmNode->isReadonly && rc==SQLITE_OK ){
+  إذا( p_Shm_گرہ->isReadonly && rc==SQLITE_OK ){
     rc = SQLITE_READONLY;
   }
-  sqlite3_mutex_leave(pShmNode->mutex);
-  return rc;
+  sqlite3_mutex_leave(p_Shm_گرہ->mutex);
+  أرجع rc;
 }
 
-#else
+#وإلا
 # define winShmMap     0
-# define winShmLock    0
+# define win_Shm_جندرا    0
 # define winShmBarrier 0
 # define winShmUnmap   0
-#endif /* #ifndef SQLITE_OMIT_WAL */
+#جے_انت /* #ifndef SQLITE_OMIT_WAL */
 
 /*
 ** Cleans up the mapped region of the specified file, if any.
 */
-#if SQLITE_MAX_MMAP_SIZE>0
-static int winUnmapfile(winFile *pFile){
-  assert( pFile!=0 );
+#إذا SQLITE_MAX_MMAP_ناپ>0
+ساكن صحيح winUnmapfile(winFile *pFile){
+  أكد( pFile!=0 );
   OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, hMap=%p, pMapRegion=%p, "
            "mmapSize=%lld, mmapSizeMax=%lld\n",
            osGetCurrentProcessId(), pFile, pFile->hMap, pFile->pMapRegion,
-           pFile->mmapSize, pFile->mmapSizeMax));
-  if( pFile->pMapRegion ){
-    if( !osUnmapViewOfFile(pFile->pMapRegion) ){
-      pFile->lastErrno = osGetLastError();
+           pFile->mmap_ناپ, pFile->mmap_ناپ_Max));
+  إذا( pFile->pMapRegion ){
+    إذا( !os_Unmap_View_دا_File(pFile->pMapRegion) ){
+      pFile->آخری_Errno = os_Get_آخری_Error();
       OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, pMapRegion=%p, "
                "rc=SQLITE_IOERR_MMAP\n", osGetCurrentProcessId(), pFile,
                pFile->pMapRegion));
-      return winLogError(SQLITE_IOERR_MMAP, pFile->lastErrno,
-                         "winUnmapfile1", pFile->zPath);
+      أرجع winLogError(SQLITE_IOERR_MMAP, pFile->آخری_Errno,
+                         "winUnmapfile1", pFile->z_رستہ);
     }
     pFile->pMapRegion = 0;
-    pFile->mmapSize = 0;
+    pFile->mmap_ناپ = 0;
   }
-  if( pFile->hMap!=NULL ){
-    if( !osCloseHandle(pFile->hMap) ){
-      pFile->lastErrno = osGetLastError();
+  إذا( pFile->hMap!=عدم ){
+    إذا( !osCloseHandle(pFile->hMap) ){
+      pFile->آخری_Errno = os_Get_آخری_Error();
       OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, hMap=%p, rc=SQLITE_IOERR_MMAP\n",
                osGetCurrentProcessId(), pFile, pFile->hMap));
-      return winLogError(SQLITE_IOERR_MMAP, pFile->lastErrno,
-                         "winUnmapfile2", pFile->zPath);
+      أرجع winLogError(SQLITE_IOERR_MMAP, pFile->آخری_Errno,
+                         "winUnmapfile2", pFile->z_رستہ);
     }
-    pFile->hMap = NULL;
+    pFile->hMap = عدم;
   }
   OSTRACE(("UNMAP-FILE pid=%lu, pFile=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFile));
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -3806,87 +3806,87 @@ static int winUnmapfile(winFile *pFile){
 ** recreated as a result of outstanding references) or an SQLite error
 ** code otherwise.
 */
-static int winMapfile(winFile *pFd, sqlite3_int64 nByte){
+ساكن صحيح winMapfile(winFile *pFd, sqlite3_int64 nByte){
   sqlite3_int64 nMap = nByte;
-  int rc;
+  صحيح rc;
 
-  assert( nMap>=0 || pFd->nFetchOut==0 );
+  أكد( nMap>=0 || pFd->n_Fetch_باہرلا==0 );
   OSTRACE(("MAP-FILE pid=%lu, pFile=%p, size=%lld\n",
            osGetCurrentProcessId(), pFd, nByte));
 
-  if( pFd->nFetchOut>0 ) return SQLITE_OK;
+  إذا( pFd->n_Fetch_باہرلا>0 ) أرجع SQLITE_OK;
 
-  if( nMap<0 ){
-    rc = winFileSize((sqlite3_file*)pFd, &nMap);
-    if( rc ){
+  إذا( nMap<0 ){
+    rc = win_File_ناپ((sqlite3_file*)pFd, &nMap);
+    إذا( rc ){
       OSTRACE(("MAP-FILE pid=%lu, pFile=%p, rc=SQLITE_IOERR_FSTAT\n",
                osGetCurrentProcessId(), pFd));
-      return SQLITE_IOERR_FSTAT;
+      أرجع SQLITE_IOERR_FSTAT;
     }
   }
-  if( nMap>pFd->mmapSizeMax ){
-    nMap = pFd->mmapSizeMax;
+  إذا( nMap>pFd->mmap_ناپ_Max ){
+    nMap = pFd->mmap_ناپ_Max;
   }
-  nMap &= ~(sqlite3_int64)(winSysInfo.dwPageSize - 1);
+  nMap &= ~(sqlite3_int64)(winSysInfo.dw_ورقہ_ناپ - 1);
 
-  if( nMap==0 && pFd->mmapSize>0 ){
+  إذا( nMap==0 && pFd->mmap_ناپ>0 ){
     winUnmapfile(pFd);
   }
-  if( nMap!=pFd->mmapSize ){
-    void *pNew = 0;
-    DWORD protect = PAGE_READONLY;
+  إذا( nMap!=pFd->mmap_ناپ ){
+    فراغ *pNew = 0;
+    DWORD protect = ورقہ_READONLY;
     DWORD flags = FILE_MAP_READ;
 
     winUnmapfile(pFd);
-#ifdef SQLITE_MMAP_READWRITE
-    if( (pFd->ctrlFlags & WINFILE_RDONLY)==0 ){
-      protect = PAGE_READWRITE;
+#جے_تعریف_شدہ SQLITE_MMAP_READWRITE
+    إذا( (pFd->ctrlFlags & WINFILE_RDONLY)==0 ){
+      protect = ورقہ_READWRITE;
       flags |= FILE_MAP_WRITE;
     }
-#endif
-#ifdef SQLITE_UWP
-    pFd->hMap = osCreateFileMappingFromApp(pFd->h, NULL, protect, nMap, NULL);
-#else
-    pFd->hMap = osCreateFileMappingW(pFd->h, NULL, protect,
+#جے_انت
+#جے_تعریف_شدہ SQLITE_UWP
+    pFd->hMap = osCreateFileMappingFromApp(pFd->h, عدم, protect, nMap, عدم);
+#وإلا
+    pFd->hMap = osCreateFileMappingW(pFd->h, عدم, protect,
                                 (DWORD)((nMap>>32) & 0xffffffff),
-                                (DWORD)(nMap & 0xffffffff), NULL);
-#endif
-    if( pFd->hMap==NULL ){
-      pFd->lastErrno = osGetLastError();
-      rc = winLogError(SQLITE_IOERR_MMAP, pFd->lastErrno,
-                       "winMapfile1", pFd->zPath);
+                                (DWORD)(nMap & 0xffffffff), عدم);
+#جے_انت
+    إذا( pFd->hMap==عدم ){
+      pFd->آخری_Errno = os_Get_آخری_Error();
+      rc = winLogError(SQLITE_IOERR_MMAP, pFd->آخری_Errno,
+                       "winMapfile1", pFd->z_رستہ);
       /* Log the error, but continue normal operation using xRead/xWrite */
       OSTRACE(("MAP-FILE-CREATE pid=%lu, pFile=%p, rc=%s\n",
                osGetCurrentProcessId(), pFd, sqlite3ErrName(rc)));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
-    assert( (nMap % winSysInfo.dwPageSize)==0 );
-    assert( sizeof(SIZE_T)==sizeof(sqlite3_int64) || nMap<=0xffffffff );
-#ifdef SQLITE_UWP
-    pNew = osMapViewOfFileFromApp(pFd->hMap, flags, 0, (SIZE_T)nMap);
-#else
-    pNew = osMapViewOfFile(pFd->hMap, flags, 0, 0, (SIZE_T)nMap);
-#endif
-    if( pNew==NULL ){
+    أكد( (nMap % winSysInfo.dw_ورقہ_ناپ)==0 );
+    أكد( حجم(ناپ_T)==حجم(sqlite3_int64) || nMap<=0xffffffff );
+#جے_تعریف_شدہ SQLITE_UWP
+    pNew = os_Map_View_دا_File_From_App(pFd->hMap, flags, 0, (ناپ_T)nMap);
+#وإلا
+    pNew = os_Map_View_دا_File(pFd->hMap, flags, 0, 0, (ناپ_T)nMap);
+#جے_انت
+    إذا( pNew==عدم ){
       osCloseHandle(pFd->hMap);
-      pFd->hMap = NULL;
-      pFd->lastErrno = osGetLastError();
-      rc = winLogError(SQLITE_IOERR_MMAP, pFd->lastErrno,
-                       "winMapfile2", pFd->zPath);
+      pFd->hMap = عدم;
+      pFd->آخری_Errno = os_Get_آخری_Error();
+      rc = winLogError(SQLITE_IOERR_MMAP, pFd->آخری_Errno,
+                       "winMapfile2", pFd->z_رستہ);
       /* Log the error, but continue normal operation using xRead/xWrite */
       OSTRACE(("MAP-FILE-MAP pid=%lu, pFile=%p, rc=%s\n",
                osGetCurrentProcessId(), pFd, sqlite3ErrName(rc)));
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
     pFd->pMapRegion = pNew;
-    pFd->mmapSize = nMap;
+    pFd->mmap_ناپ = nMap;
   }
 
   OSTRACE(("MAP-FILE pid=%lu, pFile=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), pFd));
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
-#endif /* SQLITE_MAX_MMAP_SIZE>0 */
+#جے_انت /* SQLITE_MAX_MMAP_SIZE>0 */
 
 /*
 ** If possible, return a pointer to a mapping of file fd starting at offset
@@ -3900,41 +3900,41 @@ static int winMapfile(winFile *pFd, sqlite3_int64 nByte){
 ** If this function does return a pointer, the caller must eventually
 ** release the reference by calling winUnfetch().
 */
-static int winFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
-#if SQLITE_MAX_MMAP_SIZE>0
+ساكن صحيح winFetch(sqlite3_file *fd, i64 iOff, صحيح nAmt, فراغ **pp){
+#إذا SQLITE_MAX_MMAP_ناپ>0
   winFile *pFd = (winFile*)fd;   /* The underlying database file */
-#endif
+#جے_انت
   *pp = 0;
 
   OSTRACE(("FETCH pid=%lu, pFile=%p, offset=%lld, amount=%d, pp=%p\n",
            osGetCurrentProcessId(), fd, iOff, nAmt, pp));
 
-#if SQLITE_MAX_MMAP_SIZE>0
-  if( pFd->mmapSizeMax>0 ){
+#إذا SQLITE_MAX_MMAP_ناپ>0
+  إذا( pFd->mmap_ناپ_Max>0 ){
     /* Ensure that there is always at least a 256 byte buffer of addressable
     ** memory following the returned page. If the database is corrupt,
     ** SQLite may overread the page slightly (in practice only a few bytes,
     ** but 256 is safe, round, number).  */
-    const int nEofBuffer = 256;
-    if( pFd->pMapRegion==0 ){
-      int rc = winMapfile(pFd, -1);
-      if( rc!=SQLITE_OK ){
+    ثابت صحيح n_Eof_بفر = 256;
+    إذا( pFd->pMapRegion==0 ){
+      صحيح rc = winMapfile(pFd, -1);
+      إذا( rc!=SQLITE_OK ){
         OSTRACE(("FETCH pid=%lu, pFile=%p, rc=%s\n",
                  osGetCurrentProcessId(), pFd, sqlite3ErrName(rc)));
-        return rc;
+        أرجع rc;
       }
     }
-    if( pFd->mmapSize >= (iOff+nAmt+nEofBuffer) ){
-      assert( pFd->pMapRegion!=0 );
+    إذا( pFd->mmap_ناپ >= (iOff+nAmt+n_Eof_بفر) ){
+      أكد( pFd->pMapRegion!=0 );
       *pp = &((u8 *)pFd->pMapRegion)[iOff];
-      pFd->nFetchOut++;
+      pFd->n_Fetch_باہرلا++;
     }
   }
-#endif
+#جے_انت
 
   OSTRACE(("FETCH pid=%lu, pFile=%p, pp=%p, *pp=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), fd, pp, *pp));
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -3947,24 +3947,24 @@ static int winFetch(sqlite3_file *fd, i64 iOff, int nAmt, void **pp){
 ** to inform the VFS layer that, according to POSIX, any existing mapping
 ** may now be invalid and should be unmapped.
 */
-static int winUnfetch(sqlite3_file *fd, i64 iOff, void *p){
-#if SQLITE_MAX_MMAP_SIZE>0
+ساكن صحيح winUnfetch(sqlite3_file *fd, i64 iOff, فراغ *p){
+#إذا SQLITE_MAX_MMAP_ناپ>0
   winFile *pFd = (winFile*)fd;   /* The underlying database file */
 
   /* If p==0 (unmap the entire file) then there must be no outstanding
   ** xFetch references. Or, if p!=0 (meaning it is an xFetch reference),
   ** then there must be at least one outstanding.  */
-  assert( (p==0)==(pFd->nFetchOut==0) );
+  أكد( (p==0)==(pFd->n_Fetch_باہرلا==0) );
 
   /* If p!=0, it must match the iOff value. */
-  assert( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
+  أكد( p==0 || p==&((u8 *)pFd->pMapRegion)[iOff] );
 
   OSTRACE(("UNFETCH pid=%lu, pFile=%p, offset=%lld, p=%p\n",
            osGetCurrentProcessId(), pFd, iOff, p));
 
-  if( p ){
-    pFd->nFetchOut--;
-  }else{
+  إذا( p ){
+    pFd->n_Fetch_باہرلا--;
+  }وإلا{
     /* FIXME:  If Windows truly always prevents truncating or deleting a
     ** file while a mapping is held, then the following winUnmapfile() call
     ** is unnecessary can be omitted - potentially improving
@@ -3972,12 +3972,12 @@ static int winUnfetch(sqlite3_file *fd, i64 iOff, void *p){
     winUnmapfile(pFd);
   }
 
-  assert( pFd->nFetchOut>=0 );
-#endif
+  أكد( pFd->n_Fetch_باہرلا>=0 );
+#جے_انت
 
   OSTRACE(("UNFETCH pid=%lu, pFile=%p, rc=SQLITE_OK\n",
            osGetCurrentProcessId(), fd));
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -3990,22 +3990,22 @@ static int winUnfetch(sqlite3_file *fd, i64 iOff, void *p){
 ** This vector defines all the methods that can operate on an
 ** sqlite3_file for win32.
 */
-static const sqlite3_io_methods winIoMethod = {
+ساكن ثابت sqlite3_io_methods win_Io_طریقہ = {
   3,                              /* iVersion */
   winClose,                       /* xClose */
   winRead,                        /* xRead */
   winWrite,                       /* xWrite */
   winTruncate,                    /* xTruncate */
   winSync,                        /* xSync */
-  winFileSize,                    /* xFileSize */
-  winLock,                        /* xLock */
+  win_File_ناپ,                    /* xFileSize */
+  win_جندرا,                        /* xLock */
   winUnlock,                      /* xUnlock */
-  winCheckReservedLock,           /* xCheckReservedLock */
+  win_Check_Reserved_جندرا,           /* xCheckReservedLock */
   winFileControl,                 /* xFileControl */
-  winSectorSize,                  /* xSectorSize */
+  win_Sector_ناپ,                  /* xSectorSize */
   winDeviceCharacteristics,       /* xDeviceCharacteristics */
   winShmMap,                      /* xShmMap */
-  winShmLock,                     /* xShmLock */
+  win_Shm_جندرا,                     /* xShmLock */
   winShmBarrier,                  /* xShmBarrier */
   winShmUnmap,                    /* xShmUnmap */
   winFetch,                       /* xFetch */
@@ -4016,36 +4016,36 @@ static const sqlite3_io_methods winIoMethod = {
 ** This vector defines all the methods that can operate on an
 ** sqlite3_file for win32 without performing any locking.
 */
-static const sqlite3_io_methods winIoNolockMethod = {
+ساكن ثابت sqlite3_io_methods win_Io_Nolock_طریقہ = {
   3,                              /* iVersion */
   winClose,                       /* xClose */
   winRead,                        /* xRead */
   winWrite,                       /* xWrite */
   winTruncate,                    /* xTruncate */
   winSync,                        /* xSync */
-  winFileSize,                    /* xFileSize */
-  winNolockLock,                  /* xLock */
+  win_File_ناپ,                    /* xFileSize */
+  win_Nolock_جندرا,                  /* xLock */
   winNolockUnlock,                /* xUnlock */
-  winNolockCheckReservedLock,     /* xCheckReservedLock */
+  win_Nolock_Check_Reserved_جندرا,     /* xCheckReservedLock */
   winFileControl,                 /* xFileControl */
-  winSectorSize,                  /* xSectorSize */
+  win_Sector_ناپ,                  /* xSectorSize */
   winDeviceCharacteristics,       /* xDeviceCharacteristics */
   winShmMap,                      /* xShmMap */
-  winShmLock,                     /* xShmLock */
+  win_Shm_جندرا,                     /* xShmLock */
   winShmBarrier,                  /* xShmBarrier */
   winShmUnmap,                    /* xShmUnmap */
   winFetch,                       /* xFetch */
   winUnfetch                      /* xUnfetch */
 };
 
-static winVfsAppData winAppData = {
-  &winIoMethod,       /* pMethod */
+ساكن win_Vfs_App_انکڑے win_App_انکڑے = {
+  &win_Io_طریقہ,       /* pMethod */
   0,                  /* pAppData */
   0                   /* bNoLock */
 };
 
-static winVfsAppData winNolockAppData = {
-  &winIoNolockMethod, /* pMethod */
+ساكن win_Vfs_App_انکڑے win_Nolock_App_انکڑے = {
+  &win_Io_Nolock_طریقہ, /* pMethod */
   0,                  /* pAppData */
   1                   /* bNoLock */
 };
@@ -4062,27 +4062,27 @@ static winVfsAppData winNolockAppData = {
 ** ends with a directory separator character or one was successfully
 ** added to it.
 */
-static int winMakeEndInDirSep(int nBuf, char *zBuf){
-  if( zBuf ){
-    int nLen = sqlite3Strlen30(zBuf);
-    if( nLen>0 ){
-      if( winIsDirSep(zBuf[nLen-1]) ){
-        return 1;
-      }else if( nLen+1<nBuf ){
-        if( !osGetenv ){
+ساكن صحيح win_Make_سرا_وچ_Dir_Sep(صحيح nBuf, حرف *zBuf){
+  إذا( zBuf ){
+    صحيح nLen = sqlite3Strlen30(zBuf);
+    إذا( nLen>0 ){
+      إذا( winIsDirSep(zBuf[nLen-1]) ){
+        أرجع 1;
+      }وإلا إذا( nLen+1<nBuf ){
+        إذا( !osGetenv ){
           zBuf[nLen] = winGetDirSep();
-        }else if( winIsDriveLetterAndColon(zBuf) && winIsDirSep(zBuf[2]) ){
+        }وإلا إذا( winIsDriveLetterAndColon(zBuf) && winIsDirSep(zBuf[2]) ){
           zBuf[nLen] = '\\';
           zBuf[2]='\\';
-        }else{
+        }وإلا{
           zBuf[nLen] = '/';
         }
         zBuf[nLen+1] = '\0';
-        return 1;
+        أرجع 1;
       }
     }
   }
-  return 0;
+  أرجع 0;
 }
 
 /*
@@ -4091,33 +4091,33 @@ static int winMakeEndInDirSep(int nBuf, char *zBuf){
 ** If sqlite3_temp_directory is NULL (undefined), omit the mutex and
 ** return false.
 */
-static int winTempDirDefined(void){
+ساكن صحيح win_عارضی_Dir_Defined(فراغ){
   sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  if( sqlite3_temp_directory!=0 ) return 1;
+  إذا( sqlite3_عارضی_directory!=0 ) أرجع 1;
   sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-  return 0;
+  أرجع 0;
 }
 
 /*
 ** Create a temporary file name and store the resulting pointer into pzBuf.
 ** The pointer returned in pzBuf must be freed via sqlite3_free().
 */
-static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
-  static const char zChars[] =
+ساكن صحيح winGetTempname(sqlite3_vfs *pVfs, حرف **pzBuf){
+  ساكن ثابت حرف zChars[] =
     "abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "0123456789";
   size_t i, j;
   DWORD pid;
-  int nPre = sqlite3Strlen30(SQLITE_TEMP_FILE_PREFIX);
+  صحيح nPre = sqlite3Strlen30(SQLITE_عارضی_FILE_اگیتر);
   i64 nMax, nBuf, nDir, nLen;
-  char *zBuf;
+  حرف *zBuf;
 
   /* It's odd to simulate an io-error here, but really this is just
   ** using the io-error infrastructure to test that SQLite handles this
   ** function failing.
   */
-  SimulateIOError( return SQLITE_IOERR );
+  SimulateIOError( أرجع SQLITE_IOERR );
 
   /* Allocate a temporary buffer to store the fully qualified file
   ** name for the temporary file.  If this fails, we cannot continue.
@@ -4125,9 +4125,9 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   nMax = pVfs->mxPathname;
   nBuf = 2 + (i64)nMax;
   zBuf = sqlite3MallocZero( nBuf );
-  if( !zBuf ){
+  إذا( !zBuf ){
     OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    أرجع SQLITE_IOERR_NOMEM_BKPT;
   }
 
   /* Figure out the effective temporary directory.  First, check if one
@@ -4135,27 +4135,27 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   ** configured by the operating system.
   */
   nDir = nMax - (nPre + 15);
-  assert( nDir>0 );
-  if( winTempDirDefined() ){
-    int nDirLen = sqlite3Strlen30(sqlite3_temp_directory);
-    if( nDirLen>0 ){
-      if( !winIsDirSep(sqlite3_temp_directory[nDirLen-1]) ){
+  أكد( nDir>0 );
+  إذا( win_عارضی_Dir_Defined() ){
+    صحيح nDirLen = sqlite3Strlen30(sqlite3_عارضی_directory);
+    إذا( nDirLen>0 ){
+      إذا( !winIsDirSep(sqlite3_عارضی_directory[nDirLen-1]) ){
         nDirLen++;
       }
-      if( nDirLen>nDir ){
+      إذا( nDirLen>nDir ){
         sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
         sqlite3_free(zBuf);
         OSTRACE(("TEMP-FILENAME rc=SQLITE_ERROR\n"));
-        return winLogError(SQLITE_ERROR, 0, "winGetTempname1", 0);
+        أرجع winLogError(SQLITE_ERROR, 0, "winGetTempname1", 0);
       }
-      sqlite3_snprintf(nMax, zBuf, "%s", sqlite3_temp_directory);
+      sqlite3_snprintf(nMax, zBuf, "%s", sqlite3_عارضی_directory);
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
   }
 
-#if defined(__CYGWIN__)
-  else if( osGetenv!=NULL ){
-    static const char *azDirs[] = {
+#إذا defined(__CYGWIN__)
+  وإلا إذا( osGetenv!=عدم ){
+    ساكن ثابت حرف *azDirs[] = {
        0, /* getenv("SQLITE_TMPDIR") */
        0, /* getenv("TMPDIR") */
        0, /* getenv("TMP") */
@@ -4167,17 +4167,17 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
        ".",
        0        /* List terminator */
     };
-    unsigned int i;
-    const char *zDir = 0;
+    بنانشانی صحيح i;
+    ثابت حرف *zDir = 0;
 
-    if( !azDirs[0] ) azDirs[0] = osGetenv("SQLITE_TMPDIR");
-    if( !azDirs[1] ) azDirs[1] = osGetenv("TMPDIR");
-    if( !azDirs[2] ) azDirs[2] = osGetenv("TMP");
-    if( !azDirs[3] ) azDirs[3] = osGetenv("TEMP");
-    if( !azDirs[4] ) azDirs[4] = osGetenv("USERPROFILE");
-    for(i=0; i<sizeof(azDirs)/sizeof(azDirs[0]); zDir=azDirs[i++]){
+    إذا( !azDirs[0] ) azDirs[0] = osGetenv("SQLITE_TMPDIR");
+    إذا( !azDirs[1] ) azDirs[1] = osGetenv("TMPDIR");
+    إذا( !azDirs[2] ) azDirs[2] = osGetenv("TMP");
+    إذا( !azDirs[3] ) azDirs[3] = osGetenv("TEMP");
+    إذا( !azDirs[4] ) azDirs[4] = osGetenv("USERPROFILE");
+    لكل(i=0; i<حجم(azDirs)/حجم(azDirs[0]); zDir=azDirs[i++]){
       LPWSTR zConverted;
-      if( zDir==0 ) continue;
+      إذا( zDir==0 ) استمر;
       /* If the path starts with a drive letter followed by the colon
       ** character, assume it is already a native Win32 path; otherwise,
       ** it must be converted to a native Win32 path via the Cygwin API
@@ -4185,46 +4185,46 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
       */
       {
         zConverted = winConvertFromUtf8Filename(zDir);
-        if( !zConverted ){
+        إذا( !zConverted ){
           sqlite3_free(zBuf);
           OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-          return SQLITE_IOERR_NOMEM_BKPT;
+          أرجع SQLITE_IOERR_NOMEM_BKPT;
         }
-        if( winIsDir(zConverted) ){
+        إذا( winIsDir(zConverted) ){
           sqlite3_snprintf(nMax, zBuf, "%s", zDir);
           sqlite3_free(zConverted);
-          break;
+          اكسر;
         }
         sqlite3_free(zConverted);
       }
     }
   }
-#endif
+#جے_انت
 
-  else{
-    char *zMulti;
-    LPWSTR zWidePath = sqlite3MallocZero( nMax*sizeof(WCHAR) );
-    if( !zWidePath ){
+  وإلا{
+    حرف *zMulti;
+    LPWSTR z_Wide_رستہ = sqlite3MallocZero( nMax*حجم(WCHAR) );
+    إذا( !z_Wide_رستہ ){
       sqlite3_free(zBuf);
       OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-      return SQLITE_IOERR_NOMEM_BKPT;
+      أرجع SQLITE_IOERR_NOMEM_BKPT;
     }
-    if( osGetTempPathW==0 || osGetTempPathW(nMax, zWidePath)==0 ){
-      sqlite3_free(zWidePath);
+    إذا( os_Get_عارضی_رستہ_W==0 || os_Get_عارضی_رستہ_W(nMax, z_Wide_رستہ)==0 ){
+      sqlite3_free(z_Wide_رستہ);
       sqlite3_free(zBuf);
       OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_GETTEMPPATH\n"));
-      return winLogError(SQLITE_IOERR_GETTEMPPATH, osGetLastError(),
+      أرجع winLogError(SQLITE_IOERR_GETTEMPPATH, os_Get_آخری_Error(),
                          "winGetTempname2", 0);
     }
-    zMulti = winUnicodeToUtf8(zWidePath);
-    sqlite3_free(zWidePath);
-    if( zMulti ){
+    zMulti = win_Unicode_منزل_Utf8(z_Wide_رستہ);
+    sqlite3_free(z_Wide_رستہ);
+    إذا( zMulti ){
       sqlite3_snprintf(nMax, zBuf, "%s", zMulti);
       sqlite3_free(zMulti);
-    }else{
+    }وإلا{
       sqlite3_free(zBuf);
       OSTRACE(("TEMP-FILENAME rc=SQLITE_IOERR_NOMEM\n"));
-      return SQLITE_IOERR_NOMEM_BKPT;
+      أرجع SQLITE_IOERR_NOMEM_BKPT;
     }
   }
 
@@ -4233,10 +4233,10 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   ** separator.  If it does not and there is not enough space left to add
   ** one, fail.
   */
-  if( !winMakeEndInDirSep(nDir+1, zBuf) ){
+  إذا( !win_Make_سرا_وچ_Dir_Sep(nDir+1, zBuf) ){
     sqlite3_free(zBuf);
     OSTRACE(("TEMP-FILENAME rc=SQLITE_ERROR\n"));
-    return winLogError(SQLITE_ERROR, 0, "winGetTempname4", 0);
+    أرجع winLogError(SQLITE_ERROR, 0, "winGetTempname4", 0);
   }
 
   /*
@@ -4251,28 +4251,28 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
   ** has already added if it was not already present.
   */
   nLen = sqlite3Strlen30(zBuf);
-  if( (nLen + nPre + 17) > nBuf ){
+  إذا( (nLen + nPre + 17) > nBuf ){
     sqlite3_free(zBuf);
     OSTRACE(("TEMP-FILENAME rc=SQLITE_ERROR\n"));
-    return winLogError(SQLITE_ERROR, 0, "winGetTempname5", 0);
+    أرجع winLogError(SQLITE_ERROR, 0, "winGetTempname5", 0);
   }
 
-  sqlite3_snprintf(nBuf-16-nLen, zBuf+nLen, SQLITE_TEMP_FILE_PREFIX);
+  sqlite3_snprintf(nBuf-16-nLen, zBuf+nLen, SQLITE_عارضی_FILE_اگیتر);
 
   j = sqlite3Strlen30(zBuf);
   sqlite3_randomness(15, &zBuf[j]);
   pid = osGetCurrentProcessId();
-  for(i=0; i<15; i++, j++){
+  لكل(i=0; i<15; i++, j++){
     zBuf[j] += pid & 0xff;
     pid >>= 8;
-    zBuf[j] = (char)zChars[ ((unsigned char)zBuf[j])%(sizeof(zChars)-1) ];
+    zBuf[j] = (حرف)zChars[ ((بنانشانی حرف)zBuf[j])%(حجم(zChars)-1) ];
   }
   zBuf[j] = 0;
   zBuf[j+1] = 0;
   *pzBuf = zBuf;
 
   OSTRACE(("TEMP-FILENAME name=%s, rc=SQLITE_OK\n", zBuf));
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -4280,86 +4280,86 @@ static int winGetTempname(sqlite3_vfs *pVfs, char **pzBuf){
 ** it is something other than a directory, or if there is any kind of memory
 ** allocation failure.
 */
-static int winIsDir(LPCWSTR zConverted){
+ساكن صحيح winIsDir(LPCWSTR zConverted){
   DWORD attr;
-  int rc = 0;
-  DWORD lastErrno;
-  int cnt = 0;
-  WIN32_FILE_ATTRIBUTE_DATA sAttrData;
-  memset(&sAttrData, 0, sizeof(sAttrData));
-  while( !(rc = osGetFileAttributesExW(zConverted,
+  صحيح rc = 0;
+  DWORD آخری_Errno;
+  صحيح cnt = 0;
+  WIN32_FILE_ATTRIBUTE_انکڑے s_Attr_انکڑے;
+  memset(&s_Attr_انکڑے, 0, حجم(s_Attr_انکڑے));
+  طالما( !(rc = os_Get_File_گن_Ex_W(zConverted,
                            GetFileExInfoStandard,
-                           &sAttrData)) && winRetryIoerr(&cnt, &lastErrno) ){}
-  if( !rc ){
-    return 0; /* Invalid name? */
+                           &s_Attr_انکڑے)) && winRetryIoerr(&cnt, &آخری_Errno) ){}
+  إذا( !rc ){
+    أرجع 0; /* Invalid name? */
   }
-  attr = sAttrData.dwFileAttributes;
-  return (attr!=INVALID_FILE_ATTRIBUTES) && (attr&FILE_ATTRIBUTE_DIRECTORY);
+  attr = s_Attr_انکڑے.dw_File_گن;
+  أرجع (attr!=INVALID_FILE_گن) && (attr&FILE_ATTRIBUTE_DIRECTORY);
 }
 
 /* forward reference */
-static int winAccess(
+ساكن صحيح winAccess(
   sqlite3_vfs *pVfs,         /* Not used on win32 */
-  const char *zFilename,     /* Name of file to check */
-  int flags,                 /* Type of test to make on this file */
-  int *pResOut               /* OUT: Result */
+  ثابت حرف *zFilename,     /* Name of file to check */
+  صحيح flags,                 /* Type of test to make on this file */
+  صحيح *p_Res_باہرلا               /* OUT: Result */
 );
 
 /*
 ** The Windows version of xAccess() accepts an extra bit in the flags
 ** parameter that prevents an anti-virus retry loop.
 */
-#define NORETRY 0x4000
+#تعریف_کرو NORETRY 0x4000
 
 /*
 ** Open a file.
 */
-static int winOpen(
+ساكن صحيح winOpen(
   sqlite3_vfs *pVfs,        /* Used to get maximum path length and AppData */
-  const char *zName,        /* Name of the file (UTF-8) */
+  ثابت حرف *zName,        /* Name of the file (UTF-8) */
   sqlite3_file *id,         /* Write the SQLite file handle here */
-  int flags,                /* Open mode flags */
-  int *pOutFlags            /* Status return flags */
+  صحيح flags,                /* Open mode flags */
+  صحيح *p_باہرلا_Flags            /* Status return flags */
 ){
   HANDLE h;
-  DWORD lastErrno = 0;
+  DWORD آخری_Errno = 0;
   DWORD dwDesiredAccess;
-  DWORD dwShareMode;
+  DWORD dw_Share_منوال;
   DWORD dwCreationDisposition;
-  DWORD dwFlagsAndAttributes = 0;
-  winVfsAppData *pAppData;
+  DWORD dw_Flags_And_گن = 0;
+  win_Vfs_App_انکڑے *p_App_انکڑے;
   winFile *pFile = (winFile*)id;
   LPWSTR zConverted;              /* Filename in OS encoding */
-  const char *zUtf8Name = zName; /* Filename in UTF-8 encoding */
-  int cnt = 0;
-  int isRO = 0;              /* file is known to be accessible readonly */
+  ثابت حرف *zUtf8Name = zName; /* Filename in UTF-8 encoding */
+  صحيح cnt = 0;
+  صحيح isRO = 0;              /* file is known to be accessible readonly */
 
   /* If argument zPath is a NULL pointer, this function is required to open
   ** a temporary file. Use this buffer to store the file name in.
   */
-  char *zTmpname = 0; /* For temporary filename, if necessary. */
+  حرف *zTmpname = 0; /* For temporary filename, if necessary. */
 
-  int rc = SQLITE_OK;            /* Function Return Code */
-#if !defined(NDEBUG)
-  int eType = flags&0x0FFF00;  /* Type of file to open */
-#endif
+  صحيح rc = SQLITE_OK;            /* Function Return Code */
+#إذا !defined(NDEBUG)
+  صحيح eType = flags&0x0FFF00;  /* Type of file to open */
+#جے_انت
 
-  int isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
-  int isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
-  int isCreate     = (flags & SQLITE_OPEN_CREATE);
-  int isReadonly   = (flags & SQLITE_OPEN_READONLY);
-  int isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
+  صحيح isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
+  صحيح isDelete     = (flags & SQLITE_OPEN_DELETEONCLOSE);
+  صحيح isCreate     = (flags & SQLITE_OPEN_CREATE);
+  صحيح isReadonly   = (flags & SQLITE_OPEN_READONLY);
+  صحيح isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
 
-#ifndef NDEBUG
-  int isOpenJournal = (isCreate && (
+#جے_بنا_تعریف NDEBUG
+  صحيح isOpenJournal = (isCreate && (
         eType==SQLITE_OPEN_SUPER_JOURNAL
      || eType==SQLITE_OPEN_MAIN_JOURNAL
      || eType==SQLITE_OPEN_WAL
   ));
-#endif
+#جے_انت
 
   OSTRACE(("OPEN name=%s, pFile=%p, flags=%x, pOutFlags=%p\n",
-           zUtf8Name, id, flags, pOutFlags));
+           zUtf8Name, id, flags, p_باہرلا_Flags));
 
   /* Check the following statements are true:
   **
@@ -4368,38 +4368,38 @@ static int winOpen(
   **   (c) if EXCLUSIVE is set, then CREATE must also be set.
   **   (d) if DELETEONCLOSE is set, then CREATE must also be set.
   */
-  assert((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
-  assert(isCreate==0 || isReadWrite);
-  assert(isExclusive==0 || isCreate);
-  assert(isDelete==0 || isCreate);
+  أكد((isReadonly==0 || isReadWrite==0) && (isReadWrite || isReadonly));
+  أكد(isCreate==0 || isReadWrite);
+  أكد(isExclusive==0 || isCreate);
+  أكد(isDelete==0 || isCreate);
 
   /* The main DB, main journal, WAL file and super-journal are never
   ** automatically deleted. Nor are they ever temporary files.  */
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
-  assert( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_DB );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_MAIN_JOURNAL );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_SUPER_JOURNAL );
+  أكد( (!isDelete && zName) || eType!=SQLITE_OPEN_WAL );
 
   /* Assert that the upper layer has set one of the "file-type" flags. */
-  assert( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_TEMP_DB
-       || eType==SQLITE_OPEN_MAIN_JOURNAL || eType==SQLITE_OPEN_TEMP_JOURNAL
+  أكد( eType==SQLITE_OPEN_MAIN_DB      || eType==SQLITE_OPEN_عارضی_DB
+       || eType==SQLITE_OPEN_MAIN_JOURNAL || eType==SQLITE_OPEN_عارضی_JOURNAL
        || eType==SQLITE_OPEN_SUBJOURNAL   || eType==SQLITE_OPEN_SUPER_JOURNAL
        || eType==SQLITE_OPEN_TRANSIENT_DB || eType==SQLITE_OPEN_WAL
   );
 
-  assert( pFile!=0 );
-  memset(pFile, 0, sizeof(winFile));
-  pFile->h = INVALID_HANDLE_VALUE;
+  أكد( pFile!=0 );
+  memset(pFile, 0, حجم(winFile));
+  pFile->h = INVALID_HANDLE_قدر;
 
   /* If the second argument to this function is NULL, generate a
   ** temporary file name to use
   */
-  if( !zUtf8Name ){
-    assert( isDelete && !isOpenJournal );
+  إذا( !zUtf8Name ){
+    أكد( isDelete && !isOpenJournal );
     rc = winGetTempname(pVfs, &zTmpname);
-    if( rc!=SQLITE_OK ){
+    إذا( rc!=SQLITE_OK ){
       OSTRACE(("OPEN name=%s, rc=%s", zUtf8Name, sqlite3ErrName(rc)));
-      return rc;
+      أرجع rc;
     }
     zUtf8Name = zTmpname;
   }
@@ -4408,27 +4408,27 @@ static int winOpen(
   ** URIs with parameters.  Hence, they can always be passed into
   ** sqlite3_uri_parameter().
   */
-  assert( (eType!=SQLITE_OPEN_MAIN_DB) || (flags & SQLITE_OPEN_URI) ||
+  أكد( (eType!=SQLITE_OPEN_MAIN_DB) || (flags & SQLITE_OPEN_URI) ||
        zUtf8Name[sqlite3Strlen30(zUtf8Name)+1]==0 );
 
   /* Convert the filename to the system encoding. */
   zConverted = winConvertFromUtf8Filename(zUtf8Name);
-  if( zConverted==0 ){
+  إذا( zConverted==0 ){
     sqlite3_free(zTmpname);
     OSTRACE(("OPEN name=%s, rc=SQLITE_IOERR_NOMEM", zUtf8Name));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    أرجع SQLITE_IOERR_NOMEM_BKPT;
   }
 
-  if( winIsDir(zConverted) ){
+  إذا( winIsDir(zConverted) ){
     sqlite3_free(zConverted);
     sqlite3_free(zTmpname);
     OSTRACE(("OPEN name=%s, rc=SQLITE_CANTOPEN_ISDIR", zUtf8Name));
-    return SQLITE_CANTOPEN_ISDIR;
+    أرجع SQLITE_CANTOPEN_ISDIR;
   }
 
-  if( isReadWrite ){
+  إذا( isReadWrite ){
     dwDesiredAccess = GENERIC_READ | GENERIC_WRITE;
-  }else{
+  }وإلا{
     dwDesiredAccess = GENERIC_READ;
   }
 
@@ -4436,105 +4436,105 @@ static int winOpen(
   ** created. SQLite doesn't use it to indicate "exclusive access"
   ** as it is usually understood.
   */
-  if( isExclusive ){
+  إذا( isExclusive ){
     /* Creates a new file, only if it does not already exist. */
     /* If the file exists, it fails. */
     dwCreationDisposition = CREATE_NEW;
-  }else if( isCreate ){
+  }وإلا إذا( isCreate ){
     /* Open existing file, or create if it doesn't exist */
     dwCreationDisposition = OPEN_ALWAYS;
-  }else{
+  }وإلا{
     /* Opens a file, only if it exists. */
     dwCreationDisposition = OPEN_EXISTING;
   }
 
-  if( 0==sqlite3_uri_boolean(zName, "exclusive", 0) ){
-    dwShareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
-  }else{
-    dwShareMode = 0;
+  إذا( 0==sqlite3_uri_boolean(zName, "exclusive", 0) ){
+    dw_Share_منوال = FILE_SHARE_READ | FILE_SHARE_WRITE;
+  }وإلا{
+    dw_Share_منوال = 0;
   }
 
-  if( isDelete ){
-    dwFlagsAndAttributes = FILE_ATTRIBUTE_TEMPORARY
+  إذا( isDelete ){
+    dw_Flags_And_گن = FILE_ATTRIBUTE_TEMPORARY
                                | FILE_ATTRIBUTE_HIDDEN
                                | FILE_FLAG_DELETE_ON_CLOSE;
-  }else{
-    dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
+  }وإلا{
+    dw_Flags_And_گن = FILE_ATTRIBUTE_عام;
   }
-  do{
+  افعل{
     h = osCreateFileW(zConverted,
                       dwDesiredAccess,
-                      dwShareMode, NULL,
+                      dw_Share_منوال, عدم,
                       dwCreationDisposition,
-                      dwFlagsAndAttributes,
-                      NULL);
-    if( h!=INVALID_HANDLE_VALUE ) break;
-    if( isReadWrite ){
-      int rc2;
+                      dw_Flags_And_گن,
+                      عدم);
+    إذا( h!=INVALID_HANDLE_قدر ) اكسر;
+    إذا( isReadWrite ){
+      صحيح rc2;
       sqlite3BeginBenignMalloc();
       rc2 = winAccess(pVfs, zUtf8Name, SQLITE_ACCESS_READ|NORETRY, &isRO);
-      sqlite3EndBenignMalloc();
-      if( rc2==SQLITE_OK && isRO ) break;
+      sqlite3_سرا_Benign_Malloc();
+      إذا( rc2==SQLITE_OK && isRO ) اكسر;
     }
-  }while( winRetryIoerr(&cnt, &lastErrno) );
+  }طالما( winRetryIoerr(&cnt, &آخری_Errno) );
   winLogIoerr(cnt, __LINE__);
 
   OSTRACE(("OPEN file=%p, name=%s, access=%lx, rc=%s\n", h, zUtf8Name,
-           dwDesiredAccess, (h==INVALID_HANDLE_VALUE) ? "failed" : "ok"));
+           dwDesiredAccess, (h==INVALID_HANDLE_قدر) ? "failed" : "ok"));
 
-  if( h==INVALID_HANDLE_VALUE ){
+  إذا( h==INVALID_HANDLE_قدر ){
     sqlite3_free(zConverted);
     sqlite3_free(zTmpname);
-    if( isReadWrite && isRO && !isExclusive ){
-      return winOpen(pVfs, zName, id,
+    إذا( isReadWrite && isRO && !isExclusive ){
+      أرجع winOpen(pVfs, zName, id,
          ((flags|SQLITE_OPEN_READONLY) &
                      ~(SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE)),
-         pOutFlags);
-    }else{
-      pFile->lastErrno = lastErrno;
-      winLogError(SQLITE_CANTOPEN, pFile->lastErrno, "winOpen", zUtf8Name);
-      return SQLITE_CANTOPEN_BKPT;
+         p_باہرلا_Flags);
+    }وإلا{
+      pFile->آخری_Errno = آخری_Errno;
+      winLogError(SQLITE_CANTOPEN, pFile->آخری_Errno, "winOpen", zUtf8Name);
+      أرجع SQLITE_CANTOPEN_BKPT;
     }
   }
 
-  if( pOutFlags ){
-    if( isReadWrite ){
-      *pOutFlags = SQLITE_OPEN_READWRITE;
-    }else{
-      *pOutFlags = SQLITE_OPEN_READONLY;
+  إذا( p_باہرلا_Flags ){
+    إذا( isReadWrite ){
+      *p_باہرلا_Flags = SQLITE_OPEN_READWRITE;
+    }وإلا{
+      *p_باہرلا_Flags = SQLITE_OPEN_READONLY;
     }
   }
 
   OSTRACE(("OPEN file=%p, name=%s, access=%lx, pOutFlags=%p, *pOutFlags=%d, "
-           "rc=%s\n", h, zUtf8Name, dwDesiredAccess, pOutFlags, pOutFlags ?
-           *pOutFlags : 0, (h==INVALID_HANDLE_VALUE) ? "failed" : "ok"));
+           "rc=%s\n", h, zUtf8Name, dwDesiredAccess, p_باہرلا_Flags, p_باہرلا_Flags ?
+           *p_باہرلا_Flags : 0, (h==INVALID_HANDLE_قدر) ? "failed" : "ok"));
 
-  pAppData = (winVfsAppData*)pVfs->pAppData;
+  p_App_انکڑے = (win_Vfs_App_انکڑے*)pVfs->p_App_انکڑے;
 
   sqlite3_free(zConverted);
   sqlite3_free(zTmpname);
-  id->pMethods = pAppData ? pAppData->pMethod : &winIoMethod;
+  id->pMethods = p_App_انکڑے ? p_App_انکڑے->p_طریقہ : &win_Io_طریقہ;
   pFile->pVfs = pVfs;
   pFile->h = h;
-  if( isReadonly ){
+  إذا( isReadonly ){
     pFile->ctrlFlags |= WINFILE_RDONLY;
   }
-  if( (flags & SQLITE_OPEN_MAIN_DB)
+  إذا( (flags & SQLITE_OPEN_MAIN_DB)
    && sqlite3_uri_boolean(zName, "psow", SQLITE_POWERSAFE_OVERWRITE) 
   ){
     pFile->ctrlFlags |= WINFILE_PSOW;
   }
-  pFile->lastErrno = NO_ERROR;
-  pFile->zPath = zName;
-#if SQLITE_MAX_MMAP_SIZE>0
-  pFile->hMap = NULL;
+  pFile->آخری_Errno = NO_ERROR;
+  pFile->z_رستہ = zName;
+#إذا SQLITE_MAX_MMAP_ناپ>0
+  pFile->hMap = عدم;
   pFile->pMapRegion = 0;
-  pFile->mmapSize = 0;
-  pFile->mmapSizeMax = sqlite3GlobalConfig.szMmap;
-#endif
+  pFile->mmap_ناپ = 0;
+  pFile->mmap_ناپ_Max = sqlite3GlobalConfig.szMmap;
+#جے_انت
 
   OpenCounter(+1);
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -4549,157 +4549,157 @@ static int winOpen(
 ** to MX_DELETION_ATTEMPTs deletion attempts are run before giving
 ** up and returning an error.
 */
-static int winDelete(
+ساكن صحيح winDelete(
   sqlite3_vfs *pVfs,          /* Not used on win32 */
-  const char *zFilename,      /* Name of file to delete */
-  int syncDir                 /* Not used on win32 */
+  ثابت حرف *zFilename,      /* Name of file to delete */
+  صحيح syncDir                 /* Not used on win32 */
 ){
-  int cnt = 0;
-  int rc;
+  صحيح cnt = 0;
+  صحيح rc;
   DWORD attr;
-  DWORD lastErrno = 0;
+  DWORD آخری_Errno = 0;
   LPWSTR zConverted;
-  UNUSED_PARAMETER(pVfs);
-  UNUSED_PARAMETER(syncDir);
+  بن_ورتیا_PARAMETER(pVfs);
+  بن_ورتیا_PARAMETER(syncDir);
 
-  SimulateIOError(return SQLITE_IOERR_DELETE);
+  SimulateIOError(أرجع SQLITE_IOERR_DELETE);
   OSTRACE(("DELETE name=%s, syncDir=%d\n", zFilename, syncDir));
 
   zConverted = winConvertFromUtf8Filename(zFilename);
-  if( zConverted==0 ){
+  إذا( zConverted==0 ){
     OSTRACE(("DELETE name=%s, rc=SQLITE_IOERR_NOMEM\n", zFilename));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    أرجع SQLITE_IOERR_NOMEM_BKPT;
   }
-  do {
-    attr = osGetFileAttributesW(zConverted);
-    if ( attr==INVALID_FILE_ATTRIBUTES ){
-      lastErrno = osGetLastError();
-      if( lastErrno==ERROR_FILE_NOT_FOUND
-       || lastErrno==ERROR_PATH_NOT_FOUND ){
+  افعل {
+    attr = os_Get_File_گن_W(zConverted);
+    إذا ( attr==INVALID_FILE_گن ){
+      آخری_Errno = os_Get_آخری_Error();
+      إذا( آخری_Errno==ERROR_FILE_NOT_لبھیا
+       || آخری_Errno==ERROR_رستہ_NOT_لبھیا ){
         rc = SQLITE_IOERR_DELETE_NOENT; /* Already gone? */
-      }else{
+      }وإلا{
         rc = SQLITE_ERROR;
       }
-      break;
+      اكسر;
     }
-    if ( attr&FILE_ATTRIBUTE_DIRECTORY ){
+    إذا ( attr&FILE_ATTRIBUTE_DIRECTORY ){
       rc = SQLITE_ERROR; /* Files only. */
-      break;
+      اكسر;
     }
-    if ( osDeleteFileW(zConverted) ){
+    إذا ( osDeleteFileW(zConverted) ){
       rc = SQLITE_OK; /* Deleted OK. */
-      break;
+      اكسر;
     }
-    if ( !winRetryIoerr(&cnt, &lastErrno) ){
+    إذا ( !winRetryIoerr(&cnt, &آخری_Errno) ){
       rc = SQLITE_ERROR; /* No more retries. */
-      break;
+      اكسر;
     }
-  } while(1);
-  if( rc && rc!=SQLITE_IOERR_DELETE_NOENT ){
-    rc = winLogError(SQLITE_IOERR_DELETE, lastErrno, "winDelete", zFilename);
-  }else{
+  } طالما(1);
+  إذا( rc && rc!=SQLITE_IOERR_DELETE_NOENT ){
+    rc = winLogError(SQLITE_IOERR_DELETE, آخری_Errno, "winDelete", zFilename);
+  }وإلا{
     winLogIoerr(cnt, __LINE__);
   }
   sqlite3_free(zConverted);
   OSTRACE(("DELETE name=%s, rc=%s\n", zFilename, sqlite3ErrName(rc)));
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Check the existence and status of a file.
 */
-static int winAccess(
+ساكن صحيح winAccess(
   sqlite3_vfs *pVfs,         /* Not used on win32 */
-  const char *zFilename,     /* Name of file to check */
-  int flags,                 /* Type of test to make on this file */
-  int *pResOut               /* OUT: Result */
+  ثابت حرف *zFilename,     /* Name of file to check */
+  صحيح flags,                 /* Type of test to make on this file */
+  صحيح *p_Res_باہرلا               /* OUT: Result */
 ){
   DWORD attr;
-  int rc = 0;
-  int cnt = 0;
-  DWORD lastErrno = 0;
+  صحيح rc = 0;
+  صحيح cnt = 0;
+  DWORD آخری_Errno = 0;
   LPWSTR zConverted;
-  int noRetry = 0;           /* Do not use winRetryIoerr() */
-  WIN32_FILE_ATTRIBUTE_DATA sAttrData;
-  UNUSED_PARAMETER(pVfs);
+  صحيح noRetry = 0;           /* Do not use winRetryIoerr() */
+  WIN32_FILE_ATTRIBUTE_انکڑے s_Attr_انکڑے;
+  بن_ورتیا_PARAMETER(pVfs);
 
-  if( (flags & NORETRY)!=0 ){
+  إذا( (flags & NORETRY)!=0 ){
     noRetry = 1;
     flags &= ~NORETRY;
   }  
 
-  SimulateIOError( return SQLITE_IOERR_ACCESS; );
+  SimulateIOError( أرجع SQLITE_IOERR_ACCESS; );
   OSTRACE(("ACCESS name=%s, flags=%x, pResOut=%p\n",
-           zFilename, flags, pResOut));
+           zFilename, flags, p_Res_باہرلا));
 
-  if( zFilename==0 ){
-    *pResOut = 0;
+  إذا( zFilename==0 ){
+    *p_Res_باہرلا = 0;
     OSTRACE(("ACCESS name=%s, pResOut=%p, *pResOut=%d, rc=SQLITE_OK\n",
-             zFilename, pResOut, *pResOut));
-    return SQLITE_OK;
+             zFilename, p_Res_باہرلا, *p_Res_باہرلا));
+    أرجع SQLITE_OK;
   }
 
   zConverted = winConvertFromUtf8Filename(zFilename);
-  if( zConverted==0 ){
+  إذا( zConverted==0 ){
     OSTRACE(("ACCESS name=%s, rc=SQLITE_IOERR_NOMEM\n", zFilename));
-    return SQLITE_IOERR_NOMEM_BKPT;
+    أرجع SQLITE_IOERR_NOMEM_BKPT;
   }
-  memset(&sAttrData, 0, sizeof(sAttrData));
-  while( !(rc = osGetFileAttributesExW(zConverted,
+  memset(&s_Attr_انکڑے, 0, حجم(s_Attr_انکڑے));
+  طالما( !(rc = os_Get_File_گن_Ex_W(zConverted,
                            GetFileExInfoStandard,
-                           &sAttrData))
+                           &s_Attr_انکڑے))
      && !noRetry
-     && winRetryIoerr(&cnt, &lastErrno)
+     && winRetryIoerr(&cnt, &آخری_Errno)
   ){ /* Loop until true */}
-  if( rc ){
+  إذا( rc ){
     /* For an SQLITE_ACCESS_EXISTS query, treat a zero-length file
     ** as if it does not exist.
     */
-    if(    flags==SQLITE_ACCESS_EXISTS
-        && sAttrData.nFileSizeHigh==0
-        && sAttrData.nFileSizeLow==0 ){
-      attr = INVALID_FILE_ATTRIBUTES;
-    }else{
-      attr = sAttrData.dwFileAttributes;
+    إذا(    flags==SQLITE_ACCESS_EXISTS
+        && s_Attr_انکڑے.n_File_ناپ_بلند==0
+        && s_Attr_انکڑے.n_File_ناپ_کم==0 ){
+      attr = INVALID_FILE_گن;
+    }وإلا{
+      attr = s_Attr_انکڑے.dw_File_گن;
     }
-  }else{
-    if( noRetry ) lastErrno = osGetLastError();
+  }وإلا{
+    إذا( noRetry ) آخری_Errno = os_Get_آخری_Error();
     winLogIoerr(cnt, __LINE__);
-    if( lastErrno!=ERROR_FILE_NOT_FOUND && lastErrno!=ERROR_PATH_NOT_FOUND ){
+    إذا( آخری_Errno!=ERROR_FILE_NOT_لبھیا && آخری_Errno!=ERROR_رستہ_NOT_لبھیا ){
       sqlite3_free(zConverted);
-      return winLogError(SQLITE_IOERR_ACCESS, lastErrno, "winAccess",
+      أرجع winLogError(SQLITE_IOERR_ACCESS, آخری_Errno, "winAccess",
                          zFilename);
-    }else{
-      attr = INVALID_FILE_ATTRIBUTES;
+    }وإلا{
+      attr = INVALID_FILE_گن;
     }
   }
   sqlite3_free(zConverted);
-  switch( flags ){
-    case SQLITE_ACCESS_READ:
-    case SQLITE_ACCESS_EXISTS:
-      rc = attr!=INVALID_FILE_ATTRIBUTES;
-      break;
-    case SQLITE_ACCESS_READWRITE:
-      rc = attr!=INVALID_FILE_ATTRIBUTES &&
+  بدل( flags ){
+    حالة SQLITE_ACCESS_READ:
+    حالة SQLITE_ACCESS_EXISTS:
+      rc = attr!=INVALID_FILE_گن;
+      اكسر;
+    حالة SQLITE_ACCESS_READWRITE:
+      rc = attr!=INVALID_FILE_گن &&
              (attr & FILE_ATTRIBUTE_READONLY)==0;
-      break;
-    default:
-      assert(!"Invalid flags argument");
+      اكسر;
+    افتراضي:
+      أكد(!"Invalid flags argument");
   }
-  *pResOut = rc;
+  *p_Res_باہرلا = rc;
   OSTRACE(("ACCESS name=%s, pResOut=%p, *pResOut=%d, rc=SQLITE_OK\n",
-           zFilename, pResOut, *pResOut));
-  return SQLITE_OK;
+           zFilename, p_Res_باہرلا, *p_Res_باہرلا));
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Returns non-zero if the specified path name starts with the "long path"
 ** prefix.
 */
-static BOOL winIsLongPathPrefix(
-  const char *zPathname
+ساكن BOOL win_Is_Long_رستہ_اگیتر(
+  ثابت حرف *zPathname
 ){
-  return ( zPathname[0]=='\\' && zPathname[1]=='\\'
+  أرجع ( zPathname[0]=='\\' && zPathname[1]=='\\'
         && zPathname[2]=='?'  && zPathname[3]=='\\' );
 }
 
@@ -4707,21 +4707,21 @@ static BOOL winIsLongPathPrefix(
 ** Returns non-zero if the specified path name starts with a drive letter
 ** followed by a colon character.
 */
-static BOOL winIsDriveLetterAndColon(
-  const char *zPathname
+ساكن BOOL winIsDriveLetterAndColon(
+  ثابت حرف *zPathname
 ){
-  return ( sqlite3Isalpha(zPathname[0]) && zPathname[1]==':' );
+  أرجع ( sqlite3Isalpha(zPathname[0]) && zPathname[1]==':' );
 }
 
-#ifdef _WIN32
+#جے_تعریف_شدہ _WIN32
 /*
 ** Returns non-zero if the specified path name should be used verbatim.  If
 ** non-zero is returned from this function, the calling function must simply
 ** use the provided path name verbatim -OR- resolve it into a full path name
 ** using the GetFullPathName Win32 API function (if available).
 */
-static BOOL winIsVerbatimPathname(
-  const char *zPathname
+ساكن BOOL winIsVerbatimPathname(
+  ثابت حرف *zPathname
 ){
   /*
   ** If the path name starts with a forward slash or a backslash, it is either
@@ -4730,8 +4730,8 @@ static BOOL winIsVerbatimPathname(
   ** the final two cases; therefore, we return the safer return value of TRUE
   ** so that callers of this function will simply use it verbatim.
   */
-  if ( winIsDirSep(zPathname[0]) ){
-    return TRUE;
+  إذا ( winIsDirSep(zPathname[0]) ){
+    أرجع TRUE;
   }
 
   /*
@@ -4740,19 +4740,19 @@ static BOOL winIsVerbatimPathname(
   ** attempt to treat it as a relative path name (i.e. they should simply use
   ** it verbatim).
   */
-  if ( winIsDriveLetterAndColon(zPathname) ){
-    return TRUE;
+  إذا ( winIsDriveLetterAndColon(zPathname) ){
+    أرجع TRUE;
   }
 
   /*
   ** If we get to this point, the path name should almost certainly be a purely
   ** relative one (i.e. not a UNC name, not absolute, and not volume relative).
   */
-  return FALSE;
+  أرجع FALSE;
 }
-#endif /* _WIN32 */
+#جے_انت /* _WIN32 */
 
-#ifdef __CYGWIN__
+#جے_تعریف_شدہ __CYGWIN__
 /*
 ** Simplify a filename into its canonical form
 ** by making the following changes:
@@ -4766,129 +4766,129 @@ static BOOL winIsVerbatimPathname(
 ** The original filename is in z[0..]. If the path is shortened,
 ** no-longer used bytes will be written by '\0'.
 */
-static void winSimplifyName(char *z){
-  int i, j;
-  for(i=j=0; z[i]; ++i){
-    if( winIsDirSep(z[i]) ){
-#if !defined(SQLITE_TEST)
+ساكن فراغ winSimplifyName(حرف *z){
+  صحيح i, j;
+  لكل(i=j=0; z[i]; ++i){
+    إذا( winIsDirSep(z[i]) ){
+#إذا !defined(SQLITE_TEST)
       /* Some test-cases assume that "./foo" and "foo" are different */
-      if( z[i+1]=='.' && winIsDirSep(z[i+2]) ){
+      إذا( z[i+1]=='.' && winIsDirSep(z[i+2]) ){
         ++i;
-        continue;
+        استمر;
       }
-#endif
-      if( !z[i+1] || (winIsDirSep(z[i+1]) && (i!=0)) ){
-        continue;
+#جے_انت
+      إذا( !z[i+1] || (winIsDirSep(z[i+1]) && (i!=0)) ){
+        استمر;
       }
       z[j++] = osGetenv?'/':'\\';
-    }else{
+    }وإلا{
       z[j++] = z[i];
     }
   }
-  while(j<i) z[j++] = '\0';
+  طالما(j<i) z[j++] = '\0';
 }
 
-#define SQLITE_MAX_SYMLINKS 100
+#تعریف_کرو SQLITE_MAX_SYMLINKS 100
 
-static int mkFullPathname(
-  const char *zPath,              /* Input path */
-  char *zOut,                     /* Output buffer */
-  int nOut                        /* Allocated size of buffer zOut */
+ساكن صحيح mk_بھریا_Pathname(
+  ثابت حرف *z_رستہ,              /* Input path */
+  حرف *z_باہرلا,                     /* Output buffer */
+  صحيح n_باہرلا                        /* Allocated size of buffer zOut */
 ){
-  int nPath = sqlite3Strlen30(zPath);
-  int iOff = 0;
-  if( zPath[0]!='/' ){
-    if( osGetcwd(zOut, nOut-2)==0 ){
-      return winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)osErrno, "getcwd", zPath);
+  صحيح n_رستہ = sqlite3Strlen30(z_رستہ);
+  صحيح iOff = 0;
+  إذا( z_رستہ[0]!='/' ){
+    إذا( osGetcwd(z_باہرلا, n_باہرلا-2)==0 ){
+      أرجع winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)osErrno, "getcwd", z_رستہ);
     }
-    iOff = sqlite3Strlen30(zOut);
-    zOut[iOff++] = '/';
+    iOff = sqlite3Strlen30(z_باہرلا);
+    z_باہرلا[iOff++] = '/';
   }
-  if( (iOff+nPath+1)>nOut ){
+  إذا( (iOff+n_رستہ+1)>n_باہرلا ){
     /* SQLite assumes that xFullPathname() nul-terminates the output buffer
     ** even if it returns an error.  */
-    zOut[iOff] = '\0';
-    return SQLITE_CANTOPEN_BKPT;
+    z_باہرلا[iOff] = '\0';
+    أرجع SQLITE_CANTOPEN_BKPT;
   }
-  sqlite3_snprintf(nOut-iOff, &zOut[iOff], "%s", zPath);
-  return SQLITE_OK;
+  sqlite3_snprintf(n_باہرلا-iOff, &z_باہرلا[iOff], "%s", z_رستہ);
+  أرجع SQLITE_OK;
 }
-#endif /* __CYGWIN__ */
+#جے_انت /* __CYGWIN__ */
 
 /*
 ** Turn a relative pathname into a full pathname.  Write the full
 ** pathname into zOut[].  zOut[] will be at least pVfs->mxPathname
 ** bytes in size.
 */
-static int winFullPathnameNoMutex(
+ساكن صحيح win_بھریا_Pathname_No_Mutex(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zRelative,        /* Possibly relative input path */
-  int nFull,                    /* Size of output buffer in bytes */
-  char *zFull                   /* Output buffer */
+  ثابت حرف *zRelative,        /* Possibly relative input path */
+  صحيح n_بھریا,                    /* Size of output buffer in bytes */
+  حرف *z_بھریا                   /* Output buffer */
 ){
-  int nByte;
+  صحيح nByte;
   LPWSTR zConverted;
-  char *zOut;
+  حرف *z_باہرلا;
 
   /* If this path name begins with "/X:" or "\\?\", where "X" is any
   ** alphabetic character, discard the initial "/" from the pathname.
   */
-  if( zRelative[0]=='/' && (winIsDriveLetterAndColon(zRelative+1)
-       || winIsLongPathPrefix(zRelative+1)) ){
+  إذا( zRelative[0]=='/' && (winIsDriveLetterAndColon(zRelative+1)
+       || win_Is_Long_رستہ_اگیتر(zRelative+1)) ){
     zRelative++;
   }
 
-  SimulateIOError( return SQLITE_ERROR );
+  SimulateIOError( أرجع SQLITE_ERROR );
 
-#ifdef __CYGWIN__
-  if( osGetcwd ){
-    zFull[nFull-1] = '\0';
-    if( !winIsDriveLetterAndColon(zRelative) || !winIsDirSep(zRelative[2]) ){
-      int rc = SQLITE_OK;
-      int nLink = 1;              /* Number of symbolic links followed so far */
-      const char *zIn = zRelative; /* Input path for each iteration of loop */
-      char *zDel = 0;
-      struct stat buf;
+#جے_تعریف_شدہ __CYGWIN__
+  إذا( osGetcwd ){
+    z_بھریا[n_بھریا-1] = '\0';
+    إذا( !winIsDriveLetterAndColon(zRelative) || !winIsDirSep(zRelative[2]) ){
+      صحيح rc = SQLITE_OK;
+      صحيح nLink = 1;              /* Number of symbolic links followed so far */
+      ثابت حرف *z_وچ = zRelative; /* Input path for each iteration of loop */
+      حرف *zDel = 0;
+      بنية stat buf;
 
-      UNUSED_PARAMETER(pVfs);
+      بن_ورتیا_PARAMETER(pVfs);
 
-      do {
+      افعل {
         /* Call lstat() on path zIn. Set bLink to true if the path
         ** is a symbolic link, or false otherwise.  */
-        int bLink = 0;
-        if( osLstat && osReadlink ) {
-          if( osLstat(zIn, &buf)!=0 ){
-            int myErrno = osErrno;
-            if( myErrno!=ENOENT ){
+        صحيح bLink = 0;
+        إذا( osLstat && osReadlink ) {
+          إذا( osLstat(z_وچ, &buf)!=0 ){
+            صحيح myErrno = osErrno;
+            إذا( myErrno!=ENOENT ){
               rc = winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)myErrno,
-                               "lstat", zIn);
+                               "lstat", z_وچ);
             }
-          }else{
-            bLink = ((buf.st_mode & 0170000) == 0120000);
+          }وإلا{
+            bLink = ((buf.st_منوال & 0170000) == 0120000);
           }
 
-          if( bLink ){
-            if( zDel==0 ){
-              zDel = sqlite3MallocZero(nFull);
-              if( zDel==0 ) rc = SQLITE_NOMEM;
-            }else if( ++nLink>SQLITE_MAX_SYMLINKS ){
+          إذا( bLink ){
+            إذا( zDel==0 ){
+              zDel = sqlite3MallocZero(n_بھریا);
+              إذا( zDel==0 ) rc = SQLITE_NOMEM;
+            }وإلا إذا( ++nLink>SQLITE_MAX_SYMLINKS ){
               rc = SQLITE_CANTOPEN_BKPT;
             }
 
-            if( rc==SQLITE_OK ){
-              nByte = osReadlink(zIn, zDel, nFull-1);
-              if( nByte ==(DWORD)-1 ){
+            إذا( rc==SQLITE_OK ){
+              nByte = osReadlink(z_وچ, zDel, n_بھریا-1);
+              إذا( nByte ==(DWORD)-1 ){
                 rc = winLogError(SQLITE_CANTOPEN_BKPT, (DWORD)osErrno,
-                                 "readlink", zIn);
-              }else{
-                if( zDel[0]!='/' ){
-                  int n;
-                  for(n = sqlite3Strlen30(zIn); n>0 && zIn[n-1]!='/'; n--);
-                  if( nByte+n+1>nFull ){
+                                 "readlink", z_وچ);
+              }وإلا{
+                إذا( zDel[0]!='/' ){
+                  صحيح n;
+                  لكل(n = sqlite3Strlen30(z_وچ); n>0 && z_وچ[n-1]!='/'; n--);
+                  إذا( nByte+n+1>n_بھریا ){
                     rc = SQLITE_CANTOPEN_BKPT;
-                  }else{
+                  }وإلا{
                     memmove(&zDel[n], zDel, nByte+1);
-                    memcpy(zDel, zIn, n);
+                    حافظہ_نقل(zDel, z_وچ, n);
                     nByte += n;
                   }
                 }
@@ -4896,239 +4896,239 @@ static int winFullPathnameNoMutex(
               }
             }
 
-            zIn = zDel;
+            z_وچ = zDel;
           }
         }
 
-        assert( rc!=SQLITE_OK || zIn!=zFull || zIn[0]=='/' );
-        if( rc==SQLITE_OK && zIn!=zFull ){
-          rc = mkFullPathname(zIn, zFull, nFull);
+        أكد( rc!=SQLITE_OK || z_وچ!=z_بھریا || z_وچ[0]=='/' );
+        إذا( rc==SQLITE_OK && z_وچ!=z_بھریا ){
+          rc = mk_بھریا_Pathname(z_وچ, z_بھریا, n_بھریا);
         }
-        if( bLink==0 ) break;
-        zIn = zFull;
-      }while( rc==SQLITE_OK );
+        إذا( bLink==0 ) اكسر;
+        z_وچ = z_بھریا;
+      }طالما( rc==SQLITE_OK );
 
       sqlite3_free(zDel);
-      winSimplifyName(zFull);
-      return rc;
+      winSimplifyName(z_بھریا);
+      أرجع rc;
     }
   }
-#endif /* __CYGWIN__ */
+#جے_انت /* __CYGWIN__ */
 
-#if defined(_WIN32)
+#إذا defined(_WIN32)
   /* It's odd to simulate an io-error here, but really this is just
   ** using the io-error infrastructure to test that SQLite handles this
   ** function failing. This function could fail if, for example, the
   ** current working directory has been unlinked.
   */
-  SimulateIOError( return SQLITE_ERROR );
-  if ( sqlite3_data_directory && !winIsVerbatimPathname(zRelative) ){
+  SimulateIOError( أرجع SQLITE_ERROR );
+  إذا ( sqlite3_انکڑے_directory && !winIsVerbatimPathname(zRelative) ){
     /*
     ** NOTE: We are dealing with a relative path name and the data
     **       directory has been set.  Therefore, use it as the basis
     **       for converting the relative path name to an absolute
     **       one by prepending the data directory and a backslash.
     */
-    sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s%c%s",
-                     sqlite3_data_directory, winGetDirSep(), zRelative);
-    return SQLITE_OK;
+    sqlite3_snprintf(MIN(n_بھریا, pVfs->mxPathname), z_بھریا, "%s%c%s",
+                     sqlite3_انکڑے_directory, winGetDirSep(), zRelative);
+    أرجع SQLITE_OK;
   }
-#endif
+#جے_انت
   zConverted = winConvertFromUtf8Filename(zRelative);
-  if( zConverted==0 ){
-    return SQLITE_IOERR_NOMEM_BKPT;
+  إذا( zConverted==0 ){
+    أرجع SQLITE_IOERR_NOMEM_BKPT;
   }
   {
-    LPWSTR zTemp;
-    nByte = osGetFullPathNameW(zConverted, 0, 0, 0);
-    if( nByte==0 ){
+    LPWSTR z_عارضی;
+    nByte = os_Get_بھریا_رستہ_Name_W(zConverted, 0, 0, 0);
+    إذا( nByte==0 ){
       sqlite3_free(zConverted);
-      return winLogError(SQLITE_CANTOPEN_FULLPATH, osGetLastError(),
+      أرجع winLogError(SQLITE_CANTOPEN_FULLPATH, os_Get_آخری_Error(),
                          "winFullPathname1", zRelative);
     }
     nByte += 3;
-    zTemp = sqlite3MallocZero( (u64)nByte*sizeof(WCHAR) );
-    if( zTemp==0 ){
+    z_عارضی = sqlite3MallocZero( (u64)nByte*حجم(WCHAR) );
+    إذا( z_عارضی==0 ){
       sqlite3_free(zConverted);
-      return SQLITE_IOERR_NOMEM_BKPT;
+      أرجع SQLITE_IOERR_NOMEM_BKPT;
     }
-    nByte = osGetFullPathNameW(zConverted, nByte, zTemp, 0);
-    if( nByte==0 ){
+    nByte = os_Get_بھریا_رستہ_Name_W(zConverted, nByte, z_عارضی, 0);
+    إذا( nByte==0 ){
       sqlite3_free(zConverted);
-      sqlite3_free(zTemp);
-      return winLogError(SQLITE_CANTOPEN_FULLPATH, osGetLastError(),
+      sqlite3_free(z_عارضی);
+      أرجع winLogError(SQLITE_CANTOPEN_FULLPATH, os_Get_آخری_Error(),
                          "winFullPathname2", zRelative);
     }
     sqlite3_free(zConverted);
-    zOut = winUnicodeToUtf8(zTemp);
-    sqlite3_free(zTemp);
+    z_باہرلا = win_Unicode_منزل_Utf8(z_عارضی);
+    sqlite3_free(z_عارضی);
   }
-  if( zOut ){
-#ifdef __CYGWIN__
-    if( memcmp(zOut, "\\\\?\\", 4) ){
-      sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut);
-    }else if( memcmp(zOut+4, "UNC\\", 4) ){
-      sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut+4);
-    }else{
-      char *p = zOut+6;
+  إذا( z_باہرلا ){
+#جے_تعریف_شدہ __CYGWIN__
+    إذا( memcmp(z_باہرلا, "\\\\?\\", 4) ){
+      sqlite3_snprintf(MIN(n_بھریا, pVfs->mxPathname), z_بھریا, "%s", z_باہرلا);
+    }وإلا إذا( memcmp(z_باہرلا+4, "UNC\\", 4) ){
+      sqlite3_snprintf(MIN(n_بھریا, pVfs->mxPathname), z_بھریا, "%s", z_باہرلا+4);
+    }وإلا{
+      حرف *p = z_باہرلا+6;
       *p = '\\';
-      if( osGetcwd ){
+      إذا( osGetcwd ){
         /* On Cygwin, UNC paths use forward slashes */
-        while( *p ){
-          if( *p=='\\' ) *p = '/';
+        طالما( *p ){
+          إذا( *p=='\\' ) *p = '/';
           ++p;
         }
       }
-      sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut+6);
+      sqlite3_snprintf(MIN(n_بھریا, pVfs->mxPathname), z_بھریا, "%s", z_باہرلا+6);
     }
-#else
-    sqlite3_snprintf(MIN(nFull, pVfs->mxPathname), zFull, "%s", zOut);
-#endif /* __CYGWIN__ */
-    sqlite3_free(zOut);
-    return SQLITE_OK;
-  }else{
-    return SQLITE_IOERR_NOMEM_BKPT;
+#وإلا
+    sqlite3_snprintf(MIN(n_بھریا, pVfs->mxPathname), z_بھریا, "%s", z_باہرلا);
+#جے_انت /* __CYGWIN__ */
+    sqlite3_free(z_باہرلا);
+    أرجع SQLITE_OK;
+  }وإلا{
+    أرجع SQLITE_IOERR_NOMEM_BKPT;
   }
 }
-static int winFullPathname(
+ساكن صحيح win_بھریا_Pathname(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zRelative,        /* Possibly relative input path */
-  int nFull,                    /* Size of output buffer in bytes */
-  char *zFull                   /* Output buffer */
+  ثابت حرف *zRelative,        /* Possibly relative input path */
+  صحيح n_بھریا,                    /* Size of output buffer in bytes */
+  حرف *z_بھریا                   /* Output buffer */
 ){
-  int rc;
+  صحيح rc;
   MUTEX_LOGIC( sqlite3_mutex *pMutex; )
   MUTEX_LOGIC( pMutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR); )
   sqlite3_mutex_enter(pMutex);
-  rc = winFullPathnameNoMutex(pVfs, zRelative, nFull, zFull);
+  rc = win_بھریا_Pathname_No_Mutex(pVfs, zRelative, n_بھریا, z_بھریا);
   sqlite3_mutex_leave(pMutex);
-  return rc;
+  أرجع rc;
 }
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#جے_بنا_تعریف SQLITE_OMIT_لدو_EXTENSION
 /*
 ** Interfaces for opening a shared library, finding entry points
 ** within the shared library, and closing the shared library.
 */
-static void *winDlOpen(sqlite3_vfs *pVfs, const char *zFilename){
+ساكن فراغ *winDlOpen(sqlite3_vfs *pVfs, ثابت حرف *zFilename){
   HANDLE h = 0;
   LPWSTR zConverted = winConvertFromUtf8Filename(zFilename);
-  UNUSED_PARAMETER(pVfs);
-  if( zConverted==0 ){
-    OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (void*)0));
-    return 0;
+  بن_ورتیا_PARAMETER(pVfs);
+  إذا( zConverted==0 ){
+    OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (فراغ*)0));
+    أرجع 0;
   }
-  h = osLoadLibraryW ? osLoadLibraryW(zConverted) : 0;
-  OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (void*)h));
+  h = os_لدو_Library_W ? os_لدو_Library_W(zConverted) : 0;
+  OSTRACE(("DLOPEN name=%s, handle=%p\n", zFilename, (فراغ*)h));
   sqlite3_free(zConverted);
-  return (void*)h;
+  أرجع (فراغ*)h;
 }
-static void winDlError(sqlite3_vfs *pVfs, int nBuf, char *zBufOut){
-  UNUSED_PARAMETER(pVfs);
-  winGetLastErrorMsg(osGetLastError(), nBuf, zBufOut);
+ساكن فراغ winDlError(sqlite3_vfs *pVfs, صحيح nBuf, حرف *z_Buf_باہرلا){
+  بن_ورتیا_PARAMETER(pVfs);
+  win_Get_آخری_Error_پیغام(os_Get_آخری_Error(), nBuf, z_Buf_باہرلا);
 }
-static void (*winDlSym(sqlite3_vfs *pVfs,void *pH,const char *zSym))(void){
+ساكن فراغ (*winDlSym(sqlite3_vfs *pVfs,فراغ *pH,ثابت حرف *zSym))(فراغ){
   FARPROC proc = 0;
-  UNUSED_PARAMETER(pVfs);
-  proc = osGetProcAddressA ? osGetProcAddressA((HANDLE)pH, zSym) : 0;
+  بن_ورتیا_PARAMETER(pVfs);
+  proc = os_Get_Proc_پتہ_A ? os_Get_Proc_پتہ_A((HANDLE)pH, zSym) : 0;
   OSTRACE(("DLSYM handle=%p, symbol=%s, address=%p\n",
-           (void*)pH, zSym, (void*)proc));
-  return (void(*)(void))proc;
+           (فراغ*)pH, zSym, (فراغ*)proc));
+  أرجع (فراغ(*)(فراغ))proc;
 }
-static void winDlClose(sqlite3_vfs *pVfs, void *pHandle){
-  UNUSED_PARAMETER(pVfs);
-  if( osFreeLibrary!=0 ) osFreeLibrary((HANDLE)pHandle);
-  OSTRACE(("DLCLOSE handle=%p\n", (void*)pHandle));
+ساكن فراغ winDlClose(sqlite3_vfs *pVfs, فراغ *pHandle){
+  بن_ورتیا_PARAMETER(pVfs);
+  إذا( osFreeLibrary!=0 ) osFreeLibrary((HANDLE)pHandle);
+  OSTRACE(("DLCLOSE handle=%p\n", (فراغ*)pHandle));
 }
-#else /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
-  #define winDlOpen  0
-  #define winDlError 0
-  #define winDlSym   0
-  #define winDlClose 0
-#endif
+#وإلا /* if SQLITE_OMIT_LOAD_EXTENSION is defined: */
+  #تعریف_کرو winDlOpen  0
+  #تعریف_کرو winDlError 0
+  #تعریف_کرو winDlSym   0
+  #تعریف_کرو winDlClose 0
+#جے_انت
 
 /* State information for the randomness gatherer. */
-typedef struct EntropyGatherer EntropyGatherer;
-struct EntropyGatherer {
-  unsigned char *a;   /* Gather entropy into this buffer */
-  int na;             /* Size of a[] in bytes */
-  int i;              /* XOR next input into a[i] */
-  int nXor;           /* Number of XOR operations done */
+تعريفنوع بنية EntropyGatherer EntropyGatherer;
+بنية EntropyGatherer {
+  بنانشانی حرف *a;   /* Gather entropy into this buffer */
+  صحيح na;             /* Size of a[] in bytes */
+  صحيح i;              /* XOR next input into a[i] */
+  صحيح nXor;           /* Number of XOR operations done */
 };
 
-#if !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
+#إذا !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS)
 /* Mix sz bytes of entropy into p. */
-static void xorMemory(EntropyGatherer *p, unsigned char *x, int sz){
-  int j, k;
-  for(j=0, k=p->i; j<sz; j++){
+ساكن فراغ xor_حافظہ(EntropyGatherer *p, بنانشانی حرف *x, صحيح sz){
+  صحيح j, k;
+  لكل(j=0, k=p->i; j<sz; j++){
     p->a[k++] ^= x[j];
-    if( k>=p->na ) k = 0;
+    إذا( k>=p->na ) k = 0;
   }
   p->i = k;
   p->nXor += sz;
 }
-#endif /* !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS) */
+#جے_انت /* !defined(SQLITE_TEST) && !defined(SQLITE_OMIT_RANDOMNESS) */
 
 /*
 ** Write up to nBuf bytes of randomness into zBuf.
 */
-static int winRandomness(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
-#if defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS)
-  UNUSED_PARAMETER(pVfs);
+ساكن صحيح winRandomness(sqlite3_vfs *pVfs, صحيح nBuf, حرف *zBuf){
+#إذا defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS)
+  بن_ورتیا_PARAMETER(pVfs);
   memset(zBuf, 0, nBuf);
-  return nBuf;
-#else
+  أرجع nBuf;
+#وإلا
   EntropyGatherer e;
-  UNUSED_PARAMETER(pVfs);
+  بن_ورتیا_PARAMETER(pVfs);
   memset(zBuf, 0, nBuf);
-  e.a = (unsigned char*)zBuf;
+  e.a = (بنانشانی حرف*)zBuf;
   e.na = nBuf;
   e.nXor = 0;
   e.i = 0;
   {
     FILETIME x;
-    osGetSystemTimeAsFileTime(&x);
-    xorMemory(&e, (unsigned char*)&x, sizeof(x));
+    os_Get_System_ویلا_As_File_ویلا(&x);
+    xor_حافظہ(&e, (بنانشانی حرف*)&x, حجم(x));
   }
   {
     DWORD pid = osGetCurrentProcessId();
-    xorMemory(&e, (unsigned char*)&pid, sizeof(pid));
+    xor_حافظہ(&e, (بنانشانی حرف*)&pid, حجم(pid));
   }
   {
     ULONGLONG cnt = osGetTickCount64();
-    xorMemory(&e, (unsigned char*)&cnt, sizeof(cnt));
+    xor_حافظہ(&e, (بنانشانی حرف*)&cnt, حجم(cnt));
   }
   {
     LARGE_INTEGER i;
     osQueryPerformanceCounter(&i);
-    xorMemory(&e, (unsigned char*)&i, sizeof(i));
+    xor_حافظہ(&e, (بنانشانی حرف*)&i, حجم(i));
   }
-#if SQLITE_WIN32_USE_UUID
-#ifdef SQLITE_UWP
+#إذا SQLITE_WIN32_USE_UUID
+#جے_تعریف_شدہ SQLITE_UWP
 # error SQLITE_WIN32_USE_UUID is incompatible with SQLITE_UWP
-#endif
+#جے_انت
   {
     UUID id;
-    memset(&id, 0, sizeof(id));
+    memset(&id, 0, حجم(id));
     osUuidCreate(&id);
-    xorMemory(&e, (unsigned char*)&id, sizeof(id));
-    memset(&id, 0, sizeof(UUID));
+    xor_حافظہ(&e, (بنانشانی حرف*)&id, حجم(id));
+    memset(&id, 0, حجم(UUID));
     osUuidCreateSequential(&id);
-    xorMemory(&e, (unsigned char*)&id, sizeof(id));
+    xor_حافظہ(&e, (بنانشانی حرف*)&id, حجم(id));
   }
-#endif /* SQLITE_WIN32_USE_UUID */
-  return e.nXor>nBuf ? nBuf : e.nXor;
-#endif /* defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS) */
+#جے_انت /* SQLITE_WIN32_USE_UUID */
+  أرجع e.nXor>nBuf ? nBuf : e.nXor;
+#جے_انت /* defined(SQLITE_TEST) || defined(SQLITE_OMIT_RANDOMNESS) */
 }
 
 
 /*
 ** Sleep for a little while.  Return the amount of time slept.
 */
-static int winSleep(sqlite3_vfs *pVfs, int microsec){
+ساكن صحيح winSleep(sqlite3_vfs *pVfs, صحيح microsec){
   osSleep((microsec+999)/1000);
-  UNUSED_PARAMETER(pVfs);
-  return ((microsec+999)/1000)*1000;
+  بن_ورتیا_PARAMETER(pVfs);
+  أرجع ((microsec+999)/1000)*1000;
 }
 
 /*
@@ -5136,9 +5136,9 @@ static int winSleep(sqlite3_vfs *pVfs, int microsec){
 ** the number of seconds since 1970 and is used to set the result of
 ** sqlite3OsCurrentTime() during testing.
 */
-#ifdef SQLITE_TEST
-int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
-#endif
+#جے_تعریف_شدہ SQLITE_TEST
+صحيح sqlite3_current_ویلا = 0;  /* Fake system time in seconds since 1970. */
+#جے_انت
 
 /*
 ** Find the current time (in Universal Coordinated Time).  Write into *piNow
@@ -5150,32 +5150,32 @@ int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
 ** On success, return SQLITE_OK.  Return SQLITE_ERROR if the time and date
 ** cannot be found.
 */
-static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
+ساكن صحيح win_Current_ویلا_Int64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
   /* FILETIME structure is a 64-bit value representing the number of
      100-nanosecond intervals since January 1, 1601 (= JD 2305813.5).
   */
   FILETIME ft;
-  static const sqlite3_int64 winFiletimeEpoch = 23058135*(sqlite3_int64)8640000;
-#ifdef SQLITE_TEST
-  static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
-#endif
+  ساكن ثابت sqlite3_int64 winFiletimeEpoch = 23058135*(sqlite3_int64)8640000;
+#جے_تعریف_شدہ SQLITE_TEST
+  ساكن ثابت sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+#جے_انت
   /* 2^32 - to avoid use of LL and warnings in gcc */
-  static const sqlite3_int64 max32BitValue =
+  ساكن ثابت sqlite3_int64 max32_ثنائی_ہندسہ_قدر =
       (sqlite3_int64)2000000000 + (sqlite3_int64)2000000000 +
       (sqlite3_int64)294967296;
 
-  osGetSystemTimeAsFileTime( &ft );
+  os_Get_System_ویلا_As_File_ویلا( &ft );
   *piNow = winFiletimeEpoch +
-            ((((sqlite3_int64)ft.dwHighDateTime)*max32BitValue) +
-               (sqlite3_int64)ft.dwLowDateTime)/(sqlite3_int64)10000;
+            ((((sqlite3_int64)ft.dw_بلند_Date_ویلا)*max32_ثنائی_ہندسہ_قدر) +
+               (sqlite3_int64)ft.dw_کم_Date_ویلا)/(sqlite3_int64)10000;
 
-#ifdef SQLITE_TEST
-  if( sqlite3_current_time ){
-    *piNow = 1000*(sqlite3_int64)sqlite3_current_time + unixEpoch;
+#جے_تعریف_شدہ SQLITE_TEST
+  إذا( sqlite3_current_ویلا ){
+    *piNow = 1000*(sqlite3_int64)sqlite3_current_ویلا + unixEpoch;
   }
-#endif
-  UNUSED_PARAMETER(pVfs);
-  return SQLITE_OK;
+#جے_انت
+  بن_ورتیا_PARAMETER(pVfs);
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -5183,14 +5183,14 @@ static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
 ** current time and date as a Julian Day number into *prNow and
 ** return 0.  Return 1 if the time and date cannot be found.
 */
-static int winCurrentTime(sqlite3_vfs *pVfs, double *prNow){
-  int rc;
+ساكن صحيح win_Current_ویلا(sqlite3_vfs *pVfs, مزدوج *prNow){
+  صحيح rc;
   sqlite3_int64 i;
-  rc = winCurrentTimeInt64(pVfs, &i);
-  if( !rc ){
+  rc = win_Current_ویلا_Int64(pVfs, &i);
+  إذا( !rc ){
     *prNow = i/86400000.0;
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -5223,148 +5223,148 @@ static int winCurrentTime(sqlite3_vfs *pVfs, double *prNow){
 ** by sqlite into the error message available to the user using
 ** sqlite3_errmsg(), possibly making IO errors easier to debug.
 */
-static int winGetLastError(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
-  DWORD e = osGetLastError();
-  UNUSED_PARAMETER(pVfs);
-  if( nBuf>0 ) winGetLastErrorMsg(e, nBuf, zBuf);
-  return e;
+ساكن صحيح win_Get_آخری_Error(sqlite3_vfs *pVfs, صحيح nBuf, حرف *zBuf){
+  DWORD e = os_Get_آخری_Error();
+  بن_ورتیا_PARAMETER(pVfs);
+  إذا( nBuf>0 ) win_Get_آخری_Error_پیغام(e, nBuf, zBuf);
+  أرجع e;
 }
 
 /*
 ** Initialize and deinitialize the operating system interface.
 */
-int sqlite3_os_init(void){
-  static sqlite3_vfs winVfs = {
+صحيح sqlite3_os_init(فراغ){
+  ساكن sqlite3_vfs winVfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WIN32_MAX_PATH_BYTES, /* mxPathname */
+    حجم(winFile),       /* szOsFile */
+    SQLITE_WIN32_MAX_رستہ_بائٹاں, /* mxPathname */
     0,                     /* pNext */
     "win32",               /* zName */
-    &winAppData,           /* pAppData */
+    &win_App_انکڑے,           /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_بھریا_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ویلا,        /* xCurrentTime */
+    win_Get_آخری_Error,       /* xGetLastError */
+    win_Current_ویلا_Int64,   /* xCurrentTimeInt64 */
+    win_سیٹ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_اگلا_System_Call,     /* xNextSystemCall */
   };
-  static sqlite3_vfs winLongPathVfs = {
+  ساكن sqlite3_vfs win_Long_رستہ_Vfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WINNT_MAX_PATH_BYTES, /* mxPathname */
+    حجم(winFile),       /* szOsFile */
+    SQLITE_WINNT_MAX_رستہ_بائٹاں, /* mxPathname */
     0,                     /* pNext */
     "win32-longpath",      /* zName */
-    &winAppData,           /* pAppData */
+    &win_App_انکڑے,           /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_بھریا_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ویلا,        /* xCurrentTime */
+    win_Get_آخری_Error,       /* xGetLastError */
+    win_Current_ویلا_Int64,   /* xCurrentTimeInt64 */
+    win_سیٹ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_اگلا_System_Call,     /* xNextSystemCall */
   };
-  static sqlite3_vfs winNolockVfs = {
+  ساكن sqlite3_vfs winNolockVfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WIN32_MAX_PATH_BYTES, /* mxPathname */
+    حجم(winFile),       /* szOsFile */
+    SQLITE_WIN32_MAX_رستہ_بائٹاں, /* mxPathname */
     0,                     /* pNext */
     "win32-none",          /* zName */
-    &winNolockAppData,     /* pAppData */
+    &win_Nolock_App_انکڑے,     /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_بھریا_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ویلا,        /* xCurrentTime */
+    win_Get_آخری_Error,       /* xGetLastError */
+    win_Current_ویلا_Int64,   /* xCurrentTimeInt64 */
+    win_سیٹ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_اگلا_System_Call,     /* xNextSystemCall */
   };
-  static sqlite3_vfs winLongPathNolockVfs = {
+  ساكن sqlite3_vfs win_Long_رستہ_Nolock_Vfs = {
     3,                     /* iVersion */
-    sizeof(winFile),       /* szOsFile */
-    SQLITE_WINNT_MAX_PATH_BYTES, /* mxPathname */
+    حجم(winFile),       /* szOsFile */
+    SQLITE_WINNT_MAX_رستہ_بائٹاں, /* mxPathname */
     0,                     /* pNext */
     "win32-longpath-none", /* zName */
-    &winNolockAppData,     /* pAppData */
+    &win_Nolock_App_انکڑے,     /* pAppData */
     winOpen,               /* xOpen */
     winDelete,             /* xDelete */
     winAccess,             /* xAccess */
-    winFullPathname,       /* xFullPathname */
+    win_بھریا_Pathname,       /* xFullPathname */
     winDlOpen,             /* xDlOpen */
     winDlError,            /* xDlError */
     winDlSym,              /* xDlSym */
     winDlClose,            /* xDlClose */
     winRandomness,         /* xRandomness */
     winSleep,              /* xSleep */
-    winCurrentTime,        /* xCurrentTime */
-    winGetLastError,       /* xGetLastError */
-    winCurrentTimeInt64,   /* xCurrentTimeInt64 */
-    winSetSystemCall,      /* xSetSystemCall */
+    win_Current_ویلا,        /* xCurrentTime */
+    win_Get_آخری_Error,       /* xGetLastError */
+    win_Current_ویلا_Int64,   /* xCurrentTimeInt64 */
+    win_سیٹ_System_Call,      /* xSetSystemCall */
     winGetSystemCall,      /* xGetSystemCall */
-    winNextSystemCall,     /* xNextSystemCall */
+    win_اگلا_System_Call,     /* xNextSystemCall */
   };
 
   /* Double-check that the aSyscall[] array has been constructed
   ** correctly.  See ticket [bb3a86e890c8e96ab] */
-  assert( ArraySize(aSyscall)==60 );
-  assert( strcmp(aSyscall[0].zName,"AreFileApisANSI")==0 );
-  assert( strcmp(aSyscall[8].zName,"FreeLibrary")==0 );
-  assert( strcmp(aSyscall[16].zName,"GetSystemInfo")==0 );
-  assert( strcmp(aSyscall[24].zName,"HeapReAlloc")==0 );
-  assert( strcmp(aSyscall[32].zName,"MapViewOfFileFromApp")==0 );
-  assert( strcmp(aSyscall[40].zName,"UnmapViewOfFile")==0 );
-  assert( strcmp(aSyscall[48].zName,"UuidCreate")==0 );
-  assert( strcmp(aSyscall[56].zName,"lstat")==0 );
+  أكد( Array_ناپ(aSyscall)==60 );
+  أكد( strcmp(aSyscall[0].zName,"AreFileApisANSI")==0 );
+  أكد( strcmp(aSyscall[8].zName,"FreeLibrary")==0 );
+  أكد( strcmp(aSyscall[16].zName,"GetSystemInfo")==0 );
+  أكد( strcmp(aSyscall[24].zName,"HeapReAlloc")==0 );
+  أكد( strcmp(aSyscall[32].zName,"MapViewOfFileFromApp")==0 );
+  أكد( strcmp(aSyscall[40].zName,"UnmapViewOfFile")==0 );
+  أكد( strcmp(aSyscall[48].zName,"UuidCreate")==0 );
+  أكد( strcmp(aSyscall[56].zName,"lstat")==0 );
 
   /* get memory map allocation granularity */
-  memset(&winSysInfo, 0, sizeof(SYSTEM_INFO));
+  memset(&winSysInfo, 0, حجم(SYSTEM_INFO));
   osGetSystemInfo(&winSysInfo);
-  assert( winSysInfo.dwAllocationGranularity>0 );
-  assert( winSysInfo.dwPageSize>0 );
+  أكد( winSysInfo.dw_ونڈ_Granularity>0 );
+  أكد( winSysInfo.dw_ورقہ_ناپ>0 );
 
-  sqlite3_vfs_register(&winVfs, 1);
-  sqlite3_vfs_register(&winLongPathVfs, 0);
-  sqlite3_vfs_register(&winNolockVfs, 0);
-  sqlite3_vfs_register(&winLongPathNolockVfs, 0);
-#ifndef SQLITE_OMIT_WAL
-  winBigLock = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
-#endif
+  sqlite3_vfs_رجسٹر(&winVfs, 1);
+  sqlite3_vfs_رجسٹر(&win_Long_رستہ_Vfs, 0);
+  sqlite3_vfs_رجسٹر(&winNolockVfs, 0);
+  sqlite3_vfs_رجسٹر(&win_Long_رستہ_Nolock_Vfs, 0);
+#جے_بنا_تعریف SQLITE_OMIT_WAL
+  win_Big_جندرا = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_VFS1);
+#جے_انت
 
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
-int sqlite3_os_end(void){
-#ifndef SQLITE_OMIT_WAL
-  winBigLock = 0;
-#endif
-  return SQLITE_OK;
+صحيح sqlite3_os_سرا(فراغ){
+#جے_بنا_تعریف SQLITE_OMIT_WAL
+  win_Big_جندرا = 0;
+#جے_انت
+  أرجع SQLITE_OK;
 }
 
-#endif /* SQLITE_OS_WIN */
+#جے_انت /* SQLITE_OS_WIN */

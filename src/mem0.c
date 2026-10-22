@@ -16,25 +16,25 @@
 ** are merely placeholders.  Real drivers must be substituted using
 ** sqlite3_config() before SQLite will operate.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is the default.  It is
 ** used when no other memory allocator is specified using compile-time
 ** macros.
 */
-#ifdef SQLITE_ZERO_MALLOC
+#جے_تعریف_شدہ SQLITE_ZERO_MALLOC
 
 /*
 ** No-op versions of all memory allocation routines
 */
-static void *sqlite3MemMalloc(int nByte){ return 0; }
-static void sqlite3MemFree(void *pPrior){ return; }
-static void *sqlite3MemRealloc(void *pPrior, int nByte){ return 0; }
-static int sqlite3MemSize(void *pPrior){ return 0; }
-static int sqlite3MemRoundup(int n){ return n; }
-static int sqlite3MemInit(void *NotUsed){ return SQLITE_OK; }
-static void sqlite3MemShutdown(void *NotUsed){ return; }
+ساكن فراغ *sqlite3MemMalloc(صحيح nByte){ أرجع 0; }
+ساكن فراغ sqlite3MemFree(فراغ *p_پہلوں){ أرجع; }
+ساكن فراغ *sqlite3MemRealloc(فراغ *p_پہلوں, صحيح nByte){ أرجع 0; }
+ساكن صحيح sqlite3_Mem_ناپ(فراغ *p_پہلوں){ أرجع 0; }
+ساكن صحيح sqlite3MemRoundup(صحيح n){ أرجع n; }
+ساكن صحيح sqlite3MemInit(فراغ *Not_ورتیا){ أرجع SQLITE_OK; }
+ساكن فراغ sqlite3MemShutdown(فراغ *Not_ورتیا){ أرجع; }
 
 /*
 ** This routine is the only routine in this file with external linkage.
@@ -42,12 +42,12 @@ static void sqlite3MemShutdown(void *NotUsed){ return; }
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
-  static const sqlite3_mem_methods defaultMethods = {
+فراغ sqlite3_Mem_سیٹ_Default(فراغ){
+  ساكن ثابت sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
      sqlite3MemRealloc,
-     sqlite3MemSize,
+     sqlite3_Mem_ناپ,
      sqlite3MemRoundup,
      sqlite3MemInit,
      sqlite3MemShutdown,
@@ -56,4 +56,4 @@ void sqlite3MemSetDefault(void){
   sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
-#endif /* SQLITE_ZERO_MALLOC */
+#جے_انت /* SQLITE_ZERO_MALLOC */

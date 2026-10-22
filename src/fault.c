@@ -24,17 +24,17 @@
 ** during a hash table resize is a benign fault.
 */
 
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
-#ifndef SQLITE_UNTESTABLE
+#جے_بنا_تعریف SQLITE_UNTESTABLE
 
 /*
 ** Global variables.
 */
-typedef struct BenignMallocHooks BenignMallocHooks;
-static SQLITE_WSD struct BenignMallocHooks {
-  void (*xBenignBegin)(void);
-  void (*xBenignEnd)(void);
+تعريفنوع بنية BenignMallocHooks BenignMallocHooks;
+ساكن SQLITE_WSD بنية BenignMallocHooks {
+  فراغ (*xBenignBegin)(فراغ);
+  فراغ (*x_Benign_سرا)(فراغ);
 } sqlite3Hooks = { 0, 0 };
 
 /* The "wsdHooks" macro will resolve to the appropriate BenignMallocHooks
@@ -43,27 +43,27 @@ static SQLITE_WSD struct BenignMallocHooks {
 ** case where writable static data is supported, wsdHooks can refer directly
 ** to the "sqlite3Hooks" state vector declared above.
 */
-#ifdef SQLITE_OMIT_WSD
+#جے_تعریف_شدہ SQLITE_OMIT_WSD
 # define wsdHooksInit \
   BenignMallocHooks *x = &GLOBAL(BenignMallocHooks,sqlite3Hooks)
 # define wsdHooks x[0]
-#else
+#وإلا
 # define wsdHooksInit
 # define wsdHooks sqlite3Hooks
-#endif
+#جے_انت
 
 
 /*
 ** Register hooks to call when sqlite3BeginBenignMalloc() and
 ** sqlite3EndBenignMalloc() are called, respectively.
 */
-void sqlite3BenignMallocHooks(
-  void (*xBenignBegin)(void),
-  void (*xBenignEnd)(void)
+فراغ sqlite3BenignMallocHooks(
+  فراغ (*xBenignBegin)(فراغ),
+  فراغ (*x_Benign_سرا)(فراغ)
 ){
   wsdHooksInit;
   wsdHooks.xBenignBegin = xBenignBegin;
-  wsdHooks.xBenignEnd = xBenignEnd;
+  wsdHooks.x_Benign_سرا = x_Benign_سرا;
 }
 
 /*
@@ -71,17 +71,17 @@ void sqlite3BenignMallocHooks(
 ** subsequent malloc failures are benign. A call to sqlite3EndBenignMalloc()
 ** indicates that subsequent malloc failures are non-benign.
 */
-void sqlite3BeginBenignMalloc(void){
+فراغ sqlite3BeginBenignMalloc(فراغ){
   wsdHooksInit;
-  if( wsdHooks.xBenignBegin ){
+  إذا( wsdHooks.xBenignBegin ){
     wsdHooks.xBenignBegin();
   }
 }
-void sqlite3EndBenignMalloc(void){
+فراغ sqlite3_سرا_Benign_Malloc(فراغ){
   wsdHooksInit;
-  if( wsdHooks.xBenignEnd ){
-    wsdHooks.xBenignEnd();
+  إذا( wsdHooks.x_Benign_سرا ){
+    wsdHooks.x_Benign_سرا();
   }
 }
 
-#endif   /* #ifndef SQLITE_UNTESTABLE */
+#جے_انت   /* #ifndef SQLITE_UNTESTABLE */

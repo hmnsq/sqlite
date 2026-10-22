@@ -12,29 +12,29 @@
 **
 ** This file contains code that is specific to Windows.
 */
-#ifndef SQLITE_OS_WIN_H
-#define SQLITE_OS_WIN_H
+#جے_بنا_تعریف SQLITE_OS_WIN_H
+#تعریف_کرو SQLITE_OS_WIN_H
 
 /*
 ** Include the primary Windows SDK header file.
 */
-#include "windows.h"
+#ضمن "windows.h"
 
-#ifdef __CYGWIN__
+#جے_تعریف_شدہ __CYGWIN__
 # include <sys/cygwin.h>
 # include <sys/stat.h> /* amalgamator: dontcache */
 # include <unistd.h> /* amalgamator: dontcache */
 # include <errno.h> /* amalgamator: dontcache */
-#endif
+#جے_انت
 
 /*
 ** For some Windows sub-platforms, the _beginthreadex() / _endthreadex()
 ** functions are not available (e.g. those not using MSVC, Cygwin, etc).
 */
-#if SQLITE_OS_WIN && SQLITE_THREADSAFE>0 && !defined(__CYGWIN__)
-# define SQLITE_OS_WIN_THREADS 1
-#else
-# define SQLITE_OS_WIN_THREADS 0
-#endif
+#إذا SQLITE_OS_WIN && SQLITE_THREADSAFE>0 && !defined(__CYGWIN__)
+# define SQLITE_OS_WIN_دھاگے 1
+#وإلا
+# define SQLITE_OS_WIN_دھاگے 0
+#جے_انت
 
-#endif /* SQLITE_OS_WIN_H */
+#جے_انت /* SQLITE_OS_WIN_H */

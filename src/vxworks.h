@@ -12,23 +12,23 @@
 **
 ** This file contains code that is specific to Wind River's VxWorks
 */
-#if defined(__RTP__) || defined(_WRS_KERNEL)
+#إذا defined(__RTP__) || defined(_WRS_KERNEL)
 /* This is VxWorks.  Set up things specially for that OS
 */
-#include <vxWorks.h>
-#include <pthread.h>  /* amalgamator: dontcache */
-#define OS_VXWORKS 1
-#define SQLITE_OS_OTHER 0
-#define SQLITE_HOMEGROWN_RECURSIVE_MUTEX 1
-#define SQLITE_OMIT_LOAD_EXTENSION 1
-#define SQLITE_ENABLE_LOCKING_STYLE 0
-#define HAVE_UTIME 1
-#else
+#ضمن <vxWorks.h>
+#ضمن <pthread.h>  /* amalgamator: dontcache */
+#تعریف_کرو OS_VXWORKS 1
+#تعریف_کرو SQLITE_OS_OTHER 0
+#تعریف_کرو SQLITE_HOMEGROWN_RECURSIVE_MUTEX 1
+#تعریف_کرو SQLITE_OMIT_لدو_EXTENSION 1
+#تعریف_کرو SQLITE_ENABLE_LOCKING_STYLE 0
+#تعریف_کرو HAVE_UTIME 1
+#وإلا
 /* This is not VxWorks. */
-#ifndef OS_VXWORKS
+#جے_بنا_تعریف OS_VXWORKS
 #  define OS_VXWORKS 0
-#endif
-#define HAVE_FCHOWN 1
-#define HAVE_READLINK 1
-#define HAVE_LSTAT 1
-#endif /* defined(_WRS_KERNEL) */
+#جے_انت
+#تعریف_کرو HAVE_FCHOWN 1
+#تعریف_کرو HAVE_READLINK 1
+#تعریف_کرو HAVE_LSTAT 1
+#جے_انت /* defined(_WRS_KERNEL) */
