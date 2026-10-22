@@ -41,7 +41,7 @@
 **                                be necessary when compiling for Delphi,
 **                                for example.
 */
-#include "sqliteInt.h"
+#अन्तर्भाव "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is the default.  It is
@@ -49,39 +49,39 @@
 ** macros.
 */
 #ifdef SQLITE_SYSTEM_MALLOC
-#if defined(__APPLE__) && !defined(SQLITE_WITHOUT_ZONEMALLOC)
+#यदि defined(__APPLE__) && !defined(SQLITE_WITHOUT_ZONEMALLOC)
 
 /*
 ** Use the zone allocator available on apple products unless the
 ** SQLITE_WITHOUT_ZONEMALLOC symbol is defined.
 */
-#include <sys/sysctl.h>
-#include <malloc/malloc.h>
+#अन्तर्भाव <sys/sysctl.h>
+#अन्तर्भाव <malloc/malloc.h>
 #ifdef SQLITE_MIGHT_BE_SINGLE_CORE
-#include <libkern/OSAtomic.h>
+#अन्तर्भाव <libkern/OSAtomic.h>
 #endif /* SQLITE_MIGHT_BE_SINGLE_CORE */
-static malloc_zone_t* _sqliteZone_;
+स्थिर malloc_zone_t* _sqliteZone_;
 #define SQLITE_MALLOC(x) malloc_zone_malloc(_sqliteZone_, (x))
 #define SQLITE_FREE(x) malloc_zone_free(_sqliteZone_, (x));
 #define SQLITE_REALLOC(x,y) malloc_zone_realloc(_sqliteZone_, (x), (y))
 #define SQLITE_MALLOCSIZE(x) \
         (_sqliteZone_ ? _sqliteZone_->size(_sqliteZone_,x) : malloc_size(x))
 
-#else /* if not __APPLE__ */
+#अन्यथा /* if not __APPLE__ */
 
 /*
 ** Use standard C library malloc and free on non-Apple systems.  
 ** Also used by Apple systems if SQLITE_WITHOUT_ZONEMALLOC is defined.
 */
 #define SQLITE_MALLOC(x)             malloc(x)
-#define SQLITE_FREE(x)               free(x)
+#define SQLITE_FREE(x)               मुक्त(x)
 #define SQLITE_REALLOC(x,y)          realloc((x),(y))
 
 /*
 ** The malloc.h header file is needed for malloc_usable_size() function
 ** on some systems (e.g. Linux).
 */
-#if HAVE_MALLOC_H && HAVE_MALLOC_USABLE_SIZE
+#यदि HAVE_MALLOC_H && HAVE_MALLOC_USABLE_SIZE
 #  define SQLITE_USE_MALLOC_H 1
 #  define SQLITE_USE_MALLOC_USABLE_SIZE 1
 /*
@@ -90,7 +90,7 @@ static malloc_zone_t* _sqliteZone_;
 ** -DSQLITE_WITHOUT_MSIZE.  Using the _msize() function also requires
 ** the malloc.h header file.
 */
-#elif defined(_MSC_VER) && !defined(SQLITE_WITHOUT_MSIZE)
+#नोचेद्यदि defined(_MSC_VER) && !defined(SQLITE_WITHOUT_MSIZE)
 #  define SQLITE_USE_MALLOC_H
 #  define SQLITE_USE_MSIZE
 #endif
@@ -102,14 +102,14 @@ static malloc_zone_t* _sqliteZone_;
 ** The memory size function can always be overridden manually by defining
 ** the macro SQLITE_MALLOCSIZE to the desired function name.
 */
-#if defined(SQLITE_USE_MALLOC_H)
+#यदि defined(SQLITE_USE_MALLOC_H)
 #  include <malloc.h>
-#  if defined(SQLITE_USE_MALLOC_USABLE_SIZE)
-#    if !defined(SQLITE_MALLOCSIZE)
+#  यदि defined(SQLITE_USE_MALLOC_USABLE_SIZE)
+#    यदि !defined(SQLITE_MALLOCSIZE)
 #      define SQLITE_MALLOCSIZE(x)   malloc_usable_size(x)
 #    endif
 #  elif defined(SQLITE_USE_MSIZE)
-#    if !defined(SQLITE_MALLOCSIZE)
+#    यदि !defined(SQLITE_MALLOCSIZE)
 #      define SQLITE_MALLOCSIZE      _msize
 #    endif
 #  endif
@@ -125,29 +125,29 @@ static malloc_zone_t* _sqliteZone_;
 ** cases of nByte<=0 will be intercepted and dealt with by higher level
 ** routines.
 */
-static void *sqlite3MemMalloc(int nByte){
+स्थिर शून्य *sqlite3MemMalloc(पूर्णाङ्क nByte){
 #ifdef SQLITE_MALLOCSIZE
-  void *p;
+  शून्य *p;
   testcase( ROUND8(nByte)==nByte );
   p = SQLITE_MALLOC( nByte );
-  if( p==0 ){
+  यदि( p==0 ){
     testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes of memory", nByte);
   }
-  return p;
-#else
+  प्रत्यागम p;
+#अन्यथा
   sqlite3_int64 *p;
-  assert( nByte>0 );
+  प्रतिज्ञा( nByte>0 );
   testcase( ROUND8(nByte)!=nByte );
   p = SQLITE_MALLOC( nByte+8 );
-  if( p ){
+  यदि( p ){
     p[0] = nByte;
     p++;
-  }else{
+  }अन्यथा{
     testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes of memory", nByte);
   }
-  return (void *)p;
+  प्रत्यागम (शून्य *)p;
 #endif
 }
 
@@ -159,12 +159,12 @@ static void *sqlite3MemMalloc(int nByte){
 ** cases where pPrior==0 will have been intercepted and dealt with
 ** by higher-level routines.
 */
-static void sqlite3MemFree(void *pPrior){
+स्थिर शून्य sqlite3MemFree(शून्य *pPrior){
 #ifdef SQLITE_MALLOCSIZE
   SQLITE_FREE(pPrior);
-#else
+#अन्यथा
   sqlite3_int64 *p = (sqlite3_int64*)pPrior;
-  assert( pPrior!=0 );
+  प्रतिज्ञा( pPrior!=0 );
   p--;
   SQLITE_FREE(p);
 #endif
@@ -174,16 +174,16 @@ static void sqlite3MemFree(void *pPrior){
 ** Report the allocated size of a prior return from xMalloc()
 ** or xRealloc().
 */
-static int sqlite3MemSize(void *pPrior){
+स्थिर पूर्णाङ्क sqlite3MemSize(शून्य *pPrior){
 #ifdef SQLITE_MALLOCSIZE
-  assert( pPrior!=0 );
-  return (int)SQLITE_MALLOCSIZE(pPrior);
-#else
+  प्रतिज्ञा( pPrior!=0 );
+  प्रत्यागम (पूर्णाङ्क)SQLITE_MALLOCSIZE(pPrior);
+#अन्यथा
   sqlite3_int64 *p;
-  assert( pPrior!=0 );
+  प्रतिज्ञा( pPrior!=0 );
   p = (sqlite3_int64*)pPrior;
   p--;
-  return (int)p[0];
+  प्रत्यागम (पूर्णाङ्क)p[0];
 #endif
 }
 
@@ -197,59 +197,59 @@ static int sqlite3MemSize(void *pPrior){
 ** cases where nByte<=0 will have been intercepted by higher-level
 ** routines and redirected to xFree.
 */
-static void *sqlite3MemRealloc(void *pPrior, int nByte){
+स्थिर शून्य *sqlite3MemRealloc(शून्य *pPrior, पूर्णाङ्क nByte){
 #ifdef SQLITE_MALLOCSIZE
-  void *p = SQLITE_REALLOC(pPrior, nByte);
-  if( p==0 ){
+  शून्य *p = SQLITE_REALLOC(pPrior, nByte);
+  यदि( p==0 ){
     testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM,
       "failed memory resize %u to %u bytes",
       SQLITE_MALLOCSIZE(pPrior), nByte);
   }
-  return p;
-#else
+  प्रत्यागम p;
+#अन्यथा
   sqlite3_int64 *p = (sqlite3_int64*)pPrior;
-  assert( pPrior!=0 && nByte>0 );
-  assert( nByte==ROUND8(nByte) ); /* EV: R-46199-30249 */
+  प्रतिज्ञा( pPrior!=0 && nByte>0 );
+  प्रतिज्ञा( nByte==ROUND8(nByte) ); /* EV: R-46199-30249 */
   p--;
   p = SQLITE_REALLOC(p, nByte+8 );
-  if( p ){
+  यदि( p ){
     p[0] = nByte;
     p++;
-  }else{
+  }अन्यथा{
     testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM,
       "failed memory resize %u to %u bytes",
       sqlite3MemSize(pPrior), nByte);
   }
-  return (void*)p;
+  प्रत्यागम (शून्य*)p;
 #endif
 }
 
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int sqlite3MemRoundup(int n){
-  return ROUND8(n);
+स्थिर पूर्णाङ्क sqlite3MemRoundup(पूर्णाङ्क n){
+  प्रत्यागम ROUND8(n);
 }
 
 /*
 ** Initialize this module.
 */
-static int sqlite3MemInit(void *NotUsed){
-#if defined(__APPLE__) && !defined(SQLITE_WITHOUT_ZONEMALLOC)
-  int cpuCount;
+स्थिर पूर्णाङ्क sqlite3MemInit(शून्य *NotUsed){
+#यदि defined(__APPLE__) && !defined(SQLITE_WITHOUT_ZONEMALLOC)
+  पूर्णाङ्क cpu_गिनती;
   size_t len;
-  if( _sqliteZone_ ){
-    return SQLITE_OK;
+  यदि( _sqliteZone_ ){
+    प्रत्यागम SQLITE_OK;
   }
-  len = sizeof(cpuCount);
+  len = परिमाण(cpu_गिनती);
   /* One usually wants to use hw.activecpu for MT decisions, but not here */
-  sysctlbyname("hw.ncpu", &cpuCount, &len, NULL, 0);
-  if( cpuCount>1 ){
+  sysctlbyname("hw.ncpu", &cpu_गिनती, &len, रिक्त, 0);
+  यदि( cpu_गिनती>1 ){
     /* defer MT decisions to system malloc */
     _sqliteZone_ = malloc_default_zone();
-  }else{
+  }अन्यथा{
     /* only 1 core, use our own zone to contention over global locks,
     ** e.g. we have our own dedicated locks */
     _sqliteZone_ = malloc_create_zone(4096, 0);
@@ -257,15 +257,15 @@ static int sqlite3MemInit(void *NotUsed){
   }
 #endif /*  defined(__APPLE__) && !defined(SQLITE_WITHOUT_ZONEMALLOC) */
   UNUSED_PARAMETER(NotUsed);
-  return SQLITE_OK;
+  प्रत्यागम SQLITE_OK;
 }
 
 /*
 ** Deinitialize this module.
 */
-static void sqlite3MemShutdown(void *NotUsed){
+स्थिर शून्य sqlite3MemShutdown(शून्य *NotUsed){
   UNUSED_PARAMETER(NotUsed);
-  return;
+  प्रत्यागम;
 }
 
 /*
@@ -274,8 +274,8 @@ static void sqlite3MemShutdown(void *NotUsed){
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
-  static const sqlite3_mem_methods defaultMethods = {
+शून्य sqlite3MemSetDefault(शून्य){
+  स्थिर ध्रुव sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
      sqlite3MemRealloc,
