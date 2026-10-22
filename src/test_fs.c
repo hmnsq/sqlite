@@ -61,63 +61,63 @@
 **
 **   SELECT * FROM fstree WHERE path LIKE '/home/dan/sqlite/%'
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "tclsqlite.h"
+#ಅನ್ತರ್ಭಾವ <stdlib.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <sys/stat.h>
+#ಅನ್ತರ್ಭಾವ <fcntl.h>
 
-#if !defined(_WIN32) || defined(__MSVCRT__)
+#ಆದರೆ !defined(_WIN32) || defined(__MSVCRT__)
 # include <unistd.h>
 # include <dirent.h>
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # include "windirent.h"
 # ifndef S_ISREG
-#  define S_ISREG(mode) (((mode) & S_IFMT) == S_IFREG)
+#  define S_ISREG(ಬಹುಲಕ) (((ಬಹುಲಕ) & S_IFMT) == S_IFREG)
 # endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
 
-typedef struct fs_vtab fs_vtab;
-typedef struct fs_cursor fs_cursor;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ fs_vtab fs_vtab;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ fs_cursor fs_cursor;
 
 /* 
 ** A fs virtual-table object 
 */
-struct fs_vtab {
-  sqlite3_vtab base;
+ರಚನೆ fs_vtab {
+  sqlite3_vtab ತಳ;
   sqlite3 *db;
-  char *zDb;                      /* Name of db containing zTbl */
-  char *zTbl;                     /* Name of docid->file map table */
+  ಅಕ್ಷರ *zDb;                      /* Name of db containing zTbl */
+  ಅಕ್ಷರ *zTbl;                     /* Name of docid->file map table */
 };
 
 /* A fs cursor object */
-struct fs_cursor {
-  sqlite3_vtab_cursor base;
+ರಚನೆ fs_cursor {
+  sqlite3_vtab_cursor ತಳ;
   sqlite3_stmt *pStmt;
-  char *zBuf;
-  int nBuf;
-  int nAlloc;
+  ಅಕ್ಷರ *zBuf;
+  ಪೂರ್ಣಾಂಕ nBuf;
+  ಪೂರ್ಣಾಂಕ nAlloc;
 };
 
 /*************************************************************************
 ** Start of fsdir implementation.
 */
-typedef struct FsdirVtab FsdirVtab;
-typedef struct FsdirCsr FsdirCsr;
-struct FsdirVtab {
-  sqlite3_vtab base;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FsdirVtab FsdirVtab;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FsdirCsr FsdirCsr;
+ರಚನೆ FsdirVtab {
+  sqlite3_vtab ತಳ;
 };
 
-struct FsdirCsr {
-  sqlite3_vtab_cursor base;
-  char *zDir;                     /* Buffer containing directory scanned */
+ರಚನೆ FsdirCsr {
+  sqlite3_vtab_cursor ತಳ;
+  ಅಕ್ಷರ *zDir;                     /* Buffer containing directory scanned */
   DIR *pDir;                      /* Open directory */
   sqlite3_int64 iRowid;
-  struct dirent *pEntry;
+  ರಚನೆ dirent *p_ನಮೂದು;
 };
 
 /*
@@ -131,36 +131,36 @@ struct FsdirCsr {
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fsdirConnect(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdirConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಂಕ argc, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ಅಕ್ಷರ **pzErr
 ){
   FsdirVtab *pTab;
 
-  if( argc!=3 ){
+  ಆದರೆ( argc!=3 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   }
 
-  pTab = (FsdirVtab *)sqlite3_malloc(sizeof(FsdirVtab));
-  if( !pTab ) return SQLITE_NOMEM;
-  memset(pTab, 0, sizeof(FsdirVtab));
+  pTab = (FsdirVtab *)sqlite3_malloc(ಗಾತ್ರ(FsdirVtab));
+  ಆದರೆ( !pTab ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+  memset(pTab, 0, ಗಾತ್ರ(FsdirVtab));
 
-  *ppVtab = &pTab->base;
+  *ppVtab = &pTab->ತಳ;
   sqlite3_declare_vtab(db, "CREATE TABLE xyz(dir, name);");
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** xDestroy/xDisconnect implementation.
 */
-static int fsdirDisconnect(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdirDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -168,25 +168,25 @@ static int fsdirDisconnect(sqlite3_vtab *pVtab){
 **
 **   (dir = ?)
 */
-static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdir_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ(sqlite3_vtab *tab, sqlite3_ಸೂಚ್ಯಂಕ_info *pIdxInfo){
+  ಪೂರ್ಣಾಂಕ ii;
 
-  pIdxInfo->estimatedCost = 1000000000.0;
+  pIdxInfo->estimated_ವೆಚ್ಚ = 1000000000.0;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *p = &pIdxInfo->aConstraint[ii];
-    if( p->iColumn==0 && p->usable && p->op==SQLITE_INDEX_CONSTRAINT_EQ ){
-      struct sqlite3_index_constraint_usage *pUsage;
+  ಗಾಗಿ(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ರಚನೆ sqlite3_ಸೂಚ್ಯಂಕ_constraint ಸ್ಥಿರಾಂಕ *p = &pIdxInfo->aConstraint[ii];
+    ಆದರೆ( p->i_ಸ್ತಂಭ==0 && p->usable && p->op==SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_EQ ){
+      ರಚನೆ sqlite3_ಸೂಚ್ಯಂಕ_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
       pUsage->omit = 1;
-      pUsage->argvIndex = 1;
-      pIdxInfo->idxNum = 1;
-      pIdxInfo->estimatedCost = 1.0;
-      break;
+      pUsage->argv_ಸೂಚ್ಯಂಕ = 1;
+      pIdxInfo->idx_ಅಂಕೆ = 1;
+      pIdxInfo->estimated_ವೆಚ್ಚ = 1.0;
+      ನಿಲ್ಲಿಸು;
     }
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -194,117 +194,117 @@ static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **
 ** Open a new fsdir cursor.
 */
-static int fsdirOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdirOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   FsdirCsr *pCur;
   /* Allocate an extra 256 bytes because it is undefined how big dirent.d_name
   ** is and we need enough space.  Linux provides plenty already, but
   ** Solaris only provides one byte. */
-  pCur = (FsdirCsr*)sqlite3_malloc(sizeof(FsdirCsr)+256);
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(FsdirCsr));
-  *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  pCur = (FsdirCsr*)sqlite3_malloc(ಗಾತ್ರ(FsdirCsr)+256);
+  ಆದರೆ( pCur==0 ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+  memset(pCur, 0, ಗಾತ್ರ(FsdirCsr));
+  *ppCursor = &pCur->ತಳ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Close a fsdir cursor.
 */
-static int fsdirClose(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdirClose(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCur = (FsdirCsr*)cur;
-  if( pCur->pDir ) closedir(pCur->pDir);
+  ಆದರೆ( pCur->pDir ) closedir(pCur->pDir);
   sqlite3_free(pCur->zDir);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Skip the cursor to the next entry.
 */
-static int fsdirNext(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdir_ಮುಂದಿನ(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
 
-  if( pCsr->pDir ){
-    pCsr->pEntry = readdir(pCsr->pDir);
-    if( pCsr->pEntry==0 ){
+  ಆದರೆ( pCsr->pDir ){
+    pCsr->p_ನಮೂದು = readdir(pCsr->pDir);
+    ಆದರೆ( pCsr->p_ನಮೂದು==0 ){
       closedir(pCsr->pDir);
       pCsr->pDir = 0;
     }
     pCsr->iRowid++;
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** xFilter method implementation.
 */
-static int fsdirFilter(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdirFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ಪೂರ್ಣಾಂಕ idx_ಅಂಕೆ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *idxStr,
+  ಪೂರ್ಣಾಂಕ argc, sqlite3_ಮೌಲ್ಯ **argv
 ){
   FsdirCsr *pCsr = (FsdirCsr*)pVtabCursor;
-  const char *zDir;
-  int nDir;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDir;
+  ಪೂರ್ಣಾಂಕ nDir;
 
 
-  if( idxNum!=1 || argc!=1 ){
-    return SQLITE_ERROR;
+  ಆದರೆ( idx_ಅಂಕೆ!=1 || argc!=1 ){
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   }
 
   pCsr->iRowid = 0;
   sqlite3_free(pCsr->zDir);
-  if( pCsr->pDir ){
+  ಆದರೆ( pCsr->pDir ){
     closedir(pCsr->pDir);
     pCsr->pDir = 0;
   }
 
-  zDir = (const char*)sqlite3_value_text(argv[0]);
-  nDir = sqlite3_value_bytes(argv[0]);
+  zDir = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)sqlite3_ಮೌಲ್ಯ_ಪಠ್ಯ(argv[0]);
+  nDir = sqlite3_ಮೌಲ್ಯ_ಬೈಟುಗಳು(argv[0]);
   pCsr->zDir = sqlite3_malloc(nDir+1);
-  if( pCsr->zDir==0 ) return SQLITE_NOMEM;
-  memcpy(pCsr->zDir, zDir, nDir+1);
+  ಆದರೆ( pCsr->zDir==0 ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+  ಸ್ಮರಣೆ_ನಕಲು(pCsr->zDir, zDir, nDir+1);
 
   pCsr->pDir = opendir(pCsr->zDir);
-  return fsdirNext(pVtabCursor); 
+  ಹಿಂತಿರುಗಿ fsdir_ಮುಂದಿನ(pVtabCursor); 
 }
 
 /*
 ** xEof method implementation.
 */
-static int fsdirEof(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdirEof(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
-  return pCsr->pDir==0;
+  ಹಿಂತಿರುಗಿ pCsr->pDir==0;
 }
 
 /*
 ** xColumn method implementation.
 */
-static int fsdirColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdir_ಸ್ತಂಭ(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, ಪೂರ್ಣಾಂಕ i){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
-  switch( i ){
-    case 0: /* dir */
-      sqlite3_result_text(ctx, pCsr->zDir, -1, SQLITE_STATIC);
-      break;
+  ಆಯ್ಕೆ( i ){
+    ಸ್ಥಿತಿ 0: /* dir */
+      sqlite3_ಫಲಿತಾಂಶ_ಪಠ್ಯ(ctx, pCsr->zDir, -1, SQLITE_STATIC);
+      ನಿಲ್ಲಿಸು;
 
-    case 1: /* name */
-      sqlite3_result_text(ctx, pCsr->pEntry->d_name, -1, SQLITE_TRANSIENT);
-      break;
+    ಸ್ಥಿತಿ 1: /* name */
+      sqlite3_ಫಲಿತಾಂಶ_ಪಠ್ಯ(ctx, pCsr->p_ನಮೂದು->d_name, -1, SQLITE_TRANSIENT);
+      ನಿಲ್ಲಿಸು;
 
-    default:
-      assert( 0 );
+    ಪೂರ್ವನಿಯೋಜಿತ:
+      ಪ್ರತಿಜ್ಞಾ( 0 );
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** xRowid method implementation.
 */
-static int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
   *pRowid = pCsr->iRowid;
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 /*
 ** End of fsdir implementation.
@@ -313,17 +313,17 @@ static int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 /*************************************************************************
 ** Start of fstree implementation.
 */
-typedef struct FstreeVtab FstreeVtab;
-typedef struct FstreeCsr FstreeCsr;
-struct FstreeVtab {
-  sqlite3_vtab base;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FstreeVtab FstreeVtab;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FstreeCsr FstreeCsr;
+ರಚನೆ FstreeVtab {
+  sqlite3_vtab ತಳ;
   sqlite3 *db;
 };
 
-struct FstreeCsr {
-  sqlite3_vtab_cursor base;
+ರಚನೆ FstreeCsr {
+  sqlite3_vtab_cursor ತಳ;
   sqlite3_stmt *pStmt;            /* Statement to list paths */
-  int fd;                         /* File descriptor open on current path */
+  ಪೂರ್ಣಾಂಕ fd;                         /* File descriptor open on current path */
 };
 
 /*
@@ -337,37 +337,37 @@ struct FstreeCsr {
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fstreeConnect(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstreeConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಂಕ argc, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ಅಕ್ಷರ **pzErr
 ){
   FstreeVtab *pTab;
 
-  if( argc!=3 ){
+  ಆದರೆ( argc!=3 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   }
 
-  pTab = (FstreeVtab *)sqlite3_malloc(sizeof(FstreeVtab));
-  if( !pTab ) return SQLITE_NOMEM;
-  memset(pTab, 0, sizeof(FstreeVtab));
+  pTab = (FstreeVtab *)sqlite3_malloc(ಗಾತ್ರ(FstreeVtab));
+  ಆದರೆ( !pTab ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+  memset(pTab, 0, ಗಾತ್ರ(FstreeVtab));
   pTab->db = db;
 
-  *ppVtab = &pTab->base;
+  *ppVtab = &pTab->ತಳ;
   sqlite3_declare_vtab(db, "CREATE TABLE xyz(path, size, data);");
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** xDestroy/xDisconnect implementation.
 */
-static int fstreeDisconnect(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstreeDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -375,27 +375,27 @@ static int fstreeDisconnect(sqlite3_vtab *pVtab){
 **
 **   (dir = ?)
 */
-static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstree_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ(sqlite3_vtab *tab, sqlite3_ಸೂಚ್ಯಂಕ_info *pIdxInfo){
+  ಪೂರ್ಣಾಂಕ ii;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *p = &pIdxInfo->aConstraint[ii];
-    if( p->iColumn==0 && p->usable && (
-          p->op==SQLITE_INDEX_CONSTRAINT_GLOB
-       || p->op==SQLITE_INDEX_CONSTRAINT_LIKE
-       || p->op==SQLITE_INDEX_CONSTRAINT_EQ
+  ಗಾಗಿ(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ರಚನೆ sqlite3_ಸೂಚ್ಯಂಕ_constraint ಸ್ಥಿರಾಂಕ *p = &pIdxInfo->aConstraint[ii];
+    ಆದರೆ( p->i_ಸ್ತಂಭ==0 && p->usable && (
+          p->op==SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_GLOB
+       || p->op==SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_LIKE
+       || p->op==SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_EQ
     )){
-      struct sqlite3_index_constraint_usage *pUsage;
+      ರಚನೆ sqlite3_ಸೂಚ್ಯಂಕ_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
-      pIdxInfo->idxNum = p->op;
-      pUsage->argvIndex = 1;
-      pIdxInfo->estimatedCost = 100000.0;
-      return SQLITE_OK;
+      pIdxInfo->idx_ಅಂಕೆ = p->op;
+      pUsage->argv_ಸೂಚ್ಯಂಕ = 1;
+      pIdxInfo->estimated_ವೆಚ್ಚ = 100000.0;
+      ಹಿಂತಿರುಗಿ SQLITE_OK;
     }
   }
 
-  pIdxInfo->estimatedCost = 1000000000.0;
-  return SQLITE_OK;
+  pIdxInfo->estimated_ವೆಚ್ಚ = 1000000000.0;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -403,18 +403,18 @@ static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **
 ** Open a new fstree cursor.
 */
-static int fstreeOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstreeOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   FstreeCsr *pCur;
-  pCur = (FstreeCsr*)sqlite3_malloc(sizeof(FstreeCsr));
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(FstreeCsr));
+  pCur = (FstreeCsr*)sqlite3_malloc(ಗಾತ್ರ(FstreeCsr));
+  ಆದರೆ( pCur==0 ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+  memset(pCur, 0, ಗಾತ್ರ(FstreeCsr));
   pCur->fd = -1;
-  *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  *ppCursor = &pCur->ತಳ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-static void fstreeCloseFd(FstreeCsr *pCsr){
-  if( pCsr->fd>=0 ){
+ಸ್ಥಿರ ಶೂನ್ಯ fstreeCloseFd(FstreeCsr *pCsr){
+  ಆದರೆ( pCsr->fd>=0 ){
     close(pCsr->fd);
     pCsr->fd = -1;
   }
@@ -423,46 +423,46 @@ static void fstreeCloseFd(FstreeCsr *pCsr){
 /*
 ** Close a fstree cursor.
 */
-static int fstreeClose(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstreeClose(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
   sqlite3_finalize(pCsr->pStmt);
   fstreeCloseFd(pCsr);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Skip the cursor to the next entry.
 */
-static int fstreeNext(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstree_ಮುಂದಿನ(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
 
   fstreeCloseFd(pCsr);
-  rc = sqlite3_step(pCsr->pStmt);
-  if( rc!=SQLITE_ROW ){
+  rc = sqlite3_ಹೆಜ್ಜೆ(pCsr->pStmt);
+  ಆದರೆ( rc!=SQLITE_ಅಡ್ಡಸಾಲು ){
     rc = sqlite3_finalize(pCsr->pStmt);
     pCsr->pStmt = 0;
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     rc = SQLITE_OK;
-    pCsr->fd = open((const char*)sqlite3_column_text(pCsr->pStmt, 0), O_RDONLY);
+    pCsr->fd = open((ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)sqlite3_ಸ್ತಂಭ_ಪಠ್ಯ(pCsr->pStmt, 0), O_RDONLY);
   }
 
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** xFilter method implementation.
 */
-static int fstreeFilter(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstreeFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ಪೂರ್ಣಾಂಕ idx_ಅಂಕೆ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *idxStr,
+  ಪೂರ್ಣಾಂಕ argc, sqlite3_ಮೌಲ್ಯ **argv
 ){
   FstreeCsr *pCsr = (FstreeCsr*)pVtabCursor;
-  FstreeVtab *pTab = (FstreeVtab*)(pCsr->base.pVtab);
-  int rc;
-  const char *zSql = 
+  FstreeVtab *pTab = (FstreeVtab*)(pCsr->ತಳ.pVtab);
+  ಪೂರ್ಣಾಂಕ rc;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql = 
 "WITH r(d) AS ("
 "  SELECT CASE WHEN dir=?2 THEN ?3 ELSE dir END || '/' || name "
 "    FROM fsdir WHERE dir=?1 AND name NOT LIKE '.%'"
@@ -470,120 +470,120 @@ static int fstreeFilter(
 "  SELECT dir || '/' || name FROM r, fsdir WHERE dir=d AND name NOT LIKE '.%'"
 ") SELECT d FROM r;";
 
-  char *zRoot;
-  int nRoot;
-  char *zPrefix;
-  int nPrefix;
-  const char *zDir;
-  int nDir;
-  char aWild[2] = { '\0', '\0' };
+  ಅಕ್ಷರ *z_ಬೇರು;
+  ಪೂರ್ಣಾಂಕ n_ಬೇರು;
+  ಅಕ್ಷರ *z_ಪೂರ್ವಪ್ರತ್ಯಯ;
+  ಪೂರ್ಣಾಂಕ n_ಪೂರ್ವಪ್ರತ್ಯಯ;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDir;
+  ಪೂರ್ಣಾಂಕ nDir;
+  ಅಕ್ಷರ aWild[2] = { '\0', '\0' };
 
-#ifdef _WIN32
-  const char *zDrive = getenv("fstreeDrive");
-  if( zDrive==0 ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ _WIN32
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDrive = getenv("fstreeDrive");
+  ಆದರೆ( zDrive==0 ){
     zDrive = getenv("SystemDrive");
   }
-  zRoot = sqlite3_mprintf("%s%c", zDrive, '/');
-  nRoot = sqlite3Strlen30(zRoot);
-  zPrefix = sqlite3_mprintf("%s", zDrive);
-  nPrefix = sqlite3Strlen30(zPrefix);
-#else
-  zRoot = "/";
-  nRoot = 1;
-  zPrefix = "";
-  nPrefix = 0;
-#endif
+  z_ಬೇರು = sqlite3_mprintf("%s%c", zDrive, '/');
+  n_ಬೇರು = sqlite3Strlen30(z_ಬೇರು);
+  z_ಪೂರ್ವಪ್ರತ್ಯಯ = sqlite3_mprintf("%s", zDrive);
+  n_ಪೂರ್ವಪ್ರತ್ಯಯ = sqlite3Strlen30(z_ಪೂರ್ವಪ್ರತ್ಯಯ);
+#ಇಲ್ಲದಿದ್ದರೆ
+  z_ಬೇರು = "/";
+  n_ಬೇರು = 1;
+  z_ಪೂರ್ವಪ್ರತ್ಯಯ = "";
+  n_ಪೂರ್ವಪ್ರತ್ಯಯ = 0;
+#ಆದರೆ_ಅಂತ್ಯ
 
-  zDir = zRoot;
-  nDir = nRoot;
+  zDir = z_ಬೇರು;
+  nDir = n_ಬೇರು;
 
   fstreeCloseFd(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
-  if( rc!=SQLITE_OK ) return rc;
+  ಆದರೆ( rc!=SQLITE_OK ) ಹಿಂತಿರುಗಿ rc;
 
-  if( idxNum ){
-    const char *zQuery = (const char*)sqlite3_value_text(argv[0]);
-    switch( idxNum ){
-      case SQLITE_INDEX_CONSTRAINT_GLOB:
+  ಆದರೆ( idx_ಅಂಕೆ ){
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zQuery = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)sqlite3_ಮೌಲ್ಯ_ಪಠ್ಯ(argv[0]);
+    ಆಯ್ಕೆ( idx_ಅಂಕೆ ){
+      ಸ್ಥಿತಿ SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_GLOB:
         aWild[0] = '*';
         aWild[1] = '?';
-        break;
-      case SQLITE_INDEX_CONSTRAINT_LIKE:
+        ನಿಲ್ಲಿಸು;
+      ಸ್ಥಿತಿ SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_LIKE:
         aWild[0] = '_';
         aWild[1] = '%';
-        break;
+        ನಿಲ್ಲಿಸು;
     }
 
-    if( sqlite3_strnicmp(zQuery, zPrefix, nPrefix)==0 ){
-      int i;
-      for(i=nPrefix; zQuery[i]; i++){
-        if( zQuery[i]==aWild[0] || zQuery[i]==aWild[1] ) break;
-        if( zQuery[i]=='/' ) nDir = i;
+    ಆದರೆ( sqlite3_strnicmp(zQuery, z_ಪೂರ್ವಪ್ರತ್ಯಯ, n_ಪೂರ್ವಪ್ರತ್ಯಯ)==0 ){
+      ಪೂರ್ಣಾಂಕ i;
+      ಗಾಗಿ(i=n_ಪೂರ್ವಪ್ರತ್ಯಯ; zQuery[i]; i++){
+        ಆದರೆ( zQuery[i]==aWild[0] || zQuery[i]==aWild[1] ) ನಿಲ್ಲಿಸು;
+        ಆದರೆ( zQuery[i]=='/' ) nDir = i;
       }
       zDir = zQuery;
     }
   }
-  if( nDir==0 ) nDir = 1;
+  ಆದರೆ( nDir==0 ) nDir = 1;
 
-  sqlite3_bind_text(pCsr->pStmt, 1, zDir, nDir, SQLITE_TRANSIENT);
-  sqlite3_bind_text(pCsr->pStmt, 2, zRoot, nRoot, SQLITE_TRANSIENT);
-  sqlite3_bind_text(pCsr->pStmt, 3, zPrefix, nPrefix, SQLITE_TRANSIENT);
+  sqlite3_bind_ಪಠ್ಯ(pCsr->pStmt, 1, zDir, nDir, SQLITE_TRANSIENT);
+  sqlite3_bind_ಪಠ್ಯ(pCsr->pStmt, 2, z_ಬೇರು, n_ಬೇರು, SQLITE_TRANSIENT);
+  sqlite3_bind_ಪಠ್ಯ(pCsr->pStmt, 3, z_ಪೂರ್ವಪ್ರತ್ಯಯ, n_ಪೂರ್ವಪ್ರತ್ಯಯ, SQLITE_TRANSIENT);
 
-#ifdef _WIN32
-  sqlite3_free(zPrefix);
-  sqlite3_free(zRoot);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ _WIN32
+  sqlite3_free(z_ಪೂರ್ವಪ್ರತ್ಯಯ);
+  sqlite3_free(z_ಬೇರು);
+#ಆದರೆ_ಅಂತ್ಯ
 
-  return fstreeNext(pVtabCursor); 
+  ಹಿಂತಿರುಗಿ fstree_ಮುಂದಿನ(pVtabCursor); 
 }
 
 /*
 ** xEof method implementation.
 */
-static int fstreeEof(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstreeEof(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  return pCsr->pStmt==0;
+  ಹಿಂತಿರುಗಿ pCsr->pStmt==0;
 }
 
 /*
 ** xColumn method implementation.
 */
-static int fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstree_ಸ್ತಂಭ(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, ಪೂರ್ಣಾಂಕ i){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  if( i==0 ){      /* path */
-    sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pStmt, 0));
-  }else{
-    struct stat sBuf;
+  ಆದರೆ( i==0 ){      /*ಮಾರ್ಗ*/
+    sqlite3_ಫಲಿತಾಂಶ_ಮೌಲ್ಯ(ctx, sqlite3_ಸ್ತಂಭ_ಮೌಲ್ಯ(pCsr->pStmt, 0));
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ರಚನೆ stat sBuf;
     fstat(pCsr->fd, &sBuf);
 
-    if( S_ISREG(sBuf.st_mode) ){
-      if( i==1 ){
-        sqlite3_result_int64(ctx, sBuf.st_size);
-      }else{
-        int nRead;
-        char *aBuf = sqlite3_malloc(sBuf.st_mode+1);
-        if( !aBuf ) return SQLITE_NOMEM;
-        nRead = read(pCsr->fd, aBuf, sBuf.st_mode);
-        if( nRead!=sBuf.st_mode ){
-          return SQLITE_IOERR;
+    ಆದರೆ( S_ISREG(sBuf.st_ಬಹುಲಕ) ){
+      ಆದರೆ( i==1 ){
+        sqlite3_ಫಲಿತಾಂಶ_int64(ctx, sBuf.st_ಗಾತ್ರ);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಪೂರ್ಣಾಂಕ nRead;
+        ಅಕ್ಷರ *aBuf = sqlite3_malloc(sBuf.st_ಬಹುಲಕ+1);
+        ಆದರೆ( !aBuf ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+        nRead = ಪಠ(pCsr->fd, aBuf, sBuf.st_ಬಹುಲಕ);
+        ಆದರೆ( nRead!=sBuf.st_ಬಹುಲಕ ){
+          ಹಿಂತಿರುಗಿ SQLITE_IOERR;
         }
-        sqlite3_result_blob(ctx, aBuf, nRead, SQLITE_TRANSIENT);
+        sqlite3_ಫಲಿತಾಂಶ_blob(ctx, aBuf, nRead, SQLITE_TRANSIENT);
         sqlite3_free(aBuf);
       }
     }
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** xRowid method implementation.
 */
-static int fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   *pRowid = 0;
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 /*
 ** End of fstree implementation.
@@ -603,199 +603,199 @@ static int fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fsConnect(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಂಕ argc, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ಅಕ್ಷರ **pzErr
 ){
   fs_vtab *pVtab;
-  int nByte;
-  const char *zTbl;
-  const char *zDb = argv[1];
+  ಪೂರ್ಣಾಂಕ nByte;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zTbl;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDb = argv[1];
 
-  if( argc!=4 ){
+  ಆದರೆ( argc!=4 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   }
   zTbl = argv[3];
 
-  nByte = sizeof(fs_vtab) + (int)strlen(zTbl) + 1 + (int)strlen(zDb) + 1;
+  nByte = ಗಾತ್ರ(fs_vtab) + (ಪೂರ್ಣಾಂಕ)ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zTbl) + 1 + (ಪೂರ್ಣಾಂಕ)ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zDb) + 1;
   pVtab = (fs_vtab *)sqlite3MallocZero( nByte );
-  if( !pVtab ) return SQLITE_NOMEM;
+  ಆದರೆ( !pVtab ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
 
-  pVtab->zTbl = (char *)&pVtab[1];
-  pVtab->zDb = &pVtab->zTbl[strlen(zTbl)+1];
+  pVtab->zTbl = (ಅಕ್ಷರ *)&pVtab[1];
+  pVtab->zDb = &pVtab->zTbl[ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zTbl)+1];
   pVtab->db = db;
-  memcpy(pVtab->zTbl, zTbl, strlen(zTbl));
-  memcpy(pVtab->zDb, zDb, strlen(zDb));
-  *ppVtab = &pVtab->base;
+  ಸ್ಮರಣೆ_ನಕಲು(pVtab->zTbl, zTbl, ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zTbl));
+  ಸ್ಮರಣೆ_ನಕಲು(pVtab->zDb, zDb, ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zDb));
+  *ppVtab = &pVtab->ತಳ;
   sqlite3_declare_vtab(db, "CREATE TABLE x(path TEXT, data TEXT)");
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 /* Note that for this virtual table, the xCreate and xConnect
 ** methods are identical. */
 
-static int fsDisconnect(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 /* The xDisconnect and xDestroy methods are also the same */
 
 /*
 ** Open a new fs cursor.
 */
-static int fsOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   fs_cursor *pCur;
-  pCur = sqlite3MallocZero(sizeof(fs_cursor));
-  *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  pCur = sqlite3MallocZero(ಗಾತ್ರ(fs_cursor));
+  *ppCursor = &pCur->ತಳ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Close a fs cursor.
 */
-static int fsClose(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsClose(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor *)cur;
   sqlite3_finalize(pCur->pStmt);
   sqlite3_free(pCur->zBuf);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-static int fsNext(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fs_ಮುಂದಿನ(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor *)cur;
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
 
-  rc = sqlite3_step(pCur->pStmt);
-  if( rc==SQLITE_ROW || rc==SQLITE_DONE ) rc = SQLITE_OK;
+  rc = sqlite3_ಹೆಜ್ಜೆ(pCur->pStmt);
+  ಆದರೆ( rc==SQLITE_ಅಡ್ಡಸಾಲು || rc==SQLITE_ಮುಗಿದ ) rc = SQLITE_OK;
 
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
-static int fsFilter(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ಪೂರ್ಣಾಂಕ idx_ಅಂಕೆ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *idxStr,
+  ಪೂರ್ಣಾಂಕ argc, sqlite3_ಮೌಲ್ಯ **argv
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   fs_cursor *pCur = (fs_cursor *)pVtabCursor;
   fs_vtab *p = (fs_vtab *)(pVtabCursor->pVtab);
 
-  assert( (idxNum==0 && argc==0) || (idxNum==1 && argc==1) );
-  if( idxNum==1 ){
-    char *zStmt = sqlite3_mprintf(
+  ಪ್ರತಿಜ್ಞಾ( (idx_ಅಂಕೆ==0 && argc==0) || (idx_ಅಂಕೆ==1 && argc==1) );
+  ಆದರೆ( idx_ಅಂಕೆ==1 ){
+    ಅಕ್ಷರ *zStmt = sqlite3_mprintf(
         "SELECT * FROM %Q.%Q WHERE rowid=?", p->zDb, p->zTbl);
-    if( !zStmt ) return SQLITE_NOMEM;
+    ಆದರೆ( !zStmt ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
     rc = sqlite3_prepare_v2(p->db, zStmt, -1, &pCur->pStmt, 0);
     sqlite3_free(zStmt);
-    if( rc==SQLITE_OK ){
-      sqlite3_bind_value(pCur->pStmt, 1, argv[0]);
+    ಆದರೆ( rc==SQLITE_OK ){
+      sqlite3_bind_ಮೌಲ್ಯ(pCur->pStmt, 1, argv[0]);
     }
-  }else{
-    char *zStmt = sqlite3_mprintf("SELECT * FROM %Q.%Q", p->zDb, p->zTbl);
-    if( !zStmt ) return SQLITE_NOMEM;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಅಕ್ಷರ *zStmt = sqlite3_mprintf("SELECT * FROM %Q.%Q", p->zDb, p->zTbl);
+    ಆದರೆ( !zStmt ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
     rc = sqlite3_prepare_v2(p->db, zStmt, -1, &pCur->pStmt, 0);
     sqlite3_free(zStmt);
   }
 
-  if( rc==SQLITE_OK ){
-    rc = fsNext(pVtabCursor); 
+  ಆದರೆ( rc==SQLITE_OK ){
+    rc = fs_ಮುಂದಿನ(pVtabCursor); 
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
-static int fsColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fs_ಸ್ತಂಭ(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, ಪೂರ್ಣಾಂಕ i){
   fs_cursor *pCur = (fs_cursor*)cur;
 
-  assert( i==0 || i==1 || i==2 );
-  if( i==0 ){
-    sqlite3_result_value(ctx, sqlite3_column_value(pCur->pStmt, 0));
-  }else{
-    const char *zFile = (const char *)sqlite3_column_text(pCur->pStmt, 1);
-    struct stat sbuf;
-    int fd;
+  ಪ್ರತಿಜ್ಞಾ( i==0 || i==1 || i==2 );
+  ಆದರೆ( i==0 ){
+    sqlite3_ಫಲಿತಾಂಶ_ಮೌಲ್ಯ(ctx, sqlite3_ಸ್ತಂಭ_ಮೌಲ್ಯ(pCur->pStmt, 0));
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zFile = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *)sqlite3_ಸ್ತಂಭ_ಪಠ್ಯ(pCur->pStmt, 1);
+    ರಚನೆ stat sbuf;
+    ಪೂರ್ಣಾಂಕ fd;
 
-    int n;
+    ಪೂರ್ಣಾಂಕ n;
     fd = open(zFile, O_RDONLY);
-    if( fd<0 ) return SQLITE_IOERR;
+    ಆದರೆ( fd<0 ) ಹಿಂತಿರುಗಿ SQLITE_IOERR;
     fstat(fd, &sbuf);
 
-    if( sbuf.st_size>=pCur->nAlloc ){
-      sqlite3_int64 nNew = sbuf.st_size*2;
-      char *zNew;
-      if( nNew<1024 ) nNew = 1024;
+    ಆದರೆ( sbuf.st_ಗಾತ್ರ>=pCur->nAlloc ){
+      sqlite3_int64 nNew = sbuf.st_ಗಾತ್ರ*2;
+      ಅಕ್ಷರ *zNew;
+      ಆದರೆ( nNew<1024 ) nNew = 1024;
 
       zNew = sqlite3Realloc(pCur->zBuf, nNew);
-      if( zNew==0 ){
+      ಆದರೆ( zNew==0 ){
         close(fd);
-        return SQLITE_NOMEM;
+        ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
       }
       pCur->zBuf = zNew;
       pCur->nAlloc = nNew;
     }
 
-    n = (int)read(fd, pCur->zBuf, sbuf.st_size);
+    n = (ಪೂರ್ಣಾಂಕ)ಪಠ(fd, pCur->zBuf, sbuf.st_ಗಾತ್ರ);
     close(fd);
-    if( n!=sbuf.st_size ) return SQLITE_ERROR;
-    pCur->nBuf = sbuf.st_size;
+    ಆದರೆ( n!=sbuf.st_ಗಾತ್ರ ) ಹಿಂತಿರುಗಿ SQLITE_ERROR;
+    pCur->nBuf = sbuf.st_ಗಾತ್ರ;
     pCur->zBuf[pCur->nBuf] = '\0';
 
-    sqlite3_result_text(ctx, pCur->zBuf, -1, SQLITE_TRANSIENT);
+    sqlite3_ಫಲಿತಾಂಶ_ಪಠ್ಯ(ctx, pCur->zBuf, -1, SQLITE_TRANSIENT);
   }
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-static int fsRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   fs_cursor *pCur = (fs_cursor*)cur;
-  *pRowid = sqlite3_column_int64(pCur->pStmt, 0);
-  return SQLITE_OK;
+  *pRowid = sqlite3_ಸ್ತಂಭ_int64(pCur->pStmt, 0);
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-static int fsEof(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fsEof(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor*)cur;
-  return (sqlite3_data_count(pCur->pStmt)==0);
+  ಹಿಂತಿರುಗಿ (sqlite3_ದತ್ತಾಂಶ_ಎಣಿಕೆ(pCur->pStmt)==0);
 }
 
-static int fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ fs_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ(sqlite3_vtab *tab, sqlite3_ಸೂಚ್ಯಂಕ_info *pIdxInfo){
+  ಪೂರ್ಣಾಂಕ ii;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
-    if( pCons->iColumn<0 && pCons->usable
-           && pCons->op==SQLITE_INDEX_CONSTRAINT_EQ ){
-      struct sqlite3_index_constraint_usage *pUsage;
+  ಗಾಗಿ(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ರಚನೆ sqlite3_ಸೂಚ್ಯಂಕ_constraint ಸ್ಥಿರಾಂಕ *pCons = &pIdxInfo->aConstraint[ii];
+    ಆದರೆ( pCons->i_ಸ್ತಂಭ<0 && pCons->usable
+           && pCons->op==SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_EQ ){
+      ರಚನೆ sqlite3_ಸೂಚ್ಯಂಕ_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
       pUsage->omit = 0;
-      pUsage->argvIndex = 1;
-      pIdxInfo->idxNum = 1;
-      pIdxInfo->estimatedCost = 1.0;
-      break;
+      pUsage->argv_ಸೂಚ್ಯಂಕ = 1;
+      pIdxInfo->idx_ಅಂಕೆ = 1;
+      pIdxInfo->estimated_ವೆಚ್ಚ = 1.0;
+      ನಿಲ್ಲಿಸು;
     }
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** A virtual table module that provides read-only access to a
 ** Tcl global variable namespace.
 */
-static sqlite3_module fsModule = {
+ಸ್ಥಿರ sqlite3_module fsModule = {
   0,                         /* iVersion */
   fsConnect,
   fsConnect,
-  fsBestIndex,
+  fs_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ,
   fsDisconnect, 
   fsDisconnect,
   fsOpen,                      /* xOpen - open a cursor */
   fsClose,                     /* xClose - close a cursor */
   fsFilter,                    /* xFilter - configure scan constraints */
-  fsNext,                      /* xNext - advance a cursor */
+  fs_ಮುಂದಿನ,                      /* xNext - advance a cursor */
   fsEof,                       /* xEof - check for end of scan */
-  fsColumn,                    /* xColumn - read data */
+  fs_ಸ್ತಂಭ,                    /* xColumn - read data */
   fsRowid,                     /* xRowid - read data */
   0,                           /* xUpdate */
   0,                           /* xBegin */
@@ -811,19 +811,19 @@ static sqlite3_module fsModule = {
   0                            /* xIntegrity */
 };
 
-static sqlite3_module fsdirModule = {
+ಸ್ಥಿರ sqlite3_module fsdirModule = {
   0,                              /* iVersion */
   fsdirConnect,                   /* xCreate */
   fsdirConnect,                   /* xConnect */
-  fsdirBestIndex,                 /* xBestIndex */
+  fsdir_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ,                 /* xBestIndex */
   fsdirDisconnect,                /* xDisconnect */
   fsdirDisconnect,                /* xDestroy */
   fsdirOpen,                      /* xOpen - open a cursor */
   fsdirClose,                     /* xClose - close a cursor */
   fsdirFilter,                    /* xFilter - configure scan constraints */
-  fsdirNext,                      /* xNext - advance a cursor */
+  fsdir_ಮುಂದಿನ,                      /* xNext - advance a cursor */
   fsdirEof,                       /* xEof - check for end of scan */
-  fsdirColumn,                    /* xColumn - read data */
+  fsdir_ಸ್ತಂಭ,                    /* xColumn - read data */
   fsdirRowid,                     /* xRowid - read data */
   0,                              /* xUpdate */
   0,                              /* xBegin */
@@ -839,19 +839,19 @@ static sqlite3_module fsdirModule = {
   0                               /* xIntegrity */
 };
 
-static sqlite3_module fstreeModule = {
+ಸ್ಥಿರ sqlite3_module fstreeModule = {
   0,                              /* iVersion */
   fstreeConnect,                  /* xCreate */
   fstreeConnect,                  /* xConnect */
-  fstreeBestIndex,                /* xBestIndex */
+  fstree_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ,                /* xBestIndex */
   fstreeDisconnect,               /* xDisconnect */
   fstreeDisconnect,               /* xDestroy */
   fstreeOpen,                     /* xOpen - open a cursor */
   fstreeClose,                    /* xClose - close a cursor */
   fstreeFilter,                   /* xFilter - configure scan constraints */
-  fstreeNext,                     /* xNext - advance a cursor */
+  fstree_ಮುಂದಿನ,                     /* xNext - advance a cursor */
   fstreeEof,                      /* xEof - check for end of scan */
-  fstreeColumn,                   /* xColumn - read data */
+  fstree_ಸ್ತಂಭ,                   /* xColumn - read data */
   fstreeRowid,                    /* xRowid - read data */
   0,                              /* xUpdate */
   0,                              /* xBegin */
@@ -870,51 +870,51 @@ static sqlite3_module fstreeModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ get_Db_ಸೂಚಕ(Tcl_Interp *interp, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zA, sqlite3 **ppDb);
 
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_fs_module(
-  ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ SQLITE_TCLAPI ರಿಜಿಸ್ಟರ್_fs_module(
+  Client_ದತ್ತಾಂಶ client_ದತ್ತಾಂಶ, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ಪೂರ್ಣಾಂಕ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ಆದರೆ( objc!=2 ){
+    Tcl_Wrong_ಅಂಕೆ_ವಾದಗಳು(interp, 1, objv, "DB");
+    ಹಿಂತಿರುಗಿ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  sqlite3_create_module(db, "fs", &fsModule, (void *)interp);
+  ಆದರೆ( get_Db_ಸೂಚಕ(interp, Tcl_GetString(objv[1]), &db) ) ಹಿಂತಿರುಗಿ TCL_ERROR;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  sqlite3_create_module(db, "fs", &fsModule, (ಶೂನ್ಯ *)interp);
   sqlite3_create_module(db, "fsdir", &fsdirModule, 0);
   sqlite3_create_module(db, "fstree", &fstreeModule, 0);
-#endif
-  return TCL_OK;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ TCL_OK;
 }
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetestfs_Init(Tcl_Interp *interp){
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  static struct {
-     char *zName;
+ಪೂರ್ಣಾಂಕ Sqlitetestfs_Init(Tcl_Interp *interp){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  ಸ್ಥಿರ ರಚನೆ {
+     ಅಕ್ಷರ *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     ಶೂನ್ಯ *client_ದತ್ತಾಂಶ;
   } aObjCmd[] = {
-     { "register_fs_module",   register_fs_module, 0 },
+     { "register_fs_module",   ರಿಜಿಸ್ಟರ್_fs_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  ಪೂರ್ಣಾಂಕ i;
+  ಗಾಗಿ(i=0; i<ಗಾತ್ರ(aObjCmd)/ಗಾತ್ರ(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
-        aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
+        aObjCmd[i].xProc, aObjCmd[i].client_ದತ್ತಾಂಶ, 0);
   }
-#endif
-  return TCL_OK;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ TCL_OK;
 }

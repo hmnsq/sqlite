@@ -13,44 +13,44 @@
 ** interface, and routines that contribute to loading the database schema
 ** from disk.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
 /*
 ** Fill the InitData structure with an error message that indicates
 ** that the database is corrupt.
 */
-static void corruptSchema(
-  InitData *pData,     /* Initialization context */
-  char **azObj,        /* Type and name of object being parsed */
-  const char *zExtra   /* Error information */
+ಸ್ಥಿರ ಶೂನ್ಯ corruptSchema(
+  Init_ದತ್ತಾಂಶ *p_ದತ್ತಾಂಶ,     /* Initialization context */
+  ಅಕ್ಷರ **azObj,        /* Type and name of object being parsed */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zExtra   /* Error information */
 ){
-  sqlite3 *db = pData->db;
-  if( db->mallocFailed ){
-    pData->rc = SQLITE_NOMEM_BKPT;
-  }else if( pData->pzErrMsg[0]!=0 ){
+  sqlite3 *db = p_ದತ್ತಾಂಶ->db;
+  ಆದರೆ( db->mallocFailed ){
+    p_ದತ್ತಾಂಶ->rc = SQLITE_NOMEM_BKPT;
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( p_ದತ್ತಾಂಶ->pz_Err_ಸಂದೇಶ[0]!=0 ){
     /* A error message has already been generated.  Do not overwrite it */
-  }else if( pData->mInitFlags & (INITFLAG_AlterMask) ){
-    static const char *azAlterType[] = {
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( p_ದತ್ತಾಂಶ->mInitFlags & (INITFLAG_Alter_ಮುಖವಾಡ) ){
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *azAlterType[] = {
        "rename",
        "drop column",
        "add column",
        "drop constraint"
     };
-    *pData->pzErrMsg = sqlite3MPrintf(db, 
+    *p_ದತ್ತಾಂಶ->pz_Err_ಸಂದೇಶ = sqlite3MPrintf(db, 
         "error in %s %s after %s: %s", azObj[0], azObj[1], 
-        azAlterType[(pData->mInitFlags&INITFLAG_AlterMask)-1], 
+        azAlterType[(p_ದತ್ತಾಂಶ->mInitFlags&INITFLAG_Alter_ಮುಖವಾಡ)-1], 
         zExtra
     );
-    pData->rc = SQLITE_ERROR;
-  }else if( db->flags & SQLITE_WriteSchema ){
-    pData->rc = SQLITE_CORRUPT_BKPT;
-  }else{
-    char *z;
-    const char *zObj = azObj[1] ? azObj[1] : "?";
+    p_ದತ್ತಾಂಶ->rc = SQLITE_ERROR;
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( db->flags & SQLITE_WriteSchema ){
+    p_ದತ್ತಾಂಶ->rc = SQLITE_CORRUPT_BKPT;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಅಕ್ಷರ *z;
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zObj = azObj[1] ? azObj[1] : "?";
     z = sqlite3MPrintf(db, "malformed database schema (%s)", zObj);
-    if( zExtra && zExtra[0] ) z = sqlite3MPrintf(db, "%z - %s", z, zExtra);
-    *pData->pzErrMsg = z;
-    pData->rc = SQLITE_CORRUPT_BKPT;
+    ಆದರೆ( zExtra && zExtra[0] ) z = sqlite3MPrintf(db, "%z - %s", z, zExtra);
+    *p_ದತ್ತಾಂಶ->pz_Err_ಸಂದೇಶ = z;
+    p_ದತ್ತಾಂಶ->rc = SQLITE_CORRUPT_BKPT;
   }
 }
 
@@ -59,23 +59,23 @@ static void corruptSchema(
 ** of pIndex has the same root page number, and if it does, return true.
 ** This would indicate a corrupt schema.
 */
-int sqlite3IndexHasDuplicateRootPage(Index *pIndex){
-  Index *p;
-  for(p=pIndex->pTable->pIndex; p; p=p->pNext){
-    if( p->tnum==pIndex->tnum && p!=pIndex ) return 1;
+ಪೂರ್ಣಾಂಕ sqlite3_ಸೂಚ್ಯಂಕ_Has_Duplicate_ಬೇರು_ಪುಟ(ಸೂಚ್ಯಂಕ *p_ಸೂಚ್ಯಂಕ){
+  ಸೂಚ್ಯಂಕ *p;
+  ಗಾಗಿ(p=p_ಸೂಚ್ಯಂಕ->p_ಕೋಷ್ಟಕ->p_ಸೂಚ್ಯಂಕ; p; p=p->p_ಮುಂದಿನ){
+    ಆದರೆ( p->tnum==p_ಸೂಚ್ಯಂಕ->tnum && p!=p_ಸೂಚ್ಯಂಕ ) ಹಿಂತಿರುಗಿ 1;
   }
-  return 0;
+  ಹಿಂತಿರುಗಿ 0;
 }
 
 /* forward declaration */
-static int sqlite3Prepare(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql,         /* UTF-8 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pReprepare,         /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **pz_ಬಾಲ       /* OUT: End of parsed string */
 );
 
 
@@ -93,29 +93,29 @@ static int sqlite3Prepare(
 **     argv[4] = SQL text for the CREATE statement.
 **
 */
-int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
-  InitData *pData = (InitData*)pInit;
-  sqlite3 *db = pData->db;
-  int iDb = pData->iDb;
+ಪೂರ್ಣಾಂಕ sqlite3InitCallback(ಶೂನ್ಯ *pInit, ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv, ಅಕ್ಷರ **Not_ಬಳಸಿದ){
+  Init_ದತ್ತಾಂಶ *p_ದತ್ತಾಂಶ = (Init_ದತ್ತಾಂಶ*)pInit;
+  sqlite3 *db = p_ದತ್ತಾಂಶ->db;
+  ಪೂರ್ಣಾಂಕ iDb = p_ದತ್ತಾಂಶ->iDb;
 
-  assert( argc==5 );
-  UNUSED_PARAMETER2(NotUsed, argc);
-  assert( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( argc==5 );
+  ಬಳಸದ_PARAMETER2(Not_ಬಳಸಿದ, argc);
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
   db->mDbFlags |= DBFLAG_EncodingFixed;
-  if( argv==0 ) return 0;   /* Might happen if EMPTY_RESULT_CALLBACKS are on */
-  pData->nInitRow++;
-  if( db->mallocFailed ){
-    corruptSchema(pData, argv, 0);
-    return 1;
+  ಆದರೆ( argv==0 ) ಹಿಂತಿರುಗಿ 0;   /* Might happen if EMPTY_RESULT_CALLBACKS are on */
+  p_ದತ್ತಾಂಶ->n_Init_ಅಡ್ಡಸಾಲು++;
+  ಆದರೆ( db->mallocFailed ){
+    corruptSchema(p_ದತ್ತಾಂಶ, argv, 0);
+    ಹಿಂತಿರುಗಿ 1;
   }
 
-  assert( iDb>=0 && iDb<db->nDb );
-  assert( db->aDb[iDb].pSchema!=0 );
-  if( argv[3]==0 ){
-    corruptSchema(pData, argv, 0);
-  }else if( argv[4]
-         && 'c'==sqlite3UpperToLower[(unsigned char)argv[4][0]]
-         && 'r'==sqlite3UpperToLower[(unsigned char)argv[4][1]] ){
+  ಪ್ರತಿಜ್ಞಾ( iDb>=0 && iDb<db->nDb );
+  ಪ್ರತಿಜ್ಞಾ( db->aDb[iDb].pSchema!=0 );
+  ಆದರೆ( argv[3]==0 ){
+    corruptSchema(p_ದತ್ತಾಂಶ, argv, 0);
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( argv[4]
+         && 'c'==sqlite3_ಊರ್ಧ್ವ_ಗಮ್ಯ_ಅಧೋ[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)argv[4][0]]
+         && 'r'==sqlite3_ಊರ್ಧ್ವ_ಗಮ್ಯ_ಅಧೋ[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)argv[4][1]] ){
     /* Call the parser to process a CREATE TABLE, INDEX or VIEW.
     ** But because db->init.busy is set to 1, no VDBE code is generated
     ** or executed.  All the parser does is build the internal data
@@ -126,80 +126,80 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
     ** any other kind of statement while parsing the schema, even a corrupt
     ** schema.
     */
-    int rc;
+    ಪೂರ್ಣಾಂಕ rc;
     u8 saved_iDb = db->init.iDb;
     sqlite3_stmt *pStmt;
-    const char *zEnd;
-    TESTONLY(int rcp);            /* Return code from sqlite3_prepare() */
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಕೊನೆ;
+    TESTONLY(ಪೂರ್ಣಾಂಕ rcp);            /* Return code from sqlite3_prepare() */
 
-    assert( db->init.busy );
+    ಪ್ರತಿಜ್ಞಾ( db->init.busy );
     db->init.iDb = iDb;
-    if( sqlite3GetUInt32(argv[3], &db->init.newTnum)==0
-     || (db->init.newTnum>pData->mxPage && pData->mxPage>0)
+    ಆದರೆ( sqlite3GetUInt32(argv[3], &db->init.newTnum)==0
+     || (db->init.newTnum>p_ದತ್ತಾಂಶ->mx_ಪುಟ && p_ದತ್ತಾಂಶ->mx_ಪುಟ>0)
     ){
-      if( sqlite3Config.bExtraSchemaChecks ){
-        corruptSchema(pData, argv, "invalid rootpage");
+      ಆದರೆ( sqlite3Config.bExtraSchemaChecks ){
+        corruptSchema(p_ದತ್ತಾಂಶ, argv, "invalid rootpage");
       }
     }
     db->init.orphanTrigger = 0;
-    db->init.azInit = (const char**)argv;
+    db->init.azInit = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ**)argv;
     pStmt = 0;
-    TESTONLY(rcp = ) sqlite3Prepare(db, argv[4], -1, 0, 0, &pStmt, &zEnd);
-    rc = db->errCode;
-    assert( (rc&0xFF)==(rcp&0xFF) );
+    TESTONLY(rcp = ) sqlite3Prepare(db, argv[4], -1, 0, 0, &pStmt, &z_ಕೊನೆ);
+    rc = db->err_ಸಂಕೇತ;
+    ಪ್ರತಿಜ್ಞಾ( (rc&0xFF)==(rcp&0xFF) );
     db->init.iDb = saved_iDb;
     /* assert( saved_iDb==0 || (db->mDbFlags & DBFLAG_Vacuum)!=0 ); */
-    if( SQLITE_OK!=rc ){
-      if( db->init.orphanTrigger ){
-        assert( iDb==1 );
-      }else{
-        if( rc > pData->rc ) pData->rc = rc;
-        if( rc==SQLITE_NOMEM ){
+    ಆದರೆ( SQLITE_OK!=rc ){
+      ಆದರೆ( db->init.orphanTrigger ){
+        ಪ್ರತಿಜ್ಞಾ( iDb==1 );
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಆದರೆ( rc > p_ದತ್ತಾಂಶ->rc ) p_ದತ್ತಾಂಶ->rc = rc;
+        ಆದರೆ( rc==SQLITE_NOMEM ){
           sqlite3OomFault(db);
-        }else if( rc!=SQLITE_INTERRUPT && (rc&0xFF)!=SQLITE_LOCKED ){
-          corruptSchema(pData, argv, sqlite3_errmsg(db));
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( rc!=SQLITE_ಅಡಚಣೆ && (rc&0xFF)!=SQLITE_LOCKED ){
+          corruptSchema(p_ದತ್ತಾಂಶ, argv, sqlite3_errmsg(db));
         }
       }
-    }else if( zEnd[0] ){
-      corruptSchema(pData, argv, 0);
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( z_ಕೊನೆ[0] ){
+      corruptSchema(p_ದತ್ತಾಂಶ, argv, 0);
     }
     db->init.azInit = sqlite3StdType; /* Any array of string ptrs will do */
     sqlite3_finalize(pStmt);
-  }else if( argv[1]==0 || (argv[4]!=0 && argv[4][0]!=0) ){
-    corruptSchema(pData, argv, 0);
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( argv[1]==0 || (argv[4]!=0 && argv[4][0]!=0) ){
+    corruptSchema(p_ದತ್ತಾಂಶ, argv, 0);
+  }ಇಲ್ಲದಿದ್ದರೆ{
     /* If the SQL column is blank it means this is an index that
     ** was created to be the PRIMARY KEY or to fulfill a UNIQUE
     ** constraint for a CREATE TABLE.  The index should have already
     ** been created when we processed the CREATE TABLE.  All we have
     ** to do here is record the root page number for that index.
     */
-    Index *pIndex;
-    pIndex = sqlite3FindIndex(db, argv[1], db->aDb[iDb].zDbSName);
-    if( pIndex==0 ){
-      corruptSchema(pData, argv, "orphan index");
-    }else
-    if( sqlite3GetUInt32(argv[3],&pIndex->tnum)==0
-     || pIndex->tnum<2
-     || pIndex->tnum>pData->mxPage
-     || sqlite3IndexHasDuplicateRootPage(pIndex)
+    ಸೂಚ್ಯಂಕ *p_ಸೂಚ್ಯಂಕ;
+    p_ಸೂಚ್ಯಂಕ = sqlite3_ಕಂಡುಹಿಡಿ_ಸೂಚ್ಯಂಕ(db, argv[1], db->aDb[iDb].zDbSName);
+    ಆದರೆ( p_ಸೂಚ್ಯಂಕ==0 ){
+      corruptSchema(p_ದತ್ತಾಂಶ, argv, "orphan index");
+    }ಇಲ್ಲದಿದ್ದರೆ
+    ಆದರೆ( sqlite3GetUInt32(argv[3],&p_ಸೂಚ್ಯಂಕ->tnum)==0
+     || p_ಸೂಚ್ಯಂಕ->tnum<2
+     || p_ಸೂಚ್ಯಂಕ->tnum>p_ದತ್ತಾಂಶ->mx_ಪುಟ
+     || sqlite3_ಸೂಚ್ಯಂಕ_Has_Duplicate_ಬೇರು_ಪುಟ(p_ಸೂಚ್ಯಂಕ)
     ){
-      if( sqlite3Config.bExtraSchemaChecks ){
-        corruptSchema(pData, argv, "invalid rootpage");
+      ಆದರೆ( sqlite3Config.bExtraSchemaChecks ){
+        corruptSchema(p_ದತ್ತಾಂಶ, argv, "invalid rootpage");
       }
     }
   }
-  if( pData->pzErrMsg[0]==0 ){
+  ಆದರೆ( p_ದತ್ತಾಂಶ->pz_Err_ಸಂದೇಶ[0]==0 ){
     Schema *pX = db->aDb[iDb].pSchema;
-    if( pX->tblHash.count + pX->idxHash.count + pX->trigHash.count
-                   > (u32)db->aLimit[SQLITE_LIMIT_SCHEMA]
+    ಆದರೆ( pX->tblHash.ಎಣಿಕೆ_2 + pX->idxHash.ಎಣಿಕೆ_2 + pX->trigHash.ಎಣಿಕೆ_2
+                   > (u32)db->a_ಎಲ್ಲೆ[SQLITE_ಎಲ್ಲೆ_SCHEMA]
     ){
-      *pData->pzErrMsg = sqlite3MPrintf(db, "too many schema objects");
-      pData->rc = SQLITE_ERROR;
-      return 1;
+      *p_ದತ್ತಾಂಶ->pz_Err_ಸಂದೇಶ = sqlite3MPrintf(db, "too many schema objects");
+      p_ದತ್ತಾಂಶ->rc = SQLITE_ERROR;
+      ಹಿಂತಿರುಗಿ 1;
     }
   }
-  return 0;
+  ಹಿಂತಿರುಗಿ 0;
 }
 
 /*
@@ -210,27 +210,27 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
 ** auxiliary databases.  Return one of the SQLITE_ error codes to
 ** indicate success or failure.
 */
-int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
-  int rc;
-  int i;
-#ifndef SQLITE_OMIT_DEPRECATED
-  int size;
-#endif
+ಪೂರ್ಣಾಂಕ sqlite3InitOne(sqlite3 *db, ಪೂರ್ಣಾಂಕ iDb, ಅಕ್ಷರ **pz_Err_ಸಂದೇಶ, u32 mFlags){
+  ಪೂರ್ಣಾಂಕ rc;
+  ಪೂರ್ಣಾಂಕ i;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_DEPRECATED
+  ಪೂರ್ಣಾಂಕ ಗಾತ್ರ_2;
+#ಆದರೆ_ಅಂತ್ಯ
   Db *pDb;
-  char const *azArg[6];
-  int meta[5];
-  InitData initData;
-  const char *zSchemaTabName;
-  int openedTransaction = 0;
-  int mask = ((db->mDbFlags & DBFLAG_EncodingFixed) | ~DBFLAG_EncodingFixed);
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *azArg[6];
+  ಪೂರ್ಣಾಂಕ meta[5];
+  Init_ದತ್ತಾಂಶ init_ದತ್ತಾಂಶ;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSchemaTabName;
+  ಪೂರ್ಣಾಂಕ openedTransaction = 0;
+  ಪೂರ್ಣಾಂಕ ಮುಖವಾಡ = ((db->mDbFlags & DBFLAG_EncodingFixed) | ~DBFLAG_EncodingFixed);
 
-  assert( (db->mDbFlags & DBFLAG_SchemaKnownOk)==0 );
-  assert( iDb>=0 && iDb<db->nDb );
-  assert( db->aDb[iDb].pSchema );
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( iDb==1 || sqlite3BtreeHoldsMutex(db->aDb[iDb].pBt) );
+  ಪ್ರತಿಜ್ಞಾ( (db->mDbFlags & DBFLAG_Schema_ತಿಳಿದ_Ok)==0 );
+  ಪ್ರತಿಜ್ಞಾ( iDb>=0 && iDb<db->nDb );
+  ಪ್ರತಿಜ್ಞಾ( db->aDb[iDb].pSchema );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( iDb==1 || sqlite3BtreeHoldsMutex(db->aDb[iDb].pBt) );
 
-  db->init.busy = 1 + ((mFlags & INITFLAG_AlterAdd)!=0);
+  db->init.busy = 1 + ((mFlags & INITFLAG_Alter_ಕೂಡಿಸು)!=0);
   /* ^--- Any non-zero value for init.busy means that we are scanning
   ** the sqlite_schema table to build the internal schema representation,
   ** rather than running actual CREATE statements.  init.busy==2 has the
@@ -244,45 +244,45 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** use the abbreviation "x" here.  The parser will also automatically tag
   ** the schema table as read-only. */
   azArg[0] = "table";
-  azArg[1] = zSchemaTabName = SCHEMA_TABLE(iDb);
+  azArg[1] = zSchemaTabName = SCHEMA_ಕೋಷ್ಟಕ(iDb);
   azArg[2] = azArg[1];
   azArg[3] = "1";
   azArg[4] = "CREATE TABLE x(type text,name text,tbl_name text,"
                             "rootpage int,sql text)";
   azArg[5] = 0;
-  initData.db = db;
-  initData.iDb = iDb;
-  initData.rc = SQLITE_OK;
-  initData.pzErrMsg = pzErrMsg;
-  initData.mInitFlags = mFlags;
-  initData.nInitRow = 0;
-  initData.mxPage = 0;
-  sqlite3InitCallback(&initData, 5, (char **)azArg, 0);
-  db->mDbFlags &= mask;
-  if( initData.rc ){
-    rc = initData.rc;
-    goto error_out;
+  init_ದತ್ತಾಂಶ.db = db;
+  init_ದತ್ತಾಂಶ.iDb = iDb;
+  init_ದತ್ತಾಂಶ.rc = SQLITE_OK;
+  init_ದತ್ತಾಂಶ.pz_Err_ಸಂದೇಶ = pz_Err_ಸಂದೇಶ;
+  init_ದತ್ತಾಂಶ.mInitFlags = mFlags;
+  init_ದತ್ತಾಂಶ.n_Init_ಅಡ್ಡಸಾಲು = 0;
+  init_ದತ್ತಾಂಶ.mx_ಪುಟ = 0;
+  sqlite3InitCallback(&init_ದತ್ತಾಂಶ, 5, (ಅಕ್ಷರ **)azArg, 0);
+  db->mDbFlags &= ಮುಖವಾಡ;
+  ಆದರೆ( init_ದತ್ತಾಂಶ.rc ){
+    rc = init_ದತ್ತಾಂಶ.rc;
+    ಹೋಗು error_ಹೊರಹೋಗು;
   }
 
   /* Create a cursor to hold the database open
   */
   pDb = &db->aDb[iDb];
-  if( pDb->pBt==0 ){
-    assert( iDb==1 );
-    DbSetProperty(db, 1, DB_SchemaLoaded);
+  ಆದರೆ( pDb->pBt==0 ){
+    ಪ್ರತಿಜ್ಞಾ( iDb==1 );
+    Db_ಗಣ_Property(db, 1, DB_SchemaLoaded);
     rc = SQLITE_OK;
-    goto error_out;
+    ಹೋಗು error_ಹೊರಹೋಗು;
   }
 
   /* If there is not already a read-only (or read-write) transaction opened
   ** on the b-tree database, open one now. If a transaction is opened, it 
   ** will be closed before this function returns.  */
   sqlite3BtreeEnter(pDb->pBt);
-  if( sqlite3BtreeTxnState(pDb->pBt)==SQLITE_TXN_NONE ){
+  ಆದರೆ( sqlite3BtreeTxnState(pDb->pBt)==SQLITE_TXN_NONE ){
     rc = sqlite3BtreeBeginTrans(pDb->pBt, 0, 0);
-    if( rc!=SQLITE_OK ){
-      sqlite3SetString(pzErrMsg, db, sqlite3ErrStr(rc));
-      goto initone_error_out;
+    ಆದರೆ( rc!=SQLITE_OK ){
+      sqlite3_ಗಣ_String(pz_Err_ಸಂದೇಶ, db, sqlite3ErrStr(rc));
+      ಹೋಗು initone_error_ಹೊರಹೋಗು;
     }
     openedTransaction = 1;
   }
@@ -304,51 +304,51 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** Note: The #defined SQLITE_UTF* symbols in sqliteInt.h correspond to
   ** the possible values of meta[4].
   */
-  for(i=0; i<ArraySize(meta); i++){
+  ಗಾಗಿ(i=0; i<Array_ಗಾತ್ರ(meta); i++){
     sqlite3BtreeGetMeta(pDb->pBt, i+1, (u32 *)&meta[i]);
   }
-  if( (db->flags & SQLITE_ResetDatabase)!=0 ){
-    memset(meta, 0, sizeof(meta));
+  ಆದರೆ( (db->flags & SQLITE_ResetDatabase)!=0 ){
+    memset(meta, 0, ಗಾತ್ರ(meta));
   }
-  pDb->pSchema->schema_cookie = meta[BTREE_SCHEMA_VERSION-1];
+  pDb->pSchema->schema_cookie = meta[BTREE_SCHEMA_ಆವೃತ್ತಿ-1];
 
   /* If opening a non-empty database, check the text encoding. For the
   ** main database, set sqlite3.enc to the encoding of the main database.
   ** For an attached db, it is an error if the encoding is not the same
   ** as sqlite3.enc.
   */
-  if( meta[BTREE_TEXT_ENCODING-1] ){  /* text encoding */
-    if( iDb==0 && (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
+  ಆದರೆ( meta[BTREE_ಪಠ್ಯ_ENCODING-1] ){  /* text encoding */
+    ಆದರೆ( iDb==0 && (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
       u8 encoding;
-#ifndef SQLITE_OMIT_UTF16
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UTF16
       /* If opening the main database, set ENC(db). */
-      encoding = (u8)meta[BTREE_TEXT_ENCODING-1] & 3;
-      if( encoding==0 ) encoding = SQLITE_UTF8;
-#else
+      encoding = (u8)meta[BTREE_ಪಠ್ಯ_ENCODING-1] & 3;
+      ಆದರೆ( encoding==0 ) encoding = SQLITE_UTF8;
+#ಇಲ್ಲದಿದ್ದರೆ
       encoding = SQLITE_UTF8;
-#endif
-      sqlite3SetTextEncoding(db, encoding);
-    }else{
+#ಆದರೆ_ಅಂತ್ಯ
+      sqlite3_ಗಣ_ಪಠ್ಯ_Encoding(db, encoding);
+    }ಇಲ್ಲದಿದ್ದರೆ{
       /* If opening an attached database, the encoding much match ENC(db) */
-      if( (meta[BTREE_TEXT_ENCODING-1] & 3)!=ENC(db) ){
-        sqlite3SetString(pzErrMsg, db, "attached databases must use the same"
+      ಆದರೆ( (meta[BTREE_ಪಠ್ಯ_ENCODING-1] & 3)!=ENC(db) ){
+        sqlite3_ಗಣ_String(pz_Err_ಸಂದೇಶ, db, "attached databases must use the same"
             " text encoding as main database");
         rc = SQLITE_ERROR;
-        goto initone_error_out;
+        ಹೋಗು initone_error_ಹೊರಹೋಗು;
       }
     }
   }
   pDb->pSchema->enc = ENC(db);
 
-  if( pDb->pSchema->cache_size==0 ){
-#ifndef SQLITE_OMIT_DEPRECATED
-    size = sqlite3AbsInt32(meta[BTREE_DEFAULT_CACHE_SIZE-1]);
-    if( size==0 ){ size = SQLITE_DEFAULT_CACHE_SIZE; }
-    pDb->pSchema->cache_size = size;
-#else
-    pDb->pSchema->cache_size = SQLITE_DEFAULT_CACHE_SIZE;
-#endif
-    sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+  ಆದರೆ( pDb->pSchema->cache_ಗಾತ್ರ==0 ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_DEPRECATED
+    ಗಾತ್ರ_2 = sqlite3AbsInt32(meta[BTREE_DEFAULT_CACHE_ಗಾತ್ರ-1]);
+    ಆದರೆ( ಗಾತ್ರ_2==0 ){ ಗಾತ್ರ_2 = SQLITE_DEFAULT_CACHE_ಗಾತ್ರ; }
+    pDb->pSchema->cache_ಗಾತ್ರ = ಗಾತ್ರ_2;
+#ಇಲ್ಲದಿದ್ದರೆ
+    pDb->pSchema->cache_ಗಾತ್ರ = SQLITE_DEFAULT_CACHE_ಗಾತ್ರ;
+#ಆದರೆ_ಅಂತ್ಯ
+    sqlite3_Btree_ಗಣ_Cache_ಗಾತ್ರ(pDb->pBt, pDb->pSchema->cache_ಗಾತ್ರ);
   }
 
   /*
@@ -358,13 +358,13 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** file_format==4    Version 3.3.0.  // DESC indices.  Boolean constants
   */
   pDb->pSchema->file_format = (u8)meta[BTREE_FILE_FORMAT-1];
-  if( pDb->pSchema->file_format==0 ){
+  ಆದರೆ( pDb->pSchema->file_format==0 ){
     pDb->pSchema->file_format = 1;
   }
-  if( pDb->pSchema->file_format>SQLITE_MAX_FILE_FORMAT ){
-    sqlite3SetString(pzErrMsg, db, "unsupported file format");
+  ಆದರೆ( pDb->pSchema->file_format>SQLITE_MAX_FILE_FORMAT ){
+    sqlite3_ಗಣ_String(pz_Err_ಸಂದೇಶ, db, "unsupported file format");
     rc = SQLITE_ERROR;
-    goto initone_error_out;
+    ಹೋಗು initone_error_ಹೊರಹೋಗು;
   }
 
   /* Ticket #2804:  When we open a database in the newer file format,
@@ -372,45 +372,45 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** not downgrade the database and thus invalidate any descending
   ** indices that the user might have created.
   */
-  if( iDb==0 && meta[BTREE_FILE_FORMAT-1]>=4 ){
+  ಆದರೆ( iDb==0 && meta[BTREE_FILE_FORMAT-1]>=4 ){
     db->flags &= ~(u64)SQLITE_LegacyFileFmt;
   }
 
   /* Read the schema information out of the schema tables
   */
-  assert( db->init.busy );
-  initData.mxPage = sqlite3BtreeLastPage(pDb->pBt);
+  ಪ್ರತಿಜ್ಞಾ( db->init.busy );
+  init_ದತ್ತಾಂಶ.mx_ಪುಟ = sqlite3_Btree_ಕೊನೆಯ_ಪುಟ(pDb->pBt);
   {
-    char *zSql;
+    ಅಕ್ಷರ *zSql;
     zSql = sqlite3MPrintf(db, 
         "SELECT*FROM\"%w\".%s ORDER BY rowid",
         db->aDb[iDb].zDbSName, zSchemaTabName);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTHORIZATION
     {
       sqlite3_xauth xAuth;
       xAuth = db->xAuth;
       db->xAuth = 0;
-#endif
-      rc = sqlite3_exec(db, zSql, sqlite3InitCallback, &initData, 0);
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ಆದರೆ_ಅಂತ್ಯ
+      rc = sqlite3_exec(db, zSql, sqlite3InitCallback, &init_ದತ್ತಾಂಶ, 0);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTHORIZATION
       db->xAuth = xAuth;
     }
-#endif
-    if( rc==SQLITE_OK ) rc = initData.rc;
+#ಆದರೆ_ಅಂತ್ಯ
+    ಆದರೆ( rc==SQLITE_OK ) rc = init_ದತ್ತಾಂಶ.rc;
     sqlite3DbFree(db, zSql);
-#ifndef SQLITE_OMIT_ANALYZE
-    if( rc==SQLITE_OK ){
-      sqlite3AnalysisLoad(db, iDb);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_ANALYZE
+    ಆದರೆ( rc==SQLITE_OK ){
+      sqlite3_Analysis_ತುಂಬು(db, iDb);
     }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   }
-  assert( pDb == &(db->aDb[iDb]) );
-  if( db->mallocFailed ){
+  ಪ್ರತಿಜ್ಞಾ( pDb == &(db->aDb[iDb]) );
+  ಆದರೆ( db->mallocFailed ){
     rc = SQLITE_NOMEM_BKPT;
-    sqlite3ResetAllSchemasOfConnection(db);
+    sqlite3_Reset_All_Schemas_ದ_Connection(db);
     pDb = &db->aDb[iDb];
-  }else
-  if( rc==SQLITE_OK || ((db->flags&SQLITE_NoSchemaError) && rc!=SQLITE_NOMEM)){
+  }ಇಲ್ಲದಿದ್ದರೆ
+  ಆದರೆ( rc==SQLITE_OK || ((db->flags&SQLITE_NoSchemaError) && rc!=SQLITE_NOMEM)){
     /* Hack: If the SQLITE_NoSchemaError flag is set, then consider
     ** the schema loaded, even if errors (other than OOM) occurred. In
     ** this situation the current sqlite3_prepare() operation will fail,
@@ -421,7 +421,7 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
     ** The primary purpose of this is to allow access to the sqlite_schema
     ** table even when its contents have been corrupted.
     */
-    DbSetProperty(db, iDb, DB_SchemaLoaded);
+    Db_ಗಣ_Property(db, iDb, DB_SchemaLoaded);
     rc = SQLITE_OK;
   }
 
@@ -429,21 +429,21 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   ** curMain and calling sqlite3BtreeEnter(). For an error that occurs
   ** before that point, jump to error_out.
   */
-initone_error_out:
-  if( openedTransaction ){
+initone_error_ಹೊರಹೋಗು:
+  ಆದರೆ( openedTransaction ){
     sqlite3BtreeCommit(pDb->pBt);
   }
   sqlite3BtreeLeave(pDb->pBt);
 
-error_out:
-  if( rc ){
-    if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+error_ಹೊರಹೋಗು:
+  ಆದರೆ( rc ){
+    ಆದರೆ( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
       sqlite3OomFault(db);
     }
     sqlite3ResetOneSchema(db, iDb);
   }
   db->init.busy = 0;
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
@@ -455,52 +455,52 @@ error_out:
 ** After a database is initialized, the DB_SchemaLoaded bit is set
 ** bit is set in the flags field of the Db structure. 
 */
-int sqlite3Init(sqlite3 *db, char **pzErrMsg){
-  int i, rc;
-  int commit_internal = !(db->mDbFlags&DBFLAG_SchemaChange);
+ಪೂರ್ಣಾಂಕ sqlite3Init(sqlite3 *db, ಅಕ್ಷರ **pz_Err_ಸಂದೇಶ){
+  ಪೂರ್ಣಾಂಕ i, rc;
+  ಪೂರ್ಣಾಂಕ commit_ಆಂತರಿಕ = !(db->mDbFlags&DBFLAG_SchemaChange);
   
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( sqlite3BtreeHoldsMutex(db->aDb[0].pBt) );
-  assert( db->init.busy==0 );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3BtreeHoldsMutex(db->aDb[0].pBt) );
+  ಪ್ರತಿಜ್ಞಾ( db->init.busy==0 );
   ENC(db) = SCHEMA_ENC(db);
-  assert( db->nDb>0 );
+  ಪ್ರತಿಜ್ಞಾ( db->nDb>0 );
   /* Do the main schema first */
-  if( !DbHasProperty(db, 0, DB_SchemaLoaded) ){
-    rc = sqlite3InitOne(db, 0, pzErrMsg, 0);
-    if( rc ) return rc;
+  ಆದರೆ( !DbHasProperty(db, 0, DB_SchemaLoaded) ){
+    rc = sqlite3InitOne(db, 0, pz_Err_ಸಂದೇಶ, 0);
+    ಆದರೆ( rc ) ಹಿಂತಿರುಗಿ rc;
   }
   /* All other schemas after the main schema. The "temp" schema must be last */
-  for(i=db->nDb-1; i>0; i--){
-    assert( i==1 || sqlite3BtreeHoldsMutex(db->aDb[i].pBt) );
-    if( !DbHasProperty(db, i, DB_SchemaLoaded) ){
-      rc = sqlite3InitOne(db, i, pzErrMsg, 0);
-      if( rc ) return rc;
+  ಗಾಗಿ(i=db->nDb-1; i>0; i--){
+    ಪ್ರತಿಜ್ಞಾ( i==1 || sqlite3BtreeHoldsMutex(db->aDb[i].pBt) );
+    ಆದರೆ( !DbHasProperty(db, i, DB_SchemaLoaded) ){
+      rc = sqlite3InitOne(db, i, pz_Err_ಸಂದೇಶ, 0);
+      ಆದರೆ( rc ) ಹಿಂತಿರುಗಿ rc;
     }
   }
-  if( commit_internal ){
-    sqlite3CommitInternalChanges(db);
+  ಆದರೆ( commit_ಆಂತರಿಕ ){
+    sqlite3_Commit_ಆಂತರಿಕ_Changes(db);
   }
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** This routine is a no-op if the database schema is already initialized.
 ** Otherwise, the schema is loaded. An error code is returned.
 */
-int sqlite3ReadSchema(Parse *pParse){
-  int rc = SQLITE_OK;
+ಪೂರ್ಣಾಂಕ sqlite3ReadSchema(Parse *pParse){
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
   sqlite3 *db = pParse->db;
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( !db->init.busy ){
-    rc = sqlite3Init(db, &pParse->zErrMsg);
-    if( rc!=SQLITE_OK ){
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಆದರೆ( !db->init.busy ){
+    rc = sqlite3Init(db, &pParse->z_Err_ಸಂದೇಶ);
+    ಆದರೆ( rc!=SQLITE_OK ){
       pParse->rc = rc;
       pParse->nErr++;
-    }else if( db->noSharedCache ){
-      db->mDbFlags |= DBFLAG_SchemaKnownOk;
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( db->noSharedCache ){
+      db->mDbFlags |= DBFLAG_Schema_ತಿಳಿದ_Ok;
     }
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 
@@ -509,44 +509,44 @@ int sqlite3ReadSchema(Parse *pParse){
 ** of date set pParse->rc to SQLITE_SCHEMA.  If all schema cookies
 ** make no changes to pParse->rc.
 */
-static void schemaIsValid(Parse *pParse){
+ಸ್ಥಿರ ಶೂನ್ಯ schemaIsValid(Parse *pParse){
   sqlite3 *db = pParse->db;
-  int iDb;
-  int rc;
-  int cookie;
+  ಪೂರ್ಣಾಂಕ iDb;
+  ಪೂರ್ಣಾಂಕ rc;
+  ಪೂರ್ಣಾಂಕ cookie;
 
-  assert( pParse->checkSchema );
-  assert( sqlite3_mutex_held(db->mutex) );
-  for(iDb=0; iDb<db->nDb; iDb++){
-    int openedTransaction = 0;         /* True if a transaction is opened */
+  ಪ್ರತಿಜ್ಞಾ( pParse->checkSchema );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಗಾಗಿ(iDb=0; iDb<db->nDb; iDb++){
+    ಪೂರ್ಣಾಂಕ openedTransaction = 0;         /* True if a transaction is opened */
     Btree *pBt = db->aDb[iDb].pBt;     /* Btree database to read cookie from */
-    if( pBt==0 ) continue;
+    ಆದರೆ( pBt==0 ) ಮುಂದುವರಿ;
 
     /* If there is not already a read-only (or read-write) transaction opened
     ** on the b-tree database, open one now. If a transaction is opened, it 
     ** will be closed immediately after reading the meta-value. */
-    if( sqlite3BtreeTxnState(pBt)==SQLITE_TXN_NONE ){
+    ಆದರೆ( sqlite3BtreeTxnState(pBt)==SQLITE_TXN_NONE ){
       rc = sqlite3BtreeBeginTrans(pBt, 0, 0);
-      if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+      ಆದರೆ( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
         sqlite3OomFault(db);
         pParse->rc = SQLITE_NOMEM;
       }
-      if( rc!=SQLITE_OK ) return;
+      ಆದರೆ( rc!=SQLITE_OK ) ಹಿಂತಿರುಗಿ;
       openedTransaction = 1;
     }
 
     /* Read the schema cookie from the database. If it does not match the 
     ** value stored as part of the in-memory schema representation,
     ** set Parse.rc to SQLITE_SCHEMA. */
-    sqlite3BtreeGetMeta(pBt, BTREE_SCHEMA_VERSION, (u32 *)&cookie);
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( cookie!=db->aDb[iDb].pSchema->schema_cookie ){
-      if( DbHasProperty(db, iDb, DB_SchemaLoaded) ) pParse->rc = SQLITE_SCHEMA;
+    sqlite3BtreeGetMeta(pBt, BTREE_SCHEMA_ಆವೃತ್ತಿ, (u32 *)&cookie);
+    ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ಆದರೆ( cookie!=db->aDb[iDb].pSchema->schema_cookie ){
+      ಆದರೆ( DbHasProperty(db, iDb, DB_SchemaLoaded) ) pParse->rc = SQLITE_SCHEMA;
       sqlite3ResetOneSchema(db, iDb);
     }
 
     /* Close the transaction, if one was opened. */
-    if( openedTransaction ){
+    ಆದರೆ( openedTransaction ){
       sqlite3BtreeCommit(pBt);
     }
   }
@@ -559,8 +559,8 @@ static void schemaIsValid(Parse *pParse){
 ** If the same database is attached more than once, the first
 ** attached database is returned.
 */
-int sqlite3SchemaToIndex(sqlite3 *db, Schema *pSchema){
-  int i = -32768;
+ಪೂರ್ಣಾಂಕ sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(sqlite3 *db, Schema *pSchema){
+  ಪೂರ್ಣಾಂಕ i = -32768;
 
   /* If pSchema is NULL, then return -32768. This happens when code in 
   ** expr.c is trying to resolve a reference to a transient table (i.e. one
@@ -573,44 +573,44 @@ int sqlite3SchemaToIndex(sqlite3 *db, Schema *pSchema){
   ** statements too, but it never hurts to play the odds) and
   ** -32768 will still fit into a 16-bit signed integer.
   */
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( pSchema ){
-    for(i=0; 1; i++){
-      assert( i<db->nDb );
-      if( db->aDb[i].pSchema==pSchema ){
-        break;
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಆದರೆ( pSchema ){
+    ಗಾಗಿ(i=0; 1; i++){
+      ಪ್ರತಿಜ್ಞಾ( i<db->nDb );
+      ಆದರೆ( db->aDb[i].pSchema==pSchema ){
+        ನಿಲ್ಲಿಸು;
       }
     }
-    assert( i>=0 && i<db->nDb );
+    ಪ್ರತಿಜ್ಞಾ( i>=0 && i<db->nDb );
   }
-  return i;
+  ಹಿಂತಿರುಗಿ i;
 }
 
 /*
 ** Free all memory allocations in the pParse object
 */
-void sqlite3ParseObjectReset(Parse *pParse){
+ಶೂನ್ಯ sqlite3ParseObjectReset(Parse *pParse){
   sqlite3 *db = pParse->db;
-  assert( db!=0 );
-  assert( db->pParse==pParse );
-  assert( pParse->nested==0 );
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  if( pParse->nTableLock ) sqlite3DbNNFreeNN(db, pParse->aTableLock);
-#endif
-  while( pParse->pCleanup ){
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಪ್ರತಿಜ್ಞಾ( db->pParse==pParse );
+  ಪ್ರತಿಜ್ಞಾ( pParse->nested==0 );
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_SHARED_CACHE
+  ಆದರೆ( pParse->n_ಕೋಷ್ಟಕ_ಬೀಗ ) sqlite3DbNNFreeNN(db, pParse->a_ಕೋಷ್ಟಕ_ಬೀಗ);
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆಗ( pParse->pCleanup ){
     ParseCleanup *pCleanup = pParse->pCleanup;
-    pParse->pCleanup = pCleanup->pNext;
+    pParse->pCleanup = pCleanup->p_ಮುಂದಿನ;
     pCleanup->xCleanup(db, pCleanup->pPtr);
     sqlite3DbNNFreeNN(db, pCleanup);
   }
-  if( pParse->aLabel ) sqlite3DbNNFreeNN(db, pParse->aLabel);
-  if( pParse->pConstExpr ){
-    sqlite3ExprListDelete(db, pParse->pConstExpr);
+  ಆದರೆ( pParse->aLabel ) sqlite3DbNNFreeNN(db, pParse->aLabel);
+  ಆದರೆ( pParse->p_Const_ಅಭಿವ್ಯಕ್ತಿ ){
+    sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Delete(db, pParse->p_Const_ಅಭಿವ್ಯಕ್ತಿ);
   }
-  assert( db->lookaside.bDisable >= pParse->disableLookaside );
+  ಪ್ರತಿಜ್ಞಾ( db->lookaside.bDisable >= pParse->disableLookaside );
   db->lookaside.bDisable -= pParse->disableLookaside;
   db->lookaside.sz = db->lookaside.bDisable ? 0 : db->lookaside.szTrue;
-  assert( pParse->db->pParse==pParse );
+  ಪ್ರತಿಜ್ಞಾ( pParse->db->pParse==pParse );
   db->pParse = pParse->pOuterParse;
 }
 
@@ -642,31 +642,31 @@ void sqlite3ParseObjectReset(Parse *pParse){
 **
 **       pObj = sqlite3ParserAddCleanup(pParse, destructor, pObj);
 */
-void *sqlite3ParserAddCleanup(
+ಶೂನ್ಯ *sqlite3_Parser_ಕೂಡಿಸು_Cleanup(
   Parse *pParse,                      /* Destroy when this Parser finishes */
-  void (*xCleanup)(sqlite3*,void*),   /* The cleanup routine */
-  void *pPtr                          /* Pointer to object to be cleaned up */
+  ಶೂನ್ಯ (*xCleanup)(sqlite3*,ಶೂನ್ಯ*),   /* The cleanup routine */
+  ಶೂನ್ಯ *pPtr                          /* Pointer to object to be cleaned up */
 ){
   ParseCleanup *pCleanup;
-  if( sqlite3FaultSim(300) ){
+  ಆದರೆ( sqlite3FaultSim(300) ){
     pCleanup = 0;
     sqlite3OomFault(pParse->db);
-  }else{
-    pCleanup = sqlite3DbMallocRaw(pParse->db, sizeof(*pCleanup));
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    pCleanup = sqlite3DbMallocRaw(pParse->db, ಗಾತ್ರ(*pCleanup));
   }
-  if( pCleanup ){
-    pCleanup->pNext = pParse->pCleanup;
+  ಆದರೆ( pCleanup ){
+    pCleanup->p_ಮುಂದಿನ = pParse->pCleanup;
     pParse->pCleanup = pCleanup;
     pCleanup->pPtr = pPtr;
     pCleanup->xCleanup = xCleanup;
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     xCleanup(pParse->db, pPtr);
     pPtr = 0;
-#if defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
+#ಆದರೆ defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
     pParse->earlyCleanup = 1;
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   }
-  return pPtr;
+  ಹಿಂತಿರುಗಿ pPtr;
 }
 
 /*
@@ -678,65 +678,65 @@ void *sqlite3ParserAddCleanup(
 ** Caution:  Do not confuse this routine with sqlite3ParseObjectInit() which
 ** is generated by Lemon.
 */
-void sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
-  assert( db!=0 );
+ಶೂನ್ಯ sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
   memset(PARSE_HDR(pParse), 0, PARSE_HDR_SZ);
-  memset(PARSE_TAIL(pParse), 0, PARSE_TAIL_SZ);
-  assert( db->pParse!=pParse );
+  memset(PARSE_ಬಾಲ(pParse), 0, PARSE_ಬಾಲ_SZ);
+  ಪ್ರತಿಜ್ಞಾ( db->pParse!=pParse );
   pParse->pOuterParse = db->pParse;
   db->pParse = pParse;
   pParse->db = db;
-  if( db->mallocFailed ) sqlite3ErrorMsg(pParse, "out of memory");
+  ಆದರೆ( db->mallocFailed ) sqlite3_Error_ಸಂದೇಶ(pParse, "out of memory");
 }
 
 /*
 ** Maximum number of times that we will try again to prepare a statement
 ** that returns SQLITE_ERROR_RETRY.
 */
-#ifndef SQLITE_MAX_PREPARE_RETRY
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_MAX_PREPARE_RETRY
 # define SQLITE_MAX_PREPARE_RETRY 25
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Compile the UTF-8 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ sqlite3Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql,         /* UTF-8 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pReprepare,         /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc = SQLITE_OK;       /* Result code */
-  int i;                    /* Loop counter */
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;       /* Result code */
+  ಪೂರ್ಣಾಂಕ i;                    /* Loop counter */
   Parse sParse;             /* Parsing context */
 
   /* sqlite3ParseObjectInit(&sParse, db); // inlined for performance */
   memset(PARSE_HDR(&sParse), 0, PARSE_HDR_SZ);
-  memset(PARSE_TAIL(&sParse), 0, PARSE_TAIL_SZ);
+  memset(PARSE_ಬಾಲ(&sParse), 0, PARSE_ಬಾಲ_SZ);
   sParse.pOuterParse = db->pParse;
   db->pParse = &sParse;
   sParse.db = db;
-  if( pReprepare ){
+  ಆದರೆ( pReprepare ){
     sParse.pReprepare = pReprepare;
     sParse.explain = sqlite3_stmt_isexplain((sqlite3_stmt*)pReprepare);
-  }else{
-    assert( sParse.pReprepare==0 );
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಪ್ರತಿಜ್ಞಾ( sParse.pReprepare==0 );
   }
-  assert( ppStmt && *ppStmt==0 );
-  if( db->mallocFailed ){
-    sqlite3ErrorMsg(&sParse, "out of memory");
-    db->errCode = rc = SQLITE_NOMEM;
-    goto end_prepare;
+  ಪ್ರತಿಜ್ಞಾ( ppStmt && *ppStmt==0 );
+  ಆದರೆ( db->mallocFailed ){
+    sqlite3_Error_ಸಂದೇಶ(&sParse, "out of memory");
+    db->err_ಸಂಕೇತ = rc = SQLITE_NOMEM;
+    ಹೋಗು ಕೊನೆ_prepare;
   }
-  assert( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
 
   /* For a long-term use prepared statement avoid the use of
   ** lookaside memory.
   */
-  if( prepFlags & SQLITE_PREPARE_PERSISTENT ){
+  ಆದರೆ( prepFlags & SQLITE_PREPARE_PERSISTENT ){
     sParse.disableLookaside++;
     DisableLookaside;
   }
@@ -765,77 +765,77 @@ static int sqlite3Prepare(
   ** but it does *not* override schema lock detection, so this all still
   ** works even if READ_UNCOMMITTED is set.
   */
-  if( !db->noSharedCache ){
-    for(i=0; i<db->nDb; i++) {
+  ಆದರೆ( !db->noSharedCache ){
+    ಗಾಗಿ(i=0; i<db->nDb; i++) {
       Btree *pBt = db->aDb[i].pBt;
-      if( pBt ){
-        assert( sqlite3BtreeHoldsMutex(pBt) );
+      ಆದರೆ( pBt ){
+        ಪ್ರತಿಜ್ಞಾ( sqlite3BtreeHoldsMutex(pBt) );
         rc = sqlite3BtreeSchemaLocked(pBt);
-        if( rc ){
-          const char *zDb = db->aDb[i].zDbSName;
-          sqlite3ErrorWithMsg(db, rc, "database schema is locked: %s", zDb);
+        ಆದರೆ( rc ){
+          ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDb = db->aDb[i].zDbSName;
+          sqlite3_Error_With_ಸಂದೇಶ(db, rc, "database schema is locked: %s", zDb);
           testcase( db->flags & SQLITE_ReadUncommit );
-          goto end_prepare;
+          ಹೋಗು ಕೊನೆ_prepare;
         }
       }
     }
   }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( db->pDisconnect ) sqlite3VtabUnlockList(db);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  ಆದರೆ( db->pDisconnect ) sqlite3VtabUnlockList(db);
+#ಆದರೆ_ಅಂತ್ಯ
 
-  if( nBytes>=0 && (nBytes==0 || zSql[nBytes-1]!=0) ){
-    char *zSqlCopy;
-    int mxLen = db->aLimit[SQLITE_LIMIT_SQL_LENGTH];
-    testcase( nBytes==mxLen );
-    testcase( nBytes==mxLen+1 );
-    if( nBytes>mxLen ){
-      sqlite3ErrorWithMsg(db, SQLITE_TOOBIG, "statement too long");
+  ಆದರೆ( n_ಬೈಟುಗಳು>=0 && (n_ಬೈಟುಗಳು==0 || zSql[n_ಬೈಟುಗಳು-1]!=0) ){
+    ಅಕ್ಷರ *zSqlCopy;
+    ಪೂರ್ಣಾಂಕ mxLen = db->a_ಎಲ್ಲೆ[SQLITE_ಎಲ್ಲೆ_SQL_ಉದ್ದಳತೆ];
+    testcase( n_ಬೈಟುಗಳು==mxLen );
+    testcase( n_ಬೈಟುಗಳು==mxLen+1 );
+    ಆದರೆ( n_ಬೈಟುಗಳು>mxLen ){
+      sqlite3_Error_With_ಸಂದೇಶ(db, SQLITE_TOOBIG, "statement too long");
       rc = sqlite3ApiExit(db, SQLITE_TOOBIG);
-      goto end_prepare;
+      ಹೋಗು ಕೊನೆ_prepare;
     }
-    zSqlCopy = sqlite3DbStrNDup(db, zSql, nBytes);
-    if( zSqlCopy ){
-      sqlite3RunParser(&sParse, zSqlCopy);
-      sParse.zTail = &zSql[sParse.zTail-zSqlCopy];
+    zSqlCopy = sqlite3DbStrNDup(db, zSql, n_ಬೈಟುಗಳು);
+    ಆದರೆ( zSqlCopy ){
+      sqlite3_ಸತತ_Parser(&sParse, zSqlCopy);
+      sParse.z_ಬಾಲ = &zSql[sParse.z_ಬಾಲ-zSqlCopy];
       sqlite3DbFree(db, zSqlCopy);
-    }else{
-      sParse.zTail = &zSql[nBytes];
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      sParse.z_ಬಾಲ = &zSql[n_ಬೈಟುಗಳು];
     }
-  }else{
-    sqlite3RunParser(&sParse, zSql);
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    sqlite3_ಸತತ_Parser(&sParse, zSql);
   }
-  assert( 0==sParse.nQueryLoop );
+  ಪ್ರತಿಜ್ಞಾ( 0==sParse.nQueryLoop );
 
-  if( pzTail ){
-    *pzTail = sParse.zTail;
+  ಆದರೆ( pz_ಬಾಲ ){
+    *pz_ಬಾಲ = sParse.z_ಬಾಲ;
   }
 
-  if( db->init.busy==0 ){
-    sqlite3VdbeSetSql(sParse.pVdbe, zSql, (int)(sParse.zTail-zSql), prepFlags);
+  ಆದರೆ( db->init.busy==0 ){
+    sqlite3_Vdbe_ಗಣ_Sql(sParse.pVdbe, zSql, (ಪೂರ್ಣಾಂಕ)(sParse.z_ಬಾಲ-zSql), prepFlags);
   }
-  if( db->mallocFailed ){
+  ಆದರೆ( db->mallocFailed ){
     sParse.rc = SQLITE_NOMEM_BKPT;
     sParse.checkSchema = 0;
   }
-  if( sParse.rc!=SQLITE_OK && sParse.rc!=SQLITE_DONE ){
-    if( sParse.checkSchema && db->init.busy==0 ){
+  ಆದರೆ( sParse.rc!=SQLITE_OK && sParse.rc!=SQLITE_ಮುಗಿದ ){
+    ಆದರೆ( sParse.checkSchema && db->init.busy==0 ){
       schemaIsValid(&sParse);
     }
-    if( sParse.pVdbe ){
+    ಆದರೆ( sParse.pVdbe ){
       sqlite3VdbeFinalize(sParse.pVdbe);
     }
-    assert( 0==(*ppStmt) );
+    ಪ್ರತಿಜ್ಞಾ( 0==(*ppStmt) );
     rc = sParse.rc;
-    if( sParse.zErrMsg ){
-      sqlite3ErrorWithMsg(db, rc, "%s", sParse.zErrMsg);
-      sqlite3DbFree(db, sParse.zErrMsg);
-    }else{
+    ಆದರೆ( sParse.z_Err_ಸಂದೇಶ ){
+      sqlite3_Error_With_ಸಂದೇಶ(db, rc, "%s", sParse.z_Err_ಸಂದೇಶ);
+      sqlite3DbFree(db, sParse.z_Err_ಸಂದೇಶ);
+    }ಇಲ್ಲದಿದ್ದರೆ{
       sqlite3Error(db, rc);
     }
-  }else{
-    assert( sParse.zErrMsg==0 );
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಪ್ರತಿಜ್ಞಾ( sParse.z_Err_ಸಂದೇಶ==0 );
     *ppStmt = (sqlite3_stmt*)sParse.pVdbe;
     rc = SQLITE_OK;
     sqlite3ErrorClear(db);
@@ -843,56 +843,56 @@ static int sqlite3Prepare(
 
 
   /* Delete any TriggerPrg structures allocated while parsing this statement. */
-  while( sParse.pTriggerPrg ){
+  ಆಗ( sParse.pTriggerPrg ){
     TriggerPrg *pT = sParse.pTriggerPrg;
-    sParse.pTriggerPrg = pT->pNext;
+    sParse.pTriggerPrg = pT->p_ಮುಂದಿನ;
     sqlite3DbFree(db, pT);
   }
 
-end_prepare:
+ಕೊನೆ_prepare:
 
   sqlite3ParseObjectReset(&sParse);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
-static int sqlite3LockAndPrepare(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ sqlite3_ಬೀಗ_And_Prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql,         /* UTF-8 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   Vdbe *pOld,               /* VM being reprepared */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc;
-  int cnt = 0;
+  ಪೂರ್ಣಾಂಕ rc;
+  ಪೂರ್ಣಾಂಕ cnt = 0;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppStmt==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_API_ARMOR
+  ಆದರೆ( ppStmt==0 ) ಹಿಂತಿರುಗಿ SQLITE_MISUSE_BKPT;
+#ಆದರೆ_ಅಂತ್ಯ
   *ppStmt = 0;
-  if( !sqlite3SafetyCheckOk(db)||zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ಆದರೆ( !sqlite3SafetyCheckOk(db)||zSql==0 ){
+    ಹಿಂತಿರುಗಿ SQLITE_MISUSE_BKPT;
   }
   sqlite3_mutex_enter(db->mutex);
   sqlite3BtreeEnterAll(db);
-  do{
+  ಮಾಡು{
     /* Make multiple attempts to compile the SQL, until it either succeeds
     ** or encounters a permanent error.  A schema problem after one schema
     ** reset is considered a permanent error. */
-    rc = sqlite3Prepare(db, zSql, nBytes, prepFlags, pOld, ppStmt, pzTail);
-    assert( rc==SQLITE_OK || *ppStmt==0 );
-    if( rc==SQLITE_OK || db->mallocFailed ) break;
+    rc = sqlite3Prepare(db, zSql, n_ಬೈಟುಗಳು, prepFlags, pOld, ppStmt, pz_ಬಾಲ);
+    ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || *ppStmt==0 );
+    ಆದರೆ( rc==SQLITE_OK || db->mallocFailed ) ನಿಲ್ಲಿಸು;
     cnt++;
-  }while( (rc==SQLITE_ERROR_RETRY && ALWAYS(cnt<=SQLITE_MAX_PREPARE_RETRY))
+  }ಆಗ( (rc==SQLITE_ERROR_RETRY && ALWAYS(cnt<=SQLITE_MAX_PREPARE_RETRY))
        || (rc==SQLITE_SCHEMA && (sqlite3ResetOneSchema(db,-1), cnt)==1) );
   sqlite3BtreeLeaveAll(db);
-  assert( rc!=SQLITE_ERROR_RETRY );
+  ಪ್ರತಿಜ್ಞಾ( rc!=SQLITE_ERROR_RETRY );
   rc = sqlite3ApiExit(db, rc);
-  assert( (rc&db->errMask)==rc );
+  ಪ್ರತಿಜ್ಞಾ( (rc&db->err_ಮುಖವಾಡ)==rc );
   db->busyHandler.nBusy = 0;
   sqlite3_mutex_leave(db->mutex);
-  assert( rc==SQLITE_OK || (*ppStmt)==0 );
-  return rc;
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || (*ppStmt)==0 );
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 
@@ -904,34 +904,34 @@ static int sqlite3LockAndPrepare(
 ** locked the sqlite3_schema table, return SQLITE_LOCKED. If any other error
 ** occurs, return SQLITE_SCHEMA.
 */
-int sqlite3Reprepare(Vdbe *p){
-  int rc;
+ಪೂರ್ಣಾಂಕ sqlite3Reprepare(Vdbe *p){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_stmt *pNew;
-  const char *zSql;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql;
   sqlite3 *db;
   u8 prepFlags;
 
-  assert( sqlite3_mutex_held(sqlite3VdbeDb(p)->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(sqlite3VdbeDb(p)->mutex) );
   zSql = sqlite3_sql((sqlite3_stmt *)p);
-  assert( zSql!=0 );  /* Reprepare only called for prepare_v2() statements */
+  ಪ್ರತಿಜ್ಞಾ( zSql!=0 );  /* Reprepare only called for prepare_v2() statements */
   db = sqlite3VdbeDb(p);
-  assert( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
   prepFlags = sqlite3VdbePrepareFlags(p);
-  rc = sqlite3LockAndPrepare(db, zSql, -1, prepFlags, p, &pNew, 0);
-  if( rc ){
-    if( rc==SQLITE_NOMEM ){
+  rc = sqlite3_ಬೀಗ_And_Prepare(db, zSql, -1, prepFlags, p, &pNew, 0);
+  ಆದರೆ( rc ){
+    ಆದರೆ( rc==SQLITE_NOMEM ){
       sqlite3OomFault(db);
     }
-    assert( pNew==0 );
-    return rc;
-  }else{
-    assert( pNew!=0 );
+    ಪ್ರತಿಜ್ಞಾ( pNew==0 );
+    ಹಿಂತಿರುಗಿ rc;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಪ್ರತಿಜ್ಞಾ( pNew!=0 );
   }
-  sqlite3VdbeSwap((Vdbe*)pNew, p);
+  sqlite3_Vdbe_ಅದಲುಬದಲು((Vdbe*)pNew, p);
   sqlite3TransferBindings(pNew, (sqlite3_stmt*)p);
-  sqlite3VdbeResetStepResult((Vdbe*)pNew);
+  sqlite3_Vdbe_Reset_ಹೆಜ್ಜೆ_ಫಲಿತಾಂಶ((Vdbe*)pNew);
   sqlite3VdbeFinalize((Vdbe*)pNew);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 
@@ -943,45 +943,45 @@ int sqlite3Reprepare(Vdbe *p){
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-int sqlite3_prepare(
+ಪೂರ್ಣಾಂಕ sqlite3_prepare(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql,         /* UTF-8 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3LockAndPrepare(db,zSql,nBytes,0,0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ಪೂರ್ಣಾಂಕ rc;
+  rc = sqlite3_ಬೀಗ_And_Prepare(db,zSql,n_ಬೈಟುಗಳು,0,0,ppStmt,pz_ಬಾಲ);
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  ಹಿಂತಿರುಗಿ rc;
 }
-int sqlite3_prepare_v2(
+ಪೂರ್ಣಾಂಕ sqlite3_prepare_v2(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql,         /* UTF-8 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   /* EVIDENCE-OF: R-37923-12173 The sqlite3_prepare_v2() interface works
   ** exactly the same as sqlite3_prepare_v3() with a zero prepFlags
   ** parameter.
   **
   ** Proof in that the 5th parameter to sqlite3LockAndPrepare is 0 */
-  rc = sqlite3LockAndPrepare(db,zSql,nBytes,SQLITE_PREPARE_SAVESQL,0,
-                             ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
-  return rc;
+  rc = sqlite3_ಬೀಗ_And_Prepare(db,zSql,n_ಬೈಟುಗಳು,SQLITE_PREPARE_SAVESQL,0,
+                             ppStmt,pz_ಬಾಲ);
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
+  ಹಿಂತಿರುಗಿ rc;
 }
-int sqlite3_prepare_v3(
+ಪೂರ್ಣಾಂಕ sqlite3_prepare_v3(
   sqlite3 *db,              /* Database handle. */
-  const char *zSql,         /* UTF-8 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
-  unsigned int prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql,         /* UTF-8 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const char **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   /* EVIDENCE-OF: R-56861-42673 sqlite3_prepare_v3() differs from
   ** sqlite3_prepare_v2() only in having the extra prepFlags parameter,
   ** which is a bit array consisting of zero or more of the
@@ -989,40 +989,40 @@ int sqlite3_prepare_v3(
   **
   ** Proof by comparison to the implementation of sqlite3_prepare_v2()
   ** directly above. */
-  rc = sqlite3LockAndPrepare(db,zSql,nBytes,
-                 SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_MASK),
-                 0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
-  return rc;
+  rc = sqlite3_ಬೀಗ_And_Prepare(db,zSql,n_ಬೈಟುಗಳು,
+                 SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_ಮುಖವಾಡ),
+                 0,ppStmt,pz_ಬಾಲ);
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 
-#ifndef SQLITE_OMIT_UTF16
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UTF16
 /*
 ** Compile the UTF-16 encoded SQL statement zSql into a statement handle.
 */
-static int sqlite3Prepare16(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ sqlite3Prepare16(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *zSql,         /* UTF-16 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   u32 prepFlags,            /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
   /* This function currently works by first transforming the UTF-16
   ** encoded string to UTF-8, then invoking sqlite3_prepare(). The
   ** tricky bit is figuring out the pointer to return in *pzTail.
   */
-  char *zSql8;
-  const char *zTail8 = 0;
-  int rc = SQLITE_OK;
+  ಅಕ್ಷರ *zSql8;
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zTail8 = 0;
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppStmt==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_API_ARMOR
+  ಆದರೆ( ppStmt==0 ) ಹಿಂತಿರುಗಿ SQLITE_MISUSE_BKPT;
+#ಆದರೆ_ಅಂತ್ಯ
   *ppStmt = 0;
-  if( !sqlite3SafetyCheckOk(db)||zSql==0 ){
-    return SQLITE_MISUSE_BKPT;
+  ಆದರೆ( !sqlite3SafetyCheckOk(db)||zSql==0 ){
+    ಹಿಂತಿರುಗಿ SQLITE_MISUSE_BKPT;
   }
 
   /* Make sure nBytes is non-negative and correct.  It should be the
@@ -1030,37 +1030,37 @@ static int sqlite3Prepare16(
   ** U+0000 character.  If the input nBytes is odd, convert it into
   ** an even number.  If the input nBytes is negative, then the input
   ** must be terminated by at least one U+0000 character */
-  if( nBytes>=0 ){
-    int sz;
-    const char *z = (const char*)zSql;
-    for(sz=0; sz<nBytes && (z[sz]!=0 || z[sz+1]!=0); sz += 2){}
-    nBytes = sz;
-  }else{
-    int sz;
-    const char *z = (const char*)zSql;
-    for(sz=0; z[sz]!=0 || z[sz+1]!=0; sz += 2){}
-    nBytes = sz;
+  ಆದರೆ( n_ಬೈಟುಗಳು>=0 ){
+    ಪೂರ್ಣಾಂಕ sz;
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)zSql;
+    ಗಾಗಿ(sz=0; sz<n_ಬೈಟುಗಳು && (z[sz]!=0 || z[sz+1]!=0); sz += 2){}
+    n_ಬೈಟುಗಳು = sz;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಪೂರ್ಣಾಂಕ sz;
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)zSql;
+    ಗಾಗಿ(sz=0; z[sz]!=0 || z[sz+1]!=0; sz += 2){}
+    n_ಬೈಟುಗಳು = sz;
   }
 
   sqlite3_mutex_enter(db->mutex);
-  zSql8 = sqlite3Utf16to8(db, zSql, nBytes, SQLITE_UTF16NATIVE);
-  if( zSql8 ){
-    rc = sqlite3LockAndPrepare(db, zSql8, -1, prepFlags, 0, ppStmt, &zTail8);
+  zSql8 = sqlite3Utf16to8(db, zSql, n_ಬೈಟುಗಳು, SQLITE_UTF16NATIVE);
+  ಆದರೆ( zSql8 ){
+    rc = sqlite3_ಬೀಗ_And_Prepare(db, zSql8, -1, prepFlags, 0, ppStmt, &zTail8);
   }
 
-  if( zTail8 && pzTail ){
+  ಆದರೆ( zTail8 && pz_ಬಾಲ ){
     /* If sqlite3_prepare returns a tail pointer, we calculate the
     ** equivalent pointer into the UTF-16 string by counting the unicode
     ** characters between zSql8 and zTail8, and then returning a pointer
     ** the same number of characters into the UTF-16 string.
     */
-    int chars_parsed = sqlite3Utf8CharLen(zSql8, (int)(zTail8-zSql8));
-    *pzTail = (u8 *)zSql + sqlite3Utf16ByteLen(zSql, nBytes, chars_parsed);
+    ಪೂರ್ಣಾಂಕ chars_parsed = sqlite3Utf8CharLen(zSql8, (ಪೂರ್ಣಾಂಕ)(zTail8-zSql8));
+    *pz_ಬಾಲ = (u8 *)zSql + sqlite3Utf16ByteLen(zSql, n_ಬೈಟುಗಳು, chars_parsed);
   }
   sqlite3DbFree(db, zSql8); 
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
@@ -1071,44 +1071,44 @@ static int sqlite3Prepare16(
 ** and the statement is automatically recompiled if an schema change
 ** occurs.
 */
-int sqlite3_prepare16(
+ಪೂರ್ಣಾಂಕ sqlite3_prepare16(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *zSql,         /* UTF-16 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3Prepare16(db,zSql,nBytes&~1,0,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ಪೂರ್ಣಾಂಕ rc;
+  rc = sqlite3Prepare16(db,zSql,n_ಬೈಟುಗಳು&~1,0,ppStmt,pz_ಬಾಲ);
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  ಹಿಂತಿರುಗಿ rc;
 }
-int sqlite3_prepare16_v2(
+ಪೂರ್ಣಾಂಕ sqlite3_prepare16_v2(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *zSql,         /* UTF-16 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3Prepare16(db,zSql,nBytes&~1,SQLITE_PREPARE_SAVESQL,ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ಪೂರ್ಣಾಂಕ rc;
+  rc = sqlite3Prepare16(db,zSql,n_ಬೈಟುಗಳು&~1,SQLITE_PREPARE_SAVESQL,ppStmt,pz_ಬಾಲ);
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  ಹಿಂತಿರುಗಿ rc;
 }
-int sqlite3_prepare16_v3(
+ಪೂರ್ಣಾಂಕ sqlite3_prepare16_v3(
   sqlite3 *db,              /* Database handle. */ 
-  const void *zSql,         /* UTF-16 encoded SQL statement. */
-  int nBytes,               /* Length of zSql in bytes. */
-  unsigned int prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *zSql,         /* UTF-16 encoded SQL statement. */
+  ಪೂರ್ಣಾಂಕ n_ಬೈಟುಗಳು,               /* Length of zSql in bytes. */
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ prepFlags,   /* Zero or more SQLITE_PREPARE_* flags */
   sqlite3_stmt **ppStmt,    /* OUT: A pointer to the prepared statement */
-  const void **pzTail       /* OUT: End of parsed string */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ **pz_ಬಾಲ       /* OUT: End of parsed string */
 ){
-  int rc;
-  rc = sqlite3Prepare16(db,zSql,nBytes&~1,
-         SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_MASK),
-         ppStmt,pzTail);
-  assert( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
-  return rc;
+  ಪೂರ್ಣಾಂಕ rc;
+  rc = sqlite3Prepare16(db,zSql,n_ಬೈಟುಗಳು&~1,
+         SQLITE_PREPARE_SAVESQL|(prepFlags&SQLITE_PREPARE_ಮುಖವಾಡ),
+         ppStmt,pz_ಬಾಲ);
+  ಪ್ರತಿಜ್ಞಾ( rc==SQLITE_OK || ppStmt==0 || *ppStmt==0 );  /* VERIFY: F13021 */
+  ಹಿಂತಿರುಗಿ rc;
 }
 
-#endif /* SQLITE_OMIT_UTF16 */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_UTF16 */

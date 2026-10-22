@@ -21,22 +21,22 @@
 ** the "tcl.h" header that specifies the calling conventions for each
 ** interface.  That customized "tcl.h" is named "sqlite_tcl.h".
 */
-#if defined(INCLUDE_SQLITE_TCL_H)
+#ಆದರೆ defined(INCLUDE_SQLITE_TCL_H)
 # include "sqlite_tcl.h"   /* Special case for Windows using STDCALL */
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # include <tcl.h>          /* All normal cases */
 # ifndef SQLITE_TCLAPI
 #   define SQLITE_TCLAPI
 # endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /******  Any edits to this file must mirrored in tclsqlite.c ***********/
 
 /* Compatibility between Tcl8.6 and Tcl9.0 */
-#if TCL_MAJOR_VERSION==9
-# define CONST const
-#elif !defined(Tcl_Size)
-# define Tcl_Size int
-#endif
+#ಆದರೆ TCL_MAJOR_ಆವೃತ್ತಿ==9
+# define CONST ಸ್ಥಿರಾಂಕ
+#ಅಥವಾಆದರೆ !defined(Tcl_ಗಾತ್ರ)
+# define Tcl_ಗಾತ್ರ ಪೂರ್ಣಾಂಕ
+#ಆದರೆ_ಅಂತ್ಯ
 
 /******  Any edits to this file must mirrored in tclsqlite.c ***********/

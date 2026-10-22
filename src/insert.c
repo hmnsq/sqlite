@@ -12,7 +12,7 @@
 ** This file contains C code routines that are called by the parser
 ** to handle INSERT statements in SQLite.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
 /*
 ** Generate code that will
@@ -23,31 +23,31 @@
 ** If pTab is a WITHOUT ROWID table, then it is the PRIMARY KEY index
 ** for that table that is actually opened.
 */
-void sqlite3OpenTable(
+ಶೂನ್ಯ sqlite3_Open_ಕೋಷ್ಟಕ(
   Parse *pParse,  /* Generate code into this VDBE */
-  int iCur,       /* The cursor number of the table */
-  int iDb,        /* The database index in sqlite3.aDb[] */
-  Table *pTab,    /* The table to be opened */
-  int opcode      /* OP_OpenRead or OP_OpenWrite */
+  ಪೂರ್ಣಾಂಕ iCur,       /* The cursor number of the table */
+  ಪೂರ್ಣಾಂಕ iDb,        /* The database index in sqlite3.aDb[] */
+  ಕೋಷ್ಟಕ *pTab,    /* The table to be opened */
+  ಪೂರ್ಣಾಂಕ opcode      /* OP_OpenRead or OP_OpenWrite */
 ){
   Vdbe *v;
-  assert( !IsVirtual(pTab) );
-  assert( pParse->pVdbe!=0 );
+  ಪ್ರತಿಜ್ಞಾ( !IsVirtual(pTab) );
+  ಪ್ರತಿಜ್ಞಾ( pParse->pVdbe!=0 );
   v = pParse->pVdbe;
-  assert( opcode==OP_OpenWrite || opcode==OP_OpenRead );
-  if( !pParse->db->noSharedCache ){
-    sqlite3TableLock(pParse, iDb, pTab->tnum,
+  ಪ್ರತಿಜ್ಞಾ( opcode==OP_OpenWrite || opcode==OP_OpenRead );
+  ಆದರೆ( !pParse->db->noSharedCache ){
+    sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(pParse, iDb, pTab->tnum,
                      (opcode==OP_OpenWrite)?1:0, pTab->zName);
   }
-  if( HasRowid(pTab) ){
-    sqlite3VdbeAddOp4Int(v, opcode, iCur, pTab->tnum, iDb, pTab->nNVCol);
+  ಆದರೆ( HasRowid(pTab) ){
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, opcode, iCur, pTab->tnum, iDb, pTab->nNVCol);
     VdbeComment((v, "%s", pTab->zName));
-  }else{
-    Index *pPk = sqlite3PrimaryKeyIndex(pTab);
-    assert( pPk!=0 );
-    assert( pPk->tnum==pTab->tnum || CORRUPT_DB );
-    sqlite3VdbeAddOp3(v, opcode, iCur, pPk->tnum, iDb);
-    sqlite3VdbeSetP4KeyInfo(pParse, pPk);
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಸೂಚ್ಯಂಕ *pPk = sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pTab);
+    ಪ್ರತಿಜ್ಞಾ( pPk!=0 );
+    ಪ್ರತಿಜ್ಞಾ( pPk->tnum==pTab->tnum || CORRUPT_DB );
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, opcode, iCur, pPk->tnum, iDb);
+    sqlite3_Vdbe_ಗಣ_P4_ಕೀಲಿ_Info(pParse, pPk);
     VdbeComment((v, "%s", pTab->zName));
   }
 }
@@ -72,7 +72,7 @@ void sqlite3OpenTable(
 ** is managed along with the rest of the Index structure. It will be
 ** released when sqlite3DeleteIndex() is called.
 */
-static SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
+ಸ್ಥಿರ SQLITE_NOINLINE ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *compute_ಸೂಚ್ಯಂಕ_Aff_Str(sqlite3 *db, ಸೂಚ್ಯಂಕ *pIdx){
   /* The first time a column affinity string for a particular index is
   ** required, it is allocated and populated here. It is then stored as
   ** a member of the Index structure for subsequent use.
@@ -81,36 +81,36 @@ static SQLITE_NOINLINE const char *computeIndexAffStr(sqlite3 *db, Index *pIdx){
   ** sqliteDeleteIndex() when the Index structure itself is cleaned
   ** up.
   */
-  int n;
-  Table *pTab = pIdx->pTable;
-  pIdx->zColAff = (char *)sqlite3DbMallocRaw(0, pIdx->nColumn+1);
-  if( !pIdx->zColAff ){
+  ಪೂರ್ಣಾಂಕ n;
+  ಕೋಷ್ಟಕ *pTab = pIdx->p_ಕೋಷ್ಟಕ;
+  pIdx->z_ಲಂಬಸಾಲು_Aff = (ಅಕ್ಷರ *)sqlite3DbMallocRaw(0, pIdx->n_ಸ್ತಂಭ+1);
+  ಆದರೆ( !pIdx->z_ಲಂಬಸಾಲು_Aff ){
     sqlite3OomFault(db);
-    return 0;
+    ಹಿಂತಿರುಗಿ 0;
   }
-  for(n=0; n<pIdx->nColumn; n++){
-    i16 x = pIdx->aiColumn[n];
-    char aff;
-    if( x>=0 ){
-      aff = pTab->aCol[x].affinity;
-    }else if( x==XN_ROWID ){
+  ಗಾಗಿ(n=0; n<pIdx->n_ಸ್ತಂಭ; n++){
+    i16 x = pIdx->ai_ಸ್ತಂಭ[n];
+    ಅಕ್ಷರ aff;
+    ಆದರೆ( x>=0 ){
+      aff = pTab->a_ಲಂಬಸಾಲು[x].affinity;
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( x==XN_ROWID ){
       aff = SQLITE_AFF_INTEGER;
-    }else{
-      assert( x==XN_EXPR );
-      assert( pIdx->bHasExpr );
-      assert( pIdx->aColExpr!=0 );
-      aff = sqlite3ExprAffinity(pIdx->aColExpr->a[n].pExpr);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪ್ರತಿಜ್ಞಾ( x==XN_ಅಭಿವ್ಯಕ್ತಿ );
+      ಪ್ರತಿಜ್ಞಾ( pIdx->b_Has_ಅಭಿವ್ಯಕ್ತಿ );
+      ಪ್ರತಿಜ್ಞಾ( pIdx->a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ!=0 );
+      aff = sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Affinity(pIdx->a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ->a[n].p_ಅಭಿವ್ಯಕ್ತಿ);
     }
-    if( aff<SQLITE_AFF_BLOB ) aff = SQLITE_AFF_BLOB;
-    if( aff>SQLITE_AFF_NUMERIC) aff = SQLITE_AFF_NUMERIC;
-    pIdx->zColAff[n] = aff;
+    ಆದರೆ( aff<SQLITE_AFF_BLOB ) aff = SQLITE_AFF_BLOB;
+    ಆದರೆ( aff>SQLITE_AFF_NUMERIC) aff = SQLITE_AFF_NUMERIC;
+    pIdx->z_ಲಂಬಸಾಲು_Aff[n] = aff;
   }
-  pIdx->zColAff[n] = 0;
-  return pIdx->zColAff;
+  pIdx->z_ಲಂಬಸಾಲು_Aff[n] = 0;
+  ಹಿಂತಿರುಗಿ pIdx->z_ಲಂಬಸಾಲು_Aff;
 }
-const char *sqlite3IndexAffinityStr(sqlite3 *db, Index *pIdx){
-  if( !pIdx->zColAff ) return computeIndexAffStr(db, pIdx);
-  return pIdx->zColAff;
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3_ಸೂಚ್ಯಂಕ_Affinity_Str(sqlite3 *db, ಸೂಚ್ಯಂಕ *pIdx){
+  ಆದರೆ( !pIdx->z_ಲಂಬಸಾಲು_Aff ) ಹಿಂತಿರುಗಿ compute_ಸೂಚ್ಯಂಕ_Aff_Str(db, pIdx);
+  ಹಿಂತಿರುಗಿ pIdx->z_ಲಂಬಸಾಲು_Aff;
 }
 
 
@@ -119,21 +119,21 @@ const char *sqlite3IndexAffinityStr(sqlite3 *db, Index *pIdx){
 ** from sqlite3DbMalloc().  The caller is responsible for freeing
 ** the space when done.
 */
-char *sqlite3TableAffinityStr(sqlite3 *db, const Table *pTab){
-  char *zColAff;
-  zColAff = (char *)sqlite3DbMallocRaw(db, pTab->nCol+1);
-  if( zColAff ){
-    int i, j;
-    for(i=j=0; i<pTab->nCol; i++){
-      if( (pTab->aCol[i].colFlags & COLFLAG_VIRTUAL)==0 ){
-        zColAff[j++] = pTab->aCol[i].affinity;
+ಅಕ್ಷರ *sqlite3_ಕೋಷ್ಟಕ_Affinity_Str(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಕೋಷ್ಟಕ *pTab){
+  ಅಕ್ಷರ *z_ಲಂಬಸಾಲು_Aff;
+  z_ಲಂಬಸಾಲು_Aff = (ಅಕ್ಷರ *)sqlite3DbMallocRaw(db, pTab->n_ಲಂಬಸಾಲು+1);
+  ಆದರೆ( z_ಲಂಬಸಾಲು_Aff ){
+    ಪೂರ್ಣಾಂಕ i, j;
+    ಗಾಗಿ(i=j=0; i<pTab->n_ಲಂಬಸಾಲು; i++){
+      ಆದರೆ( (pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL)==0 ){
+        z_ಲಂಬಸಾಲು_Aff[j++] = pTab->a_ಲಂಬಸಾಲು[i].affinity;
       }
     }
-    do{
-      zColAff[j--] = 0;
-    }while( j>=0 && zColAff[j]<=SQLITE_AFF_BLOB );
+    ಮಾಡು{
+      z_ಲಂಬಸಾಲು_Aff[j--] = 0;
+    }ಆಗ( j>=0 && z_ಲಂಬಸಾಲು_Aff[j]<=SQLITE_AFF_BLOB );
   }
-  return zColAff; 
+  ಹಿಂತಿರುಗಿ z_ಲಂಬಸಾಲು_Aff; 
 }
 
 /*
@@ -176,49 +176,49 @@ char *sqlite3TableAffinityStr(sqlite3 *db, const Table *pTab){
 ** the first of a series of registers that will form the new record.
 ** Apply the type checking to that array of registers.
 */
-void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg){
-  int i;
-  char *zColAff;
-  if( pTab->tabFlags & TF_Strict ){
-    if( iReg==0 ){
+ಶೂನ್ಯ sqlite3_ಕೋಷ್ಟಕ_Affinity(Vdbe *v, ಕೋಷ್ಟಕ *pTab, ಪೂರ್ಣಾಂಕ iReg){
+  ಪೂರ್ಣಾಂಕ i;
+  ಅಕ್ಷರ *z_ಲಂಬಸಾಲು_Aff;
+  ಆದರೆ( pTab->tabFlags & TF_Strict ){
+    ಆದರೆ( iReg==0 ){
       /* Move the previous opcode (which should be OP_MakeRecord) forward
       ** by one slot and insert a new OP_TypeCheck where the current
       ** OP_MakeRecord is found */
       VdbeOp *pPrev;
-      int p3;
-      sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
-      pPrev = sqlite3VdbeGetLastOp(v);
-      assert( pPrev!=0 );
-      assert( pPrev->opcode==OP_MakeRecord || sqlite3VdbeDb(v)->mallocFailed );
+      ಪೂರ್ಣಾಂಕ p3;
+      sqlite3VdbeAppendP4(v, pTab, P4_ಕೋಷ್ಟಕ);
+      pPrev = sqlite3_Vdbe_Get_ಕೊನೆಯ_Op(v);
+      ಪ್ರತಿಜ್ಞಾ( pPrev!=0 );
+      ಪ್ರತಿಜ್ಞಾ( pPrev->opcode==OP_Make_ದಾಖಲೆ || sqlite3VdbeDb(v)->mallocFailed );
       pPrev->opcode = OP_TypeCheck;
       p3 = pPrev->p3;
       pPrev->p3 = 0;
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, pPrev->p1, pPrev->p2, p3);
-    }else{
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Make_ದಾಖಲೆ, pPrev->p1, pPrev->p2, p3);
+    }ಇಲ್ಲದಿದ್ದರೆ{
       /* Insert an isolated OP_Typecheck */
-      sqlite3VdbeAddOp2(v, OP_TypeCheck, iReg, pTab->nNVCol);
-      sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_TypeCheck, iReg, pTab->nNVCol);
+      sqlite3VdbeAppendP4(v, pTab, P4_ಕೋಷ್ಟಕ);
     }
-    return;
+    ಹಿಂತಿರುಗಿ;
   }
-  zColAff = pTab->zColAff;
-  if( zColAff==0 ){
-    zColAff = sqlite3TableAffinityStr(0, pTab);
-    if( !zColAff ){
+  z_ಲಂಬಸಾಲು_Aff = pTab->z_ಲಂಬಸಾಲು_Aff;
+  ಆದರೆ( z_ಲಂಬಸಾಲು_Aff==0 ){
+    z_ಲಂಬಸಾಲು_Aff = sqlite3_ಕೋಷ್ಟಕ_Affinity_Str(0, pTab);
+    ಆದರೆ( !z_ಲಂಬಸಾಲು_Aff ){
       sqlite3OomFault(sqlite3VdbeDb(v));
-      return;
+      ಹಿಂತಿರುಗಿ;
     }
-    pTab->zColAff = zColAff;
+    pTab->z_ಲಂಬಸಾಲು_Aff = z_ಲಂಬಸಾಲು_Aff;
   }
-  assert( zColAff!=0 );
-  i = sqlite3Strlen30NN(zColAff);
-  if( i ){
-    if( iReg ){
-      sqlite3VdbeAddOp4(v, OP_Affinity, iReg, i, 0, zColAff, i);
-    }else{
-      assert( sqlite3VdbeGetLastOp(v)->opcode==OP_MakeRecord
+  ಪ್ರತಿಜ್ಞಾ( z_ಲಂಬಸಾಲು_Aff!=0 );
+  i = sqlite3Strlen30NN(z_ಲಂಬಸಾಲು_Aff);
+  ಆದರೆ( i ){
+    ಆದರೆ( iReg ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_Affinity, iReg, i, 0, z_ಲಂಬಸಾಲು_Aff, i);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪ್ರತಿಜ್ಞಾ( sqlite3_Vdbe_Get_ಕೊನೆಯ_Op(v)->opcode==OP_Make_ದಾಖಲೆ
               || sqlite3VdbeDb(v)->mallocFailed );
-      sqlite3VdbeChangeP4(v, -1, zColAff, i);
+      sqlite3VdbeChangeP4(v, -1, z_ಲಂಬಸಾಲು_Aff, i);
     }
   }
 }
@@ -229,52 +229,52 @@ void sqlite3TableAffinity(Vdbe *v, Table *pTab, int iReg){
 ** a statement of the form  "INSERT INTO <iDb, pTab> SELECT ..." can
 ** run without using a temporary table for the results of the SELECT.
 */
-static int readsTable(Parse *p, int iDb, Table *pTab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ reads_ಕೋಷ್ಟಕ(Parse *p, ಪೂರ್ಣಾಂಕ iDb, ಕೋಷ್ಟಕ *pTab){
   Vdbe *v = sqlite3GetVdbe(p);
-  int i;
-  int iEnd = sqlite3VdbeCurrentAddr(v);
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+  ಪೂರ್ಣಾಂಕ i;
+  ಪೂರ್ಣಾಂಕ i_ಕೊನೆ = sqlite3VdbeCurrentAddr(v);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
   VTable *pVTab = IsVirtual(pTab) ? sqlite3GetVTable(p->db, pTab) : 0;
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-  for(i=1; i<iEnd; i++){
+  ಗಾಗಿ(i=1; i<i_ಕೊನೆ; i++){
     VdbeOp *pOp = sqlite3VdbeGetOp(v, i);
-    assert( pOp!=0 );
-    if( pOp->opcode==OP_OpenRead && pOp->p3==iDb ){
-      Index *pIndex;
+    ಪ್ರತಿಜ್ಞಾ( pOp!=0 );
+    ಆದರೆ( pOp->opcode==OP_OpenRead && pOp->p3==iDb ){
+      ಸೂಚ್ಯಂಕ *p_ಸೂಚ್ಯಂಕ;
       Pgno tnum = pOp->p2;
-      if( tnum==pTab->tnum ){
-        return 1;
+      ಆದರೆ( tnum==pTab->tnum ){
+        ಹಿಂತಿರುಗಿ 1;
       }
-      for(pIndex=pTab->pIndex; pIndex; pIndex=pIndex->pNext){
-        if( tnum==pIndex->tnum ){
-          return 1;
+      ಗಾಗಿ(p_ಸೂಚ್ಯಂಕ=pTab->p_ಸೂಚ್ಯಂಕ; p_ಸೂಚ್ಯಂಕ; p_ಸೂಚ್ಯಂಕ=p_ಸೂಚ್ಯಂಕ->p_ಮುಂದಿನ){
+        ಆದರೆ( tnum==p_ಸೂಚ್ಯಂಕ->tnum ){
+          ಹಿಂತಿರುಗಿ 1;
         }
       }
     }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( pOp->opcode==OP_VOpen && pOp->p4.pVtab==pVTab ){
-      assert( pOp->p4.pVtab!=0 );
-      assert( pOp->p4type==P4_VTAB );
-      return 1;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+    ಆದರೆ( pOp->opcode==OP_VOpen && pOp->p4.pVtab==pVTab ){
+      ಪ್ರತಿಜ್ಞಾ( pOp->p4.pVtab!=0 );
+      ಪ್ರತಿಜ್ಞಾ( pOp->p4type==P4_VTAB );
+      ಹಿಂತಿರುಗಿ 1;
     }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   }
-  return 0;
+  ಹಿಂತಿರುಗಿ 0;
 }
 
 /* This walker callback will compute the union of colFlags flags for all
 ** referenced columns in a CHECK constraint or generated column expression.
 */
-static int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN && pExpr->iColumn>=0 ){
-    assert( pExpr->iColumn < pWalker->u.pTab->nCol );
-    pWalker->eCode |= pWalker->u.pTab->aCol[pExpr->iColumn].colFlags;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_ಸ್ತಂಭ_Flag_Union(Walker *pWalker, ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ){
+  ಆದರೆ( p_ಅಭಿವ್ಯಕ್ತಿ->op==TK_ಸ್ತಂಭ && p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ>=0 ){
+    ಪ್ರತಿಜ್ಞಾ( p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ < pWalker->u.pTab->n_ಲಂಬಸಾಲು );
+    pWalker->e_ಸಂಕೇತ |= pWalker->u.pTab->a_ಲಂಬಸಾಲು[p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ].ಲಂಬಸಾಲು_Flags;
   }
-  return WRC_Continue;
+  ಹಿಂತಿರುಗಿ WRC_Continue;
 }
 
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
 /*
 ** All regular columns for table pTab have been puts into registers
 ** starting with iRegStore.  The registers that correspond to STORED
@@ -282,45 +282,45 @@ static int exprColumnFlagUnion(Walker *pWalker, Expr *pExpr){
 ** back and computes the values for those columns based on the previously
 ** computed normal columns.
 */
-void sqlite3ComputeGeneratedColumns(
+ಶೂನ್ಯ sqlite3ComputeGeneratedColumns(
   Parse *pParse,    /* Parsing context */
-  int iRegStore,    /* Register holding the first column */
-  Table *pTab       /* The table */
+  ಪೂರ್ಣಾಂಕ iRegStore,    /* Register holding the first column */
+  ಕೋಷ್ಟಕ *pTab       /* The table */
 ){
-  int i;
+  ಪೂರ್ಣಾಂಕ i;
   Walker w;
-  Column *pRedo;
-  int eProgress;
+  ಸ್ತಂಭ *pRedo;
+  ಪೂರ್ಣಾಂಕ e_ಪ್ರಗತಿ;
   VdbeOp *pOp;
 
-  assert( pTab->tabFlags & TF_HasGenerated );
+  ಪ್ರತಿಜ್ಞಾ( pTab->tabFlags & TF_HasGenerated );
   testcase( pTab->tabFlags & TF_HasVirtual );
   testcase( pTab->tabFlags & TF_HasStored );
 
   /* Before computing generated columns, first go through and make sure
   ** that appropriate affinity has been applied to the regular columns
   */
-  sqlite3TableAffinity(pParse->pVdbe, pTab, iRegStore);
-  if( (pTab->tabFlags & TF_HasStored)!=0 ){
-    pOp = sqlite3VdbeGetLastOp(pParse->pVdbe);
-    if( pOp->opcode==OP_Affinity ){
+  sqlite3_ಕೋಷ್ಟಕ_Affinity(pParse->pVdbe, pTab, iRegStore);
+  ಆದರೆ( (pTab->tabFlags & TF_HasStored)!=0 ){
+    pOp = sqlite3_Vdbe_Get_ಕೊನೆಯ_Op(pParse->pVdbe);
+    ಆದರೆ( pOp->opcode==OP_Affinity ){
       /* Change the OP_Affinity argument to '@' (NONE) for all stored
       ** columns.  '@' is the no-op affinity and those columns have not
       ** yet been computed. */
-      int ii, jj;
-      char *zP4 = pOp->p4.z;
-      assert( zP4!=0 );
-      assert( pOp->p4type==P4_DYNAMIC );
-      for(ii=jj=0; zP4[jj]; ii++){
-        if( pTab->aCol[ii].colFlags & COLFLAG_VIRTUAL ){
-          continue;
+      ಪೂರ್ಣಾಂಕ ii, jj;
+      ಅಕ್ಷರ *zP4 = pOp->p4.z;
+      ಪ್ರತಿಜ್ಞಾ( zP4!=0 );
+      ಪ್ರತಿಜ್ಞಾ( pOp->p4type==P4_DYNAMIC );
+      ಗಾಗಿ(ii=jj=0; zP4[jj]; ii++){
+        ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[ii].ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL ){
+          ಮುಂದುವರಿ;
         }
-        if( pTab->aCol[ii].colFlags & COLFLAG_STORED ){
+        ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[ii].ಲಂಬಸಾಲು_Flags & COLFLAG_STORED ){
           zP4[jj] = SQLITE_AFF_NONE;
         }
         jj++;
       }
-    }else if( pOp->opcode==OP_TypeCheck ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pOp->opcode==OP_TypeCheck ){
       /* If an OP_TypeCheck was generated because the table is STRICT,
       ** then set the P3 operand to indicate that generated columns should
       ** not be checked */
@@ -332,16 +332,16 @@ void sqlite3ComputeGeneratedColumns(
   ** this is a two-pass algorithm.  On the first pass, mark all generated
   ** columns as "not available".
   */
-  for(i=0; i<pTab->nCol; i++){
-    if( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
-      testcase( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL );
-      testcase( pTab->aCol[i].colFlags & COLFLAG_STORED );
-      pTab->aCol[i].colFlags |= COLFLAG_NOTAVAIL;
+  ಗಾಗಿ(i=0; i<pTab->n_ಲಂಬಸಾಲು; i++){
+    ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED ){
+      testcase( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL );
+      testcase( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_STORED );
+      pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags |= COLFLAG_NOTAVAIL;
     }
   }
 
   w.u.pTab = pTab;
-  w.xExprCallback = exprColumnFlagUnion;
+  w.x_ಅಭಿವ್ಯಕ್ತಿ_Callback = ಅಭಿವ್ಯಕ್ತಿ_ಸ್ತಂಭ_Flag_Union;
   w.xSelectCallback = 0;
   w.xSelectCallback2 = 0;
 
@@ -351,38 +351,38 @@ void sqlite3ComputeGeneratedColumns(
   ** they are needed.
   */
   pParse->iSelfTab = -iRegStore;
-  do{
-    eProgress = 0;
+  ಮಾಡು{
+    e_ಪ್ರಗತಿ = 0;
     pRedo = 0;
-    for(i=0; i<pTab->nCol; i++){
-      Column *pCol = pTab->aCol + i;
-      if( (pCol->colFlags & COLFLAG_NOTAVAIL)!=0 ){
-        int x;
-        pCol->colFlags |= COLFLAG_BUSY;
-        w.eCode = 0;
-        sqlite3WalkExpr(&w, sqlite3ColumnExpr(pTab, pCol));
-        pCol->colFlags &= ~COLFLAG_BUSY;
-        if( w.eCode & COLFLAG_NOTAVAIL ){
-          pRedo = pCol;
-          continue;
+    ಗಾಗಿ(i=0; i<pTab->n_ಲಂಬಸಾಲು; i++){
+      ಸ್ತಂಭ *p_ಲಂಬಸಾಲು = pTab->a_ಲಂಬಸಾಲು + i;
+      ಆದರೆ( (p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_NOTAVAIL)!=0 ){
+        ಪೂರ್ಣಾಂಕ x;
+        p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags |= COLFLAG_BUSY;
+        w.e_ಸಂಕೇತ = 0;
+        sqlite3_Walk_ಅಭಿವ್ಯಕ್ತಿ(&w, sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(pTab, p_ಲಂಬಸಾಲು));
+        p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags &= ~COLFLAG_BUSY;
+        ಆದರೆ( w.e_ಸಂಕೇತ & COLFLAG_NOTAVAIL ){
+          pRedo = p_ಲಂಬಸಾಲು;
+          ಮುಂದುವರಿ;
         }
-        eProgress = 1;
-        assert( pCol->colFlags & COLFLAG_GENERATED );
-        x = sqlite3TableColumnToStorage(pTab, i) + iRegStore;
-        sqlite3ExprCodeGeneratedColumn(pParse, pTab, pCol, x);
-        pCol->colFlags &= ~COLFLAG_NOTAVAIL;
+        e_ಪ್ರಗತಿ = 1;
+        ಪ್ರತಿಜ್ಞಾ( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED );
+        x = sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab, i) + iRegStore;
+        sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Generated_ಸ್ತಂಭ(pParse, pTab, p_ಲಂಬಸಾಲು, x);
+        p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags &= ~COLFLAG_NOTAVAIL;
       }
     }
-  }while( pRedo && eProgress );
-  if( pRedo ){
-    sqlite3ErrorMsg(pParse, "generated column loop on \"%s\"", pRedo->zCnName);
+  }ಆಗ( pRedo && e_ಪ್ರಗತಿ );
+  ಆದರೆ( pRedo ){
+    sqlite3_Error_ಸಂದೇಶ(pParse, "generated column loop on \"%s\"", pRedo->zCnName);
   }
   pParse->iSelfTab = 0;
 }
-#endif /* SQLITE_OMIT_GENERATED_COLUMNS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_GENERATED_COLUMNS */
 
 
-#ifndef SQLITE_OMIT_AUTOINCREMENT
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINCREMENT
 /*
 ** Locate or create an AutoincInfo structure associated with table pTab
 ** which is in database iDb.  Return the register number for the register
@@ -406,46 +406,46 @@ void sqlite3ComputeGeneratedColumns(
 ** The 2nd register is the one that is returned.  That is all the
 ** insert routine needs to know about.
 */
-static int autoIncBegin(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ autoIncBegin(
   Parse *pParse,      /* Parsing context */
-  int iDb,            /* Index of the database holding pTab */
-  Table *pTab         /* The table we are writing to */
+  ಪೂರ್ಣಾಂಕ iDb,            /* Index of the database holding pTab */
+  ಕೋಷ್ಟಕ *pTab         /* The table we are writing to */
 ){
-  int memId = 0;      /* Register holding maximum rowid */
-  assert( pParse->db->aDb[iDb].pSchema!=0 );
-  if( (pTab->tabFlags & TF_Autoincrement)!=0
+  ಪೂರ್ಣಾಂಕ memId = 0;      /* Register holding maximum rowid */
+  ಪ್ರತಿಜ್ಞಾ( pParse->db->aDb[iDb].pSchema!=0 );
+  ಆದರೆ( (pTab->tabFlags & TF_Autoincrement)!=0
    && (pParse->db->mDbFlags & DBFLAG_Vacuum)==0
   ){
     Parse *pToplevel = sqlite3ParseToplevel(pParse);
     AutoincInfo *pInfo;
-    Table *pSeqTab = pParse->db->aDb[iDb].pSchema->pSeqTab;
+    ಕೋಷ್ಟಕ *pSeqTab = pParse->db->aDb[iDb].pSchema->pSeqTab;
 
     /* Verify that the sqlite_sequence table exists and is an ordinary
     ** rowid table with exactly two columns.
     ** Ticket d8dc2b3a58cd5dc2918a1d4acb 2018-05-23 */
-    if( pSeqTab==0
+    ಆದರೆ( pSeqTab==0
      || !HasRowid(pSeqTab)
      || NEVER(IsVirtual(pSeqTab))
-     || pSeqTab->nCol!=2
+     || pSeqTab->n_ಲಂಬಸಾಲು!=2
     ){
       pParse->nErr++;
       pParse->rc = SQLITE_CORRUPT_SEQUENCE;
-      return 0;
+      ಹಿಂತಿರುಗಿ 0;
     }
 
-    if( pToplevel->usesAinc==0 ){
+    ಆದರೆ( pToplevel->ಬಳಸುತ್ತದೆ_Ainc==0 ){
       pToplevel->pAinc = 0;
     }
     pInfo = pToplevel->pAinc;
-    while( pInfo && pInfo->pTab!=pTab ){ pInfo = pInfo->pNext; }
-    if( pInfo==0 ){
-      pInfo = sqlite3DbMallocRawNN(pParse->db, sizeof(*pInfo));
-      sqlite3ParserAddCleanup(pToplevel, sqlite3DbFree, pInfo);
+    ಆಗ( pInfo && pInfo->pTab!=pTab ){ pInfo = pInfo->p_ಮುಂದಿನ; }
+    ಆದರೆ( pInfo==0 ){
+      pInfo = sqlite3DbMallocRawNN(pParse->db, ಗಾತ್ರ(*pInfo));
+      sqlite3_Parser_ಕೂಡಿಸು_Cleanup(pToplevel, sqlite3DbFree, pInfo);
       testcase( pParse->earlyCleanup );
-      if( pParse->db->mallocFailed ) return 0;
-      pInfo->pNext = pToplevel->pAinc;
+      ಆದರೆ( pParse->db->mallocFailed ) ಹಿಂತಿರುಗಿ 0;
+      pInfo->p_ಮುಂದಿನ = pToplevel->pAinc;
       pToplevel->pAinc = pInfo;
-      pToplevel->usesAinc = 1;
+      pToplevel->ಬಳಸುತ್ತದೆ_Ainc = 1;
       pInfo->pTab = pTab;
       pInfo->iDb = iDb;
       pToplevel->nMem++;                  /* Register to hold name of table */
@@ -454,51 +454,51 @@ static int autoIncBegin(
     }
     memId = pInfo->regCtr;
   }
-  return memId;
+  ಹಿಂತಿರುಗಿ memId;
 }
 
 /*
 ** This routine generates code that will initialize all of the
 ** register used by the autoincrement tracker. 
 */
-void sqlite3AutoincrementBegin(Parse *pParse){
+ಶೂನ್ಯ sqlite3AutoincrementBegin(Parse *pParse){
   AutoincInfo *p;            /* Information about an AUTOINCREMENT */
   sqlite3 *db = pParse->db;  /* The database connection */
   Db *pDb;                   /* Database only autoinc table */
-  int memId;                 /* Register holding max rowid */
+  ಪೂರ್ಣಾಂಕ memId;                 /* Register holding max rowid */
   Vdbe *v = pParse->pVdbe;   /* VDBE under construction */
 
   /* This routine is never called during trigger-generation.  It is
   ** only called from the top-level */
-  assert( pParse->pTriggerTab==0 );
-  assert( sqlite3IsToplevel(pParse) );
+  ಪ್ರತಿಜ್ಞಾ( pParse->pTriggerTab==0 );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3IsToplevel(pParse) );
 
-  assert( v );   /* We failed long ago if this is not so */
-  assert( pParse->usesAinc );
-  for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoInc[] = {
+  ಪ್ರತಿಜ್ಞಾ( v );   /* We failed long ago if this is not so */
+  ಪ್ರತಿಜ್ಞಾ( pParse->ಬಳಸುತ್ತದೆ_Ainc );
+  ಗಾಗಿ(p = pParse->pAinc; p; p = p->p_ಮುಂದಿನ){
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ iLn = VDBE_ಸ್ಥಾನಾಂತರ_LINENO(2);
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ VdbeOpList autoInc[] = {
       /* 0  */ {OP_Null,    0,  0, 0},
       /* 1  */ {OP_Rewind,  0, 10, 0},
-      /* 2  */ {OP_Column,  0,  0, 0},
+      /* 2  */ {OP_ಸ್ತಂಭ,  0,  0, 0},
       /* 3  */ {OP_Ne,      0,  9, 0},
       /* 4  */ {OP_Rowid,   0,  0, 0},
-      /* 5  */ {OP_Column,  0,  1, 0},
-      /* 6  */ {OP_AddImm,  0,  0, 0},
+      /* 5  */ {OP_ಸ್ತಂಭ,  0,  1, 0},
+      /* 6  */ {OP_ಕೂಡಿಸು_Imm,  0,  0, 0},
       /* 7  */ {OP_Copy,    0,  0, 0},
       /* 8  */ {OP_Goto,    0, 11, 0},
-      /* 9  */ {OP_Next,    0,  2, 0},
+      /* 9  */ {OP_ಮುಂದಿನ,    0,  2, 0},
       /* 10 */ {OP_Integer, 0,  0, 0},
       /* 11 */ {OP_Close,   0,  0, 0}
     };
     VdbeOp *aOp;
     pDb = &db->aDb[p->iDb];
     memId = p->regCtr;
-    assert( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
-    sqlite3OpenTable(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenRead);
-    sqlite3VdbeLoadString(v, memId-1, p->pTab->zName);
-    aOp = sqlite3VdbeAddOpList(v, ArraySize(autoInc), autoInc, iLn);
-    if( aOp==0 ) break;
+    ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
+    sqlite3_Open_ಕೋಷ್ಟಕ(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenRead);
+    sqlite3_Vdbe_ತುಂಬು_String(v, memId-1, p->pTab->zName);
+    aOp = sqlite3_Vdbe_ಕೂಡಿಸು_Op_List(v, Array_ಗಾತ್ರ(autoInc), autoInc, iLn);
+    ಆದರೆ( aOp==0 ) ನಿಲ್ಲಿಸು;
     aOp[0].p2 = memId;
     aOp[0].p3 = memId+2;
     aOp[2].p3 = memId;
@@ -511,7 +511,7 @@ void sqlite3AutoincrementBegin(Parse *pParse){
     aOp[7].p2 = memId+2;
     aOp[7].p1 = memId;
     aOp[10].p2 = memId;
-    if( pParse->nTab==0 ) pParse->nTab = 1;
+    ಆದರೆ( pParse->nTab==0 ) pParse->nTab = 1;
   }
 }
 
@@ -523,9 +523,9 @@ void sqlite3AutoincrementBegin(Parse *pParse){
 ** larger than the maximum rowid in the memId memory cell, then the
 ** memory cell is updated.
 */
-static void autoIncStep(Parse *pParse, int memId, int regRowid){
-  if( memId>0 ){
-    sqlite3VdbeAddOp2(pParse->pVdbe, OP_MemMax, memId, regRowid);
+ಸ್ಥಿರ ಶೂನ್ಯ auto_Inc_ಹೆಜ್ಜೆ(Parse *pParse, ಪೂರ್ಣಾಂಕ memId, ಪೂರ್ಣಾಂಕ regRowid){
+  ಆದರೆ( memId>0 ){
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(pParse->pVdbe, OP_MemMax, memId, regRowid);
   }
 }
 
@@ -536,34 +536,34 @@ static void autoIncStep(Parse *pParse, int memId, int regRowid){
 ** table (either directly or through triggers) needs to call this
 ** routine just before the "exit" code.
 */
-static SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
+ಸ್ಥಿರ SQLITE_NOINLINE ಶೂನ್ಯ auto_Increment_ಕೊನೆ(Parse *pParse){
   AutoincInfo *p;
   Vdbe *v = pParse->pVdbe;
   sqlite3 *db = pParse->db;
 
-  assert( v );
-  assert( pParse->usesAinc );
-  for(p = pParse->pAinc; p; p = p->pNext){
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList autoIncEnd[] = {
+  ಪ್ರತಿಜ್ಞಾ( v );
+  ಪ್ರತಿಜ್ಞಾ( pParse->ಬಳಸುತ್ತದೆ_Ainc );
+  ಗಾಗಿ(p = pParse->pAinc; p; p = p->p_ಮುಂದಿನ){
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ iLn = VDBE_ಸ್ಥಾನಾಂತರ_LINENO(2);
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ VdbeOpList auto_Inc_ಕೊನೆ[] = {
       /* 0 */ {OP_NotNull,     0, 2, 0},
       /* 1 */ {OP_NewRowid,    0, 0, 0},
-      /* 2 */ {OP_MakeRecord,  0, 2, 0},
-      /* 3 */ {OP_Insert,      0, 0, 0},
+      /* 2 */ {OP_Make_ದಾಖಲೆ,  0, 2, 0},
+      /* 3 */ {OP_ಸೇರಿಸು,      0, 0, 0},
       /* 4 */ {OP_Close,       0, 0, 0}
     };
     VdbeOp *aOp;
     Db *pDb = &db->aDb[p->iDb];
-    int iRec;
-    int memId = p->regCtr;
+    ಪೂರ್ಣಾಂಕ iRec;
+    ಪೂರ್ಣಾಂಕ memId = p->regCtr;
 
-    iRec = sqlite3GetTempReg(pParse);
-    assert( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
-    sqlite3VdbeAddOp3(v, OP_Le, memId+2, sqlite3VdbeCurrentAddr(v)+7, memId);
+    iRec = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(pParse);
+    ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, 0, pDb->pSchema) );
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Le, memId+2, sqlite3VdbeCurrentAddr(v)+7, memId);
     VdbeCoverage(v);
-    sqlite3OpenTable(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenWrite);
-    aOp = sqlite3VdbeAddOpList(v, ArraySize(autoIncEnd), autoIncEnd, iLn);
-    if( aOp==0 ) break;
+    sqlite3_Open_ಕೋಷ್ಟಕ(pParse, 0, p->iDb, pDb->pSchema->pSeqTab, OP_OpenWrite);
+    aOp = sqlite3_Vdbe_ಕೂಡಿಸು_Op_List(v, Array_ಗಾತ್ರ(auto_Inc_ಕೊನೆ), auto_Inc_ಕೊನೆ, iLn);
+    ಆದರೆ( aOp==0 ) ನಿಲ್ಲಿಸು;
     aOp[0].p1 = memId+1;
     aOp[1].p2 = memId+1;
     aOp[2].p1 = memId-1;
@@ -571,33 +571,33 @@ static SQLITE_NOINLINE void autoIncrementEnd(Parse *pParse){
     aOp[3].p2 = iRec;
     aOp[3].p3 = memId+1;
     aOp[3].p5 = OPFLAG_APPEND;
-    sqlite3ReleaseTempReg(pParse, iRec);
+    sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Reg(pParse, iRec);
   }
 }
-void sqlite3AutoincrementEnd(Parse *pParse){
-  if( pParse->usesAinc ) autoIncrementEnd(pParse);
+ಶೂನ್ಯ sqlite3_Autoincrement_ಕೊನೆ(Parse *pParse){
+  ಆದರೆ( pParse->ಬಳಸುತ್ತದೆ_Ainc ) auto_Increment_ಕೊನೆ(pParse);
 }
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 /*
 ** If SQLITE_OMIT_AUTOINCREMENT is defined, then the three routines
 ** above are all no-ops
 */
 # define autoIncBegin(A,B,C) (0)
-# define autoIncStep(A,B,C)
-#endif /* SQLITE_OMIT_AUTOINCREMENT */
+# define auto_Inc_ಹೆಜ್ಜೆ(A,B,C)
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_AUTOINCREMENT */
 
 /*
 ** If argument pVal is a Select object returned by an sqlite3MultiValues()
 ** that was able to use the co-routine optimization, finish coding the
 ** co-routine.
 */
-void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal){
-  if( ALWAYS(pVal) && pVal->pSrc->nSrc>0 ){
-    SrcItem *pItem = &pVal->pSrc->a[0];
-    assert( (pItem->fg.isSubquery && pItem->u4.pSubq!=0) || pParse->nErr );
-    if( pItem->fg.isSubquery ){
-      sqlite3VdbeEndCoroutine(pParse->pVdbe, pItem->u4.pSubq->regReturn);
-      sqlite3VdbeJumpHere(pParse->pVdbe, pItem->u4.pSubq->addrFillSub - 1);
+ಶೂನ್ಯ sqlite3_Multi_ಮೌಲ್ಯಗಳು_ಕೊನೆ(Parse *pParse, Select *pVal){
+  ಆದರೆ( ALWAYS(pVal) && pVal->pSrc->nSrc>0 ){
+    Src_ಅಂಶ *p_ಅಂಶ = &pVal->pSrc->a[0];
+    ಪ್ರತಿಜ್ಞಾ( (p_ಅಂಶ->fg.isSubquery && p_ಅಂಶ->u4.pSubq!=0) || pParse->nErr );
+    ಆದರೆ( p_ಅಂಶ->fg.isSubquery ){
+      sqlite3_Vdbe_ಕೊನೆ_Coroutine(pParse->pVdbe, p_ಅಂಶ->u4.pSubq->regReturn);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(pParse->pVdbe, p_ಅಂಶ->u4.pSubq->addrFillSub - 1);
     }
   }
 }
@@ -606,16 +606,16 @@ void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal){
 ** Return true if all expressions in the expression-list passed as the
 ** only argument are both constant and have no affinity.
 */
-static int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
-  int ii;
-  if( sqlite3ExprListIsConstant(pParse, pRow, 0)==0 ) return 0;
-  for(ii=0; ii<pRow->nExpr; ii++){
-    Expr *pExpr = pRow->a[ii].pExpr;
-    assert( pExpr->op!=TK_RAISE );
-    assert( pExpr->affExpr==0 );
-    if( 0!=sqlite3ExprAffinity(pExpr) ) return 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List_Is_No_Affinity(Parse *pParse, ಅಭಿವ್ಯಕ್ತಿ_List *p_ಅಡ್ಡಸಾಲು){
+  ಪೂರ್ಣಾಂಕ ii;
+  ಆದರೆ( sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Is_Constant(pParse, p_ಅಡ್ಡಸಾಲು, 0)==0 ) ಹಿಂತಿರುಗಿ 0;
+  ಗಾಗಿ(ii=0; ii<p_ಅಡ್ಡಸಾಲು->n_ಅಭಿವ್ಯಕ್ತಿ; ii++){
+    ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ = p_ಅಡ್ಡಸಾಲು->a[ii].p_ಅಭಿವ್ಯಕ್ತಿ;
+    ಪ್ರತಿಜ್ಞಾ( p_ಅಭಿವ್ಯಕ್ತಿ->op!=TK_RAISE );
+    ಪ್ರತಿಜ್ಞಾ( p_ಅಭಿವ್ಯಕ್ತಿ->aff_ಅಭಿವ್ಯಕ್ತಿ==0 );
+    ಆದರೆ( 0!=sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Affinity(p_ಅಭಿವ್ಯಕ್ತಿ) ) ಹಿಂತಿರುಗಿ 0;
   }
-  return 1;
+  ಹಿಂತಿರುಗಿ 1;
 
 }
 
@@ -670,36 +670,36 @@ static int exprListIsNoAffinity(Parse *pParse, ExprList *pRow){
 **       affinity of such a column for all rows require access to all values in
 **       the column simultaneously. 
 */
-Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
+Select *sqlite3_Multi_ಮೌಲ್ಯಗಳು(Parse *pParse, Select *p_ಎಡ, ಅಭಿವ್ಯಕ್ತಿ_List *p_ಅಡ್ಡಸಾಲು){
 
-  if( pParse->bHasWith                   /* condition (a) above */
+  ಆದರೆ( pParse->bHasWith                   /* condition (a) above */
    || pParse->db->init.busy              /* condition (b) above */
-   || sqlite3ExprListIsConstant(pParse, pRow, 1)==0   /* condition (c) above */
-   || (pLeft->pSrc->nSrc==0 &&
-       exprListIsNoAffinity(pParse,pLeft->pEList)==0) /* condition (d) above */
-   || IN_SPECIAL_PARSE
+   || sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Is_Constant(pParse, p_ಅಡ್ಡಸಾಲು, 1)==0   /* condition (c) above */
+   || (p_ಎಡ->pSrc->nSrc==0 &&
+       ಅಭಿವ್ಯಕ್ತಿ_List_Is_No_Affinity(pParse,p_ಎಡ->pEList)==0) /* condition (d) above */
+   || ಒಳ_SPECIAL_PARSE
   ){
     /* The co-routine method cannot be used. Fall back to UNION ALL. */
     Select *pSelect = 0;
-    int f = SF_Values | SF_MultiValue;
-    if( pLeft->pSrc->nSrc ){
-      sqlite3MultiValuesEnd(pParse, pLeft);
-      f = SF_Values;
-    }else if( pLeft->pPrior ){
+    ಪೂರ್ಣಾಂಕ f = SF_ಮೌಲ್ಯಗಳು | SF_Multi_ಮೌಲ್ಯ;
+    ಆದರೆ( p_ಎಡ->pSrc->nSrc ){
+      sqlite3_Multi_ಮೌಲ್ಯಗಳು_ಕೊನೆ(pParse, p_ಎಡ);
+      f = SF_ಮೌಲ್ಯಗಳು;
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( p_ಎಡ->p_ಪೂರ್ವ ){
       /* In this case set the SF_MultiValue flag only if it was set on pLeft */
-      f = (f & pLeft->selFlags);
+      f = (f & p_ಎಡ->selFlags);
     }
-    pSelect = sqlite3SelectNew(pParse, pRow, 0, 0, 0, 0, 0, f, 0);
-    pLeft->selFlags &= ~(u32)SF_MultiValue;
-    if( pSelect ){
+    pSelect = sqlite3SelectNew(pParse, p_ಅಡ್ಡಸಾಲು, 0, 0, 0, 0, 0, f, 0);
+    p_ಎಡ->selFlags &= ~(u32)SF_Multi_ಮೌಲ್ಯ;
+    ಆದರೆ( pSelect ){
       pSelect->op = TK_ALL;
-      pSelect->pPrior = pLeft;
-      pLeft = pSelect;
+      pSelect->p_ಪೂರ್ವ = p_ಎಡ;
+      p_ಎಡ = pSelect;
     }
-  }else{
-    SrcItem *p = 0;               /* SrcItem that reads from co-routine */
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    Src_ಅಂಶ *p = 0;               /* SrcItem that reads from co-routine */
 
-    if( pLeft->pSrc->nSrc==0 ){
+    ಆದರೆ( p_ಎಡ->pSrc->nSrc==0 ){
       /* Co-routine has not yet been started and the special Select object
       ** that accesses the co-routine has not yet been created. This block 
       ** does both those things. */
@@ -708,31 +708,31 @@ Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
 
       /* Ensure the database schema has been read. This is to ensure we have
       ** the correct text encoding.  */
-      if( (pParse->db->mDbFlags & DBFLAG_SchemaKnownOk)==0 ){
+      ಆದರೆ( (pParse->db->mDbFlags & DBFLAG_Schema_ತಿಳಿದ_Ok)==0 ){
         sqlite3ReadSchema(pParse);
       }
 
-      if( pRet ){
+      ಆದರೆ( pRet ){
         SelectDest dest;
         Subquery *pSubq;
         pRet->pSrc->nSrc = 1;
-        pRet->pPrior = pLeft->pPrior;
-        pRet->op = pLeft->op;
-        if( pRet->pPrior ) pRet->selFlags |= SF_Values;
-        pLeft->pPrior = 0;
-        pLeft->op = TK_SELECT;
-        assert( pLeft->pNext==0 );
-        assert( pRet->pNext==0 );
+        pRet->p_ಪೂರ್ವ = p_ಎಡ->p_ಪೂರ್ವ;
+        pRet->op = p_ಎಡ->op;
+        ಆದರೆ( pRet->p_ಪೂರ್ವ ) pRet->selFlags |= SF_ಮೌಲ್ಯಗಳು;
+        p_ಎಡ->p_ಪೂರ್ವ = 0;
+        p_ಎಡ->op = TK_SELECT;
+        ಪ್ರತಿಜ್ಞಾ( p_ಎಡ->p_ಮುಂದಿನ==0 );
+        ಪ್ರತಿಜ್ಞಾ( pRet->p_ಮುಂದಿನ==0 );
         p = &pRet->pSrc->a[0];
-        p->fg.viaCoroutine = 1;
+        p->fg.ಮೂಲಕ_Coroutine = 1;
         p->iCursor = -1;
-        assert( !p->fg.isIndexedBy && !p->fg.isTabFunc );
-        p->u1.nRow = 2;
-        if( sqlite3SrcItemAttachSubquery(pParse, p, pLeft, 0) ){
+        ಪ್ರತಿಜ್ಞಾ( !p->fg.is_ಸೂಚ್ಯಂಕಿತ_By && !p->fg.isTabFunc );
+        p->u1.n_ಅಡ್ಡಸಾಲು = 2;
+        ಆದರೆ( sqlite3_Src_ಅಂಶ_Attach_Subquery(pParse, p, p_ಎಡ, 0) ){
           pSubq = p->u4.pSubq;
           pSubq->addrFillSub = sqlite3VdbeCurrentAddr(v) + 1;
           pSubq->regReturn = ++pParse->nMem;
-          sqlite3VdbeAddOp3(v, OP_InitCoroutine,
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_InitCoroutine,
                             pSubq->regReturn, 0, pSubq->addrFillSub);
           sqlite3SelectDestInit(&dest, SRT_Coroutine, pSubq->regReturn);
 
@@ -742,50 +742,50 @@ Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow){
           ** to use these registers directly, instead of copying the output
           ** of the co-routine to a separate array for processing.  */
           dest.iSdst = pParse->nMem + 3; 
-          dest.nSdst = pLeft->pEList->nExpr;
+          dest.nSdst = p_ಎಡ->pEList->n_ಅಭಿವ್ಯಕ್ತಿ;
           pParse->nMem += 2 + dest.nSdst;
 
-          pLeft->selFlags |= SF_MultiValue;
-          sqlite3Select(pParse, pLeft, &dest);
-          pSubq->regResult = dest.iSdst;
-          assert( pParse->nErr || dest.iSdst>0 );
+          p_ಎಡ->selFlags |= SF_Multi_ಮೌಲ್ಯ;
+          sqlite3Select(pParse, p_ಎಡ, &dest);
+          pSubq->reg_ಫಲಿತಾಂಶ = dest.iSdst;
+          ಪ್ರತಿಜ್ಞಾ( pParse->nErr || dest.iSdst>0 );
         }
-        pLeft = pRet;
+        p_ಎಡ = pRet;
       }
-    }else{
-      p = &pLeft->pSrc->a[0];
-      assert( !p->fg.isTabFunc && !p->fg.isIndexedBy );
-      p->u1.nRow++;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      p = &p_ಎಡ->pSrc->a[0];
+      ಪ್ರತಿಜ್ಞಾ( !p->fg.isTabFunc && !p->fg.is_ಸೂಚ್ಯಂಕಿತ_By );
+      p->u1.n_ಅಡ್ಡಸಾಲು++;
     }
   
-    if( pParse->nErr==0 ){
+    ಆದರೆ( pParse->nErr==0 ){
       Subquery *pSubq;
-      assert( p!=0 );
-      assert( p->fg.isSubquery );
+      ಪ್ರತಿಜ್ಞಾ( p!=0 );
+      ಪ್ರತಿಜ್ಞಾ( p->fg.isSubquery );
       pSubq = p->u4.pSubq;
-      assert( pSubq!=0 );
-      assert( pSubq->pSelect!=0 );
-      assert( pSubq->pSelect->pEList!=0 );
-      if( pSubq->pSelect->pEList->nExpr!=pRow->nExpr ){
-        sqlite3SelectWrongNumTermsError(pParse, pSubq->pSelect);
-      }else{
-        sqlite3ExprCodeExprList(pParse, pRow, pSubq->regResult, 0, 0);
-        sqlite3VdbeAddOp1(pParse->pVdbe, OP_Yield, pSubq->regReturn);
+      ಪ್ರತಿಜ್ಞಾ( pSubq!=0 );
+      ಪ್ರತಿಜ್ಞಾ( pSubq->pSelect!=0 );
+      ಪ್ರತಿಜ್ಞಾ( pSubq->pSelect->pEList!=0 );
+      ಆದರೆ( pSubq->pSelect->pEList->n_ಅಭಿವ್ಯಕ್ತಿ!=p_ಅಡ್ಡಸಾಲು->n_ಅಭಿವ್ಯಕ್ತಿ ){
+        sqlite3_Select_Wrong_ಅಂಕೆ_Terms_Error(pParse, pSubq->pSelect);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ಅಭಿವ್ಯಕ್ತಿ_List(pParse, p_ಅಡ್ಡಸಾಲು, pSubq->reg_ಫಲಿತಾಂಶ, 0, 0);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op1(pParse->pVdbe, OP_Yield, pSubq->regReturn);
       }
     }
-    sqlite3ExprListDelete(pParse->db, pRow);
+    sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Delete(pParse->db, p_ಅಡ್ಡಸಾಲು);
   }
 
-  return pLeft;
+  ಹಿಂತಿರುಗಿ p_ಎಡ;
 }
 
 /* Forward declaration */
-static int xferOptimization(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ xferOptimization(
   Parse *pParse,        /* Parser context */
-  Table *pDest,         /* The table we are inserting into */
+  ಕೋಷ್ಟಕ *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */
-  int onError,          /* How to handle constraint errors */
-  int iDbDest           /* The database of pDest */
+  ಪೂರ್ಣಾಂಕ onError,          /* How to handle constraint errors */
+  ಪೂರ್ಣಾಂಕ iDbDest           /* The database of pDest */
 );
 
 /*
@@ -885,66 +885,66 @@ static int xferOptimization(
 **         end loop
 **      D: cleanup
 */
-void sqlite3Insert(
+ಶೂನ್ಯ sqlite3_ಸೇರಿಸು(
   Parse *pParse,        /* Parser context */
   SrcList *pTabList,    /* Name of table into which we are inserting */
   Select *pSelect,      /* A SELECT statement to use as the data source */
-  IdList *pColumn,      /* Column names corresponding to IDLIST, or NULL. */
-  int onError,          /* How to handle constraint errors */
+  IdList *p_ಸ್ತಂಭ,      /* Column names corresponding to IDLIST, or NULL. */
+  ಪೂರ್ಣಾಂಕ onError,          /* How to handle constraint errors */
   Upsert *pUpsert       /* ON CONFLICT clauses for upsert, or NULL */
 ){
   sqlite3 *db;          /* The main database structure */
-  Table *pTab;          /* The table to insert into.  aka TABLE */
-  int i, j;             /* Loop counters */
+  ಕೋಷ್ಟಕ *pTab;          /* The table to insert into.  aka TABLE */
+  ಪೂರ್ಣಾಂಕ i, j;             /* Loop counters */
   Vdbe *v;              /* Generate code into this virtual machine */
-  Index *pIdx;          /* For looping over indices of the table */
-  int nColumn;          /* Number of columns in the data */
-  int nHidden = 0;      /* Number of hidden columns if TABLE is virtual */
-  int iDataCur = 0;     /* VDBE cursor that is the main data repository */
-  int iIdxCur = 0;      /* First index cursor */
-  int ipkColumn = -1;   /* Column that is the INTEGER PRIMARY KEY */
-  int endOfLoop;        /* Label for the end of the insertion loop */
-  int srcTab = 0;       /* Data comes from this temporary cursor if >=0 */
-  int addrInsTop = 0;   /* Jump to label "D" */
-  int addrCont = 0;     /* Top of insert loop. Label "C" in templates 3 and 4 */
+  ಸೂಚ್ಯಂಕ *pIdx;          /* For looping over indices of the table */
+  ಪೂರ್ಣಾಂಕ n_ಸ್ತಂಭ;          /* Number of columns in the data */
+  ಪೂರ್ಣಾಂಕ nHidden = 0;      /* Number of hidden columns if TABLE is virtual */
+  ಪೂರ್ಣಾಂಕ i_ದತ್ತಾಂಶ_Cur = 0;     /* VDBE cursor that is the main data repository */
+  ಪೂರ್ಣಾಂಕ iIdxCur = 0;      /* First index cursor */
+  ಪೂರ್ಣಾಂಕ ipk_ಸ್ತಂಭ = -1;   /* Column that is the INTEGER PRIMARY KEY */
+  ಪೂರ್ಣಾಂಕ ಕೊನೆ_ದ_Loop;        /* Label for the end of the insertion loop */
+  ಪೂರ್ಣಾಂಕ srcTab = 0;       /* Data comes from this temporary cursor if >=0 */
+  ಪೂರ್ಣಾಂಕ addr_Ins_ತುದಿ = 0;   /* Jump to label "D" */
+  ಪೂರ್ಣಾಂಕ addrCont = 0;     /* Top of insert loop. Label "C" in templates 3 and 4 */
   SelectDest dest;      /* Destination for SELECT on rhs of INSERT */
-  int iDb;              /* Index of database holding TABLE */
-  u8 useTempTable = 0;  /* Store SELECT results in intermediate table */
+  ಪೂರ್ಣಾಂಕ iDb;              /* Index of database holding TABLE */
+  u8 use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ = 0;  /* Store SELECT results in intermediate table */
   u8 appendFlag = 0;    /* True if the insert is likely to be an append */
   u8 withoutRowid;      /* 0 for normal table.  1 for WITHOUT ROWID table */
-  u8 bIdListInOrder;    /* True if IDLIST is in table order */
-  ExprList *pList = 0;  /* List of VALUES() to be inserted  */
-  int iRegStore;        /* Register in which to store next column */
+  u8 b_Id_List_ಒಳ_ಕ್ರಮ;    /* True if IDLIST is in table order */
+  ಅಭಿವ್ಯಕ್ತಿ_List *pList = 0;  /* List of VALUES() to be inserted  */
+  ಪೂರ್ಣಾಂಕ iRegStore;        /* Register in which to store next column */
 
   /* Register allocations */
-  int regFromSelect = 0;/* Base register for data coming from SELECT */
-  int regAutoinc = 0;   /* Register holding the AUTOINCREMENT counter */
-  int regRowCount = 0;  /* Memory cell used for the row counter */
-  int regIns;           /* Block of regs holding rowid+data being inserted */
-  int regRowid;         /* registers holding insert rowid */
-  int regData;          /* register holding first column to insert */
-  int *aRegIdx = 0;     /* One register allocated to each index */
-  int *aTabColMap = 0;  /* Mapping from pTab columns to pCol entries */
+  ಪೂರ್ಣಾಂಕ regFromSelect = 0;/* Base register for data coming from SELECT */
+  ಪೂರ್ಣಾಂಕ regAutoinc = 0;   /* Register holding the AUTOINCREMENT counter */
+  ಪೂರ್ಣಾಂಕ reg_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ = 0;  /* Memory cell used for the row counter */
+  ಪೂರ್ಣಾಂಕ regIns;           /* Block of regs holding rowid+data being inserted */
+  ಪೂರ್ಣಾಂಕ regRowid;         /* registers holding insert rowid */
+  ಪೂರ್ಣಾಂಕ reg_ದತ್ತಾಂಶ;          /* register holding first column to insert */
+  ಪೂರ್ಣಾಂಕ *aRegIdx = 0;     /* One register allocated to each index */
+  ಪೂರ್ಣಾಂಕ *a_Tab_ಲಂಬಸಾಲು_Map = 0;  /* Mapping from pTab columns to pCol entries */
 
-#ifndef SQLITE_OMIT_TRIGGER
-  int isView;                 /* True if attempting to insert into a view */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TRIGGER
+  ಪೂರ್ಣಾಂಕ isView;                 /* True if attempting to insert into a view */
   Trigger *pTrigger;          /* List of triggers on pTab, if required */
-  int tmask;                  /* Mask of trigger times */
-#endif
+  ಪೂರ್ಣಾಂಕ tmask;                  /* Mask of trigger times */
+#ಆದರೆ_ಅಂತ್ಯ
 
   db = pParse->db;
-  assert( db->pParse==pParse );
-  if( pParse->nErr ){
-    goto insert_cleanup;
+  ಪ್ರತಿಜ್ಞಾ( db->pParse==pParse );
+  ಆದರೆ( pParse->nErr ){
+    ಹೋಗು ಸೇರಿಸು_cleanup;
   }
-  assert( db->mallocFailed==0 );
+  ಪ್ರತಿಜ್ಞಾ( db->mallocFailed==0 );
   dest.iSDParm = 0;  /* Suppress a harmless compiler warning */
 
   /* If the Select object is really just a simple VALUES() list with a
   ** single row (the common case) then keep that one row of values
   ** and discard the other (unused) parts of the pSelect object
   */
-  if( pSelect && (pSelect->selFlags & SF_Values)!=0 && pSelect->pPrior==0 ){
+  ಆದರೆ( pSelect && (pSelect->selFlags & SF_ಮೌಲ್ಯಗಳು)!=0 && pSelect->p_ಪೂರ್ವ==0 ){
     pList = pSelect->pEList;
     pSelect->pEList = 0;
     sqlite3SelectDelete(db, pSelect);
@@ -953,65 +953,65 @@ void sqlite3Insert(
 
   /* Locate the table into which we will be inserting new information.
   */
-  assert( pTabList->nSrc==1 );
+  ಪ್ರತಿಜ್ಞಾ( pTabList->nSrc==1 );
   pTab = sqlite3SrcListLookup(pParse, pTabList);
-  if( pTab==0 ){
-    goto insert_cleanup;
+  ಆದರೆ( pTab==0 ){
+    ಹೋಗು ಸೇರಿಸು_cleanup;
   }
-  iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-  assert( iDb<db->nDb );
-  if( sqlite3AuthCheck(pParse, SQLITE_INSERT, pTab->zName, 0,
+  iDb = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(db, pTab->pSchema);
+  ಪ್ರತಿಜ್ಞಾ( iDb<db->nDb );
+  ಆದರೆ( sqlite3AuthCheck(pParse, SQLITE_ಸೇರಿಸು, pTab->zName, 0,
                        db->aDb[iDb].zDbSName) ){
-    goto insert_cleanup;
+    ಹೋಗು ಸೇರಿಸು_cleanup;
   }
   withoutRowid = !HasRowid(pTab);
 
   /* Figure out if we have any triggers and if the table being
   ** inserted into is a view
   */
-#ifndef SQLITE_OMIT_TRIGGER
-  pTrigger = sqlite3TriggersExist(pParse, pTab, TK_INSERT, 0, &tmask);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TRIGGER
+  pTrigger = sqlite3TriggersExist(pParse, pTab, TK_ಸೇರಿಸು, 0, &tmask);
   isView = IsView(pTab);
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define pTrigger 0
 # define tmask 0
 # define isView 0
-#endif
-#ifdef SQLITE_OMIT_VIEW
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_VIEW
 # undef isView
 # define isView 0
-#endif
-  assert( (pTrigger && tmask) || (pTrigger==0 && tmask==0) );
+#ಆದರೆ_ಅಂತ್ಯ
+  ಪ್ರತಿಜ್ಞಾ( (pTrigger && tmask) || (pTrigger==0 && tmask==0) );
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
-    sqlite3TreeViewLine(0, "In sqlite3Insert() at %s:%d", __FILE__, __LINE__);
-    sqlite3TreeViewInsert(pParse->pWith, pTabList, pColumn, pSelect, pList,
+#ಆದರೆ TREETRACE_ENABLED
+  ಆದರೆ( sqlite3_ವೃಕ್ಷ_Trace & 0x10000 ){
+    sqlite3_ವೃಕ್ಷ_View_ಸಾಲು(0, "In sqlite3Insert() at %s:%d", __FILE__, __LINE__);
+    sqlite3_ವೃಕ್ಷ_View_ಸೇರಿಸು(pParse->pWith, pTabList, p_ಸ್ತಂಭ, pSelect, pList,
                           onError, pUpsert, pTrigger);
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
   /* If pTab is really a view, make sure it has been initialized.
   ** ViewGetColumnNames() is a no-op if pTab is not a view.
   */
-  if( sqlite3ViewGetColumnNames(pParse, pTab) ){
-    goto insert_cleanup;
+  ಆದರೆ( sqlite3_View_Get_ಸ್ತಂಭ_ಹೆಸರುಗಳು(pParse, pTab) ){
+    ಹೋಗು ಸೇರಿಸು_cleanup;
   }
 
   /* Cannot insert into a read-only table.
   */
-  if( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
-    goto insert_cleanup;
+  ಆದರೆ( sqlite3IsReadOnly(pParse, pTab, pTrigger) ){
+    ಹೋಗು ಸೇರಿಸು_cleanup;
   }
 
   /* Allocate a VDBE
   */
   v = sqlite3GetVdbe(pParse);
-  if( v==0 ) goto insert_cleanup;
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  ಆದರೆ( v==0 ) ಹೋಗು ಸೇರಿಸು_cleanup;
+  ಆದರೆ( pParse->nested==0 ) sqlite3_Vdbe_ಎಣಿಕೆ_Changes(v);
   sqlite3BeginWriteOperation(pParse, pSelect || pTrigger, iDb);
 
-#ifndef SQLITE_OMIT_XFER_OPT
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_XFER_OPT
   /* If the statement is of the form
   **
   **       INSERT INTO <table1> SELECT * FROM <table2>;
@@ -1021,16 +1021,16 @@ void sqlite3Insert(
   **
   ** This is the 2nd template.
   */
-  if( pColumn==0
+  ಆದರೆ( p_ಸ್ತಂಭ==0
    && pSelect!=0
    && pTrigger==0
    && xferOptimization(pParse, pTab, pSelect, onError, iDb)
   ){
-    assert( !pTrigger );
-    assert( pList==0 );
-    goto insert_end;
+    ಪ್ರತಿಜ್ಞಾ( !pTrigger );
+    ಪ್ರತಿಜ್ಞಾ( pList==0 );
+    ಹೋಗು ಸೇರಿಸು_ಕೊನೆ;
   }
-#endif /* SQLITE_OMIT_XFER_OPT */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_XFER_OPT */
 
   /* If this is an AUTOINCREMENT table, look up the sequence number in the
   ** sqlite_sequence table and store it in memory cell regAutoinc.
@@ -1041,12 +1041,12 @@ void sqlite3Insert(
   ** for all columns of the new row.
   */
   regRowid = regIns = pParse->nMem+1;
-  pParse->nMem += pTab->nCol + 1;
-  if( IsVirtual(pTab) ){
+  pParse->nMem += pTab->n_ಲಂಬಸಾಲು + 1;
+  ಆದರೆ( IsVirtual(pTab) ){
     regRowid++;
     pParse->nMem++;
   }
-  regData = regRowid+1;
+  reg_ದತ್ತಾಂಶ = regRowid+1;
 
   /* If the INSERT statement included an IDLIST term, then make sure
   ** all elements of the IDLIST really are columns of the table and
@@ -1067,35 +1067,35 @@ void sqlite3Insert(
   ** columns into storage order.  False negatives are harmless,
   ** but false positives will cause database corruption.
   */
-  bIdListInOrder = (pTab->tabFlags & (TF_OOOHidden|TF_HasStored))==0;
-  if( pColumn ){
-    aTabColMap = sqlite3DbMallocZero(db, pTab->nCol*sizeof(int));
-    if( aTabColMap==0 ) goto insert_cleanup;
-    for(i=0; i<pColumn->nId; i++){
-      j = sqlite3ColumnIndex(pTab, pColumn->a[i].zName);
-      if( j>=0 ){
-        if( aTabColMap[j]==0 ) aTabColMap[j] = i+1;
-        if( i!=j ) bIdListInOrder = 0;
-        if( j==pTab->iPKey ){
-          ipkColumn = i;  assert( !withoutRowid );
+  b_Id_List_ಒಳ_ಕ್ರಮ = (pTab->tabFlags & (TF_OOOHidden|TF_HasStored))==0;
+  ಆದರೆ( p_ಸ್ತಂಭ ){
+    a_Tab_ಲಂಬಸಾಲು_Map = sqlite3DbMallocZero(db, pTab->n_ಲಂಬಸಾಲು*ಗಾತ್ರ(ಪೂರ್ಣಾಂಕ));
+    ಆದರೆ( a_Tab_ಲಂಬಸಾಲು_Map==0 ) ಹೋಗು ಸೇರಿಸು_cleanup;
+    ಗಾಗಿ(i=0; i<p_ಸ್ತಂಭ->nId; i++){
+      j = sqlite3_ಸ್ತಂಭ_ಸೂಚ್ಯಂಕ(pTab, p_ಸ್ತಂಭ->a[i].zName);
+      ಆದರೆ( j>=0 ){
+        ಆದರೆ( a_Tab_ಲಂಬಸಾಲು_Map[j]==0 ) a_Tab_ಲಂಬಸಾಲು_Map[j] = i+1;
+        ಆದರೆ( i!=j ) b_Id_List_ಒಳ_ಕ್ರಮ = 0;
+        ಆದರೆ( j==pTab->iPKey ){
+          ipk_ಸ್ತಂಭ = i;  ಪ್ರತಿಜ್ಞಾ( !withoutRowid );
         }
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-        if( pTab->aCol[j].colFlags & (COLFLAG_STORED|COLFLAG_VIRTUAL) ){
-          sqlite3ErrorMsg(pParse,
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
+        ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[j].ಲಂಬಸಾಲು_Flags & (COLFLAG_STORED|COLFLAG_VIRTUAL) ){
+          sqlite3_Error_ಸಂದೇಶ(pParse,
              "cannot INSERT into generated column \"%s\"",
-             pTab->aCol[j].zCnName);
-          goto insert_cleanup;
+             pTab->a_ಲಂಬಸಾಲು[j].zCnName);
+          ಹೋಗು ಸೇರಿಸು_cleanup;
         }
-#endif
-      }else{
-        if( sqlite3IsRowid(pColumn->a[i].zName) && !withoutRowid ){
-          ipkColumn = i;
-          bIdListInOrder = 0;
-        }else{
-          sqlite3ErrorMsg(pParse, "table %S has no column named %s",
-              pTabList->a, pColumn->a[i].zName);
+#ಆದರೆ_ಅಂತ್ಯ
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಆದರೆ( sqlite3IsRowid(p_ಸ್ತಂಭ->a[i].zName) && !withoutRowid ){
+          ipk_ಸ್ತಂಭ = i;
+          b_Id_List_ಒಳ_ಕ್ರಮ = 0;
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          sqlite3_Error_ಸಂದೇಶ(pParse, "table %S has no column named %s",
+              pTabList->a, p_ಸ್ತಂಭ->a[i].zName);
           pParse->checkSchema = 1;
-          goto insert_cleanup;
+          ಹೋಗು ಸೇರಿಸು_cleanup;
         }
       }
     }
@@ -1106,47 +1106,47 @@ void sqlite3Insert(
   ** produces a single row of the SELECT on each invocation.  The
   ** co-routine is the common header to the 3rd and 4th templates.
   */
-  if( pSelect ){
+  ಆದರೆ( pSelect ){
     /* Data is coming from a SELECT or from a multi-row VALUES clause.
     ** Generate a co-routine to run the SELECT. */
-    int rc;             /* Result code */
+    ಪೂರ್ಣಾಂಕ rc;             /* Result code */
 
-    if( pSelect->pSrc->nSrc==1 
-     && pSelect->pSrc->a[0].fg.viaCoroutine 
-     && pSelect->pPrior==0
+    ಆದರೆ( pSelect->pSrc->nSrc==1 
+     && pSelect->pSrc->a[0].fg.ಮೂಲಕ_Coroutine 
+     && pSelect->p_ಪೂರ್ವ==0
     ){
-      SrcItem *pItem = &pSelect->pSrc->a[0];
+      Src_ಅಂಶ *p_ಅಂಶ = &pSelect->pSrc->a[0];
       Subquery *pSubq;
-      assert( pItem->fg.isSubquery );
-      pSubq = pItem->u4.pSubq;
+      ಪ್ರತಿಜ್ಞಾ( p_ಅಂಶ->fg.isSubquery );
+      pSubq = p_ಅಂಶ->u4.pSubq;
       dest.iSDParm = pSubq->regReturn;
-      regFromSelect = pSubq->regResult;
-      assert( pSubq->pSelect!=0 );
-      assert( pSubq->pSelect->pEList!=0 );
-      nColumn = pSubq->pSelect->pEList->nExpr;
-      ExplainQueryPlan((pParse, 0, "SCAN %S", pItem));
-      if( bIdListInOrder && nColumn==pTab->nCol ){
-        regData = regFromSelect;
-        regRowid = regData - 1;
+      regFromSelect = pSubq->reg_ಫಲಿತಾಂಶ;
+      ಪ್ರತಿಜ್ಞಾ( pSubq->pSelect!=0 );
+      ಪ್ರತಿಜ್ಞಾ( pSubq->pSelect->pEList!=0 );
+      n_ಸ್ತಂಭ = pSubq->pSelect->pEList->n_ಅಭಿವ್ಯಕ್ತಿ;
+      ExplainQueryPlan((pParse, 0, "SCAN %S", p_ಅಂಶ));
+      ಆದರೆ( b_Id_List_ಒಳ_ಕ್ರಮ && n_ಸ್ತಂಭ==pTab->n_ಲಂಬಸಾಲು ){
+        reg_ದತ್ತಾಂಶ = regFromSelect;
+        regRowid = reg_ದತ್ತಾಂಶ - 1;
         regIns = regRowid - (IsVirtual(pTab) ? 1 : 0);
       }
-    }else{
-      int addrTop;        /* Top of the co-routine */
-      int regYield = ++pParse->nMem;
-      addrTop = sqlite3VdbeCurrentAddr(v) + 1;
-      sqlite3VdbeAddOp3(v, OP_InitCoroutine, regYield, 0, addrTop);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪೂರ್ಣಾಂಕ addr_ತುದಿ;        /* Top of the co-routine */
+      ಪೂರ್ಣಾಂಕ regYield = ++pParse->nMem;
+      addr_ತುದಿ = sqlite3VdbeCurrentAddr(v) + 1;
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_InitCoroutine, regYield, 0, addr_ತುದಿ);
       sqlite3SelectDestInit(&dest, SRT_Coroutine, regYield);
-      dest.iSdst = bIdListInOrder ? regData : 0;
-      dest.nSdst = pTab->nCol;
+      dest.iSdst = b_Id_List_ಒಳ_ಕ್ರಮ ? reg_ದತ್ತಾಂಶ : 0;
+      dest.nSdst = pTab->n_ಲಂಬಸಾಲು;
       rc = sqlite3Select(pParse, pSelect, &dest);
       regFromSelect = dest.iSdst;
-      assert( db->pParse==pParse );
-      if( rc || pParse->nErr ) goto insert_cleanup;
-      assert( db->mallocFailed==0 );
-      sqlite3VdbeEndCoroutine(v, regYield);
-      sqlite3VdbeJumpHere(v, addrTop - 1);                       /* label B: */
-      assert( pSelect->pEList );
-      nColumn = pSelect->pEList->nExpr;
+      ಪ್ರತಿಜ್ಞಾ( db->pParse==pParse );
+      ಆದರೆ( rc || pParse->nErr ) ಹೋಗು ಸೇರಿಸು_cleanup;
+      ಪ್ರತಿಜ್ಞಾ( db->mallocFailed==0 );
+      sqlite3_Vdbe_ಕೊನೆ_Coroutine(v, regYield);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr_ತುದಿ - 1);                       /* label B: */
+      ಪ್ರತಿಜ್ಞಾ( pSelect->pEList );
+      n_ಸ್ತಂಭ = pSelect->pEList->n_ಅಭಿವ್ಯಕ್ತಿ;
     }
 
     /* Set useTempTable to TRUE if the result of the SELECT statement
@@ -1158,11 +1158,11 @@ void sqlite3Insert(
     ** of the tables being read by the SELECT statement.  Also use a
     ** temp table in the case of row triggers.
     */
-    if( pTrigger || readsTable(pParse, iDb, pTab) ){
-      useTempTable = 1;
+    ಆದರೆ( pTrigger || reads_ಕೋಷ್ಟಕ(pParse, iDb, pTab) ){
+      use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ = 1;
     }
 
-    if( useTempTable ){
+    ಆದರೆ( use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ ){
       /* Invoke the coroutine to extract information from the SELECT
       ** and add it to a transient table srcTab.  The code generated
       ** here is from the 4th template:
@@ -1173,39 +1173,39 @@ void sqlite3Insert(
       **         goto L
       **      M: ...
       */
-      int regRec;          /* Register to hold packed record */
-      int regTempRowid;    /* Register to hold temp table ROWID */
-      int addrL;           /* Label "L" */
+      ಪೂರ್ಣಾಂಕ regRec;          /* Register to hold packed record */
+      ಪೂರ್ಣಾಂಕ reg_ತಾತ್ಕಾಲಿಕ_Rowid;    /* Register to hold temp table ROWID */
+      ಪೂರ್ಣಾಂಕ addrL;           /* Label "L" */
 
       srcTab = pParse->nTab++;
-      regRec = sqlite3GetTempReg(pParse);
-      regTempRowid = sqlite3GetTempReg(pParse);
-      sqlite3VdbeAddOp2(v, OP_OpenEphemeral, srcTab, nColumn);
-      addrL = sqlite3VdbeAddOp1(v, OP_Yield, dest.iSDParm); VdbeCoverage(v);
-      sqlite3VdbeAddOp3(v, OP_MakeRecord, regFromSelect, nColumn, regRec);
-      sqlite3VdbeAddOp2(v, OP_NewRowid, srcTab, regTempRowid);
-      sqlite3VdbeAddOp3(v, OP_Insert, srcTab, regRec, regTempRowid);
+      regRec = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(pParse);
+      reg_ತಾತ್ಕಾಲಿಕ_Rowid = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(pParse);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_OpenEphemeral, srcTab, n_ಸ್ತಂಭ);
+      addrL = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Yield, dest.iSDParm); VdbeCoverage(v);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Make_ದಾಖಲೆ, regFromSelect, n_ಸ್ತಂಭ, regRec);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_NewRowid, srcTab, reg_ತಾತ್ಕಾಲಿಕ_Rowid);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸೇರಿಸು, srcTab, regRec, reg_ತಾತ್ಕಾಲಿಕ_Rowid);
       sqlite3VdbeGoto(v, addrL);
-      sqlite3VdbeJumpHere(v, addrL);
-      sqlite3ReleaseTempReg(pParse, regRec);
-      sqlite3ReleaseTempReg(pParse, regTempRowid);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addrL);
+      sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Reg(pParse, regRec);
+      sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Reg(pParse, reg_ತಾತ್ಕಾಲಿಕ_Rowid);
     }
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     /* This is the case if the data for the INSERT is coming from a
     ** single-row VALUES clause
     */
     NameContext sNC;
-    memset(&sNC, 0, sizeof(sNC));
+    memset(&sNC, 0, ಗಾತ್ರ(sNC));
     sNC.pParse = pParse;
     srcTab = -1;
-    assert( useTempTable==0 );
-    if( pList ){
-      nColumn = pList->nExpr;
-      if( sqlite3ResolveExprListNames(&sNC, pList) ){
-        goto insert_cleanup;
+    ಪ್ರತಿಜ್ಞಾ( use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ==0 );
+    ಆದರೆ( pList ){
+      n_ಸ್ತಂಭ = pList->n_ಅಭಿವ್ಯಕ್ತಿ;
+      ಆದರೆ( sqlite3_Resolve_ಅಭಿವ್ಯಕ್ತಿ_List_ಹೆಸರುಗಳು(&sNC, pList) ){
+        ಹೋಗು ಸೇರಿಸು_cleanup;
       }
-    }else{
-      nColumn = 0;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      n_ಸ್ತಂಭ = 0;
     }
   }
 
@@ -1213,107 +1213,107 @@ void sqlite3Insert(
   ** key, the set the ipkColumn variable to the integer primary key
   ** column index in the original table definition.
   */
-  if( pColumn==0 && nColumn>0 ){
-    ipkColumn = pTab->iPKey;
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-    if( ipkColumn>=0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
+  ಆದರೆ( p_ಸ್ತಂಭ==0 && n_ಸ್ತಂಭ>0 ){
+    ipk_ಸ್ತಂಭ = pTab->iPKey;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
+    ಆದರೆ( ipk_ಸ್ತಂಭ>=0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
       testcase( pTab->tabFlags & TF_HasVirtual );
       testcase( pTab->tabFlags & TF_HasStored );
-      for(i=ipkColumn-1; i>=0; i--){
-        if( pTab->aCol[i].colFlags & COLFLAG_GENERATED ){
-          testcase( pTab->aCol[i].colFlags & COLFLAG_VIRTUAL );
-          testcase( pTab->aCol[i].colFlags & COLFLAG_STORED );
-          ipkColumn--;
+      ಗಾಗಿ(i=ipk_ಸ್ತಂಭ-1; i>=0; i--){
+        ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED ){
+          testcase( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL );
+          testcase( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_STORED );
+          ipk_ಸ್ತಂಭ--;
         }
       }
     }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
     /* Make sure the number of columns in the source data matches the number
     ** of columns to be inserted into the table.
     */
-    assert( TF_HasHidden==COLFLAG_HIDDEN );
-    assert( TF_HasGenerated==COLFLAG_GENERATED );
-    assert( COLFLAG_NOINSERT==(COLFLAG_GENERATED|COLFLAG_HIDDEN) );
-    if( (pTab->tabFlags & (TF_HasGenerated|TF_HasHidden))!=0 ){
-      for(i=0; i<pTab->nCol; i++){
-        if( pTab->aCol[i].colFlags & COLFLAG_NOINSERT ) nHidden++;
+    ಪ್ರತಿಜ್ಞಾ( TF_HasHidden==COLFLAG_HIDDEN );
+    ಪ್ರತಿಜ್ಞಾ( TF_HasGenerated==COLFLAG_GENERATED );
+    ಪ್ರತಿಜ್ಞಾ( COLFLAG_NOINSERT==(COLFLAG_GENERATED|COLFLAG_HIDDEN) );
+    ಆದರೆ( (pTab->tabFlags & (TF_HasGenerated|TF_HasHidden))!=0 ){
+      ಗಾಗಿ(i=0; i<pTab->n_ಲಂಬಸಾಲು; i++){
+        ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_NOINSERT ) nHidden++;
       }
     }
-    if( nColumn!=(pTab->nCol-nHidden) ){
-      sqlite3ErrorMsg(pParse,
+    ಆದರೆ( n_ಸ್ತಂಭ!=(pTab->n_ಲಂಬಸಾಲು-nHidden) ){
+      sqlite3_Error_ಸಂದೇಶ(pParse,
          "table %S has %d columns but %d values were supplied",
-         pTabList->a, pTab->nCol-nHidden, nColumn);
-     goto insert_cleanup;
+         pTabList->a, pTab->n_ಲಂಬಸಾಲು-nHidden, n_ಸ್ತಂಭ);
+     ಹೋಗು ಸೇರಿಸು_cleanup;
     }
   }
-  if( pColumn!=0 && nColumn!=pColumn->nId ){
-    sqlite3ErrorMsg(pParse, "%d values for %d columns", nColumn, pColumn->nId);
-    goto insert_cleanup;
+  ಆದರೆ( p_ಸ್ತಂಭ!=0 && n_ಸ್ತಂಭ!=p_ಸ್ತಂಭ->nId ){
+    sqlite3_Error_ಸಂದೇಶ(pParse, "%d values for %d columns", n_ಸ್ತಂಭ, p_ಸ್ತಂಭ->nId);
+    ಹೋಗು ಸೇರಿಸು_cleanup;
   }
    
   /* Initialize the count of rows to be inserted
   */
-  if( (db->flags & SQLITE_CountRows)!=0
+  ಆದರೆ( (db->flags & SQLITE_ಎಣಿಕೆ_ಅಡ್ಡಸಾಲುಗಳು)!=0
    && !pParse->nested
    && !pParse->pTriggerTab
    && !pParse->bReturning
   ){
-    regRowCount = ++pParse->nMem;
-    sqlite3VdbeAddOp2(v, OP_Integer, 0, regRowCount);
+    reg_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ = ++pParse->nMem;
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, 0, reg_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ);
   }
 
   /* If this is not a view, open the table and and all indices */
-  if( !isView ){
-    int nIdx;
-    nIdx = sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenWrite, 0, -1, 0,
-                                      &iDataCur, &iIdxCur);
-    aRegIdx = sqlite3DbMallocRawNN(db, sizeof(int)*(nIdx+2));
-    if( aRegIdx==0 ){
-      goto insert_cleanup;
+  ಆದರೆ( !isView ){
+    ಪೂರ್ಣಾಂಕ nIdx;
+    nIdx = sqlite3_Open_ಕೋಷ್ಟಕ_And_Indices(pParse, pTab, OP_OpenWrite, 0, -1, 0,
+                                      &i_ದತ್ತಾಂಶ_Cur, &iIdxCur);
+    aRegIdx = sqlite3DbMallocRawNN(db, ಗಾತ್ರ(ಪೂರ್ಣಾಂಕ)*(nIdx+2));
+    ಆದರೆ( aRegIdx==0 ){
+      ಹೋಗು ಸೇರಿಸು_cleanup;
     }
-    for(i=0, pIdx=pTab->pIndex; i<nIdx; pIdx=pIdx->pNext, i++){
-      assert( pIdx );
+    ಗಾಗಿ(i=0, pIdx=pTab->p_ಸೂಚ್ಯಂಕ; i<nIdx; pIdx=pIdx->p_ಮುಂದಿನ, i++){
+      ಪ್ರತಿಜ್ಞಾ( pIdx );
       aRegIdx[i] = ++pParse->nMem;
-      pParse->nMem += pIdx->nColumn;
+      pParse->nMem += pIdx->n_ಸ್ತಂಭ;
     }
     aRegIdx[i] = ++pParse->nMem;  /* Register to store the table record */
   }
-#ifndef SQLITE_OMIT_UPSERT
-  if( pUpsert ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UPSERT
+  ಆದರೆ( pUpsert ){
     Upsert *pNx;
-    if( IsVirtual(pTab) ){
-      sqlite3ErrorMsg(pParse, "UPSERT not implemented for virtual table \"%s\"",
+    ಆದರೆ( IsVirtual(pTab) ){
+      sqlite3_Error_ಸಂದೇಶ(pParse, "UPSERT not implemented for virtual table \"%s\"",
               pTab->zName);
-      goto insert_cleanup;
+      ಹೋಗು ಸೇರಿಸು_cleanup;
     }
-    if( IsView(pTab) ){
-      sqlite3ErrorMsg(pParse, "cannot UPSERT a view");
-      goto insert_cleanup;
+    ಆದರೆ( IsView(pTab) ){
+      sqlite3_Error_ಸಂದೇಶ(pParse, "cannot UPSERT a view");
+      ಹೋಗು ಸೇರಿಸು_cleanup;
     }
-    if( sqlite3HasExplicitNulls(pParse, pUpsert->pUpsertTarget) ){
-      goto insert_cleanup;
+    ಆದರೆ( sqlite3HasExplicitNulls(pParse, pUpsert->p_Upsert_ಗುರಿ) ){
+      ಹೋಗು ಸೇರಿಸು_cleanup;
     }
-    pTabList->a[0].iCursor = iDataCur;
+    pTabList->a[0].iCursor = i_ದತ್ತಾಂಶ_Cur;
     pNx = pUpsert;
-    do{
+    ಮಾಡು{
       pNx->pUpsertSrc = pTabList;
-      pNx->regData = regData;
-      pNx->iDataCur = iDataCur;
+      pNx->reg_ದತ್ತಾಂಶ = reg_ದತ್ತಾಂಶ;
+      pNx->i_ದತ್ತಾಂಶ_Cur = i_ದತ್ತಾಂಶ_Cur;
       pNx->iIdxCur = iIdxCur;
-      if( pNx->pUpsertTarget ){
-        if( sqlite3UpsertAnalyzeTarget(pParse, pTabList, pNx, pUpsert) ){
-          goto insert_cleanup;
+      ಆದರೆ( pNx->p_Upsert_ಗುರಿ ){
+        ಆದರೆ( sqlite3_Upsert_Analyze_ಗುರಿ(pParse, pTabList, pNx, pUpsert) ){
+          ಹೋಗು ಸೇರಿಸು_cleanup;
         }
       }
-      pNx = pNx->pNextUpsert;
-    }while( pNx!=0 );
+      pNx = pNx->p_ಮುಂದಿನ_Upsert;
+    }ಆಗ( pNx!=0 );
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 
   /* This is the top of the main insertion loop */
-  if( useTempTable ){
+  ಆದರೆ( use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ ){
     /* This block codes the top of loop only.  The complete loop is the
     ** following pseudocode (template 4):
     **
@@ -1323,9 +1323,9 @@ void sqlite3Insert(
     **         end loop
     **      D: ...
     */
-    addrInsTop = sqlite3VdbeAddOp1(v, OP_Rewind, srcTab); VdbeCoverage(v);
+    addr_Ins_ತುದಿ = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Rewind, srcTab); VdbeCoverage(v);
     addrCont = sqlite3VdbeCurrentAddr(v);
-  }else if( pSelect ){
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pSelect ){
     /* This block codes the top of loop only.  The complete loop is the
     ** following pseudocode (template 3):
     **
@@ -1334,14 +1334,14 @@ void sqlite3Insert(
     **         goto C
     **      D: ...
     */
-    sqlite3VdbeReleaseRegisters(pParse, regData, pTab->nCol, 0, 0);
-    addrInsTop = addrCont = sqlite3VdbeAddOp1(v, OP_Yield, dest.iSDParm);
+    sqlite3VdbeReleaseRegisters(pParse, reg_ದತ್ತಾಂಶ, pTab->n_ಲಂಬಸಾಲು, 0, 0);
+    addr_Ins_ತುದಿ = addrCont = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Yield, dest.iSDParm);
     VdbeCoverage(v);
-    if( ipkColumn>=0 ){
+    ಆದರೆ( ipk_ಸ್ತಂಭ>=0 ){
       /* tag-20191021-001: If the INTEGER PRIMARY KEY is being generated by the
       ** SELECT, go ahead and copy the value into the rowid slot now, so that
       ** the value does not get overwritten by a NULL at tag-20191021-002. */
-      sqlite3VdbeAddOp2(v, OP_Copy, regFromSelect+ipkColumn, regRowid);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Copy, regFromSelect+ipk_ಸ್ತಂಭ, regRowid);
     }
   }
 
@@ -1353,79 +1353,79 @@ void sqlite3Insert(
   ** of the rowid.
   */
   nHidden = 0;
-  iRegStore = regData;  assert( regData==regRowid+1 );
-  for(i=0; i<pTab->nCol; i++, iRegStore++){
-    int k;
-    u32 colFlags;
-    assert( i>=nHidden );
-    if( i==pTab->iPKey ){
+  iRegStore = reg_ದತ್ತಾಂಶ;  ಪ್ರತಿಜ್ಞಾ( reg_ದತ್ತಾಂಶ==regRowid+1 );
+  ಗಾಗಿ(i=0; i<pTab->n_ಲಂಬಸಾಲು; i++, iRegStore++){
+    ಪೂರ್ಣಾಂಕ k;
+    u32 ಲಂಬಸಾಲು_Flags;
+    ಪ್ರತಿಜ್ಞಾ( i>=nHidden );
+    ಆದರೆ( i==pTab->iPKey ){
       /* tag-20191021-002: References to the INTEGER PRIMARY KEY are filled
       ** using the rowid. So put a NULL in the IPK slot of the record to avoid
       ** using excess space.  The file format definition requires this extra
       ** NULL - we cannot optimize further by skipping the column completely */
-      sqlite3VdbeAddOp1(v, OP_SoftNull, iRegStore);
-      continue;
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_SoftNull, iRegStore);
+      ಮುಂದುವರಿ;
     }
-    if( ((colFlags = pTab->aCol[i].colFlags) & COLFLAG_NOINSERT)!=0 ){
+    ಆದರೆ( ((ಲಂಬಸಾಲು_Flags = pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags) & COLFLAG_NOINSERT)!=0 ){
       nHidden++;
-      if( (colFlags & COLFLAG_VIRTUAL)!=0 ){
+      ಆದರೆ( (ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL)!=0 ){
         /* Virtual columns do not participate in OP_MakeRecord.  So back up
         ** iRegStore by one slot to compensate for the iRegStore++ in the
         ** outer for() loop */
         iRegStore--;
-        continue;
-      }else if( (colFlags & COLFLAG_STORED)!=0 ){
+        ಮುಂದುವರಿ;
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( (ಲಂಬಸಾಲು_Flags & COLFLAG_STORED)!=0 ){
         /* Stored columns are computed later.  But if there are BEFORE
         ** triggers, the slots used for stored columns will be OP_Copy-ed
         ** to a second block of registers, so the register needs to be
         ** initialized to NULL to avoid an uninitialized register read */
-        if( tmask & TRIGGER_BEFORE ){
-          sqlite3VdbeAddOp1(v, OP_SoftNull, iRegStore);
+        ಆದರೆ( tmask & TRIGGER_BEFORE ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_SoftNull, iRegStore);
         }
-        continue;
-      }else if( pColumn==0 ){
+        ಮುಂದುವರಿ;
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( p_ಸ್ತಂಭ==0 ){
         /* Hidden columns that are not explicitly named in the INSERT
         ** get their default value */
-        sqlite3ExprCodeFactorable(pParse,
-            sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+        sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Factorable(pParse,
+            sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ_Auth(pTab, &pTab->a_ಲಂಬಸಾಲು[i], pParse),
             iRegStore);
-        continue;
+        ಮುಂದುವರಿ;
       }
     }
-    if( pColumn ){
-      j = aTabColMap[i];
-      assert( j>=0 && j<=pColumn->nId );   
-      if( j==0 ){
+    ಆದರೆ( p_ಸ್ತಂಭ ){
+      j = a_Tab_ಲಂಬಸಾಲು_Map[i];
+      ಪ್ರತಿಜ್ಞಾ( j>=0 && j<=p_ಸ್ತಂಭ->nId );   
+      ಆದರೆ( j==0 ){
         /* A column not named in the insert column list gets its
         ** default value */
-        sqlite3ExprCodeFactorable(pParse,
-            sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+        sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Factorable(pParse,
+            sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ_Auth(pTab, &pTab->a_ಲಂಬಸಾಲು[i], pParse),
             iRegStore);
-        continue;
+        ಮುಂದುವರಿ;
       }
       k = j - 1;
-    }else if( nColumn==0 ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( n_ಸ್ತಂಭ==0 ){
       /* This is INSERT INTO ... DEFAULT VALUES.  Load the default value. */
-      sqlite3ExprCodeFactorable(pParse,
-          sqlite3ColumnExprAuth(pTab, &pTab->aCol[i], pParse),
+      sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Factorable(pParse,
+          sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ_Auth(pTab, &pTab->a_ಲಂಬಸಾಲು[i], pParse),
           iRegStore);
-      continue;
-    }else{
+      ಮುಂದುವರಿ;
+    }ಇಲ್ಲದಿದ್ದರೆ{
       k = i - nHidden;
     }
 
-    if( useTempTable ){
-      sqlite3VdbeAddOp3(v, OP_Column, srcTab, k, iRegStore);
-    }else if( pSelect ){
-      if( regFromSelect!=regData ){
-        sqlite3VdbeAddOp2(v, OP_SCopy, regFromSelect+k, iRegStore);
+    ಆದರೆ( use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸ್ತಂಭ, srcTab, k, iRegStore);
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pSelect ){
+      ಆದರೆ( regFromSelect!=reg_ದತ್ತಾಂಶ ){
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_SCopy, regFromSelect+k, iRegStore);
       }
-    }else{
-      Expr *pX = pList->a[k].pExpr;
-      int y = sqlite3ExprCodeTarget(pParse, pX, iRegStore);
-      if( y!=iRegStore ){
-        sqlite3VdbeAddOp2(v,
-          ExprHasProperty(pX, EP_Subquery) ? OP_Copy : OP_SCopy, y, iRegStore);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಅಭಿವ್ಯಕ್ತಿ *pX = pList->a[k].p_ಅಭಿವ್ಯಕ್ತಿ;
+      ಪೂರ್ಣಾಂಕ y = sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ಗುರಿ(pParse, pX, iRegStore);
+      ಆದರೆ( y!=iRegStore ){
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v,
+          ಅಭಿವ್ಯಕ್ತಿ_Has_Property(pX, EP_Subquery) ? OP_Copy : OP_SCopy, y, iRegStore);
       }
     }
   }
@@ -1433,9 +1433,9 @@ void sqlite3Insert(
 
   /* Run the BEFORE and INSTEAD OF triggers, if there are any
   */
-  endOfLoop = sqlite3VdbeMakeLabel(pParse);
-  if( tmask & TRIGGER_BEFORE ){
-    int regCols = sqlite3GetTempRange(pParse, pTab->nCol+1);
+  ಕೊನೆ_ದ_Loop = sqlite3VdbeMakeLabel(pParse);
+  ಆದರೆ( tmask & TRIGGER_BEFORE ){
+    ಪೂರ್ಣಾಂಕ reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Range(pParse, pTab->n_ಲಂಬಸಾಲು+1);
 
     /* build the NEW.* reference row.  Note that if there is an INTEGER
     ** PRIMARY KEY into which a NULL is being inserted, that NULL will be
@@ -1443,129 +1443,129 @@ void sqlite3Insert(
     ** we do not know what the unique ID will be (because the insert has
     ** not happened yet) so we substitute a rowid of -1
     */
-    if( ipkColumn<0 ){
-      sqlite3VdbeAddOp2(v, OP_Integer, -1, regCols);
-    }else{
-      int addr1;
-      assert( !withoutRowid );
-      if( useTempTable ){
-        sqlite3VdbeAddOp3(v, OP_Column, srcTab, ipkColumn, regCols);
-      }else{
-        assert( pSelect==0 );  /* Otherwise useTempTable is true */
-        sqlite3ExprCode(pParse, pList->a[ipkColumn].pExpr, regCols);
+    ಆದರೆ( ipk_ಸ್ತಂಭ<0 ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, -1, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪೂರ್ಣಾಂಕ addr1;
+      ಪ್ರತಿಜ್ಞಾ( !withoutRowid );
+      ಆದರೆ( use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ ){
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸ್ತಂಭ, srcTab, ipk_ಸ್ತಂಭ, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಪ್ರತಿಜ್ಞಾ( pSelect==0 );  /* Otherwise useTempTable is true */
+        sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ(pParse, pList->a[ipk_ಸ್ತಂಭ].p_ಅಭಿವ್ಯಕ್ತಿ, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ);
       }
-      addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, regCols); VdbeCoverage(v);
-      sqlite3VdbeAddOp2(v, OP_Integer, -1, regCols);
-      sqlite3VdbeJumpHere(v, addr1);
-      sqlite3VdbeAddOp1(v, OP_MustBeInt, regCols); VdbeCoverage(v);
+      addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_NotNull, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ); VdbeCoverage(v);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, -1, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr1);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_MustBeInt, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ); VdbeCoverage(v);
       sqlite3MayAbort(pParse);
     }
 
     /* Copy the new data already generated. */
-    assert( pTab->nNVCol>0 || pParse->nErr>0 );
-    sqlite3VdbeAddOp3(v, OP_Copy, regRowid+1, regCols+1, pTab->nNVCol-1);
+    ಪ್ರತಿಜ್ಞಾ( pTab->nNVCol>0 || pParse->nErr>0 );
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Copy, regRowid+1, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ+1, pTab->nNVCol-1);
 
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
     /* Compute the new value for generated columns after all other
     ** columns have already been computed.  This must be done after
     ** computing the ROWID in case one of the generated columns
     ** refers to the ROWID. */
-    if( pTab->tabFlags & TF_HasGenerated ){
+    ಆದರೆ( pTab->tabFlags & TF_HasGenerated ){
       testcase( pTab->tabFlags & TF_HasVirtual );
       testcase( pTab->tabFlags & TF_HasStored );
-      sqlite3ComputeGeneratedColumns(pParse, regCols+1, pTab);
+      sqlite3ComputeGeneratedColumns(pParse, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ+1, pTab);
     }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
     /* If this is an INSERT on a view with an INSTEAD OF INSERT trigger,
     ** do not attempt any conversions before assembling the record.
     ** If this is a real table, attempt conversions as required by the
     ** table column affinities.
     */
-    if( !isView ){
-      sqlite3TableAffinity(v, pTab, regCols+1);
+    ಆದರೆ( !isView ){
+      sqlite3_ಕೋಷ್ಟಕ_Affinity(v, pTab, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ+1);
     }
 
     /* Fire BEFORE or INSTEAD OF triggers */
-    sqlite3CodeRowTrigger(pParse, pTrigger, TK_INSERT, 0, TRIGGER_BEFORE,
-        pTab, regCols-pTab->nCol-1, onError, endOfLoop);
+    sqlite3_ಸಂಕೇತ_ಅಡ್ಡಸಾಲು_Trigger(pParse, pTrigger, TK_ಸೇರಿಸು, 0, TRIGGER_BEFORE,
+        pTab, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ-pTab->n_ಲಂಬಸಾಲು-1, onError, ಕೊನೆ_ದ_Loop);
 
-    sqlite3ReleaseTempRange(pParse, regCols, pTab->nCol+1);
+    sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Range(pParse, reg_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ, pTab->n_ಲಂಬಸಾಲು+1);
   }
 
-  if( !isView ){
-    if( IsVirtual(pTab) ){
+  ಆದರೆ( !isView ){
+    ಆದರೆ( IsVirtual(pTab) ){
       /* The row that the VUpdate opcode will delete: none */
-      sqlite3VdbeAddOp2(v, OP_Null, 0, regIns);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Null, 0, regIns);
     }
-    if( ipkColumn>=0 ){
+    ಆದರೆ( ipk_ಸ್ತಂಭ>=0 ){
       /* Compute the new rowid */
-      if( useTempTable ){
-        sqlite3VdbeAddOp3(v, OP_Column, srcTab, ipkColumn, regRowid);
-      }else if( pSelect ){
+      ಆದರೆ( use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ ){
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸ್ತಂಭ, srcTab, ipk_ಸ್ತಂಭ, regRowid);
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pSelect ){
         /* Rowid already initialized at tag-20191021-001 */
-      }else{
-        Expr *pIpk = pList->a[ipkColumn].pExpr;
-        if( pIpk->op==TK_NULL && !IsVirtual(pTab) ){
-          sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಅಭಿವ್ಯಕ್ತಿ *pIpk = pList->a[ipk_ಸ್ತಂಭ].p_ಅಭಿವ್ಯಕ್ತಿ;
+        ಆದರೆ( pIpk->op==TK_NULL && !IsVirtual(pTab) ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_NewRowid, i_ದತ್ತಾಂಶ_Cur, regRowid, regAutoinc);
           appendFlag = 1;
-        }else{
-          sqlite3ExprCode(pParse, pList->a[ipkColumn].pExpr, regRowid);
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ(pParse, pList->a[ipk_ಸ್ತಂಭ].p_ಅಭಿವ್ಯಕ್ತಿ, regRowid);
         }
       }
       /* If the PRIMARY KEY expression is NULL, then use OP_NewRowid
       ** to generate a unique primary key value.
       */
-      if( !appendFlag ){
-        int addr1;
-        if( !IsVirtual(pTab) ){
-          addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, regRowid); VdbeCoverage(v);
-          sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
-          sqlite3VdbeJumpHere(v, addr1);
-        }else{
+      ಆದರೆ( !appendFlag ){
+        ಪೂರ್ಣಾಂಕ addr1;
+        ಆದರೆ( !IsVirtual(pTab) ){
+          addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_NotNull, regRowid); VdbeCoverage(v);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_NewRowid, i_ದತ್ತಾಂಶ_Cur, regRowid, regAutoinc);
+          sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr1);
+        }ಇಲ್ಲದಿದ್ದರೆ{
           addr1 = sqlite3VdbeCurrentAddr(v);
-          sqlite3VdbeAddOp2(v, OP_IsNull, regRowid, addr1+2); VdbeCoverage(v);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IsNull, regRowid, addr1+2); VdbeCoverage(v);
         }
-        sqlite3VdbeAddOp1(v, OP_MustBeInt, regRowid); VdbeCoverage(v);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_MustBeInt, regRowid); VdbeCoverage(v);
         sqlite3MayAbort(pParse);
       }
-    }else if( IsVirtual(pTab) || withoutRowid ){
-      sqlite3VdbeAddOp2(v, OP_Null, 0, regRowid);
-    }else{
-      sqlite3VdbeAddOp3(v, OP_NewRowid, iDataCur, regRowid, regAutoinc);
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( IsVirtual(pTab) || withoutRowid ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Null, 0, regRowid);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_NewRowid, i_ದತ್ತಾಂಶ_Cur, regRowid, regAutoinc);
       appendFlag = 1;
     }
-    autoIncStep(pParse, regAutoinc, regRowid);
+    auto_Inc_ಹೆಜ್ಜೆ(pParse, regAutoinc, regRowid);
 
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
     /* Compute the new value for generated columns after all other
     ** columns have already been computed.  This must be done after
     ** computing the ROWID in case one of the generated columns
     ** is derived from the INTEGER PRIMARY KEY. */
-    if( pTab->tabFlags & TF_HasGenerated ){
+    ಆದರೆ( pTab->tabFlags & TF_HasGenerated ){
       sqlite3ComputeGeneratedColumns(pParse, regRowid+1, pTab);
     }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
     /* Generate code to check constraints and generate index keys and
     ** do the insertion.
     */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-    if( IsVirtual(pTab) ){
-      const char *pVTab = (const char *)sqlite3GetVTable(db, pTab);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+    ಆದರೆ( IsVirtual(pTab) ){
+      ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *pVTab = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *)sqlite3GetVTable(db, pTab);
       sqlite3VtabMakeWritable(pParse, pTab);
-      sqlite3VdbeAddOp4(v, OP_VUpdate, 1, pTab->nCol+2, regIns, pVTab, P4_VTAB);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_VUpdate, 1, pTab->n_ಲಂಬಸಾಲು+2, regIns, pVTab, P4_VTAB);
       sqlite3VdbeChangeP5(v, onError==OE_Default ? OE_Abort : onError);
       sqlite3MayAbort(pParse);
-    }else
-#endif
+    }ಇಲ್ಲದಿದ್ದರೆ
+#ಆದರೆ_ಅಂತ್ಯ
     {
-      int isReplace = 0;/* Set to true if constraints may cause a replace */
-      int bUseSeek;     /* True to use OPFLAG_SEEKRESULT */
-      sqlite3GenerateConstraintChecks(pParse, pTab, aRegIdx, iDataCur, iIdxCur,
-          regIns, 0, ipkColumn>=0, onError, endOfLoop, &isReplace, 0, pUpsert
+      ಪೂರ್ಣಾಂಕ isReplace = 0;/* Set to true if constraints may cause a replace */
+      ಪೂರ್ಣಾಂಕ bUseSeek;     /* True to use OPFLAG_SEEKRESULT */
+      sqlite3GenerateConstraintChecks(pParse, pTab, aRegIdx, i_ದತ್ತಾಂಶ_Cur, iIdxCur,
+          regIns, 0, ipk_ಸ್ತಂಭ>=0, onError, ಕೊನೆ_ದ_Loop, &isReplace, 0, pUpsert
       );
-      if( db->flags & SQLITE_ForeignKeys ){
+      ಆದರೆ( db->flags & SQLITE_Foreign_ಕೀಲಿಗಳು ){
         sqlite3FkCheck(pParse, pTab, 0, regIns, 0, 0);
       }
 
@@ -1577,63 +1577,63 @@ void sqlite3Insert(
       ** cursor that is disturbed. And these instructions both clear the
       ** VdbeCursor.seekResult variable, disabling the OPFLAG_USESEEKRESULT
       ** functionality.  */
-      bUseSeek = (isReplace==0 || !sqlite3VdbeHasSubProgram(v));
-      sqlite3CompleteInsertion(pParse, pTab, iDataCur, iIdxCur,
+      bUseSeek = (isReplace==0 || !sqlite3_Vdbe_Has_Sub_ಕಾರ್ಯಕ್ರಮ(v));
+      sqlite3CompleteInsertion(pParse, pTab, i_ದತ್ತಾಂಶ_Cur, iIdxCur,
           regIns, aRegIdx, 0, appendFlag, bUseSeek
       );
     }
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-  }else if( pParse->bReturning ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ALLOW_ROWID_ಒಳ_VIEW
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pParse->bReturning ){
     /* If there is a RETURNING clause, populate the rowid register with
     ** constant value -1, in case one or more of the returned expressions
     ** refer to the "rowid" of the view.  */
-    sqlite3VdbeAddOp2(v, OP_Integer, -1, regRowid);
-#endif
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, -1, regRowid);
+#ಆದರೆ_ಅಂತ್ಯ
   }
 
   /* Update the count of rows that are inserted
   */
-  if( regRowCount ){
-    sqlite3VdbeAddOp2(v, OP_AddImm, regRowCount, 1);
+  ಆದರೆ( reg_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ ){
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಕೂಡಿಸು_Imm, reg_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ, 1);
   }
 
-  if( pTrigger ){
+  ಆದರೆ( pTrigger ){
     /* Code AFTER triggers */
-    sqlite3CodeRowTrigger(pParse, pTrigger, TK_INSERT, 0, TRIGGER_AFTER,
-        pTab, regData-2-pTab->nCol, onError, endOfLoop);
+    sqlite3_ಸಂಕೇತ_ಅಡ್ಡಸಾಲು_Trigger(pParse, pTrigger, TK_ಸೇರಿಸು, 0, TRIGGER_AFTER,
+        pTab, reg_ದತ್ತಾಂಶ-2-pTab->n_ಲಂಬಸಾಲು, onError, ಕೊನೆ_ದ_Loop);
   }
 
   /* The bottom of the main insertion loop, if the data source
   ** is a SELECT statement.
   */
-  sqlite3VdbeResolveLabel(v, endOfLoop);
-  if( useTempTable ){
-    sqlite3VdbeAddOp2(v, OP_Next, srcTab, addrCont); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addrInsTop);
-    sqlite3VdbeAddOp1(v, OP_Close, srcTab);
-  }else if( pSelect ){
+  sqlite3VdbeResolveLabel(v, ಕೊನೆ_ದ_Loop);
+  ಆದರೆ( use_ತಾತ್ಕಾಲಿಕ_ಕೋಷ್ಟಕ ){
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಮುಂದಿನ, srcTab, addrCont); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr_Ins_ತುದಿ);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Close, srcTab);
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pSelect ){
     sqlite3VdbeGoto(v, addrCont);
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
     /* If we are jumping back to an OP_Yield that is preceded by an
     ** OP_ReleaseReg, set the p5 flag on the OP_Goto so that the
     ** OP_ReleaseReg will be included in the loop. */
-    if( sqlite3VdbeGetOp(v, addrCont-1)->opcode==OP_ReleaseReg ){
-      assert( sqlite3VdbeGetOp(v, addrCont)->opcode==OP_Yield );
+    ಆದರೆ( sqlite3VdbeGetOp(v, addrCont-1)->opcode==OP_ReleaseReg ){
+      ಪ್ರತಿಜ್ಞಾ( sqlite3VdbeGetOp(v, addrCont)->opcode==OP_Yield );
       sqlite3VdbeChangeP5(v, 1);
     }
-#endif
-    sqlite3VdbeJumpHere(v, addrInsTop);
+#ಆದರೆ_ಅಂತ್ಯ
+    sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr_Ins_ತುದಿ);
   }
 
-#ifndef SQLITE_OMIT_XFER_OPT
-insert_end:
-#endif /* SQLITE_OMIT_XFER_OPT */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_XFER_OPT
+ಸೇರಿಸು_ಕೊನೆ:
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_XFER_OPT */
   /* Update the sqlite_sequence table by storing the content of the
   ** maximum rowid counter values recorded while inserting into
   ** autoincrement tables.
   */
-  if( pParse->nested==0 && pParse->pTriggerTab==0 ){
-    sqlite3AutoincrementEnd(pParse);
+  ಆದರೆ( pParse->nested==0 && pParse->pTriggerTab==0 ){
+    sqlite3_Autoincrement_ಕೊನೆ(pParse);
   }
 
   /*
@@ -1641,59 +1641,59 @@ insert_end:
   ** generating code because of a call to sqlite3NestedParse(), do not
   ** invoke the callback function.
   */
-  if( regRowCount ){
-    sqlite3CodeChangeCount(v, regRowCount, "rows inserted");
+  ಆದರೆ( reg_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ ){
+    sqlite3_ಸಂಕೇತ_Change_ಎಣಿಕೆ(v, reg_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ, "rows inserted");
   }
 
-insert_cleanup:
+ಸೇರಿಸು_cleanup:
   sqlite3SrcListDelete(db, pTabList);
-  sqlite3ExprListDelete(db, pList);
+  sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Delete(db, pList);
   sqlite3UpsertDelete(db, pUpsert);
   sqlite3SelectDelete(db, pSelect);
-  if( pColumn ){
-    sqlite3IdListDelete(db, pColumn);
-    sqlite3DbFree(db, aTabColMap);
+  ಆದರೆ( p_ಸ್ತಂಭ ){
+    sqlite3IdListDelete(db, p_ಸ್ತಂಭ);
+    sqlite3DbFree(db, a_Tab_ಲಂಬಸಾಲು_Map);
   }
-  if( aRegIdx ) sqlite3DbNNFreeNN(db, aRegIdx);
+  ಆದರೆ( aRegIdx ) sqlite3DbNNFreeNN(db, aRegIdx);
 }
 
 /* Make sure "isView" and other macros defined above are undefined. Otherwise
 ** they may interfere with compilation of other functions in this file
 ** (or in another file, if this file becomes part of the amalgamation).  */
-#ifdef isView
- #undef isView
-#endif
-#ifdef pTrigger
- #undef pTrigger
-#endif
-#ifdef tmask
- #undef tmask
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ isView
+ #ವ್ಯಾಖ್ಯಾನ_ರದ್ದು isView
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ pTrigger
+ #ವ್ಯಾಖ್ಯಾನ_ರದ್ದು pTrigger
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ tmask
+ #ವ್ಯಾಖ್ಯಾನ_ರದ್ದು tmask
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Meanings of bits in of pWalker->eCode for
 ** sqlite3ExprReferencesUpdatedColumn()
 */
-#define CKCNSTRNT_COLUMN   0x01    /* CHECK constraint uses a changing column */
-#define CKCNSTRNT_ROWID    0x02    /* CHECK constraint references the ROWID */
+#ವ್ಯಾಖ್ಯಾನಿಸು CKCNSTRNT_ಸ್ತಂಭ   0x01    /* CHECK constraint uses a changing column */
+#ವ್ಯಾಖ್ಯಾನಿಸು CKCNSTRNT_ROWID    0x02    /* CHECK constraint references the ROWID */
 
 /* This is the Walker callback from sqlite3ExprReferencesUpdatedColumn().
 *  Set bit 0x01 of pWalker->eCode if pWalker->eCode to 0 and if this
 ** expression node references any of the
 ** columns that are being modified by an UPDATE statement.
 */
-static int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN ){
-    assert( pExpr->iColumn>=0 || pExpr->iColumn==-1 );
-    if( pExpr->iColumn>=0 ){
-      if( pWalker->u.aiCol[pExpr->iColumn]>=0 ){
-        pWalker->eCode |= CKCNSTRNT_COLUMN;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ check_Constraint_ಅಭಿವ್ಯಕ್ತಿ_ಗಂಟು(Walker *pWalker, ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ){
+  ಆದರೆ( p_ಅಭಿವ್ಯಕ್ತಿ->op==TK_ಸ್ತಂಭ ){
+    ಪ್ರತಿಜ್ಞಾ( p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ>=0 || p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ==-1 );
+    ಆದರೆ( p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ>=0 ){
+      ಆದರೆ( pWalker->u.ai_ಲಂಬಸಾಲು[p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ]>=0 ){
+        pWalker->e_ಸಂಕೇತ |= CKCNSTRNT_ಸ್ತಂಭ;
       }
-    }else{
-      pWalker->eCode |= CKCNSTRNT_ROWID;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      pWalker->e_ಸಂಕೇತ |= CKCNSTRNT_ROWID;
     }
   }
-  return WRC_Continue;
+  ಹಿಂತಿರುಗಿ WRC_Continue;
 }
 
 /*
@@ -1711,26 +1711,26 @@ static int checkConstraintExprNode(Walker *pWalker, Expr *pExpr){
 ** the expression uses one or more of columns identified by the second and
 ** third arguments.
 */
-int sqlite3ExprReferencesUpdatedColumn(
-  Expr *pExpr,    /* The expression to be checked */
-  int *aiChng,    /* aiChng[x]>=0 if column x changed by the UPDATE */
-  int chngRowid   /* True if UPDATE changes the rowid */
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_References_Updated_ಸ್ತಂಭ(
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ,    /* The expression to be checked */
+  ಪೂರ್ಣಾಂಕ *aiChng,    /* aiChng[x]>=0 if column x changed by the UPDATE */
+  ಪೂರ್ಣಾಂಕ chngRowid   /* True if UPDATE changes the rowid */
 ){
   Walker w;
-  memset(&w, 0, sizeof(w));
-  w.eCode = 0;
-  w.xExprCallback = checkConstraintExprNode;
-  w.u.aiCol = aiChng;
-  sqlite3WalkExpr(&w, pExpr);
-  if( !chngRowid ){
-    testcase( (w.eCode & CKCNSTRNT_ROWID)!=0 );
-    w.eCode &= ~CKCNSTRNT_ROWID;
+  memset(&w, 0, ಗಾತ್ರ(w));
+  w.e_ಸಂಕೇತ = 0;
+  w.x_ಅಭಿವ್ಯಕ್ತಿ_Callback = check_Constraint_ಅಭಿವ್ಯಕ್ತಿ_ಗಂಟು;
+  w.u.ai_ಲಂಬಸಾಲು = aiChng;
+  sqlite3_Walk_ಅಭಿವ್ಯಕ್ತಿ(&w, p_ಅಭಿವ್ಯಕ್ತಿ);
+  ಆದರೆ( !chngRowid ){
+    testcase( (w.e_ಸಂಕೇತ & CKCNSTRNT_ROWID)!=0 );
+    w.e_ಸಂಕೇತ &= ~CKCNSTRNT_ROWID;
   }
-  testcase( w.eCode==0 );
-  testcase( w.eCode==CKCNSTRNT_COLUMN );
-  testcase( w.eCode==CKCNSTRNT_ROWID );
-  testcase( w.eCode==(CKCNSTRNT_ROWID|CKCNSTRNT_COLUMN) );
-  return w.eCode!=0;
+  testcase( w.e_ಸಂಕೇತ==0 );
+  testcase( w.e_ಸಂಕೇತ==CKCNSTRNT_ಸ್ತಂಭ );
+  testcase( w.e_ಸಂಕೇತ==CKCNSTRNT_ROWID );
+  testcase( w.e_ಸಂಕೇತ==(CKCNSTRNT_ROWID|CKCNSTRNT_ಸ್ತಂಭ) );
+  ಹಿಂತಿರುಗಿ w.e_ಸಂಕೇತ!=0;
 }
 
 /*
@@ -1744,18 +1744,18 @@ int sqlite3ExprReferencesUpdatedColumn(
 ** of a table in either Index.pNext order, or in some other order established
 ** by an array of IndexListTerm objects.
 */
-typedef struct IndexListTerm IndexListTerm;
-typedef struct IndexIterator IndexIterator;
-struct IndexIterator {
-  int eType;    /* 0 for Index.pNext list.  1 for an array of IndexListTerm */
-  int i;        /* Index of the current item from the list */
-  union {
-    struct {    /* Use this object for eType==0: A Index.pNext list */
-      Index *pIdx;   /* The current Index */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಸೂಚ್ಯಂಕ_List_ಪದ ಸೂಚ್ಯಂಕ_List_ಪದ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಸೂಚ್ಯಂಕ_Iterator ಸೂಚ್ಯಂಕ_Iterator;
+ರಚನೆ ಸೂಚ್ಯಂಕ_Iterator {
+  ಪೂರ್ಣಾಂಕ eType;    /* 0 for Index.pNext list.  1 for an array of IndexListTerm */
+  ಪೂರ್ಣಾಂಕ i;        /* Index of the current item from the list */
+  ಒಕ್ಕೂಟ {
+    ರಚನೆ {    /* Use this object for eType==0: A Index.pNext list */
+      ಸೂಚ್ಯಂಕ *pIdx;   /* The current Index */
     } lx;     
-    struct {    /* Use this object for eType==1; Array of IndexListTerm */
-      int nIdx;               /* Size of the array */
-      IndexListTerm *aIdx;    /* Array of IndexListTerms */
+    ರಚನೆ {    /* Use this object for eType==1; Array of IndexListTerm */
+      ಪೂರ್ಣಾಂಕ nIdx;               /* Size of the array */
+      ಸೂಚ್ಯಂಕ_List_ಪದ *aIdx;    /* Array of IndexListTerms */
     } ax;
   } u;
 };
@@ -1763,37 +1763,37 @@ struct IndexIterator {
 /* When IndexIterator.eType==1, then each index is an array of instances
 ** of the following object
 */
-struct IndexListTerm {
-  Index *p;  /* The index */
-  int ix;    /* Which entry in the original Table.pIndex list is this index*/
+ರಚನೆ ಸೂಚ್ಯಂಕ_List_ಪದ {
+  ಸೂಚ್ಯಂಕ *p;  /* The index */
+  ಪೂರ್ಣಾಂಕ ix;    /* Which entry in the original Table.pIndex list is this index*/
 };
 
 /* Return the first index on the list */
-static Index *indexIteratorFirst(IndexIterator *pIter, int *pIx){
-  assert( pIter->i==0 );
-  if( pIter->eType ){
+ಸ್ಥಿರ ಸೂಚ್ಯಂಕ *ಸೂಚ್ಯಂಕ_Iterator_ಮೊದಲ(ಸೂಚ್ಯಂಕ_Iterator *pIter, ಪೂರ್ಣಾಂಕ *pIx){
+  ಪ್ರತಿಜ್ಞಾ( pIter->i==0 );
+  ಆದರೆ( pIter->eType ){
     *pIx = pIter->u.ax.aIdx[0].ix;
-    return pIter->u.ax.aIdx[0].p;
-  }else{
+    ಹಿಂತಿರುಗಿ pIter->u.ax.aIdx[0].p;
+  }ಇಲ್ಲದಿದ್ದರೆ{
     *pIx = 0;
-    return pIter->u.lx.pIdx;
+    ಹಿಂತಿರುಗಿ pIter->u.lx.pIdx;
   }
 }
 
 /* Return the next index from the list.  Return NULL when out of indexes */
-static Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
-  if( pIter->eType ){
-    int i = ++pIter->i;
-    if( i>=pIter->u.ax.nIdx ){
+ಸ್ಥಿರ ಸೂಚ್ಯಂಕ *ಸೂಚ್ಯಂಕ_Iterator_ಮುಂದಿನ(ಸೂಚ್ಯಂಕ_Iterator *pIter, ಪೂರ್ಣಾಂಕ *pIx){
+  ಆದರೆ( pIter->eType ){
+    ಪೂರ್ಣಾಂಕ i = ++pIter->i;
+    ಆದರೆ( i>=pIter->u.ax.nIdx ){
       *pIx = i;
-      return 0;
+      ಹಿಂತಿರುಗಿ 0;
     }
     *pIx = pIter->u.ax.aIdx[i].ix;
-    return pIter->u.ax.aIdx[i].p;
-  }else{
+    ಹಿಂತಿರುಗಿ pIter->u.ax.aIdx[i].p;
+  }ಇಲ್ಲದಿದ್ದರೆ{
     ++(*pIx);
-    pIter->u.lx.pIdx = pIter->u.lx.pIdx->pNext;
-    return pIter->u.lx.pIdx;
+    pIter->u.lx.pIdx = pIter->u.lx.pIdx->p_ಮುಂದಿನ;
+    ಹಿಂತಿರುಗಿ pIter->u.lx.pIdx;
   }
 }
  
@@ -1888,207 +1888,207 @@ static Index *indexIteratorNext(IndexIterator *pIter, int *pIx){
 ** is used.  Or if pParse->onError==OE_Default then the onError value
 ** for the constraint is used.
 */
-void sqlite3GenerateConstraintChecks(
+ಶೂನ್ಯ sqlite3GenerateConstraintChecks(
   Parse *pParse,       /* The parser context */
-  Table *pTab,         /* The table being inserted or updated */
-  int *aRegIdx,        /* Use register aRegIdx[i] for index i.  0 for unused */
-  int iDataCur,        /* Canonical data cursor (main table or PK index) */
-  int iIdxCur,         /* First index cursor */
-  int regNewData,      /* First register in a range holding values to insert */
-  int regOldData,      /* Previous content.  0 for INSERTs */
+  ಕೋಷ್ಟಕ *pTab,         /* The table being inserted or updated */
+  ಪೂರ್ಣಾಂಕ *aRegIdx,        /* Use register aRegIdx[i] for index i.  0 for unused */
+  ಪೂರ್ಣಾಂಕ i_ದತ್ತಾಂಶ_Cur,        /* Canonical data cursor (main table or PK index) */
+  ಪೂರ್ಣಾಂಕ iIdxCur,         /* First index cursor */
+  ಪೂರ್ಣಾಂಕ reg_New_ದತ್ತಾಂಶ,      /* First register in a range holding values to insert */
+  ಪೂರ್ಣಾಂಕ reg_Old_ದತ್ತಾಂಶ,      /* Previous content.  0 for INSERTs */
   u8 pkChng,           /* Non-zero if the rowid or PRIMARY KEY changed */
   u8 overrideError,    /* Override onError to this if not OE_Default */
-  int ignoreDest,      /* Jump to this label on an OE_Ignore resolution */
-  int *pbMayReplace,   /* OUT: Set to true if constraint may cause a replace */
-  int *aiChng,         /* column i is unchanged if aiChng[i]<0 */
+  ಪೂರ್ಣಾಂಕ ignoreDest,      /* Jump to this label on an OE_Ignore resolution */
+  ಪೂರ್ಣಾಂಕ *pbMayReplace,   /* OUT: Set to true if constraint may cause a replace */
+  ಪೂರ್ಣಾಂಕ *aiChng,         /* column i is unchanged if aiChng[i]<0 */
   Upsert *pUpsert      /* ON CONFLICT clauses, if any.  NULL otherwise */
 ){
   Vdbe *v;             /* VDBE under construction */
-  Index *pIdx;         /* Pointer to one of the indices */
-  Index *pPk = 0;      /* The PRIMARY KEY index for WITHOUT ROWID tables */
+  ಸೂಚ್ಯಂಕ *pIdx;         /* Pointer to one of the indices */
+  ಸೂಚ್ಯಂಕ *pPk = 0;      /* The PRIMARY KEY index for WITHOUT ROWID tables */
   sqlite3 *db;         /* Database connection */
-  int i;               /* loop counter */
-  int ix;              /* Index loop counter */
-  int nCol;            /* Number of columns */
-  int onError;         /* Conflict resolution strategy */
-  int seenReplace = 0; /* True if REPLACE is used to resolve INT PK conflict */
-  int nPkField;        /* Number of fields in PRIMARY KEY. 1 for ROWID tables */
+  ಪೂರ್ಣಾಂಕ i;               /* loop counter */
+  ಪೂರ್ಣಾಂಕ ix;              /* Index loop counter */
+  ಪೂರ್ಣಾಂಕ n_ಲಂಬಸಾಲು;            /* Number of columns */
+  ಪೂರ್ಣಾಂಕ onError;         /* Conflict resolution strategy */
+  ಪೂರ್ಣಾಂಕ ನೋಡಿದ_Replace = 0; /* True if REPLACE is used to resolve INT PK conflict */
+  ಪೂರ್ಣಾಂಕ n_Pk_ಕ್ಷೇತ್ರ;        /* Number of fields in PRIMARY KEY. 1 for ROWID tables */
   Upsert *pUpsertClause = 0;  /* The specific ON CONFLICT clause for pIdx */
   u8 isUpdate;           /* True if this is an UPDATE operation */
-  u8 bAffinityDone = 0;  /* True if the OP_Affinity operation has been run */
-  int upsertIpkReturn = 0; /* Address of Goto at end of IPK uniqueness check */
-  int upsertIpkDelay = 0;  /* Address of Goto to bypass initial IPK check */
-  int ipkTop = 0;        /* Top of the IPK uniqueness check */
-  int ipkBottom = 0;     /* OP_Goto at the end of the IPK uniqueness check */
+  u8 b_Affinity_ಮುಗಿದ = 0;  /* True if the OP_Affinity operation has been run */
+  ಪೂರ್ಣಾಂಕ upsertIpkReturn = 0; /* Address of Goto at end of IPK uniqueness check */
+  ಪೂರ್ಣಾಂಕ upsertIpkDelay = 0;  /* Address of Goto to bypass initial IPK check */
+  ಪೂರ್ಣಾಂಕ ipk_ತುದಿ = 0;        /* Top of the IPK uniqueness check */
+  ಪೂರ್ಣಾಂಕ ipkBottom = 0;     /* OP_Goto at the end of the IPK uniqueness check */
   /* Variables associated with retesting uniqueness constraints after
   ** replace triggers fire have run */
-  int regTrigCnt;       /* Register used to count replace trigger invocations */
-  int addrRecheck = 0;  /* Jump here to recheck all uniqueness constraints */
-  int lblRecheckOk = 0; /* Each recheck jumps to this label if it passes */
+  ಪೂರ್ಣಾಂಕ regTrigCnt;       /* Register used to count replace trigger invocations */
+  ಪೂರ್ಣಾಂಕ addrRecheck = 0;  /* Jump here to recheck all uniqueness constraints */
+  ಪೂರ್ಣಾಂಕ lblRecheckOk = 0; /* Each recheck jumps to this label if it passes */
   Trigger *pTrigger;    /* List of DELETE triggers on the table pTab */
-  int nReplaceTrig = 0; /* Number of replace triggers coded */
-  IndexIterator sIdxIter;  /* Index iterator */
+  ಪೂರ್ಣಾಂಕ nReplaceTrig = 0; /* Number of replace triggers coded */
+  ಸೂಚ್ಯಂಕ_Iterator sIdxIter;  /* Index iterator */
 
-  isUpdate = regOldData!=0;
+  isUpdate = reg_Old_ದತ್ತಾಂಶ!=0;
   db = pParse->db;
   v = pParse->pVdbe;
-  assert( v!=0 );
-  assert( !IsView(pTab) );  /* This table is not a VIEW */
-  nCol = pTab->nCol;
+  ಪ್ರತಿಜ್ಞಾ( v!=0 );
+  ಪ್ರತಿಜ್ಞಾ( !IsView(pTab) );  /* This table is not a VIEW */
+  n_ಲಂಬಸಾಲು = pTab->n_ಲಂಬಸಾಲು;
  
   /* pPk is the PRIMARY KEY index for WITHOUT ROWID tables and NULL for
   ** normal rowid tables.  nPkField is the number of key fields in the
   ** pPk index or 1 for a rowid table.  In other words, nPkField is the
   ** number of fields in the true primary key of the table. */
-  if( HasRowid(pTab) ){
+  ಆದರೆ( HasRowid(pTab) ){
     pPk = 0;
-    nPkField = 1;
-  }else{
-    pPk = sqlite3PrimaryKeyIndex(pTab);
-    nPkField = pPk->nKeyCol;
+    n_Pk_ಕ್ಷೇತ್ರ = 1;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    pPk = sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pTab);
+    n_Pk_ಕ್ಷೇತ್ರ = pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು;
   }
 
   /* Record that this module has started */
   VdbeModuleComment((v, "BEGIN: GenCnstCks(%d,%d,%d,%d,%d)",
-                     iDataCur, iIdxCur, regNewData, regOldData, pkChng));
+                     i_ದತ್ತಾಂಶ_Cur, iIdxCur, reg_New_ದತ್ತಾಂಶ, reg_Old_ದತ್ತಾಂಶ, pkChng));
 
   /* Test all NOT NULL constraints.
   */
-  if( pTab->tabFlags & TF_HasNotNull ){
-    int b2ndPass = 0;         /* True if currently running 2nd pass */
-    int nSeenReplace = 0;     /* Number of ON CONFLICT REPLACE operations */
-    int nGenerated = 0;       /* Number of generated columns with NOT NULL */
-    while(1){  /* Make 2 passes over columns. Exit loop via "break" */
-      for(i=0; i<nCol; i++){
-        int iReg;                        /* Register holding column value */
-        Column *pCol = &pTab->aCol[i];   /* The column to check for NOT NULL */
-        int isGenerated;                 /* non-zero if column is generated */
-        onError = pCol->notNull;
-        if( onError==OE_None ) continue; /* No NOT NULL on this column */
-        if( i==pTab->iPKey ){
-          continue;        /* ROWID is never NULL */
+  ಆದರೆ( pTab->tabFlags & TF_HasNotNull ){
+    ಪೂರ್ಣಾಂಕ b2ndPass = 0;         /* True if currently running 2nd pass */
+    ಪೂರ್ಣಾಂಕ n_ನೋಡಿದ_Replace = 0;     /* Number of ON CONFLICT REPLACE operations */
+    ಪೂರ್ಣಾಂಕ nGenerated = 0;       /* Number of generated columns with NOT NULL */
+    ಆಗ(1){  /* Make 2 passes over columns. Exit loop via "break" */
+      ಗಾಗಿ(i=0; i<n_ಲಂಬಸಾಲು; i++){
+        ಪೂರ್ಣಾಂಕ iReg;                        /* Register holding column value */
+        ಸ್ತಂಭ *p_ಲಂಬಸಾಲು = &pTab->a_ಲಂಬಸಾಲು[i];   /* The column to check for NOT NULL */
+        ಪೂರ್ಣಾಂಕ isGenerated;                 /* non-zero if column is generated */
+        onError = p_ಲಂಬಸಾಲು->notNull;
+        ಆದರೆ( onError==OE_None ) ಮುಂದುವರಿ; /* No NOT NULL on this column */
+        ಆದರೆ( i==pTab->iPKey ){
+          ಮುಂದುವರಿ;        /* ROWID is never NULL */
         }
-        isGenerated = pCol->colFlags & COLFLAG_GENERATED;
-        if( isGenerated && !b2ndPass ){
+        isGenerated = p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED;
+        ಆದರೆ( isGenerated && !b2ndPass ){
           nGenerated++;
-          continue;        /* Generated columns processed on 2nd pass */
+          ಮುಂದುವರಿ;        /* Generated columns processed on 2nd pass */
         }
-        if( aiChng && aiChng[i]<0 && !isGenerated ){
+        ಆದರೆ( aiChng && aiChng[i]<0 && !isGenerated ){
           /* Do not check NOT NULL on columns that do not change */
-          continue;
+          ಮುಂದುವರಿ;
         }
-        if( overrideError!=OE_Default ){
+        ಆದರೆ( overrideError!=OE_Default ){
           onError = overrideError;
-        }else if( onError==OE_Default ){
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( onError==OE_Default ){
           onError = OE_Abort;
         }
-        if( onError==OE_Replace ){
-          if( b2ndPass        /* REPLACE becomes ABORT on the 2nd pass */
-           || pCol->iDflt==0  /* REPLACE is ABORT if no DEFAULT value */
+        ಆದರೆ( onError==OE_Replace ){
+          ಆದರೆ( b2ndPass        /* REPLACE becomes ABORT on the 2nd pass */
+           || p_ಲಂಬಸಾಲು->iDflt==0  /* REPLACE is ABORT if no DEFAULT value */
           ){
-            testcase( pCol->colFlags & COLFLAG_VIRTUAL );
-            testcase( pCol->colFlags & COLFLAG_STORED );
-            testcase( pCol->colFlags & COLFLAG_GENERATED );
+            testcase( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL );
+            testcase( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_STORED );
+            testcase( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED );
             onError = OE_Abort;
-          }else{
-            assert( !isGenerated );
+          }ಇಲ್ಲದಿದ್ದರೆ{
+            ಪ್ರತಿಜ್ಞಾ( !isGenerated );
           }
-        }else if( b2ndPass && !isGenerated ){
-          continue;
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( b2ndPass && !isGenerated ){
+          ಮುಂದುವರಿ;
         }
-        assert( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
+        ಪ್ರತಿಜ್ಞಾ( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
             || onError==OE_Ignore || onError==OE_Replace );
-        testcase( i!=sqlite3TableColumnToStorage(pTab, i) );
-        iReg = sqlite3TableColumnToStorage(pTab, i) + regNewData + 1;
-        switch( onError ){
-          case OE_Replace: {
-            int addr1 = sqlite3VdbeAddOp1(v, OP_NotNull, iReg);
+        testcase( i!=sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab, i) );
+        iReg = sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab, i) + reg_New_ದತ್ತಾಂಶ + 1;
+        ಆಯ್ಕೆ( onError ){
+          ಸ್ಥಿತಿ OE_Replace: {
+            ಪೂರ್ಣಾಂಕ addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_NotNull, iReg);
             VdbeCoverage(v);
-            assert( (pCol->colFlags & COLFLAG_GENERATED)==0 );
-            nSeenReplace++;
-            sqlite3ExprCodeCopy(pParse,
-               sqlite3ColumnExprAuth(pTab, pCol, pParse), iReg);
-            sqlite3VdbeJumpHere(v, addr1);
-            break;
+            ಪ್ರತಿಜ್ಞಾ( (p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED)==0 );
+            n_ನೋಡಿದ_Replace++;
+            sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Copy(pParse,
+               sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ_Auth(pTab, p_ಲಂಬಸಾಲು, pParse), iReg);
+            sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr1);
+            ನಿಲ್ಲಿಸು;
           }
-          case OE_Abort:
+          ಸ್ಥಿತಿ OE_Abort:
             sqlite3MayAbort(pParse);
             /* no break */ deliberate_fall_through
-          case OE_Rollback:
-          case OE_Fail: {
-            char *zMsg = sqlite3MPrintf(db, "%s.%s", pTab->zName,
-                                        pCol->zCnName);
-            testcase( zMsg==0 && db->mallocFailed==0 );
-            sqlite3VdbeAddOp3(v, OP_HaltIfNull, SQLITE_CONSTRAINT_NOTNULL,
+          ಸ್ಥಿತಿ OE_Rollback:
+          ಸ್ಥಿತಿ OE_Fail: {
+            ಅಕ್ಷರ *z_ಸಂದೇಶ = sqlite3MPrintf(db, "%s.%s", pTab->zName,
+                                        p_ಲಂಬಸಾಲು->zCnName);
+            testcase( z_ಸಂದೇಶ==0 && db->mallocFailed==0 );
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_HaltIfNull, SQLITE_CONSTRAINT_NOTNULL,
                               onError, iReg);
-            sqlite3VdbeAppendP4(v, zMsg, P4_DYNAMIC);
+            sqlite3VdbeAppendP4(v, z_ಸಂದೇಶ, P4_DYNAMIC);
             sqlite3VdbeChangeP5(v, P5_ConstraintNotNull);
             VdbeCoverage(v);
-            break;
+            ನಿಲ್ಲಿಸು;
           }
-          default: {
-            assert( onError==OE_Ignore );
-            sqlite3VdbeAddOp2(v, OP_IsNull, iReg, ignoreDest);
+          ಪೂರ್ವನಿಯೋಜಿತ: {
+            ಪ್ರತಿಜ್ಞಾ( onError==OE_Ignore );
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IsNull, iReg, ignoreDest);
             VdbeCoverage(v);
-            break;
+            ನಿಲ್ಲಿಸು;
           }
         } /* end switch(onError) */
       } /* end loop i over columns */
-      if( nGenerated==0 && nSeenReplace==0 ){
+      ಆದರೆ( nGenerated==0 && n_ನೋಡಿದ_Replace==0 ){
         /* If there are no generated columns with NOT NULL constraints
         ** and no NOT NULL ON CONFLICT REPLACE constraints, then a single
         ** pass is sufficient */
-        break;
+        ನಿಲ್ಲಿಸು;
       }
-      if( b2ndPass ) break;  /* Never need more than 2 passes */
+      ಆದರೆ( b2ndPass ) ನಿಲ್ಲಿಸು;  /* Never need more than 2 passes */
       b2ndPass = 1;
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-      if( nSeenReplace>0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
+      ಆದರೆ( n_ನೋಡಿದ_Replace>0 && (pTab->tabFlags & TF_HasGenerated)!=0 ){
         /* If any NOT NULL ON CONFLICT REPLACE constraints fired on the
         ** first pass, recomputed values for all generated columns, as
         ** those values might depend on columns affected by the REPLACE.
         */
-        sqlite3ComputeGeneratedColumns(pParse, regNewData+1, pTab);
+        sqlite3ComputeGeneratedColumns(pParse, reg_New_ದತ್ತಾಂಶ+1, pTab);
       }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
     } /* end of 2-pass loop */
   } /* end if( has-not-null-constraints ) */
 
   /* Test all CHECK constraints
   */
-#ifndef SQLITE_OMIT_CHECK
-  if( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
-    ExprList *pCheck = pTab->pCheck;
-    pParse->iSelfTab = -(regNewData+1);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_CHECK
+  ಆದರೆ( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
+    ಅಭಿವ್ಯಕ್ತಿ_List *pCheck = pTab->pCheck;
+    pParse->iSelfTab = -(reg_New_ದತ್ತಾಂಶ+1);
     onError = overrideError!=OE_Default ? overrideError : OE_Abort;
-    for(i=0; i<pCheck->nExpr; i++){
-      int allOk;
-      Expr *pCopy;
-      Expr *pExpr = pCheck->a[i].pExpr;
-      if( aiChng
-       && !sqlite3ExprReferencesUpdatedColumn(pExpr, aiChng, pkChng)
+    ಗಾಗಿ(i=0; i<pCheck->n_ಅಭಿವ್ಯಕ್ತಿ; i++){
+      ಪೂರ್ಣಾಂಕ allOk;
+      ಅಭಿವ್ಯಕ್ತಿ *pCopy;
+      ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ = pCheck->a[i].p_ಅಭಿವ್ಯಕ್ತಿ;
+      ಆದರೆ( aiChng
+       && !sqlite3_ಅಭಿವ್ಯಕ್ತಿ_References_Updated_ಸ್ತಂಭ(p_ಅಭಿವ್ಯಕ್ತಿ, aiChng, pkChng)
       ){
         /* The check constraints do not reference any of the columns being
         ** updated so there is no point it verifying the check constraint */
-        continue;
+        ಮುಂದುವರಿ;
       }
-      if( bAffinityDone==0 ){
-        sqlite3TableAffinity(v, pTab, regNewData+1);
-        bAffinityDone = 1;
+      ಆದರೆ( b_Affinity_ಮುಗಿದ==0 ){
+        sqlite3_ಕೋಷ್ಟಕ_Affinity(v, pTab, reg_New_ದತ್ತಾಂಶ+1);
+        b_Affinity_ಮುಗಿದ = 1;
       }
       allOk = sqlite3VdbeMakeLabel(pParse);
       sqlite3VdbeVerifyAbortable(v, onError);
-      pCopy = sqlite3ExprDup(db, pExpr, 0);
-      if( !db->mallocFailed ){
-        sqlite3ExprIfTrue(pParse, pCopy, allOk, SQLITE_JUMPIFNULL);
+      pCopy = sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Dup(db, p_ಅಭಿವ್ಯಕ್ತಿ, 0);
+      ಆದರೆ( !db->mallocFailed ){
+        sqlite3_ಅಭಿವ್ಯಕ್ತಿ_If_True(pParse, pCopy, allOk, SQLITE_JUMPIFNULL);
       }
-      sqlite3ExprDelete(db, pCopy);
-      if( onError==OE_Ignore ){
+      sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Delete(db, pCopy);
+      ಆದರೆ( onError==OE_Ignore ){
         sqlite3VdbeGoto(v, ignoreDest);
-      }else{
-        char *zName = pCheck->a[i].zEName;
-        assert( zName!=0 || pParse->db->mallocFailed );
-        if( onError==OE_Replace ) onError = OE_Abort; /* IMP: R-26383-51744 */
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಅಕ್ಷರ *zName = pCheck->a[i].zEName;
+        ಪ್ರತಿಜ್ಞಾ( zName!=0 || pParse->db->mallocFailed );
+        ಆದರೆ( onError==OE_Replace ) onError = OE_Abort; /* IMP: R-26383-51744 */
         sqlite3HaltConstraint(pParse, SQLITE_CONSTRAINT_CHECK,
                               onError, zName, P4_TRANSIENT,
                               P5_ConstraintCheck);
@@ -2097,7 +2097,7 @@ void sqlite3GenerateConstraintChecks(
     }
     pParse->iSelfTab = 0;
   }
-#endif /* !defined(SQLITE_OMIT_CHECK) */
+#ಆದರೆ_ಅಂತ್ಯ /* !defined(SQLITE_OMIT_CHECK) */
 
   /* UNIQUE and PRIMARY KEY constraints should be handled in the following
   ** order:
@@ -2130,60 +2130,60 @@ void sqlite3GenerateConstraintChecks(
   sIdxIter.eType = 0;
   sIdxIter.i = 0;
   sIdxIter.u.ax.aIdx = 0;  /* Silence harmless compiler warning */
-  sIdxIter.u.lx.pIdx = pTab->pIndex;
-  if( pUpsert ){
-    if( pUpsert->pUpsertTarget==0 ){
+  sIdxIter.u.lx.pIdx = pTab->p_ಸೂಚ್ಯಂಕ;
+  ಆದರೆ( pUpsert ){
+    ಆದರೆ( pUpsert->p_Upsert_ಗುರಿ==0 ){
       /* There is just on ON CONFLICT clause and it has no constraint-target */
-      assert( pUpsert->pNextUpsert==0 );
-      if( pUpsert->isDoUpdate==0 ){
+      ಪ್ರತಿಜ್ಞಾ( pUpsert->p_ಮುಂದಿನ_Upsert==0 );
+      ಆದರೆ( pUpsert->isDoUpdate==0 ){
         /* A single ON CONFLICT DO NOTHING clause, without a constraint-target.
         ** Make all unique constraint resolution be OE_Ignore */
         overrideError = OE_Ignore;
         pUpsert = 0;
-      }else{
+      }ಇಲ್ಲದಿದ್ದರೆ{
         /* A single ON CONFLICT DO UPDATE.  Make all resolutions OE_Update */
         overrideError = OE_Update;
       }
-    }else if( pTab->pIndex!=0 ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pTab->p_ಸೂಚ್ಯಂಕ!=0 ){
       /* Otherwise, we'll need to run the IndexListTerm array version of the
       ** iterator to ensure that all of the ON CONFLICT conditions are
       ** checked first and in order. */
-      int nIdx, jj;
+      ಪೂರ್ಣಾಂಕ nIdx, jj;
       u64 nByte;
-      Upsert *pTerm;
-      u8 *bUsed;
-      for(nIdx=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, nIdx++){
-         assert( aRegIdx[nIdx]>0 );
+      Upsert *p_ಪದ;
+      u8 *b_ಬಳಸಿದ;
+      ಗಾಗಿ(nIdx=0, pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ, nIdx++){
+         ಪ್ರತಿಜ್ಞಾ( aRegIdx[nIdx]>0 );
       }
       sIdxIter.eType = 1;
       sIdxIter.u.ax.nIdx = nIdx;
-      nByte = (sizeof(IndexListTerm)+1)*nIdx + nIdx;
+      nByte = (ಗಾತ್ರ(ಸೂಚ್ಯಂಕ_List_ಪದ)+1)*nIdx + nIdx;
       sIdxIter.u.ax.aIdx = sqlite3DbMallocZero(db, nByte);
-      if( sIdxIter.u.ax.aIdx==0 ) return; /* OOM */
-      bUsed = (u8*)&sIdxIter.u.ax.aIdx[nIdx];
-      pUpsert->pToFree = sIdxIter.u.ax.aIdx;
-      for(i=0, pTerm=pUpsert; pTerm; pTerm=pTerm->pNextUpsert){
-        if( pTerm->pUpsertTarget==0 ) break;
-        if( pTerm->pUpsertIdx==0 ) continue;  /* Skip ON CONFLICT for the IPK */
+      ಆದರೆ( sIdxIter.u.ax.aIdx==0 ) ಹಿಂತಿರುಗಿ; /* OOM */
+      b_ಬಳಸಿದ = (u8*)&sIdxIter.u.ax.aIdx[nIdx];
+      pUpsert->p_ಗಮ್ಯ_Free = sIdxIter.u.ax.aIdx;
+      ಗಾಗಿ(i=0, p_ಪದ=pUpsert; p_ಪದ; p_ಪದ=p_ಪದ->p_ಮುಂದಿನ_Upsert){
+        ಆದರೆ( p_ಪದ->p_Upsert_ಗುರಿ==0 ) ನಿಲ್ಲಿಸು;
+        ಆದರೆ( p_ಪದ->pUpsertIdx==0 ) ಮುಂದುವರಿ;  /* Skip ON CONFLICT for the IPK */
         jj = 0;
-        pIdx = pTab->pIndex;
-        while( ALWAYS(pIdx!=0) && pIdx!=pTerm->pUpsertIdx ){
-           pIdx = pIdx->pNext;
+        pIdx = pTab->p_ಸೂಚ್ಯಂಕ;
+        ಆಗ( ALWAYS(pIdx!=0) && pIdx!=p_ಪದ->pUpsertIdx ){
+           pIdx = pIdx->p_ಮುಂದಿನ;
            jj++;
         }
-        if( bUsed[jj] ) continue; /* Duplicate ON CONFLICT clause ignored */
-        bUsed[jj] = 1;
+        ಆದರೆ( b_ಬಳಸಿದ[jj] ) ಮುಂದುವರಿ; /* Duplicate ON CONFLICT clause ignored */
+        b_ಬಳಸಿದ[jj] = 1;
         sIdxIter.u.ax.aIdx[i].p = pIdx;
         sIdxIter.u.ax.aIdx[i].ix = jj;
         i++;
       }
-      for(jj=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, jj++){
-        if( bUsed[jj] ) continue;
+      ಗಾಗಿ(jj=0, pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ, jj++){
+        ಆದರೆ( b_ಬಳಸಿದ[jj] ) ಮುಂದುವರಿ;
         sIdxIter.u.ax.aIdx[i].p = pIdx;
         sIdxIter.u.ax.aIdx[i].ix = jj;
         i++;
       }
-      assert( i==nIdx );
+      ಪ್ರತಿಜ್ಞಾ( i==nIdx );
     }
   }
 
@@ -2207,40 +2207,40 @@ void sqlite3GenerateConstraintChecks(
   ** used to link together these tests which are separated from each other
   ** in the generate bytecode.
   */
-  if( (db->flags & (SQLITE_RecTriggers|SQLITE_ForeignKeys))==0 ){
+  ಆದರೆ( (db->flags & (SQLITE_RecTriggers|SQLITE_Foreign_ಕೀಲಿಗಳು))==0 ){
     /* There are not DELETE triggers nor FK constraints.  No constraint
     ** rechecks are needed. */
     pTrigger = 0;
     regTrigCnt = 0;
-  }else{
-    if( db->flags&SQLITE_RecTriggers ){
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಆದರೆ( db->flags&SQLITE_RecTriggers ){
       pTrigger = sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0);
       regTrigCnt = pTrigger!=0 || sqlite3FkRequired(pParse, pTab, 0, 0);
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       pTrigger = 0;
       regTrigCnt = sqlite3FkRequired(pParse, pTab, 0, 0);
     }
-    if( regTrigCnt ){
+    ಆದರೆ( regTrigCnt ){
       /* At this point regTrigCnt is non-zero if there are DELETE triggers
       ** or FK triggers. But we only care about these things if there is
       ** a chance that a row will be deleted by an ON CONFLICT REPLACE
       ** constraint. So zero regTrigCnt if no such constraint can be found. */
-      if( overrideError!=OE_Replace ){
-        if( overrideError!=OE_Default ){
+      ಆದರೆ( overrideError!=OE_Replace ){
+        ಆದರೆ( overrideError!=OE_Default ){
           regTrigCnt = 0;
-        }else if( pkChng==0 || pPk || pTab->keyConf!=OE_Replace ){
-          for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-            if( pIdx->onError==OE_Replace ) break;
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pkChng==0 || pPk || pTab->ಕೀಲಿ_Conf!=OE_Replace ){
+          ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ){
+            ಆದರೆ( pIdx->onError==OE_Replace ) ನಿಲ್ಲಿಸು;
           }
-          if( pIdx==0 ) regTrigCnt = 0;
+          ಆದರೆ( pIdx==0 ) regTrigCnt = 0;
         }
       }
     }
-    if( regTrigCnt ){
+    ಆದರೆ( regTrigCnt ){
       /* Replace triggers might exist.  Allocate the counter and
       ** initialize it to zero. */
       regTrigCnt = ++pParse->nMem;
-      sqlite3VdbeAddOp2(v, OP_Integer, 0, regTrigCnt);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, 0, regTrigCnt);
       VdbeComment((v, "trigger count"));
       lblRecheckOk = sqlite3VdbeMakeLabel(pParse);
       addrRecheck = lblRecheckOk;
@@ -2250,32 +2250,32 @@ void sqlite3GenerateConstraintChecks(
   /* If rowid is changing, make sure the new rowid does not previously
   ** exist in the table.
   */
-  if( pkChng && pPk==0 ){
-    int addrRowidOk = sqlite3VdbeMakeLabel(pParse);
+  ಆದರೆ( pkChng && pPk==0 ){
+    ಪೂರ್ಣಾಂಕ addrRowidOk = sqlite3VdbeMakeLabel(pParse);
 
     /* Figure out what action to take in case of a rowid collision */
-    onError = pTab->keyConf;
-    if( overrideError!=OE_Default ){
+    onError = pTab->ಕೀಲಿ_Conf;
+    ಆದರೆ( overrideError!=OE_Default ){
       onError = overrideError;
-    }else if( onError==OE_Default ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( onError==OE_Default ){
       onError = OE_Abort;
     }
 
     /* figure out whether or not upsert applies in this case */
-    if( pUpsert ){
-      pUpsertClause = sqlite3UpsertOfIndex(pUpsert,0);
-      if( pUpsertClause!=0 ){
-        if( pUpsertClause->isDoUpdate==0 ){
+    ಆದರೆ( pUpsert ){
+      pUpsertClause = sqlite3_Upsert_ದ_ಸೂಚ್ಯಂಕ(pUpsert,0);
+      ಆದರೆ( pUpsertClause!=0 ){
+        ಆದರೆ( pUpsertClause->isDoUpdate==0 ){
           onError = OE_Ignore;  /* DO NOTHING is the same as INSERT OR IGNORE */
-        }else{
+        }ಇಲ್ಲದಿದ್ದರೆ{
           onError = OE_Update;  /* DO UPDATE */
         }
       }
-      if( pUpsertClause!=pUpsert ){
+      ಆದರೆ( pUpsertClause!=pUpsert ){
         /* The first ON CONFLICT clause has a conflict target other than
         ** the IPK.  We have to jump ahead to that first ON CONFLICT clause
         ** and then come back here and deal with the IPK afterwards */
-        upsertIpkDelay = sqlite3VdbeAddOp0(v, OP_Goto);
+        upsertIpkDelay = sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Goto);
       }
     }
 
@@ -2284,24 +2284,24 @@ void sqlite3GenerateConstraintChecks(
     ** to defer the running of the rowid conflict checking until after
     ** the UNIQUE constraints have run.
     */
-    if( onError==OE_Replace      /* IPK rule is REPLACE */
+    ಆದರೆ( onError==OE_Replace      /* IPK rule is REPLACE */
      && onError!=overrideError   /* Rules for other constraints are different */
-     && pTab->pIndex             /* There exist other constraints */
+     && pTab->p_ಸೂಚ್ಯಂಕ             /* There exist other constraints */
     ){
-      if( upsertIpkDelay ){
-        ipkTop = upsertIpkDelay + 1;
+      ಆದರೆ( upsertIpkDelay ){
+        ipk_ತುದಿ = upsertIpkDelay + 1;
         upsertIpkDelay = 0;
-      }else{
-        ipkTop = sqlite3VdbeAddOp0(v, OP_Goto)+1;
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ipk_ತುದಿ = sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Goto)+1;
       }
       VdbeComment((v, "defer IPK REPLACE until last"));
     }
 
-    if( isUpdate ){
+    ಆದರೆ( isUpdate ){
       /* pkChng!=0 does not mean that the rowid has changed, only that
       ** it might have changed.  Skip the conflict logic below if the rowid
       ** is unchanged. */
-      sqlite3VdbeAddOp3(v, OP_Eq, regNewData, addrRowidOk, regOldData);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Eq, reg_New_ದತ್ತಾಂಶ, addrRowidOk, reg_Old_ದತ್ತಾಂಶ);
       sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
       VdbeCoverage(v);
     }
@@ -2310,24 +2310,24 @@ void sqlite3GenerateConstraintChecks(
     ** the following conflict logic if it does not. */
     VdbeNoopComment((v, "uniqueness check for ROWID"));
     sqlite3VdbeVerifyAbortable(v, onError);
-    sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, addrRowidOk, regNewData);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_NotExists, i_ದತ್ತಾಂಶ_Cur, addrRowidOk, reg_New_ದತ್ತಾಂಶ);
     VdbeCoverage(v);
 
-    switch( onError ){
-      default: {
+    ಆಯ್ಕೆ( onError ){
+      ಪೂರ್ವನಿಯೋಜಿತ: {
         onError = OE_Abort;
         /* no break */ deliberate_fall_through
       }
-      case OE_Rollback:
-      case OE_Abort:
-      case OE_Fail: {
+      ಸ್ಥಿತಿ OE_Rollback:
+      ಸ್ಥಿತಿ OE_Abort:
+      ಸ್ಥಿತಿ OE_Fail: {
         testcase( onError==OE_Rollback );
         testcase( onError==OE_Abort );
         testcase( onError==OE_Fail );
         sqlite3RowidConstraint(pParse, onError, pTab);
-        break;
+        ನಿಲ್ಲಿಸು;
       }
-      case OE_Replace: {
+      ಸ್ಥಿತಿ OE_Replace: {
         /* If there are DELETE triggers on this table and the
         ** recursive-triggers flag is set, call GenerateRowDelete() to
         ** remove the conflicting row from the table. This will fire
@@ -2350,48 +2350,48 @@ void sqlite3GenerateConstraintChecks(
         ** to run without a statement journal if there are no indexes on the
         ** table.
         */
-        if( regTrigCnt ){
+        ಆದರೆ( regTrigCnt ){
           sqlite3MultiWrite(pParse);
-          sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
-                                   regNewData, 1, 0, OE_Replace, 1, -1);
-          sqlite3VdbeAddOp2(v, OP_AddImm, regTrigCnt, 1); /* incr trigger cnt */
+          sqlite3_Generate_ಅಡ್ಡಸಾಲು_Delete(pParse, pTab, pTrigger, i_ದತ್ತಾಂಶ_Cur, iIdxCur,
+                                   reg_New_ದತ್ತಾಂಶ, 1, 0, OE_Replace, 1, -1);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಕೂಡಿಸು_Imm, regTrigCnt, 1); /* incr trigger cnt */
           nReplaceTrig++;
-        }else{
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-          assert( HasRowid(pTab) );
+        }ಇಲ್ಲದಿದ್ದರೆ{
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_PREUPDATE_HOOK
+          ಪ್ರತಿಜ್ಞಾ( HasRowid(pTab) );
           /* This OP_Delete opcode fires the pre-update-hook only. It does
           ** not modify the b-tree. It is more efficient to let the coming
           ** OP_Insert replace the existing entry than it is to delete the
           ** existing entry and then insert a new one. */
-          sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, OPFLAG_ISNOOP);
-          sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
-#endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
-          if( pTab->pIndex ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Delete, i_ದತ್ತಾಂಶ_Cur, OPFLAG_ISNOOP);
+          sqlite3VdbeAppendP4(v, pTab, P4_ಕೋಷ್ಟಕ);
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_ENABLE_PREUPDATE_HOOK */
+          ಆದರೆ( pTab->p_ಸೂಚ್ಯಂಕ ){
             sqlite3MultiWrite(pParse);
-            sqlite3GenerateRowIndexDelete(pParse, pTab, iDataCur, iIdxCur,0,-1);
+            sqlite3_Generate_ಅಡ್ಡಸಾಲು_ಸೂಚ್ಯಂಕ_Delete(pParse, pTab, i_ದತ್ತಾಂಶ_Cur, iIdxCur,0,-1);
           }
         }
-        seenReplace = 1;
-        break;
+        ನೋಡಿದ_Replace = 1;
+        ನಿಲ್ಲಿಸು;
       }
-#ifndef SQLITE_OMIT_UPSERT
-      case OE_Update: {
-        sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, 0, iDataCur);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UPSERT
+      ಸ್ಥಿತಿ OE_Update: {
+        sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, 0, i_ದತ್ತಾಂಶ_Cur);
         /* no break */ deliberate_fall_through
       }
-#endif
-      case OE_Ignore: {
+#ಆದರೆ_ಅಂತ್ಯ
+      ಸ್ಥಿತಿ OE_Ignore: {
         testcase( onError==OE_Ignore );
         sqlite3VdbeGoto(v, ignoreDest);
-        break;
+        ನಿಲ್ಲಿಸು;
       }
     }
     sqlite3VdbeResolveLabel(v, addrRowidOk);
-    if( ipkTop ){
-      ipkBottom = sqlite3VdbeAddOp0(v, OP_Goto);
-      sqlite3VdbeJumpHere(v, ipkTop-1);
-    }else if( pUpsert && pUpsertClause!=pUpsert ){
-      upsertIpkReturn = sqlite3VdbeAddOp0(v, OP_Goto);
+    ಆದರೆ( ipk_ತುದಿ ){
+      ipkBottom = sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Goto);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, ipk_ತುದಿ-1);
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pUpsert && pUpsertClause!=pUpsert ){
+      upsertIpkReturn = sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Goto);
     }
   }
 
@@ -2402,38 +2402,38 @@ void sqlite3GenerateConstraintChecks(
   ** This loop also handles the case of the PRIMARY KEY index for a
   ** WITHOUT ROWID table.
   */
-  for(pIdx = indexIteratorFirst(&sIdxIter, &ix);
+  ಗಾಗಿ(pIdx = ಸೂಚ್ಯಂಕ_Iterator_ಮೊದಲ(&sIdxIter, &ix);
       pIdx;
-      pIdx = indexIteratorNext(&sIdxIter, &ix)
+      pIdx = ಸೂಚ್ಯಂಕ_Iterator_ಮುಂದಿನ(&sIdxIter, &ix)
   ){
-    int regIdx;          /* Range of registers holding content for pIdx */
-    int regR;            /* Range of registers holding conflicting PK */
-    int iThisCur;        /* Cursor for this UNIQUE index */
-    int addrUniqueOk;    /* Jump here if the UNIQUE constraint is satisfied */
-    int addrConflictCk;  /* First opcode in the conflict check logic */
-    int nConflictCk;     /* Number of opcodes in conflict check logic */
+    ಪೂರ್ಣಾಂಕ regIdx;          /* Range of registers holding content for pIdx */
+    ಪೂರ್ಣಾಂಕ regR;            /* Range of registers holding conflicting PK */
+    ಪೂರ್ಣಾಂಕ iThisCur;        /* Cursor for this UNIQUE index */
+    ಪೂರ್ಣಾಂಕ addrUniqueOk;    /* Jump here if the UNIQUE constraint is satisfied */
+    ಪೂರ್ಣಾಂಕ addrConflictCk;  /* First opcode in the conflict check logic */
+    ಪೂರ್ಣಾಂಕ nConflictCk;     /* Number of opcodes in conflict check logic */
 
-    if( aRegIdx[ix]==0 ) continue;  /* Skip indices that do not change */
-    if( pUpsert ){
-      pUpsertClause = sqlite3UpsertOfIndex(pUpsert, pIdx);
-      if( upsertIpkDelay && pUpsertClause==pUpsert ){
-        sqlite3VdbeJumpHere(v, upsertIpkDelay);
+    ಆದರೆ( aRegIdx[ix]==0 ) ಮುಂದುವರಿ;  /* Skip indices that do not change */
+    ಆದರೆ( pUpsert ){
+      pUpsertClause = sqlite3_Upsert_ದ_ಸೂಚ್ಯಂಕ(pUpsert, pIdx);
+      ಆದರೆ( upsertIpkDelay && pUpsertClause==pUpsert ){
+        sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, upsertIpkDelay);
       }
     }
     addrUniqueOk = sqlite3VdbeMakeLabel(pParse);
-    if( bAffinityDone==0 ){
-      sqlite3TableAffinity(v, pTab, regNewData+1);
-      bAffinityDone = 1;
+    ಆದರೆ( b_Affinity_ಮುಗಿದ==0 ){
+      sqlite3_ಕೋಷ್ಟಕ_Affinity(v, pTab, reg_New_ದತ್ತಾಂಶ+1);
+      b_Affinity_ಮುಗಿದ = 1;
     }
     VdbeNoopComment((v, "prep index %s", pIdx->zName));
     iThisCur = iIdxCur+ix;
 
 
     /* Skip partial indices for which the WHERE clause is not true */
-    if( pIdx->pPartIdxWhere ){
-      sqlite3VdbeAddOp2(v, OP_Null, 0, aRegIdx[ix]);
-      pParse->iSelfTab = -(regNewData+1);
-      sqlite3ExprIfFalseDup(pParse, pIdx->pPartIdxWhere, addrUniqueOk,
+    ಆದರೆ( pIdx->pPartIdxWhere ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Null, 0, aRegIdx[ix]);
+      pParse->iSelfTab = -(reg_New_ದತ್ತಾಂಶ+1);
+      sqlite3_ಅಭಿವ್ಯಕ್ತಿ_If_False_Dup(pParse, pIdx->pPartIdxWhere, addrUniqueOk,
                             SQLITE_JUMPIFNULL);
       pParse->iSelfTab = 0;
     }
@@ -2442,60 +2442,60 @@ void sqlite3GenerateConstraintChecks(
     ** the insert or update.  Store that record in the aRegIdx[ix] register
     */
     regIdx = aRegIdx[ix]+1;
-    for(i=0; i<pIdx->nColumn; i++){
-      int iField = pIdx->aiColumn[i];
-      int x;
-      if( iField==XN_EXPR ){
-        pParse->iSelfTab = -(regNewData+1);
-        sqlite3ExprCodeCopy(pParse, pIdx->aColExpr->a[i].pExpr, regIdx+i);
+    ಗಾಗಿ(i=0; i<pIdx->n_ಸ್ತಂಭ; i++){
+      ಪೂರ್ಣಾಂಕ i_ಕ್ಷೇತ್ರ = pIdx->ai_ಸ್ತಂಭ[i];
+      ಪೂರ್ಣಾಂಕ x;
+      ಆದರೆ( i_ಕ್ಷೇತ್ರ==XN_ಅಭಿವ್ಯಕ್ತಿ ){
+        pParse->iSelfTab = -(reg_New_ದತ್ತಾಂಶ+1);
+        sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Copy(pParse, pIdx->a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ->a[i].p_ಅಭಿವ್ಯಕ್ತಿ, regIdx+i);
         pParse->iSelfTab = 0;
         VdbeComment((v, "%s column %d", pIdx->zName, i));
-      }else if( iField==XN_ROWID || iField==pTab->iPKey ){
-        x = regNewData;
-        sqlite3VdbeAddOp2(v, OP_IntCopy, x, regIdx+i);
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( i_ಕ್ಷೇತ್ರ==XN_ROWID || i_ಕ್ಷೇತ್ರ==pTab->iPKey ){
+        x = reg_New_ದತ್ತಾಂಶ;
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IntCopy, x, regIdx+i);
         VdbeComment((v, "rowid"));
-      }else{
-        testcase( sqlite3TableColumnToStorage(pTab, iField)!=iField );
-        x = sqlite3TableColumnToStorage(pTab, iField) + regNewData + 1;
-        sqlite3VdbeAddOp2(v, OP_SCopy, x, regIdx+i);
-        VdbeComment((v, "%s", pTab->aCol[iField].zCnName));
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        testcase( sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab, i_ಕ್ಷೇತ್ರ)!=i_ಕ್ಷೇತ್ರ );
+        x = sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab, i_ಕ್ಷೇತ್ರ) + reg_New_ದತ್ತಾಂಶ + 1;
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_SCopy, x, regIdx+i);
+        VdbeComment((v, "%s", pTab->a_ಲಂಬಸಾಲು[i_ಕ್ಷೇತ್ರ].zCnName));
       }
     }
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, regIdx, pIdx->nColumn, aRegIdx[ix]);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Make_ದಾಖಲೆ, regIdx, pIdx->n_ಸ್ತಂಭ, aRegIdx[ix]);
     VdbeComment((v, "for %s", pIdx->zName));
-#ifdef SQLITE_ENABLE_NULL_TRIM
-    if( pIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
-      sqlite3SetMakeRecordP5(v, pIdx->pTable);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_NULL_TRIM
+    ಆದರೆ( pIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
+      sqlite3_ಗಣ_Make_ದಾಖಲೆ_P5(v, pIdx->p_ಕೋಷ್ಟಕ);
     }
-#endif
-    sqlite3VdbeReleaseRegisters(pParse, regIdx, pIdx->nColumn, 0, 0);
+#ಆದರೆ_ಅಂತ್ಯ
+    sqlite3VdbeReleaseRegisters(pParse, regIdx, pIdx->n_ಸ್ತಂಭ, 0, 0);
 
     /* In an UPDATE operation, if this index is the PRIMARY KEY index
     ** of a WITHOUT ROWID table and there has been no change the
     ** primary key, then no collision is possible.  The collision detection
     ** logic below can all be skipped. */
-    if( isUpdate && pPk==pIdx && pkChng==0 ){
+    ಆದರೆ( isUpdate && pPk==pIdx && pkChng==0 ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;
+      ಮುಂದುವರಿ;
     }
 
     /* Find out what action to take in case there is a uniqueness conflict */
     onError = pIdx->onError;
-    if( onError==OE_None ){
+    ಆದರೆ( onError==OE_None ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;  /* pIdx is not a UNIQUE index */
+      ಮುಂದುವರಿ;  /* pIdx is not a UNIQUE index */
     }
-    if( overrideError!=OE_Default ){
+    ಆದರೆ( overrideError!=OE_Default ){
       onError = overrideError;
-    }else if( onError==OE_Default ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( onError==OE_Default ){
       onError = OE_Abort;
     }
 
     /* Figure out if the upsert clause applies to this index */
-    if( pUpsertClause ){
-      if( pUpsertClause->isDoUpdate==0 ){
+    ಆದರೆ( pUpsertClause ){
+      ಆದರೆ( pUpsertClause->isDoUpdate==0 ){
         onError = OE_Ignore;  /* DO NOTHING is the same as INSERT OR IGNORE */
-      }else{
+      }ಇಲ್ಲದಿದ್ದರೆ{
         onError = OE_Update;  /* DO UPDATE */
       }
     }
@@ -2510,53 +2510,53 @@ void sqlite3GenerateConstraintChecks(
     ** This is not possible for ENABLE_PREUPDATE_HOOK builds, as the row
     ** must be explicitly deleted in order to ensure any pre-update hook
     ** is invoked.  */
-    assert( IsOrdinaryTable(pTab) );
-#ifndef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( (ix==0 && pIdx->pNext==0)                   /* Condition 3 */
+    ಪ್ರತಿಜ್ಞಾ( Is_Ordinary_ಕೋಷ್ಟಕ(pTab) );
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_ENABLE_PREUPDATE_HOOK
+    ಆದರೆ( (ix==0 && pIdx->p_ಮುಂದಿನ==0)                   /* Condition 3 */
      && pPk==pIdx                                   /* Condition 2 */
      && onError==OE_Replace                         /* Condition 1 */
      && ( 0==(db->flags&SQLITE_RecTriggers) ||      /* Condition 4 */
           0==sqlite3TriggersExist(pParse, pTab, TK_DELETE, 0, 0))
-     && ( 0==(db->flags&SQLITE_ForeignKeys) ||      /* Condition 5 */
+     && ( 0==(db->flags&SQLITE_Foreign_ಕೀಲಿಗಳು) ||      /* Condition 5 */
          (0==pTab->u.tab.pFKey && 0==sqlite3FkReferences(pTab)))
     ){
       sqlite3VdbeResolveLabel(v, addrUniqueOk);
-      continue;
+      ಮುಂದುವರಿ;
     }
-#endif /* ifndef SQLITE_ENABLE_PREUPDATE_HOOK */
+#ಆದರೆ_ಅಂತ್ಯ /* ifndef SQLITE_ENABLE_PREUPDATE_HOOK */
 
     /* Check to see if the new index entry will be unique */
     sqlite3VdbeVerifyAbortable(v, onError);
     addrConflictCk =
-      sqlite3VdbeAddOp4Int(v, OP_NoConflict, iThisCur, addrUniqueOk,
-                           regIdx, pIdx->nKeyCol); VdbeCoverage(v);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_NoConflict, iThisCur, addrUniqueOk,
+                           regIdx, pIdx->n_ಕೀಲಿ_ಲಂಬಸಾಲು); VdbeCoverage(v);
 
     /* Generate code to handle collisions */
-    regR = pIdx==pPk ? regIdx : sqlite3GetTempRange(pParse, nPkField);
-    if( isUpdate || onError==OE_Replace ){
-      if( HasRowid(pTab) ){
-        sqlite3VdbeAddOp2(v, OP_IdxRowid, iThisCur, regR);
+    regR = pIdx==pPk ? regIdx : sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Range(pParse, n_Pk_ಕ್ಷೇತ್ರ);
+    ಆದರೆ( isUpdate || onError==OE_Replace ){
+      ಆದರೆ( HasRowid(pTab) ){
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IdxRowid, iThisCur, regR);
         /* Conflict only if the rowid of the existing index entry
         ** is different from old-rowid */
-        if( isUpdate ){
-          sqlite3VdbeAddOp3(v, OP_Eq, regR, addrUniqueOk, regOldData);
+        ಆದರೆ( isUpdate ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Eq, regR, addrUniqueOk, reg_Old_ದತ್ತಾಂಶ);
           sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
           VdbeCoverage(v);
         }
-      }else{
-        int x;
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಪೂರ್ಣಾಂಕ x;
         /* Extract the PRIMARY KEY from the end of the index entry and
         ** store it in registers regR..regR+nPk-1 */
-        if( pIdx!=pPk ){
-          for(i=0; i<pPk->nKeyCol; i++){
-            assert( pPk->aiColumn[i]>=0 );
-            x = sqlite3TableColumnToIndex(pIdx, pPk->aiColumn[i]);
-            sqlite3VdbeAddOp3(v, OP_Column, iThisCur, x, regR+i);
+        ಆದರೆ( pIdx!=pPk ){
+          ಗಾಗಿ(i=0; i<pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು; i++){
+            ಪ್ರತಿಜ್ಞಾ( pPk->ai_ಸ್ತಂಭ[i]>=0 );
+            x = sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(pIdx, pPk->ai_ಸ್ತಂಭ[i]);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸ್ತಂಭ, iThisCur, x, regR+i);
             VdbeComment((v, "%s.%s", pTab->zName,
-                         pTab->aCol[pPk->aiColumn[i]].zCnName));
+                         pTab->a_ಲಂಬಸಾಲು[pPk->ai_ಸ್ತಂಭ[i]].zCnName));
           }
         }
-        if( isUpdate ){
+        ಆದರೆ( isUpdate ){
           /* If currently processing the PRIMARY KEY of a WITHOUT ROWID
           ** table, only conflict if the new PRIMARY KEY values are actually
           ** different from the old.  See TH3 withoutrowid04.test.
@@ -2564,21 +2564,21 @@ void sqlite3GenerateConstraintChecks(
           ** For a UNIQUE index, only conflict if the PRIMARY KEY values
           ** of the matched index row are different from the original PRIMARY
           ** KEY values of this row before the update.  */
-          int addrJump = sqlite3VdbeCurrentAddr(v)+pPk->nKeyCol;
-          int op = OP_Ne;
-          int regCmp = (IsPrimaryKeyIndex(pIdx) ? regIdx : regR);
+          ಪೂರ್ಣಾಂಕ addrJump = sqlite3VdbeCurrentAddr(v)+pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು;
+          ಪೂರ್ಣಾಂಕ op = OP_Ne;
+          ಪೂರ್ಣಾಂಕ regCmp = (Is_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pIdx) ? regIdx : regR);
  
-          for(i=0; i<pPk->nKeyCol; i++){
-            char *p4 = (char*)sqlite3LocateCollSeq(pParse, pPk->azColl[i]);
-            x = pPk->aiColumn[i];
-            assert( x>=0 );
-            if( i==(pPk->nKeyCol-1) ){
+          ಗಾಗಿ(i=0; i<pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು; i++){
+            ಅಕ್ಷರ *p4 = (ಅಕ್ಷರ*)sqlite3LocateCollSeq(pParse, pPk->azColl[i]);
+            x = pPk->ai_ಸ್ತಂಭ[i];
+            ಪ್ರತಿಜ್ಞಾ( x>=0 );
+            ಆದರೆ( i==(pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು-1) ){
               addrJump = addrUniqueOk;
               op = OP_Eq;
             }
-            x = sqlite3TableColumnToStorage(pTab, x);
-            sqlite3VdbeAddOp4(v, op,
-                regOldData+1+x, addrJump, regCmp+i, p4, P4_COLLSEQ
+            x = sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab, x);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, op,
+                reg_Old_ದತ್ತಾಂಶ+1+x, addrJump, regCmp+i, p4, P4_COLLSEQ
             );
             sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
             VdbeCoverageIf(v, op==OP_Eq);
@@ -2589,58 +2589,58 @@ void sqlite3GenerateConstraintChecks(
     }
 
     nConflictCk = sqlite3VdbeCurrentAddr(v) - addrConflictCk;
-    assert( nConflictCk>0 || db->mallocFailed );
+    ಪ್ರತಿಜ್ಞಾ( nConflictCk>0 || db->mallocFailed );
     testcase( nConflictCk<=0 );
     testcase( nConflictCk>1 );
 
     /* Generate code that executes if the new index entry is not unique */
-    assert( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
+    ಪ್ರತಿಜ್ಞಾ( onError==OE_Rollback || onError==OE_Abort || onError==OE_Fail
         || onError==OE_Ignore || onError==OE_Replace || onError==OE_Update );
-    switch( onError ){
-      case OE_Rollback:
-      case OE_Abort:
-      case OE_Fail: {
+    ಆಯ್ಕೆ( onError ){
+      ಸ್ಥಿತಿ OE_Rollback:
+      ಸ್ಥಿತಿ OE_Abort:
+      ಸ್ಥಿತಿ OE_Fail: {
         testcase( onError==OE_Rollback );
         testcase( onError==OE_Abort );
         testcase( onError==OE_Fail );
         sqlite3UniqueConstraint(pParse, onError, pIdx);
-        break;
+        ನಿಲ್ಲಿಸು;
       }
-#ifndef SQLITE_OMIT_UPSERT
-      case OE_Update: {
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UPSERT
+      ಸ್ಥಿತಿ OE_Update: {
         sqlite3UpsertDoUpdate(pParse, pUpsert, pTab, pIdx, iIdxCur+ix);
         /* no break */ deliberate_fall_through
       }
-#endif
-      case OE_Ignore: {
+#ಆದರೆ_ಅಂತ್ಯ
+      ಸ್ಥಿತಿ OE_Ignore: {
         testcase( onError==OE_Ignore );
         sqlite3VdbeGoto(v, ignoreDest);
-        break;
+        ನಿಲ್ಲಿಸು;
       }
-      default: {
-        assert( onError==OE_Replace );
-        if( regTrigCnt ){
+      ಪೂರ್ವನಿಯೋಜಿತ: {
+        ಪ್ರತಿಜ್ಞಾ( onError==OE_Replace );
+        ಆದರೆ( regTrigCnt ){
           sqlite3MultiWrite(pParse);
           nReplaceTrig++;
         }
-        if( pTrigger && isUpdate ){
-          sqlite3VdbeAddOp1(v, OP_CursorLock, iDataCur);
+        ಆದರೆ( pTrigger && isUpdate ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Cursor_ಬೀಗ, i_ದತ್ತಾಂಶ_Cur);
         }
-        sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
-            regR, nPkField, 0, OE_Replace,
+        sqlite3_Generate_ಅಡ್ಡಸಾಲು_Delete(pParse, pTab, pTrigger, i_ದತ್ತಾಂಶ_Cur, iIdxCur,
+            regR, n_Pk_ಕ್ಷೇತ್ರ, 0, OE_Replace,
             (pIdx==pPk ? ONEPASS_SINGLE : ONEPASS_OFF), iThisCur);
-        if( pTrigger && isUpdate ){
-          sqlite3VdbeAddOp1(v, OP_CursorUnlock, iDataCur);
+        ಆದರೆ( pTrigger && isUpdate ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_CursorUnlock, i_ದತ್ತಾಂಶ_Cur);
         }
-        seenReplace = 1;
-        break;
+        ನೋಡಿದ_Replace = 1;
+        ನಿಲ್ಲಿಸು;
       }
     }
-    if( regTrigCnt ){
-      int addrBypass;  /* Jump destination to bypass recheck logic */
+    ಆದರೆ( regTrigCnt ){
+      ಪೂರ್ಣಾಂಕ addrBypass;  /* Jump destination to bypass recheck logic */
 
-      sqlite3VdbeAddOp2(v, OP_AddImm, regTrigCnt, 1); /* incr trigger cnt */
-      addrBypass = sqlite3VdbeAddOp0(v, OP_Goto);  /* Bypass recheck */
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಕೂಡಿಸು_Imm, regTrigCnt, 1); /* incr trigger cnt */
+      addrBypass = sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Goto);  /* Bypass recheck */
       VdbeComment((v, "bypass recheck"));
 
       /* Here we insert code that will be invoked after all constraint
@@ -2648,31 +2648,31 @@ void sqlite3GenerateConstraintChecks(
       ** fired. */
       sqlite3VdbeResolveLabel(v, lblRecheckOk);
       lblRecheckOk = sqlite3VdbeMakeLabel(pParse);
-      if( pIdx->pPartIdxWhere ){
+      ಆದರೆ( pIdx->pPartIdxWhere ){
         /* Bypass the recheck if this partial index is not defined
         ** for the current row */
-        sqlite3VdbeAddOp2(v, OP_IsNull, regIdx-1, lblRecheckOk);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IsNull, regIdx-1, lblRecheckOk);
         VdbeCoverage(v);
       }
       /* Copy the constraint check code from above, except change
       ** the constraint-ok jump destination to be the address of
       ** the next retest block */
-      while( nConflictCk>0 ){
+      ಆಗ( nConflictCk>0 ){
         VdbeOp x;    /* Conflict check opcode to copy */
         /* The sqlite3VdbeAddOp4() call might reallocate the opcode array.
         ** Hence, make a complete copy of the opcode, rather than using
         ** a pointer to the opcode. */
         x = *sqlite3VdbeGetOp(v, addrConflictCk);
-        if( x.opcode!=OP_IdxRowid || isUpdate ){
-          int p2;      /* New P2 value for copied conflict check opcode */
-          const char *zP4;
-          if( sqlite3OpcodeProperty[x.opcode]&OPFLG_JUMP ){
+        ಆದರೆ( x.opcode!=OP_IdxRowid || isUpdate ){
+          ಪೂರ್ಣಾಂಕ p2;      /* New P2 value for copied conflict check opcode */
+          ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zP4;
+          ಆದರೆ( sqlite3OpcodeProperty[x.opcode]&OPFLG_JUMP ){
             p2 = lblRecheckOk;
-          }else{
+          }ಇಲ್ಲದಿದ್ದರೆ{
             p2 = x.p2;
           }
-          zP4 = x.p4type==P4_INT32 ? SQLITE_INT_TO_PTR(x.p4.i) : x.p4.z;
-          sqlite3VdbeAddOp4(v, x.opcode, x.p1, p2, x.p3, zP4, x.p4type);
+          zP4 = x.p4type==P4_INT32 ? SQLITE_INT_ಗಮ್ಯ_PTR(x.p4.i) : x.p4.z;
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, x.opcode, x.p1, p2, x.p3, zP4, x.p4type);
           sqlite3VdbeChangeP5(v, x.p5);
           VdbeCoverageIf(v, p2!=x.p2);
         }
@@ -2682,83 +2682,83 @@ void sqlite3GenerateConstraintChecks(
       /* If the retest fails, issue an abort */
       sqlite3UniqueConstraint(pParse, OE_Abort, pIdx);
 
-      sqlite3VdbeJumpHere(v, addrBypass); /* Terminate the recheck bypass */
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addrBypass); /* Terminate the recheck bypass */
     }
     sqlite3VdbeResolveLabel(v, addrUniqueOk);
-    if( regR!=regIdx ) sqlite3ReleaseTempRange(pParse, regR, nPkField);
-    if( pUpsertClause
+    ಆದರೆ( regR!=regIdx ) sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Range(pParse, regR, n_Pk_ಕ್ಷೇತ್ರ);
+    ಆದರೆ( pUpsertClause
      && upsertIpkReturn
-     && sqlite3UpsertNextIsIPK(pUpsertClause)
+     && sqlite3_Upsert_ಮುಂದಿನ_Is_IPK(pUpsertClause)
     ){
       sqlite3VdbeGoto(v, upsertIpkDelay+1);
-      sqlite3VdbeJumpHere(v, upsertIpkReturn);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, upsertIpkReturn);
       upsertIpkReturn = 0;
     }
   }
 
   /* If the IPK constraint is a REPLACE, run it last */
-  if( ipkTop ){
-    sqlite3VdbeGoto(v, ipkTop);
+  ಆದರೆ( ipk_ತುದಿ ){
+    sqlite3VdbeGoto(v, ipk_ತುದಿ);
     VdbeComment((v, "Do IPK REPLACE"));
-    assert( ipkBottom>0 );
-    sqlite3VdbeJumpHere(v, ipkBottom);
+    ಪ್ರತಿಜ್ಞಾ( ipkBottom>0 );
+    sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, ipkBottom);
   }
 
   /* Recheck all uniqueness constraints after replace triggers have run */
   testcase( regTrigCnt!=0 && nReplaceTrig==0 );
-  assert( regTrigCnt!=0 || nReplaceTrig==0 );
-  if( nReplaceTrig ){
-    sqlite3VdbeAddOp2(v, OP_IfNot, regTrigCnt, lblRecheckOk);VdbeCoverage(v);
-    if( !pPk ){
-      if( isUpdate ){
-        sqlite3VdbeAddOp3(v, OP_Eq, regNewData, addrRecheck, regOldData);
+  ಪ್ರತಿಜ್ಞಾ( regTrigCnt!=0 || nReplaceTrig==0 );
+  ಆದರೆ( nReplaceTrig ){
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IfNot, regTrigCnt, lblRecheckOk);VdbeCoverage(v);
+    ಆದರೆ( !pPk ){
+      ಆದರೆ( isUpdate ){
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Eq, reg_New_ದತ್ತಾಂಶ, addrRecheck, reg_Old_ದತ್ತಾಂಶ);
         sqlite3VdbeChangeP5(v, SQLITE_NOTNULL);
         VdbeCoverage(v);
       }
-      sqlite3VdbeAddOp3(v, OP_NotExists, iDataCur, addrRecheck, regNewData);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_NotExists, i_ದತ್ತಾಂಶ_Cur, addrRecheck, reg_New_ದತ್ತಾಂಶ);
       VdbeCoverage(v);
       sqlite3RowidConstraint(pParse, OE_Abort, pTab);
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       sqlite3VdbeGoto(v, addrRecheck);
     }
   }
-  if( regTrigCnt ) sqlite3VdbeResolveLabel(v, lblRecheckOk);
+  ಆದರೆ( regTrigCnt ) sqlite3VdbeResolveLabel(v, lblRecheckOk);
 
   /* Generate the table record */
-  if( HasRowid(pTab) ){
-    int regRec = aRegIdx[ix];
-    sqlite3VdbeAddOp3(v, OP_MakeRecord, regNewData+1, pTab->nNVCol, regRec);
-    sqlite3SetMakeRecordP5(v, pTab);
-    if( !bAffinityDone ){
-      sqlite3TableAffinity(v, pTab, 0);
+  ಆದರೆ( HasRowid(pTab) ){
+    ಪೂರ್ಣಾಂಕ regRec = aRegIdx[ix];
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Make_ದಾಖಲೆ, reg_New_ದತ್ತಾಂಶ+1, pTab->nNVCol, regRec);
+    sqlite3_ಗಣ_Make_ದಾಖಲೆ_P5(v, pTab);
+    ಆದರೆ( !b_Affinity_ಮುಗಿದ ){
+      sqlite3_ಕೋಷ್ಟಕ_Affinity(v, pTab, 0);
     }
   }
 
-  *pbMayReplace = seenReplace;
-  VdbeModuleComment((v, "END: GenCnstCks(%d)", seenReplace));
+  *pbMayReplace = ನೋಡಿದ_Replace;
+  VdbeModuleComment((v, "END: GenCnstCks(%d)", ನೋಡಿದ_Replace));
 }
 
-#ifdef SQLITE_ENABLE_NULL_TRIM
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_NULL_TRIM
 /*
 ** Change the P5 operand on the last opcode (which should be an OP_MakeRecord)
 ** to be the number of columns in table pTab that must not be NULL-trimmed.
 **
 ** Or if no columns of pTab may be NULL-trimmed, leave P5 at zero.
 */
-void sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
+ಶೂನ್ಯ sqlite3_ಗಣ_Make_ದಾಖಲೆ_P5(Vdbe *v, ಕೋಷ್ಟಕ *pTab){
   u16 i;
 
   /* Records with omitted columns are only allowed for schema format
   ** version 2 and later (SQLite version 3.1.4, 2005-02-20). */
-  if( pTab->pSchema->file_format<2 ) return;
+  ಆದರೆ( pTab->pSchema->file_format<2 ) ಹಿಂತಿರುಗಿ;
 
-  for(i=pTab->nCol-1; i>0; i--){
-    if( pTab->aCol[i].iDflt!=0 ) break;
-    if( pTab->aCol[i].colFlags & COLFLAG_PRIMKEY ) break;
+  ಗಾಗಿ(i=pTab->n_ಲಂಬಸಾಲು-1; i>0; i--){
+    ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[i].iDflt!=0 ) ನಿಲ್ಲಿಸು;
+    ಆದರೆ( pTab->a_ಲಂಬಸಾಲು[i].ಲಂಬಸಾಲು_Flags & COLFLAG_PRIMKEY ) ನಿಲ್ಲಿಸು;
   }
   sqlite3VdbeChangeP5(v, i+1);
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Table pTab is a WITHOUT ROWID table that is being written to. The cursor
@@ -2766,25 +2766,25 @@ void sqlite3SetMakeRecordP5(Vdbe *v, Table *pTab){
 ** PK index. This function adds code to invoke the pre-update hook,
 ** if one is registered.
 */
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-static void codeWithoutRowidPreupdate(
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_PREUPDATE_HOOK
+ಸ್ಥಿರ ಶೂನ್ಯ ಸಂಕೇತ_Without_Rowid_Preupdate(
   Parse *pParse,                  /* Parse context */
-  Table *pTab,                    /* Table being updated */
-  int iCur,                       /* Cursor number for table */
-  int regData                     /* Data containing new record */
+  ಕೋಷ್ಟಕ *pTab,                    /* Table being updated */
+  ಪೂರ್ಣಾಂಕ iCur,                       /* Cursor number for table */
+  ಪೂರ್ಣಾಂಕ reg_ದತ್ತಾಂಶ                     /* Data containing new record */
 ){
   Vdbe *v = pParse->pVdbe;
-  int r = sqlite3GetTempReg(pParse);
-  assert( !HasRowid(pTab) );
-  assert( 0==(pParse->db->mDbFlags & DBFLAG_Vacuum) || CORRUPT_DB );
-  sqlite3VdbeAddOp2(v, OP_Integer, 0, r);
-  sqlite3VdbeAddOp4(v, OP_Insert, iCur, regData, r, (char*)pTab, P4_TABLE);
+  ಪೂರ್ಣಾಂಕ r = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(pParse);
+  ಪ್ರತಿಜ್ಞಾ( !HasRowid(pTab) );
+  ಪ್ರತಿಜ್ಞಾ( 0==(pParse->db->mDbFlags & DBFLAG_Vacuum) || CORRUPT_DB );
+  sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, 0, r);
+  sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_ಸೇರಿಸು, iCur, reg_ದತ್ತಾಂಶ, r, (ಅಕ್ಷರ*)pTab, P4_ಕೋಷ್ಟಕ);
   sqlite3VdbeChangeP5(v, OPFLAG_ISNOOP);
-  sqlite3ReleaseTempReg(pParse, r);
+  sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Reg(pParse, r);
 }
-#else
-# define codeWithoutRowidPreupdate(a,b,c,d)
-#endif
+#ಇಲ್ಲದಿದ್ದರೆ
+# define ಸಂಕೇತ_Without_Rowid_Preupdate(a,b,c,d)
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** This routine generates code to finish the INSERT or UPDATE operation
@@ -2795,72 +2795,72 @@ static void codeWithoutRowidPreupdate(
 ** The arguments to this routine should be the same as the first six
 ** arguments to sqlite3GenerateConstraintChecks.
 */
-void sqlite3CompleteInsertion(
+ಶೂನ್ಯ sqlite3CompleteInsertion(
   Parse *pParse,      /* The parser context */
-  Table *pTab,        /* the table into which we are inserting */
-  int iDataCur,       /* Cursor of the canonical data source */
-  int iIdxCur,        /* First index cursor */
-  int regNewData,     /* Range of content */
-  int *aRegIdx,       /* Register used by each index.  0 for unused indices */
-  int update_flags,   /* True for UPDATE, False for INSERT */
-  int appendBias,     /* True if this is likely to be an append */
-  int useSeekResult   /* True to set the USESEEKRESULT flag on OP_[Idx]Insert */
+  ಕೋಷ್ಟಕ *pTab,        /* the table into which we are inserting */
+  ಪೂರ್ಣಾಂಕ i_ದತ್ತಾಂಶ_Cur,       /* Cursor of the canonical data source */
+  ಪೂರ್ಣಾಂಕ iIdxCur,        /* First index cursor */
+  ಪೂರ್ಣಾಂಕ reg_New_ದತ್ತಾಂಶ,     /* Range of content */
+  ಪೂರ್ಣಾಂಕ *aRegIdx,       /* Register used by each index.  0 for unused indices */
+  ಪೂರ್ಣಾಂಕ update_flags,   /* True for UPDATE, False for INSERT */
+  ಪೂರ್ಣಾಂಕ appendBias,     /* True if this is likely to be an append */
+  ಪೂರ್ಣಾಂಕ use_Seek_ಫಲಿತಾಂಶ   /* True to set the USESEEKRESULT flag on OP_[Idx]Insert */
 ){
   Vdbe *v;            /* Prepared statements under construction */
-  Index *pIdx;        /* An index being inserted or updated */
+  ಸೂಚ್ಯಂಕ *pIdx;        /* An index being inserted or updated */
   u8 pik_flags;       /* flag values passed to the btree insert */
-  int i;              /* Loop counter */
+  ಪೂರ್ಣಾಂಕ i;              /* Loop counter */
 
-  assert( update_flags==0
+  ಪ್ರತಿಜ್ಞಾ( update_flags==0
        || update_flags==OPFLAG_ISUPDATE
        || update_flags==(OPFLAG_ISUPDATE|OPFLAG_SAVEPOSITION)
   );
 
   v = pParse->pVdbe;
-  assert( v!=0 );
-  assert( !IsView(pTab) );  /* This table is not a VIEW */
-  for(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
+  ಪ್ರತಿಜ್ಞಾ( v!=0 );
+  ಪ್ರತಿಜ್ಞಾ( !IsView(pTab) );  /* This table is not a VIEW */
+  ಗಾಗಿ(i=0, pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ, i++){
     /* All REPLACE indexes are at the end of the list */
-    assert( pIdx->onError!=OE_Replace
-         || pIdx->pNext==0
-         || pIdx->pNext->onError==OE_Replace );
-    if( aRegIdx[i]==0 ) continue;
-    if( pIdx->pPartIdxWhere || (update_flags && pIdx->bHasExpr) ){
+    ಪ್ರತಿಜ್ಞಾ( pIdx->onError!=OE_Replace
+         || pIdx->p_ಮುಂದಿನ==0
+         || pIdx->p_ಮುಂದಿನ->onError==OE_Replace );
+    ಆದರೆ( aRegIdx[i]==0 ) ಮುಂದುವರಿ;
+    ಆದರೆ( pIdx->pPartIdxWhere || (update_flags && pIdx->b_Has_ಅಭಿವ್ಯಕ್ತಿ) ){
       /* If this is a partial index, or an UPDATE of an index on an
       ** expression, then the record register may be set to NULL to indicate
       ** that no record should be inserted into this index. */
-      sqlite3VdbeAddOp2(v, OP_IsNull, aRegIdx[i], sqlite3VdbeCurrentAddr(v)+2);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IsNull, aRegIdx[i], sqlite3VdbeCurrentAddr(v)+2);
       VdbeCoverage(v);
     }
-    pik_flags = (useSeekResult ? OPFLAG_USESEEKRESULT : 0);
-    if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
+    pik_flags = (use_Seek_ಫಲಿತಾಂಶ ? OPFLAG_USESEEKRESULT : 0);
+    ಆದರೆ( Is_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pIdx) && !HasRowid(pTab) ){
       pik_flags |= OPFLAG_NCHANGE;
       pik_flags |= (update_flags & OPFLAG_SAVEPOSITION);
-      if( update_flags==0 ){
-        codeWithoutRowidPreupdate(pParse, pTab, iIdxCur+i, aRegIdx[i]);
+      ಆದರೆ( update_flags==0 ){
+        ಸಂಕೇತ_Without_Rowid_Preupdate(pParse, pTab, iIdxCur+i, aRegIdx[i]);
       }
     }
-    sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iIdxCur+i, aRegIdx[i],
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_Idx_ಸೇರಿಸು, iIdxCur+i, aRegIdx[i],
                          aRegIdx[i]+1,
-                         pIdx->uniqNotNull ? pIdx->nKeyCol: pIdx->nColumn);
+                         pIdx->uniqNotNull ? pIdx->n_ಕೀಲಿ_ಲಂಬಸಾಲು: pIdx->n_ಸ್ತಂಭ);
     sqlite3VdbeChangeP5(v, pik_flags);
   }
-  if( !HasRowid(pTab) ) return;
-  if( pParse->nested ){
+  ಆದರೆ( !HasRowid(pTab) ) ಹಿಂತಿರುಗಿ;
+  ಆದರೆ( pParse->nested ){
     pik_flags = 0;
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     pik_flags = OPFLAG_NCHANGE;
     pik_flags |= (update_flags?update_flags:OPFLAG_LASTROWID);
   }
-  if( appendBias ){
+  ಆದರೆ( appendBias ){
     pik_flags |= OPFLAG_APPEND;
   }
-  if( useSeekResult ){
+  ಆದರೆ( use_Seek_ಫಲಿತಾಂಶ ){
     pik_flags |= OPFLAG_USESEEKRESULT;
   }
-  sqlite3VdbeAddOp3(v, OP_Insert, iDataCur, aRegIdx[i], regNewData);
-  if( !pParse->nested ){
-    sqlite3VdbeAppendP4(v, pTab, P4_TABLE);
+  sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸೇರಿಸು, i_ದತ್ತಾಂಶ_Cur, aRegIdx[i], reg_New_ದತ್ತಾಂಶ);
+  ಆದರೆ( !pParse->nested ){
+    sqlite3VdbeAppendP4(v, pTab, P4_ಕೋಷ್ಟಕ);
   }
   sqlite3VdbeChangeP5(v, pik_flags);
 }
@@ -2886,76 +2886,76 @@ void sqlite3CompleteInsertion(
 ** If pTab is a virtual table, then this routine is a no-op and the
 ** *piDataCur and *piIdxCur values are left uninitialized.
 */
-int sqlite3OpenTableAndIndices(
+ಪೂರ್ಣಾಂಕ sqlite3_Open_ಕೋಷ್ಟಕ_And_Indices(
   Parse *pParse,   /* Parsing context */
-  Table *pTab,     /* Table to be opened */
-  int op,          /* OP_OpenRead or OP_OpenWrite */
+  ಕೋಷ್ಟಕ *pTab,     /* Table to be opened */
+  ಪೂರ್ಣಾಂಕ op,          /* OP_OpenRead or OP_OpenWrite */
   u8 p5,           /* P5 value for OP_Open* opcodes (except on WITHOUT ROWID) */
-  int iBase,       /* Use this for the table cursor, if there is one */
-  u8 *aToOpen,     /* If not NULL: boolean for each table and index */
-  int *piDataCur,  /* Write the database source cursor number here */
-  int *piIdxCur    /* Write the first index cursor number here */
+  ಪೂರ್ಣಾಂಕ i_ತಳ,       /* Use this for the table cursor, if there is one */
+  u8 *a_ಗಮ್ಯ_Open,     /* If not NULL: boolean for each table and index */
+  ಪೂರ್ಣಾಂಕ *pi_ದತ್ತಾಂಶ_Cur,  /* Write the database source cursor number here */
+  ಪೂರ್ಣಾಂಕ *piIdxCur    /* Write the first index cursor number here */
 ){
-  int i;
-  int iDb;
-  int iDataCur;
-  Index *pIdx;
+  ಪೂರ್ಣಾಂಕ i;
+  ಪೂರ್ಣಾಂಕ iDb;
+  ಪೂರ್ಣಾಂಕ i_ದತ್ತಾಂಶ_Cur;
+  ಸೂಚ್ಯಂಕ *pIdx;
   Vdbe *v;
 
-  assert( op==OP_OpenRead || op==OP_OpenWrite );
-  assert( op==OP_OpenWrite || p5==0 );
-  assert( piDataCur!=0 );
-  assert( piIdxCur!=0 );
-  if( IsVirtual(pTab) ){
+  ಪ್ರತಿಜ್ಞಾ( op==OP_OpenRead || op==OP_OpenWrite );
+  ಪ್ರತಿಜ್ಞಾ( op==OP_OpenWrite || p5==0 );
+  ಪ್ರತಿಜ್ಞಾ( pi_ದತ್ತಾಂಶ_Cur!=0 );
+  ಪ್ರತಿಜ್ಞಾ( piIdxCur!=0 );
+  ಆದರೆ( IsVirtual(pTab) ){
     /* This routine is a no-op for virtual tables. Leave the output
     ** variables *piDataCur and *piIdxCur set to illegal cursor numbers
     ** for improved error detection. */
-    *piDataCur = *piIdxCur = -999;
-    return 0;
+    *pi_ದತ್ತಾಂಶ_Cur = *piIdxCur = -999;
+    ಹಿಂತಿರುಗಿ 0;
   }
-  iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+  iDb = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(pParse->db, pTab->pSchema);
   v = pParse->pVdbe;
-  assert( v!=0 );
-  if( iBase<0 ) iBase = pParse->nTab;
-  iDataCur = iBase++;
-  *piDataCur = iDataCur;
-  if( HasRowid(pTab) && (aToOpen==0 || aToOpen[0]) ){
-    sqlite3OpenTable(pParse, iDataCur, iDb, pTab, op);
-  }else if( pParse->db->noSharedCache==0 ){
-    sqlite3TableLock(pParse, iDb, pTab->tnum, op==OP_OpenWrite, pTab->zName);
+  ಪ್ರತಿಜ್ಞಾ( v!=0 );
+  ಆದರೆ( i_ತಳ<0 ) i_ತಳ = pParse->nTab;
+  i_ದತ್ತಾಂಶ_Cur = i_ತಳ++;
+  *pi_ದತ್ತಾಂಶ_Cur = i_ದತ್ತಾಂಶ_Cur;
+  ಆದರೆ( HasRowid(pTab) && (a_ಗಮ್ಯ_Open==0 || a_ಗಮ್ಯ_Open[0]) ){
+    sqlite3_Open_ಕೋಷ್ಟಕ(pParse, i_ದತ್ತಾಂಶ_Cur, iDb, pTab, op);
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pParse->db->noSharedCache==0 ){
+    sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(pParse, iDb, pTab->tnum, op==OP_OpenWrite, pTab->zName);
   }
-  *piIdxCur = iBase;
-  for(i=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, i++){
-    int iIdxCur = iBase++;
-    assert( pIdx->pSchema==pTab->pSchema );
-    if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
-      *piDataCur = iIdxCur;
+  *piIdxCur = i_ತಳ;
+  ಗಾಗಿ(i=0, pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ, i++){
+    ಪೂರ್ಣಾಂಕ iIdxCur = i_ತಳ++;
+    ಪ್ರತಿಜ್ಞಾ( pIdx->pSchema==pTab->pSchema );
+    ಆದರೆ( Is_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pIdx) && !HasRowid(pTab) ){
+      *pi_ದತ್ತಾಂಶ_Cur = iIdxCur;
       p5 = 0;
     }
-    if( aToOpen==0 || aToOpen[i+1] ){
-      sqlite3VdbeAddOp3(v, op, iIdxCur, pIdx->tnum, iDb);
-      sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+    ಆದರೆ( a_ಗಮ್ಯ_Open==0 || a_ಗಮ್ಯ_Open[i+1] ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, op, iIdxCur, pIdx->tnum, iDb);
+      sqlite3_Vdbe_ಗಣ_P4_ಕೀಲಿ_Info(pParse, pIdx);
       sqlite3VdbeChangeP5(v, p5);
       VdbeComment((v, "%s", pIdx->zName));
     }
   }
-  if( iBase>pParse->nTab ) pParse->nTab = iBase;
-  return i;
+  ಆದರೆ( i_ತಳ>pParse->nTab ) pParse->nTab = i_ತಳ;
+  ಹಿಂತಿರುಗಿ i;
 }
 
 
-#ifdef SQLITE_TEST
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
 /*
 ** The following global variable is incremented whenever the
 ** transfer optimization is used.  This is used for testing
 ** purposes only - to make sure the transfer optimization really
 ** is happening when it is supposed to.
 */
-int sqlite3_xferopt_count;
-#endif /* SQLITE_TEST */
+ಪೂರ್ಣಾಂಕ sqlite3_xferopt_ಎಣಿಕೆ;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_TEST */
 
 
-#ifndef SQLITE_OMIT_XFER_OPT
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_XFER_OPT
 /*
 ** Check to see if index pSrc is compatible as a source of data
 ** for index pDest in an insert transfer optimization.  The rules
@@ -2967,52 +2967,52 @@ int sqlite3_xferopt_count;
 **    *   The same collating sequence on each column
 **    *   The index has the exact same WHERE clause
 */
-static int xferCompatibleIndex(Index *pDest, Index *pSrc){
-  int i;
-  assert( pDest && pSrc );
-  assert( pDest->pTable!=pSrc->pTable );
-  if( pDest->nKeyCol!=pSrc->nKeyCol || pDest->nColumn!=pSrc->nColumn ){
-    return 0;   /* Different number of columns */
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ xfer_Compatible_ಸೂಚ್ಯಂಕ(ಸೂಚ್ಯಂಕ *pDest, ಸೂಚ್ಯಂಕ *pSrc){
+  ಪೂರ್ಣಾಂಕ i;
+  ಪ್ರತಿಜ್ಞಾ( pDest && pSrc );
+  ಪ್ರತಿಜ್ಞಾ( pDest->p_ಕೋಷ್ಟಕ!=pSrc->p_ಕೋಷ್ಟಕ );
+  ಆದರೆ( pDest->n_ಕೀಲಿ_ಲಂಬಸಾಲು!=pSrc->n_ಕೀಲಿ_ಲಂಬಸಾಲು || pDest->n_ಸ್ತಂಭ!=pSrc->n_ಸ್ತಂಭ ){
+    ಹಿಂತಿರುಗಿ 0;   /* Different number of columns */
   }
-  if( pDest->onError!=pSrc->onError ){
-    return 0;   /* Different conflict resolution strategies */
+  ಆದರೆ( pDest->onError!=pSrc->onError ){
+    ಹಿಂತಿರುಗಿ 0;   /* Different conflict resolution strategies */
   }
-  for(i=0; i<pSrc->nKeyCol; i++){
-    if( pSrc->aiColumn[i]!=pDest->aiColumn[i] ){
-      return 0;   /* Different columns indexed */
+  ಗಾಗಿ(i=0; i<pSrc->n_ಕೀಲಿ_ಲಂಬಸಾಲು; i++){
+    ಆದರೆ( pSrc->ai_ಸ್ತಂಭ[i]!=pDest->ai_ಸ್ತಂಭ[i] ){
+      ಹಿಂತಿರುಗಿ 0;   /* Different columns indexed */
     }
-    if( pSrc->aiColumn[i]==XN_EXPR ){
-      assert( pSrc->aColExpr!=0 && pDest->aColExpr!=0 );
-      if( sqlite3ExprCompare(0, pSrc->aColExpr->a[i].pExpr,
-                             pDest->aColExpr->a[i].pExpr, -1)!=0 ){
-        return 0;   /* Different expressions in the index */
+    ಆದರೆ( pSrc->ai_ಸ್ತಂಭ[i]==XN_ಅಭಿವ್ಯಕ್ತಿ ){
+      ಪ್ರತಿಜ್ಞಾ( pSrc->a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ!=0 && pDest->a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ!=0 );
+      ಆದರೆ( sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Compare(0, pSrc->a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ->a[i].p_ಅಭಿವ್ಯಕ್ತಿ,
+                             pDest->a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ->a[i].p_ಅಭಿವ್ಯಕ್ತಿ, -1)!=0 ){
+        ಹಿಂತಿರುಗಿ 0;   /* Different expressions in the index */
       }
     }
-    if( pSrc->aSortOrder[i]!=pDest->aSortOrder[i] ){
-      return 0;   /* Different sort orders */
+    ಆದರೆ( pSrc->a_ವಿಂಗಡಿಸು_ಕ್ರಮ[i]!=pDest->a_ವಿಂಗಡಿಸು_ಕ್ರಮ[i] ){
+      ಹಿಂತಿರುಗಿ 0;   /* Different sort orders */
     }
-    if( sqlite3_stricmp(pSrc->azColl[i],pDest->azColl[i])!=0 ){
-      return 0;   /* Different collating sequences */
+    ಆದರೆ( sqlite3_stricmp(pSrc->azColl[i],pDest->azColl[i])!=0 ){
+      ಹಿಂತಿರುಗಿ 0;   /* Different collating sequences */
     }
   }
-  if( sqlite3ExprCompare(0, pSrc->pPartIdxWhere, pDest->pPartIdxWhere, -1) ){
-    return 0;     /* Different WHERE clauses */
+  ಆದರೆ( sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Compare(0, pSrc->pPartIdxWhere, pDest->pPartIdxWhere, -1) ){
+    ಹಿಂತಿರುಗಿ 0;     /* Different WHERE clauses */
   }
 
   /* If no test above fails then the indices must be compatible */
-  return 1;
+  ಹಿಂತಿರುಗಿ 1;
 }
 
 /*
 ** Examine an expression node and abort if it references the ROWID.
 ** This is a Walker callback used by xferCompatibleCheck()
 */
-static int xferCheckRowid(Walker *pWalk, Expr *pExpr){
-  if( pExpr->op==TK_COLUMN && pExpr->iColumn<0 ){
-    pWalk->eCode = 1;
-    return WRC_Abort;
-  }else{
-    return WRC_Continue;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ xferCheckRowid(Walker *pWalk, ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ){
+  ಆದರೆ( p_ಅಭಿವ್ಯಕ್ತಿ->op==TK_ಸ್ತಂಭ && p_ಅಭಿವ್ಯಕ್ತಿ->i_ಸ್ತಂಭ<0 ){
+    pWalk->e_ಸಂಕೇತ = 1;
+    ಹಿಂತಿರುಗಿ WRC_Abort;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಹಿಂತಿರುಗಿ WRC_Continue;
   }
 }
 
@@ -3027,18 +3027,18 @@ static int xferCheckRowid(Walker *pWalk, Expr *pExpr){
 **       INTEGER PRIMARY KEY column, then no CHECK constraint may
 **       referenced the ROWID.  (See forum post 2026-05-11T13:15:57Z)
 */
-static int xferCompatibleCheck(Table *pDest, Table *pSrc){
-  if( sqlite3ExprListCompare(pSrc->pCheck,pDest->pCheck,-1) ){
-    return 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ xferCompatibleCheck(ಕೋಷ್ಟಕ *pDest, ಕೋಷ್ಟಕ *pSrc){
+  ಆದರೆ( sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Compare(pSrc->pCheck,pDest->pCheck,-1) ){
+    ಹಿಂತಿರುಗಿ 0;
   }
-  if( pDest->iPKey<0 ){
+  ಆದರೆ( pDest->iPKey<0 ){
     Walker w;
-    memset(&w, 0, sizeof(w));
-    w.xExprCallback = xferCheckRowid;
-    sqlite3WalkExprList(&w,pDest->pCheck);
-    if( w.eCode ) return 0;
+    memset(&w, 0, ಗಾತ್ರ(w));
+    w.x_ಅಭಿವ್ಯಕ್ತಿ_Callback = xferCheckRowid;
+    sqlite3_Walk_ಅಭಿವ್ಯಕ್ತಿ_List(&w,pDest->pCheck);
+    ಆದರೆ( w.e_ಸಂಕೇತ ) ಹಿಂತಿರುಗಿ 0;
   }
-  return 1;
+  ಹಿಂತಿರುಗಿ 1;
 }
 
 /*
@@ -3066,132 +3066,132 @@ static int xferCompatibleCheck(Table *pDest, Table *pSrc){
 **
 ** This optimization is particularly useful at making VACUUM run faster.
 */
-static int xferOptimization(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ xferOptimization(
   Parse *pParse,        /* Parser context */
-  Table *pDest,         /* The table we are inserting into */
+  ಕೋಷ್ಟಕ *pDest,         /* The table we are inserting into */
   Select *pSelect,      /* A SELECT statement to use as the data source */
-  int onError,          /* How to handle constraint errors */
-  int iDbDest           /* The database of pDest */
+  ಪೂರ್ಣಾಂಕ onError,          /* How to handle constraint errors */
+  ಪೂರ್ಣಾಂಕ iDbDest           /* The database of pDest */
 ){
   sqlite3 *db = pParse->db;
-  ExprList *pEList;                /* The result set of the SELECT */
-  Table *pSrc;                     /* The table in the FROM clause of SELECT */
-  Index *pSrcIdx, *pDestIdx;       /* Source and destination indices */
-  SrcItem *pItem;                  /* An element of pSelect->pSrc */
-  int i;                           /* Loop counter */
-  int iDbSrc;                      /* The database of pSrc */
-  int iSrc, iDest;                 /* Cursors from source and destination */
-  int addr1, addr2;                /* Loop addresses */
-  int emptyDestTest = 0;           /* Address of test for empty pDest */
-  int emptySrcTest = 0;            /* Address of test for empty pSrc */
+  ಅಭಿವ್ಯಕ್ತಿ_List *pEList;                /* The result set of the SELECT */
+  ಕೋಷ್ಟಕ *pSrc;                     /* The table in the FROM clause of SELECT */
+  ಸೂಚ್ಯಂಕ *pSrcIdx, *pDestIdx;       /* Source and destination indices */
+  Src_ಅಂಶ *p_ಅಂಶ;                  /* An element of pSelect->pSrc */
+  ಪೂರ್ಣಾಂಕ i;                           /* Loop counter */
+  ಪೂರ್ಣಾಂಕ iDbSrc;                      /* The database of pSrc */
+  ಪೂರ್ಣಾಂಕ iSrc, iDest;                 /* Cursors from source and destination */
+  ಪೂರ್ಣಾಂಕ addr1, addr2;                /* Loop addresses */
+  ಪೂರ್ಣಾಂಕ ಖಾಲಿಗಳು_Dest_Test = 0;           /* Address of test for empty pDest */
+  ಪೂರ್ಣಾಂಕ ಖಾಲಿಗಳು_Src_Test = 0;            /* Address of test for empty pSrc */
   Vdbe *v;                         /* The VDBE we are building */
-  int regAutoinc;                  /* Memory register used by AUTOINC */
-  int destHasUniqueIdx = 0;        /* True if pDest has a UNIQUE index */
-  int regData, regRowid;           /* Registers holding data and rowid */
+  ಪೂರ್ಣಾಂಕ regAutoinc;                  /* Memory register used by AUTOINC */
+  ಪೂರ್ಣಾಂಕ destHasUniqueIdx = 0;        /* True if pDest has a UNIQUE index */
+  ಪೂರ್ಣಾಂಕ reg_ದತ್ತಾಂಶ, regRowid;           /* Registers holding data and rowid */
 
-  assert( pSelect!=0 );
-  if( pParse->pWith || pSelect->pWith ){
+  ಪ್ರತಿಜ್ಞಾ( pSelect!=0 );
+  ಆದರೆ( pParse->pWith || pSelect->pWith ){
     /* Do not attempt to process this query if there are an WITH clauses
     ** attached to it. Proceeding may generate a false "no such table: xxx"
     ** error if pSelect reads from a CTE named "xxx".  */
-    return 0;
+    ಹಿಂತಿರುಗಿ 0;
   }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  if( IsVirtual(pDest) ){
-    return 0;   /* tab1 must not be a virtual table */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  ಆದರೆ( IsVirtual(pDest) ){
+    ಹಿಂತಿರುಗಿ 0;   /* tab1 must not be a virtual table */
   }
-#endif
-  if( onError==OE_Default ){
-    if( pDest->iPKey>=0 ) onError = pDest->keyConf;
-    if( onError==OE_Default ) onError = OE_Abort;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆದರೆ( onError==OE_Default ){
+    ಆದರೆ( pDest->iPKey>=0 ) onError = pDest->ಕೀಲಿ_Conf;
+    ಆದರೆ( onError==OE_Default ) onError = OE_Abort;
   }
-  assert(pSelect->pSrc);   /* allocated even if there is no FROM clause */
-  if( pSelect->pSrc->nSrc!=1 ){
-    return 0;   /* FROM clause must have exactly one term */
+  ಪ್ರತಿಜ್ಞಾ(pSelect->pSrc);   /* allocated even if there is no FROM clause */
+  ಆದರೆ( pSelect->pSrc->nSrc!=1 ){
+    ಹಿಂತಿರುಗಿ 0;   /* FROM clause must have exactly one term */
   }
-  if( pSelect->pSrc->a[0].fg.isSubquery ){
-    return 0;   /* FROM clause cannot contain a subquery */
+  ಆದರೆ( pSelect->pSrc->a[0].fg.isSubquery ){
+    ಹಿಂತಿರುಗಿ 0;   /* FROM clause cannot contain a subquery */
   }
-  if( pSelect->pWhere ){
-    return 0;   /* SELECT may not have a WHERE clause */
+  ಆದರೆ( pSelect->pWhere ){
+    ಹಿಂತಿರುಗಿ 0;   /* SELECT may not have a WHERE clause */
   }
-  if( pSelect->pOrderBy ){
-    return 0;   /* SELECT may not have an ORDER BY clause */
+  ಆದರೆ( pSelect->p_ಕ್ರಮ_By ){
+    ಹಿಂತಿರುಗಿ 0;   /* SELECT may not have an ORDER BY clause */
   }
   /* Do not need to test for a HAVING clause.  If HAVING is present but
   ** there is no ORDER BY, we will get an error. */
-  if( pSelect->pGroupBy ){
-    return 0;   /* SELECT may not have a GROUP BY clause */
+  ಆದರೆ( pSelect->p_ಗುಂಪು_By ){
+    ಹಿಂತಿರುಗಿ 0;   /* SELECT may not have a GROUP BY clause */
   }
-  if( pSelect->pLimit ){
-    return 0;   /* SELECT may not have a LIMIT clause */
+  ಆದರೆ( pSelect->p_ಎಲ್ಲೆ ){
+    ಹಿಂತಿರುಗಿ 0;   /* SELECT may not have a LIMIT clause */
   }
-  if( pSelect->pPrior ){
-    return 0;   /* SELECT may not be a compound query */
+  ಆದರೆ( pSelect->p_ಪೂರ್ವ ){
+    ಹಿಂತಿರುಗಿ 0;   /* SELECT may not be a compound query */
   }
-  if( pSelect->selFlags & SF_Distinct ){
-    return 0;   /* SELECT may not be DISTINCT */
+  ಆದರೆ( pSelect->selFlags & SF_Distinct ){
+    ಹಿಂತಿರುಗಿ 0;   /* SELECT may not be DISTINCT */
   }
   pEList = pSelect->pEList;
-  assert( pEList!=0 );
-  if( pEList->nExpr!=1 ){
-    return 0;   /* The result set must have exactly one column */
+  ಪ್ರತಿಜ್ಞಾ( pEList!=0 );
+  ಆದರೆ( pEList->n_ಅಭಿವ್ಯಕ್ತಿ!=1 ){
+    ಹಿಂತಿರುಗಿ 0;   /* The result set must have exactly one column */
   }
-  assert( pEList->a[0].pExpr );
-  if( pEList->a[0].pExpr->op!=TK_ASTERISK ){
-    return 0;   /* The result set must be the special operator "*" */
+  ಪ್ರತಿಜ್ಞಾ( pEList->a[0].p_ಅಭಿವ್ಯಕ್ತಿ );
+  ಆದರೆ( pEList->a[0].p_ಅಭಿವ್ಯಕ್ತಿ->op!=TK_ASTERISK ){
+    ಹಿಂತಿರುಗಿ 0;   /* The result set must be the special operator "*" */
   }
 
   /* At this point we have established that the statement is of the
   ** correct syntactic form to participate in this optimization.  Now
   ** we have to check the semantics.
   */
-  pItem = pSelect->pSrc->a;
-  pSrc = sqlite3LocateTableItem(pParse, 0, pItem);
-  if( pSrc==0 ){
-    return 0;   /* FROM clause does not contain a real table */
+  p_ಅಂಶ = pSelect->pSrc->a;
+  pSrc = sqlite3_Locate_ಕೋಷ್ಟಕ_ಅಂಶ(pParse, 0, p_ಅಂಶ);
+  ಆದರೆ( pSrc==0 ){
+    ಹಿಂತಿರುಗಿ 0;   /* FROM clause does not contain a real table */
   }
-  if( pSrc->tnum==pDest->tnum && pSrc->pSchema==pDest->pSchema ){
+  ಆದರೆ( pSrc->tnum==pDest->tnum && pSrc->pSchema==pDest->pSchema ){
     testcase( pSrc!=pDest ); /* Possible due to bad sqlite_schema.rootpage */
-    return 0;   /* tab1 and tab2 may not be the same table */
+    ಹಿಂತಿರುಗಿ 0;   /* tab1 and tab2 may not be the same table */
   }
-  if( HasRowid(pDest)!=HasRowid(pSrc) ){
-    return 0;   /* source and destination must both be WITHOUT ROWID or not */
+  ಆದರೆ( HasRowid(pDest)!=HasRowid(pSrc) ){
+    ಹಿಂತಿರುಗಿ 0;   /* source and destination must both be WITHOUT ROWID or not */
   }
-  if( !IsOrdinaryTable(pSrc) ){
-    return 0;   /* tab2 may not be a view or virtual table */
+  ಆದರೆ( !Is_Ordinary_ಕೋಷ್ಟಕ(pSrc) ){
+    ಹಿಂತಿರುಗಿ 0;   /* tab2 may not be a view or virtual table */
   }
-  if( pDest->nCol!=pSrc->nCol ){
-    return 0;   /* Number of columns must be the same in tab1 and tab2 */
+  ಆದರೆ( pDest->n_ಲಂಬಸಾಲು!=pSrc->n_ಲಂಬಸಾಲು ){
+    ಹಿಂತಿರುಗಿ 0;   /* Number of columns must be the same in tab1 and tab2 */
   }
-  if( pDest->iPKey!=pSrc->iPKey ){
-    return 0;   /* Both tables must have the same INTEGER PRIMARY KEY */
+  ಆದರೆ( pDest->iPKey!=pSrc->iPKey ){
+    ಹಿಂತಿರುಗಿ 0;   /* Both tables must have the same INTEGER PRIMARY KEY */
   }
-  if( (pDest->tabFlags & TF_Strict)!=0 ){
-    if( (pSrc->tabFlags & TF_Strict)==0 ){
-      return 0;  /* Cannot feed from a non-strict into a strict table */
+  ಆದರೆ( (pDest->tabFlags & TF_Strict)!=0 ){
+    ಆದರೆ( (pSrc->tabFlags & TF_Strict)==0 ){
+      ಹಿಂತಿರುಗಿ 0;  /* Cannot feed from a non-strict into a strict table */
     }
-    for(i=0; i<pDest->nCol; i++){
-      unsigned eDestType = pDest->aCol[i].eCType;
-      unsigned eSrcType = pSrc->aCol[i].eCType;
-      if( eDestType==COLTYPE_ANY ) continue;
-      if( eDestType==eSrcType ) continue;
-      if( eDestType==COLTYPE_INT && eSrcType==COLTYPE_INTEGER ) continue;
-      if( eDestType==COLTYPE_INTEGER && eSrcType==COLTYPE_INT ) continue;
-      return 0; /* Incompatible types in source and destination */
+    ಗಾಗಿ(i=0; i<pDest->n_ಲಂಬಸಾಲು; i++){
+      ಚಿಹ್ನೆರಹಿತ eDestType = pDest->a_ಲಂಬಸಾಲು[i].eCType;
+      ಚಿಹ್ನೆರಹಿತ eSrcType = pSrc->a_ಲಂಬಸಾಲು[i].eCType;
+      ಆದರೆ( eDestType==COLTYPE_ANY ) ಮುಂದುವರಿ;
+      ಆದರೆ( eDestType==eSrcType ) ಮುಂದುವರಿ;
+      ಆದರೆ( eDestType==COLTYPE_INT && eSrcType==COLTYPE_INTEGER ) ಮುಂದುವರಿ;
+      ಆದರೆ( eDestType==COLTYPE_INTEGER && eSrcType==COLTYPE_INT ) ಮುಂದುವರಿ;
+      ಹಿಂತಿರುಗಿ 0; /* Incompatible types in source and destination */
     }
   }
-  for(i=0; i<pDest->nCol; i++){
-    Column *pDestCol = &pDest->aCol[i];
-    Column *pSrcCol = &pSrc->aCol[i];
-#ifdef SQLITE_ENABLE_HIDDEN_COLUMNS
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0
-     && (pDestCol->colFlags | pSrcCol->colFlags) & COLFLAG_HIDDEN
+  ಗಾಗಿ(i=0; i<pDest->n_ಲಂಬಸಾಲು; i++){
+    ಸ್ತಂಭ *p_Dest_ಲಂಬಸಾಲು = &pDest->a_ಲಂಬಸಾಲು[i];
+    ಸ್ತಂಭ *p_Src_ಲಂಬಸಾಲು = &pSrc->a_ಲಂಬಸಾಲು[i];
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_HIDDEN_COLUMNS
+    ಆದರೆ( (db->mDbFlags & DBFLAG_Vacuum)==0
+     && (p_Dest_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags | p_Src_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags) & COLFLAG_HIDDEN
     ){
-      return 0;    /* Neither table may have __hidden__ columns */
+      ಹಿಂತಿರುಗಿ 0;    /* Neither table may have __hidden__ columns */
     }
-#endif
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
     /* Even if tables t1 and t2 have identical schemas, if they contain
     ** generated columns, then this statement is semantically incorrect:
     **
@@ -3208,77 +3208,77 @@ static int xferOptimization(
     ** VACUUM command where it is actually needed).  But why do that?  It
     ** seems harmless enough, and provides a useful service.
     */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED) !=
-        (pSrcCol->colFlags & COLFLAG_GENERATED) ){
-      return 0;    /* Both columns have the same generated-column type */
+    ಆದರೆ( (p_Dest_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED) !=
+        (p_Src_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED) ){
+      ಹಿಂತಿರುಗಿ 0;    /* Both columns have the same generated-column type */
     }
     /* But the transfer is only allowed if both the source and destination
     ** tables have the exact same expressions for generated columns.
     ** This requirement could be relaxed for VIRTUAL columns, I suppose.
     */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED)!=0 ){
-      if( sqlite3ExprCompare(0,
-             sqlite3ColumnExpr(pSrc, pSrcCol),
-             sqlite3ColumnExpr(pDest, pDestCol), -1)!=0 ){
-        testcase( pDestCol->colFlags & COLFLAG_VIRTUAL );
-        testcase( pDestCol->colFlags & COLFLAG_STORED );
-        return 0;  /* Different generator expressions */
+    ಆದರೆ( (p_Dest_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED)!=0 ){
+      ಆದರೆ( sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Compare(0,
+             sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(pSrc, p_Src_ಲಂಬಸಾಲು),
+             sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(pDest, p_Dest_ಲಂಬಸಾಲು), -1)!=0 ){
+        testcase( p_Dest_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL );
+        testcase( p_Dest_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_STORED );
+        ಹಿಂತಿರುಗಿ 0;  /* Different generator expressions */
       }
     }
-#endif
-    if( pDestCol->affinity!=pSrcCol->affinity ){
-      return 0;    /* Affinity must be the same on all columns */
+#ಆದರೆ_ಅಂತ್ಯ
+    ಆದರೆ( p_Dest_ಲಂಬಸಾಲು->affinity!=p_Src_ಲಂಬಸಾಲು->affinity ){
+      ಹಿಂತಿರುಗಿ 0;    /* Affinity must be the same on all columns */
     }
-    if( sqlite3_stricmp(sqlite3ColumnColl(pDestCol),
-                        sqlite3ColumnColl(pSrcCol))!=0 ){
-      return 0;    /* Collating sequence must be the same on all columns */
+    ಆದರೆ( sqlite3_stricmp(sqlite3_ಸ್ತಂಭ_Coll(p_Dest_ಲಂಬಸಾಲು),
+                        sqlite3_ಸ್ತಂಭ_Coll(p_Src_ಲಂಬಸಾಲು))!=0 ){
+      ಹಿಂತಿರುಗಿ 0;    /* Collating sequence must be the same on all columns */
     }
-    if( pDestCol->notNull && !pSrcCol->notNull ){
-      return 0;    /* tab2 must be NOT NULL if tab1 is */
+    ಆದರೆ( p_Dest_ಲಂಬಸಾಲು->notNull && !p_Src_ಲಂಬಸಾಲು->notNull ){
+      ಹಿಂತಿರುಗಿ 0;    /* tab2 must be NOT NULL if tab1 is */
     }
     /* Default values for second and subsequent columns need to match. */
-    if( (pDestCol->colFlags & COLFLAG_GENERATED)==0 && i>0 ){
-      Expr *pDestExpr = sqlite3ColumnExpr(pDest, pDestCol);
-      Expr *pSrcExpr = sqlite3ColumnExpr(pSrc, pSrcCol);
-      assert( pDestExpr==0 || pDestExpr->op==TK_SPAN );
-      assert( pDestExpr==0 || !ExprHasProperty(pDestExpr, EP_IntValue) );
-      assert( pSrcExpr==0 || pSrcExpr->op==TK_SPAN );
-      assert( pSrcExpr==0 || !ExprHasProperty(pSrcExpr, EP_IntValue) );
-      if( (pDestExpr==0)!=(pSrcExpr==0)
-       || (pDestExpr!=0 && strcmp(pDestExpr->u.zToken,
-                                       pSrcExpr->u.zToken)!=0)
+    ಆದರೆ( (p_Dest_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_GENERATED)==0 && i>0 ){
+      ಅಭಿವ್ಯಕ್ತಿ *p_Dest_ಅಭಿವ್ಯಕ್ತಿ = sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(pDest, p_Dest_ಲಂಬಸಾಲು);
+      ಅಭಿವ್ಯಕ್ತಿ *p_Src_ಅಭಿವ್ಯಕ್ತಿ = sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(pSrc, p_Src_ಲಂಬಸಾಲು);
+      ಪ್ರತಿಜ್ಞಾ( p_Dest_ಅಭಿವ್ಯಕ್ತಿ==0 || p_Dest_ಅಭಿವ್ಯಕ್ತಿ->op==TK_ಹರವು );
+      ಪ್ರತಿಜ್ಞಾ( p_Dest_ಅಭಿವ್ಯಕ್ತಿ==0 || !ಅಭಿವ್ಯಕ್ತಿ_Has_Property(p_Dest_ಅಭಿವ್ಯಕ್ತಿ, EP_Int_ಮೌಲ್ಯ) );
+      ಪ್ರತಿಜ್ಞಾ( p_Src_ಅಭಿವ್ಯಕ್ತಿ==0 || p_Src_ಅಭಿವ್ಯಕ್ತಿ->op==TK_ಹರವು );
+      ಪ್ರತಿಜ್ಞಾ( p_Src_ಅಭಿವ್ಯಕ್ತಿ==0 || !ಅಭಿವ್ಯಕ್ತಿ_Has_Property(p_Src_ಅಭಿವ್ಯಕ್ತಿ, EP_Int_ಮೌಲ್ಯ) );
+      ಆದರೆ( (p_Dest_ಅಭಿವ್ಯಕ್ತಿ==0)!=(p_Src_ಅಭಿವ್ಯಕ್ತಿ==0)
+       || (p_Dest_ಅಭಿವ್ಯಕ್ತಿ!=0 && strcmp(p_Dest_ಅಭಿವ್ಯಕ್ತಿ->u.zToken,
+                                       p_Src_ಅಭಿವ್ಯಕ್ತಿ->u.zToken)!=0)
       ){
-        return 0;    /* Default values must be the same for all columns */
+        ಹಿಂತಿರುಗಿ 0;    /* Default values must be the same for all columns */
       }
     }
   }
-  for(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
-    if( IsUniqueIndex(pDestIdx) ){
+  ಗಾಗಿ(pDestIdx=pDest->p_ಸೂಚ್ಯಂಕ; pDestIdx; pDestIdx=pDestIdx->p_ಮುಂದಿನ){
+    ಆದರೆ( Is_Unique_ಸೂಚ್ಯಂಕ(pDestIdx) ){
       destHasUniqueIdx = 1;
     }
-    for(pSrcIdx=pSrc->pIndex; pSrcIdx; pSrcIdx=pSrcIdx->pNext){
-      if( xferCompatibleIndex(pDestIdx, pSrcIdx) ) break;
+    ಗಾಗಿ(pSrcIdx=pSrc->p_ಸೂಚ್ಯಂಕ; pSrcIdx; pSrcIdx=pSrcIdx->p_ಮುಂದಿನ){
+      ಆದರೆ( xfer_Compatible_ಸೂಚ್ಯಂಕ(pDestIdx, pSrcIdx) ) ನಿಲ್ಲಿಸು;
     }
-    if( pSrcIdx==0 ){
-      return 0;    /* pDestIdx has no corresponding index in pSrc */
+    ಆದರೆ( pSrcIdx==0 ){
+      ಹಿಂತಿರುಗಿ 0;    /* pDestIdx has no corresponding index in pSrc */
     }
-    if( pSrcIdx->tnum==pDestIdx->tnum && pSrc->pSchema==pDest->pSchema
+    ಆದರೆ( pSrcIdx->tnum==pDestIdx->tnum && pSrc->pSchema==pDest->pSchema
          && sqlite3FaultSim(411)==SQLITE_OK ){
       /* The sqlite3FaultSim() call allows this corruption test to be
       ** bypassed during testing, in order to exercise other corruption tests
       ** further downstream. */
-      return 0;   /* Corrupt schema - two indexes on the same btree */
+      ಹಿಂತಿರುಗಿ 0;   /* Corrupt schema - two indexes on the same btree */
     }
   }
-#ifndef SQLITE_OMIT_CHECK
-  if( pDest->pCheck
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_CHECK
+  ಆದರೆ( pDest->pCheck
    && (db->mDbFlags & DBFLAG_Vacuum)==0
    && !xferCompatibleCheck(pDest,pSrc)
   ){
-    return 0;   /* Tables have different CHECK constraints.  Ticket #2252 */
+    ಹಿಂತಿರುಗಿ 0;   /* Tables have different CHECK constraints.  Ticket #2252 */
   }
-#endif
-#ifndef SQLITE_OMIT_FOREIGN_KEY
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_FOREIGN_ಕೀಲಿ
   /* Disallow the transfer optimization if the destination table contains
   ** any foreign key constraints.  This is more restrictive than necessary.
   ** But the main beneficiary of the transfer optimization is the VACUUM
@@ -3286,47 +3286,47 @@ static int xferOptimization(
   ** the extra complication to make this rule less restrictive is probably
   ** not worth the effort.  Ticket [6284df89debdfa61db8073e062908af0c9b6118e]
   */
-  assert( IsOrdinaryTable(pDest) );
-  if( (db->flags & SQLITE_ForeignKeys)!=0 && pDest->u.tab.pFKey!=0 ){
-    return 0;
+  ಪ್ರತಿಜ್ಞಾ( Is_Ordinary_ಕೋಷ್ಟಕ(pDest) );
+  ಆದರೆ( (db->flags & SQLITE_Foreign_ಕೀಲಿಗಳು)!=0 && pDest->u.tab.pFKey!=0 ){
+    ಹಿಂತಿರುಗಿ 0;
   }
-#endif
-  if( (db->flags & SQLITE_CountRows)!=0 ){
-    return 0;  /* xfer opt does not play well with PRAGMA count_changes */
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆದರೆ( (db->flags & SQLITE_ಎಣಿಕೆ_ಅಡ್ಡಸಾಲುಗಳು)!=0 ){
+    ಹಿಂತಿರುಗಿ 0;  /* xfer opt does not play well with PRAGMA count_changes */
   }
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( db->xAuth ){
-    int iDb = sqlite3SchemaToIndex(db, pSrc->pSchema);
-    if( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) return 0;
-    for(i=0; i<pSrc->nCol; i++){
-      Column *pSrcCol = &pSrc->aCol[i];
-      if( sqlite3AuthReadCol(pParse, pSrc->zName, pSrcCol->zCnName, iDb) ){
-        return 0;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTHORIZATION
+  ಆದರೆ( db->xAuth ){
+    ಪೂರ್ಣಾಂಕ iDb = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(db, pSrc->pSchema);
+    ಆದರೆ( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) ಹಿಂತಿರುಗಿ 0;
+    ಗಾಗಿ(i=0; i<pSrc->n_ಲಂಬಸಾಲು; i++){
+      ಸ್ತಂಭ *p_Src_ಲಂಬಸಾಲು = &pSrc->a_ಲಂಬಸಾಲು[i];
+      ಆದರೆ( sqlite3_Auth_Read_ಲಂಬಸಾಲು(pParse, pSrc->zName, p_Src_ಲಂಬಸಾಲು->zCnName, iDb) ){
+        ಹಿಂತಿರುಗಿ 0;
       }
     }
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
   /* If we get this far, it means that the xfer optimization is at
   ** least a possibility, though it might only work if the destination
   ** table (tab1) is initially empty.
   */
-#ifdef SQLITE_TEST
-  sqlite3_xferopt_count++;
-#endif
-  iDbSrc = sqlite3SchemaToIndex(db, pSrc->pSchema);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
+  sqlite3_xferopt_ಎಣಿಕೆ++;
+#ಆದರೆ_ಅಂತ್ಯ
+  iDbSrc = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(db, pSrc->pSchema);
   v = sqlite3GetVdbe(pParse);
-  sqlite3CodeVerifySchema(pParse, iDbSrc);
+  sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iDbSrc);
   iSrc = pParse->nTab++;
   iDest = pParse->nTab++;
   regAutoinc = autoIncBegin(pParse, iDbDest, pDest);
-  regData = sqlite3GetTempReg(pParse);
-  sqlite3VdbeAddOp2(v, OP_Null, 0, regData);
-  regRowid = sqlite3GetTempReg(pParse);
-  sqlite3OpenTable(pParse, iDest, iDbDest, pDest, OP_OpenWrite);
-  assert( HasRowid(pDest) || destHasUniqueIdx );
-  if( (db->mDbFlags & DBFLAG_Vacuum)==0 && (
-      (pDest->iPKey<0 && pDest->pIndex!=0)          /* (1) */
+  reg_ದತ್ತಾಂಶ = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(pParse);
+  sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Null, 0, reg_ದತ್ತಾಂಶ);
+  regRowid = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(pParse);
+  sqlite3_Open_ಕೋಷ್ಟಕ(pParse, iDest, iDbDest, pDest, OP_OpenWrite);
+  ಪ್ರತಿಜ್ಞಾ( HasRowid(pDest) || destHasUniqueIdx );
+  ಆದರೆ( (db->mDbFlags & DBFLAG_Vacuum)==0 && (
+      (pDest->iPKey<0 && pDest->p_ಸೂಚ್ಯಂಕ!=0)          /* (1) */
    || destHasUniqueIdx                              /* (2) */
    || (onError!=OE_Abort && onError!=OE_Rollback)   /* (3) */
   )){
@@ -3347,74 +3347,74 @@ static int xferOptimization(
     **
     ** (3) onError is something other than OE_Abort and OE_Rollback.
     */
-    addr1 = sqlite3VdbeAddOp2(v, OP_Rewind, iDest, 0); VdbeCoverage(v);
-    emptyDestTest = sqlite3VdbeAddOp0(v, OP_Goto);
-    sqlite3VdbeJumpHere(v, addr1);
+    addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rewind, iDest, 0); VdbeCoverage(v);
+    ಖಾಲಿಗಳು_Dest_Test = sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Goto);
+    sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr1);
   }
-  if( HasRowid(pSrc) ){
+  ಆದರೆ( HasRowid(pSrc) ){
     u8 insFlags;
-    sqlite3OpenTable(pParse, iSrc, iDbSrc, pSrc, OP_OpenRead);
-    emptySrcTest = sqlite3VdbeAddOp2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
-    if( pDest->iPKey>=0 ){
-      addr1 = sqlite3VdbeAddOp2(v, OP_Rowid, iSrc, regRowid);
-      if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+    sqlite3_Open_ಕೋಷ್ಟಕ(pParse, iSrc, iDbSrc, pSrc, OP_OpenRead);
+    ಖಾಲಿಗಳು_Src_Test = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
+    ಆದರೆ( pDest->iPKey>=0 ){
+      addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rowid, iSrc, regRowid);
+      ಆದರೆ( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
         sqlite3VdbeVerifyAbortable(v, onError);
-        addr2 = sqlite3VdbeAddOp3(v, OP_NotExists, iDest, 0, regRowid);
+        addr2 = sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_NotExists, iDest, 0, regRowid);
         VdbeCoverage(v);
         sqlite3RowidConstraint(pParse, onError, pDest);
-        sqlite3VdbeJumpHere(v, addr2);
+        sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr2);
       }
-      autoIncStep(pParse, regAutoinc, regRowid);
-    }else if( pDest->pIndex==0 && !(db->mDbFlags & DBFLAG_VacuumInto) ){
-      addr1 = sqlite3VdbeAddOp2(v, OP_NewRowid, iDest, regRowid);
-    }else{
-      addr1 = sqlite3VdbeAddOp2(v, OP_Rowid, iSrc, regRowid);
-      assert( (pDest->tabFlags & TF_Autoincrement)==0 );
+      auto_Inc_ಹೆಜ್ಜೆ(pParse, regAutoinc, regRowid);
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pDest->p_ಸೂಚ್ಯಂಕ==0 && !(db->mDbFlags & DBFLAG_VacuumInto) ){
+      addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_NewRowid, iDest, regRowid);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rowid, iSrc, regRowid);
+      ಪ್ರತಿಜ್ಞಾ( (pDest->tabFlags & TF_Autoincrement)==0 );
     }
 
-    if( db->mDbFlags & DBFLAG_Vacuum ){
-      sqlite3VdbeAddOp1(v, OP_SeekEnd, iDest);
+    ಆದರೆ( db->mDbFlags & DBFLAG_Vacuum ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Seek_ಕೊನೆ, iDest);
       insFlags = OPFLAG_APPEND|OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT;
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       insFlags = OPFLAG_NCHANGE|OPFLAG_LASTROWID|OPFLAG_APPEND|OPFLAG_PREFORMAT;
     }
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
-      sqlite3VdbeAddOp3(v, OP_RowData, iSrc, regData, 1);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_PREUPDATE_HOOK
+    ಆದರೆ( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಅಡ್ಡಸಾಲು_ದತ್ತಾಂಶ, iSrc, reg_ದತ್ತಾಂಶ, 1);
       insFlags &= ~OPFLAG_PREFORMAT;
-    }else
-#endif
+    }ಇಲ್ಲದಿದ್ದರೆ
+#ಆದರೆ_ಅಂತ್ಯ
     {
-      sqlite3VdbeAddOp3(v, OP_RowCell, iDest, iSrc, regRowid);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಅಡ್ಡಸಾಲು_Cell, iDest, iSrc, regRowid);
     }
-    sqlite3VdbeAddOp3(v, OP_Insert, iDest, regData, regRowid);
-    if( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
-      sqlite3VdbeChangeP4(v, -1, (char*)pDest, P4_TABLE);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸೇರಿಸು, iDest, reg_ದತ್ತಾಂಶ, regRowid);
+    ಆದರೆ( (db->mDbFlags & DBFLAG_Vacuum)==0 ){
+      sqlite3VdbeChangeP4(v, -1, (ಅಕ್ಷರ*)pDest, P4_ಕೋಷ್ಟಕ);
     }
     sqlite3VdbeChangeP5(v, insFlags);
 
-    sqlite3VdbeAddOp2(v, OP_Next, iSrc, addr1); VdbeCoverage(v);
-    sqlite3VdbeAddOp2(v, OP_Close, iSrc, 0);
-    sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
-  }else{
-    sqlite3TableLock(pParse, iDbDest, pDest->tnum, 1, pDest->zName);
-    sqlite3TableLock(pParse, iDbSrc, pSrc->tnum, 0, pSrc->zName);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಮುಂದಿನ, iSrc, addr1); VdbeCoverage(v);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Close, iSrc, 0);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Close, iDest, 0);
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(pParse, iDbDest, pDest->tnum, 1, pDest->zName);
+    sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(pParse, iDbSrc, pSrc->tnum, 0, pSrc->zName);
   }
-  for(pDestIdx=pDest->pIndex; pDestIdx; pDestIdx=pDestIdx->pNext){
+  ಗಾಗಿ(pDestIdx=pDest->p_ಸೂಚ್ಯಂಕ; pDestIdx; pDestIdx=pDestIdx->p_ಮುಂದಿನ){
     u8 idxInsFlags = 0;
-    for(pSrcIdx=pSrc->pIndex; ALWAYS(pSrcIdx); pSrcIdx=pSrcIdx->pNext){
-      if( xferCompatibleIndex(pDestIdx, pSrcIdx) ) break;
+    ಗಾಗಿ(pSrcIdx=pSrc->p_ಸೂಚ್ಯಂಕ; ALWAYS(pSrcIdx); pSrcIdx=pSrcIdx->p_ಮುಂದಿನ){
+      ಆದರೆ( xfer_Compatible_ಸೂಚ್ಯಂಕ(pDestIdx, pSrcIdx) ) ನಿಲ್ಲಿಸು;
     }
-    assert( pSrcIdx );
-    sqlite3VdbeAddOp3(v, OP_OpenRead, iSrc, pSrcIdx->tnum, iDbSrc);
-    sqlite3VdbeSetP4KeyInfo(pParse, pSrcIdx);
+    ಪ್ರತಿಜ್ಞಾ( pSrcIdx );
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_OpenRead, iSrc, pSrcIdx->tnum, iDbSrc);
+    sqlite3_Vdbe_ಗಣ_P4_ಕೀಲಿ_Info(pParse, pSrcIdx);
     VdbeComment((v, "%s", pSrcIdx->zName));
-    sqlite3VdbeAddOp3(v, OP_OpenWrite, iDest, pDestIdx->tnum, iDbDest);
-    sqlite3VdbeSetP4KeyInfo(pParse, pDestIdx);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_OpenWrite, iDest, pDestIdx->tnum, iDbDest);
+    sqlite3_Vdbe_ಗಣ_P4_ಕೀಲಿ_Info(pParse, pDestIdx);
     sqlite3VdbeChangeP5(v, OPFLAG_BULKCSR);
     VdbeComment((v, "%s", pDestIdx->zName));
-    addr1 = sqlite3VdbeAddOp2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
-    if( db->mDbFlags & DBFLAG_Vacuum ){
+    addr1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rewind, iSrc, 0); VdbeCoverage(v);
+    ಆದರೆ( db->mDbFlags & DBFLAG_Vacuum ){
       /* This INSERT command is part of a VACUUM operation, which guarantees
       ** that the destination table is empty. If all indexed columns use
       ** collation sequence BINARY, then it can also be assumed that the
@@ -3429,45 +3429,45 @@ static int xferOptimization(
       ** might change the definition of a collation sequence and then run
       ** a VACUUM command. In that case keys may not be written in strictly
       ** sorted order.  */
-      for(i=0; i<pSrcIdx->nColumn; i++){
-        const char *zColl = pSrcIdx->azColl[i];
-        if( sqlite3_stricmp(sqlite3StrBINARY, zColl) ) break;
+      ಗಾಗಿ(i=0; i<pSrcIdx->n_ಸ್ತಂಭ; i++){
+        ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zColl = pSrcIdx->azColl[i];
+        ಆದರೆ( sqlite3_stricmp(sqlite3_Str_ದ್ವಿಮಾನ, zColl) ) ನಿಲ್ಲಿಸು;
       }
-      if( i==pSrcIdx->nColumn ){
+      ಆದರೆ( i==pSrcIdx->n_ಸ್ತಂಭ ){
         idxInsFlags = OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT;
-        sqlite3VdbeAddOp1(v, OP_SeekEnd, iDest);
-        sqlite3VdbeAddOp2(v, OP_RowCell, iDest, iSrc);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Seek_ಕೊನೆ, iDest);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಅಡ್ಡಸಾಲು_Cell, iDest, iSrc);
       }
-    }else if( !HasRowid(pSrc) && pDestIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( !HasRowid(pSrc) && pDestIdx->idxType==SQLITE_IDXTYPE_PRIMARYKEY ){
       idxInsFlags |= OPFLAG_NCHANGE;
     }
-    if( idxInsFlags!=(OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT) ){
-      sqlite3VdbeAddOp3(v, OP_RowData, iSrc, regData, 1);
-      if( (db->mDbFlags & DBFLAG_Vacuum)==0
+    ಆದರೆ( idxInsFlags!=(OPFLAG_USESEEKRESULT|OPFLAG_PREFORMAT) ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಅಡ್ಡಸಾಲು_ದತ್ತಾಂಶ, iSrc, reg_ದತ್ತಾಂಶ, 1);
+      ಆದರೆ( (db->mDbFlags & DBFLAG_Vacuum)==0
        && !HasRowid(pDest)
-       && IsPrimaryKeyIndex(pDestIdx)
+       && Is_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pDestIdx)
       ){
-        codeWithoutRowidPreupdate(pParse, pDest, iDest, regData);
+        ಸಂಕೇತ_Without_Rowid_Preupdate(pParse, pDest, iDest, reg_ದತ್ತಾಂಶ);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_IdxInsert, iDest, regData);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Idx_ಸೇರಿಸು, iDest, reg_ದತ್ತಾಂಶ);
     sqlite3VdbeChangeP5(v, idxInsFlags|OPFLAG_APPEND);
-    sqlite3VdbeAddOp2(v, OP_Next, iSrc, addr1+1); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr1);
-    sqlite3VdbeAddOp2(v, OP_Close, iSrc, 0);
-    sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಮುಂದಿನ, iSrc, addr1+1); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr1);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Close, iSrc, 0);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Close, iDest, 0);
   }
-  if( emptySrcTest ) sqlite3VdbeJumpHere(v, emptySrcTest);
-  sqlite3ReleaseTempReg(pParse, regRowid);
-  sqlite3ReleaseTempReg(pParse, regData);
-  if( emptyDestTest ){
-    sqlite3AutoincrementEnd(pParse);
-    sqlite3VdbeAddOp2(v, OP_Halt, SQLITE_OK, 0);
-    sqlite3VdbeJumpHere(v, emptyDestTest);
-    sqlite3VdbeAddOp2(v, OP_Close, iDest, 0);
-    return 0;
-  }else{
-    return 1;
+  ಆದರೆ( ಖಾಲಿಗಳು_Src_Test ) sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, ಖಾಲಿಗಳು_Src_Test);
+  sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Reg(pParse, regRowid);
+  sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Reg(pParse, reg_ದತ್ತಾಂಶ);
+  ಆದರೆ( ಖಾಲಿಗಳು_Dest_Test ){
+    sqlite3_Autoincrement_ಕೊನೆ(pParse);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Halt, SQLITE_OK, 0);
+    sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, ಖಾಲಿಗಳು_Dest_Test);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Close, iDest, 0);
+    ಹಿಂತಿರುಗಿ 0;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಹಿಂತಿರುಗಿ 1;
   }
 }
-#endif /* SQLITE_OMIT_XFER_OPT */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_XFER_OPT */

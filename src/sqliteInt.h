@@ -12,8 +12,8 @@
 ** Internal interface definitions for SQLite.
 **
 */
-#ifndef SQLITEINT_H
-#define SQLITEINT_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITEINT_H
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITEINT_H
 
 /* Special Comments:
 **
@@ -46,9 +46,9 @@
 ** Make sure the Tcl calling convention macro is defined.  This macro is
 ** only used by test code and Tcl integration code.
 */
-#ifndef SQLITE_TCLAPI
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_TCLAPI
 #  define SQLITE_TCLAPI
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Include the header file used to customize the compiler options for MSVC.
@@ -56,12 +56,12 @@
 ** compiler warnings due to subsequent content in this file and other files
 ** that are included by this file.
 */
-#include "msvc.h"
+#ಅನ್ತರ್ಭಾವ "msvc.h"
 
 /*
 ** Special setup for VxWorks
 */
-#include "vxworks.h"
+#ಅನ್ತರ್ಭಾವ "vxworks.h"
 
 /*
 ** These #defines should enable >2GB file support on POSIX if the
@@ -87,13 +87,13 @@
 **
 ** Similar is true for Mac OS X.  LFS is only supported on Mac OS X 9 and later.
 */
-#ifndef SQLITE_DISABLE_LFS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DISABLE_LFS
 # define _LARGE_FILE       1
-# ifndef _FILE_OFFSET_BITS
-#   define _FILE_OFFSET_BITS 64
+# ifndef FILE_ಸ್ಥಾನಾಂತರ_ಬಿಟ್ಟುಗಳು
+#   define FILE_ಸ್ಥಾನಾಂತರ_ಬಿಟ್ಟುಗಳು 64
 # endif
-# define _LARGEFILE_SOURCE 1
-#endif
+# define LARGEFILE_ಮೂಲ 1
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* The GCC_VERSION and MSVC_VERSION macros are used to
 ** conditionally include optimizations for each of these compilers.  A
@@ -108,49 +108,49 @@
 ** so the GCC_VERSION macro will be set to a correct non-zero value even
 ** when compiling with clang.
 */
-#if defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
-# define GCC_VERSION (__GNUC__*1000000+__GNUC_MINOR__*1000+__GNUC_PATCHLEVEL__)
-#else
-# define GCC_VERSION 0
-#endif
-#if defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
-# define MSVC_VERSION _MSC_VER
-#else
-# define MSVC_VERSION 0
-#endif
+#ಆದರೆ defined(__GNUC__) && !defined(SQLITE_DISABLE_INTRINSIC)
+# define GCC_ಆವೃತ್ತಿ (__GNUC__*1000000+__GNUC_MINOR__*1000+__GNUC_PATCHLEVEL__)
+#ಇಲ್ಲದಿದ್ದರೆ
+# define GCC_ಆವೃತ್ತಿ 0
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(_MSC_VER) && !defined(SQLITE_DISABLE_INTRINSIC)
+# define MSVC_ಆವೃತ್ತಿ _MSC_VER
+#ಇಲ್ಲದಿದ್ದರೆ
+# define MSVC_ಆವೃತ್ತಿ 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Some C99 functions in "math.h" are only present for MSVC when its version
 ** is associated with Visual Studio 2013 or higher.
 */
-#ifndef SQLITE_HAVE_C99_MATH_FUNCS
-# if MSVC_VERSION==0 || MSVC_VERSION>=1800
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_HAVE_C99_MATH_FUNCS
+# ಆದರೆ MSVC_ಆವೃತ್ತಿ==0 || MSVC_ಆವೃತ್ತಿ>=1800
 #  define SQLITE_HAVE_C99_MATH_FUNCS (1)
-# else
+# ಇಲ್ಲದಿದ್ದರೆ
 #  define SQLITE_HAVE_C99_MATH_FUNCS (0)
 # endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Needed for various definitions... */
-#if defined(__GNUC__) && !defined(_GNU_SOURCE)
-# define _GNU_SOURCE
-#endif
+#ಆದರೆ defined(__GNUC__) && !defined(GNU_ಮೂಲ)
+# define GNU_ಮೂಲ
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(__OpenBSD__) && !defined(_BSD_SOURCE)
-# define _BSD_SOURCE
-#endif
+#ಆದರೆ defined(__OpenBSD__) && !defined(BSD_ಮೂಲ)
+# define BSD_ಮೂಲ
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Macro to disable warnings about missing "break" at the end of a "case".
 */
-#if defined(__has_attribute)
-#  if __has_attribute(fallthrough)
+#ಆದರೆ defined(__has_attribute)
+#  ಆದರೆ __has_attribute(fallthrough)
 #    define deliberate_fall_through __attribute__((fallthrough));
 #  endif
-#endif
-#if !defined(deliberate_fall_through)
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ !defined(deliberate_fall_through)
 #  define deliberate_fall_through
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** For MinGW, check to see if we can include the header file containing its
@@ -166,90 +166,90 @@
 ** defined; otherwise, detection of conditions specific to MinGW will be
 ** disabled.
 */
-#if defined(_HAVE_MINGW_H)
+#ಆದರೆ defined(_HAVE_MINGW_H)
 # include "mingw.h"
-#elif defined(_HAVE__MINGW_H)
+#ಅಥವಾಆದರೆ defined(_HAVE__MINGW_H)
 # include "_mingw.h"
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** For MinGW version 4.x (and higher), check to see if the _USE_32BIT_TIME_T
 ** define is required to maintain binary compatibility with the MSVC runtime
 ** library in use (e.g. for Windows XP).
 */
-#if !defined(_USE_32BIT_TIME_T) && !defined(_USE_64BIT_TIME_T) && \
+#ಆದರೆ !defined(USE_32_ಬಿಟ್_ಸಮಯ_T) && !defined(USE_64_ಬಿಟ್_ಸಮಯ_T) && \
     defined(_WIN32) && !defined(_WIN64) && \
     defined(__MINGW_MAJOR_VERSION) && __MINGW_MAJOR_VERSION >= 4 && \
     defined(__MSVCRT__)
-# define _USE_32BIT_TIME_T
-#endif
+# define USE_32_ಬಿಟ್_ಸಮಯ_T
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Optionally #include a user-defined header, whereby compilation options
 ** may be set prior to where they take effect, but after platform setup.
 ** If SQLITE_CUSTOM_INCLUDE=? is defined, its value names the #include
 ** file.
 */
-#ifdef SQLITE_CUSTOM_INCLUDE
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_CUSTOM_INCLUDE
 # define INC_STRINGIFY_(f) #f
 # define INC_STRINGIFY(f) INC_STRINGIFY_(f)
 # include INC_STRINGIFY(SQLITE_CUSTOM_INCLUDE)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* The public SQLite interface.  The _FILE_OFFSET_BITS macro must appear
 ** first in QNX.  Also, the _USE_32BIT_TIME_T macro must appear first for
 ** MinGW.
 */
-#include "sqlite3.h"
+#ಅನ್ತರ್ಭಾವ "sqlite3.h"
 
 /*
 ** Reuse the STATIC_VFS1 for mutex access to sqlite3_temp_directory.
 */
-#define SQLITE_MUTEX_STATIC_TEMPDIR SQLITE_MUTEX_STATIC_VFS1
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_MUTEX_STATIC_TEMPDIR SQLITE_MUTEX_STATIC_VFS1
 
 /*
 ** Include the configuration header output by 'configure' if we're using the
 ** autoconf-based build
 */
-#if defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
-#include "sqlite_cfg.h"
-#define SQLITECONFIG_H 1
-#endif
+#ಆದರೆ defined(_HAVE_SQLITE_CONFIG_H) && !defined(SQLITECONFIG_H)
+#ಅನ್ತರ್ಭಾವ "sqlite_cfg.h"
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITECONFIG_H 1
+#ಆದರೆ_ಅಂತ್ಯ
 
-#include "sqliteLimit.h"
+#ಅನ್ತರ್ಭಾವ "sqliteLimit.h"
 
 /* Disable nuisance warnings on Borland compilers */
-#if defined(__BORLANDC__)
-#pragma warn -rch /* unreachable code */
-#pragma warn -ccc /* Condition is always true or false */
-#pragma warn -aus /* Assigned value is never used */
-#pragma warn -csu /* Comparing signed and unsigned */
-#pragma warn -spa /* Suspicious pointer arithmetic */
-#endif
+#ಆದರೆ defined(__BORLANDC__)
+#ಸೂಚನೆ warn -rch /* unreachable code */
+#ಸೂಚನೆ warn -ccc /* Condition is always true or false */
+#ಸೂಚನೆ warn -aus /* Assigned value is never used */
+#ಸೂಚನೆ warn -csu /* Comparing signed and unsigned */
+#ಸೂಚನೆ warn -spa /* Suspicious pointer arithmetic */
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** A few places in the code require atomic load/store of aligned
 ** integer values.
 */
-#ifndef __has_extension
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __has_extension
 # define __has_extension(x) 0     /* compatibility with non-clang compilers */
-#endif
-#if GCC_VERSION>=4007000 || __has_extension(c_atomic)
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ GCC_ಆವೃತ್ತಿ>=4007000 || __has_extension(c_atomic)
 # define SQLITE_ATOMIC_INTRINSICS 1
-# define AtomicLoad(PTR)       __atomic_load_n((PTR),__ATOMIC_RELAXED)
+# define Atomic_ತುಂಬು(PTR)       __atomic_load_n((PTR),__ATOMIC_RELAXED)
 # define AtomicStore(PTR,VAL)  __atomic_store_n((PTR),(VAL),__ATOMIC_RELAXED)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define SQLITE_ATOMIC_INTRINSICS 0
-# define AtomicLoad(PTR)       (*(PTR))
+# define Atomic_ತುಂಬು(PTR)       (*(PTR))
 # define AtomicStore(PTR,VAL)  (*(PTR) = (VAL))
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Include standard header files as necessary
 */
-#include <stdint.h>
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
+#ಅನ್ತರ್ಭಾವ <stdint.h>
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ HAVE_INTTYPES_H
+#ಅನ್ತರ್ಭಾವ <inttypes.h>
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The following macros are used to cast pointers to integers and
@@ -267,19 +267,19 @@
 ** So we have to define the macros in different ways depending on the
 ** compiler.
 */
-#if defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(intptr_t)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(intptr_t)(X))
-#elif defined(__PTRDIFF_TYPE__)  /* This case should work for GCC */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(__PTRDIFF_TYPE__)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(__PTRDIFF_TYPE__)(X))
-#elif !defined(__GNUC__)       /* Works for compilers other than LLVM */
-# define SQLITE_INT_TO_PTR(X)  ((void*)&((char*)0)[X])
-# define SQLITE_PTR_TO_INT(X)  ((int)(((char*)X)-(char*)0))
-#else                          /* Generates a warning - but it always works */
-# define SQLITE_INT_TO_PTR(X)  ((void*)(X))
-# define SQLITE_PTR_TO_INT(X)  ((int)(X))
-#endif
+#ಆದರೆ defined(HAVE_STDINT_H)   /* Use this case if we have ANSI headers */
+# define SQLITE_INT_ಗಮ್ಯ_PTR(X)  ((ಶೂನ್ಯ*)(intptr_t)(X))
+# define SQLITE_PTR_ಗಮ್ಯ_INT(X)  ((ಪೂರ್ಣಾಂಕ)(intptr_t)(X))
+#ಅಥವಾಆದರೆ defined(__PTRDIFF_TYPE__)  /* This case should work for GCC */
+# define SQLITE_INT_ಗಮ್ಯ_PTR(X)  ((ಶೂನ್ಯ*)(__PTRDIFF_TYPE__)(X))
+# define SQLITE_PTR_ಗಮ್ಯ_INT(X)  ((ಪೂರ್ಣಾಂಕ)(__PTRDIFF_TYPE__)(X))
+#ಅಥವಾಆದರೆ !defined(__GNUC__)       /* Works for compilers other than LLVM */
+# define SQLITE_INT_ಗಮ್ಯ_PTR(X)  ((ಶೂನ್ಯ*)&((ಅಕ್ಷರ*)0)[X])
+# define SQLITE_PTR_ಗಮ್ಯ_INT(X)  ((ಪೂರ್ಣಾಂಕ)(((ಅಕ್ಷರ*)X)-(ಅಕ್ಷರ*)0))
+#ಇಲ್ಲದಿದ್ದರೆ                          /* Generates a warning - but it always works */
+# define SQLITE_INT_ಗಮ್ಯ_PTR(X)  ((ಶೂನ್ಯ*)(X))
+# define SQLITE_PTR_ಗಮ್ಯ_INT(X)  ((ಪೂರ್ಣಾಂಕ)(X))
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Hint to the compiler that a function should or should not be inlined:
@@ -294,80 +294,80 @@
 **    SQLITE_USES_INLINE      Set to 1 or 0 according to whether or not
 **                            inline functions are supported.
 */
-#if defined(SQLITE_DISABLE_INLINE)
+#ಆದರೆ defined(SQLITE_DISABLE_INLINE)
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
-#  define SQLITE_USES_INLINE 0
-#elif defined(__GNUC__)
+#  define SQLITE_ಬಳಸುತ್ತದೆ_INLINE 0
+#ಅಥವಾಆದರೆ defined(__GNUC__)
 #  define SQLITE_NOINLINE    __attribute__((noinline))
-#  define SQLITE_INLINE      __attribute__((always_inline)) inline
-#  define SQLITE_OPT_INLINE  __attribute__((always_inline)) inline
-#  define SQLITE_USES_INLINE 1
-#elif defined(_MSC_VER) && _MSC_VER>=1310
+#  define SQLITE_INLINE      __attribute__((always_inline)) ಸಾಲೊಳಗೆ
+#  define SQLITE_OPT_INLINE  __attribute__((always_inline)) ಸಾಲೊಳಗೆ
+#  define SQLITE_ಬಳಸುತ್ತದೆ_INLINE 1
+#ಅಥವಾಆದರೆ defined(_MSC_VER) && _MSC_VER>=1310
 #  define SQLITE_NOINLINE    __declspec(noinline)
 #  define SQLITE_INLINE      __forceinline
 #  define SQLITE_OPT_INLINE  __forceinline
-#  define SQLITE_USES_INLINE 1
-#else
+#  define SQLITE_ಬಳಸುತ್ತದೆ_INLINE 1
+#ಇಲ್ಲದಿದ್ದರೆ
 #  define SQLITE_NOINLINE
 #  define SQLITE_INLINE
 #  define SQLITE_OPT_INLINE
-#  define SQLITE_USES_INLINE 0
-#endif
-#if defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
+#  define SQLITE_ಬಳಸುತ್ತದೆ_INLINE 0
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(SQLITE_COVERAGE_TEST) || defined(__STRICT_ANSI__)
 # undef SQLITE_INLINE
 # define SQLITE_INLINE
 # undef SQLITE_OPT_INLINE
 # define SQLITE_OPT_INLINE
-# undef SQLITE_USES_INLINE
-# define SQLITE_USES_INLINE 0
-#endif
-#if !defined(SQLITE_AMALGAMATION)
+# undef SQLITE_ಬಳಸುತ್ತದೆ_INLINE
+# define SQLITE_ಬಳಸುತ್ತದೆ_INLINE 0
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ !defined(SQLITE_AMALGAMATION)
 # undef SQLITE_OPT_INLINE
 # define SQLITE_OPT_INLINE
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Make sure that the compiler intrinsics we desire are enabled when
 ** compiling with an appropriate version of MSVC unless prevented by
 ** the SQLITE_DISABLE_INTRINSIC define.
 */
-#if !defined(SQLITE_DISABLE_INTRINSIC)
-#  if defined(_MSC_VER) && _MSC_VER>=1400
-#    if !defined(_WIN32_WCE)
+#ಆದರೆ !defined(SQLITE_DISABLE_INTRINSIC)
+#  ಆದರೆ defined(_MSC_VER) && _MSC_VER>=1400
+#    ಆದರೆ !defined(_WIN32_WCE)
 #      include <intrin.h>
 #      pragma intrinsic(_byteswap_ushort)
 #      pragma intrinsic(_byteswap_ulong)
 #      pragma intrinsic(_byteswap_uint64)
 #      pragma intrinsic(_ReadWriteBarrier)
-#    else
+#    ಇಲ್ಲದಿದ್ದರೆ
 #      include <cmnintrin.h>
 #    endif
 #  endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Enable SQLITE_USE_SEH by default on MSVC builds.  Only omit
 ** SEH support if the -DSQLITE_OMIT_SEH option is given.
 */
-#if defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
+#ಆದರೆ defined(_MSC_VER) && !defined(SQLITE_OMIT_SEH)
 # define SQLITE_USE_SEH 1
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # undef SQLITE_USE_SEH
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Enable SQLITE_DIRECT_OVERFLOW_READ, unless the build explicitly
 ** disables it using -DSQLITE_DIRECT_OVERFLOW_READ=0
 */
-#if defined(SQLITE_DIRECT_OVERFLOW_READ) && SQLITE_DIRECT_OVERFLOW_READ+1==1
+#ಆದರೆ defined(SQLITE_ನೇರ_ಅತಿಪ್ರವಾಹ_READ) && SQLITE_ನೇರ_ಅತಿಪ್ರವಾಹ_READ+1==1
   /* Disable if -DSQLITE_DIRECT_OVERFLOW_READ=0 */
-# undef SQLITE_DIRECT_OVERFLOW_READ
-#else
+# undef SQLITE_ನೇರ_ಅತಿಪ್ರವಾಹ_READ
+#ಇಲ್ಲದಿದ್ದರೆ
   /* In all other cases, enable */
-# define SQLITE_DIRECT_OVERFLOW_READ 1
-#endif
+# define SQLITE_ನೇರ_ಅತಿಪ್ರವಾಹ_READ 1
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /*
@@ -386,30 +386,30 @@
 ** logic is partially replicated in ctime.c. If it is updated here, it should
 ** also be updated there.
 */
-#if !defined(SQLITE_THREADSAFE)
-# if defined(THREADSAFE)
+#ಆದರೆ !defined(SQLITE_THREADSAFE)
+# ಆದರೆ defined(THREADSAFE)
 #   define SQLITE_THREADSAFE THREADSAFE
-# else
+# ಇಲ್ಲದಿದ್ದರೆ
 #   define SQLITE_THREADSAFE 1 /* IMP: R-07272-22309 */
 # endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Powersafe overwrite is on by default.  But can be turned off using
 ** the -DSQLITE_POWERSAFE_OVERWRITE=0 command-line option.
 */
-#ifndef SQLITE_POWERSAFE_OVERWRITE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_POWERSAFE_OVERWRITE
 # define SQLITE_POWERSAFE_OVERWRITE 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** EVIDENCE-OF: R-25715-37072 Memory allocation statistics are enabled by
 ** default unless SQLite is compiled with SQLITE_DEFAULT_MEMSTATUS=0 in
 ** which case memory allocation statistics are disabled by default.
 */
-#if !defined(SQLITE_DEFAULT_MEMSTATUS)
+#ಆದರೆ !defined(SQLITE_DEFAULT_MEMSTATUS)
 # define SQLITE_DEFAULT_MEMSTATUS 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Exactly one of the following macros must be defined in order to
@@ -428,29 +428,29 @@
 ** If none of the above are defined, then set SQLITE_SYSTEM_MALLOC as
 ** the default.
 */
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#ಆದರೆ defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)>1
-# error "Two or more of the following compile-time configuration options\
+# error "Two or ಇನ್ನಷ್ಟು ದ the following compile-ಸಮಯ configuration options\
  are defined but at most one is allowed:\
  SQLITE_SYSTEM_MALLOC, SQLITE_WIN32_MALLOC, SQLITE_MEMDEBUG,\
  SQLITE_ZERO_MALLOC"
-#endif
-#if defined(SQLITE_SYSTEM_MALLOC) \
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(SQLITE_SYSTEM_MALLOC) \
   + defined(SQLITE_WIN32_MALLOC) \
   + defined(SQLITE_ZERO_MALLOC) \
   + defined(SQLITE_MEMDEBUG)==0
 # define SQLITE_SYSTEM_MALLOC 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** If SQLITE_MALLOC_SOFT_LIMIT is not zero, then try to keep the
 ** sizes of memory allocations below this value where possible.
 */
-#if !defined(SQLITE_MALLOC_SOFT_LIMIT)
-# define SQLITE_MALLOC_SOFT_LIMIT 1024
-#endif
+#ಆದರೆ !defined(SQLITE_MALLOC_SOFT_ಎಲ್ಲೆ)
+# define SQLITE_MALLOC_SOFT_ಎಲ್ಲೆ 1024
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** We need to define _XOPEN_SOURCE as follows in order to enable
@@ -458,9 +458,9 @@
 ** But _XOPEN_SOURCE define causes problems for Mac OS X, so omit
 ** it.
 */
-#if !defined(_XOPEN_SOURCE) && !defined(__DARWIN__) && !defined(__APPLE__)
-#  define _XOPEN_SOURCE 600
-#endif
+#ಆದರೆ !defined(XOPEN_ಮೂಲ) && !defined(__DARWIN__) && !defined(__APPLE__)
+#  define XOPEN_ಮೂಲ 600
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** NDEBUG and SQLITE_DEBUG are opposites.  It should always be true that
@@ -473,19 +473,19 @@
 ** is set.  Thus NDEBUG becomes an opt-in rather than an opt-out
 ** feature.
 */
-#if !defined(NDEBUG) && !defined(SQLITE_DEBUG)
+#ಆದರೆ !defined(NDEBUG) && !defined(SQLITE_DEBUG)
 # define NDEBUG 1
-#endif
-#if defined(NDEBUG) && defined(SQLITE_DEBUG)
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(NDEBUG) && defined(SQLITE_DEBUG)
 # undef NDEBUG
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Enable SQLITE_ENABLE_EXPLAIN_COMMENTS if SQLITE_DEBUG is turned on.
 */
-#if !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
+#ಆದರೆ !defined(SQLITE_ENABLE_EXPLAIN_COMMENTS) && defined(SQLITE_DEBUG)
 # define SQLITE_ENABLE_EXPLAIN_COMMENTS 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The testcase() macro is used to aid in coverage testing.  When
@@ -500,27 +500,27 @@
 ** where multiple cases go to the same block of code, testcase()
 ** can insure that all cases are evaluated.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#ಆದರೆ defined(SQLITE_MUTATION_TEST)
 # define testcase(X)
-#elif defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
+#ಅಥವಾಆದರೆ defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_DEBUG)
 # ifndef SQLITE_AMALGAMATION
-    extern unsigned int sqlite3CoverageCounter;
+    ಬಾಹ್ಯ ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ sqlite3CoverageCounter;
 # endif
-# define testcase(X)  if( X ){ sqlite3CoverageCounter += (unsigned)__LINE__; }
-#else
+# define testcase(X)  ಆದರೆ( X ){ sqlite3CoverageCounter += (ಚಿಹ್ನೆರಹಿತ)__LINE__; }
+#ಇಲ್ಲದಿದ್ದರೆ
 # define testcase(X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The TESTONLY macro is used to enclose variable declarations or
 ** other bits of code that are needed to support the arguments
 ** within testcase() and assert() macros.
 */
-#if !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
+#ಆದರೆ !defined(NDEBUG) || defined(SQLITE_COVERAGE_TEST)
 # define TESTONLY(X)  X
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define TESTONLY(X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Sometimes we need a small amount of code such as a variable initialization
@@ -530,19 +530,19 @@
 ** "Verification, Validation, and Accreditation".  In other words, the
 ** code within VVA_ONLY() will only run during verification processes.
 */
-#ifndef NDEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ NDEBUG
 # define VVA_ONLY(X)  X
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define VVA_ONLY(X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Disable ALWAYS() and NEVER() (make them pass-throughs) for coverage
 ** and mutation testing
 */
-#if defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
+#ಆದರೆ defined(SQLITE_COVERAGE_TEST) || defined(SQLITE_MUTATION_TEST)
 # define SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS  1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The ALWAYS and NEVER macros surround boolean expressions which
@@ -559,16 +559,16 @@
 ** be true and false so that the unreachable code they specify will
 ** not be counted as untested code.
 */
-#if defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
+#ಆದರೆ defined(SQLITE_OMIT_AUXILIARY_SAFETY_CHECKS)
 # define ALWAYS(X)      (1)
 # define NEVER(X)       (0)
-#elif !defined(NDEBUG)
-# define ALWAYS(X)      ((X)?1:(assert(0),0))
-# define NEVER(X)       ((X)?(assert(0),1):0)
-#else
+#ಅಥವಾಆದರೆ !defined(NDEBUG)
+# define ALWAYS(X)      ((X)?1:(ಪ್ರತಿಜ್ಞಾ(0),0))
+# define NEVER(X)       ((X)?(ಪ್ರತಿಜ್ಞಾ(0),1):0)
+#ಇಲ್ಲದಿದ್ದರೆ
 # define ALWAYS(X)      (X)
 # define NEVER(X)       (X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Some conditionals are optimizations only.  In other words, if the
@@ -577,13 +577,13 @@
 **
 ** The following macros mark these optimizations conditionals.
 */
-#if defined(SQLITE_MUTATION_TEST)
+#ಆದರೆ defined(SQLITE_MUTATION_TEST)
 # define OK_IF_ALWAYS_TRUE(X)  (1)
 # define OK_IF_ALWAYS_FALSE(X) (0)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define OK_IF_ALWAYS_TRUE(X)  (X)
 # define OK_IF_ALWAYS_FALSE(X) (X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Some malloc failures are only possible if SQLITE_TEST_REALLOC_STRESS is
@@ -592,26 +592,26 @@
 ** during a normal build.  The following macro can be used to disable tests
 ** that are always false except when SQLITE_TEST_REALLOC_STRESS is set.
 */
-#if defined(SQLITE_TEST_REALLOC_STRESS)
+#ಆದರೆ defined(SQLITE_TEST_REALLOC_STRESS)
 # define ONLY_IF_REALLOC_STRESS(X)  (X)
-#elif !defined(NDEBUG)
-# define ONLY_IF_REALLOC_STRESS(X)  ((X)?(assert(0),1):0)
-#else
+#ಅಥವಾಆದರೆ !defined(NDEBUG)
+# define ONLY_IF_REALLOC_STRESS(X)  ((X)?(ಪ್ರತಿಜ್ಞಾ(0),1):0)
+#ಇಲ್ಲದಿದ್ದರೆ
 # define ONLY_IF_REALLOC_STRESS(X)  (0)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Declarations used for tracing the operating system interfaces.
 */
-#if defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
+#ಆದರೆ defined(SQLITE_FORCE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
-  extern int sqlite3OSTrace;
-# define OSTRACE(X)          if( sqlite3OSTrace ) sqlite3DebugPrintf X
+  ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ sqlite3OSTrace;
+# define OSTRACE(X)          ಆದರೆ( sqlite3OSTrace ) sqlite3DebugPrintf X
 # define SQLITE_HAVE_OS_TRACE
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define OSTRACE(X)
 # undef  SQLITE_HAVE_OS_TRACE
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Is the sqlite3ErrName() function needed in the build?  Currently,
@@ -619,35 +619,35 @@
 ** OSTRACE is enabled), and by several "test*.c" files (which are
 ** compiled using SQLITE_TEST).
 */
-#if defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
+#ಆದರೆ defined(SQLITE_HAVE_OS_TRACE) || defined(SQLITE_TEST) || \
     (defined(SQLITE_DEBUG) && SQLITE_OS_WIN)
 # define SQLITE_NEED_ERR_NAME
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # undef  SQLITE_NEED_ERR_NAME
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** SQLITE_ENABLE_EXPLAIN_COMMENTS is incompatible with SQLITE_OMIT_EXPLAIN
 */
-#ifdef SQLITE_OMIT_EXPLAIN
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_EXPLAIN
 # undef SQLITE_ENABLE_EXPLAIN_COMMENTS
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** SQLITE_OMIT_VIRTUALTABLE implies SQLITE_OMIT_ALTERTABLE
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
+#ಆದರೆ defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_ALTERTABLE)
 # define SQLITE_OMIT_ALTERTABLE
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#define SQLITE_DIGIT_SEPARATOR '_'
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_DIGIT_SEPARATOR '_'
 
 /*
 ** Return true (non-zero) if the input is an integer that is too large
 ** to fit in 32-bits.  This macro is used inside of various testcase()
 ** macros to verify that we have tested SQLite for large-file support.
 */
-#define IS_BIG_INT(X)  (((X)&~(i64)0xffffffff)!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು IS_BIG_INT(X)  (((X)&~(i64)0xffffffff)!=0)
 
 /*
 ** The macro unlikely() is a hint that surrounds a boolean
@@ -656,17 +656,17 @@
 ** in theory, be used by the compiler to generate better code, but
 ** currently they are just comments for human readers.
 */
-#define likely(X)    (X)
-#define unlikely(X)  (X)
+#ವ್ಯಾಖ್ಯಾನಿಸು likely(X)    (X)
+#ವ್ಯಾಖ್ಯಾನಿಸು unlikely(X)  (X)
 
-#include "hash.h"
-#include "parse.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <stddef.h>
-#include <ctype.h>
+#ಅನ್ತರ್ಭಾವ "hash.h"
+#ಅನ್ತರ್ಭಾವ "parse.h"
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <stdlib.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
+#ಅನ್ತರ್ಭಾವ <stddef.h>
+#ಅನ್ತರ್ಭಾವ <ctype.h>
 
 /*
 ** Use a macro to replace memcpy() if compiled with SQLITE_INLINE_MEMCPY.
@@ -675,43 +675,43 @@
 ** should not be used in production.  This is a performance measurement
 ** hack only.
 */
-#ifdef SQLITE_INLINE_MEMCPY
-# define memcpy(D,S,N) {char*xxd=(char*)(D);const char*xxs=(const char*)(S);\
-                        int xxn=(N);while(xxn-->0)*(xxd++)=*(xxs++);}
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_INLINE_MEMCPY
+# define ಸ್ಮರಣೆ_ನಕಲು(D,S,N) {ಅಕ್ಷರ*xxd=(ಅಕ್ಷರ*)(D);ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*xxs=(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)(S);\
+                        ಪೂರ್ಣಾಂಕ xxn=(N);ಆಗ(xxn-->0)*(xxd++)=*(xxs++);}
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** If compiling for a processor that lacks floating point support,
 ** substitute integer for floating-point
 */
-#ifdef SQLITE_OMIT_FLOATING_POINT
-# define double sqlite_int64
-# define float sqlite_int64
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_FLOATING_ಬಿಂದು
+# define ದ್ವಿಗುಣ sqlite_int64
+# define ದಶಮಾಂಶ sqlite_int64
 # define fabs(X) ((X)<0?-(X):(X))
-# define sqlite3IsOverflow(X) 0
+# define sqlite3_Is_ಅತಿಪ್ರವಾಹ(X) 0
 # define INFINITY (9223372036854775807LL)
 # ifndef SQLITE_BIG_DBL
 #   define SQLITE_BIG_DBL (((sqlite3_int64)1)<<50)
 # endif
 # define SQLITE_OMIT_DATETIME_FUNCS 1
 # define SQLITE_OMIT_TRACE 1
-# undef SQLITE_MIXED_ENDIAN_64BIT_FLOAT
+# undef SQLITE_MIXED_ENDIAN_64_ಬಿಟ್_FLOAT
 # undef SQLITE_HAVE_ISNAN
-#endif
-#ifndef SQLITE_BIG_DBL
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_BIG_DBL
 # define SQLITE_BIG_DBL (1e99)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** OMIT_TEMPDB is set to 1 if SQLITE_OMIT_TEMPDB is defined, or 0
 ** afterward. Having this macro allows us to cause the C compiler
 ** to omit code used by TEMP tables without messy #ifndef statements.
 */
-#ifdef SQLITE_OMIT_TEMPDB
-#define OMIT_TEMPDB 1
-#else
-#define OMIT_TEMPDB 0
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_TEMPDB
+#ವ್ಯಾಖ್ಯಾನಿಸು OMIT_TEMPDB 1
+#ಇಲ್ಲದಿದ್ದರೆ
+#ವ್ಯಾಖ್ಯಾನಿಸು OMIT_TEMPDB 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The "file format" number is an integer that is incremented whenever
@@ -719,46 +719,46 @@
 ** the default file format for new databases and the maximum file format
 ** that the library can read.
 */
-#define SQLITE_MAX_FILE_FORMAT 4
-#ifndef SQLITE_DEFAULT_FILE_FORMAT
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_MAX_FILE_FORMAT 4
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_FILE_FORMAT
 # define SQLITE_DEFAULT_FILE_FORMAT 4
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Determine whether triggers are recursive by default.  This can be
 ** changed at run-time using a pragma.
 */
-#ifndef SQLITE_DEFAULT_RECURSIVE_TRIGGERS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_RECURSIVE_TRIGGERS
 # define SQLITE_DEFAULT_RECURSIVE_TRIGGERS 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Provide a default value for SQLITE_TEMP_STORE in case it is not specified
 ** on the command-line
 */
-#ifndef SQLITE_TEMP_STORE
-# define SQLITE_TEMP_STORE 1
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_ತಾತ್ಕಾಲಿಕ_STORE
+# define SQLITE_ತಾತ್ಕಾಲಿಕ_STORE 1
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** If no value has been provided for SQLITE_MAX_WORKER_THREADS, or if
 ** SQLITE_TEMP_STORE is set to 3 (never use temporary files), set it
 ** to zero.
 */
-#if SQLITE_TEMP_STORE==3 || SQLITE_THREADSAFE==0
-# undef SQLITE_MAX_WORKER_THREADS
-# define SQLITE_MAX_WORKER_THREADS 0
-#endif
-#ifndef SQLITE_MAX_WORKER_THREADS
-# define SQLITE_MAX_WORKER_THREADS 8
-#endif
-#ifndef SQLITE_DEFAULT_WORKER_THREADS
-# define SQLITE_DEFAULT_WORKER_THREADS 0
-#endif
-#if SQLITE_DEFAULT_WORKER_THREADS>SQLITE_MAX_WORKER_THREADS
-# undef SQLITE_MAX_WORKER_THREADS
-# define SQLITE_MAX_WORKER_THREADS SQLITE_DEFAULT_WORKER_THREADS
-#endif
+#ಆದರೆ SQLITE_ತಾತ್ಕಾಲಿಕ_STORE==3 || SQLITE_THREADSAFE==0
+# undef SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು
+# define SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು 0
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು
+# define SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು 8
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_ಕೆಲಸಗಾರ_ಎಳೆಗಳು
+# define SQLITE_DEFAULT_ಕೆಲಸಗಾರ_ಎಳೆಗಳು 0
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ SQLITE_DEFAULT_ಕೆಲಸಗಾರ_ಎಳೆಗಳು>SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು
+# undef SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು
+# define SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು SQLITE_DEFAULT_ಕೆಲಸಗಾರ_ಎಳೆಗಳು
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The default initial allocation for the pagecache when using separate
@@ -769,75 +769,75 @@
 ** The default value of "20" was chosen to minimize the run-time of the
 ** speedtest1 test program with options: --shrink-memory --reprepare
 */
-#ifndef SQLITE_DEFAULT_PCACHE_INITSZ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_PCACHE_INITSZ
 # define SQLITE_DEFAULT_PCACHE_INITSZ 20
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Default value for the SQLITE_CONFIG_SORTERREF_SIZE option.
 */
-#ifndef SQLITE_DEFAULT_SORTERREF_SIZE
-# define SQLITE_DEFAULT_SORTERREF_SIZE 0x7fffffff
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_SORTERREF_ಗಾತ್ರ
+# define SQLITE_DEFAULT_SORTERREF_ಗಾತ್ರ 0x7fffffff
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The compile-time options SQLITE_MMAP_READWRITE and
 ** SQLITE_ENABLE_BATCH_ATOMIC_WRITE are not compatible with one another.
 ** You must choose one or the other (or neither) but not both.
 */
-#if defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-#error Cannot use both SQLITE_MMAP_READWRITE and SQLITE_ENABLE_BATCH_ATOMIC_WRITE
-#endif
+#ಆದರೆ defined(SQLITE_MMAP_READWRITE) && defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
+#ದೋಷ Cannot use both SQLITE_MMAP_READWRITE and SQLITE_ENABLE_BATCH_ATOMIC_WRITE
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** GCC does not define the offsetof() macro so we'll have to do it
 ** ourselves.
 */
-#ifndef offsetof
-# define offsetof(ST,M) ((size_t)((char*)&((ST*)0)->M - (char*)0))
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ offsetof
+# define offsetof(ST,M) ((size_t)((ಅಕ್ಷರ*)&((ST*)0)->M - (ಅಕ್ಷರ*)0))
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** sizeof64() is like sizeof(), but always returns a 64-bit value, even
 ** on 32-bit builds. This can help to avoid overflow by ensuring 64-bit
 ** arithmetic is used consistently in both 32-bit and 64-bit builds.
 */
-#define sizeof64(X) ((sqlite3_int64)sizeof(X))
+#ವ್ಯಾಖ್ಯಾನಿಸು sizeof64(X) ((sqlite3_int64)ಗಾತ್ರ(X))
 
 /*
 ** Work around C99 "flex-array" syntax for pre-C99 compilers, so as
 ** to avoid complaints from -fsanitize=strict-bounds.
 */
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#ಆದರೆ defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 # define FLEXARRAY
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define FLEXARRAY 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Macros to compute minimum and maximum of two numbers.
 */
-#ifndef MIN
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ MIN
 # define MIN(A,B) ((A)<(B)?(A):(B))
-#endif
-#ifndef MAX
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ MAX
 # define MAX(A,B) ((A)>(B)?(A):(B))
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Swap two objects of type TYPE.
 */
-#define SWAP(TYPE,A,B) {TYPE t=A; A=B; B=t;}
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅದಲುಬದಲು(TYPE,A,B) {TYPE t=A; A=B; B=t;}
 
 /*
 ** Check to see if this machine uses EBCDIC.  (Yes, believe it or
 ** not, there are still machines out there that use EBCDIC.)
 */
-#if 'A' == '\301'
+#ಆದರೆ 'A' == '\301'
 # define SQLITE_EBCDIC 1
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define SQLITE_ASCII 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Integers of known sizes.  These typedefs might change for architectures
@@ -846,53 +846,53 @@
 **
 **         cc '-DUINTPTR_TYPE=long long int' ...
 */
-#ifndef UINT32_TYPE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ UINT32_TYPE
 # ifdef HAVE_UINT32_T
 #  define UINT32_TYPE uint32_t
-# else
-#  define UINT32_TYPE unsigned int
+# ಇಲ್ಲದಿದ್ದರೆ
+#  define UINT32_TYPE ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ
 # endif
-#endif
-#ifndef UINT16_TYPE
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ UINT16_TYPE
 # ifdef HAVE_UINT16_T
 #  define UINT16_TYPE uint16_t
-# else
-#  define UINT16_TYPE unsigned short int
+# ಇಲ್ಲದಿದ್ದರೆ
+#  define UINT16_TYPE ಚಿಹ್ನೆರಹಿತ ಗಿಡ್ಡ ಪೂರ್ಣಾಂಕ
 # endif
-#endif
-#ifndef INT16_TYPE
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ INT16_TYPE
 # ifdef HAVE_INT16_T
 #  define INT16_TYPE int16_t
-# else
-#  define INT16_TYPE short int
+# ಇಲ್ಲದಿದ್ದರೆ
+#  define INT16_TYPE ಗಿಡ್ಡ ಪೂರ್ಣಾಂಕ
 # endif
-#endif
-#ifndef UINT8_TYPE
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ UINT8_TYPE
 # ifdef HAVE_UINT8_T
 #  define UINT8_TYPE uint8_t
-# else
-#  define UINT8_TYPE unsigned char
+# ಇಲ್ಲದಿದ್ದರೆ
+#  define UINT8_TYPE ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ
 # endif
-#endif
-#ifndef INT8_TYPE
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ INT8_TYPE
 # ifdef HAVE_INT8_T
 #  define INT8_TYPE int8_t
-# else
-#  define INT8_TYPE signed char
+# ಇಲ್ಲದಿದ್ದರೆ
+#  define INT8_TYPE ಚಿಹ್ನೆಯುಳ್ಳ ಅಕ್ಷರ
 # endif
-#endif
-typedef sqlite_int64 i64;          /* 8-byte signed integer */
-typedef sqlite_uint64 u64;         /* 8-byte unsigned integer */
-typedef UINT32_TYPE u32;           /* 4-byte unsigned integer */
-typedef UINT16_TYPE u16;           /* 2-byte unsigned integer */
-typedef INT16_TYPE i16;            /* 2-byte signed integer */
-typedef UINT8_TYPE u8;             /* 1-byte unsigned integer */
-typedef INT8_TYPE i8;              /* 1-byte signed integer */
+#ಆದರೆ_ಅಂತ್ಯ
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ sqlite_int64 i64;          /* 8-byte signed integer */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ sqlite_uint64 u64;         /* 8-byte unsigned integer */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ UINT32_TYPE u32;           /* 4-byte unsigned integer */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ UINT16_TYPE u16;           /* 2-byte unsigned integer */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ INT16_TYPE i16;            /* 2-byte signed integer */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ UINT8_TYPE u8;             /* 1-byte unsigned integer */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ INT8_TYPE i8;              /* 1-byte signed integer */
 
 /* A bitfield type for use inside of structures.  Always follow with :N where
 ** N is the number of bits.
 */
-typedef unsigned bft;  /* Bit Field Type */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಚಿಹ್ನೆರಹಿತ bft;  /* Bit Field Type */
 
 /*
 ** SQLITE_MAX_U32 is a u64 constant that is the maximum u64 value
@@ -900,13 +900,13 @@ typedef unsigned bft;  /* Bit Field Type */
 ** is 0x00000000ffffffff.  But because of quirks of some compilers, we
 ** have to specify the value in the less intuitive manner shown:
 */
-#define SQLITE_MAX_U32  ((((u64)1)<<32)-1)
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_MAX_U32  ((((u64)1)<<32)-1)
 
 /*
 ** The datatype used to store estimates of the number of rows in a
 ** table or index.
 */
-typedef u64 tRowcnt;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ u64 tRowcnt;
 
 /*
 ** Estimated quantities used for query planning are stored as 16-bit
@@ -931,35 +931,35 @@ typedef u64 tRowcnt;
 **
 **    0.5 -> -10           0.1 -> -33        0.0625 -> -40
 */
-typedef INT16_TYPE LogEst;
-#define LOGEST_MIN (-32768)
-#define LOGEST_MAX (32767)
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ INT16_TYPE LogEst;
+#ವ್ಯಾಖ್ಯಾನಿಸು LOGEST_MIN (-32768)
+#ವ್ಯಾಖ್ಯಾನಿಸು LOGEST_MAX (32767)
 
 /*
 ** Set the SQLITE_PTRSIZE macro to the number of bytes in a pointer
 */
-#ifndef SQLITE_PTRSIZE
-# if defined(__SIZEOF_POINTER__)
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_PTRSIZE
+# ಆದರೆ defined(__SIZEOF_POINTER__)
 #   define SQLITE_PTRSIZE __SIZEOF_POINTER__
 # elif defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
        defined(_M_ARM)   || defined(__arm__)    || defined(__x86)   ||    \
       (defined(__APPLE__) && defined(__ppc__)) ||                         \
       (defined(__TOS_AIX__) && !defined(__64BIT__))
 #   define SQLITE_PTRSIZE 4
-# else
+# ಇಲ್ಲದಿದ್ದರೆ
 #   define SQLITE_PTRSIZE 8
 # endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* The uptr type is an unsigned integer large enough to hold a pointer
 */
-#if defined(HAVE_STDINT_H)
-  typedef uintptr_t uptr;
-#elif SQLITE_PTRSIZE==4
-  typedef u32 uptr;
-#else
-  typedef u64 uptr;
-#endif
+#ಆದರೆ defined(HAVE_STDINT_H)
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ uintptr_t uptr;
+#ಅಥವಾಆದರೆ SQLITE_PTRSIZE==4
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ u32 uptr;
+#ಇಲ್ಲದಿದ್ದರೆ
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ u64 uptr;
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The SQLITE_WITHIN(P,S,E) macro checks to see if pointer P points to
@@ -969,7 +969,7 @@ typedef INT16_TYPE LogEst;
 ** the end of buffer S.  This macro returns true if P points to something
 ** contained within the buffer S.
 */
-#define SQLITE_WITHIN(P,S,E)   (((uptr)(P)>=(uptr)(S))&&((uptr)(P)<(uptr)(E)))
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_WITHIN(P,S,E)   (((uptr)(P)>=(uptr)(S))&&((uptr)(P)<(uptr)(E)))
 
 /*
 ** P is one byte past the end of a large buffer. Return true if a span of bytes
@@ -993,7 +993,7 @@ typedef INT16_TYPE LogEst;
 **                        |-------|       FALSE
 **                        S        E
 */
-#define SQLITE_OVERFLOW(P,S,E) (((uptr)(S)<(uptr)(P))&&((uptr)(E)>(uptr)(P)))
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಅತಿಪ್ರವಾಹ(P,S,E) (((uptr)(S)<(uptr)(P))&&((uptr)(E)>(uptr)(P)))
 
 /*
 ** Macros to determine whether the machine is big or little endian,
@@ -1016,8 +1016,8 @@ typedef INT16_TYPE LogEst;
 ** to cause the build to work for little-endian or big-endian processors,
 ** respectively.
 */
-#ifndef SQLITE_BYTEORDER  /* Replicate changes at tag-20230904a */
-# if defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_BYTEORDER  /* Replicate changes at tag-20230904a */
+# ಆದರೆ defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_BIG_ENDIAN__
 #   define SQLITE_BYTEORDER 4321
 # elif defined(__BYTE_ORDER__) && __BYTE_ORDER__==__ORDER_LITTLE_ENDIAN__
 #   define SQLITE_BYTEORDER 1234
@@ -1030,45 +1030,45 @@ typedef INT16_TYPE LogEst;
 #   define SQLITE_BYTEORDER 1234
 # elif defined(sparc)   || defined(__ARMEB__)     || defined(__AARCH64EB__)
 #   define SQLITE_BYTEORDER 4321
-# else
+# ಇಲ್ಲದಿದ್ದರೆ
 #   define SQLITE_BYTEORDER 0
 # endif
-#endif
-#if SQLITE_BYTEORDER==4321
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ SQLITE_BYTEORDER==4321
 # define SQLITE_BIGENDIAN    1
 # define SQLITE_LITTLEENDIAN 0
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16BE
-#elif SQLITE_BYTEORDER==1234
+#ಅಥವಾಆದರೆ SQLITE_BYTEORDER==1234
 # define SQLITE_BIGENDIAN    0
 # define SQLITE_LITTLEENDIAN 1
 # define SQLITE_UTF16NATIVE  SQLITE_UTF16LE
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # ifdef SQLITE_AMALGAMATION
-  const int sqlite3one = 1;
-# else
-  extern const int sqlite3one;
+  ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ sqlite3one = 1;
+# ಇಲ್ಲದಿದ್ದರೆ
+  ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ sqlite3one;
 # endif
-# define SQLITE_BIGENDIAN    (*(char *)(&sqlite3one)==0)
-# define SQLITE_LITTLEENDIAN (*(char *)(&sqlite3one)==1)
+# define SQLITE_BIGENDIAN    (*(ಅಕ್ಷರ *)(&sqlite3one)==0)
+# define SQLITE_LITTLEENDIAN (*(ಅಕ್ಷರ *)(&sqlite3one)==1)
 # define SQLITE_UTF16NATIVE  (SQLITE_BIGENDIAN?SQLITE_UTF16BE:SQLITE_UTF16LE)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Constants for the largest and smallest possible 64-bit signed integers.
 ** These macros are designed to work correctly on both 32-bit and 64-bit
 ** compilers.
 */
-#define LARGEST_INT64  (0xffffffff|(((i64)0x7fffffff)<<32))
-#define LARGEST_UINT64 (0xffffffff|(((u64)0xffffffff)<<32))
-#define SMALLEST_INT64 (((i64)-1) - LARGEST_INT64)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅತಿದೊಡ್ಡ_INT64  (0xffffffff|(((i64)0x7fffffff)<<32))
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅತಿದೊಡ್ಡ_UINT64 (0xffffffff|(((u64)0xffffffff)<<32))
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅತಿಚಿಕ್ಕ_INT64 (((i64)-1) - ಅತಿದೊಡ್ಡ_INT64)
 
 /*
 ** Macro SMXV(n) return the maximum value that can be held in variable n,
 ** assuming n is a signed integer type.  UMXV(n) is similar for unsigned
 ** integer types.
 */
-#define SMXV(n) ((((i64)1)<<(sizeof(n)*8-1))-1)
-#define UMXV(n) ((((i64)1)<<(sizeof(n)*8))-1)
+#ವ್ಯಾಖ್ಯಾನಿಸು SMXV(n) ((((i64)1)<<(ಗಾತ್ರ(n)*8-1))-1)
+#ವ್ಯಾಖ್ಯಾನಿಸು UMXV(n) ((((i64)1)<<(ಗಾತ್ರ(n)*8))-1)
 
 /*
 ** Round up a number to the next larger multiple of 8.  This is used
@@ -1080,17 +1080,17 @@ typedef INT16_TYPE LogEst;
 ** pointers in size, and so it is a no-op on systems where the pointer
 ** size is 8.
 */
-#define ROUND8(x)     (((x)+7)&~7)
-#if SQLITE_PTRSIZE==8
+#ವ್ಯಾಖ್ಯಾನಿಸು ROUND8(x)     (((x)+7)&~7)
+#ಆದರೆ SQLITE_PTRSIZE==8
 # define ROUND8P(x)   (x)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define ROUND8P(x)   (((x)+7)&~7)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Round down to the nearest multiple of 8
 */
-#define ROUNDDOWN8(x) ((x)&~7)
+#ವ್ಯಾಖ್ಯಾನಿಸು ROUNDDOWN8(x) ((x)&~7)
 
 /*
 ** Assert that the pointer X is aligned to an 8-byte boundary.  This
@@ -1101,72 +1101,72 @@ typedef INT16_TYPE LogEst;
 ** underlying malloc() implementation might return us 4-byte aligned
 ** pointers.  In that case, only verify 4-byte alignment.
 */
-#ifdef SQLITE_4_BYTE_ALIGNED_MALLOC
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_4_BYTE_ALIGNED_MALLOC
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&3)==0)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define EIGHT_BYTE_ALIGNMENT(X)   ((((uptr)(X) - (uptr)0)&7)==0)
-#endif
-#define TWO_BYTE_ALIGNMENT(X)      ((((uptr)(X) - (uptr)0)&1)==0)
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿಸು TWO_BYTE_ALIGNMENT(X)      ((((uptr)(X) - (uptr)0)&1)==0)
 
 /*
 ** Disable MMAP on platforms where it is known to not work
 */
-#if defined(__OpenBSD__) || defined(__QNXNTO__)
-# undef SQLITE_MAX_MMAP_SIZE
-# define SQLITE_MAX_MMAP_SIZE 0
-#endif
+#ಆದರೆ defined(__OpenBSD__) || defined(__QNXNTO__)
+# undef SQLITE_MAX_MMAP_ಗಾತ್ರ
+# define SQLITE_MAX_MMAP_ಗಾತ್ರ 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Default maximum size of memory used by memory-mapped I/O in the VFS
 */
-#ifdef __APPLE__
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ __APPLE__
 # include <TargetConditionals.h>
-#endif
-#ifndef SQLITE_MAX_MMAP_SIZE
-# if defined(__linux__) \
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_MAX_MMAP_ಗಾತ್ರ
+# ಆದರೆ defined(__linux__) \
   || defined(_WIN32) \
   || (defined(__APPLE__) && defined(__MACH__)) \
   || defined(__sun) \
   || defined(__FreeBSD__) \
   || defined(__DragonFly__)
-#   define SQLITE_MAX_MMAP_SIZE 0x7fff0000  /* 2147418112 */
-# else
-#   define SQLITE_MAX_MMAP_SIZE 0
+#   define SQLITE_MAX_MMAP_ಗಾತ್ರ 0x7fff0000  /* 2147418112 */
+# ಇಲ್ಲದಿದ್ದರೆ
+#   define SQLITE_MAX_MMAP_ಗಾತ್ರ 0
 # endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The default MMAP_SIZE is zero on all platforms.  Or, even if a larger
 ** default MMAP_SIZE is specified at compile-time, make sure that it does
 ** not exceed the maximum mmap size.
 */
-#ifndef SQLITE_DEFAULT_MMAP_SIZE
-# define SQLITE_DEFAULT_MMAP_SIZE 0
-#endif
-#if SQLITE_DEFAULT_MMAP_SIZE>SQLITE_MAX_MMAP_SIZE
-# undef SQLITE_DEFAULT_MMAP_SIZE
-# define SQLITE_DEFAULT_MMAP_SIZE SQLITE_MAX_MMAP_SIZE
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_MMAP_ಗಾತ್ರ
+# define SQLITE_DEFAULT_MMAP_ಗಾತ್ರ 0
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ SQLITE_DEFAULT_MMAP_ಗಾತ್ರ>SQLITE_MAX_MMAP_ಗಾತ್ರ
+# undef SQLITE_DEFAULT_MMAP_ಗಾತ್ರ
+# define SQLITE_DEFAULT_MMAP_ಗಾತ್ರ SQLITE_MAX_MMAP_ಗಾತ್ರ
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** TREETRACE_ENABLED will be either 1 or 0 depending on whether or not
 ** the Abstract Syntax Tree tracing logic is turned on.
 */
-#if !defined(SQLITE_AMALGAMATION)
-extern u32 sqlite3TreeTrace;
-#endif
-#if defined(SQLITE_DEBUG) \
+#ಆದರೆ !defined(SQLITE_AMALGAMATION)
+ಬಾಹ್ಯ u32 sqlite3_ವೃಕ್ಷ_Trace;
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_SELECTTRACE) \
                              || defined(SQLITE_ENABLE_TREETRACE))
 # define TREETRACE_ENABLED 1
 # define TREETRACE(K,P,S,X)  \
-  if(sqlite3TreeTrace&(K))   \
+  ಆದರೆ(sqlite3_ವೃಕ್ಷ_Trace&(K))   \
     sqlite3DebugPrintf("%u/%d/%p: ",(S)->selId,(P)->addrExplain,(S)),\
     sqlite3DebugPrintf X
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define TREETRACE(K,P,S,X)
 # define TREETRACE_ENABLED 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* TREETRACE flag meanings:
 **
@@ -1197,14 +1197,14 @@ extern u32 sqlite3TreeTrace;
 /*
 ** Macros for "wheretrace"
 */
-extern u32 sqlite3WhereTrace;
-#if defined(SQLITE_DEBUG) \
+ಬಾಹ್ಯ u32 sqlite3WhereTrace;
+#ಆದರೆ defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_WHERETRACE))
-# define WHERETRACE(K,X)  if(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
+# define WHERETRACE(K,X)  ಆದರೆ(sqlite3WhereTrace&(K)) sqlite3DebugPrintf X
 # define WHERETRACE_ENABLED 1
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define WHERETRACE(K,X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Bits for the sqlite3WhereTrace mask:
@@ -1249,11 +1249,11 @@ extern u32 sqlite3WhereTrace;
 ** handle is passed a pointer to sqlite.busyHandler. The busy-handler
 ** callback is currently invoked only from within pager.c.
 */
-typedef struct BusyHandler BusyHandler;
-struct BusyHandler {
-  int (*xBusyHandler)(void *,int);  /* The busy callback */
-  void *pBusyArg;                   /* First arg to busy callback */
-  int nBusy;                        /* Incremented with each busy call */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ BusyHandler BusyHandler;
+ರಚನೆ BusyHandler {
+  ಪೂರ್ಣಾಂಕ (*xBusyHandler)(ಶೂನ್ಯ *,ಪೂರ್ಣಾಂಕ);  /* The busy callback */
+  ಶೂನ್ಯ *pBusyArg;                   /* First arg to busy callback */
+  ಪೂರ್ಣಾಂಕ nBusy;                        /* Incremented with each busy call */
 };
 
 /*
@@ -1273,33 +1273,33 @@ struct BusyHandler {
 **
 ** Note that "sqlite_temp_schema" can also be called "temp.sqlite_schema".
 */
-#define LEGACY_SCHEMA_TABLE          "sqlite_master"
-#define LEGACY_TEMP_SCHEMA_TABLE     "sqlite_temp_master"
-#define PREFERRED_SCHEMA_TABLE       "sqlite_schema"
-#define PREFERRED_TEMP_SCHEMA_TABLE  "sqlite_temp_schema"
+#ವ್ಯಾಖ್ಯಾನಿಸು LEGACY_SCHEMA_ಕೋಷ್ಟಕ          "sqlite_master"
+#ವ್ಯಾಖ್ಯಾನಿಸು LEGACY_ತಾತ್ಕಾಲಿಕ_SCHEMA_ಕೋಷ್ಟಕ     "sqlite_temp_master"
+#ವ್ಯಾಖ್ಯಾನಿಸು PREFERRED_SCHEMA_ಕೋಷ್ಟಕ       "sqlite_schema"
+#ವ್ಯಾಖ್ಯಾನಿಸು PREFERRED_ತಾತ್ಕಾಲಿಕ_SCHEMA_ಕೋಷ್ಟಕ  "sqlite_temp_schema"
 
 
 /*
 ** The root-page of the schema table.
 */
-#define SCHEMA_ROOT    1
+#ವ್ಯಾಖ್ಯಾನಿಸು SCHEMA_ಬೇರು    1
 
 /*
 ** The name of the schema table.  The name is different for TEMP.
 */
-#define SCHEMA_TABLE(x) \
-    ((!OMIT_TEMPDB)&&(x==1)?LEGACY_TEMP_SCHEMA_TABLE:LEGACY_SCHEMA_TABLE)
+#ವ್ಯಾಖ್ಯಾನಿಸು SCHEMA_ಕೋಷ್ಟಕ(x) \
+    ((!OMIT_TEMPDB)&&(x==1)?LEGACY_ತಾತ್ಕಾಲಿಕ_SCHEMA_ಕೋಷ್ಟಕ:LEGACY_SCHEMA_ಕೋಷ್ಟಕ)
 
 /*
 ** A convenience macro that returns the number of elements in
 ** an array.
 */
-#define ArraySize(X)    ((int)(sizeof(X)/sizeof(X[0])))
+#ವ್ಯಾಖ್ಯಾನಿಸು Array_ಗಾತ್ರ(X)    ((ಪೂರ್ಣಾಂಕ)(ಗಾತ್ರ(X)/ಗಾತ್ರ(X[0])))
 
 /*
 ** Determine if the argument is a power of two
 */
-#define IsPowerOfTwo(X) (((X)&((X)-1))==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು Is_Power_ದ_Two(X) (((X)&((X)-1))==0)
 
 /*
 ** The following value as a destructor means to use sqlite3DbFree().
@@ -1309,7 +1309,7 @@ struct BusyHandler {
 ** pointer will work here as long as it is distinct from SQLITE_STATIC
 ** and SQLITE_TRANSIENT.
 */
-#define SQLITE_DYNAMIC   ((sqlite3_destructor_type)sqlite3RowSetClear)
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_DYNAMIC   ((sqlite3_destructor_type)sqlite3_ಅಡ್ಡಸಾಲು_ಗಣ_Clear)
 
 /*
 ** When SQLITE_OMIT_WSD is defined, it means that the target platform does
@@ -1325,17 +1325,17 @@ struct BusyHandler {
 ** In the usual case where WSD is supported, the SQLITE_WSD and GLOBAL
 ** macros become no-ops and have zero performance impact.
 */
-#ifdef SQLITE_OMIT_WSD
-  #define SQLITE_WSD const
-  #define GLOBAL(t,v) (*(t*)sqlite3_wsd_find((void*)&(v), sizeof(v)))
-  #define sqlite3GlobalConfig GLOBAL(struct Sqlite3Config, sqlite3Config)
-  int sqlite3_wsd_init(int N, int J);
-  void *sqlite3_wsd_find(void *K, int L);
-#else
-  #define SQLITE_WSD
-  #define GLOBAL(t,v) v
-  #define sqlite3GlobalConfig sqlite3Config
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_WSD
+  #ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_WSD ಸ್ಥಿರಾಂಕ
+  #ವ್ಯಾಖ್ಯಾನಿಸು GLOBAL(t,v) (*(t*)sqlite3_wsd_ಕಂಡುಹಿಡಿ((ಶೂನ್ಯ*)&(v), ಗಾತ್ರ(v)))
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3GlobalConfig GLOBAL(ರಚನೆ Sqlite3Config, sqlite3Config)
+  ಪೂರ್ಣಾಂಕ sqlite3_wsd_init(ಪೂರ್ಣಾಂಕ N, ಪೂರ್ಣಾಂಕ J);
+  ಶೂನ್ಯ *sqlite3_wsd_ಕಂಡುಹಿಡಿ(ಶೂನ್ಯ *K, ಪೂರ್ಣಾಂಕ L);
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_WSD
+  #ವ್ಯಾಖ್ಯಾನಿಸು GLOBAL(t,v) v
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3GlobalConfig sqlite3Config
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The following macros are used to suppress compiler warnings and to
@@ -1353,73 +1353,73 @@ struct BusyHandler {
 ** For example those parameters only used in assert() statements. In these
 ** cases the parameters are named as per the usual conventions.
 */
-#define UNUSED_PARAMETER(x) (void)(x)
-#define UNUSED_PARAMETER2(x,y) UNUSED_PARAMETER(x),UNUSED_PARAMETER(y)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಬಳಸದ_PARAMETER(x) (ಶೂನ್ಯ)(x)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಬಳಸದ_PARAMETER2(x,y) ಬಳಸದ_PARAMETER(x),ಬಳಸದ_PARAMETER(y)
 
 /*
 ** Forward references to structures
 */
-typedef struct AggInfo AggInfo;
-typedef struct AuthContext AuthContext;
-typedef struct AutoincInfo AutoincInfo;
-typedef struct Bitvec Bitvec;
-typedef struct CollSeq CollSeq;
-typedef struct Column Column;
-typedef struct Cte Cte;
-typedef struct CteUse CteUse;
-typedef struct Db Db;
-typedef struct DbClientData DbClientData;
-typedef struct DbFixer DbFixer;
-typedef struct Schema Schema;
-typedef struct Expr Expr;
-typedef struct ExprList ExprList;
-typedef struct FKey FKey;
-typedef struct FpDecode FpDecode;
-typedef struct FuncDestructor FuncDestructor;
-typedef struct FuncDef FuncDef;
-typedef struct FuncDefHash FuncDefHash;
-typedef struct IdList IdList;
-typedef struct Index Index;
-typedef struct IndexedExpr IndexedExpr;
-typedef struct IndexSample IndexSample;
-typedef struct KeyClass KeyClass;
-typedef struct KeyInfo KeyInfo;
-typedef struct Lookaside Lookaside;
-typedef struct LookasideSlot LookasideSlot;
-typedef struct Module Module;
-typedef struct NameContext NameContext;
-typedef struct OnOrUsing OnOrUsing;
-typedef struct Parse Parse;
-typedef struct ParseCleanup ParseCleanup;
-typedef struct PreUpdate PreUpdate;
-typedef struct PrintfArguments PrintfArguments;
-typedef struct RCStr RCStr;
-typedef struct RenameToken RenameToken;
-typedef struct Returning Returning;
-typedef struct RowSet RowSet;
-typedef struct Savepoint Savepoint;
-typedef struct Select Select;
-typedef struct SQLiteThread SQLiteThread;
-typedef struct SelectDest SelectDest;
-typedef struct Subquery Subquery;
-typedef struct SrcItem SrcItem;
-typedef struct SrcList SrcList;
-typedef struct sqlite3_str StrAccum; /* Internal alias for sqlite3_str */
-typedef struct Table Table;
-typedef struct TableLock TableLock;
-typedef struct Token Token;
-typedef struct TreeView TreeView;
-typedef struct Trigger Trigger;
-typedef struct TriggerPrg TriggerPrg;
-typedef struct TriggerStep TriggerStep;
-typedef struct UnpackedRecord UnpackedRecord;
-typedef struct Upsert Upsert;
-typedef struct VTable VTable;
-typedef struct VtabCtx VtabCtx;
-typedef struct Walker Walker;
-typedef struct WhereInfo WhereInfo;
-typedef struct Window Window;
-typedef struct With With;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ AggInfo AggInfo;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ AuthContext AuthContext;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ AutoincInfo AutoincInfo;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Bitvec Bitvec;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ CollSeq CollSeq;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಸ್ತಂಭ ಸ್ತಂಭ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Cte Cte;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ CteUse CteUse;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Db Db;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Db_Client_ದತ್ತಾಂಶ Db_Client_ದತ್ತಾಂಶ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ DbFixer DbFixer;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Schema Schema;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಅಭಿವ್ಯಕ್ತಿ ಅಭಿವ್ಯಕ್ತಿ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಅಭಿವ್ಯಕ್ತಿ_List ಅಭಿವ್ಯಕ್ತಿ_List;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FKey FKey;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FpDecode FpDecode;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FuncDestructor FuncDestructor;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FuncDef FuncDef;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FuncDefHash FuncDefHash;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ IdList IdList;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಸೂಚ್ಯಂಕ ಸೂಚ್ಯಂಕ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಸೂಚ್ಯಂಕಿತ_ಅಭಿವ್ಯಕ್ತಿ ಸೂಚ್ಯಂಕಿತ_ಅಭಿವ್ಯಕ್ತಿ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಸೂಚ್ಯಂಕ_Sample ಸೂಚ್ಯಂಕ_Sample;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಕೀಲಿ_Class ಕೀಲಿ_Class;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಕೀಲಿ_Info ಕೀಲಿ_Info;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Lookaside Lookaside;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Lookaside_ಸ್ಥಾನ Lookaside_ಸ್ಥಾನ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Module Module;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ NameContext NameContext;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ OnOrUsing OnOrUsing;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Parse Parse;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ParseCleanup ParseCleanup;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ PreUpdate PreUpdate;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ PrintfArguments PrintfArguments;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ RCStr RCStr;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ RenameToken RenameToken;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Returning Returning;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಅಡ್ಡಸಾಲು_ಗಣ ಅಡ್ಡಸಾಲು_ಗಣ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Savepoint Savepoint;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Select Select;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ SQLiteThread SQLiteThread;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ SelectDest SelectDest;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Subquery Subquery;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Src_ಅಂಶ Src_ಅಂಶ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ SrcList SrcList;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ sqlite3_str StrAccum; /* Internal alias for sqlite3_str */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಕೋಷ್ಟಕ ಕೋಷ್ಟಕ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಕೋಷ್ಟಕ_ಬೀಗ ಕೋಷ್ಟಕ_ಬೀಗ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Token Token;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ವೃಕ್ಷ_View ವೃಕ್ಷ_View;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Trigger Trigger;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ TriggerPrg TriggerPrg;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Trigger_ಹೆಜ್ಜೆ Trigger_ಹೆಜ್ಜೆ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Unpacked_ದಾಖಲೆ Unpacked_ದಾಖಲೆ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Upsert Upsert;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ VTable VTable;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ VtabCtx VtabCtx;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Walker Walker;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ WhereInfo WhereInfo;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಕಿಟಕಿ ಕಿಟಕಿ;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ With With;
 
 
 /*
@@ -1429,26 +1429,26 @@ typedef struct With With;
 ** tables in a join to 32 instead of 64.  But it also reduces the size
 ** of the library by 738 bytes on ix86.
 */
-#ifdef SQLITE_BITMASK_TYPE
-  typedef SQLITE_BITMASK_TYPE Bitmask;
-#else
-  typedef u64 Bitmask;
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_BITMASK_TYPE
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ SQLITE_BITMASK_TYPE Bitmask;
+#ಇಲ್ಲದಿದ್ದರೆ
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ u64 Bitmask;
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The number of bits in a Bitmask.  "BMS" means "BitMask Size".
 */
-#define BMS  ((int)(sizeof(Bitmask)*8))
+#ವ್ಯಾಖ್ಯಾನಿಸು BMS  ((ಪೂರ್ಣಾಂಕ)(ಗಾತ್ರ(Bitmask)*8))
 
 /*
 ** A bit in a Bitmask
 */
-#define MASKBIT(n)    (((Bitmask)1)<<(n))
-#define MASKBIT64(n)  (((u64)1)<<(n))
-#define MASKBIT32(n)  (((unsigned int)1)<<(n))
-#define SMASKBIT32(n) ((n)<=31?((unsigned int)1)<<(n):0)
-#define ALLBITS       ((Bitmask)-1)
-#define TOPBIT        (((Bitmask)1)<<(BMS-1))
+#ವ್ಯಾಖ್ಯಾನಿಸು MASKBIT(n)    (((Bitmask)1)<<(n))
+#ವ್ಯಾಖ್ಯಾನಿಸು MASKBIT64(n)  (((u64)1)<<(n))
+#ವ್ಯಾಖ್ಯಾನಿಸು MASKBIT32(n)  (((ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ)1)<<(n))
+#ವ್ಯಾಖ್ಯಾನಿಸು SMASKBIT32(n) ((n)<=31?((ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ)1)<<(n):0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ALLBITS       ((Bitmask)-1)
+#ವ್ಯಾಖ್ಯಾನಿಸು TOPBIT        (((Bitmask)1)<<(BMS-1))
 
 /* A VList object records a mapping between parameters/variables/wildcards
 ** in the SQL statement (such as $abc, @pqr, or :xyz) and the integer
@@ -1456,27 +1456,27 @@ typedef struct With With;
 ** on the sqlite3VListAdd() routine for more information.  A VList is really
 ** just an array of integers.
 */
-typedef int VList;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಪೂರ್ಣಾಂಕ VList;
 
 /*
 ** Defer sourcing vdbe.h and btree.h until after the "u8" and
 ** "BusyHandler" typedefs. vdbe.h also requires a few of the opaque
 ** pointer types (i.e. FuncDef) defined above.
 */
-#include "os.h"
-#include "pager.h"
-#include "btree.h"
-#include "vdbe.h"
-#include "pcache.h"
-#include "mutex.h"
+#ಅನ್ತರ್ಭಾವ "os.h"
+#ಅನ್ತರ್ಭಾವ "pager.h"
+#ಅನ್ತರ್ಭಾವ "btree.h"
+#ಅನ್ತರ್ಭಾವ "vdbe.h"
+#ಅನ್ತರ್ಭಾವ "pcache.h"
+#ಅನ್ತರ್ಭಾವ "mutex.h"
 
 /* The SQLITE_EXTRA_DURABLE compile-time option used to set the default
 ** synchronous setting to EXTRA.  It is no longer supported.
 */
-#ifdef SQLITE_EXTRA_DURABLE
-# warning Use SQLITE_DEFAULT_SYNCHRONOUS=3 instead of SQLITE_EXTRA_DURABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_EXTRA_DURABLE
+# warning Use SQLITE_DEFAULT_SYNCHRONOUS=3 instead ದ SQLITE_EXTRA_DURABLE
 # define SQLITE_DEFAULT_SYNCHRONOUS 3
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Default synchronous levels.
@@ -1494,12 +1494,12 @@ typedef int VList;
 ** In other words, the zero-based numbers are used for all external interfaces
 ** and the one-based values are used internally.
 */
-#ifndef SQLITE_DEFAULT_SYNCHRONOUS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_SYNCHRONOUS
 # define SQLITE_DEFAULT_SYNCHRONOUS 2
-#endif
-#ifndef SQLITE_DEFAULT_WAL_SYNCHRONOUS
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_WAL_SYNCHRONOUS
 # define SQLITE_DEFAULT_WAL_SYNCHRONOUS SQLITE_DEFAULT_SYNCHRONOUS
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Each database file to be accessed by the system is an instance
@@ -1508,11 +1508,11 @@ typedef int VList;
 ** aDb[1] is the database file used to hold temporary tables.  Additional
 ** databases may be attached.
 */
-struct Db {
-  char *zDbSName;      /* Name of this database. (schema name, not filename) */
+ರಚನೆ Db {
+  ಅಕ್ಷರ *zDbSName;      /* Name of this database. (schema name, not filename) */
   Btree *pBt;          /* The B*Tree structure for this database file */
   u8 safety_level;     /* How aggressive at syncing data to disk */
-  u8 bSyncSet;         /* True if "PRAGMA synchronous=N" has been run */
+  u8 b_Sync_ಗಣ;         /* True if "PRAGMA synchronous=N" has been run */
   Schema *pSchema;     /* Pointer to database schema (possibly shared) */
 };
 
@@ -1533,28 +1533,28 @@ struct Db {
 ** holding a mutex on the sqlite3 connection pointer that owns the Btree.
 ** For a TEMP Schema, only the connection mutex is required.
 */
-struct Schema {
-  int schema_cookie;   /* Database schema version number for this file */
-  int iGeneration;     /* Generation counter.  Incremented with each change */
+ರಚನೆ Schema {
+  ಪೂರ್ಣಾಂಕ schema_cookie;   /* Database schema version number for this file */
+  ಪೂರ್ಣಾಂಕ iGeneration;     /* Generation counter.  Incremented with each change */
   Hash tblHash;        /* All tables indexed by name */
   Hash idxHash;        /* All (named) indices indexed by name */
   Hash trigHash;       /* All triggers indexed by name */
   Hash fkeyHash;       /* All foreign keys by referenced table name */
-  Table *pSeqTab;      /* The sqlite_sequence table used by AUTOINCREMENT */
+  ಕೋಷ್ಟಕ *pSeqTab;      /* The sqlite_sequence table used by AUTOINCREMENT */
   u8 file_format;      /* Schema format version for this file */
   u8 enc;              /* Text encoding used by this database */
   u16 schemaFlags;     /* Flags associated with this schema */
-  int cache_size;      /* Number of pages to use in the cache */
+  ಪೂರ್ಣಾಂಕ cache_ಗಾತ್ರ;      /* Number of pages to use in the cache */
 };
 
 /*
 ** These macros can be used to test, set, or clear bits in the
 ** Db.pSchema->flags field.
 */
-#define DbHasProperty(D,I,P)     (((D)->aDb[I].pSchema->schemaFlags&(P))==(P))
-#define DbHasAnyProperty(D,I,P)  (((D)->aDb[I].pSchema->schemaFlags&(P))!=0)
-#define DbSetProperty(D,I,P)     (D)->aDb[I].pSchema->schemaFlags|=(P)
-#define DbClearProperty(D,I,P)   (D)->aDb[I].pSchema->schemaFlags&=~(P)
+#ವ್ಯಾಖ್ಯಾನಿಸು DbHasProperty(D,I,P)     (((D)->aDb[I].pSchema->schemaFlags&(P))==(P))
+#ವ್ಯಾಖ್ಯಾನಿಸು DbHasAnyProperty(D,I,P)  (((D)->aDb[I].pSchema->schemaFlags&(P))!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು Db_ಗಣ_Property(D,I,P)     (D)->aDb[I].pSchema->schemaFlags|=(P)
+#ವ್ಯಾಖ್ಯಾನಿಸು DbClearProperty(D,I,P)   (D)->aDb[I].pSchema->schemaFlags&=~(P)
 
 /*
 ** Allowed values for the DB.pSchema->flags field.
@@ -1566,15 +1566,15 @@ struct Schema {
 ** have been filled out.  If the schema changes, these column names might
 ** changes and so the view will need to be reset.
 */
-#define DB_SchemaLoaded    0x0001  /* The schema has been loaded */
-#define DB_UnresetViews    0x0002  /* Some views have defined column names */
-#define DB_ResetWanted     0x0008  /* Reset the schema when nSchemaLock==0 */
+#ವ್ಯಾಖ್ಯಾನಿಸು DB_SchemaLoaded    0x0001  /* The schema has been loaded */
+#ವ್ಯಾಖ್ಯಾನಿಸು DB_UnresetViews    0x0002  /* Some views have defined column names */
+#ವ್ಯಾಖ್ಯಾನಿಸು DB_ResetWanted     0x0008  /* Reset the schema when nSchemaLock==0 */
 
 /*
 ** The number of different kinds of things that can be limited
 ** using the sqlite3_limit() interface.
 */
-#define SQLITE_N_LIMIT (SQLITE_LIMIT_CTES+1)
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_N_ಎಲ್ಲೆ (SQLITE_ಎಲ್ಲೆ_CTES+1)
 
 /*
 ** Lookaside malloc is a set of fixed-size buffers that can be used
@@ -1621,39 +1621,39 @@ struct Schema {
 ** This enhancement can be omitted by compiling with
 ** SQLITE_OMIT_TWOSIZE_LOOKASIDE.
 */
-struct Lookaside {
+ರಚನೆ Lookaside {
   u32 bDisable;           /* Only operate the lookaside when zero */
   u16 sz;                 /* Size of each buffer in bytes */
   u16 szTrue;             /* True value of sz, even if disabled */
   u8 bMalloced;           /* True if pStart obtained from sqlite3_malloc() */
-  u32 nSlot;              /* Number of lookaside slots allocated */
+  u32 n_ಸ್ಥಾನ;              /* Number of lookaside slots allocated */
   u32 anStat[3];          /* 0: hits.  1: size misses.  2: full misses */
-  LookasideSlot *pInit;   /* List of buffers not previously used */
-  LookasideSlot *pFree;   /* List of available buffers */
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-  LookasideSlot *pSmallInit; /* List of small buffers not previously used */
-  LookasideSlot *pSmallFree; /* List of available small buffers */
-  void *pMiddle;          /* First byte past end of full-size buffers and
+  Lookaside_ಸ್ಥಾನ *pInit;   /* List of buffers not previously used */
+  Lookaside_ಸ್ಥಾನ *pFree;   /* List of available buffers */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE
+  Lookaside_ಸ್ಥಾನ *pSmallInit; /* List of small buffers not previously used */
+  Lookaside_ಸ್ಥಾನ *pSmallFree; /* List of available small buffers */
+  ಶೂನ್ಯ *p_ಮಧ್ಯ;          /* First byte past end of full-size buffers and
                           ** the first byte of LOOKASIDE_SMALL buffers */
-#endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-  void *pStart;           /* First byte of available memory space */
-  void *pEnd;             /* First byte past end of available space */
-  void *pTrueEnd;         /* True value of pEnd, when db->pnBytesFreed!=0 */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
+  ಶೂನ್ಯ *p_ಆರಂಭ;           /* First byte of available memory space */
+  ಶೂನ್ಯ *p_ಕೊನೆ;             /* First byte past end of available space */
+  ಶೂನ್ಯ *p_True_ಕೊನೆ;         /* True value of pEnd, when db->pnBytesFreed!=0 */
 };
-struct LookasideSlot {
-  LookasideSlot *pNext;    /* Next buffer in the list of free buffers */
+ರಚನೆ Lookaside_ಸ್ಥಾನ {
+  Lookaside_ಸ್ಥಾನ *p_ಮುಂದಿನ;    /* Next buffer in the list of free buffers */
 };
 
-#define DisableLookaside  db->lookaside.bDisable++;db->lookaside.sz=0
-#define EnableLookaside   db->lookaside.bDisable--;\
+#ವ್ಯಾಖ್ಯಾನಿಸು DisableLookaside  db->lookaside.bDisable++;db->lookaside.sz=0
+#ವ್ಯಾಖ್ಯಾನಿಸು EnableLookaside   db->lookaside.bDisable--;\
    db->lookaside.sz=db->lookaside.bDisable?0:db->lookaside.szTrue
 
 /* Size of the smaller allocations in two-size lookaside */
-#ifdef SQLITE_OMIT_TWOSIZE_LOOKASIDE
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE
 #  define LOOKASIDE_SMALL           0
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 #  define LOOKASIDE_SMALL         128
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** A hash table for built-in function definitions.  (Application-defined
@@ -1663,63 +1663,63 @@ struct LookasideSlot {
 ** Collisions are on the FuncDef.u.pHash chain.  Use the SQLITE_FUNC_HASH()
 ** macro to compute a hash on the function name.
 */
-#define SQLITE_FUNC_HASH_SZ 23
-struct FuncDefHash {
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_HASH_SZ 23
+ರಚನೆ FuncDefHash {
   FuncDef *a[SQLITE_FUNC_HASH_SZ];       /* Hash table for functions */
 };
-#define SQLITE_FUNC_HASH(C,L) (((C)+(L))%SQLITE_FUNC_HASH_SZ)
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_HASH(C,L) (((C)+(L))%SQLITE_FUNC_HASH_SZ)
 
 /*
 ** typedef for the authorization callback function.
 */
-typedef int (*sqlite3_xauth)(void*,int,const char*,const char*,const char*,
-                             const char*);
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಪೂರ್ಣಾಂಕ (*sqlite3_xauth)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,
+                             ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
 
-#ifndef SQLITE_OMIT_DEPRECATED
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_DEPRECATED
 /* This is an extra SQLITE_TRACE macro that indicates "legacy" tracing
 ** in the style of sqlite3_trace()
 */
-#define SQLITE_TRACE_LEGACY          0x40     /* Use the legacy xTrace */
-#define SQLITE_TRACE_XPROFILE        0x80     /* Use the legacy xProfile */
-#else
-#define SQLITE_TRACE_LEGACY          0
-#define SQLITE_TRACE_XPROFILE        0
-#endif /* SQLITE_OMIT_DEPRECATED */
-#define SQLITE_TRACE_NONLEGACY_MASK  0x0f     /* Normal flags */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TRACE_LEGACY          0x40     /* Use the legacy xTrace */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TRACE_XPROFILE        0x80     /* Use the legacy xProfile */
+#ಇಲ್ಲದಿದ್ದರೆ
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TRACE_LEGACY          0
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TRACE_XPROFILE        0
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_DEPRECATED */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TRACE_NONLEGACY_ಮುಖವಾಡ  0x0f     /* Normal flags */
 
 /*
 ** Maximum number of sqlite3.aDb[] entries.  This is the number of attached
 ** databases plus 2 for "main" and "temp".
 */
-#define SQLITE_MAX_DB (SQLITE_MAX_ATTACHED+2)
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_MAX_DB (SQLITE_MAX_ATTACHED+2)
 
 /*
 ** Each database connection is an instance of the following structure.
 */
-struct sqlite3 {
+ರಚನೆ sqlite3 {
   sqlite3_vfs *pVfs;            /* OS Interface */
-  struct Vdbe *pVdbe;           /* List of active virtual machines */
+  ರಚನೆ Vdbe *pVdbe;           /* List of active virtual machines */
   CollSeq *pDfltColl;           /* BINARY collseq for the database encoding */
   sqlite3_mutex *mutex;         /* Connection mutex */
   Db *aDb;                      /* All backends */
-  int nDb;                      /* Number of backends currently in use */
+  ಪೂರ್ಣಾಂಕ nDb;                      /* Number of backends currently in use */
   u32 mDbFlags;                 /* flags recording internal state */
   u64 flags;                    /* flags settable by pragmas. See below */
-  i64 lastRowid;                /* ROWID of most recent insert (see above) */
+  i64 ಕೊನೆಯ_Rowid;                /* ROWID of most recent insert (see above) */
   i64 szMmap;                   /* Default mmap_size setting */
-  u32 nSchemaLock;              /* Do not reset the schema when non-zero */
-  unsigned int openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
-  int errCode;                  /* Most recent error code (SQLITE_*) */
-  int errByteOffset;            /* Byte offset of error in SQL statement */
-  int errMask;                  /* & result codes with this before returning */
-  int iSysErrno;                /* Errno value from last system error */
+  u32 n_Schema_ಬೀಗ;              /* Do not reset the schema when non-zero */
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ openFlags;       /* Flags passed to sqlite3_vfs.xOpen() */
+  ಪೂರ್ಣಾಂಕ err_ಸಂಕೇತ;                  /* Most recent error code (SQLITE_*) */
+  ಪೂರ್ಣಾಂಕ err_Byte_ಸ್ಥಾನಾಂತರ;            /* Byte offset of error in SQL statement */
+  ಪೂರ್ಣಾಂಕ err_ಮುಖವಾಡ;                  /* & result codes with this before returning */
+  ಪೂರ್ಣಾಂಕ iSysErrno;                /* Errno value from last system error */
   u8 enc;                       /* Text encoding */
   u8 autoCommit;                /* The auto-commit flag. */
-  u8 temp_store;                /* 1: file 2: memory 0: default */
+  u8 ತಾತ್ಕಾಲಿಕ_store;                /* 1: file 2: memory 0: default */
   u8 mallocFailed;              /* True if we have seen a malloc failure */
   u8 bBenignMalloc;             /* Do not require OOMs if true */
-  u8 dfltLockMode;              /* Default locking-mode for attached dbs */
-  signed char nextAutovac;      /* Autovac setting after VACUUM if >=0 */
+  u8 dflt_ಬೀಗ_ಬಹುಲಕ;              /* Default locking-mode for attached dbs */
+  ಚಿಹ್ನೆಯುಳ್ಳ ಅಕ್ಷರ ಮುಂದಿನ_Autovac;      /* Autovac setting after VACUUM if >=0 */
   u8 suppressErr;               /* Do not issue error messages if true */
   u8 vtabOnConflict;            /* Value to return for s3_vtab_on_conflict() */
   u8 isTransactionSavepoint;    /* True if the outermost savepoint is a TS */
@@ -1728,102 +1728,102 @@ struct sqlite3 {
   u8 nSqlExec;                  /* Number of pending OP_SqlExec opcodes */
   u8 eOpenState;                /* Current condition of the connection */
   u8 nFpDigit;                  /* Significant digits to keep on double->text */
-  int nextPagesize;             /* Pagesize after VACUUM if >0 */
+  ಪೂರ್ಣಾಂಕ ಮುಂದಿನ_Pagesize;             /* Pagesize after VACUUM if >0 */
   i64 nChange;                  /* Value returned by sqlite3_changes() */
-  i64 nTotalChange;             /* Value returned by sqlite3_total_changes() */
+  i64 n_ಒಟ್ಟು_Change;             /* Value returned by sqlite3_total_changes() */
   u32 dbOptFlags;               /* Flags to enable/disable optimizations */
-  int aLimit[SQLITE_N_LIMIT];   /* Limits */
-  int nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
-  struct sqlite3InitInfo {      /* Information used during initialization */
+  ಪೂರ್ಣಾಂಕ a_ಎಲ್ಲೆ[SQLITE_N_ಎಲ್ಲೆ];   /* Limits */
+  ಪೂರ್ಣಾಂಕ nMaxSorterMmap;           /* Maximum size of regions mapped by sorter */
+  ರಚನೆ sqlite3InitInfo {      /* Information used during initialization */
     Pgno newTnum;               /* Rootpage of table being initialized */
     u8 iDb;                     /* Which db file is being initialized */
     u8 busy;                    /* TRUE if initing. 2 if due to ADD COLUMN */
-    unsigned orphanTrigger : 1; /* Last statement is orphaned TEMP trigger */
-    unsigned imposterTable : 2; /* Building an imposter table */
-    unsigned reopenMemdb : 1;   /* ATTACH is really a reopen using MemDB */
-    const char **azInit;        /* "type", "name", and "tbl_name" columns */
+    ಚಿಹ್ನೆರಹಿತ orphanTrigger : 1; /* Last statement is orphaned TEMP trigger */
+    ಚಿಹ್ನೆರಹಿತ imposter_ಕೋಷ್ಟಕ : 2; /* Building an imposter table */
+    ಚಿಹ್ನೆರಹಿತ reopenMemdb : 1;   /* ATTACH is really a reopen using MemDB */
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **azInit;        /* "type", "name", and "tbl_name" columns */
   } init;
-  int nVdbeActive;              /* Number of VDBEs currently running */
-  int nVdbeRead;                /* Number of active VDBEs that read or write */
-  int nVdbeWrite;               /* Number of active VDBEs that read and write */
-  int nVdbeExec;                /* Number of nested calls to VdbeExec() */
-  int nVDestroy;                /* Number of active OP_VDestroy operations */
-  int nExtension;               /* Number of loaded extensions */
-  void **aExtension;            /* Array of shared library handles */
-  union {
-    void (*xLegacy)(void*,const char*);   /* mTrace==SQLITE_TRACE_LEGACY */
-    int (*xV2)(u32,void*,void*,void*);    /* All other mTrace values */
+  ಪೂರ್ಣಾಂಕ n_Vdbe_ಸಕ್ರಿಯ;              /* Number of VDBEs currently running */
+  ಪೂರ್ಣಾಂಕ nVdbeRead;                /* Number of active VDBEs that read or write */
+  ಪೂರ್ಣಾಂಕ nVdbeWrite;               /* Number of active VDBEs that read and write */
+  ಪೂರ್ಣಾಂಕ nVdbeExec;                /* Number of nested calls to VdbeExec() */
+  ಪೂರ್ಣಾಂಕ nVDestroy;                /* Number of active OP_VDestroy operations */
+  ಪೂರ್ಣಾಂಕ nExtension;               /* Number of loaded extensions */
+  ಶೂನ್ಯ **aExtension;            /* Array of shared library handles */
+  ಒಕ್ಕೂಟ {
+    ಶೂನ್ಯ (*xLegacy)(ಶೂನ್ಯ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);   /* mTrace==SQLITE_TRACE_LEGACY */
+    ಪೂರ್ಣಾಂಕ (*xV2)(u32,ಶೂನ್ಯ*,ಶೂನ್ಯ*,ಶೂನ್ಯ*);    /* All other mTrace values */
   } trace;
-  void *pTraceArg;                        /* Argument to the trace function */
-#ifndef SQLITE_OMIT_DEPRECATED
-  void (*xProfile)(void*,const char*,u64);  /* Profiling function */
-  void *pProfileArg;                        /* Argument to profile function */
-#endif
-  void *pCommitArg;                 /* Argument to xCommitCallback() */
-  int (*xCommitCallback)(void*);    /* Invoked at every commit. */
-  void *pRollbackArg;               /* Argument to xRollbackCallback() */
-  void (*xRollbackCallback)(void*); /* Invoked at every commit. */
-  void *pUpdateArg;
-  void (*xUpdateCallback)(void*,int, const char*,const char*,sqlite_int64);
-  void *pAutovacPagesArg;           /* Client argument to autovac_pages */
-  void (*xAutovacDestr)(void*);     /* Destructor for pAutovacPAgesArg */
-  unsigned int (*xAutovacPages)(void*,const char*,u32,u32,u32);
+  ಶೂನ್ಯ *pTraceArg;                        /* Argument to the trace function */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_DEPRECATED
+  ಶೂನ್ಯ (*xProfile)(ಶೂನ್ಯ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,u64);  /* Profiling function */
+  ಶೂನ್ಯ *pProfileArg;                        /* Argument to profile function */
+#ಆದರೆ_ಅಂತ್ಯ
+  ಶೂನ್ಯ *pCommitArg;                 /* Argument to xCommitCallback() */
+  ಪೂರ್ಣಾಂಕ (*xCommitCallback)(ಶೂನ್ಯ*);    /* Invoked at every commit. */
+  ಶೂನ್ಯ *pRollbackArg;               /* Argument to xRollbackCallback() */
+  ಶೂನ್ಯ (*xRollbackCallback)(ಶೂನ್ಯ*); /* Invoked at every commit. */
+  ಶೂನ್ಯ *pUpdateArg;
+  ಶೂನ್ಯ (*xUpdateCallback)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,sqlite_int64);
+  ಶೂನ್ಯ *p_Autovac_ಪುಟಗಳು_Arg;           /* Client argument to autovac_pages */
+  ಶೂನ್ಯ (*xAutovacDestr)(ಶೂನ್ಯ*);     /* Destructor for pAutovacPAgesArg */
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ (*x_Autovac_ಪುಟಗಳು)(ಶೂನ್ಯ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,u32,u32,u32);
   Parse *pParse;                /* Current parse */
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-  void *pPreUpdateArg;          /* First argument to xPreUpdateCallback */
-  void (*xPreUpdateCallback)(   /* Registered using sqlite3_preupdate_hook() */
-    void*,sqlite3*,int,char const*,char const*,sqlite3_int64,sqlite3_int64
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_PREUPDATE_HOOK
+  ಶೂನ್ಯ *pPreUpdateArg;          /* First argument to xPreUpdateCallback */
+  ಶೂನ್ಯ (*xPreUpdateCallback)(   /* Registered using sqlite3_preupdate_hook() */
+    ಶೂನ್ಯ*,sqlite3*,ಪೂರ್ಣಾಂಕ,ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ*,ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ*,sqlite3_int64,sqlite3_int64
   );
   PreUpdate *pPreUpdate;        /* Context for active pre-update callback */
-#endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
-#ifndef SQLITE_OMIT_WAL
-  int (*xWalCallback)(void *, sqlite3 *, const char *, int);
-  void *pWalArg;
-#endif
-  void(*xCollNeeded)(void*,sqlite3*,int eTextRep,const char*);
-  void(*xCollNeeded16)(void*,sqlite3*,int eTextRep,const void*);
-  void *pCollNeededArg;
-  sqlite3_value *pErr;          /* Most recent error message */
-  union {
-    volatile int isInterrupted; /* True if sqlite3_interrupt has been called */
-    double notUsed1;            /* Spacer */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_ENABLE_PREUPDATE_HOOK */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WAL
+  ಪೂರ್ಣಾಂಕ (*xWalCallback)(ಶೂನ್ಯ *, sqlite3 *, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, ಪೂರ್ಣಾಂಕ);
+  ಶೂನ್ಯ *pWalArg;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಶೂನ್ಯ(*xCollNeeded)(ಶೂನ್ಯ*,sqlite3*,ಪೂರ್ಣಾಂಕ e_ಪಠ್ಯ_Rep,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ(*xCollNeeded16)(ಶೂನ್ಯ*,sqlite3*,ಪೂರ್ಣಾಂಕ e_ಪಠ್ಯ_Rep,ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*);
+  ಶೂನ್ಯ *pCollNeededArg;
+  sqlite3_ಮೌಲ್ಯ *pErr;          /* Most recent error message */
+  ಒಕ್ಕೂಟ {
+    ಅಸ್ಥಿರ ಪೂರ್ಣಾಂಕ isInterrupted; /* True if sqlite3_interrupt has been called */
+    ದ್ವಿಗುಣ notUsed1;            /* Spacer */
   } u1;
   Lookaside lookaside;          /* Lookaside malloc configuration */
-#ifndef SQLITE_OMIT_AUTHORIZATION
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTHORIZATION
   sqlite3_xauth xAuth;          /* Access authorization function */
-  void *pAuthArg;               /* 1st argument to the access auth function */
-#endif
-#ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  int (*xProgress)(void *);     /* The progress callback */
-  void *pProgressArg;           /* Argument to the progress callback */
-  unsigned nProgressOps;        /* Number of opcodes for progress callback */
-#endif
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVTrans;                  /* Allocated size of aVTrans */
+  ಶೂನ್ಯ *pAuthArg;               /* 1st argument to the access auth function */
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_ಪ್ರಗತಿ_CALLBACK
+  ಪೂರ್ಣಾಂಕ (*x_ಪ್ರಗತಿ)(ಶೂನ್ಯ *);     /* The progress callback */
+  ಶೂನ್ಯ *p_ಪ್ರಗತಿ_Arg;           /* Argument to the progress callback */
+  ಚಿಹ್ನೆರಹಿತ n_ಪ್ರಗತಿ_Ops;        /* Number of opcodes for progress callback */
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  ಪೂರ್ಣಾಂಕ nVTrans;                  /* Allocated size of aVTrans */
   Hash aModule;                 /* populated by sqlite3_create_module() */
   VtabCtx *pVtabCtx;            /* Context for active vtab connect/create */
   VTable **aVTrans;             /* Virtual tables with open transactions */
   VTable *pDisconnect;          /* Disconnect these in next sqlite3_prepare() */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   Hash aFunc;                   /* Hash table of connection functions */
   Hash aCollSeq;                /* All collating sequences */
   BusyHandler busyHandler;      /* Busy callback */
   Db aDbStatic[2];              /* Static space for the 2 default backends */
   Savepoint *pSavepoint;        /* List of active savepoints */
-  int nAnalysisLimit;           /* Number of index rows to ANALYZE */
-  int busyTimeout;              /* Busy handler timeout, in msec */
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-  int setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
-  int setlkFlags;               /* Flags passed to setlk_timeout() */
-#endif
-  int nSavepoint;               /* Number of non-transaction savepoints */
-  int nStatement;               /* Number of nested statement-transactions  */
+  ಪೂರ್ಣಾಂಕ n_Analysis_ಎಲ್ಲೆ;           /* Number of index rows to ANALYZE */
+  ಪೂರ್ಣಾಂಕ busyTimeout;              /* Busy handler timeout, in msec */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_SETLK_TIMEOUT
+  ಪೂರ್ಣಾಂಕ setlkTimeout;             /* Blocking lock timeout, in msec. -1 -> inf. */
+  ಪೂರ್ಣಾಂಕ setlkFlags;               /* Flags passed to setlk_timeout() */
+#ಆದರೆ_ಅಂತ್ಯ
+  ಪೂರ್ಣಾಂಕ nSavepoint;               /* Number of non-transaction savepoints */
+  ಪೂರ್ಣಾಂಕ nStatement;               /* Number of nested statement-transactions  */
   i64 nDeferredCons;            /* Net deferred constraints this transaction. */
   i64 nDeferredImmCons;         /* Net deferred immediate constraints */
-  int *pnBytesFreed;            /* If not NULL, increment this in DbFree() */
-  DbClientData *pDbData;        /* sqlite3_set_clientdata() content */
+  ಪೂರ್ಣಾಂಕ *pn_ಬೈಟುಗಳು_Freed;            /* If not NULL, increment this in DbFree() */
+  Db_Client_ದತ್ತಾಂಶ *p_Db_ದತ್ತಾಂಶ;        /* sqlite3_set_clientdata() content */
   u64 nSpill;                   /* TEMP content spilled to disk */
-#ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_UNLOCK_NOTIFY
   /* The following variables are all protected by the STATIC_MAIN
   ** mutex, not by sqlite3.mutex. They are used by code in notify.c.
   **
@@ -1836,24 +1836,24 @@ struct sqlite3 {
   */
   sqlite3 *pBlockingConnection; /* Connection that caused SQLITE_LOCKED */
   sqlite3 *pUnlockConnection;           /* Connection to watch for unlock */
-  void *pUnlockArg;                     /* Argument to xUnlockNotify */
-  void (*xUnlockNotify)(void **, int);  /* Unlock notify callback */
-  sqlite3 *pNextBlocked;        /* Next in list of all blocked connections */
-#endif
+  ಶೂನ್ಯ *pUnlockArg;                     /* Argument to xUnlockNotify */
+  ಶೂನ್ಯ (*xUnlockNotify)(ಶೂನ್ಯ **, ಪೂರ್ಣಾಂಕ);  /* Unlock notify callback */
+  sqlite3 *p_ಮುಂದಿನ_Blocked;        /* Next in list of all blocked connections */
+#ಆದರೆ_ಅಂತ್ಯ
 };
 
 /*
 ** A macro to discover the encoding of a database.
 */
-#define SCHEMA_ENC(db) ((db)->aDb[0].pSchema->enc)
-#define ENC(db)        ((db)->enc)
+#ವ್ಯಾಖ್ಯಾನಿಸು SCHEMA_ENC(db) ((db)->aDb[0].pSchema->enc)
+#ವ್ಯಾಖ್ಯಾನಿಸು ENC(db)        ((db)->enc)
 
 /*
 ** A u64 constant where the lower 32 bits are all zeros.  Only the
 ** upper 32 bits are included in the argument.  Necessary because some
 ** C-compilers still do not accept LL integer literals.
 */
-#define HI(X)  ((u64)(X)<<32)
+#ವ್ಯಾಖ್ಯಾನಿಸು HI(X)  ((u64)(X)<<32)
 
 /*
 ** Possible values for the sqlite3.flags.
@@ -1863,70 +1863,70 @@ struct sqlite3 {
 **      SQLITE_CkptFullFSync == PAGER_CKPT_FULLFSYNC
 **      SQLITE_CacheSpill    == PAGER_CACHE_SPILL
 */
-#define SQLITE_WriteSchema    0x00000001  /* OK to update SQLITE_SCHEMA */
-#define SQLITE_LegacyFileFmt  0x00000002  /* Create new databases in format 1 */
-#define SQLITE_FullColNames   0x00000004  /* Show full column names on SELECT */
-#define SQLITE_FullFSync      0x00000008  /* Use full fsync on the backend */
-#define SQLITE_CkptFullFSync  0x00000010  /* Use full fsync for checkpoint */
-#define SQLITE_CacheSpill     0x00000020  /* OK to spill pager cache */
-#define SQLITE_ShortColNames  0x00000040  /* Show short columns names */
-#define SQLITE_TrustedSchema  0x00000080  /* Allow unsafe functions and
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_WriteSchema    0x00000001  /* OK to update SQLITE_SCHEMA */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_LegacyFileFmt  0x00000002  /* Create new databases in format 1 */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ತುಂಬಿದ_ಲಂಬಸಾಲು_ಹೆಸರುಗಳು   0x00000004  /* Show full column names on SELECT */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ತುಂಬಿದ_FSync      0x00000008  /* Use full fsync on the backend */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Ckpt_ತುಂಬಿದ_FSync  0x00000010  /* Use full fsync for checkpoint */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_CacheSpill     0x00000020  /* OK to spill pager cache */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Short_ಲಂಬಸಾಲು_ಹೆಸರುಗಳು  0x00000040  /* Show short columns names */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TrustedSchema  0x00000080  /* Allow unsafe functions and
                                           ** vtabs in the schema definition */
-#define SQLITE_NullCallback   0x00000100  /* Invoke the callback once if the */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_NullCallback   0x00000100  /* Invoke the callback once if the */
                                           /*   result set is empty */
-#define SQLITE_IgnoreChecks   0x00000200  /* Do not enforce check constraints */
-#define SQLITE_StmtScanStatus 0x00000400  /* Enable stmt_scanstats() counters */
-#define SQLITE_NoCkptOnClose  0x00000800  /* No checkpoint on close()/DETACH */
-#define SQLITE_ReverseOrder   0x00001000  /* Reverse unordered SELECTs */
-#define SQLITE_RecTriggers    0x00002000  /* Enable recursive triggers */
-#define SQLITE_ForeignKeys    0x00004000  /* Enforce foreign key constraints  */
-#define SQLITE_AutoIndex      0x00008000  /* Enable automatic indexes */
-#define SQLITE_LoadExtension  0x00010000  /* Enable load_extension */
-#define SQLITE_LoadExtFunc    0x00020000  /* Enable load_extension() SQL func */
-#define SQLITE_EnableTrigger  0x00040000  /* True to enable triggers */
-#define SQLITE_DeferFKs       0x00080000  /* Defer all FK constraints */
-#define SQLITE_QueryOnly      0x00100000  /* Disable database changes */
-#define SQLITE_CellSizeCk     0x00200000  /* Check btree cell sizes on load */
-#define SQLITE_Fts3Tokenizer  0x00400000  /* Enable fts3_tokenizer(2) */
-#define SQLITE_EnableQPSG     0x00800000  /* Query Planner Stability Guarantee*/
-#define SQLITE_TriggerEQP     0x01000000  /* Show trigger EXPLAIN QUERY PLAN */
-#define SQLITE_ResetDatabase  0x02000000  /* Reset the database */
-#define SQLITE_LegacyAlter    0x04000000  /* Legacy ALTER TABLE behaviour */
-#define SQLITE_NoSchemaError  0x08000000  /* Do not report schema parse errors*/
-#define SQLITE_Defensive      0x10000000  /* Input SQL is likely hostile */
-#define SQLITE_DqsDDL         0x20000000  /* dbl-quoted strings allowed in DDL*/
-#define SQLITE_DqsDML         0x40000000  /* dbl-quoted strings allowed in DML*/
-#define SQLITE_EnableView     0x80000000  /* Enable the use of views */
-#define SQLITE_CountRows      HI(0x00001) /* Count rows changed by INSERT, */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_IgnoreChecks   0x00000200  /* Do not enforce check constraints */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Stmt_ಪರಿಶೀಲನೆ_ಸ್ಥಿತಿ 0x00000400  /* Enable stmt_scanstats() counters */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_NoCkptOnClose  0x00000800  /* No checkpoint on close()/DETACH */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಹಿಮ್ಮುಖ_ಕ್ರಮ   0x00001000  /* Reverse unordered SELECTs */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_RecTriggers    0x00002000  /* Enable recursive triggers */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Foreign_ಕೀಲಿಗಳು    0x00004000  /* Enforce foreign key constraints  */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Auto_ಸೂಚ್ಯಂಕ      0x00008000  /* Enable automatic indexes */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ತುಂಬು_Extension  0x00010000  /* Enable load_extension */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ತುಂಬು_Ext_Func    0x00020000  /* Enable load_extension() SQL func */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_EnableTrigger  0x00040000  /* True to enable triggers */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_DeferFKs       0x00080000  /* Defer all FK constraints */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_QueryOnly      0x00100000  /* Disable database changes */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Cell_ಗಾತ್ರ_Ck     0x00200000  /* Check btree cell sizes on load */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Fts3Tokenizer  0x00400000  /* Enable fts3_tokenizer(2) */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_EnableQPSG     0x00800000  /* Query Planner Stability Guarantee*/
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TriggerEQP     0x01000000  /* Show trigger EXPLAIN QUERY PLAN */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ResetDatabase  0x02000000  /* Reset the database */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_LegacyAlter    0x04000000  /* Legacy ALTER TABLE behaviour */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_NoSchemaError  0x08000000  /* Do not report schema parse errors*/
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Defensive      0x10000000  /* Input SQL is likely hostile */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_DqsDDL         0x20000000  /* dbl-quoted strings allowed in DDL*/
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_DqsDML         0x40000000  /* dbl-quoted strings allowed in DML*/
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_EnableView     0x80000000  /* Enable the use of views */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಎಣಿಕೆ_ಅಡ್ಡಸಾಲುಗಳು      HI(0x00001) /* Count rows changed by INSERT, */
                                           /*   DELETE, or UPDATE and return */
                                           /*   the count using a callback. */
-#define SQLITE_CorruptRdOnly  HI(0x00002) /* Prohibit writes due to error */
-#define SQLITE_ReadUncommit   HI(0x00004) /* READ UNCOMMITTED in shared-cache */
-#define SQLITE_FkNoAction     HI(0x00008) /* Treat all FK as NO ACTION */
-#define SQLITE_AttachCreate   HI(0x00010) /* ATTACH allowed to create new dbs */
-#define SQLITE_AttachWrite    HI(0x00020) /* ATTACH allowed to open for write */
-#define SQLITE_Comments       HI(0x00040) /* Enable SQL comments */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_CorruptRdOnly  HI(0x00002) /* Prohibit writes due to error */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ReadUncommit   HI(0x00004) /* READ UNCOMMITTED in shared-cache */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FkNoAction     HI(0x00008) /* Treat all FK as NO ACTION */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AttachCreate   HI(0x00010) /* ATTACH allowed to create new dbs */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AttachWrite    HI(0x00020) /* ATTACH allowed to open for write */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Comments       HI(0x00040) /* Enable SQL comments */
 
 /* Flags used only if debugging */
-#ifdef SQLITE_DEBUG
-#define SQLITE_SqlTrace       HI(0x0100000) /* Debug print SQL as it executes */
-#define SQLITE_VdbeListing    HI(0x0200000) /* Debug listings of VDBE progs */
-#define SQLITE_VdbeTrace      HI(0x0400000) /* True to trace VDBE execution */
-#define SQLITE_VdbeAddopTrace HI(0x0800000) /* Trace sqlite3VdbeAddOp() calls */
-#define SQLITE_VdbeEQP        HI(0x1000000) /* Debug EXPLAIN QUERY PLAN */
-#define SQLITE_ParserTrace    HI(0x2000000) /* PRAGMA parser_trace=ON */
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_SqlTrace       HI(0x0100000) /* Debug print SQL as it executes */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_VdbeListing    HI(0x0200000) /* Debug listings of VDBE progs */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_VdbeTrace      HI(0x0400000) /* True to trace VDBE execution */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_VdbeAddopTrace HI(0x0800000) /* Trace sqlite3VdbeAddOp() calls */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_VdbeEQP        HI(0x1000000) /* Debug EXPLAIN QUERY PLAN */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ParserTrace    HI(0x2000000) /* PRAGMA parser_trace=ON */
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Allowed values for sqlite3.mDbFlags
 */
-#define DBFLAG_SchemaChange   0x0001  /* Uncommitted Hash table changes */
-#define DBFLAG_PreferBuiltin  0x0002  /* Preference to built-in funcs */
-#define DBFLAG_Vacuum         0x0004  /* Currently in a VACUUM */
-#define DBFLAG_VacuumInto     0x0008  /* Currently running VACUUM INTO */
-#define DBFLAG_SchemaKnownOk  0x0010  /* Schema is known to be valid */
-#define DBFLAG_InternalFunc   0x0020  /* Allow use of internal functions */
-#define DBFLAG_EncodingFixed  0x0040  /* No longer possible to change enc. */
+#ವ್ಯಾಖ್ಯಾನಿಸು DBFLAG_SchemaChange   0x0001  /* Uncommitted Hash table changes */
+#ವ್ಯಾಖ್ಯಾನಿಸು DBFLAG_PreferBuiltin  0x0002  /* Preference to built-in funcs */
+#ವ್ಯಾಖ್ಯಾನಿಸು DBFLAG_Vacuum         0x0004  /* Currently in a VACUUM */
+#ವ್ಯಾಖ್ಯಾನಿಸು DBFLAG_VacuumInto     0x0008  /* Currently running VACUUM INTO */
+#ವ್ಯಾಖ್ಯಾನಿಸು DBFLAG_Schema_ತಿಳಿದ_Ok  0x0010  /* Schema is known to be valid */
+#ವ್ಯಾಖ್ಯಾನಿಸು DBFLAG_ಆಂತರಿಕ_Func   0x0020  /* Allow use of internal functions */
+#ವ್ಯಾಖ್ಯಾನಿಸು DBFLAG_EncodingFixed  0x0040  /* No longer possible to change enc. */
 
 /*
 ** Bits of the sqlite3.dbOptFlags field that are used by the
@@ -1936,61 +1936,61 @@ struct sqlite3 {
 **
 ** Keep these values in sync with the ext/misc/optname.c extension.
 */
-#define SQLITE_QueryFlattener  1 /* Query flattening */
-#define SQLITE_WindowFunc      2 /* Use xInverse for window functions */
-#define SQLITE_GroupByOrder    3 /* GROUPBY cover of ORDERBY */
-#define SQLITE_JoinMiss        4 /* Unwind join loops on a lookup miss*/
-#define SQLITE_DistinctOpt     5 /* DISTINCT using indexes */
-#define SQLITE_CoverIdxScan    6 /* Covering index scans */
-#define SQLITE_OrderByIdxJoin  7 /* ORDER BY of joins via index */
-#define SQLITE_Transitive      8 /* Transitive constraints */
-#define SQLITE_OmitNoopJoin    9 /* Omit unused tables in joins */
-#define SQLITE_CountOfView    10 /* The count-of-view optimization */
-#define SQLITE_CursorHints    11 /* Add OP_CursorHint opcodes */
-#define SQLITE_Stat4          12 /* Use STAT4 data */
-#define SQLITE_PushDown       13 /* WHERE-clause push-down opt */
-#define SQLITE_SimplifyJoin   14 /* Convert LEFT JOIN to JOIN */
-#define SQLITE_SkipScan       15 /* Skip-scans */
-#define SQLITE_PropagateConst 16 /* The constant propagation opt */
-#define SQLITE_MinMaxOpt      17 /* The min/max optimization */
-#define SQLITE_SeekScan       18 /* The OP_SeekScan optimization */
-#define SQLITE_OmitOrderBy    19 /* Omit pointless ORDER BY */
-#define SQLITE_BloomFilter    20 /* Use a Bloom filters */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_QueryFlattener  1 /* Query flattening */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಕಿಟಕಿ_Func      2 /* Use xInverse for window functions */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಗುಂಪು_By_ಕ್ರಮ    3 /* GROUPBY cover of ORDERBY */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Join_ತಪ್ಪಿದ        4 /* Unwind join loops on a lookup miss*/
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_DistinctOpt     5 /* DISTINCT using indexes */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Cover_Idx_ಪರಿಶೀಲನೆ    6 /* Covering index scans */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಕ್ರಮ_By_Idx_Join  7 /* ORDER BY of joins via index */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಸಂಕ್ರಾಮಿಕ      8 /* Transitive constraints */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_OmitNoopJoin    9 /* Omit unused tables in joins */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಎಣಿಕೆ_ದ_View    10 /* The count-of-view optimization */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_CursorHints    11 /* Add OP_CursorHint opcodes */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Stat4          12 /* Use STAT4 data */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ತಳ್ಳು_ಕೆಳಕ್ಕೆ       13 /* WHERE-clause push-down opt */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_SimplifyJoin   14 /* Convert LEFT JOIN to JOIN */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Skip_ಪರಿಶೀಲನೆ       15 /* Skip-scans */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_PropagateConst 16 /* The constant propagation opt */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_MinMaxOpt      17 /* The min/max optimization */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Seek_ಪರಿಶೀಲನೆ       18 /* The OP_SeekScan optimization */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Omit_ಕ್ರಮ_By    19 /* Omit pointless ORDER BY */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_BloomFilter    20 /* Use a Bloom filters */
                           /*  21 -- Available for reuse */
-#define SQLITE_BalancedMerge  22 /* Balance multi-way merges */
-#define SQLITE_ReleaseReg     23 /* Use OP_ReleaseReg for testing */
-#define SQLITE_FlttnUnionAll  24 /* Disable the UNION ALL flattener */
-#define SQLITE_IndexedExpr    25 /* Pull exprs from index when able */
-#define SQLITE_Coroutines     26 /* Co-routines for subqueries */
-#define SQLITE_NullUnusedCols 27 /* NULL unused columns in subqueries */
-#define SQLITE_OnePass        28 /* Single-pass DELETE and UPDATE */
-#define SQLITE_OrderBySubq    29 /* ORDER BY in subquery helps outer */
-#define SQLITE_StarQuery      30 /* Heurists for star queries */
-#define SQLITE_ExistsToJoin   31 /* The EXISTS-to-JOIN optimization */
-#define SQLITE_UnionLimit     32 /* Optimizations for UNION + LIMIT */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಸಮತೋಲಿತ_ವಿಲೀನ  22 /* Balance multi-way merges */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ReleaseReg     23 /* Use OP_ReleaseReg for testing */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FlttnUnionAll  24 /* Disable the UNION ALL flattener */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಸೂಚ್ಯಂಕಿತ_ಅಭಿವ್ಯಕ್ತಿ    25 /* Pull exprs from index when able */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Coroutines     26 /* Co-routines for subqueries */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Null_ಬಳಸದ_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ 27 /* NULL unused columns in subqueries */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_OnePass        28 /* Single-pass DELETE and UPDATE */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ಕ್ರಮ_By_Subq    29 /* ORDER BY in subquery helps outer */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ನಕ್ಷತ್ರ_Query      30 /* Heurists for star queries */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Exists_ಗಮ್ಯ_Join   31 /* The EXISTS-to-JOIN optimization */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_Union_ಎಲ್ಲೆ     32 /* Optimizations for UNION + LIMIT */
 
 /*
 ** Macros for testing whether or not optimizations are enabled or disabled.
 */
-#define OptimizationDisabled(D,M)  (((D)->dbOptFlags&(1ul<<((M)-1)))!=0)
-#define OptimizationEnabled(D,M)   (((D)->dbOptFlags&(1ul<<((M)-1)))==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು OptimizationDisabled(D,M)  (((D)->dbOptFlags&(1ul<<((M)-1)))!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು OptimizationEnabled(D,M)   (((D)->dbOptFlags&(1ul<<((M)-1)))==0)
 
 /*
 ** Return true if it OK to factor constant expressions into the initialization
 ** code. The argument is a Parse object for the code generator.
 */
-#define ConstFactorOk(P) ((P)->okConstFactor)
+#ವ್ಯಾಖ್ಯಾನಿಸು Const_ಗುಣಕ_Ok(P) ((P)->ok_Const_ಗುಣಕ)
 
 /* Possible values for the sqlite3.eOpenState field.
 ** The numbers are randomly selected such that a minimum of three bits must
 ** change to convert any number to another or to zero
 */
-#define SQLITE_STATE_OPEN     0x76  /* Database is open */
-#define SQLITE_STATE_CLOSED   0xce  /* Database is closed */
-#define SQLITE_STATE_SICK     0xba  /* Error and awaiting close */
-#define SQLITE_STATE_BUSY     0x6d  /* Database currently in use */
-#define SQLITE_STATE_ERROR    0xd5  /* An SQLITE_MISUSE error occurred */
-#define SQLITE_STATE_ZOMBIE   0xa7  /* Close with last statement close */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_STATE_OPEN     0x76  /* Database is open */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_STATE_CLOSED   0xce  /* Database is closed */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_STATE_SICK     0xba  /* Error and awaiting close */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_STATE_BUSY     0x6d  /* Database currently in use */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_STATE_ERROR    0xd5  /* An SQLITE_MISUSE error occurred */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_STATE_ZOMBIE   0xa7  /* Close with last statement close */
 
 /*
 ** Each SQL function is defined by an instance of the following
@@ -2002,17 +2002,17 @@ struct sqlite3 {
 ** The u.pHash field is used by the global built-ins.  The u.pDestructor
 ** field is used by per-connection app-def functions.
 */
-struct FuncDef {
+ರಚನೆ FuncDef {
   i16 nArg;            /* Number of arguments.  -1 means unlimited */
   u32 funcFlags;       /* Some combination of SQLITE_FUNC_* */
-  void *pUserData;     /* User data parameter */
-  FuncDef *pNext;      /* Next function with same name */
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**); /* func or agg-step */
-  void (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
-  void (*xValue)(sqlite3_context*);                     /* Current agg value */
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value**); /* inverse agg-step */
-  const char *zName;   /* SQL name of the function. */
-  union {
+  ಶೂನ್ಯ *p_User_ದತ್ತಾಂಶ;     /* User data parameter */
+  FuncDef *p_ಮುಂದಿನ;      /* Next function with same name */
+  ಶೂನ್ಯ (*xSFunc)(sqlite3_context*,ಪೂರ್ಣಾಂಕ,sqlite3_ಮೌಲ್ಯ**); /* func or agg-step */
+  ಶೂನ್ಯ (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
+  ಶೂನ್ಯ (*x_ಮೌಲ್ಯ)(sqlite3_context*);                     /* Current agg value */
+  ಶೂನ್ಯ (*xInverse)(sqlite3_context*,ಪೂರ್ಣಾಂಕ,sqlite3_ಮೌಲ್ಯ**); /* inverse agg-step */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName;   /* SQL name of the function. */
+  ಒಕ್ಕೂಟ {
     FuncDef *pHash;      /* Next with a different name but the same hash */
     FuncDestructor *pDestructor;   /* Reference counted destructor function */
   } u; /* pHash if SQLITE_FUNC_BUILTIN, pDestructor otherwise */
@@ -2032,10 +2032,10 @@ struct FuncDef {
 ** count on this object is decremented. When it reaches 0, the destructor
 ** is invoked and the FuncDestructor structure freed.
 */
-struct FuncDestructor {
-  int nRef;
-  void (*xDestroy)(void *);
-  void *pUserData;
+ರಚನೆ FuncDestructor {
+  ಪೂರ್ಣಾಂಕ nRef;
+  ಶೂನ್ಯ (*xDestroy)(ಶೂನ್ಯ *);
+  ಶೂನ್ಯ *p_User_ದತ್ತಾಂಶ;
 };
 
 /*
@@ -2061,42 +2061,42 @@ struct FuncDestructor {
 ** SQLITE_INNOCUOUS is used by application code and means "not unsafe".
 ** See multiple instances of tag-20230109-1.
 */
-#define SQLITE_FUNC_ENCMASK  0x0003 /* SQLITE_UTF8, SQLITE_UTF16BE or UTF16LE */
-#define SQLITE_FUNC_LIKE     0x0004 /* Candidate for the LIKE optimization */
-#define SQLITE_FUNC_CASE     0x0008 /* Case-sensitive LIKE-type function */
-#define SQLITE_FUNC_EPHEM    0x0010 /* Ephemeral.  Delete with VDBE */
-#define SQLITE_FUNC_NEEDCOLL 0x0020 /* sqlite3GetFuncCollSeq() might be called*/
-#define SQLITE_FUNC_LENGTH   0x0040 /* Built-in length() function */
-#define SQLITE_FUNC_TYPEOF   0x0080 /* Built-in typeof() function */
-#define SQLITE_FUNC_BYTELEN  0x00c0 /* Built-in octet_length() function */
-#define SQLITE_FUNC_COUNT    0x0100 /* Built-in count(*) aggregate */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_ENCMASK  0x0003 /* SQLITE_UTF8, SQLITE_UTF16BE or UTF16LE */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_LIKE     0x0004 /* Candidate for the LIKE optimization */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_CASE     0x0008 /* Case-sensitive LIKE-type function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_EPHEM    0x0010 /* Ephemeral.  Delete with VDBE */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_NEEDCOLL 0x0020 /* sqlite3GetFuncCollSeq() might be called*/
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_ಉದ್ದಳತೆ   0x0040 /* Built-in length() function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_TYPEOF   0x0080 /* Built-in typeof() function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_BYTELEN  0x00c0 /* Built-in octet_length() function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_ಎಣಿಕೆ    0x0100 /* Built-in count(*) aggregate */
 /*                           0x0200 -- available for reuse */
-#define SQLITE_FUNC_UNLIKELY 0x0400 /* Built-in unlikely() function */
-#define SQLITE_FUNC_CONSTANT 0x0800 /* Constant inputs give a constant output */
-#define SQLITE_FUNC_MINMAX   0x1000 /* True for min() and max() aggregates */
-#define SQLITE_FUNC_SLOCHNG  0x2000 /* "Slow Change". Value constant during a
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_UNLIKELY 0x0400 /* Built-in unlikely() function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_CONSTANT 0x0800 /* Constant inputs give a constant output */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_MINMAX   0x1000 /* True for min() and max() aggregates */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_SLOCHNG  0x2000 /* "Slow Change". Value constant during a
                                     ** single query - might change over time */
-#define SQLITE_FUNC_TEST     0x4000 /* Built-in testing functions */
-#define SQLITE_FUNC_RUNONLY  0x8000 /* Cannot be used by valueFromFunction */
-#define SQLITE_FUNC_WINDOW   0x00010000 /* Built-in window-only function */
-#define SQLITE_FUNC_INTERNAL 0x00040000 /* For use by NestedParse() only */
-#define SQLITE_FUNC_DIRECT   0x00080000 /* Not for use in TRIGGERs or VIEWs */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_TEST     0x4000 /* Built-in testing functions */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_RUNONLY  0x8000 /* Cannot be used by valueFromFunction */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_ಕಿಟಕಿ   0x00010000 /* Built-in window-only function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_ಆಂತರಿಕ 0x00040000 /* For use by NestedParse() only */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_ನೇರ   0x00080000 /* Not for use in TRIGGERs or VIEWs */
 /* SQLITE_SUBTYPE            0x00100000 // Consumer of subtypes */
-#define SQLITE_FUNC_UNSAFE   0x00200000 /* Function has side effects */
-#define SQLITE_FUNC_INLINE   0x00400000 /* Functions implemented in-line */
-#define SQLITE_FUNC_BUILTIN  0x00800000 /* This is a built-in function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_UNSAFE   0x00200000 /* Function has side effects */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_INLINE   0x00400000 /* Functions implemented in-line */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_BUILTIN  0x00800000 /* This is a built-in function */
 /*  SQLITE_RESULT_SUBTYPE    0x01000000 // Generator of subtypes */
-#define SQLITE_FUNC_ANYORDER 0x08000000 /* count/min/max aggregate */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FUNC_ANYORDER 0x08000000 /* count/min/max aggregate */
 
 /* Identifier numbers for each in-line function */
-#define INLINEFUNC_coalesce             0
-#define INLINEFUNC_implies_nonnull_row  1
-#define INLINEFUNC_expr_implies_expr    2
-#define INLINEFUNC_expr_compare         3
-#define INLINEFUNC_affinity             4
-#define INLINEFUNC_iif                  5
-#define INLINEFUNC_sqlite_offset        6
-#define INLINEFUNC_unlikely            99  /* Default case */
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_coalesce             0
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_ಸೂಚಿಸುತ್ತದೆ_nonnull_ಅಡ್ಡಸಾಲು  1
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_ಅಭಿವ್ಯಕ್ತಿ_ಸೂಚಿಸುತ್ತದೆ_ಅಭಿವ್ಯಕ್ತಿ    2
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_ಅಭಿವ್ಯಕ್ತಿ_compare         3
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_affinity             4
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_iif                  5
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_sqlite_ಸ್ಥಾನಾಂತರ        6
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINEFUNC_unlikely            99  /* Default case */
 
 /*
 ** The following three macros, FUNCTION(), LIKEFUNC() and AGGREGATE() are
@@ -2164,57 +2164,57 @@ struct FuncDestructor {
 **     FuncDef.flags variable is set to the value passed as the flags
 **     parameter.
 */
-#define FUNCTION(zName, nArg, iArg, bNC, xFunc) \
+#ವ್ಯಾಖ್ಯಾನಿಸು FUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_CONSTANT|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL), \
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define VFUNCTION(zName, nArg, iArg, bNC, xFunc) \
+   SQLITE_INT_ಗಮ್ಯ_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು VFUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL), \
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define SFUNCTION(zName, nArg, iArg, bNC, xFunc) \
+   SQLITE_INT_ಗಮ್ಯ_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು SFUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_DIRECTONLY|SQLITE_FUNC_UNSAFE, \
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define MFUNCTION(zName, nArg, xPtr, xFunc) \
+   SQLITE_INT_ಗಮ್ಯ_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು MFUNCTION(zName, nArg, xPtr, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_CONSTANT|SQLITE_UTF8, \
    xPtr, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define JFUNCTION(zName, nArg, bUseCache, bWS, bRS, bJsonB, iArg, xFunc) \
+#ವ್ಯಾಖ್ಯಾನಿಸು JFUNCTION(zName, nArg, bUseCache, bWS, bRS, bJsonB, iArg, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_DETERMINISTIC|SQLITE_FUNC_CONSTANT|\
    SQLITE_UTF8|((bUseCache)*SQLITE_FUNC_RUNONLY)|\
-   ((bRS)*SQLITE_SUBTYPE)|((bWS)*SQLITE_RESULT_SUBTYPE), \
-   SQLITE_INT_TO_PTR(iArg|((bJsonB)*JSON_BLOB)),0,xFunc,0, 0, 0, #zName, {0} }
-#define INLINE_FUNC(zName, nArg, iArg, mFlags) \
+   ((bRS)*SQLITE_SUBTYPE)|((bWS)*SQLITE_ಫಲಿತಾಂಶ_SUBTYPE), \
+   SQLITE_INT_ಗಮ್ಯ_PTR(iArg|((bJsonB)*JSON_BLOB)),0,xFunc,0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು INLINE_FUNC(zName, nArg, iArg, mFlags) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_UTF8|SQLITE_FUNC_INLINE|SQLITE_FUNC_CONSTANT|(mFlags), \
-   SQLITE_INT_TO_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
-#define TEST_FUNC(zName, nArg, iArg, mFlags) \
+   SQLITE_INT_ಗಮ್ಯ_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು TEST_FUNC(zName, nArg, iArg, mFlags) \
   {nArg, SQLITE_FUNC_BUILTIN|\
-         SQLITE_UTF8|SQLITE_FUNC_INTERNAL|SQLITE_FUNC_TEST| \
+         SQLITE_UTF8|SQLITE_FUNC_ಆಂತರಿಕ|SQLITE_FUNC_TEST| \
          SQLITE_FUNC_INLINE|SQLITE_FUNC_CONSTANT|(mFlags), \
-   SQLITE_INT_TO_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
-#define DFUNCTION(zName, nArg, iArg, bNC, xFunc) \
+   SQLITE_INT_ಗಮ್ಯ_PTR(iArg), 0, noopFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು DFUNCTION(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_SLOCHNG|SQLITE_UTF8, \
    0, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define PURE_DATE(zName, nArg, iArg, bNC, xFunc) \
+#ವ್ಯಾಖ್ಯಾನಿಸು ಶುದ್ಧ_DATE(zName, nArg, iArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
          SQLITE_FUNC_SLOCHNG|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
-   (void*)&sqlite3Config, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define FUNCTION2(zName, nArg, iArg, bNC, xFunc, extraFlags) \
+   (ಶೂನ್ಯ*)&sqlite3Config, 0, xFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು FUNCTION2(zName, nArg, iArg, bNC, xFunc, extraFlags) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_CONSTANT|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL)|extraFlags,\
-   SQLITE_INT_TO_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
-#define STR_FUNCTION(zName, nArg, pArg, bNC, xFunc) \
+   SQLITE_INT_ಗಮ್ಯ_PTR(iArg), 0, xFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು STR_FUNCTION(zName, nArg, pArg, bNC, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_SLOCHNG|SQLITE_UTF8|(bNC*SQLITE_FUNC_NEEDCOLL), \
    pArg, 0, xFunc, 0, 0, 0, #zName, {0} }
-#define LIKEFUNC(zName, nArg, arg, flags) \
+#ವ್ಯಾಖ್ಯಾನಿಸು LIKEFUNC(zName, nArg, arg, flags) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_CONSTANT|SQLITE_UTF8|flags, \
-   (void *)arg, 0, likeFunc, 0, 0, 0, #zName, {0} }
-#define WAGGREGATE(zName, nArg, arg, nc, xStep, xFinal, xValue, xInverse, f) \
+   (ಶೂನ್ಯ *)arg, 0, likeFunc, 0, 0, 0, #zName, {0} }
+#ವ್ಯಾಖ್ಯಾನಿಸು WAGGREGATE(zName, nArg, arg, nc, x_ಹೆಜ್ಜೆ, xFinal, x_ಮೌಲ್ಯ, xInverse, f) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|(nc*SQLITE_FUNC_NEEDCOLL)|f, \
-   SQLITE_INT_TO_PTR(arg), 0, xStep,xFinal,xValue,xInverse,#zName, {0}}
-#define INTERNAL_FUNCTION(zName, nArg, xFunc) \
+   SQLITE_INT_ಗಮ್ಯ_PTR(arg), 0, x_ಹೆಜ್ಜೆ,xFinal,x_ಮೌಲ್ಯ,xInverse,#zName, {0}}
+#ವ್ಯಾಖ್ಯಾನಿಸು ಆಂತರಿಕ_FUNCTION(zName, nArg, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
-   SQLITE_FUNC_INTERNAL|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
+   SQLITE_FUNC_ಆಂತರಿಕ|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
    0, 0, xFunc, 0, 0, 0, #zName, {0} }
 
 
@@ -2224,20 +2224,20 @@ struct FuncDestructor {
 ** opened savepoint. Savepoints are added to the list by the vdbe
 ** OP_Savepoint instruction.
 */
-struct Savepoint {
-  char *zName;                        /* Savepoint name (nul-terminated) */
+ರಚನೆ Savepoint {
+  ಅಕ್ಷರ *zName;                        /* Savepoint name (nul-terminated) */
   i64 nDeferredCons;                  /* Number of deferred fk violations */
   i64 nDeferredImmCons;               /* Number of deferred imm fk. */
-  Savepoint *pNext;                   /* Parent savepoint (if any) */
+  Savepoint *p_ಮುಂದಿನ;                   /* Parent savepoint (if any) */
 };
 
 /*
 ** The following are used as the second parameter to sqlite3Savepoint(),
 ** and as the P1 argument to the OP_Savepoint instruction.
 */
-#define SAVEPOINT_BEGIN      0
-#define SAVEPOINT_RELEASE    1
-#define SAVEPOINT_ROLLBACK   2
+#ವ್ಯಾಖ್ಯಾನಿಸು SAVEPOINT_BEGIN      0
+#ವ್ಯಾಖ್ಯಾನಿಸು SAVEPOINT_RELEASE    1
+#ವ್ಯಾಖ್ಯಾನಿಸು SAVEPOINT_ROLLBACK   2
 
 
 /*
@@ -2245,13 +2245,13 @@ struct Savepoint {
 ** instance of the following structure, stored in the sqlite3.aModule
 ** hash table.
 */
-struct Module {
-  const sqlite3_module *pModule;       /* Callback pointers */
-  const char *zName;                   /* Name passed to create_module() */
-  int nRefModule;                      /* Number of pointers to this object */
-  void *pAux;                          /* pAux passed to create_module() */
-  void (*xDestroy)(void *);            /* Module destructor function */
-  Table *pEpoTab;                      /* Eponymous table for this module */
+ರಚನೆ Module {
+  ಸ್ಥಿರಾಂಕ sqlite3_module *pModule;       /* Callback pointers */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName;                   /* Name passed to create_module() */
+  ಪೂರ್ಣಾಂಕ nRefModule;                      /* Number of pointers to this object */
+  ಶೂನ್ಯ *pAux;                          /* pAux passed to create_module() */
+  ಶೂನ್ಯ (*xDestroy)(ಶೂನ್ಯ *);            /* Module destructor function */
+  ಕೋಷ್ಟಕ *pEpoTab;                      /* Eponymous table for this module */
 };
 
 /*
@@ -2279,15 +2279,15 @@ struct Module {
 ** collating sequence name is only included if the COLFLAG_HASCOLL bit is
 ** set.
 */
-struct Column {
-  char *zCnName;        /* Name of this column */
-  unsigned notNull :4;  /* An OE_ code for handling a NOT NULL constraint */
-  unsigned eCType :4;   /* One of the standard types */
-  char affinity;        /* One of the SQLITE_AFF_... values */
+ರಚನೆ ಸ್ತಂಭ {
+  ಅಕ್ಷರ *zCnName;        /* Name of this column */
+  ಚಿಹ್ನೆರಹಿತ notNull :4;  /* An OE_ code for handling a NOT NULL constraint */
+  ಚಿಹ್ನೆರಹಿತ eCType :4;   /* One of the standard types */
+  ಅಕ್ಷರ affinity;        /* One of the SQLITE_AFF_... values */
   u8 szEst;             /* Est size of value in this column. sizeof(INT)==1 */
   u8 hName;             /* Column name hash for faster lookup */
   u16 iDflt;            /* 1-based index of DEFAULT.  0 means "none" */
-  u16 colFlags;         /* Boolean properties.  See COLFLAG_ defines below */
+  u16 ಲಂಬಸಾಲು_Flags;         /* Boolean properties.  See COLFLAG_ defines below */
 };
 
 /* Allowed values for Column.eCType.
@@ -2297,14 +2297,14 @@ struct Column {
 ** than the offset into these arrays for the corresponding name.
 ** Adjust the SQLITE_N_STDTYPE value if adding or removing entries.
 */
-#define COLTYPE_CUSTOM      0   /* Type appended to zName */
-#define COLTYPE_ANY         1
-#define COLTYPE_BLOB        2
-#define COLTYPE_INT         3
-#define COLTYPE_INTEGER     4
-#define COLTYPE_REAL        5
-#define COLTYPE_TEXT        6
-#define SQLITE_N_STDTYPE    6  /* Number of standard types */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLTYPE_CUSTOM      0   /* Type appended to zName */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLTYPE_ANY         1
+#ವ್ಯಾಖ್ಯಾನಿಸು COLTYPE_BLOB        2
+#ವ್ಯಾಖ್ಯಾನಿಸು COLTYPE_INT         3
+#ವ್ಯಾಖ್ಯಾನಿಸು COLTYPE_INTEGER     4
+#ವ್ಯಾಖ್ಯಾನಿಸು COLTYPE_REAL        5
+#ವ್ಯಾಖ್ಯಾನಿಸು COLTYPE_ಪಠ್ಯ        6
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_N_STDTYPE    6  /* Number of standard types */
 
 /* Allowed values for Column.colFlags.
 **
@@ -2313,19 +2313,19 @@ struct Column {
 **         TF_HasStored  == COLFLAG_STORED
 **         TF_HasHidden  == COLFLAG_HIDDEN
 */
-#define COLFLAG_PRIMKEY   0x0001   /* Column is part of the primary key */
-#define COLFLAG_HIDDEN    0x0002   /* A hidden column in a virtual table */
-#define COLFLAG_HASTYPE   0x0004   /* Type name follows column name */
-#define COLFLAG_UNIQUE    0x0008   /* Column def contains "UNIQUE" or "PK" */
-#define COLFLAG_SORTERREF 0x0010   /* Use sorter-refs with this column */
-#define COLFLAG_VIRTUAL   0x0020   /* GENERATED ALWAYS AS ... VIRTUAL */
-#define COLFLAG_STORED    0x0040   /* GENERATED ALWAYS AS ... STORED */
-#define COLFLAG_NOTAVAIL  0x0080   /* STORED column not yet calculated */
-#define COLFLAG_BUSY      0x0100   /* Blocks recursion on GENERATED columns */
-#define COLFLAG_HASCOLL   0x0200   /* Has collating sequence name in zCnName */
-#define COLFLAG_NOEXPAND  0x0400   /* Omit this column when expanding "*" */
-#define COLFLAG_GENERATED 0x0060   /* Combo: _STORED, _VIRTUAL */
-#define COLFLAG_NOINSERT  0x0062   /* Combo: _HIDDEN, _STORED, _VIRTUAL */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_PRIMKEY   0x0001   /* Column is part of the primary key */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_HIDDEN    0x0002   /* A hidden column in a virtual table */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_HASTYPE   0x0004   /* Type name follows column name */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_UNIQUE    0x0008   /* Column def contains "UNIQUE" or "PK" */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_SORTERREF 0x0010   /* Use sorter-refs with this column */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_VIRTUAL   0x0020   /* GENERATED ALWAYS AS ... VIRTUAL */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_STORED    0x0040   /* GENERATED ALWAYS AS ... STORED */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_NOTAVAIL  0x0080   /* STORED column not yet calculated */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_BUSY      0x0100   /* Blocks recursion on GENERATED columns */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_HASCOLL   0x0200   /* Has collating sequence name in zCnName */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_NOEXPAND  0x0400   /* Omit this column when expanding "*" */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_GENERATED 0x0060   /* Combo: _STORED, _VIRTUAL */
+#ವ್ಯಾಖ್ಯಾನಿಸು COLFLAG_NOINSERT  0x0062   /* Combo: _HIDDEN, _STORED, _VIRTUAL */
 
 /*
 ** A "Collating Sequence" is defined by an instance of the following
@@ -2336,20 +2336,20 @@ struct Column {
 ** collating sequence is undefined.  Indices built on an undefined
 ** collating sequence may not be read or written.
 */
-struct CollSeq {
-  char *zName;          /* Name of the collating sequence, UTF-8 encoded */
+ರಚನೆ CollSeq {
+  ಅಕ್ಷರ *zName;          /* Name of the collating sequence, UTF-8 encoded */
   u8 enc;               /* Text encoding handled by xCmp() */
-  void *pUser;          /* First argument to xCmp() */
-  int (*xCmp)(void*,int, const void*, int, const void*);
-  void (*xDel)(void*);  /* Destructor for pUser */
+  ಶೂನ್ಯ *pUser;          /* First argument to xCmp() */
+  ಪೂರ್ಣಾಂಕ (*xCmp)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*, ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*);
+  ಶೂನ್ಯ (*xDel)(ಶೂನ್ಯ*);  /* Destructor for pUser */
 };
 
 /*
 ** A sort order can be either ASC or DESC.
 */
-#define SQLITE_SO_ASC       0  /* Sort in ascending order */
-#define SQLITE_SO_DESC      1  /* Sort in ascending order */
-#define SQLITE_SO_UNDEFINED -1 /* No sort order specified */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_SO_ASC       0  /* Sort in ascending order */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_SO_DESC      1  /* Sort in ascending order */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_SO_UNDEFINED -1 /* No sort order specified */
 
 /*
 ** Column affinity types.
@@ -2365,22 +2365,22 @@ struct CollSeq {
 ** Note also that the numeric types are grouped together so that testing
 ** for a numeric type is a single comparison.  And the BLOB type is first.
 */
-#define SQLITE_AFF_NONE     0x40  /* '@' */
-#define SQLITE_AFF_BLOB     0x41  /* 'A' */
-#define SQLITE_AFF_TEXT     0x42  /* 'B' */
-#define SQLITE_AFF_NUMERIC  0x43  /* 'C' */
-#define SQLITE_AFF_INTEGER  0x44  /* 'D' */
-#define SQLITE_AFF_REAL     0x45  /* 'E' */
-#define SQLITE_AFF_FLEXNUM  0x46  /* 'F' */
-#define SQLITE_AFF_DEFER    0x58  /* 'X'  - defer computation until later */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_NONE     0x40  /* '@' */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_BLOB     0x41  /* 'A' */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_ಪಠ್ಯ     0x42  /* 'B' */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_NUMERIC  0x43  /* 'C' */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_INTEGER  0x44  /* 'D' */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_REAL     0x45  /* 'E' */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_FLEXNUM  0x46  /* 'F' */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_DEFER    0x58  /* 'X'  - defer computation until later */
 
-#define sqlite3IsNumericAffinity(X)  ((X)>=SQLITE_AFF_NUMERIC)
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3IsNumericAffinity(X)  ((X)>=SQLITE_AFF_NUMERIC)
 
 /*
 ** The SQLITE_AFF_MASK values masks off the significant bits of an
 ** affinity value.
 */
-#define SQLITE_AFF_MASK     0x47
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_AFF_ಮುಖವಾಡ     0x47
 
 /*
 ** Additional bit values that can be ORed with an affinity without
@@ -2391,9 +2391,9 @@ struct CollSeq {
 ** operator is NULL.  It is added to certain comparison operators to
 ** prove that the operands are always NOT NULL.
 */
-#define SQLITE_JUMPIFNULL   0x10  /* jumps if either operand is NULL */
-#define SQLITE_NULLEQ       0x80  /* NULL=NULL */
-#define SQLITE_NOTNULL      0x90  /* Assert that operands are never NULL */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_JUMPIFNULL   0x10  /* jumps if either operand is NULL */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_NULLEQ       0x80  /* NULL=NULL */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_NOTNULL      0x90  /* Assert that operands are never NULL */
 
 /*
 ** An object of this type is created for each virtual table present in
@@ -2437,61 +2437,61 @@ struct CollSeq {
 ** sqlite3DbMalloc(), using the connection handle stored in VTable.db as
 ** the first argument.
 */
-struct VTable {
+ರಚನೆ VTable {
   sqlite3 *db;              /* Database connection associated with this table */
   Module *pMod;             /* Pointer to module implementation */
   sqlite3_vtab *pVtab;      /* Pointer to vtab instance */
-  int nRef;                 /* Number of pointers to this structure */
+  ಪೂರ್ಣಾಂಕ nRef;                 /* Number of pointers to this structure */
   u8 bConstraint;           /* True if constraints are supported */
   u8 bAllSchemas;           /* True if might use any attached schema */
   u8 eVtabRisk;             /* Riskiness of allowing hacker access */
-  int iSavepoint;           /* Depth of the SAVEPOINT stack */
-  VTable *pNext;            /* Next in linked list (see above) */
+  ಪೂರ್ಣಾಂಕ iSavepoint;           /* Depth of the SAVEPOINT stack */
+  VTable *p_ಮುಂದಿನ;            /* Next in linked list (see above) */
 };
 
 /* Allowed values for VTable.eVtabRisk
 */
-#define SQLITE_VTABRISK_Low          0
-#define SQLITE_VTABRISK_Normal       1
-#define SQLITE_VTABRISK_High         2
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_VTABRISK_ಕೆಳಗಿನ          0
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_VTABRISK_ಸಾಮಾನ್ಯ       1
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_VTABRISK_ಮೇಲಿನ         2
 
 /*
 ** The schema for each SQL table, virtual table, and view is represented
 ** in memory by an instance of the following structure.
 */
-struct Table {
-  char *zName;         /* Name of the table or view */
-  Column *aCol;        /* Information about each column */
-  Index *pIndex;       /* List of SQL indexes on this table. */
-  char *zColAff;       /* String defining the affinity of each column */
-  ExprList *pCheck;    /* All CHECK constraints */
+ರಚನೆ ಕೋಷ್ಟಕ {
+  ಅಕ್ಷರ *zName;         /* Name of the table or view */
+  ಸ್ತಂಭ *a_ಲಂಬಸಾಲು;        /* Information about each column */
+  ಸೂಚ್ಯಂಕ *p_ಸೂಚ್ಯಂಕ;       /* List of SQL indexes on this table. */
+  ಅಕ್ಷರ *z_ಲಂಬಸಾಲು_Aff;       /* String defining the affinity of each column */
+  ಅಭಿವ್ಯಕ್ತಿ_List *pCheck;    /* All CHECK constraints */
                        /*   ... also used as column name list in a VIEW */
   Pgno tnum;           /* Root BTree page for this table */
   u32 nTabRef;         /* Number of pointers to this Table */
   u32 tabFlags;        /* Mask of TF_* values */
   i16 iPKey;           /* If not negative, use aCol[iPKey] as the rowid */
-  i16 nCol;            /* Number of columns in this table */
+  i16 n_ಲಂಬಸಾಲು;            /* Number of columns in this table */
   i16 nNVCol;          /* Number of columns that are not VIRTUAL */
-  LogEst nRowLogEst;   /* Estimated rows in table - from sqlite_stat1 table */
-  LogEst szTabRow;     /* Estimated size of each table row in bytes */
-#ifdef SQLITE_ENABLE_COSTMULT
-  LogEst costMult;     /* Cost multiplier for using this table */
-#endif
-  u8 keyConf;          /* What to do in case of uniqueness conflict on iPKey */
+  LogEst n_ಅಡ್ಡಸಾಲು_Log_Est;   /* Estimated rows in table - from sqlite_stat1 table */
+  LogEst sz_Tab_ಅಡ್ಡಸಾಲು;     /* Estimated size of each table row in bytes */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_COSTMULT
+  LogEst ವೆಚ್ಚ_Mult;     /* Cost multiplier for using this table */
+#ಆದರೆ_ಅಂತ್ಯ
+  u8 ಕೀಲಿ_Conf;          /* What to do in case of uniqueness conflict on iPKey */
   u8 eTabType;         /* 0: normal, 1: virtual, 2: view */
-  union {
-    struct {             /* Used by ordinary tables: */
-      int addColOffset;    /* Offset in CREATE TABLE stmt to add a new column */
+  ಒಕ್ಕೂಟ {
+    ರಚನೆ {             /* Used by ordinary tables: */
+      ಪೂರ್ಣಾಂಕ ಕೂಡಿಸು_ಲಂಬಸಾಲು_ಸ್ಥಾನಾಂತರ;    /* Offset in CREATE TABLE stmt to add a new column */
       FKey *pFKey;         /* Linked list of all foreign keys in this table */
-      ExprList *pDfltList; /* DEFAULT clauses on various columns.
+      ಅಭಿವ್ಯಕ್ತಿ_List *pDfltList; /* DEFAULT clauses on various columns.
                            ** Or the AS clause for generated columns. */
     } tab;
-    struct {             /* Used by views: */
+    ರಚನೆ {             /* Used by views: */
       Select *pSelect;     /* View definition */
     } view;
-    struct {             /* Used by virtual tables only: */
-      int nArg;            /* Number of arguments to the module */
-      char **azArg;        /* 0: module 1: schema 2: vtab name 3...: args */
+    ರಚನೆ {             /* Used by virtual tables only: */
+      ಪೂರ್ಣಾಂಕ nArg;            /* Number of arguments to the module */
+      ಅಕ್ಷರ **azArg;        /* 0: module 1: schema 2: vtab name 3...: args */
       VTable *p;           /* List of VTable objects. */
     } vtab;
   } u;
@@ -2515,49 +2515,49 @@ struct Table {
 **         TF_HasStored  == COLFLAG_STORED
 **         TF_HasHidden  == COLFLAG_HIDDEN
 */
-#define TF_Readonly       0x00000001 /* Read-only system table */
-#define TF_HasHidden      0x00000002 /* Has one or more hidden columns */
-#define TF_HasPrimaryKey  0x00000004 /* Table has a primary key */
-#define TF_Autoincrement  0x00000008 /* Integer primary key is autoincrement */
-#define TF_HasStat1       0x00000010 /* nRowLogEst set from sqlite_stat1 */
-#define TF_HasVirtual     0x00000020 /* Has one or more VIRTUAL columns */
-#define TF_HasStored      0x00000040 /* Has one or more STORED columns */
-#define TF_HasGenerated   0x00000060 /* Combo: HasVirtual + HasStored */
-#define TF_WithoutRowid   0x00000080 /* No rowid.  PRIMARY KEY is the key */
-#define TF_MaybeReanalyze 0x00000100 /* Maybe run ANALYZE on this table */
-#define TF_NoVisibleRowid 0x00000200 /* No user-visible "rowid" column */
-#define TF_OOOHidden      0x00000400 /* Out-of-Order hidden columns */
-#define TF_HasNotNull     0x00000800 /* Contains NOT NULL constraints */
-#define TF_Shadow         0x00001000 /* True for a shadow table */
-#define TF_HasStat4       0x00002000 /* STAT4 info available for this table */
-#define TF_Ephemeral      0x00004000 /* An ephemeral table */
-#define TF_Eponymous      0x00008000 /* An eponymous virtual table */
-#define TF_Strict         0x00010000 /* STRICT mode */
-#define TF_Imposter       0x00020000 /* An imposter table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Readonly       0x00000001 /* Read-only system table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_HasHidden      0x00000002 /* Has one or more hidden columns */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Has_Primary_ಕೀಲಿ  0x00000004 /* Table has a primary key */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Autoincrement  0x00000008 /* Integer primary key is autoincrement */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_HasStat1       0x00000010 /* nRowLogEst set from sqlite_stat1 */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_HasVirtual     0x00000020 /* Has one or more VIRTUAL columns */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_HasStored      0x00000040 /* Has one or more STORED columns */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_HasGenerated   0x00000060 /* Combo: HasVirtual + HasStored */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_WithoutRowid   0x00000080 /* No rowid.  PRIMARY KEY is the key */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_MaybeReanalyze 0x00000100 /* Maybe run ANALYZE on this table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_NoVisibleRowid 0x00000200 /* No user-visible "rowid" column */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_OOOHidden      0x00000400 /* Out-of-Order hidden columns */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_HasNotNull     0x00000800 /* Contains NOT NULL constraints */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Shadow         0x00001000 /* True for a shadow table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_HasStat4       0x00002000 /* STAT4 info available for this table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Ephemeral      0x00004000 /* An ephemeral table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Eponymous      0x00008000 /* An eponymous virtual table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Strict         0x00010000 /* STRICT mode */
+#ವ್ಯಾಖ್ಯಾನಿಸು TF_Imposter       0x00020000 /* An imposter table */
 
 /*
 ** Allowed values for Table.eTabType
 */
-#define TABTYP_NORM      0     /* Ordinary table */
-#define TABTYP_VTAB      1     /* Virtual table */
-#define TABTYP_VIEW      2     /* A view */
+#ವ್ಯಾಖ್ಯಾನಿಸು TABTYP_NORM      0     /* Ordinary table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TABTYP_VTAB      1     /* Virtual table */
+#ವ್ಯಾಖ್ಯಾನಿಸು TABTYP_VIEW      2     /* A view */
 
-#define IsView(X)           ((X)->eTabType==TABTYP_VIEW)
-#define IsOrdinaryTable(X)  ((X)->eTabType==TABTYP_NORM)
+#ವ್ಯಾಖ್ಯಾನಿಸು IsView(X)           ((X)->eTabType==TABTYP_VIEW)
+#ವ್ಯಾಖ್ಯಾನಿಸು Is_Ordinary_ಕೋಷ್ಟಕ(X)  ((X)->eTabType==TABTYP_NORM)
 
 /*
 ** Test to see whether or not a table is a virtual table.  This is
 ** done as a macro so that it will be optimized out when virtual
 ** table support is omitted from the build.
 */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
 #  define IsVirtual(X)      ((X)->eTabType==TABTYP_VTAB)
-#  define ExprIsVtab(X)  \
-   ((X)->op==TK_COLUMN && (X)->y.pTab->eTabType==TABTYP_VTAB)
-#else
+#  define ಅಭಿವ್ಯಕ್ತಿ_Is_Vtab(X)  \
+   ((X)->op==TK_ಸ್ತಂಭ && (X)->y.pTab->eTabType==TABTYP_VTAB)
+#ಇಲ್ಲದಿದ್ದರೆ
 #  define IsVirtual(X)      0
-#  define ExprIsVtab(X)     0
-#endif
+#  define ಅಭಿವ್ಯಕ್ತಿ_Is_Vtab(X)     0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Macros to determine if a column is hidden.  IsOrdinaryHiddenColumn()
@@ -2565,30 +2565,30 @@ struct Table {
 ** always false unless SQLITE_ENABLE_HIDDEN_COLUMNS is defined.  The
 ** IsHiddenColumn() macro is general purpose.
 */
-#if defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
-#  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
-#  define IsOrdinaryHiddenColumn(X) (((X)->colFlags & COLFLAG_HIDDEN)!=0)
-#elif !defined(SQLITE_OMIT_VIRTUALTABLE)
-#  define IsHiddenColumn(X)         (((X)->colFlags & COLFLAG_HIDDEN)!=0)
-#  define IsOrdinaryHiddenColumn(X) 0
-#else
-#  define IsHiddenColumn(X)         0
-#  define IsOrdinaryHiddenColumn(X) 0
-#endif
+#ಆದರೆ defined(SQLITE_ENABLE_HIDDEN_COLUMNS)
+#  define Is_Hidden_ಸ್ತಂಭ(X)         (((X)->ಲಂಬಸಾಲು_Flags & COLFLAG_HIDDEN)!=0)
+#  define Is_Ordinary_Hidden_ಸ್ತಂಭ(X) (((X)->ಲಂಬಸಾಲು_Flags & COLFLAG_HIDDEN)!=0)
+#ಅಥವಾಆದರೆ !defined(SQLITE_OMIT_VIRTUALTABLE)
+#  define Is_Hidden_ಸ್ತಂಭ(X)         (((X)->ಲಂಬಸಾಲು_Flags & COLFLAG_HIDDEN)!=0)
+#  define Is_Ordinary_Hidden_ಸ್ತಂಭ(X) 0
+#ಇಲ್ಲದಿದ್ದರೆ
+#  define Is_Hidden_ಸ್ತಂಭ(X)         0
+#  define Is_Ordinary_Hidden_ಸ್ತಂಭ(X) 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /* Does the table have a rowid */
-#define HasRowid(X)     (((X)->tabFlags & TF_WithoutRowid)==0)
-#define VisibleRowid(X) (((X)->tabFlags & TF_NoVisibleRowid)==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು HasRowid(X)     (((X)->tabFlags & TF_WithoutRowid)==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು VisibleRowid(X) (((X)->tabFlags & TF_NoVisibleRowid)==0)
 
 /* Macro is true if the SQLITE_ALLOW_ROWID_IN_VIEW (mis-)feature is
 ** available.  By default, this macro is false
 */
-#ifndef SQLITE_ALLOW_ROWID_IN_VIEW
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_ALLOW_ROWID_ಒಳ_VIEW
 # define ViewCanHaveRowid     0
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define ViewCanHaveRowid     (sqlite3Config.mNoVisibleRowid==0)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Each foreign key constraint is an instance of the following structure.
@@ -2618,26 +2618,26 @@ struct Table {
 ** A list of all children for a table named Z (which might not even exist)
 ** is held in Schema.fkeyHash with a hash key of Z.
 */
-struct FKey {
-  Table *pFrom;     /* Table containing the REFERENCES clause (aka: Child) */
-  FKey *pNextFrom;  /* Next FKey with the same in pFrom. Next parent of pFrom */
-  char *zTo;        /* Name of table that the key points to (aka: Parent) */
-  FKey *pNextTo;    /* Next with the same zTo. Next child of zTo. */
-  FKey *pPrevTo;    /* Previous with the same zTo */
-  int nCol;         /* Number of columns in this key */
+ರಚನೆ FKey {
+  ಕೋಷ್ಟಕ *pFrom;     /* Table containing the REFERENCES clause (aka: Child) */
+  FKey *p_ಮುಂದಿನ_From;  /* Next FKey with the same in pFrom. Next parent of pFrom */
+  ಅಕ್ಷರ *z_ಗಮ್ಯ;        /* Name of table that the key points to (aka: Parent) */
+  FKey *p_ಮುಂದಿನ_ಗಮ್ಯ;    /* Next with the same zTo. Next child of zTo. */
+  FKey *p_Prev_ಗಮ್ಯ;    /* Previous with the same zTo */
+  ಪೂರ್ಣಾಂಕ n_ಲಂಬಸಾಲು;         /* Number of columns in this key */
   /* EV: R-30323-21917 */
   u8 isDeferred;       /* True if constraint checking is deferred till COMMIT */
   u8 aAction[2];        /* ON DELETE and ON UPDATE actions, respectively */
   Trigger *apTrigger[2];/* Triggers for aAction[] actions */
-  struct sColMap {      /* Mapping of columns in pFrom to columns in zTo */
-    int iFrom;            /* Index of column in pFrom */
-    char *zCol;           /* Name of column in zTo.  If NULL use PRIMARY KEY */
-  } aCol[FLEXARRAY];      /* One entry for each of nCol columns */
+  ರಚನೆ s_ಲಂಬಸಾಲು_Map {      /* Mapping of columns in pFrom to columns in zTo */
+    ಪೂರ್ಣಾಂಕ iFrom;            /* Index of column in pFrom */
+    ಅಕ್ಷರ *z_ಲಂಬಸಾಲು;           /* Name of column in zTo.  If NULL use PRIMARY KEY */
+  } a_ಲಂಬಸಾಲು[FLEXARRAY];      /* One entry for each of nCol columns */
 };
 
 /* The size (in bytes) of an FKey object holding N columns.  The answer
 ** does NOT include space to hold the zTo name. */
-#define SZ_FKEY(N)  (offsetof(FKey,aCol)+(N)*sizeof(struct sColMap))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_FKEY(N)  (offsetof(FKey,a_ಲಂಬಸಾಲು)+(N)*ಗಾತ್ರ(ರಚನೆ s_ಲಂಬಸಾಲು_Map))
 
 /*
 ** SQLite supports many different ways to resolve a constraint
@@ -2670,18 +2670,18 @@ struct FKey {
 ** The following symbolic values are used to record which type
 ** of conflict resolution action to take.
 */
-#define OE_None     0   /* There is no constraint to check */
-#define OE_Rollback 1   /* Fail the operation and rollback the transaction */
-#define OE_Abort    2   /* Back out changes but do no rollback transaction */
-#define OE_Fail     3   /* Stop the operation but leave all prior changes */
-#define OE_Ignore   4   /* Ignore the error. Do not do the INSERT or UPDATE */
-#define OE_Replace  5   /* Delete existing record, then do INSERT or UPDATE */
-#define OE_Update   6   /* Process as a DO UPDATE in an upsert */
-#define OE_Restrict 7   /* OE_Abort for IMMEDIATE, OE_Rollback for DEFERRED */
-#define OE_SetNull  8   /* Set the foreign key value to NULL */
-#define OE_SetDflt  9   /* Set the foreign key value to its default */
-#define OE_Cascade  10  /* Cascade the changes */
-#define OE_Default  11  /* Do whatever the default action is */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_None     0   /* There is no constraint to check */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Rollback 1   /* Fail the operation and rollback the transaction */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Abort    2   /* Back out changes but do no rollback transaction */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Fail     3   /* Stop the operation but leave all prior changes */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Ignore   4   /* Ignore the error. Do not do the INSERT or UPDATE */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Replace  5   /* Delete existing record, then do INSERT or UPDATE */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Update   6   /* Process as a DO UPDATE in an upsert */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Restrict 7   /* OE_Abort for IMMEDIATE, OE_Rollback for DEFERRED */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_ಗಣ_Null  8   /* Set the foreign key value to NULL */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_ಗಣ_Dflt  9   /* Set the foreign key value to its default */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Cascade  10  /* Cascade the changes */
+#ವ್ಯಾಖ್ಯಾನಿಸು OE_Default  11  /* Do whatever the default action is */
 
 
 /*
@@ -2699,33 +2699,33 @@ struct FKey {
 ** is NULL, then nAllField is uninitialized and no space is allocated for
 ** aColl[], so those fields may not be used.
 */
-struct KeyInfo {
+ರಚನೆ ಕೀಲಿ_Info {
   u32 nRef;           /* Number of references to this KeyInfo object */
   u8 enc;             /* Text encoding - one of the SQLITE_UTF* values */
-  u16 nKeyField;      /* Number of key columns in the index */
-  u16 nAllField;      /* Total columns, including key plus others */
+  u16 n_ಕೀಲಿ_ಕ್ಷೇತ್ರ;      /* Number of key columns in the index */
+  u16 n_All_ಕ್ಷೇತ್ರ;      /* Total columns, including key plus others */
   sqlite3 *db;        /* The database connection */
-  u8 *aSortFlags;     /* Sort order for each column. */
+  u8 *a_ವಿಂಗಡಿಸು_Flags;     /* Sort order for each column. */
   CollSeq *aColl[FLEXARRAY]; /* Collating sequence for each term of the key */
 };
 
 /* The size (in bytes) of a KeyInfo object with up to N fields.  This includes
 ** the main body of the KeyInfo object and the aColl[] array of N elements,
 ** but does not count the memory used to hold aSortFlags[]. */
-#define SZ_KEYINFO(N)  (offsetof(KeyInfo,aColl) + (N)*sizeof(CollSeq*))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_KEYINFO(N)  (offsetof(ಕೀಲಿ_Info,aColl) + (N)*ಗಾತ್ರ(CollSeq*))
 
 /* The size of a bare KeyInfo with no aColl[] entries */
-#if FLEXARRAY+1 > 1
-# define SZ_KEYINFO_0   offsetof(KeyInfo,aColl)
-#else
-# define SZ_KEYINFO_0   sizeof(KeyInfo)
-#endif
+#ಆದರೆ FLEXARRAY+1 > 1
+# define SZ_KEYINFO_0   offsetof(ಕೀಲಿ_Info,aColl)
+#ಇಲ್ಲದಿದ್ದರೆ
+# define SZ_KEYINFO_0   ಗಾತ್ರ(ಕೀಲಿ_Info)
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Allowed bit values for entries in the KeyInfo.aSortFlags[] array.
 */
-#define KEYINFO_ORDER_DESC    0x01    /* DESC sort order */
-#define KEYINFO_ORDER_BIGNULL 0x02    /* NULL is larger than any other value */
+#ವ್ಯಾಖ್ಯಾನಿಸು KEYINFO_ಕ್ರಮ_DESC    0x01    /* DESC sort order */
+#ವ್ಯಾಖ್ಯಾನಿಸು KEYINFO_ಕ್ರಮ_BIGNULL 0x02    /* NULL is larger than any other value */
 
 /*
 ** This object holds a record which has been parsed out into individual
@@ -2761,20 +2761,20 @@ struct KeyInfo {
 ** eqSeen field will indicate whether or not an exact match exists in the
 ** b-tree.
 */
-struct UnpackedRecord {
-  KeyInfo *pKeyInfo;  /* Comparison info for the index that is unpacked */
+ರಚನೆ Unpacked_ದಾಖಲೆ {
+  ಕೀಲಿ_Info *p_ಕೀಲಿ_Info;  /* Comparison info for the index that is unpacked */
   Mem *aMem;          /* Values for columns of the index */
-  union {
-    char *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
+  ಒಕ್ಕೂಟ {
+    ಅಕ್ಷರ *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
     i64 i;              /* Cache of aMem[0].u.i for vdbeRecordCompareInt() */
   } u;
-  int n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
-  u16 nField;         /* Number of entries in apMem[] */
+  ಪೂರ್ಣಾಂಕ n;              /* Cache of aMem[0].n used by vdbeRecordCompareString() */
+  u16 n_ಕ್ಷೇತ್ರ;         /* Number of entries in apMem[] */
   i8 default_rc;      /* Comparison result if keys are equal */
-  u8 errCode;         /* Error detected by xRecordCompare (CORRUPT or NOMEM) */
+  u8 err_ಸಂಕೇತ;         /* Error detected by xRecordCompare (CORRUPT or NOMEM) */
   i8 r1;              /* Value to return if (lhs < rhs) */
   i8 r2;              /* Value to return if (lhs > rhs) */
-  u8 eqSeen;          /* True if an equality comparison has been seen */
+  u8 eq_ನೋಡಿದ;          /* True if an equality comparison has been seen */
 };
 
 
@@ -2824,75 +2824,75 @@ struct UnpackedRecord {
 ** number (it cannot - the database page is not allocated until the VDBE
 ** program is executed). See convertToWithoutRowidTable() for details.
 */
-struct Index {
-  char *zName;             /* Name of this index */
-  i16 *aiColumn;           /* Which columns are used by this index.  1st is 0 */
-  LogEst *aiRowLogEst;     /* From ANALYZE: Est. rows selected by each column */
-  Table *pTable;           /* The SQL table being indexed */
-  char *zColAff;           /* String defining the affinity of each column */
-  Index *pNext;            /* The next index associated with the same table */
+ರಚನೆ ಸೂಚ್ಯಂಕ {
+  ಅಕ್ಷರ *zName;             /* Name of this index */
+  i16 *ai_ಸ್ತಂಭ;           /* Which columns are used by this index.  1st is 0 */
+  LogEst *ai_ಅಡ್ಡಸಾಲು_Log_Est;     /* From ANALYZE: Est. rows selected by each column */
+  ಕೋಷ್ಟಕ *p_ಕೋಷ್ಟಕ;           /* The SQL table being indexed */
+  ಅಕ್ಷರ *z_ಲಂಬಸಾಲು_Aff;           /* String defining the affinity of each column */
+  ಸೂಚ್ಯಂಕ *p_ಮುಂದಿನ;            /* The next index associated with the same table */
   Schema *pSchema;         /* Schema containing this index */
-  u8 *aSortOrder;          /* for each column: True==DESC, False==ASC */
-  const char **azColl;     /* Array of collation sequence names for index */
-  Expr *pPartIdxWhere;     /* WHERE clause for partial indices */
-  ExprList *aColExpr;      /* Column expressions */
+  u8 *a_ವಿಂಗಡಿಸು_ಕ್ರಮ;          /* for each column: True==DESC, False==ASC */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **azColl;     /* Array of collation sequence names for index */
+  ಅಭಿವ್ಯಕ್ತಿ *pPartIdxWhere;     /* WHERE clause for partial indices */
+  ಅಭಿವ್ಯಕ್ತಿ_List *a_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ;      /* Column expressions */
   Pgno tnum;               /* DB Page containing root of this index */
-  LogEst szIdxRow;         /* Estimated average row size in bytes */
-  u16 nKeyCol;             /* Number of columns forming the key */
-  u16 nColumn;             /* Nr columns in btree. Can be 2*Table.nCol */
+  LogEst sz_Idx_ಅಡ್ಡಸಾಲು;         /* Estimated average row size in bytes */
+  u16 n_ಕೀಲಿ_ಲಂಬಸಾಲು;             /* Number of columns forming the key */
+  u16 n_ಸ್ತಂಭ;             /* Nr columns in btree. Can be 2*Table.nCol */
   u8 onError;              /* OE_Abort, OE_Ignore, OE_Replace, or OE_None */
-  unsigned idxType:2;      /* 0:Normal 1:UNIQUE, 2:PRIMARY KEY, 3:IPK */
-  unsigned bUnordered:1;   /* Use this index for == or IN queries only */
-  unsigned uniqNotNull:1;  /* True if UNIQUE and NOT NULL for all columns */
-  unsigned isResized:1;    /* True if resizeIndexObject() has been called */
-  unsigned isCovering:1;   /* True if this is a covering index */
-  unsigned noSkipScan:1;   /* Do not try to use skip-scan if true */
-  unsigned hasStat1:1;     /* aiRowLogEst values come from sqlite_stat1 */
-  unsigned bNoQuery:1;     /* Do not use this index to optimize queries */
-  unsigned bAscKeyBug:1;   /* True if the bba7b69f9849b5bf bug applies */
-  unsigned bHasVCol:1;     /* Index references one or more VIRTUAL columns */
-  unsigned bHasExpr:1;     /* Index contains an expression, either a literal
+  ಚಿಹ್ನೆರಹಿತ idxType:2;      /* 0:Normal 1:UNIQUE, 2:PRIMARY KEY, 3:IPK */
+  ಚಿಹ್ನೆರಹಿತ bUnordered:1;   /* Use this index for == or IN queries only */
+  ಚಿಹ್ನೆರಹಿತ uniqNotNull:1;  /* True if UNIQUE and NOT NULL for all columns */
+  ಚಿಹ್ನೆರಹಿತ isResized:1;    /* True if resizeIndexObject() has been called */
+  ಚಿಹ್ನೆರಹಿತ isCovering:1;   /* True if this is a covering index */
+  ಚಿಹ್ನೆರಹಿತ no_Skip_ಪರಿಶೀಲನೆ:1;   /* Do not try to use skip-scan if true */
+  ಚಿಹ್ನೆರಹಿತ hasStat1:1;     /* aiRowLogEst values come from sqlite_stat1 */
+  ಚಿಹ್ನೆರಹಿತ bNoQuery:1;     /* Do not use this index to optimize queries */
+  ಚಿಹ್ನೆರಹಿತ b_Asc_ಕೀಲಿ_Bug:1;   /* True if the bba7b69f9849b5bf bug applies */
+  ಚಿಹ್ನೆರಹಿತ bHasVCol:1;     /* Index references one or more VIRTUAL columns */
+  ಚಿಹ್ನೆರಹಿತ b_Has_ಅಭಿವ್ಯಕ್ತಿ:1;     /* Index contains an expression, either a literal
                            ** expression, or a reference to a VIRTUAL column */
-#ifdef SQLITE_ENABLE_STAT4
-  int nSample;             /* Number of elements in aSample[] */
-  int mxSample;            /* Number of slots allocated to aSample[] */
-  int nSampleCol;          /* Size of IndexSample.anEq[] and so on */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_STAT4
+  ಪೂರ್ಣಾಂಕ nSample;             /* Number of elements in aSample[] */
+  ಪೂರ್ಣಾಂಕ mxSample;            /* Number of slots allocated to aSample[] */
+  ಪೂರ್ಣಾಂಕ n_Sample_ಲಂಬಸಾಲು;          /* Size of IndexSample.anEq[] and so on */
   tRowcnt *aAvgEq;         /* Average nEq values for keys not in aSample */
-  IndexSample *aSample;    /* Samples of the left-most key */
-  tRowcnt *aiRowEst;       /* Non-logarithmic stat1 data for this index */
-  tRowcnt nRowEst0;        /* Non-logarithmic number of rows in the index */
-#endif
-  Bitmask colNotIdxed;     /* Unindexed columns in pTab */
+  ಸೂಚ್ಯಂಕ_Sample *aSample;    /* Samples of the left-most key */
+  tRowcnt *ai_ಅಡ್ಡಸಾಲು_Est;       /* Non-logarithmic stat1 data for this index */
+  tRowcnt n_ಅಡ್ಡಸಾಲು_Est0;        /* Non-logarithmic number of rows in the index */
+#ಆದರೆ_ಅಂತ್ಯ
+  Bitmask ಲಂಬಸಾಲು_Not_Idxed;     /* Unindexed columns in pTab */
 };
 
 /*
 ** Allowed values for Index.idxType
 */
-#define SQLITE_IDXTYPE_APPDEF      0   /* Created using CREATE INDEX */
-#define SQLITE_IDXTYPE_UNIQUE      1   /* Implements a UNIQUE constraint */
-#define SQLITE_IDXTYPE_PRIMARYKEY  2   /* Is the PRIMARY KEY for the table */
-#define SQLITE_IDXTYPE_IPK         3   /* INTEGER PRIMARY KEY index */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_IDXTYPE_APPDEF      0   /* Created using CREATE INDEX */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_IDXTYPE_UNIQUE      1   /* Implements a UNIQUE constraint */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_IDXTYPE_PRIMARYKEY  2   /* Is the PRIMARY KEY for the table */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_IDXTYPE_IPK         3   /* INTEGER PRIMARY KEY index */
 
 /* Return true if index X is a PRIMARY KEY index */
-#define IsPrimaryKeyIndex(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
+#ವ್ಯಾಖ್ಯಾನಿಸು Is_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
 
 /* Return true if index X is a UNIQUE index */
-#define IsUniqueIndex(X)      ((X)->onError!=OE_None)
+#ವ್ಯಾಖ್ಯಾನಿಸು Is_Unique_ಸೂಚ್ಯಂಕ(X)      ((X)->onError!=OE_None)
 
 /* The Index.aiColumn[] values are normally positive integer.  But
 ** there are some negative values that have special meaning:
 */
-#define XN_ROWID     (-1)     /* Indexed column is the rowid */
-#define XN_EXPR      (-2)     /* Indexed column is an expression */
+#ವ್ಯಾಖ್ಯಾನಿಸು XN_ROWID     (-1)     /* Indexed column is the rowid */
+#ವ್ಯಾಖ್ಯಾನಿಸು XN_ಅಭಿವ್ಯಕ್ತಿ      (-2)     /* Indexed column is an expression */
 
 /*
 ** Each sample stored in the sqlite_stat4 table is represented in memory
 ** using a structure of this type.  See documentation at the top of the
 ** analyze.c source file for additional information.
 */
-struct IndexSample {
-  void *p;          /* Pointer to sampled record */
-  int n;            /* Size of record in bytes */
+ರಚನೆ ಸೂಚ್ಯಂಕ_Sample {
+  ಶೂನ್ಯ *p;          /* Pointer to sampled record */
+  ಪೂರ್ಣಾಂಕ n;            /* Size of record in bytes */
   tRowcnt *anEq;    /* Est. number of rows where the key equals this sample */
   tRowcnt *anLt;    /* Est. number of rows where key is less than this sample */
   tRowcnt *anDLt;   /* Est. number of distinct keys less than this sample */
@@ -2901,8 +2901,8 @@ struct IndexSample {
 /*
 ** Possible values to use within the flags argument to sqlite3GetToken().
 */
-#define SQLITE_TOKEN_QUOTED    0x1 /* Token is a quoted identifier. */
-#define SQLITE_TOKEN_KEYWORD   0x2 /* Token is a keyword. */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TOKEN_QUOTED    0x1 /* Token is a quoted identifier. */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_TOKEN_KEYWORD   0x2 /* Token is a keyword. */
 
 /*
 ** Each token coming out of the lexer is an instance of
@@ -2914,9 +2914,9 @@ struct IndexSample {
 ** in the middle of the Parse.zSql text.  But it might also point to a
 ** static string.
 */
-struct Token {
-  const char *z;     /* Text of the token.  Not NULL-terminated! */
-  unsigned int n;    /* Number of characters in this token */
+ರಚನೆ Token {
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z;     /* Text of the token.  Not NULL-terminated! */
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ n;    /* Number of characters in this token */
 };
 
 /*
@@ -2932,42 +2932,42 @@ struct Token {
 ** original Select structure that describes the SELECT statement.  These
 ** fields do not need to be freed when deallocating the AggInfo structure.
 */
-struct AggInfo {
-  u8 directMode;          /* Direct rendering mode means take data directly
+ರಚನೆ AggInfo {
+  u8 ನೇರ_ಬಹುಲಕ;          /* Direct rendering mode means take data directly
                           ** from source tables rather than from accumulators */
-  u8 useSortingIdx;       /* In direct mode, reference the sorting index rather
+  u8 use_ವಿಂಗಡಣೆ_Idx;       /* In direct mode, reference the sorting index rather
                           ** than the source table */
-  u32 nSortingColumn;     /* Number of columns in the sorting index */
-  int sortingIdx;         /* Cursor number of the sorting index */
-  int sortingIdxPTab;     /* Cursor number of pseudo-table */
-  int iFirstReg;          /* First register in range for aCol[] and aFunc[] */
-  ExprList *pGroupBy;     /* The group by clause */
-  struct AggInfo_col {    /* For each column used in source tables */
-    Table *pTab;             /* Source table */
-    Expr *pCExpr;            /* The original expression */
-    int iTable;              /* Cursor number of the source table */
-    int iColumn;             /* Column number within the source table */
-    int iSorterColumn;       /* Column number in the sorting index */
-  } *aCol;
-  int nColumn;            /* Number of used entries in aCol[] */
-  int nAccumulator;       /* Number of columns that show through to the output.
+  u32 n_ವಿಂಗಡಣೆ_ಸ್ತಂಭ;     /* Number of columns in the sorting index */
+  ಪೂರ್ಣಾಂಕ ವಿಂಗಡಣೆ_Idx;         /* Cursor number of the sorting index */
+  ಪೂರ್ಣಾಂಕ ವಿಂಗಡಣೆ_Idx_PTab;     /* Cursor number of pseudo-table */
+  ಪೂರ್ಣಾಂಕ i_ಮೊದಲ_Reg;          /* First register in range for aCol[] and aFunc[] */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ಗುಂಪು_By;     /* The group by clause */
+  ರಚನೆ Agg_Info_ಲಂಬಸಾಲು {    /* For each column used in source tables */
+    ಕೋಷ್ಟಕ *pTab;             /* Source table */
+    ಅಭಿವ್ಯಕ್ತಿ *pCExpr;            /* The original expression */
+    ಪೂರ್ಣಾಂಕ i_ಕೋಷ್ಟಕ;              /* Cursor number of the source table */
+    ಪೂರ್ಣಾಂಕ i_ಸ್ತಂಭ;             /* Column number within the source table */
+    ಪೂರ್ಣಾಂಕ i_Sorter_ಸ್ತಂಭ;       /* Column number in the sorting index */
+  } *a_ಲಂಬಸಾಲು;
+  ಪೂರ್ಣಾಂಕ n_ಸ್ತಂಭ;            /* Number of used entries in aCol[] */
+  ಪೂರ್ಣಾಂಕ n_ಸಂಚಯಕ;       /* Number of columns that show through to the output.
                           ** Additional columns are used only as parameters to
                           ** aggregate functions */
-  struct AggInfo_func {   /* For each aggregate function */
-    Expr *pFExpr;            /* Expression encoding the function */
+  ರಚನೆ AggInfo_func {   /* For each aggregate function */
+    ಅಭಿವ್ಯಕ್ತಿ *pFExpr;            /* Expression encoding the function */
     FuncDef *pFunc;          /* The aggregate function implementation */
-    int iDistinct;           /* Ephemeral table used to enforce DISTINCT */
-    int iDistAddr;           /* Address of OP_OpenEphemeral */
-    int iOBTab;              /* Ephemeral table to implement ORDER BY */
+    ಪೂರ್ಣಾಂಕ iDistinct;           /* Ephemeral table used to enforce DISTINCT */
+    ಪೂರ್ಣಾಂಕ iDistAddr;           /* Address of OP_OpenEphemeral */
+    ಪೂರ್ಣಾಂಕ iOBTab;              /* Ephemeral table to implement ORDER BY */
     u8 bOBPayload;           /* iOBTab has payload columns separate from key */
     u8 bOBUnique;            /* Enforce uniqueness on iOBTab keys */
     u8 bUseSubtype;          /* Transfer subtype info through sorter */
   } *aFunc;
-  int nFunc;              /* Number of entries in aFunc[] */
+  ಪೂರ್ಣಾಂಕ nFunc;              /* Number of entries in aFunc[] */
   u32 selId;              /* Select to which this AggInfo belongs */
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
   Select *pSelect;        /* SELECT statement that this AggInfo supports */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 };
 
 /*
@@ -2977,15 +2977,15 @@ struct AggInfo {
 ** assignAggregateRegisters() that computes the value of pAggInfo->iFirstReg.
 ** The assert()s that are part of this macro verify that constraint.
 */
-#ifndef NDEBUG
-#define AggInfoColumnReg(A,I)  (assert((A)->iFirstReg),(A)->iFirstReg+(I))
-#define AggInfoFuncReg(A,I)    \
-                      (assert((A)->iFirstReg),(A)->iFirstReg+(A)->nColumn+(I))
-#else
-#define AggInfoColumnReg(A,I)  ((A)->iFirstReg+(I))
-#define AggInfoFuncReg(A,I)    \
-                      ((A)->iFirstReg+(A)->nColumn+(I))
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ NDEBUG
+#ವ್ಯಾಖ್ಯಾನಿಸು Agg_Info_ಸ್ತಂಭ_Reg(A,I)  (ಪ್ರತಿಜ್ಞಾ((A)->i_ಮೊದಲ_Reg),(A)->i_ಮೊದಲ_Reg+(I))
+#ವ್ಯಾಖ್ಯಾನಿಸು AggInfoFuncReg(A,I)    \
+                      (ಪ್ರತಿಜ್ಞಾ((A)->i_ಮೊದಲ_Reg),(A)->i_ಮೊದಲ_Reg+(A)->n_ಸ್ತಂಭ+(I))
+#ಇಲ್ಲದಿದ್ದರೆ
+#ವ್ಯಾಖ್ಯಾನಿಸು Agg_Info_ಸ್ತಂಭ_Reg(A,I)  ((A)->i_ಮೊದಲ_Reg+(I))
+#ವ್ಯಾಖ್ಯಾನಿಸು AggInfoFuncReg(A,I)    \
+                      ((A)->i_ಮೊದಲ_Reg+(A)->n_ಸ್ತಂಭ+(I))
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The datatype ynVar is a signed integer, either 16-bit or 32-bit.
@@ -2997,11 +2997,11 @@ struct AggInfo {
 ** to have prepared statements with over 32766 variables, and for them
 ** the option is available (at compile-time).
 */
-#if SQLITE_MAX_VARIABLE_NUMBER<32767
-typedef i16 ynVar;
-#else
-typedef int ynVar;
-#endif
+#ಆದರೆ SQLITE_MAX_VARIABLE_ಸಂಖ್ಯೆ<32767
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ i16 ynVar;
+#ಇಲ್ಲದಿದ್ದರೆ
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಪೂರ್ಣಾಂಕ ynVar;
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Each node of an expression in the parse tree is an instance
@@ -3066,20 +3066,20 @@ typedef int ynVar;
 ** the subtrees in Expr.x.pList or Expr.x.pSelect are always separately
 ** allocated, regardless of whether or not EP_Reduced is set.
 */
-struct Expr {
+ರಚನೆ ಅಭಿವ್ಯಕ್ತಿ {
   u8 op;                 /* Operation performed by this node */
-  char affExpr;          /* affinity, or RAISE type */
+  ಅಕ್ಷರ aff_ಅಭಿವ್ಯಕ್ತಿ;          /* affinity, or RAISE type */
   u8 op2;                /* TK_REGISTER/TK_TRUTH: original value of Expr.op
                          ** TK_COLUMN: the value of p5 for OP_Column
                          ** TK_AGG_FUNCTION: nesting depth
                          ** TK_FUNCTION: NC_SelfRef flag if needs OP_PureFunc */
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
   u8 vvaFlags;           /* Verification flags. */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   u32 flags;             /* Various flags.  EP_* See below */
-  union {
-    char *zToken;          /* Token value. Zero terminated and dequoted */
-    int iValue;            /* Non-negative integer value if EP_IntValue */
+  ಒಕ್ಕೂಟ {
+    ಅಕ್ಷರ *zToken;          /* Token value. Zero terminated and dequoted */
+    ಪೂರ್ಣಾಂಕ i_ಮೌಲ್ಯ;            /* Non-negative integer value if EP_IntValue */
   } u;
 
   /* If the EP_TokenOnly flag is set in the Expr.flags mask, then no
@@ -3087,10 +3087,10 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-  Expr *pLeft;           /* Left subnode */
-  Expr *pRight;          /* Right subnode */
-  union {
-    ExprList *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಎಡ;           /* Left subnode */
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಬಲ;          /* Right subnode */
+  ಒಕ್ಕೂಟ {
+    ಅಭಿವ್ಯಕ್ತಿ_List *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
     Select *pSelect;     /* EP_xIsSelect and op = IN, EXISTS, SELECT */
   } x;
 
@@ -3099,33 +3099,33 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int nHeight;           /* Height of the tree headed by this node */
-#endif
-  int iTable;            /* TK_COLUMN: cursor number of table holding column
+#ಆದರೆ SQLITE_MAX_ಅಭಿವ್ಯಕ್ತಿ_ಆಳ>0
+  ಪೂರ್ಣಾಂಕ n_ಎತ್ತರ;           /* Height of the tree headed by this node */
+#ಆದರೆ_ಅಂತ್ಯ
+  ಪೂರ್ಣಾಂಕ i_ಕೋಷ್ಟಕ;            /* TK_COLUMN: cursor number of table holding column
                          ** TK_REGISTER: register number
                          ** TK_TRIGGER: 1 -> new, 0 -> old
                          ** EP_Unlikely:  134217728 times likelihood
                          ** TK_IN: ephemeral table holding RHS
                          ** TK_SELECT_COLUMN: Number of columns on the LHS
                          ** TK_SELECT: 1st register of result vector */
-  ynVar iColumn;         /* TK_COLUMN: column index.  -1 for rowid.
+  ynVar i_ಸ್ತಂಭ;         /* TK_COLUMN: column index.  -1 for rowid.
                          ** TK_VARIABLE: variable number (always >= 1).
                          ** TK_SELECT_COLUMN: column of the result vector */
   i16 iAgg;              /* Which entry in pAggInfo->aCol[] or ->aFunc[] */
-  union {
-    int iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
-    int iOfst;             /* else: start of token from start of statement */
+  ಒಕ್ಕೂಟ {
+    ಪೂರ್ಣಾಂಕ iJoin;             /* If EP_OuterON or EP_InnerON, the right table */
+    ಪೂರ್ಣಾಂಕ iOfst;             /* else: start of token from start of statement */
   } w;
   AggInfo *pAggInfo;     /* Used by TK_AGG_COLUMN and TK_AGG_FUNCTION */
-  union {
-    Table *pTab;           /* TK_COLUMN: Table containing column. Can be NULL
+  ಒಕ್ಕೂಟ {
+    ಕೋಷ್ಟಕ *pTab;           /* TK_COLUMN: Table containing column. Can be NULL
                            ** for a column of an index on an expression */
-    Window *pWin;          /* EP_WinFunc: Window/Filter defn for a function */
-    int nReg;              /* TK_NULLS: Number of registers to NULL out */
-    struct {               /* TK_IN, TK_SELECT, and TK_EXISTS */
-      int iAddr;             /* Subroutine entry address */
-      int regReturn;         /* Register used to hold return address */
+    ಕಿಟಕಿ *pWin;          /* EP_WinFunc: Window/Filter defn for a function */
+    ಪೂರ್ಣಾಂಕ nReg;              /* TK_NULLS: Number of registers to NULL out */
+    ರಚನೆ {               /* TK_IN, TK_SELECT, and TK_EXISTS */
+      ಪೂರ್ಣಾಂಕ iAddr;             /* Subroutine entry address */
+      ಪೂರ್ಣಾಂಕ regReturn;         /* Register used to hold return address */
     } sub;
   } y;
 };
@@ -3136,113 +3136,113 @@ struct Expr {
 **          EP_Agg == NC_HasAgg == SF_HasAgg
 **          EP_Win == NC_HasWin
 */
-#define EP_OuterON    0x000001 /* Originates in ON/USING clause of outer join */
-#define EP_InnerON    0x000002 /* Originates in ON/USING of an inner join */
-#define EP_Distinct   0x000004 /* Aggregate function with DISTINCT keyword */
-#define EP_HasFunc    0x000008 /* Contains one or more functions of any kind */
-#define EP_Agg        0x000010 /* Contains one or more aggregate functions */
-#define EP_FixedCol   0x000020 /* TK_Column with a known fixed value */
-#define EP_VarSelect  0x000040 /* pSelect is correlated, not constant */
-#define EP_DblQuoted  0x000080 /* token.z was originally in "..." */
-#define EP_InfixFunc  0x000100 /* True for an infix function: LIKE, GLOB, etc */
-#define EP_Collate    0x000200 /* Tree contains a TK_COLLATE operator */
-#define EP_Commuted   0x000400 /* Comparison operator has been commuted */
-#define EP_IntValue   0x000800 /* Integer value contained in u.iValue */
-#define EP_xIsSelect  0x001000 /* x.pSelect is valid (otherwise x.pList is) */
-#define EP_Skip       0x002000 /* Operator does not contribute to affinity */
-#define EP_Reduced    0x004000 /* Expr struct EXPR_REDUCEDSIZE bytes only */
-#define EP_Win        0x008000 /* Contains window functions */
-#define EP_TokenOnly  0x010000 /* Expr struct EXPR_TOKENONLYSIZE bytes only */
-#define EP_FullSize   0x020000 /* Expr structure must remain full sized */
-#define EP_IfNullRow  0x040000 /* The TK_IF_NULL_ROW opcode */
-#define EP_Unlikely   0x080000 /* unlikely() or likelihood() function */
-#define EP_ConstFunc  0x100000 /* A SQLITE_FUNC_CONSTANT or _SLOCHNG function */
-#define EP_CanBeNull  0x200000 /* Can be null despite NOT NULL constraint */
-#define EP_Subquery   0x400000 /* Tree contains a TK_SELECT operator */
-#define EP_Leaf       0x800000 /* Expr.pLeft, .pRight, .u.pSelect all NULL */
-#define EP_WinFunc   0x1000000 /* TK_FUNCTION with Expr.y.pWin set */
-#define EP_Subrtn    0x2000000 /* Uses Expr.y.sub. TK_IN, _SELECT, or _EXISTS */
-#define EP_Quoted    0x4000000 /* TK_ID was originally quoted */
-#define EP_Static    0x8000000 /* Held in memory not obtained from malloc() */
-#define EP_IsTrue   0x10000000 /* Always has boolean value of TRUE */
-#define EP_IsFalse  0x20000000 /* Always has boolean value of FALSE */
-#define EP_FromDDL  0x40000000 /* Originates from sqlite_schema */
-#define EP_SubtArg  0x80000000 /* Is argument to SQLITE_SUBTYPE function */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_OuterON    0x000001 /* Originates in ON/USING clause of outer join */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_InnerON    0x000002 /* Originates in ON/USING of an inner join */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Distinct   0x000004 /* Aggregate function with DISTINCT keyword */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_HasFunc    0x000008 /* Contains one or more functions of any kind */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Agg        0x000010 /* Contains one or more aggregate functions */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Fixed_ಲಂಬಸಾಲು   0x000020 /* TK_Column with a known fixed value */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_VarSelect  0x000040 /* pSelect is correlated, not constant */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_DblQuoted  0x000080 /* token.z was originally in "..." */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_InfixFunc  0x000100 /* True for an infix function: LIKE, GLOB, etc */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Collate    0x000200 /* Tree contains a TK_COLLATE operator */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Commuted   0x000400 /* Comparison operator has been commuted */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Int_ಮೌಲ್ಯ   0x000800 /* Integer value contained in u.iValue */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_xIsSelect  0x001000 /* x.pSelect is valid (otherwise x.pList is) */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Skip       0x002000 /* Operator does not contribute to affinity */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Reduced    0x004000 /* Expr struct EXPR_REDUCEDSIZE bytes only */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Win        0x008000 /* Contains window functions */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_TokenOnly  0x010000 /* Expr struct EXPR_TOKENONLYSIZE bytes only */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_ತುಂಬಿದ_ಗಾತ್ರ   0x020000 /* Expr structure must remain full sized */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_If_Null_ಅಡ್ಡಸಾಲು  0x040000 /* The TK_IF_NULL_ROW opcode */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Unlikely   0x080000 /* unlikely() or likelihood() function */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_ConstFunc  0x100000 /* A SQLITE_FUNC_CONSTANT or _SLOCHNG function */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_CanBeNull  0x200000 /* Can be null despite NOT NULL constraint */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Subquery   0x400000 /* Tree contains a TK_SELECT operator */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_ಎಲೆ       0x800000 /* Expr.pLeft, .pRight, .u.pSelect all NULL */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_WinFunc   0x1000000 /* TK_FUNCTION with Expr.y.pWin set */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Subrtn    0x2000000 /* Uses Expr.y.sub. TK_IN, _SELECT, or _EXISTS */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Quoted    0x4000000 /* TK_ID was originally quoted */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Static    0x8000000 /* Held in memory not obtained from malloc() */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_IsTrue   0x10000000 /* Always has boolean value of TRUE */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_IsFalse  0x20000000 /* Always has boolean value of FALSE */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_FromDDL  0x40000000 /* Originates from sqlite_schema */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_SubtArg  0x80000000 /* Is argument to SQLITE_SUBTYPE function */
 
 /* The EP_Propagate mask is a set of properties that automatically propagate
 ** upwards into parent nodes.
 */
-#define EP_Propagate (EP_Collate|EP_Subquery|EP_HasFunc)
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Propagate (EP_Collate|EP_Subquery|EP_HasFunc)
 
 /* Macros can be used to test, set, or clear bits in the
 ** Expr.flags field.
 */
-#define ExprHasProperty(E,P)     (((E)->flags&(u32)(P))!=0)
-#define ExprHasAllProperty(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
-#define ExprSetProperty(E,P)     (E)->flags|=(u32)(P)
-#define ExprClearProperty(E,P)   (E)->flags&=~(u32)(P)
-#define ExprAlwaysTrue(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
-#define ExprAlwaysFalse(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
-#define ExprIsFullSize(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Has_Property(E,P)     (((E)->flags&(u32)(P))!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Has_All_Property(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_ಗಣ_Property(E,P)     (E)->flags|=(u32)(P)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Clear_Property(E,P)   (E)->flags&=~(u32)(P)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Always_True(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Always_False(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Is_ತುಂಬಿದ_ಗಾತ್ರ(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
 
 /* Macros used to ensure that the correct members of unions are accessed
 ** in Expr.
 */
-#define ExprUseUToken(E)    (((E)->flags&EP_IntValue)==0)
-#define ExprUseUValue(E)    (((E)->flags&EP_IntValue)!=0)
-#define ExprUseWOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
-#define ExprUseWJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
-#define ExprUseXList(E)     (((E)->flags&EP_xIsSelect)==0)
-#define ExprUseXSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
-#define ExprUseYTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
-#define ExprUseYWin(E)      (((E)->flags&EP_WinFunc)!=0)
-#define ExprUseYSub(E)      (((E)->flags&EP_Subrtn)!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_UToken(E)    (((E)->flags&EP_Int_ಮೌಲ್ಯ)==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_UValue(E)    (((E)->flags&EP_Int_ಮೌಲ್ಯ)!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_WOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_WJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_XList(E)     (((E)->flags&EP_xIsSelect)==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_XSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_YTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_YWin(E)      (((E)->flags&EP_WinFunc)!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_Use_YSub(E)      (((E)->flags&EP_Subrtn)!=0)
 
 /* Flags for use with Expr.vvaFlags
 */
-#define EP_NoReduce   0x01  /* Cannot EXPRDUP_REDUCE this Expr */
-#define EP_Immutable  0x02  /* Do not change this Expr node */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_NoReduce   0x01  /* Cannot EXPRDUP_REDUCE this Expr */
+#ವ್ಯಾಖ್ಯಾನಿಸು EP_Immutable  0x02  /* Do not change this Expr node */
 
 /* The ExprSetVVAProperty() macro is used for Verification, Validation,
 ** and Accreditation only.  It works like ExprSetProperty() during VVA
 ** processes but is a no-op for delivery.
 */
-#ifdef SQLITE_DEBUG
-# define ExprSetVVAProperty(E,P)   (E)->vvaFlags|=(P)
-# define ExprHasVVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
-# define ExprClearVVAProperties(E) (E)->vvaFlags = 0
-#else
-# define ExprSetVVAProperty(E,P)
-# define ExprHasVVAProperty(E,P)   0
-# define ExprClearVVAProperties(E)
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+# define ಅಭಿವ್ಯಕ್ತಿ_ಗಣ_VVAProperty(E,P)   (E)->vvaFlags|=(P)
+# define ಅಭಿವ್ಯಕ್ತಿ_Has_VVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
+# define ಅಭಿವ್ಯಕ್ತಿ_Clear_VVAProperties(E) (E)->vvaFlags = 0
+#ಇಲ್ಲದಿದ್ದರೆ
+# define ಅಭಿವ್ಯಕ್ತಿ_ಗಣ_VVAProperty(E,P)
+# define ಅಭಿವ್ಯಕ್ತಿ_Has_VVAProperty(E,P)   0
+# define ಅಭಿವ್ಯಕ್ತಿ_Clear_VVAProperties(E)
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Macros to determine the number of bytes required by a normal Expr
 ** struct, an Expr struct with the EP_Reduced flag set in Expr.flags
 ** and an Expr struct with the EP_TokenOnly flag set.
 */
-#define EXPR_FULLSIZE           sizeof(Expr)           /* Full size */
-#define EXPR_REDUCEDSIZE        offsetof(Expr,iTable)  /* Common features */
-#define EXPR_TOKENONLYSIZE      offsetof(Expr,pLeft)   /* Fewer features */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_FULLSIZE           ಗಾತ್ರ(ಅಭಿವ್ಯಕ್ತಿ)           /* Full size */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_REDUCEDSIZE        offsetof(ಅಭಿವ್ಯಕ್ತಿ,i_ಕೋಷ್ಟಕ)  /* Common features */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಭಿವ್ಯಕ್ತಿ_TOKENONLYSIZE      offsetof(ಅಭಿವ್ಯಕ್ತಿ,p_ಎಡ)   /* Fewer features */
 
 /*
 ** Flags passed to the sqlite3ExprDup() function. See the header comment
 ** above sqlite3ExprDup() for details.
 */
-#define EXPRDUP_REDUCE         0x0001  /* Used reduced-size Expr nodes */
+#ವ್ಯಾಖ್ಯಾನಿಸು EXPRDUP_REDUCE         0x0001  /* Used reduced-size Expr nodes */
 
 /*
 ** True if the expression passed as an argument was a function with
 ** an OVER() clause (a window function).
 */
-#ifdef SQLITE_OMIT_WINDOWFUNC
-# define IsWindowFunc(p) 0
-#else
-# define IsWindowFunc(p) ( \
-    ExprHasProperty((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_WINDOWFUNC
+# define Is_ಕಿಟಕಿ_Func(p) 0
+#ಇಲ್ಲದಿದ್ದರೆ
+# define Is_ಕಿಟಕಿ_Func(p) ( \
+    ಅಭಿವ್ಯಕ್ತಿ_Has_Property((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
  )
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** A list of expressions.  Each expression may optionally have a
@@ -3266,30 +3266,30 @@ struct Expr {
 **    ENAME_SPAN       Text of the original result set
 **                     expression.
 */
-struct ExprList {
-  int nExpr;             /* Number of expressions on the list */
-  int nAlloc;            /* Number of a[] slots allocated */
-  struct ExprList_item { /* For each expression in the list */
-    Expr *pExpr;            /* The parse tree for this expression */
-    char *zEName;           /* Token associated with this expression */
-    struct {
-      u8 sortFlags;           /* Mask of KEYINFO_ORDER_* flags */
-      unsigned eEName :2;     /* Meaning of zEName */
-      unsigned done :1;       /* Indicates when processing is finished */
-      unsigned reusable :1;   /* Constant expression is reusable */
-      unsigned bSorterRef :1; /* Defer evaluation until after sorting */
-      unsigned bNulls :1;     /* True if explicit "NULLS FIRST/LAST" */
-      unsigned bUsed :1;      /* This column used in a SF_NestedFrom subquery */
-      unsigned bUsingTerm:1;  /* Term from the USING clause of a NestedFrom */
-      unsigned bNoExpand: 1;  /* Term is an auxiliary in NestedFrom and should
+ರಚನೆ ಅಭಿವ್ಯಕ್ತಿ_List {
+  ಪೂರ್ಣಾಂಕ n_ಅಭಿವ್ಯಕ್ತಿ;             /* Number of expressions on the list */
+  ಪೂರ್ಣಾಂಕ nAlloc;            /* Number of a[] slots allocated */
+  ರಚನೆ ಅಭಿವ್ಯಕ್ತಿ_List_ಅಂಶ { /* For each expression in the list */
+    ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ;            /* The parse tree for this expression */
+    ಅಕ್ಷರ *zEName;           /* Token associated with this expression */
+    ರಚನೆ {
+      u8 ವಿಂಗಡಿಸು_Flags;           /* Mask of KEYINFO_ORDER_* flags */
+      ಚಿಹ್ನೆರಹಿತ eEName :2;     /* Meaning of zEName */
+      ಚಿಹ್ನೆರಹಿತ ಮುಗಿದ :1;       /* Indicates when processing is finished */
+      ಚಿಹ್ನೆರಹಿತ reusable :1;   /* Constant expression is reusable */
+      ಚಿಹ್ನೆರಹಿತ bSorterRef :1; /* Defer evaluation until after sorting */
+      ಚಿಹ್ನೆರಹಿತ bNulls :1;     /* True if explicit "NULLS FIRST/LAST" */
+      ಚಿಹ್ನೆರಹಿತ b_ಬಳಸಿದ :1;      /* This column used in a SF_NestedFrom subquery */
+      ಚಿಹ್ನೆರಹಿತ b_Using_ಪದ:1;  /* Term from the USING clause of a NestedFrom */
+      ಚಿಹ್ನೆರಹಿತ bNoExpand: 1;  /* Term is an auxiliary in NestedFrom and should
                               ** not be expanded by "*" in parent queries */
     } fg;
-    union {
-      struct {             /* Used by any ExprList other than Parse.pConsExpr */
-        u16 iOrderByCol;      /* For ORDER BY, column number in result set */
+    ಒಕ್ಕೂಟ {
+      ರಚನೆ {             /* Used by any ExprList other than Parse.pConsExpr */
+        u16 i_ಕ್ರಮ_By_ಲಂಬಸಾಲು;      /* For ORDER BY, column number in result set */
         u16 iAlias;           /* Index into Parse.aAlias[] for zName */
       } x;
-      int iConstExprReg;   /* Register in which Expr value is cached. Used only
+      ಪೂರ್ಣಾಂಕ i_Const_ಅಭಿವ್ಯಕ್ತಿ_Reg;   /* Register in which Expr value is cached. Used only
                            ** by Parse.pConstExpr */
     } u;
   } a[FLEXARRAY];          /* One slot for each expression in the list */
@@ -3297,16 +3297,16 @@ struct ExprList {
 
 /* The size (in bytes) of an ExprList object that is big enough to hold
 ** as many as N expressions. */
-#define SZ_EXPRLIST(N)  \
-             (offsetof(ExprList,a) + (N)*sizeof(struct ExprList_item))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_EXPRLIST(N)  \
+             (offsetof(ಅಭಿವ್ಯಕ್ತಿ_List,a) + (N)*ಗಾತ್ರ(ರಚನೆ ಅಭಿವ್ಯಕ್ತಿ_List_ಅಂಶ))
 
 /*
 ** Allowed values for Expr.a.eEName
 */
-#define ENAME_NAME  0       /* The AS clause of a result set */
-#define ENAME_SPAN  1       /* Complete text of the result set expression */
-#define ENAME_TAB   2       /* "DB.TABLE.NAME" for the result set */
-#define ENAME_ROWID 3       /* "DB.TABLE._rowid_" for * expansion of rowid */
+#ವ್ಯಾಖ್ಯಾನಿಸು ENAME_NAME  0       /* The AS clause of a result set */
+#ವ್ಯಾಖ್ಯಾನಿಸು ENAME_ಹರವು  1       /* Complete text of the result set expression */
+#ವ್ಯಾಖ್ಯಾನಿಸು ENAME_TAB   2       /* "DB.TABLE.NAME" for the result set */
+#ವ್ಯಾಖ್ಯಾನಿಸು ENAME_ROWID 3       /* "DB.TABLE._rowid_" for * expansion of rowid */
 
 /*
 ** An instance of this structure can hold a simple list of identifiers,
@@ -3323,32 +3323,32 @@ struct ExprList {
 **
 ** If "a" is the k-th column of table "t", then IdList.a[0].idx==k.
 */
-struct IdList {
-  int nId;         /* Number of identifiers on the list */
-  struct IdList_item {
-    char *zName;      /* Name of the identifier */
+ರಚನೆ IdList {
+  ಪೂರ್ಣಾಂಕ nId;         /* Number of identifiers on the list */
+  ರಚನೆ Id_List_ಅಂಶ {
+    ಅಕ್ಷರ *zName;      /* Name of the identifier */
   } a[FLEXARRAY];
 };
 
 /* The size (in bytes) of an IdList object that can hold up to N IDs. */
-#define SZ_IDLIST(N)  (offsetof(IdList,a)+(N)*sizeof(struct IdList_item))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_IDLIST(N)  (offsetof(IdList,a)+(N)*ಗಾತ್ರ(ರಚನೆ Id_List_ಅಂಶ))
 
 /*
 ** Allowed values for IdList.eType, which determines which value of the a.u4
 ** is valid.
 */
-#define EU4_NONE   0   /* Does not use IdList.a.u4 */
-#define EU4_IDX    1   /* Uses IdList.a.u4.idx */
-#define EU4_EXPR   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
+#ವ್ಯಾಖ್ಯಾನಿಸು EU4_NONE   0   /* Does not use IdList.a.u4 */
+#ವ್ಯಾಖ್ಯಾನಿಸು EU4_IDX    1   /* Uses IdList.a.u4.idx */
+#ವ್ಯಾಖ್ಯಾನಿಸು EU4_ಅಭಿವ್ಯಕ್ತಿ   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
 
 /*
 ** Details of the implementation of a subquery.
 */
-struct Subquery {
+ರಚನೆ Subquery {
   Select *pSelect;  /* A SELECT statement used in place of a table name */
-  int addrFillSub;  /* Address of subroutine to initialize a subquery */
-  int regReturn;    /* Register holding return address of addrFillSub */
-  int regResult;    /* Registers holding results of a co-routine */
+  ಪೂರ್ಣಾಂಕ addrFillSub;  /* Address of subroutine to initialize a subquery */
+  ಪೂರ್ಣಾಂಕ regReturn;    /* Register holding return address of addrFillSub */
+  ಪೂರ್ಣಾಂಕ reg_ಫಲಿತಾಂಶ;    /* Registers holding results of a co-routine */
 };
 
 /*
@@ -3388,50 +3388,50 @@ struct Subquery {
 ** check invariants on the fields of this object, especially the flags
 ** inside the fg struct.
 */
-struct SrcItem {
-  char *zName;      /* Name of the table */
-  char *zAlias;     /* The "B" part of a "A AS B" phrase.  zName is the "A" */
-  Table *pSTab;     /* Table object for zName. Mnemonic: Srcitem-TABle */
-  struct {
+ರಚನೆ Src_ಅಂಶ {
+  ಅಕ್ಷರ *zName;      /* Name of the table */
+  ಅಕ್ಷರ *zAlias;     /* The "B" part of a "A AS B" phrase.  zName is the "A" */
+  ಕೋಷ್ಟಕ *pSTab;     /* Table object for zName. Mnemonic: Srcitem-TABle */
+  ರಚನೆ {
     u8 jointype;      /* Type of join between this table and the previous */
-    unsigned notIndexed :1;    /* True if there is a NOT INDEXED clause */
-    unsigned isIndexedBy :1;   /* True if there is an INDEXED BY clause */
-    unsigned isSubquery :1;    /* True if this term is a subquery */
-    unsigned isTabFunc :1;     /* True if table-valued-function syntax */
-    unsigned isCorrelated :1;  /* True if sub-query is correlated */
-    unsigned isMaterialized:1; /* This is a materialized view */
-    unsigned viaCoroutine :1;  /* Implemented as a co-routine */
-    unsigned isRecursive :1;   /* True for recursive reference in WITH */
-    unsigned fromDDL :1;       /* Comes from sqlite_schema */
-    unsigned isCte :1;         /* This is a CTE */
-    unsigned notCte :1;        /* This item may not match a CTE */
-    unsigned isUsing :1;       /* u3.pUsing is valid */
-    unsigned isOn :1;          /* u3.pOn was once valid and non-NULL */
-    unsigned isSynthUsing :1;  /* u3.pUsing is synthesized from NATURAL */
-    unsigned isNestedFrom :1;  /* pSelect is a SF_NestedFrom subquery */
-    unsigned rowidUsed :1;     /* The ROWID of this table is referenced */
-    unsigned fixedSchema :1;   /* Uses u4.pSchema, not u4.zDatabase */
-    unsigned hadSchema :1;     /* Had u4.zDatabase before u4.pSchema */
-    unsigned fromExists :1;    /* Comes from WHERE EXISTS(...) */
+    ಚಿಹ್ನೆರಹಿತ not_ಸೂಚ್ಯಂಕಿತ :1;    /* True if there is a NOT INDEXED clause */
+    ಚಿಹ್ನೆರಹಿತ is_ಸೂಚ್ಯಂಕಿತ_By :1;   /* True if there is an INDEXED BY clause */
+    ಚಿಹ್ನೆರಹಿತ isSubquery :1;    /* True if this term is a subquery */
+    ಚಿಹ್ನೆರಹಿತ isTabFunc :1;     /* True if table-valued-function syntax */
+    ಚಿಹ್ನೆರಹಿತ isCorrelated :1;  /* True if sub-query is correlated */
+    ಚಿಹ್ನೆರಹಿತ isMaterialized:1; /* This is a materialized view */
+    ಚಿಹ್ನೆರಹಿತ ಮೂಲಕ_Coroutine :1;  /* Implemented as a co-routine */
+    ಚಿಹ್ನೆರಹಿತ isRecursive :1;   /* True for recursive reference in WITH */
+    ಚಿಹ್ನೆರಹಿತ fromDDL :1;       /* Comes from sqlite_schema */
+    ಚಿಹ್ನೆರಹಿತ isCte :1;         /* This is a CTE */
+    ಚಿಹ್ನೆರಹಿತ notCte :1;        /* This item may not match a CTE */
+    ಚಿಹ್ನೆರಹಿತ isUsing :1;       /* u3.pUsing is valid */
+    ಚಿಹ್ನೆರಹಿತ isOn :1;          /* u3.pOn was once valid and non-NULL */
+    ಚಿಹ್ನೆರಹಿತ isSynthUsing :1;  /* u3.pUsing is synthesized from NATURAL */
+    ಚಿಹ್ನೆರಹಿತ isNestedFrom :1;  /* pSelect is a SF_NestedFrom subquery */
+    ಚಿಹ್ನೆರಹಿತ rowid_ಬಳಸಿದ :1;     /* The ROWID of this table is referenced */
+    ಚಿಹ್ನೆರಹಿತ fixedSchema :1;   /* Uses u4.pSchema, not u4.zDatabase */
+    ಚಿಹ್ನೆರಹಿತ hadSchema :1;     /* Had u4.zDatabase before u4.pSchema */
+    ಚಿಹ್ನೆರಹಿತ fromExists :1;    /* Comes from WHERE EXISTS(...) */
   } fg;
-  int iCursor;      /* The VDBE cursor number used to access this table */
-  Bitmask colUsed;  /* Bit N set if column N used. Details above for N>62 */
-  union {
-    char *zIndexedBy;    /* Identifier from "INDEXED BY <zIndex>" clause */
-    ExprList *pFuncArg;  /* Arguments to table-valued-function */
-    u32 nRow;            /* Number of rows in a VALUES clause */
+  ಪೂರ್ಣಾಂಕ iCursor;      /* The VDBE cursor number used to access this table */
+  Bitmask ಲಂಬಸಾಲು_ಬಳಸಿದ;  /* Bit N set if column N used. Details above for N>62 */
+  ಒಕ್ಕೂಟ {
+    ಅಕ್ಷರ *z_ಸೂಚ್ಯಂಕಿತ_By;    /* Identifier from "INDEXED BY <zIndex>" clause */
+    ಅಭಿವ್ಯಕ್ತಿ_List *pFuncArg;  /* Arguments to table-valued-function */
+    u32 n_ಅಡ್ಡಸಾಲು;            /* Number of rows in a VALUES clause */
   } u1;
-  union {
-    Index *pIBIndex;  /* Index structure corresponding to u1.zIndexedBy */
+  ಒಕ್ಕೂಟ {
+    ಸೂಚ್ಯಂಕ *pIBIndex;  /* Index structure corresponding to u1.zIndexedBy */
     CteUse *pCteUse;  /* CTE Usage info when fg.isCte is true */
   } u2;
-  union {
-    Expr *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
+  ಒಕ್ಕೂಟ {
+    ಅಭಿವ್ಯಕ್ತಿ *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
     IdList *pUsing;   /* fg.isUsing==1 =>  The USING clause of a join */
   } u3;
-  union {
+  ಒಕ್ಕೂಟ {
     Schema *pSchema;  /* Schema to which this item is fixed */
-    char *zDatabase;  /* Name of database holding this table */
+    ಅಕ್ಷರ *zDatabase;  /* Name of database holding this table */
     Subquery *pSubq;  /* Description of a subquery */
   } u4;
 };
@@ -3440,8 +3440,8 @@ struct SrcItem {
 ** The OnOrUsing object represents either an ON clause or a USING clause.
 ** It can never be both at the same time, but it can be neither.
 */
-struct OnOrUsing {
-  Expr *pOn;         /* The ON clause of a join */
+ರಚನೆ OnOrUsing {
+  ಅಭಿವ್ಯಕ್ತಿ *pOn;         /* The ON clause of a join */
   IdList *pUsing;    /* The USING clause of a join */
 };
 
@@ -3452,32 +3452,32 @@ struct OnOrUsing {
 ** represents the target tables for DELETE, INSERT, and UPDATE statements.
 **
 */
-struct SrcList {
-  int nSrc;             /* Number of tables or subqueries in the FROM clause */
+ರಚನೆ SrcList {
+  ಪೂರ್ಣಾಂಕ nSrc;             /* Number of tables or subqueries in the FROM clause */
   u32 nAlloc;           /* Number of entries allocated in a[] below */
-  SrcItem a[FLEXARRAY]; /* One entry for each identifier on the list */
+  Src_ಅಂಶ a[FLEXARRAY]; /* One entry for each identifier on the list */
 };
 
 /* Size (in bytes) of a SrcList object that can hold as many as N
 ** SrcItem objects. */
-#define SZ_SRCLIST(N) (offsetof(SrcList,a)+(N)*sizeof(SrcItem))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_SRCLIST(N) (offsetof(SrcList,a)+(N)*ಗಾತ್ರ(Src_ಅಂಶ))
 
 /* Size (in bytes( of a SrcList object that holds 1 SrcItem.  This is a
 ** special case of SZ_SRCITEM(1) that comes up often. */
-#define SZ_SRCLIST_1  (offsetof(SrcList,a)+sizeof(SrcItem))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_SRCLIST_1  (offsetof(SrcList,a)+ಗಾತ್ರ(Src_ಅಂಶ))
 
 /*
 ** Permitted values of the SrcList.a.jointype field
 */
-#define JT_INNER     0x01    /* Any kind of inner or cross join */
-#define JT_CROSS     0x02    /* Explicit use of the CROSS keyword */
-#define JT_NATURAL   0x04    /* True for a "natural" join */
-#define JT_LEFT      0x08    /* Left outer join */
-#define JT_RIGHT     0x10    /* Right outer join */
-#define JT_OUTER     0x20    /* The "OUTER" keyword is present */
-#define JT_LTORJ     0x40    /* One of the LEFT operands of a RIGHT JOIN
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_INNER     0x01    /* Any kind of inner or cross join */
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_CROSS     0x02    /* Explicit use of the CROSS keyword */
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_NATURAL   0x04    /* True for a "natural" join */
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_ಎಡ      0x08    /* Left outer join */
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_ಬಲ     0x10    /* Right outer join */
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_OUTER     0x20    /* The "OUTER" keyword is present */
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_LTORJ     0x40    /* One of the LEFT operands of a RIGHT JOIN
                              ** Mnemonic: Left Table Of Right Join */
-#define JT_ERROR     0x80    /* unknown or unsupported join type */
+#ವ್ಯಾಖ್ಯಾನಿಸು JT_ERROR     0x80    /* unknown or unsupported join type */
 
 /*
 ** Flags appropriate for the wctrlFlags parameter of sqlite3WhereBegin()
@@ -3486,31 +3486,31 @@ struct SrcList {
 ** Value constraints (enforced via assert()):
 **     WHERE_USE_LIMIT  == SF_FixedLimit
 */
-#define WHERE_ORDERBY_NORMAL   0x0000 /* No-op */
-#define WHERE_ORDERBY_MIN      0x0001 /* ORDER BY processing for min() func */
-#define WHERE_ORDERBY_MAX      0x0002 /* ORDER BY processing for max() func */
-#define WHERE_ONEPASS_DESIRED  0x0004 /* Want to do one-pass UPDATE/DELETE */
-#define WHERE_ONEPASS_MULTIROW 0x0008 /* ONEPASS is ok with multiple rows */
-#define WHERE_DUPLICATES_OK    0x0010 /* Ok to return a row more than once */
-#define WHERE_OR_SUBCLAUSE     0x0020 /* Processing a sub-WHERE as part of
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_ORDERBY_ಸಾಮಾನ್ಯ   0x0000 /* No-op */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_ORDERBY_MIN      0x0001 /* ORDER BY processing for min() func */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_ORDERBY_MAX      0x0002 /* ORDER BY processing for max() func */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_ONEPASS_DESIRED  0x0004 /* Want to do one-pass UPDATE/DELETE */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_ONEPASS_MULTIROW 0x0008 /* ONEPASS is ok with multiple rows */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_DUPLICATES_OK    0x0010 /* Ok to return a row more than once */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_OR_SUBCLAUSE     0x0020 /* Processing a sub-WHERE as part of
                                       ** the OR optimization  */
-#define WHERE_GROUPBY          0x0040 /* pOrderBy is really a GROUP BY */
-#define WHERE_DISTINCTBY       0x0080 /* pOrderby is really a DISTINCT clause */
-#define WHERE_WANT_DISTINCT    0x0100 /* All output needs to be distinct */
-#define WHERE_SORTBYGROUP      0x0200 /* Support sqlite3WhereIsSorted() */
-#define WHERE_AGG_DISTINCT     0x0400 /* Query is "SELECT agg(DISTINCT ...)" */
-#define WHERE_ORDERBY_LIMIT    0x0800 /* ORDERBY+LIMIT on the inner loop */
-#define WHERE_RIGHT_JOIN       0x1000 /* Processing a RIGHT JOIN */
-#define WHERE_KEEP_ALL_JOINS   0x2000 /* Do not do the omit-noop-join opt */
-#define WHERE_USE_LIMIT        0x4000 /* Use the LIMIT in cost estimates */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_GROUPBY          0x0040 /* pOrderBy is really a GROUP BY */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_DISTINCTBY       0x0080 /* pOrderby is really a DISTINCT clause */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_WANT_DISTINCT    0x0100 /* All output needs to be distinct */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_SORTBYGROUP      0x0200 /* Support sqlite3WhereIsSorted() */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_AGG_DISTINCT     0x0400 /* Query is "SELECT agg(DISTINCT ...)" */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_ORDERBY_ಎಲ್ಲೆ    0x0800 /* ORDERBY+LIMIT on the inner loop */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_ಬಲ_JOIN       0x1000 /* Processing a RIGHT JOIN */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_KEEP_ALL_JOINS   0x2000 /* Do not do the omit-noop-join opt */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_USE_ಎಲ್ಲೆ        0x4000 /* Use the LIMIT in cost estimates */
                         /*     0x8000    not currently used */
 
 /* Allowed return values from sqlite3WhereIsDistinct()
 */
-#define WHERE_DISTINCT_NOOP      0  /* DISTINCT keyword not used */
-#define WHERE_DISTINCT_UNIQUE    1  /* No duplicates */
-#define WHERE_DISTINCT_ORDERED   2  /* All duplicates are adjacent */
-#define WHERE_DISTINCT_UNORDERED 3  /* Duplicates are scattered */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_DISTINCT_NOOP      0  /* DISTINCT keyword not used */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_DISTINCT_UNIQUE    1  /* No duplicates */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_DISTINCT_ORDERED   2  /* All duplicates are adjacent */
+#ವ್ಯಾಖ್ಯಾನಿಸು WHERE_DISTINCT_UNORDERED 3  /* Duplicates are scattered */
 
 /*
 ** A NameContext defines a context in which to resolve table and column
@@ -3533,19 +3533,19 @@ struct SrcList {
 ** NameContext list corresponds to searching through successively outer
 ** subqueries looking for a match.
 */
-struct NameContext {
+ರಚನೆ NameContext {
   Parse *pParse;       /* The parser */
   SrcList *pSrcList;   /* One or more tables used to resolve names */
-  union {
-    ExprList *pEList;    /* Optional list of result-set columns */
+  ಒಕ್ಕೂಟ {
+    ಅಭಿವ್ಯಕ್ತಿ_List *pEList;    /* Optional list of result-set columns */
     AggInfo *pAggInfo;   /* Information about aggregates at this level */
     Upsert *pUpsert;     /* ON CONFLICT clause information from an upsert */
-    int iBaseReg;        /* For TK_REGISTER when parsing RETURNING */
+    ಪೂರ್ಣಾಂಕ i_ತಳ_Reg;        /* For TK_REGISTER when parsing RETURNING */
   } uNC;
-  NameContext *pNext;  /* Next outer name context.  NULL for outermost */
-  int nRef;            /* Number of names resolved by this context */
-  int nNcErr;          /* Number of errors encountered while resolving names */
-  int ncFlags;         /* Zero or more NC_* flags defined below */
+  NameContext *p_ಮುಂದಿನ;  /* Next outer name context.  NULL for outermost */
+  ಪೂರ್ಣಾಂಕ nRef;            /* Number of names resolved by this context */
+  ಪೂರ್ಣಾಂಕ nNcErr;          /* Number of errors encountered while resolving names */
+  ಪೂರ್ಣಾಂಕ ncFlags;         /* Zero or more NC_* flags defined below */
   u32 nNestedSelect;   /* Number of nested selects using this NC */
   Select *pWinSelect;  /* SELECT statement for any window functions */
 };
@@ -3560,28 +3560,28 @@ struct NameContext {
 **    NC_HasWin    == EP_Win
 **
 */
-#define NC_AllowAgg  0x000001 /* Aggregate functions are allowed here */
-#define NC_PartIdx   0x000002 /* True if resolving a partial index WHERE */
-#define NC_IsCheck   0x000004 /* True if resolving a CHECK constraint */
-#define NC_GenCol    0x000008 /* True for a GENERATED ALWAYS AS clause */
-#define NC_HasAgg    0x000010 /* One or more aggregate functions seen */
-#define NC_IdxExpr   0x000020 /* True if resolving columns of CREATE INDEX */
-#define NC_SelfRef   0x00002e /* Combo: PartIdx, isCheck, GenCol, and IdxExpr */
-#define NC_Subquery  0x000040 /* A subquery has been seen */
-#define NC_UEList    0x000080 /* True if uNC.pEList is used */
-#define NC_UAggInfo  0x000100 /* True if uNC.pAggInfo is used */
-#define NC_UUpsert   0x000200 /* True if uNC.pUpsert is used */
-#define NC_UBaseReg  0x000400 /* True if uNC.iBaseReg is used */
-#define NC_MinMaxAgg 0x001000 /* min/max aggregates seen.  See note above */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_AllowAgg  0x000001 /* Aggregate functions are allowed here */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_PartIdx   0x000002 /* True if resolving a partial index WHERE */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_IsCheck   0x000004 /* True if resolving a CHECK constraint */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_Gen_ಲಂಬಸಾಲು    0x000008 /* True for a GENERATED ALWAYS AS clause */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_HasAgg    0x000010 /* One or more aggregate functions seen */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_Idx_ಅಭಿವ್ಯಕ್ತಿ   0x000020 /* True if resolving columns of CREATE INDEX */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_SelfRef   0x00002e /* Combo: PartIdx, isCheck, GenCol, and IdxExpr */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_Subquery  0x000040 /* A subquery has been seen */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_UEList    0x000080 /* True if uNC.pEList is used */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_UAggInfo  0x000100 /* True if uNC.pAggInfo is used */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_UUpsert   0x000200 /* True if uNC.pUpsert is used */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_UBaseReg  0x000400 /* True if uNC.iBaseReg is used */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_MinMaxAgg 0x001000 /* min/max aggregates seen.  See note above */
 /*                   0x002000 // available for reuse */
-#define NC_AllowWin  0x004000 /* Window functions are allowed here */
-#define NC_HasWin    0x008000 /* One or more window functions seen */
-#define NC_IsDDL     0x010000 /* Resolving names in a CREATE statement */
-#define NC_InAggFunc 0x020000 /* True if analyzing arguments to an agg func */
-#define NC_FromDDL   0x040000 /* SQL text comes from sqlite_schema */
-#define NC_NoSelect  0x080000 /* Do not descend into sub-selects */
-#define NC_Where     0x100000 /* Processing WHERE clause of a SELECT */
-#define NC_OrderAgg 0x8000000 /* Has an aggregate other than count/min/max */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_AllowWin  0x004000 /* Window functions are allowed here */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_HasWin    0x008000 /* One or more window functions seen */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_IsDDL     0x010000 /* Resolving names in a CREATE statement */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_ಒಳ_Agg_Func 0x020000 /* True if analyzing arguments to an agg func */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_FromDDL   0x040000 /* SQL text comes from sqlite_schema */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_NoSelect  0x080000 /* Do not descend into sub-selects */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_Where     0x100000 /* Processing WHERE clause of a SELECT */
+#ವ್ಯಾಖ್ಯಾನಿಸು NC_ಕ್ರಮ_Agg 0x8000000 /* Has an aggregate other than count/min/max */
 
 /*
 ** An instance of the following object describes a single ON CONFLICT
@@ -3597,53 +3597,53 @@ struct NameContext {
 ** pUpsertWhere is the WHERE clause for the UPDATE and is NULL if the
 ** WHERE clause is omitted.
 */
-struct Upsert {
-  ExprList *pUpsertTarget;  /* Optional description of conflict target */
-  Expr *pUpsertTargetWhere; /* WHERE clause for partial index targets */
-  ExprList *pUpsertSet;     /* The SET clause from an ON CONFLICT UPDATE */
-  Expr *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
-  Upsert *pNextUpsert;      /* Next ON CONFLICT clause in the list */
+ರಚನೆ Upsert {
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_Upsert_ಗುರಿ;  /* Optional description of conflict target */
+  ಅಭಿವ್ಯಕ್ತಿ *p_Upsert_ಗುರಿ_Where; /* WHERE clause for partial index targets */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_Upsert_ಗಣ;     /* The SET clause from an ON CONFLICT UPDATE */
+  ಅಭಿವ್ಯಕ್ತಿ *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
+  Upsert *p_ಮುಂದಿನ_Upsert;      /* Next ON CONFLICT clause in the list */
   u8 isDoUpdate;            /* True for DO UPDATE.  False for DO NOTHING */
   u8 isDup;                 /* True if 2nd or later with same pUpsertIdx */
   /* Above this point is the parse tree for the ON CONFLICT clauses.
   ** The next group of fields stores intermediate data. */
-  void *pToFree;            /* Free memory when deleting the Upsert object */
+  ಶೂನ್ಯ *p_ಗಮ್ಯ_Free;            /* Free memory when deleting the Upsert object */
   /* All fields above are owned by the Upsert object and must be freed
   ** when the Upsert is destroyed.  The fields below are used to transfer
   ** information from the INSERT processing down into the UPDATE processing
   ** while generating code.  The fields below are owned by the INSERT
   ** statement and will be freed by INSERT processing. */
-  Index *pUpsertIdx;        /* UNIQUE constraint specified by pUpsertTarget */
+  ಸೂಚ್ಯಂಕ *pUpsertIdx;        /* UNIQUE constraint specified by pUpsertTarget */
   SrcList *pUpsertSrc;      /* Table to be updated */
-  int regData;              /* First register holding array of VALUES */
-  int iDataCur;             /* Index of the data cursor */
-  int iIdxCur;              /* Index of the first index cursor */
+  ಪೂರ್ಣಾಂಕ reg_ದತ್ತಾಂಶ;              /* First register holding array of VALUES */
+  ಪೂರ್ಣಾಂಕ i_ದತ್ತಾಂಶ_Cur;             /* Index of the data cursor */
+  ಪೂರ್ಣಾಂಕ iIdxCur;              /* Index of the first index cursor */
 };
 
 /*
 ** An instance of the following structure contains all information
 ** needed to generate code for a single SELECT statement.
 */
-struct Select {
+ರಚನೆ Select {
   u8 op;                 /* One of: TK_UNION TK_ALL TK_INTERSECT TK_EXCEPT */
-  LogEst nSelectRow;     /* Estimated number of result rows */
+  LogEst n_Select_ಅಡ್ಡಸಾಲು;     /* Estimated number of result rows */
   u32 selFlags;          /* Various SF_* values */
-  int iLimit, iOffset;   /* Memory registers holding LIMIT & OFFSET counters */
+  ಪೂರ್ಣಾಂಕ i_ಎಲ್ಲೆ, i_ಸ್ಥಾನಾಂತರ;   /* Memory registers holding LIMIT & OFFSET counters */
   u32 selId;             /* Unique identifier number for this SELECT */
-  ExprList *pEList;      /* The fields of the result */
+  ಅಭಿವ್ಯಕ್ತಿ_List *pEList;      /* The fields of the result */
   SrcList *pSrc;         /* The FROM clause */
-  Expr *pWhere;          /* The WHERE clause */
-  ExprList *pGroupBy;    /* The GROUP BY clause */
-  Expr *pHaving;         /* The HAVING clause */
-  ExprList *pOrderBy;    /* The ORDER BY clause */
-  Select *pPrior;        /* Prior select in a compound select statement */
-  Select *pNext;         /* Next select to the left in a compound */
-  Expr *pLimit;          /* LIMIT expression. NULL means not used. */
+  ಅಭಿವ್ಯಕ್ತಿ *pWhere;          /* The WHERE clause */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ಗುಂಪು_By;    /* The GROUP BY clause */
+  ಅಭಿವ್ಯಕ್ತಿ *pHaving;         /* The HAVING clause */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ಕ್ರಮ_By;    /* The ORDER BY clause */
+  Select *p_ಪೂರ್ವ;        /* Prior select in a compound select statement */
+  Select *p_ಮುಂದಿನ;         /* Next select to the left in a compound */
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಎಲ್ಲೆ;          /* LIMIT expression. NULL means not used. */
   With *pWith;           /* WITH clause attached to this select. Or NULL. */
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  Window *pWin;          /* List of window functions */
-  Window *pWinDefn;      /* List of named window definitions */
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WINDOWFUNC
+  ಕಿಟಕಿ *pWin;          /* List of window functions */
+  ಕಿಟಕಿ *pWinDefn;      /* List of named window definitions */
+#ಆದರೆ_ಅಂತ್ಯ
 };
 
 /*
@@ -3656,40 +3656,40 @@ struct Select {
 **     SF_OrderByReqd == NC_OrderAgg      == SQLITE_FUNC_ANYORDER
 **     SF_FixedLimit  == WHERE_USE_LIMIT
 */
-#define SF_Distinct      0x0000001 /* Output should be DISTINCT */
-#define SF_All           0x0000002 /* Includes the ALL keyword */
-#define SF_Resolved      0x0000004 /* Identifiers have been resolved */
-#define SF_Aggregate     0x0000008 /* Contains agg functions or a GROUP BY */
-#define SF_HasAgg        0x0000010 /* Contains aggregate functions */
-#define SF_ClonedRhsIn   0x0000020 /* Cloned RHS of an IN operator */
-#define SF_Expanded      0x0000040 /* sqlite3SelectExpand() called on this */
-#define SF_HasTypeInfo   0x0000080 /* FROM subqueries have Table metadata */
-#define SF_Compound      0x0000100 /* Part of a compound query */
-#define SF_Values        0x0000200 /* Synthesized from VALUES clause */
-#define SF_MultiValue    0x0000400 /* Single VALUES term with multiple rows */
-#define SF_NestedFrom    0x0000800 /* Part of a parenthesized FROM clause */
-#define SF_MinMaxAgg     0x0001000 /* Aggregate containing min() or max() */
-#define SF_Recursive     0x0002000 /* The recursive part of a recursive CTE */
-#define SF_FixedLimit    0x0004000 /* nSelectRow set by a constant LIMIT */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Distinct      0x0000001 /* Output should be DISTINCT */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_All           0x0000002 /* Includes the ALL keyword */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Resolved      0x0000004 /* Identifiers have been resolved */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Aggregate     0x0000008 /* Contains agg functions or a GROUP BY */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_HasAgg        0x0000010 /* Contains aggregate functions */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Cloned_Rhs_ಒಳ   0x0000020 /* Cloned RHS of an IN operator */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Expanded      0x0000040 /* sqlite3SelectExpand() called on this */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_HasTypeInfo   0x0000080 /* FROM subqueries have Table metadata */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Compound      0x0000100 /* Part of a compound query */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_ಮೌಲ್ಯಗಳು        0x0000200 /* Synthesized from VALUES clause */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Multi_ಮೌಲ್ಯ    0x0000400 /* Single VALUES term with multiple rows */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_NestedFrom    0x0000800 /* Part of a parenthesized FROM clause */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_MinMaxAgg     0x0001000 /* Aggregate containing min() or max() */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Recursive     0x0002000 /* The recursive part of a recursive CTE */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Fixed_ಎಲ್ಲೆ    0x0004000 /* nSelectRow set by a constant LIMIT */
 /*                       0x0008000 // available for reuse */
-#define SF_Converted     0x0010000 /* By convertCompoundSelectToSubquery() */
-#define SF_IncludeHidden 0x0020000 /* Include hidden columns in output */
-#define SF_ComplexResult 0x0040000 /* Result contains subquery or function */
-#define SF_WhereBegin    0x0080000 /* Really a WhereBegin() call.  Debug Only */
-#define SF_WinRewrite    0x0100000 /* Window function rewrite accomplished */
-#define SF_View          0x0200000 /* SELECT statement is a view */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Converted     0x0010000 /* By convertCompoundSelectToSubquery() */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_IncludeHidden 0x0020000 /* Include hidden columns in output */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Complex_ಫಲಿತಾಂಶ 0x0040000 /* Result contains subquery or function */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_WhereBegin    0x0080000 /* Really a WhereBegin() call.  Debug Only */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_WinRewrite    0x0100000 /* Window function rewrite accomplished */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_View          0x0200000 /* SELECT statement is a view */
 /*                       0x0400000 // available for reuse */
-#define SF_UFSrcCheck    0x0800000 /* Check pSrc as required by UPDATE...FROM */
-#define SF_PushDown      0x1000000 /* Modified by WHERE-clause push-down opt */
-#define SF_MultiPart     0x2000000 /* Has multiple incompatible PARTITIONs */
-#define SF_CopyCte       0x4000000 /* SELECT statement is a copy of a CTE */
-#define SF_OrderByReqd   0x8000000 /* The ORDER BY clause may not be omitted */
-#define SF_UpdateFrom   0x10000000 /* Query originates with UPDATE FROM */
-#define SF_Correlated   0x20000000 /* True if references the outer context */
-#define SF_OnToWhere    0x40000000 /* One or more ON clauses moved to WHERE */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_UFSrcCheck    0x0800000 /* Check pSrc as required by UPDATE...FROM */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_ತಳ್ಳು_ಕೆಳಕ್ಕೆ      0x1000000 /* Modified by WHERE-clause push-down opt */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_MultiPart     0x2000000 /* Has multiple incompatible PARTITIONs */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_CopyCte       0x4000000 /* SELECT statement is a copy of a CTE */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_ಕ್ರಮ_By_Reqd   0x8000000 /* The ORDER BY clause may not be omitted */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_UpdateFrom   0x10000000 /* Query originates with UPDATE FROM */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_Correlated   0x20000000 /* True if references the outer context */
+#ವ್ಯಾಖ್ಯಾನಿಸು SF_On_ಗಮ್ಯ_Where    0x40000000 /* One or more ON clauses moved to WHERE */
 
 /* True if SrcItem X is a subquery that has SF_NestedFrom */
-#define IsNestedFrom(X) \
+#ವ್ಯಾಖ್ಯಾನಿಸು IsNestedFrom(X) \
    ((X)->fg.isSubquery && \
     ((X)->u4.pSubq->pSelect->selFlags&SF_NestedFrom)!=0)
 
@@ -3761,41 +3761,41 @@ struct Select {
 **                     table. (pDest->iSDParm) is the number of key columns in
 **                     each index record in this case.
 */
-#define SRT_Exists       1  /* Store 1 if the result is not empty */
-#define SRT_Discard      2  /* Do not save the results anywhere */
-#define SRT_DistFifo     3  /* Like SRT_Fifo, but unique results only */
-#define SRT_DistQueue    4  /* Like SRT_Queue, but unique results only */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Exists       1  /* Store 1 if the result is not empty */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Discard      2  /* Do not save the results anywhere */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_DistFifo     3  /* Like SRT_Fifo, but unique results only */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Dist_ಸರತಿ    4  /* Like SRT_Queue, but unique results only */
 
 /* The DISTINCT clause is ignored for all of the above.  Not that
 ** IgnorableDistinct() implies IgnorableOrderby() */
-#define IgnorableDistinct(X) ((X->eDest)<=SRT_DistQueue)
+#ವ್ಯಾಖ್ಯಾನಿಸು IgnorableDistinct(X) ((X->eDest)<=SRT_Dist_ಸರತಿ)
 
-#define SRT_Queue        5  /* Store result in an queue */
-#define SRT_Fifo         6  /* Store result as data with an automatic rowid */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_ಸರತಿ        5  /* Store result in an queue */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Fifo         6  /* Store result as data with an automatic rowid */
 
 /* The ORDER BY clause is ignored for all of the above */
-#define IgnorableOrderby(X) ((X->eDest)<=SRT_Fifo)
+#ವ್ಯಾಖ್ಯಾನಿಸು IgnorableOrderby(X) ((X->eDest)<=SRT_Fifo)
 
-#define SRT_Output       7  /* Output each row of result */
-#define SRT_Mem          8  /* Store result in a memory cell */
-#define SRT_Set          9  /* Store results as keys in an index */
-#define SRT_EphemTab    10  /* Create transient tab and store like SRT_Table */
-#define SRT_Coroutine   11  /* Generate a single row of result */
-#define SRT_Table       12  /* Store result as data with an automatic rowid */
-#define SRT_Upfrom      13  /* Store result as data with rowid */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Output       7  /* Output each row of result */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Mem          8  /* Store result in a memory cell */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_ಗಣ          9  /* Store results as keys in an index */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_EphemTab    10  /* Create transient tab and store like SRT_Table */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Coroutine   11  /* Generate a single row of result */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_ಕೋಷ್ಟಕ       12  /* Store result as data with an automatic rowid */
+#ವ್ಯಾಖ್ಯಾನಿಸು SRT_Upfrom      13  /* Store result as data with rowid */
 
 /*
 ** An instance of this object describes where to put of the results of
 ** a SELECT statement.
 */
-struct SelectDest {
+ರಚನೆ SelectDest {
   u8 eDest;            /* How to dispose of the results.  One of SRT_* above. */
-  int iSDParm;         /* A parameter used by the eDest disposal method */
-  int iSDParm2;        /* A second parameter for the eDest disposal method */
-  int iSdst;           /* Base register where results are written */
-  int nSdst;           /* Number of registers allocated */
-  char *zAffSdst;      /* Affinity used for SRT_Set */
-  ExprList *pOrderBy;  /* Key columns for SRT_Queue and SRT_DistQueue */
+  ಪೂರ್ಣಾಂಕ iSDParm;         /* A parameter used by the eDest disposal method */
+  ಪೂರ್ಣಾಂಕ iSDParm2;        /* A second parameter for the eDest disposal method */
+  ಪೂರ್ಣಾಂಕ iSdst;           /* Base register where results are written */
+  ಪೂರ್ಣಾಂಕ nSdst;           /* Number of registers allocated */
+  ಅಕ್ಷರ *zAffSdst;      /* Affinity used for SRT_Set */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ಕ್ರಮ_By;  /* Key columns for SRT_Queue and SRT_DistQueue */
 };
 
 /*
@@ -3807,11 +3807,11 @@ struct SelectDest {
 ** normally coordinate their activities, but we do need to coordinate the
 ** loading and saving of autoincrement information.
 */
-struct AutoincInfo {
-  AutoincInfo *pNext;   /* Next info block in a list of them all */
-  Table *pTab;          /* Table this info block refers to */
-  int iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
-  int regCtr;           /* Memory register holding the rowid counter */
+ರಚನೆ AutoincInfo {
+  AutoincInfo *p_ಮುಂದಿನ;   /* Next info block in a list of them all */
+  ಕೋಷ್ಟಕ *pTab;          /* Table this info block refers to */
+  ಪೂರ್ಣಾಂಕ iDb;              /* Index in sqlite3.aDb[] of database holding pTab */
+  ಪೂರ್ಣಾಂಕ regCtr;           /* Memory register holding the rowid counter */
 };
 
 /*
@@ -3832,32 +3832,32 @@ struct AutoincInfo {
 ** statements). Similarly, the TriggerPrg.aColmask[1] variable is set to
 ** a mask of new.* columns used by the program.
 */
-struct TriggerPrg {
+ರಚನೆ TriggerPrg {
   Trigger *pTrigger;      /* Trigger this program was coded from */
-  TriggerPrg *pNext;      /* Next entry in Parse.pTriggerPrg list */
-  SubProgram *pProgram;   /* Program implementing pTrigger/orconf */
-  int orconf;             /* Default ON CONFLICT policy */
+  TriggerPrg *p_ಮುಂದಿನ;      /* Next entry in Parse.pTriggerPrg list */
+  Sub_ಕಾರ್ಯಕ್ರಮ *p_ಕಾರ್ಯಕ್ರಮ;   /* Program implementing pTrigger/orconf */
+  ಪೂರ್ಣಾಂಕ orconf;             /* Default ON CONFLICT policy */
   u32 aColmask[2];        /* Masks of old.*, new.* columns accessed */
 };
 
 /*
 ** The yDbMask datatype for the bitmask of all attached databases.
 */
-#if SQLITE_MAX_ATTACHED>30
-  typedef unsigned char yDbMask[(SQLITE_MAX_ATTACHED+9)/8];
-# define DbMaskTest(M,I)    (((M)[(I)/8]&(1<<((I)&7)))!=0)
-# define DbMaskZero(M)      memset((M),0,sizeof(M))
-# define DbMaskSet(M,I)     (M)[(I)/8]|=(1<<((I)&7))
-# define DbMaskAllZero(M)   sqlite3DbMaskAllZero(M)
-# define DbMaskNonZero(M)   (sqlite3DbMaskAllZero(M)==0)
-#else
-  typedef unsigned int yDbMask;
-# define DbMaskTest(M,I)    (((M)&(((yDbMask)1)<<(I)))!=0)
-# define DbMaskZero(M)      ((M)=0)
-# define DbMaskSet(M,I)     ((M)|=(((yDbMask)1)<<(I)))
-# define DbMaskAllZero(M)   ((M)==0)
-# define DbMaskNonZero(M)   ((M)!=0)
-#endif
+#ಆದರೆ SQLITE_MAX_ATTACHED>30
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ y_Db_ಮುಖವಾಡ[(SQLITE_MAX_ATTACHED+9)/8];
+# define Db_ಮುಖವಾಡ_Test(M,I)    (((M)[(I)/8]&(1<<((I)&7)))!=0)
+# define Db_ಮುಖವಾಡ_Zero(M)      memset((M),0,ಗಾತ್ರ(M))
+# define Db_ಮುಖವಾಡ_ಗಣ(M,I)     (M)[(I)/8]|=(1<<((I)&7))
+# define Db_ಮುಖವಾಡ_All_Zero(M)   sqlite3_Db_ಮುಖವಾಡ_All_Zero(M)
+# define Db_ಮುಖವಾಡ_Non_Zero(M)   (sqlite3_Db_ಮುಖವಾಡ_All_Zero(M)==0)
+#ಇಲ್ಲದಿದ್ದರೆ
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ y_Db_ಮುಖವಾಡ;
+# define Db_ಮುಖವಾಡ_Test(M,I)    (((M)&(((y_Db_ಮುಖವಾಡ)1)<<(I)))!=0)
+# define Db_ಮುಖವಾಡ_Zero(M)      ((M)=0)
+# define Db_ಮುಖವಾಡ_ಗಣ(M,I)     ((M)|=(((y_Db_ಮುಖವಾಡ)1)<<(I)))
+# define Db_ಮುಖವಾಡ_All_Zero(M)   ((M)==0)
+# define Db_ಮುಖವಾಡ_Non_Zero(M)   ((M)!=0)
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** For each index X that has as one of its arguments either an expression
@@ -3869,17 +3869,17 @@ struct TriggerPrg {
 ** this list is consulted and if a matching expression is found, the value
 ** is read from the index rather than being recomputed.
 */
-struct IndexedExpr {
-  Expr *pExpr;            /* The expression contained in the index */
-  int iDataCur;           /* The data cursor associated with the index */
-  int iIdxCur;            /* The index cursor */
-  int iIdxCol;            /* The index column that contains value of pExpr */
-  u8 bMaybeNullRow;       /* True if we need an OP_IfNullRow check */
+ರಚನೆ ಸೂಚ್ಯಂಕಿತ_ಅಭಿವ್ಯಕ್ತಿ {
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ;            /* The expression contained in the index */
+  ಪೂರ್ಣಾಂಕ i_ದತ್ತಾಂಶ_Cur;           /* The data cursor associated with the index */
+  ಪೂರ್ಣಾಂಕ iIdxCur;            /* The index cursor */
+  ಪೂರ್ಣಾಂಕ i_Idx_ಲಂಬಸಾಲು;            /* The index column that contains value of pExpr */
+  u8 b_Maybe_Null_ಅಡ್ಡಸಾಲು;       /* True if we need an OP_IfNullRow check */
   u8 aff;                 /* Affinity of the pExpr expression */
-  IndexedExpr *pIENext;   /* Next in a list of all indexed expressions */
-#ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
-  const char *zIdxName;   /* Name of index, used only for bytecode comments */
-#endif
+  ಸೂಚ್ಯಂಕಿತ_ಅಭಿವ್ಯಕ್ತಿ *pIENext;   /* Next in a list of all indexed expressions */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_EXPLAIN_COMMENTS
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zIdxName;   /* Name of index, used only for bytecode comments */
+#ಆದರೆ_ಅಂತ್ಯ
 };
 
 /*
@@ -3887,18 +3887,18 @@ struct IndexedExpr {
 ** should be performed after parsing to deallocation resources obtained
 ** during the parse and which are no longer needed.
 */
-struct ParseCleanup {
-  ParseCleanup *pNext;               /* Next cleanup task */
-  void *pPtr;                        /* Pointer to object to deallocate */
-  void (*xCleanup)(sqlite3*,void*);  /* Deallocation routine */
+ರಚನೆ ParseCleanup {
+  ParseCleanup *p_ಮುಂದಿನ;               /* Next cleanup task */
+  ಶೂನ್ಯ *pPtr;                        /* Pointer to object to deallocate */
+  ಶೂನ್ಯ (*xCleanup)(sqlite3*,ಶೂನ್ಯ*);  /* Deallocation routine */
 };
 
 /*
 ** Number of 64-bit entried in the variable number bitmap cache (VNBMC).
 */
-#ifndef SQLITE_VNBMC
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_VNBMC
 # define SQLITE_VNBMC 2
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** An SQL parser context.  A copy of this structure is passed through
@@ -3916,14 +3916,14 @@ struct ParseCleanup {
 ** compiled. Function sqlite3TableLock() is used to add entries to the
 ** list.
 */
-struct Parse {
+ರಚನೆ Parse {
   sqlite3 *db;         /* The main database structure */
-  char *zErrMsg;       /* An error message */
+  ಅಕ್ಷರ *z_Err_ಸಂದೇಶ;       /* An error message */
   Vdbe *pVdbe;         /* An engine for executing database bytecode */
-  int rc;              /* Return code from execution */
+  ಪೂರ್ಣಾಂಕ rc;              /* Return code from execution */
   LogEst nQueryLoop;   /* Est number of iterations of a query (10*log2(N)) */
   u8 nested;           /* Number of nested calls to the parser/code generator */
-  u8 nTempReg;         /* Number of temporary registers in aTempReg[] */
+  u8 n_ತಾತ್ಕಾಲಿಕ_Reg;         /* Number of temporary registers in aTempReg[] */
   u8 isMultiWrite;     /* True if statement may modify/insert multiple rows */
   u8 disableLookaside; /* Number of times lookaside has been disabled */
   u8 prepFlags;        /* SQLITE_PREPARE_* flags */
@@ -3931,51 +3931,51 @@ struct Parse {
   u8 mSubrtnSig;       /* mini Bloom filter on available SubrtnSig.selId */
   u8 eTriggerOp;       /* TK_UPDATE, TK_INSERT or TK_DELETE */
   u8 eOrconf;          /* Default ON CONFLICT policy for trigger steps */
-#if defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
+#ಆದರೆ defined(SQLITE_DEBUG) || defined(SQLITE_COVERAGE_TEST)
   u8 earlyCleanup;     /* OOM inside sqlite3ParserAddCleanup() */
-#endif
-#ifdef SQLITE_DEBUG
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
   u8 ifNotExists;      /* Might be true if IF NOT EXISTS.  Assert()s only */
   u8 isCreate;         /* CREATE TABLE, INDEX, or VIEW (but not TRIGGER)
                        ** and ALTER TABLE ADD COLUMN. */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   bft disableTriggers:1; /* True to disable triggers */
   bft mayAbort :1;     /* True if statement may throw an ABORT exception */
   bft hasCompound :1;  /* Need to invoke convertCompoundSelectToSubquery() */
   bft bReturning :1;   /* Coding a RETURNING trigger */
   bft bHasExists :1;   /* Has a correlated "EXISTS (SELECT ....)" expression */
-  bft colNamesSet :1;  /* TRUE after OP_ColumnName has been issued to pVdbe */
+  bft ಲಂಬಸಾಲು_ಹೆಸರುಗಳು_ಗಣ :1;  /* TRUE after OP_ColumnName has been issued to pVdbe */
   bft bHasWith :1;     /* True if statement contains WITH */
-  bft okConstFactor:1; /* OK to factor out constants */
+  bft ok_Const_ಗುಣಕ:1; /* OK to factor out constants */
   bft checkSchema :1;  /* Causes schema cookie check after an error */
-  bft usesAinc :1;     /* True if pAinc is valid */
-  int nRangeReg;       /* Size of the temporary register block */
-  int iRangeReg;       /* First register in temporary register block */
-  int nErr;            /* Number of errors seen */
-  int nTab;            /* Number of previously allocated VDBE cursors */
-  int nMem;            /* Number of memory cells used so far */
-  int szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
-  int iSelfTab;        /* Table associated with an index on expr, or negative
+  bft ಬಳಸುತ್ತದೆ_Ainc :1;     /* True if pAinc is valid */
+  ಪೂರ್ಣಾಂಕ nRangeReg;       /* Size of the temporary register block */
+  ಪೂರ್ಣಾಂಕ iRangeReg;       /* First register in temporary register block */
+  ಪೂರ್ಣಾಂಕ nErr;            /* Number of errors seen */
+  ಪೂರ್ಣಾಂಕ nTab;            /* Number of previously allocated VDBE cursors */
+  ಪೂರ್ಣಾಂಕ nMem;            /* Number of memory cells used so far */
+  ಪೂರ್ಣಾಂಕ szOpAlloc;       /* Bytes of memory space allocated for Vdbe.aOp[] */
+  ಪೂರ್ಣಾಂಕ iSelfTab;        /* Table associated with an index on expr, or negative
                        ** of the base register during check-constraint eval */
-  int nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
-  int nLabel;          /* The *negative* of the number of labels used */
-  int nLabelAlloc;     /* Number of slots in aLabel */
-  int *aLabel;         /* Space to hold the labels */
-  ExprList *pConstExpr;/* Constant expressions */
-  IndexedExpr *pIdxEpr;/* List of expressions used by active indexes */
-  IndexedExpr *pIdxPartExpr; /* Exprs constrained by index WHERE clauses */
-  yDbMask writeMask;   /* Start a write transaction on these databases */
-  yDbMask cookieMask;  /* Bitmask of schema verified databases */
-  int nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
-  int nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
-#ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-  u32 nProgressSteps;  /* xProgress steps taken during sqlite3_prepare() */
-#endif
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  int nTableLock;        /* Number of locks in aTableLock */
-#endif
+  ಪೂರ್ಣಾಂಕ nNestSel;        /* Number of nested SELECT statements and/or VIEWs */
+  ಪೂರ್ಣಾಂಕ nLabel;          /* The *negative* of the number of labels used */
+  ಪೂರ್ಣಾಂಕ nLabelAlloc;     /* Number of slots in aLabel */
+  ಪೂರ್ಣಾಂಕ *aLabel;         /* Space to hold the labels */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_Const_ಅಭಿವ್ಯಕ್ತಿ;/* Constant expressions */
+  ಸೂಚ್ಯಂಕಿತ_ಅಭಿವ್ಯಕ್ತಿ *pIdxEpr;/* List of expressions used by active indexes */
+  ಸೂಚ್ಯಂಕಿತ_ಅಭಿವ್ಯಕ್ತಿ *p_Idx_Part_ಅಭಿವ್ಯಕ್ತಿ; /* Exprs constrained by index WHERE clauses */
+  y_Db_ಮುಖವಾಡ write_ಮುಖವಾಡ;   /* Start a write transaction on these databases */
+  y_Db_ಮುಖವಾಡ cookie_ಮುಖವಾಡ;  /* Bitmask of schema verified databases */
+  ಪೂರ್ಣಾಂಕ nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
+  ಪೂರ್ಣಾಂಕ nSelect;         /* Number of SELECT stmts. Counter for Select.selId */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_ಪ್ರಗತಿ_CALLBACK
+  u32 n_ಪ್ರಗತಿ_ಹೆಜ್ಜೆಗಳು;  /* xProgress steps taken during sqlite3_prepare() */
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_SHARED_CACHE
+  ಪೂರ್ಣಾಂಕ n_ಕೋಷ್ಟಕ_ಬೀಗ;        /* Number of locks in aTableLock */
+#ಆದರೆ_ಅಂತ್ಯ
   Parse *pToplevel;    /* Parse structure for main program (or NULL) */
-  Table *pTriggerTab;  /* Table triggers are being coded for */
+  ಕೋಷ್ಟಕ *pTriggerTab;  /* Table triggers are being coded for */
   TriggerPrg *pTriggerPrg;  /* Linked list of coded triggers */
   ParseCleanup *pCleanup;   /* List of cleanup operations to run after parse */
   Trigger *pTrigCoded;      /* Trigger whose sub-program is being coded */
@@ -3987,28 +3987,28 @@ struct Parse {
   ** determined by offsetof(Parse,aTempReg).
   **************************************************************************/
 
-  int aTempReg[8];        /* Holding area for temporary registers */
+  ಪೂರ್ಣಾಂಕ a_ತಾತ್ಕಾಲಿಕ_Reg[8];        /* Holding area for temporary registers */
   Parse *pOuterParse;     /* Outer Parse object when nested */
   Token sNameToken;       /* Token with unqualified schema object name */
   u32 oldmask;            /* Mask of old.* columns referenced */
   u32 newmask;            /* Mask of new.* columns referenced */
-  union {
-    struct {  /* These fields available when isCreate is true */
-      int addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
-      int regRowid;         /* Register holding rowid of CREATE TABLE entry */
-      int regRoot;          /* Register holding root page for new objects */
+  ಒಕ್ಕೂಟ {
+    ರಚನೆ {  /* These fields available when isCreate is true */
+      ಪೂರ್ಣಾಂಕ addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
+      ಪೂರ್ಣಾಂಕ regRowid;         /* Register holding rowid of CREATE TABLE entry */
+      ಪೂರ್ಣಾಂಕ reg_ಬೇರು;          /* Register holding root page for new objects */
       Token constraintName; /* Name of the constraint currently being parsed */
     } cr;
-    struct {  /* These fields available to all other statements */
+    ರಚನೆ {  /* These fields available to all other statements */
       Returning *pReturning; /* The RETURNING clause */
     } d;
   } u1;
   AutoincInfo *pAinc;     /* Information about AUTOINCREMENT counters. Only
                           ** valid if Parse.usesAinc is true */
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  TableLock *aTableLock;  /* Required table locks for shared-cache mode. Only
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_SHARED_CACHE
+  ಕೋಷ್ಟಕ_ಬೀಗ *a_ಕೋಷ್ಟಕ_ಬೀಗ;  /* Required table locks for shared-cache mode. Only
                           ** valid if Parse.nTableLock>0 */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 
   /************************************************************************
@@ -4018,79 +4018,79 @@ struct Parse {
   ** first field in the recursive region.
   ************************************************************************/
 
-  Token sLastToken;       /* The last token parsed */
+  Token s_ಕೊನೆಯ_Token;       /* The last token parsed */
   ynVar nVar;               /* Number of '?' variables seen in the SQL so far */
   u64 aVnbmc[SQLITE_VNBMC]; /* Varible Number Bitmap Cache */
-  u8 iPkSortOrder;          /* ASC or DESC for INTEGER PRIMARY KEY */
+  u8 i_Pk_ವಿಂಗಡಿಸು_ಕ್ರಮ;          /* ASC or DESC for INTEGER PRIMARY KEY */
   u8 explain;               /* True if the EXPLAIN flag is found on the query */
-  u8 eParseMode;            /* PARSE_MODE_XXX constant */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  int nVtabLock;            /* Number of virtual tables to lock */
-#endif
-  int nHeight;              /* Expression tree height of current sub-select */
-  int addrExplain;          /* Address of current OP_Explain opcode */
+  u8 e_Parse_ಬಹುಲಕ;            /* PARSE_MODE_XXX constant */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  ಪೂರ್ಣಾಂಕ n_Vtab_ಬೀಗ;            /* Number of virtual tables to lock */
+#ಆದರೆ_ಅಂತ್ಯ
+  ಪೂರ್ಣಾಂಕ n_ಎತ್ತರ;              /* Expression tree height of current sub-select */
+  ಪೂರ್ಣಾಂಕ addrExplain;          /* Address of current OP_Explain opcode */
   VList *pVList;            /* Mapping between variable names and numbers */
   Vdbe *pReprepare;         /* VM being reprepared (sqlite3Reprepare()) */
-  const char *zTail;        /* All SQL text past the last semicolon parsed */
-  Table *pNewTable;         /* A table being constructed by CREATE TABLE */
-  Index *pNewIndex;         /* An index being constructed by CREATE INDEX.
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಬಾಲ;        /* All SQL text past the last semicolon parsed */
+  ಕೋಷ್ಟಕ *p_New_ಕೋಷ್ಟಕ;         /* A table being constructed by CREATE TABLE */
+  ಸೂಚ್ಯಂಕ *p_New_ಸೂಚ್ಯಂಕ;         /* An index being constructed by CREATE INDEX.
                             ** Also used to hold redundant UNIQUE constraints
                             ** during a RENAME COLUMN */
   Trigger *pNewTrigger;     /* Trigger under construct by a CREATE TRIGGER */
-  const char *zAuthContext; /* The 6th parameter to db->xAuth callbacks */
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zAuthContext; /* The 6th parameter to db->xAuth callbacks */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
   Token sArg;               /* Complete text of a module argument */
-  Table **apVtabLock;       /* Pointer to virtual tables needing locking */
-#endif
+  ಕೋಷ್ಟಕ **ap_Vtab_ಬೀಗ;       /* Pointer to virtual tables needing locking */
+#ಆದರೆ_ಅಂತ್ಯ
   With *pWith;              /* Current WITH clause, or NULL */
-#ifndef SQLITE_OMIT_ALTERTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_ALTERTABLE
   RenameToken *pRename;     /* Tokens subject to renaming by ALTER TABLE */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 };
 
 /* Allowed values for Parse.eParseMode
 */
-#define PARSE_MODE_NORMAL        0
-#define PARSE_MODE_DECLARE_VTAB  1
-#define PARSE_MODE_RENAME        2
-#define PARSE_MODE_UNMAP         3
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_ಬಹುಲಕ_ಸಾಮಾನ್ಯ        0
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_ಬಹುಲಕ_DECLARE_VTAB  1
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_ಬಹುಲಕ_RENAME        2
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_ಬಹುಲಕ_UNMAP         3
 
 /*
 ** Sizes and pointers of various parts of the Parse object.
 */
-#define PARSE_HDR(X)  (((char*)(X))+offsetof(Parse,zErrMsg))
-#define PARSE_HDR_SZ (offsetof(Parse,aTempReg)-offsetof(Parse,zErrMsg)) /* Recursive part w/o aColCache*/
-#define PARSE_RECURSE_SZ offsetof(Parse,sLastToken)    /* Recursive part */
-#define PARSE_TAIL_SZ (sizeof(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
-#define PARSE_TAIL(X) (((char*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_HDR(X)  (((ಅಕ್ಷರ*)(X))+offsetof(Parse,z_Err_ಸಂದೇಶ))
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_HDR_SZ (offsetof(Parse,a_ತಾತ್ಕಾಲಿಕ_Reg)-offsetof(Parse,z_Err_ಸಂದೇಶ)) /* Recursive part w/o aColCache*/
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_RECURSE_SZ offsetof(Parse,s_ಕೊನೆಯ_Token)    /* Recursive part */
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_ಬಾಲ_SZ (ಗಾತ್ರ(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
+#ವ್ಯಾಖ್ಯಾನಿಸು PARSE_ಬಾಲ(X) (((ಅಕ್ಷರ*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
 
 /*
 ** Return true if currently inside an sqlite3_declare_vtab() call.
 */
-#ifdef SQLITE_OMIT_VIRTUALTABLE
-  #define IN_DECLARE_VTAB 0
-#else
-  #define IN_DECLARE_VTAB (pParse->eParseMode==PARSE_MODE_DECLARE_VTAB)
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_VIRTUALTABLE
+  #ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_DECLARE_VTAB 0
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_DECLARE_VTAB (pParse->e_Parse_ಬಹುಲಕ==PARSE_ಬಹುಲಕ_DECLARE_VTAB)
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(SQLITE_OMIT_ALTERTABLE)
-  #define IN_RENAME_OBJECT 0
-#else
-  #define IN_RENAME_OBJECT (pParse->eParseMode>=PARSE_MODE_RENAME)
-#endif
+#ಆದರೆ defined(SQLITE_OMIT_ALTERTABLE)
+  #ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_RENAME_OBJECT 0
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_RENAME_OBJECT (pParse->e_Parse_ಬಹುಲಕ>=PARSE_ಬಹುಲಕ_RENAME)
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
-  #define IN_SPECIAL_PARSE 0
-#else
-  #define IN_SPECIAL_PARSE (pParse->eParseMode!=PARSE_MODE_NORMAL)
-#endif
+#ಆದರೆ defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_OMIT_ALTERTABLE)
+  #ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_SPECIAL_PARSE 0
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_SPECIAL_PARSE (pParse->e_Parse_ಬಹುಲಕ!=PARSE_ಬಹುಲಕ_ಸಾಮಾನ್ಯ)
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** An instance of the following structure can be declared on a stack and used
 ** to save the Parse.zAuthContext value so that it can be restored later.
 */
-struct AuthContext {
-  const char *zAuthContext;   /* Put saved Parse.zAuthContext here */
+ರಚನೆ AuthContext {
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zAuthContext;   /* Put saved Parse.zAuthContext here */
   Parse *pParse;              /* The Parse structure */
 };
 
@@ -4106,27 +4106,27 @@ struct AuthContext {
 **    OPFLAG_SAVEPOSITION == BTREE_SAVEPOSITION
 **    OPFLAG_AUXDELETE    == BTREE_AUXDELETE
 */
-#define OPFLAG_NCHANGE       0x01    /* OP_Insert: Set to update db->nChange */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_NCHANGE       0x01    /* OP_Insert: Set to update db->nChange */
                                      /* Also used in P2 (not P5) of OP_Delete */
-#define OPFLAG_NOCHNG        0x01    /* OP_VColumn nochange for UPDATE */
-#define OPFLAG_EPHEM         0x01    /* OP_Column: Ephemeral output is ok */
-#define OPFLAG_LASTROWID     0x20    /* Set to update db->lastRowid */
-#define OPFLAG_ISUPDATE      0x04    /* This OP_Insert is an sql UPDATE */
-#define OPFLAG_APPEND        0x08    /* This is likely to be an append */
-#define OPFLAG_USESEEKRESULT 0x10    /* Try to avoid a seek in BtreeInsert() */
-#define OPFLAG_ISNOOP        0x40    /* OP_Delete does pre-update-hook only */
-#define OPFLAG_LENGTHARG     0x40    /* OP_Column only used for length() */
-#define OPFLAG_TYPEOFARG     0x80    /* OP_Column only used for typeof() */
-#define OPFLAG_BYTELENARG    0xc0    /* OP_Column only for octet_length() */
-#define OPFLAG_BULKCSR       0x01    /* OP_Open** used to open bulk cursor */
-#define OPFLAG_SEEKEQ        0x02    /* OP_Open** cursor uses EQ seek only */
-#define OPFLAG_FORDELETE     0x08    /* OP_Open should use BTREE_FORDELETE */
-#define OPFLAG_P2ISREG       0x10    /* P2 to OP_Open** is a register number */
-#define OPFLAG_PERMUTE       0x01    /* OP_Compare: use the permutation */
-#define OPFLAG_SAVEPOSITION  0x02    /* OP_Delete/Insert: save cursor pos */
-#define OPFLAG_AUXDELETE     0x04    /* OP_Delete: index in a DELETE op */
-#define OPFLAG_NOCHNG_MAGIC  0x6d    /* OP_MakeRecord: serialtype 10 is ok */
-#define OPFLAG_PREFORMAT     0x80    /* OP_Insert uses preformatted cell */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_NOCHNG        0x01    /* OP_VColumn nochange for UPDATE */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_EPHEM         0x01    /* OP_Column: Ephemeral output is ok */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_LASTROWID     0x20    /* Set to update db->lastRowid */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_ISUPDATE      0x04    /* This OP_Insert is an sql UPDATE */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_APPEND        0x08    /* This is likely to be an append */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_USESEEKRESULT 0x10    /* Try to avoid a seek in BtreeInsert() */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_ISNOOP        0x40    /* OP_Delete does pre-update-hook only */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_LENGTHARG     0x40    /* OP_Column only used for length() */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_TYPEOFARG     0x80    /* OP_Column only used for typeof() */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_BYTELENARG    0xc0    /* OP_Column only for octet_length() */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_BULKCSR       0x01    /* OP_Open** used to open bulk cursor */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_SEEKEQ        0x02    /* OP_Open** cursor uses EQ seek only */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_FORDELETE     0x08    /* OP_Open should use BTREE_FORDELETE */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_P2ISREG       0x10    /* P2 to OP_Open** is a register number */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_ಕ್ರಮಬದಲಾವಣೆ       0x01    /* OP_Compare: use the permutation */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_SAVEPOSITION  0x02    /* OP_Delete/Insert: save cursor pos */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_AUXDELETE     0x04    /* OP_Delete: index in a DELETE op */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_NOCHNG_MAGIC  0x6d    /* OP_MakeRecord: serialtype 10 is ok */
+#ವ್ಯಾಖ್ಯಾನಿಸು OPFLAG_PREFORMAT     0x80    /* OP_Insert uses preformatted cell */
 
 /*
 ** Each trigger present in the database schema is stored as an instance of
@@ -4143,19 +4143,19 @@ struct AuthContext {
 ** The "step_list" member points to the first element of a linked list
 ** containing the SQL statements specified as the trigger program.
 */
-struct Trigger {
-  char *zName;            /* The name of the trigger                        */
-  char *table;            /* The table or view to which the trigger applies */
+ರಚನೆ Trigger {
+  ಅಕ್ಷರ *zName;            /* The name of the trigger                        */
+  ಅಕ್ಷರ *ಕೋಷ್ಟಕ_2;            /* The table or view to which the trigger applies */
   u8 op;                  /* One of TK_DELETE, TK_UPDATE, TK_INSERT         */
   u8 tr_tm;               /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
   u8 bReturning;          /* This trigger implements a RETURNING clause */
-  Expr *pWhen;            /* The WHEN clause of the expression (may be NULL) */
+  ಅಭಿವ್ಯಕ್ತಿ *pWhen;            /* The WHEN clause of the expression (may be NULL) */
   IdList *pColumns;       /* If this is an UPDATE OF <column-list> trigger,
                              the <column-list> is stored here */
   Schema *pSchema;        /* Schema containing the trigger */
   Schema *pTabSchema;     /* Schema containing the table */
-  TriggerStep *step_list; /* Link list of trigger program steps             */
-  Trigger *pNext;         /* Next trigger associated with the table */
+  Trigger_ಹೆಜ್ಜೆ *ಹೆಜ್ಜೆ_list; /* Link list of trigger program steps             */
+  Trigger *p_ಮುಂದಿನ;         /* Next trigger associated with the table */
 };
 
 /*
@@ -4165,8 +4165,8 @@ struct Trigger {
 ** If there are multiple triggers, you might of some BEFORE and some AFTER.
 ** In that cases, the constants below can be ORed together.
 */
-#define TRIGGER_BEFORE  1
-#define TRIGGER_AFTER   2
+#ವ್ಯಾಖ್ಯಾನಿಸು TRIGGER_BEFORE  1
+#ವ್ಯಾಖ್ಯಾನಿಸು TRIGGER_AFTER   2
 
 /*
 ** An instance of struct TriggerStep is used to store a single SQL statement
@@ -4211,54 +4211,54 @@ struct Trigger {
 ** pExprList -> The list of expressions that follow the RETURNING keyword.
 **
 */
-struct TriggerStep {
+ರಚನೆ Trigger_ಹೆಜ್ಜೆ {
   u8 op;               /* One of TK_DELETE, TK_UPDATE, TK_INSERT, TK_SELECT,
                        ** or TK_RETURNING */
   u8 orconf;           /* OE_Rollback etc. */
   Trigger *pTrig;      /* The trigger that this step is a part of */
   Select *pSelect;     /* SELECT statement or RHS of INSERT INTO SELECT ... */
   SrcList *pSrc;       /* Table to insert/update/delete */
-  Expr *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
-  ExprList *pExprList; /* SET clause for UPDATE, or RETURNING clause */
+  ಅಭಿವ್ಯಕ್ತಿ *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ಅಭಿವ್ಯಕ್ತಿ_List; /* SET clause for UPDATE, or RETURNING clause */
   IdList *pIdList;     /* Column names for INSERT */
   Upsert *pUpsert;     /* Upsert clauses on an INSERT */
-  char *zSpan;         /* Original SQL text of this command */
-  TriggerStep *pNext;  /* Next in the link-list */
-  TriggerStep *pLast;  /* Last element in link-list. Valid for 1st elem only */
+  ಅಕ್ಷರ *z_ಹರವು;         /* Original SQL text of this command */
+  Trigger_ಹೆಜ್ಜೆ *p_ಮುಂದಿನ;  /* Next in the link-list */
+  Trigger_ಹೆಜ್ಜೆ *p_ಕೊನೆಯ;  /* Last element in link-list. Valid for 1st elem only */
 };
 
 /*
 ** Information about a RETURNING clause
 */
-struct Returning {
+ರಚನೆ Returning {
   Parse *pParse;        /* The parse that includes the RETURNING clause */
-  ExprList *pReturnEL;  /* List of expressions to return */
+  ಅಭಿವ್ಯಕ್ತಿ_List *pReturnEL;  /* List of expressions to return */
   Trigger retTrig;      /* The transient trigger that implements RETURNING */
-  TriggerStep retTStep; /* The trigger step */
-  int iRetCur;          /* Transient table holding RETURNING results */
-  int nRetCol;          /* Number of in pReturnEL after expansion */
-  int iRetReg;          /* Register array for holding a row of RETURNING */
-  char zName[40];       /* Name of trigger: "sqlite_returning_%p" */
+  Trigger_ಹೆಜ್ಜೆ retTStep; /* The trigger step */
+  ಪೂರ್ಣಾಂಕ iRetCur;          /* Transient table holding RETURNING results */
+  ಪೂರ್ಣಾಂಕ n_Ret_ಲಂಬಸಾಲು;          /* Number of in pReturnEL after expansion */
+  ಪೂರ್ಣಾಂಕ iRetReg;          /* Register array for holding a row of RETURNING */
+  ಅಕ್ಷರ zName[40];       /* Name of trigger: "sqlite_returning_%p" */
 };
 
 /*
 ** An object used to accumulate the text of a string where we
 ** do not necessarily know how big the string will be in the end.
 */
-struct sqlite3_str {
+ರಚನೆ sqlite3_str {
   sqlite3 *db;         /* Optional database for lookaside.  Can be NULL */
-  char *zText;         /* The string collected so far */
+  ಅಕ್ಷರ *z_ಪಠ್ಯ;         /* The string collected so far */
   u32  nAlloc;         /* Amount of space allocated in zText */
   u32  mxAlloc;        /* Maximum allowed allocation.  0 for no malloc usage */
   u32  nChar;          /* Length of the string so far */
   u8   accError;       /* SQLITE_NOMEM or SQLITE_TOOBIG */
   u8   printfFlags;    /* SQLITE_PRINTF flags below */
 };
-#define SQLITE_PRINTF_INTERNAL 0x01  /* Internal-use-only converters allowed */
-#define SQLITE_PRINTF_SQLFUNC  0x02  /* SQL function arguments to VXPrintf */
-#define SQLITE_PRINTF_MALLOCED 0x04  /* True if zText is allocated space */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_PRINTF_ಆಂತರಿಕ 0x01  /* Internal-use-only converters allowed */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_PRINTF_SQLFUNC  0x02  /* SQL function arguments to VXPrintf */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_PRINTF_MALLOCED 0x04  /* True if zText is allocated space */
 
-#define isMalloced(X)  (((X)->printfFlags & SQLITE_PRINTF_MALLOCED)!=0)
+#ವ್ಯಾಖ್ಯಾನಿಸು isMalloced(X)  (((X)->printfFlags & SQLITE_PRINTF_MALLOCED)!=0)
 
 /*
 ** The following object is the header for an "RCStr" or "reference-counted
@@ -4278,7 +4278,7 @@ struct sqlite3_str {
 ** "String" is in the name, but an RCStr object can also be used to hold
 ** binary data.
 */
-struct RCStr {
+ರಚನೆ RCStr {
   u64 nRCRef;            /* Number of references */
   /* Total structure size should be a multiple of 8 bytes for alignment */
 };
@@ -4287,24 +4287,24 @@ struct RCStr {
 ** A pointer to this structure is used to communicate information
 ** from sqlite3Init and OP_ParseSchema into the sqlite3InitCallback.
 */
-typedef struct {
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ {
   sqlite3 *db;        /* The database being initialized */
-  char **pzErrMsg;    /* Error message stored here */
-  int iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
-  int rc;             /* Result code stored here */
+  ಅಕ್ಷರ **pz_Err_ಸಂದೇಶ;    /* Error message stored here */
+  ಪೂರ್ಣಾಂಕ iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
+  ಪೂರ್ಣಾಂಕ rc;             /* Result code stored here */
   u32 mInitFlags;     /* Flags controlling error messages */
-  u32 nInitRow;       /* Number of rows processed */
-  Pgno mxPage;        /* Maximum page number.  0 for no limit. */
-} InitData;
+  u32 n_Init_ಅಡ್ಡಸಾಲು;       /* Number of rows processed */
+  Pgno mx_ಪುಟ;        /* Maximum page number.  0 for no limit. */
+} Init_ದತ್ತಾಂಶ;
 
 /*
 ** Allowed values for mInitFlags
 */
-#define INITFLAG_AlterMask     0x0007  /* Types of ALTER */
-#define INITFLAG_AlterRename   0x0001  /* Reparse after a RENAME */
-#define INITFLAG_AlterDrop     0x0002  /* Reparse after a DROP COLUMN */
-#define INITFLAG_AlterAdd      0x0003  /* Reparse after an ADD COLUMN */
-#define INITFLAG_AlterDropCons 0x0004  /* Reparse after a DROP CONSTRAINT */
+#ವ್ಯಾಖ್ಯಾನಿಸು INITFLAG_Alter_ಮುಖವಾಡ     0x0007  /* Types of ALTER */
+#ವ್ಯಾಖ್ಯಾನಿಸು INITFLAG_AlterRename   0x0001  /* Reparse after a RENAME */
+#ವ್ಯಾಖ್ಯಾನಿಸು INITFLAG_AlterDrop     0x0002  /* Reparse after a DROP COLUMN */
+#ವ್ಯಾಖ್ಯಾನಿಸು INITFLAG_Alter_ಕೂಡಿಸು      0x0003  /* Reparse after an ADD COLUMN */
+#ವ್ಯಾಖ್ಯಾನಿಸು INITFLAG_AlterDropCons 0x0004  /* Reparse after a DROP CONSTRAINT */
 
 /* Tuning parameters are set using SQLITE_TESTCTRL_TUNE and are controlled
 ** on debug-builds of the CLI using ".testctrl tune ID VALUE".  Tuning
@@ -4315,90 +4315,90 @@ typedef struct {
 **
 ** Tuning parameters are numbered starting with 1.
 */
-#define SQLITE_NTUNE  6             /* Should be zero for all trunk check-ins */
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_NTUNE  6             /* Should be zero for all trunk check-ins */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
 # define Tuning(X)  (sqlite3Config.aTune[(X)-1])
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define Tuning(X)  0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Structure containing global configuration data for the SQLite library.
 **
 ** This structure also contains some state information.
 */
-struct Sqlite3Config {
-  int bMemstat;                     /* True to enable memory status */
+ರಚನೆ Sqlite3Config {
+  ಪೂರ್ಣಾಂಕ bMemstat;                     /* True to enable memory status */
   u8 bCoreMutex;                    /* True to enable core mutexing */
-  u8 bFullMutex;                    /* True to enable full mutexing */
+  u8 b_ತುಂಬಿದ_Mutex;                    /* True to enable full mutexing */
   u8 bOpenUri;                      /* True to interpret filenames as URIs */
   u8 bUseCis;                       /* Use covering indices for full-scans */
   u8 bSmallMalloc;                  /* Avoid large memory allocations if true */
   u8 bExtraSchemaChecks;            /* Verify type,name,tbl_name in schema */
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
   u8 bJsonSelfcheck;                /* Double-check JSON parsing */
-#endif
-  int mxStrlen;                     /* Maximum string length */
-  int neverCorrupt;                 /* Database is always well-formed */
-  int szLookaside;                  /* Default lookaside buffer size */
-  int nLookaside;                   /* Default lookaside buffer count */
-  int nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
+#ಆದರೆ_ಅಂತ್ಯ
+  ಪೂರ್ಣಾಂಕ mxStrlen;                     /* Maximum string length */
+  ಪೂರ್ಣಾಂಕ neverCorrupt;                 /* Database is always well-formed */
+  ಪೂರ್ಣಾಂಕ szLookaside;                  /* Default lookaside buffer size */
+  ಪೂರ್ಣಾಂಕ nLookaside;                   /* Default lookaside buffer count */
+  ಪೂರ್ಣಾಂಕ nStmtSpill;                   /* Stmt-journal spill-to-disk threshold */
   sqlite3_mem_methods m;            /* Low-level memory allocation interface */
   sqlite3_mutex_methods mutex;      /* Low-level mutex interface */
   sqlite3_pcache_methods2 pcache2;  /* Low-level page-cache interface */
-  void *pHeap;                      /* Heap storage space */
-  int nHeap;                        /* Size of pHeap[] */
-  int mnReq, mxReq;                 /* Min and max heap requests sizes */
+  ಶೂನ್ಯ *p_ರಾಶಿ;                      /* Heap storage space */
+  ಪೂರ್ಣಾಂಕ n_ರಾಶಿ;                        /* Size of pHeap[] */
+  ಪೂರ್ಣಾಂಕ mnReq, mxReq;                 /* Min and max heap requests sizes */
   sqlite3_int64 szMmap;             /* mmap() space per open file */
   sqlite3_int64 mxMmap;             /* Maximum value for szMmap */
-  void *pPage;                      /* Page cache memory */
-  int szPage;                       /* Size of each page in pPage[] */
-  int nPage;                        /* Number of pages in pPage[] */
-  int mxParserStack;                /* maximum depth of the parser stack */
-  int sharedCacheEnabled;           /* true if shared-cache mode enabled */
+  ಶೂನ್ಯ *p_ಪುಟ;                      /* Page cache memory */
+  ಪೂರ್ಣಾಂಕ sz_ಪುಟ;                       /* Size of each page in pPage[] */
+  ಪೂರ್ಣಾಂಕ n_ಪುಟ;                        /* Number of pages in pPage[] */
+  ಪೂರ್ಣಾಂಕ mx_Parser_ರಾಶಿ;                /* maximum depth of the parser stack */
+  ಪೂರ್ಣಾಂಕ sharedCacheEnabled;           /* true if shared-cache mode enabled */
   u32 szPma;                        /* Maximum Sorter PMA size */
   /* The above might be initialized to non-zero.  The following need to always
   ** initially be zero, however. */
-  int isInit;                       /* True after initialization has finished */
-  int inProgress;                   /* True while initialization in progress */
-  int isMutexInit;                  /* True after mutexes are initialized */
-  int isMallocInit;                 /* True after malloc is initialized */
-  int isPCacheInit;                 /* True after malloc is initialized */
-  int nRefInitMutex;                /* Number of users of pInitMutex */
+  ಪೂರ್ಣಾಂಕ isInit;                       /* True after initialization has finished */
+  ಪೂರ್ಣಾಂಕ ಒಳ_ಪ್ರಗತಿ;                   /* True while initialization in progress */
+  ಪೂರ್ಣಾಂಕ isMutexInit;                  /* True after mutexes are initialized */
+  ಪೂರ್ಣಾಂಕ isMallocInit;                 /* True after malloc is initialized */
+  ಪೂರ್ಣಾಂಕ isPCacheInit;                 /* True after malloc is initialized */
+  ಪೂರ್ಣಾಂಕ nRefInitMutex;                /* Number of users of pInitMutex */
   sqlite3_mutex *pInitMutex;        /* Mutex used by sqlite3_initialize() */
-  void (*xLog)(void*,int,const char*); /* Function for logging */
-  void *pLogArg;                       /* First argument to xLog() */
-#ifdef SQLITE_ENABLE_SQLLOG
-  void(*xSqllog)(void*,sqlite3*,const char*, int);
-  void *pSqllogArg;
-#endif
-#ifdef SQLITE_VDBE_COVERAGE
+  ಶೂನ್ಯ (*xLog)(ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*); /* Function for logging */
+  ಶೂನ್ಯ *pLogArg;                       /* First argument to xLog() */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_SQLLOG
+  ಶೂನ್ಯ(*xSqllog)(ಶೂನ್ಯ*,sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಪೂರ್ಣಾಂಕ);
+  ಶೂನ್ಯ *pSqllogArg;
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_VDBE_COVERAGE
   /* The following callback (if not NULL) is invoked on every VDBE branch
   ** operation.  Set the callback using SQLITE_TESTCTRL_VDBE_COVERAGE.
   */
-  void (*xVdbeBranch)(void*,unsigned iSrcLine,u8 eThis,u8 eMx);  /* Callback */
-  void *pVdbeBranchArg;                                     /* 1st argument */
-#endif
-#ifndef SQLITE_OMIT_DESERIALIZE
-  sqlite3_int64 mxMemdbSize;        /* Default max memdb size */
-#endif
-#ifndef SQLITE_UNTESTABLE
-  int (*xTestCallback)(int);        /* Invoked by sqlite3FaultSim() */
-#endif
-#ifdef SQLITE_ALLOW_ROWID_IN_VIEW
+  ಶೂನ್ಯ (*xVdbeBranch)(ಶೂನ್ಯ*,ಚಿಹ್ನೆರಹಿತ i_Src_ಸಾಲು,u8 eThis,u8 eMx);  /* Callback */
+  ಶೂನ್ಯ *pVdbeBranchArg;                                     /* 1st argument */
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_DESERIALIZE
+  sqlite3_int64 mx_Memdb_ಗಾತ್ರ;        /* Default max memdb size */
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_UNTESTABLE
+  ಪೂರ್ಣಾಂಕ (*xTestCallback)(ಪೂರ್ಣಾಂಕ);        /* Invoked by sqlite3FaultSim() */
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ALLOW_ROWID_ಒಳ_VIEW
   u32 mNoVisibleRowid;              /* TF_NoVisibleRowid if the ROWID_IN_VIEW
                                     ** feature is disabled.  0 if rowids can
                                     ** occur in views. */
-#endif
-  int bLocaltimeFault;              /* True to fail localtime() calls */
-  int (*xAltLocaltime)(const void*,void*); /* Alternative localtime() routine */
-  int iOnceResetThreshold;          /* When to reset OP_Once counters */
+#ಆದರೆ_ಅಂತ್ಯ
+  ಪೂರ್ಣಾಂಕ bLocaltimeFault;              /* True to fail localtime() calls */
+  ಪೂರ್ಣಾಂಕ (*xAltLocaltime)(ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*,ಶೂನ್ಯ*); /* Alternative localtime() routine */
+  ಪೂರ್ಣಾಂಕ i_Once_Reset_ಮಿತಿ;          /* When to reset OP_Once counters */
   u32 szSorterRef;                  /* Min size in bytes to use sorter-refs */
-  unsigned int iPrngSeed;           /* Alternative fixed seed for the PRNG */
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ i_Prng_ಬೀಜ;           /* Alternative fixed seed for the PRNG */
   /* vvvv--- must be last ---vvv */
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
   sqlite3_int64 aTune[SQLITE_NTUNE]; /* Tuning parameters */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 };
 
 /*
@@ -4417,40 +4417,40 @@ struct Sqlite3Config {
 ** sqlite3_test_control().  This enables assert() statements to prove
 ** things that are always true for well-formed databases.
 */
-#define CORRUPT_DB  (sqlite3Config.neverCorrupt==0)
+#ವ್ಯಾಖ್ಯಾನಿಸು CORRUPT_DB  (sqlite3Config.neverCorrupt==0)
 
 /*
 ** Context pointer passed down through the tree-walk.
 */
-struct Walker {
+ರಚನೆ Walker {
   Parse *pParse;                            /* Parser context.  */
-  int (*xExprCallback)(Walker*, Expr*);     /* Callback for expressions */
-  int (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
-  void (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
-  int walkerDepth;                          /* Number of subqueries */
-  u16 eCode;                                /* A small processing code */
+  ಪೂರ್ಣಾಂಕ (*x_ಅಭಿವ್ಯಕ್ತಿ_Callback)(Walker*, ಅಭಿವ್ಯಕ್ತಿ*);     /* Callback for expressions */
+  ಪೂರ್ಣಾಂಕ (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
+  ಶೂನ್ಯ (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
+  ಪೂರ್ಣಾಂಕ walker_ಆಳ;                          /* Number of subqueries */
+  u16 e_ಸಂಕೇತ;                                /* A small processing code */
   u16 mWFlags;                              /* Use-dependent flags */
-  union {                                   /* Extra data for callback */
+  ಒಕ್ಕೂಟ {                                   /* Extra data for callback */
     NameContext *pNC;                         /* Naming context */
-    int n;                                    /* A counter */
-    int iCur;                                 /* A cursor number */
-    int sz;                                   /* String literal length */
+    ಪೂರ್ಣಾಂಕ n;                                    /* A counter */
+    ಪೂರ್ಣಾಂಕ iCur;                                 /* A cursor number */
+    ಪೂರ್ಣಾಂಕ sz;                                   /* String literal length */
     SrcList *pSrcList;                        /* FROM clause */
-    struct CCurHint *pCCurHint;               /* Used by codeCursorHint() */
-    struct RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
-    int *aiCol;                               /* array of column indexes */
-    struct IdxCover *pIdxCover;               /* Check for index coverage */
-    ExprList *pGroupBy;                       /* GROUP BY clause */
+    ರಚನೆ CCurHint *pCCurHint;               /* Used by codeCursorHint() */
+    ರಚನೆ RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
+    ಪೂರ್ಣಾಂಕ *ai_ಲಂಬಸಾಲು;                               /* array of column indexes */
+    ರಚನೆ IdxCover *pIdxCover;               /* Check for index coverage */
+    ಅಭಿವ್ಯಕ್ತಿ_List *p_ಗುಂಪು_By;                       /* GROUP BY clause */
     Select *pSelect;                          /* HAVING to WHERE clause ctx */
-    struct WindowRewrite *pRewrite;           /* Window rewrite context */
-    struct WhereConst *pConst;                /* WHERE clause constants */
-    struct RenameCtx *pRename;                /* RENAME COLUMN context */
-    struct Table *pTab;                       /* Table of generated column */
-    struct CoveringIndexCheck *pCovIdxCk;     /* Check for covering index */
-    SrcItem *pSrcItem;                        /* A single FROM clause item */
+    ರಚನೆ ಕಿಟಕಿ_Rewrite *pRewrite;           /* Window rewrite context */
+    ರಚನೆ WhereConst *pConst;                /* WHERE clause constants */
+    ರಚನೆ RenameCtx *pRename;                /* RENAME COLUMN context */
+    ರಚನೆ ಕೋಷ್ಟಕ *pTab;                       /* Table of generated column */
+    ರಚನೆ Covering_ಸೂಚ್ಯಂಕ_Check *pCovIdxCk;     /* Check for covering index */
+    Src_ಅಂಶ *p_Src_ಅಂಶ;                        /* A single FROM clause item */
     DbFixer *pFix;                            /* See sqlite3FixSelect() */
     Mem *aMem;                                /* See sqlite3BtreeCursorHint() */
-    struct CheckOnCtx *pCheckOnCtx;           /* See selectCheckOnClauses() */
+    ರಚನೆ CheckOnCtx *pCheckOnCtx;           /* See selectCheckOnClauses() */
   } u;
 };
 
@@ -4459,56 +4459,56 @@ struct Walker {
 ** routines as they walk the parse tree to make database references
 ** explicit.
 */
-struct DbFixer {
+ರಚನೆ DbFixer {
   Parse *pParse;      /* The parsing context.  Error messages written here */
   Walker w;           /* Walker object */
   Schema *pSchema;    /* Fix items to this schema */
-  u8 bTemp;           /* True for TEMP schema entries */
-  const char *zDb;    /* Make sure all objects are contained in this database */
-  const char *zType;  /* Type of the container - used for error messages */
-  const Token *pName; /* Name of the container - used for error messages */
+  u8 b_ತಾತ್ಕಾಲಿಕ;           /* True for TEMP schema entries */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDb;    /* Make sure all objects are contained in this database */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zType;  /* Type of the container - used for error messages */
+  ಸ್ಥಿರಾಂಕ Token *pName; /* Name of the container - used for error messages */
 };
 
 /* Forward declarations */
-int sqlite3WalkExpr(Walker*, Expr*);
-int sqlite3WalkExprNN(Walker*, Expr*);
-int sqlite3WalkExprList(Walker*, ExprList*);
-int sqlite3WalkSelect(Walker*, Select*);
-int sqlite3WalkSelectExpr(Walker*, Select*);
-int sqlite3WalkSelectFrom(Walker*, Select*);
-int sqlite3ExprWalkNoop(Walker*, Expr*);
-int sqlite3SelectWalkNoop(Walker*, Select*);
-int sqlite3SelectWalkFail(Walker*, Select*);
-int sqlite3WalkerDepthIncrease(Walker*,Select*);
-void sqlite3WalkerDepthDecrease(Walker*,Select*);
-void sqlite3WalkWinDefnDummyCallback(Walker*,Select*);
+ಪೂರ್ಣಾಂಕ sqlite3_Walk_ಅಭಿವ್ಯಕ್ತಿ(Walker*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Walk_ಅಭಿವ್ಯಕ್ತಿ_NN(Walker*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Walk_ಅಭಿವ್ಯಕ್ತಿ_List(Walker*, ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಪೂರ್ಣಾಂಕ sqlite3WalkSelect(Walker*, Select*);
+ಪೂರ್ಣಾಂಕ sqlite3_Walk_Select_ಅಭಿವ್ಯಕ್ತಿ(Walker*, Select*);
+ಪೂರ್ಣಾಂಕ sqlite3WalkSelectFrom(Walker*, Select*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Walk_Noop(Walker*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3SelectWalkNoop(Walker*, Select*);
+ಪೂರ್ಣಾಂಕ sqlite3SelectWalkFail(Walker*, Select*);
+ಪೂರ್ಣಾಂಕ sqlite3_Walker_ಆಳ_Increase(Walker*,Select*);
+ಶೂನ್ಯ sqlite3_Walker_ಆಳ_Decrease(Walker*,Select*);
+ಶೂನ್ಯ sqlite3WalkWinDefnDummyCallback(Walker*,Select*);
 
-#ifdef SQLITE_DEBUG
-void sqlite3SelectWalkAssert2(Walker*, Select*);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+ಶೂನ್ಯ sqlite3SelectWalkAssert2(Walker*, Select*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_CTE
-void sqlite3SelectPopWith(Walker*, Select*);
-#else
-# define sqlite3SelectPopWith 0
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_CTE
+ಶೂನ್ಯ sqlite3_Select_ತೆಗೆ_With(Walker*, Select*);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_Select_ತೆಗೆ_With 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Return code from the parse-tree walking primitives and their
 ** callbacks.
 */
-#define WRC_Continue    0   /* Continue down into children */
-#define WRC_Prune       1   /* Omit children but continue walking siblings */
-#define WRC_Abort       2   /* Abandon the tree walk */
+#ವ್ಯಾಖ್ಯಾನಿಸು WRC_Continue    0   /* Continue down into children */
+#ವ್ಯಾಖ್ಯಾನಿಸು WRC_Prune       1   /* Omit children but continue walking siblings */
+#ವ್ಯಾಖ್ಯಾನಿಸು WRC_Abort       2   /* Abandon the tree walk */
 
 /*
 ** A single common table expression
 */
-struct Cte {
-  char *zName;            /* Name of this CTE */
-  ExprList *pCols;        /* List of explicit column names, or NULL */
+ರಚನೆ Cte {
+  ಅಕ್ಷರ *zName;            /* Name of this CTE */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ;        /* List of explicit column names, or NULL */
   Select *pSelect;        /* The definition of this CTE */
-  const char *zCteErr;    /* Error message for circular references */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zCteErr;    /* Error message for circular references */
   CteUse *pUse;           /* Usage information for this CTE */
   u8 eM10d;               /* The MATERIALIZED flag */
 };
@@ -4516,24 +4516,24 @@ struct Cte {
 /*
 ** Allowed values for the materialized flag (eM10d):
 */
-#define M10d_Yes       0  /* AS MATERIALIZED */
-#define M10d_Any       1  /* Not specified.  Query planner's choice */
-#define M10d_No        2  /* AS NOT MATERIALIZED */
+#ವ್ಯಾಖ್ಯಾನಿಸು M10d_Yes       0  /* AS MATERIALIZED */
+#ವ್ಯಾಖ್ಯಾನಿಸು M10d_Any       1  /* Not specified.  Query planner's choice */
+#ವ್ಯಾಖ್ಯಾನಿಸು M10d_No        2  /* AS NOT MATERIALIZED */
 
 /*
 ** An instance of the With object represents a WITH clause containing
 ** one or more CTEs (common table expressions).
 */
-struct With {
-  int nCte;               /* Number of CTEs in the WITH clause */
-  int bView;              /* Belongs to the outermost Select of a view */
+ರಚನೆ With {
+  ಪೂರ್ಣಾಂಕ nCte;               /* Number of CTEs in the WITH clause */
+  ಪೂರ್ಣಾಂಕ bView;              /* Belongs to the outermost Select of a view */
   With *pOuter;           /* Containing WITH clause, or NULL */
   Cte a[FLEXARRAY];       /* For each CTE in the WITH clause.... */
 };
 
 /* The size (in bytes) of a With object that can hold as many
 ** as N different CTEs. */
-#define SZ_WITH(N)  (offsetof(With,a) + (N)*sizeof(Cte))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_WITH(N)  (offsetof(With,a) + (N)*ಗಾತ್ರ(Cte))
 
 /*
 ** The Cte object is not guaranteed to persist for the entire duration
@@ -4546,12 +4546,12 @@ struct With {
 ** than sqlite3SelectDelete(), which is what enables them to persist
 ** until the end of code generation.
 */
-struct CteUse {
-  int nUse;              /* Number of users of this CTE */
-  int addrM9e;           /* Start of subroutine to compute materialization */
-  int regRtn;            /* Return address register for addrM9e subroutine */
-  int iCur;              /* Ephemeral table holding the materialization */
-  LogEst nRowEst;        /* Estimated number of rows in the table */
+ರಚನೆ CteUse {
+  ಪೂರ್ಣಾಂಕ nUse;              /* Number of users of this CTE */
+  ಪೂರ್ಣಾಂಕ addrM9e;           /* Start of subroutine to compute materialization */
+  ಪೂರ್ಣಾಂಕ regRtn;            /* Return address register for addrM9e subroutine */
+  ಪೂರ್ಣಾಂಕ iCur;              /* Ephemeral table holding the materialization */
+  LogEst n_ಅಡ್ಡಸಾಲು_Est;        /* Estimated number of rows in the table */
   u8 eM10d;              /* The MATERIALIZED flag */
 };
 
@@ -4559,27 +4559,27 @@ struct CteUse {
 /* Client data associated with sqlite3_set_clientdata() and
 ** sqlite3_get_clientdata().
 */
-struct DbClientData {
-  DbClientData *pNext;        /* Next in a linked list */
-  void *pData;                /* The data */
-  void (*xDestructor)(void*); /* Destructor.  Might be NULL */
-  char zName[FLEXARRAY];      /* Name of this client data. MUST BE LAST */
+ರಚನೆ Db_Client_ದತ್ತಾಂಶ {
+  Db_Client_ದತ್ತಾಂಶ *p_ಮುಂದಿನ;        /* Next in a linked list */
+  ಶೂನ್ಯ *p_ದತ್ತಾಂಶ;                /* The data */
+  ಶೂನ್ಯ (*xDestructor)(ಶೂನ್ಯ*); /* Destructor.  Might be NULL */
+  ಅಕ್ಷರ zName[FLEXARRAY];      /* Name of this client data. MUST BE LAST */
 };
 
 /* The size (in bytes) of a DbClientData object that can has a name
 ** that is N bytes long, including the zero-terminator. */
-#define SZ_DBCLIENTDATA(N) (offsetof(DbClientData,zName)+(N))
+#ವ್ಯಾಖ್ಯಾನಿಸು SZ_DBCLIENTDATA(N) (offsetof(Db_Client_ದತ್ತಾಂಶ,zName)+(N))
 
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
 /*
 ** An instance of the TreeView object is used for printing the content of
 ** data structures on sqlite3DebugPrintf() using a tree-like view.
 */
-struct TreeView {
-  int iLevel;             /* Which level of the tree we are on */
-  u8  bLine[100];         /* Draw vertical in column i if bLine[i] is true */
+ರಚನೆ ವೃಕ್ಷ_View {
+  ಪೂರ್ಣಾಂಕ iLevel;             /* Which level of the tree we are on */
+  u8  b_ಸಾಲು[100];         /* Draw vertical in column i if bLine[i] is true */
 };
-#endif /* SQLITE_DEBUG */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_DEBUG */
 
 /*
 ** This object is used in various ways, most (but not all) related to window
@@ -4604,63 +4604,63 @@ struct TreeView {
 ** The uses (1) and (2) are really the same Window object that just happens
 ** to be accessible in two different ways.  Use case (3) are separate objects.
 */
-struct Window {
-  char *zName;            /* Name of window (may be NULL) */
-  char *zBase;            /* Name of base window for chaining (may be NULL) */
-  ExprList *pPartition;   /* PARTITION BY clause */
-  ExprList *pOrderBy;     /* ORDER BY clause */
+ರಚನೆ ಕಿಟಕಿ {
+  ಅಕ್ಷರ *zName;            /* Name of window (may be NULL) */
+  ಅಕ್ಷರ *z_ತಳ;            /* Name of base window for chaining (may be NULL) */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ವಿಭಜನೆ;   /* PARTITION BY clause */
+  ಅಭಿವ್ಯಕ್ತಿ_List *p_ಕ್ರಮ_By;     /* ORDER BY clause */
   u8 eFrmType;            /* TK_RANGE, TK_GROUPS, TK_ROWS, or 0 */
-  u8 eStart;              /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
-  u8 eEnd;                /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
-  u8 bImplicitFrame;      /* True if frame was implicitly specified */
+  u8 e_ಆರಂಭ;              /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
+  u8 e_ಕೊನೆ;                /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
+  u8 b_Implicit_ಚೌಕಟ್ಟು;      /* True if frame was implicitly specified */
   u8 eExclude;            /* TK_NO, TK_CURRENT, TK_TIES, TK_GROUP, or 0 */
-  Expr *pStart;           /* Expression for "<expr> PRECEDING" */
-  Expr *pEnd;             /* Expression for "<expr> FOLLOWING" */
-  Window **ppThis;        /* Pointer to this object in Select.pWin list */
-  Window *pNextWin;       /* Next window function belonging to this SELECT */
-  Expr *pFilter;          /* The FILTER expression */
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಆರಂಭ;           /* Expression for "<expr> PRECEDING" */
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಕೊನೆ;             /* Expression for "<expr> FOLLOWING" */
+  ಕಿಟಕಿ **ppThis;        /* Pointer to this object in Select.pWin list */
+  ಕಿಟಕಿ *p_ಮುಂದಿನ_Win;       /* Next window function belonging to this SELECT */
+  ಅಭಿವ್ಯಕ್ತಿ *pFilter;          /* The FILTER expression */
   FuncDef *pWFunc;        /* The function */
-  int iEphCsr;            /* Partition buffer or Peer buffer */
-  int regAccum;           /* Accumulator */
-  int regResult;          /* Interim result */
-  int csrApp;             /* Function cursor (used by min/max) */
-  int regApp;             /* Function register (also used by min/max) */
-  int regPart;            /* Array of registers for PARTITION BY values */
-  Expr *pOwner;           /* Expression object this window is attached to */
-  int nBufferCol;         /* Number of columns in buffer table */
-  int iArgCol;            /* Offset of first argument for this function */
-  int regOne;             /* Register containing constant value 1 */
-  int regStartRowid;
-  int regEndRowid;
-  u8 bExprArgs;           /* Defer evaluation of window function arguments
+  ಪೂರ್ಣಾಂಕ iEphCsr;            /* Partition buffer or Peer buffer */
+  ಪೂರ್ಣಾಂಕ regAccum;           /*ಸಂಚಯಕ*/
+  ಪೂರ್ಣಾಂಕ reg_ಫಲಿತಾಂಶ;          /* Interim result */
+  ಪೂರ್ಣಾಂಕ csrApp;             /* Function cursor (used by min/max) */
+  ಪೂರ್ಣಾಂಕ regApp;             /* Function register (also used by min/max) */
+  ಪೂರ್ಣಾಂಕ regPart;            /* Array of registers for PARTITION BY values */
+  ಅಭಿವ್ಯಕ್ತಿ *pOwner;           /* Expression object this window is attached to */
+  ಪೂರ್ಣಾಂಕ n_ಬಫರ್_ಲಂಬಸಾಲು;         /* Number of columns in buffer table */
+  ಪೂರ್ಣಾಂಕ i_Arg_ಲಂಬಸಾಲು;            /* Offset of first argument for this function */
+  ಪೂರ್ಣಾಂಕ regOne;             /* Register containing constant value 1 */
+  ಪೂರ್ಣಾಂಕ reg_ಆರಂಭ_Rowid;
+  ಪೂರ್ಣಾಂಕ reg_ಕೊನೆ_Rowid;
+  u8 b_ಅಭಿವ್ಯಕ್ತಿ_ವಾದಗಳು;           /* Defer evaluation of window function arguments
                           ** due to the SQLITE_SUBTYPE flag */
 };
 
-Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow);
-void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal);
+Select *sqlite3_Multi_ಮೌಲ್ಯಗಳು(Parse *pParse, Select *p_ಎಡ, ಅಭಿವ್ಯಕ್ತಿ_List *p_ಅಡ್ಡಸಾಲು);
+ಶೂನ್ಯ sqlite3_Multi_ಮೌಲ್ಯಗಳು_ಕೊನೆ(Parse *pParse, Select *pVal);
 
-#ifndef SQLITE_OMIT_WINDOWFUNC
-void sqlite3WindowDelete(sqlite3*, Window*);
-void sqlite3WindowUnlinkFromSelect(Window*);
-void sqlite3WindowListDelete(sqlite3 *db, Window *p);
-Window *sqlite3WindowAlloc(Parse*, int, int, Expr*, int , Expr*, u8);
-void sqlite3WindowAttach(Parse*, Expr*, Window*);
-void sqlite3WindowLink(Select *pSel, Window *pWin);
-int sqlite3WindowCompare(const Parse*, const Window*, const Window*, int);
-void sqlite3WindowCodeInit(Parse*, Select*);
-void sqlite3WindowCodeStep(Parse*, Select*, WhereInfo*, int, int);
-int sqlite3WindowRewrite(Parse*, Select*);
-void sqlite3WindowUpdate(Parse*, Window*, Window*, FuncDef*);
-Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p);
-Window *sqlite3WindowListDup(sqlite3 *db, Window *p);
-void sqlite3WindowFunctions(void);
-void sqlite3WindowChain(Parse*, Window*, Window*);
-Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
-#else
-# define sqlite3WindowDelete(a,b)
-# define sqlite3WindowFunctions()
-# define sqlite3WindowAttach(a,b,c)
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WINDOWFUNC
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_Delete(sqlite3*, ಕಿಟಕಿ*);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_Unlink_From_Select(ಕಿಟಕಿ*);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_List_Delete(sqlite3 *db, ಕಿಟಕಿ *p);
+ಕಿಟಕಿ *sqlite3_ಕಿಟಕಿ_Alloc(Parse*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ , ಅಭಿವ್ಯಕ್ತಿ*, u8);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_Attach(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಕಿಟಕಿ*);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_Link(Select *pSel, ಕಿಟಕಿ *pWin);
+ಪೂರ್ಣಾಂಕ sqlite3_ಕಿಟಕಿ_Compare(ಸ್ಥಿರಾಂಕ Parse*, ಸ್ಥಿರಾಂಕ ಕಿಟಕಿ*, ಸ್ಥಿರಾಂಕ ಕಿಟಕಿ*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_ಸಂಕೇತ_Init(Parse*, Select*);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_ಸಂಕೇತ_ಹೆಜ್ಜೆ(Parse*, Select*, WhereInfo*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಕಿಟಕಿ_Rewrite(Parse*, Select*);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_Update(Parse*, ಕಿಟಕಿ*, ಕಿಟಕಿ*, FuncDef*);
+ಕಿಟಕಿ *sqlite3_ಕಿಟಕಿ_Dup(sqlite3 *db, ಅಭಿವ್ಯಕ್ತಿ *pOwner, ಕಿಟಕಿ *p);
+ಕಿಟಕಿ *sqlite3_ಕಿಟಕಿ_List_Dup(sqlite3 *db, ಕಿಟಕಿ *p);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_Functions(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3_ಕಿಟಕಿ_Chain(Parse*, ಕಿಟಕಿ*, ಕಿಟಕಿ*);
+ಕಿಟಕಿ *sqlite3_ಕಿಟಕಿ_Assemble(Parse*, ಕಿಟಕಿ*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಅಭಿವ್ಯಕ್ತಿ_List*, Token*);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_ಕಿಟಕಿ_Delete(a,b)
+# define sqlite3_ಕಿಟಕಿ_Functions()
+# define sqlite3_ಕಿಟಕಿ_Attach(a,b,c)
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Assuming zIn points to the first byte of a UTF-8 character,
@@ -4717,9 +4717,9 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** that constant (0xc0-1) instead, gcc 13.3.0 generates code that runs slower.
 ** So the (0x80-1) constant is used for substr() and length().
 */
-#define SQLITE_SKIP_UTF8(zIn) {                        \
-  if( (*(zIn++))>=0xc0 ){                              \
-    while( (*zIn & 0xc0)==0x80 ){ zIn++; }             \
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_SKIP_UTF8(z_ಒಳ) {                        \
+  ಆದರೆ( (*(z_ಒಳ++))>=0xc0 ){                              \
+    ಆಗ( (*z_ಒಳ & 0xc0)==0x80 ){ z_ಒಳ++; }             \
   }                                                    \
 }
 
@@ -4730,110 +4730,110 @@ Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
 ** using sqlite3_log().  The routines also provide a convenient place
 ** to set a debugger breakpoint.
 */
-int sqlite3ReportError(int iErr, int lineno, const char *zType);
-int sqlite3CorruptError(int);
-int sqlite3MisuseError(int);
-int sqlite3CantopenError(int);
-#define SQLITE_CORRUPT_BKPT sqlite3CorruptError(__LINE__)
-#define SQLITE_MISUSE_BKPT sqlite3MisuseError(__LINE__)
-#define SQLITE_CANTOPEN_BKPT sqlite3CantopenError(__LINE__)
-#ifdef SQLITE_DEBUG
-  int sqlite3NomemError(int);
-  int sqlite3IoerrnomemError(int);
+ಪೂರ್ಣಾಂಕ sqlite3ReportError(ಪೂರ್ಣಾಂಕ iErr, ಪೂರ್ಣಾಂಕ lineno, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zType);
+ಪೂರ್ಣಾಂಕ sqlite3CorruptError(ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3MisuseError(ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3CantopenError(ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_CORRUPT_BKPT sqlite3CorruptError(__LINE__)
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_MISUSE_BKPT sqlite3MisuseError(__LINE__)
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_CANTOPEN_BKPT sqlite3CantopenError(__LINE__)
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+  ಪೂರ್ಣಾಂಕ sqlite3NomemError(ಪೂರ್ಣಾಂಕ);
+  ಪೂರ್ಣಾಂಕ sqlite3IoerrnomemError(ಪೂರ್ಣಾಂಕ);
 # define SQLITE_NOMEM_BKPT sqlite3NomemError(__LINE__)
 # define SQLITE_IOERR_NOMEM_BKPT sqlite3IoerrnomemError(__LINE__)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define SQLITE_NOMEM_BKPT SQLITE_NOMEM
 # define SQLITE_IOERR_NOMEM_BKPT SQLITE_IOERR_NOMEM
-#endif
-#if defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
-  int sqlite3CorruptPgnoError(int,Pgno);
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(SQLITE_DEBUG) || defined(SQLITE_ENABLE_CORRUPT_PGNO)
+  ಪೂರ್ಣಾಂಕ sqlite3CorruptPgnoError(ಪೂರ್ಣಾಂಕ,Pgno);
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptPgnoError(__LINE__,(P))
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define SQLITE_CORRUPT_PGNO(P) sqlite3CorruptError(__LINE__)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** FTS3 and FTS4 both require virtual table support
 */
-#if defined(SQLITE_OMIT_VIRTUALTABLE)
+#ಆದರೆ defined(SQLITE_OMIT_VIRTUALTABLE)
 # undef SQLITE_ENABLE_FTS3
 # undef SQLITE_ENABLE_FTS4
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** FTS4 is really an extension for FTS3.  It is enabled using the
 ** SQLITE_ENABLE_FTS3 macro.  But to avoid confusion we also call
 ** the SQLITE_ENABLE_FTS4 macro to serve as an alias for SQLITE_ENABLE_FTS3.
 */
-#if defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
+#ಆದರೆ defined(SQLITE_ENABLE_FTS4) && !defined(SQLITE_ENABLE_FTS3)
 # define SQLITE_ENABLE_FTS3 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The following macros mimic the standard library functions toupper(),
 ** isspace(), isalnum(), isdigit() and isxdigit(), respectively. The
 ** sqlite versions only work for ASCII characters, regardless of locale.
 */
-#ifdef SQLITE_ASCII
-# define sqlite3Toupper(x)  ((x)&~(sqlite3CtypeMap[(unsigned char)(x)]&0x20))
-# define sqlite3Isspace(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x01)
-# define sqlite3Isalnum(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x06)
-# define sqlite3Isalpha(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x02)
-# define sqlite3Isdigit(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x04)
-# define sqlite3Isxdigit(x)  (sqlite3CtypeMap[(unsigned char)(x)]&0x08)
-# define sqlite3Tolower(x)   (sqlite3UpperToLower[(unsigned char)(x)])
-# define sqlite3Isquote(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x80)
-# define sqlite3JsonId1(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x42)
-# define sqlite3JsonId2(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x46)
-#else
-# define sqlite3Toupper(x)   toupper((unsigned char)(x))
-# define sqlite3Isspace(x)   isspace((unsigned char)(x))
-# define sqlite3Isalnum(x)   isalnum((unsigned char)(x))
-# define sqlite3Isalpha(x)   isalpha((unsigned char)(x))
-# define sqlite3Isdigit(x)   isdigit((unsigned char)(x))
-# define sqlite3Isxdigit(x)  isxdigit((unsigned char)(x))
-# define sqlite3Tolower(x)   tolower((unsigned char)(x))
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ASCII
+# define sqlite3Toupper(x)  ((x)&~(sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x20))
+# define sqlite3Isspace(x)   (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x01)
+# define sqlite3Isalnum(x)   (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x06)
+# define sqlite3Isalpha(x)   (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x02)
+# define sqlite3Isdigit(x)   (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x04)
+# define sqlite3Isxdigit(x)  (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x08)
+# define sqlite3Tolower(x)   (sqlite3_ಊರ್ಧ್ವ_ಗಮ್ಯ_ಅಧೋ[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)])
+# define sqlite3Isquote(x)   (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x80)
+# define sqlite3JsonId1(x)   (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x42)
+# define sqlite3JsonId2(x)   (sqlite3CtypeMap[(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x)]&0x46)
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3Toupper(x)   ದೊಡ್ಡ_ಅಕ್ಷರ((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x))
+# define sqlite3Isspace(x)   ಖಾಲಿಯೇ((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x))
+# define sqlite3Isalnum(x)   ಅಕ್ಷರವೇ_ಅಂಕಿಯೇ((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x))
+# define sqlite3Isalpha(x)   ಅಕ್ಷರವೇ((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x))
+# define sqlite3Isdigit(x)   ಅಂಕಿಯೇ((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x))
+# define sqlite3Isxdigit(x)  isxdigit((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x))
+# define sqlite3Tolower(x)   tolower((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(x))
 # define sqlite3Isquote(x)   ((x)=='"'||(x)=='\''||(x)=='['||(x)=='`')
 # define sqlite3JsonId1(x)   (sqlite3IsIdChar(x)&&(x)<'0')
 # define sqlite3JsonId2(x)   sqlite3IsIdChar(x)
-#endif
-int sqlite3IsIdChar(u8);
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3IsIdChar(u8);
 
 /*
 ** Internal function prototypes
 */
-int sqlite3StrICmp(const char*,const char*);
-int sqlite3Strlen30(const char*);
-#define sqlite3Strlen30NN(C) (strlen(C)&0x3fffffff)
-char *sqlite3ColumnType(Column*,char*);
-#define sqlite3StrNICmp sqlite3_strnicmp
+ಪೂರ್ಣಾಂಕ sqlite3StrICmp(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಪೂರ್ಣಾಂಕ sqlite3Strlen30(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3Strlen30NN(C) (ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(C)&0x3fffffff)
+ಅಕ್ಷರ *sqlite3_ಸ್ತಂಭ_Type(ಸ್ತಂಭ*,ಅಕ್ಷರ*);
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3StrNICmp sqlite3_strnicmp
 
-int sqlite3MallocInit(void);
-void sqlite3MallocEnd(void);
-void *sqlite3Malloc(u64);
-void *sqlite3MallocZero(u64);
-void *sqlite3DbMallocZero(sqlite3*, u64);
-void *sqlite3DbMallocRaw(sqlite3*, u64);
-void *sqlite3DbMallocRawNN(sqlite3*, u64);
-char *sqlite3DbStrDup(sqlite3*,const char*);
-char *sqlite3DbStrNDup(sqlite3*,const char*, u64);
-char *sqlite3DbSpanDup(sqlite3*,const char*,const char*);
-void *sqlite3Realloc(void*, u64);
-void *sqlite3DbReallocOrFree(sqlite3 *, void *, u64);
-void *sqlite3DbRealloc(sqlite3 *, void *, u64);
-void sqlite3DbFree(sqlite3*, void*);
-void sqlite3DbFreeNN(sqlite3*, void*);
-void sqlite3DbNNFreeNN(sqlite3*, void*);
-int sqlite3MallocSize(const void*);
-int sqlite3DbMallocSize(sqlite3*, const void*);
-void *sqlite3PageMalloc(int);
-void sqlite3PageFree(void*);
-void sqlite3MemSetDefault(void);
-#ifndef SQLITE_UNTESTABLE
-void sqlite3BenignMallocHooks(void (*)(void), void (*)(void));
-#endif
-int sqlite3HeapNearlyFull(void);
+ಪೂರ್ಣಾಂಕ sqlite3MallocInit(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3_Malloc_ಕೊನೆ(ಶೂನ್ಯ);
+ಶೂನ್ಯ *sqlite3Malloc(u64);
+ಶೂನ್ಯ *sqlite3MallocZero(u64);
+ಶೂನ್ಯ *sqlite3DbMallocZero(sqlite3*, u64);
+ಶೂನ್ಯ *sqlite3DbMallocRaw(sqlite3*, u64);
+ಶೂನ್ಯ *sqlite3DbMallocRawNN(sqlite3*, u64);
+ಅಕ್ಷರ *sqlite3DbStrDup(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಅಕ್ಷರ *sqlite3DbStrNDup(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, u64);
+ಅಕ್ಷರ *sqlite3_Db_ಹರವು_Dup(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ *sqlite3Realloc(ಶೂನ್ಯ*, u64);
+ಶೂನ್ಯ *sqlite3DbReallocOrFree(sqlite3 *, ಶೂನ್ಯ *, u64);
+ಶೂನ್ಯ *sqlite3DbRealloc(sqlite3 *, ಶೂನ್ಯ *, u64);
+ಶೂನ್ಯ sqlite3DbFree(sqlite3*, ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3DbFreeNN(sqlite3*, ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3DbNNFreeNN(sqlite3*, ಶೂನ್ಯ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Malloc_ಗಾತ್ರ(ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Db_Malloc_ಗಾತ್ರ(sqlite3*, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*);
+ಶೂನ್ಯ *sqlite3_ಪುಟ_Malloc(ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಪುಟ_Free(ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3_Mem_ಗಣ_Default(ಶೂನ್ಯ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_UNTESTABLE
+ಶೂನ್ಯ sqlite3BenignMallocHooks(ಶೂನ್ಯ (*)(ಶೂನ್ಯ), ಶೂನ್ಯ (*)(ಶೂನ್ಯ));
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3_ರಾಶಿ_Nearly_ತುಂಬಿದ(ಶೂನ್ಯ);
 
 /*
 ** On systems with ample stack space and that support alloca(), make
@@ -4843,982 +4843,982 @@ int sqlite3HeapNearlyFull(void);
 ** The alloca() routine never returns NULL.  This will cause code paths
 ** that deal with sqlite3StackAlloc() failures to be unreachable.
 */
-#ifdef SQLITE_USE_ALLOCA
-# define sqlite3StackAllocRaw(D,N)   alloca(N)
-# define sqlite3StackAllocRawNN(D,N) alloca(N)
-# define sqlite3StackFree(D,P)
-# define sqlite3StackFreeNN(D,P)
-#else
-# define sqlite3StackAllocRaw(D,N)   sqlite3DbMallocRaw(D,N)
-# define sqlite3StackAllocRawNN(D,N) sqlite3DbMallocRawNN(D,N)
-# define sqlite3StackFree(D,P)       sqlite3DbFree(D,P)
-# define sqlite3StackFreeNN(D,P)     sqlite3DbFreeNN(D,P)
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_USE_ALLOCA
+# define sqlite3_ರಾಶಿ_Alloc_Raw(D,N)   alloca(N)
+# define sqlite3_ರಾಶಿ_Alloc_Raw_NN(D,N) alloca(N)
+# define sqlite3_ರಾಶಿ_Free(D,P)
+# define sqlite3_ರಾಶಿ_Free_NN(D,P)
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_ರಾಶಿ_Alloc_Raw(D,N)   sqlite3DbMallocRaw(D,N)
+# define sqlite3_ರಾಶಿ_Alloc_Raw_NN(D,N) sqlite3DbMallocRawNN(D,N)
+# define sqlite3_ರಾಶಿ_Free(D,P)       sqlite3DbFree(D,P)
+# define sqlite3_ರಾಶಿ_Free_NN(D,P)     sqlite3DbFreeNN(D,P)
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Do not allow both MEMSYS5 and MEMSYS3 to be defined together.  If they
 ** are, disable MEMSYS3
 */
-#ifdef SQLITE_ENABLE_MEMSYS5
-const sqlite3_mem_methods *sqlite3MemGetMemsys5(void);
-#undef SQLITE_ENABLE_MEMSYS3
-#endif
-#ifdef SQLITE_ENABLE_MEMSYS3
-const sqlite3_mem_methods *sqlite3MemGetMemsys3(void);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_MEMSYS5
+ಸ್ಥಿರಾಂಕ sqlite3_mem_methods *sqlite3MemGetMemsys5(ಶೂನ್ಯ);
+#ವ್ಯಾಖ್ಯಾನ_ರದ್ದು SQLITE_ENABLE_MEMSYS3
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_MEMSYS3
+ಸ್ಥಿರಾಂಕ sqlite3_mem_methods *sqlite3MemGetMemsys3(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
 
 
-#ifndef SQLITE_MUTEX_OMIT
-  sqlite3_mutex_methods const *sqlite3DefaultMutex(void);
-  sqlite3_mutex_methods const *sqlite3NoopMutex(void);
-  sqlite3_mutex *sqlite3MutexAlloc(int);
-  int sqlite3MutexInit(void);
-  int sqlite3MutexEnd(void);
-#endif
-#if !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
-  void sqlite3MemoryBarrier(void);
-#else
-# define sqlite3MemoryBarrier()
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_MUTEX_OMIT
+  sqlite3_mutex_methods ಸ್ಥಿರಾಂಕ *sqlite3DefaultMutex(ಶೂನ್ಯ);
+  sqlite3_mutex_methods ಸ್ಥಿರಾಂಕ *sqlite3NoopMutex(ಶೂನ್ಯ);
+  sqlite3_mutex *sqlite3MutexAlloc(ಪೂರ್ಣಾಂಕ);
+  ಪೂರ್ಣಾಂಕ sqlite3MutexInit(ಶೂನ್ಯ);
+  ಪೂರ್ಣಾಂಕ sqlite3_Mutex_ಕೊನೆ(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ !defined(SQLITE_MUTEX_OMIT) && !defined(SQLITE_MUTEX_NOOP)
+  ಶೂನ್ಯ sqlite3_ಸ್ಮರಣೆ_Barrier(ಶೂನ್ಯ);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_ಸ್ಮರಣೆ_Barrier()
+#ಆದರೆ_ಅಂತ್ಯ
 
-sqlite3_int64 sqlite3StatusValue(int);
-void sqlite3StatusUp(int, int);
-void sqlite3StatusDown(int, int);
-void sqlite3StatusHighwater(int, int);
-int sqlite3LookasideUsed(sqlite3*,int*);
+sqlite3_int64 sqlite3_ಸ್ಥಿತಿ_ಮೌಲ್ಯ(ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸ್ಥಿತಿ_ಮೇಲೆ(ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸ್ಥಿತಿ_ಕೆಳಕ್ಕೆ(ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸ್ಥಿತಿ_Highwater(ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_Lookaside_ಬಳಸಿದ(sqlite3*,ಪೂರ್ಣಾಂಕ*);
 
 /* Access to mutexes used by sqlite3_status() */
-sqlite3_mutex *sqlite3Pcache1Mutex(void);
-sqlite3_mutex *sqlite3MallocMutex(void);
+sqlite3_mutex *sqlite3Pcache1Mutex(ಶೂನ್ಯ);
+sqlite3_mutex *sqlite3MallocMutex(ಶೂನ್ಯ);
 
 
 /* The SQLITE_THREAD_MISUSE_WARNINGS compile-time option used to be called
 ** SQLITE_ENABLE_MULTITHREADED_CHECKS.  Keep that older macro for backwards
 ** compatibility, at least for a while... */
-#ifdef SQLITE_ENABLE_MULTITHREADED_CHECKS
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_MULTITHREADED_CHECKS
 # define SQLITE_THREAD_MISUSE_WARNINGS 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* SQLITE_THREAD_MISUSE_ABORT implies SQLITE_THREAD_MISUSE_WARNINGS */
-#ifdef SQLITE_THREAD_MISUSE_ABORT
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_THREAD_MISUSE_ABORT
 # define SQLITE_THREAD_MISUSE_WARNINGS 1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
-void sqlite3MutexWarnOnContention(sqlite3_mutex*);
-#else
+#ಆದರೆ defined(SQLITE_THREAD_MISUSE_WARNINGS) && !defined(SQLITE_MUTEX_OMIT)
+ಶೂನ್ಯ sqlite3MutexWarnOnContention(sqlite3_mutex*);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define sqlite3MutexWarnOnContention(x)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_FLOATING_POINT
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_FLOATING_ಬಿಂದು
 # define EXP754 (((u64)0x7ff)<<52)
 # define MAN754 ((((u64)1)<<52)-1)
 # define IsNaN(X) (((X)&EXP754)==EXP754 && ((X)&MAN754)!=0)
 # define IsOvfl(X) (((X)&EXP754)==EXP754)
-  int sqlite3IsNaN(double);
-  int sqlite3IsOverflow(double);
-#else
+  ಪೂರ್ಣಾಂಕ sqlite3IsNaN(ದ್ವಿಗುಣ);
+  ಪೂರ್ಣಾಂಕ sqlite3_Is_ಅತಿಪ್ರವಾಹ(ದ್ವಿಗುಣ);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define IsNaN(X)             0
 # define sqlite3IsNaN(X)      0
-# define sqlite3IsOVerflow(X) 0
-#endif
+# define sqlite3_Is_ಅತಿಪ್ರವಾಹ_2(X) 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** An instance of the following structure holds information about SQL
 ** functions arguments that are the parameters to the printf() function.
 */
-struct PrintfArguments {
-  int nArg;                /* Total number of arguments */
-  int nUsed;               /* Number of arguments used so far */
-  sqlite3_value **apArg;   /* The argument values */
+ರಚನೆ PrintfArguments {
+  ಪೂರ್ಣಾಂಕ nArg;                /* Total number of arguments */
+  ಪೂರ್ಣಾಂಕ n_ಬಳಸಿದ;               /* Number of arguments used so far */
+  sqlite3_ಮೌಲ್ಯ **apArg;   /* The argument values */
 };
 
 /*
 ** Maxium number of base-10 digits in an unsigned 64-bit integer
 */
-#define SQLITE_U64_DIGITS 20
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_U64_DIGITS 20
 
 /*
 ** An instance of this object receives the decoding of a floating point
 ** value into an approximate decimal representation.
 */
-struct FpDecode {
-  int n;                           /* Significant digits in the decode */
-  int iDP;                         /* Location of the decimal point */
-  char *z;                         /* Start of significant digits */
-  char zBuf[SQLITE_U64_DIGITS+1];  /* Storage for significant digits */
-  char sign;                       /* '+' or '-' */
-  char isSpecial;                  /* 1: Infinity  2: NaN */
+ರಚನೆ FpDecode {
+  ಪೂರ್ಣಾಂಕ n;                           /* Significant digits in the decode */
+  ಪೂರ್ಣಾಂಕ iDP;                         /* Location of the decimal point */
+  ಅಕ್ಷರ *z;                         /* Start of significant digits */
+  ಅಕ್ಷರ zBuf[SQLITE_U64_DIGITS+1];  /* Storage for significant digits */
+  ಅಕ್ಷರ sign;                       /* '+' or '-' */
+  ಅಕ್ಷರ isSpecial;                  /* 1: Infinity  2: NaN */
 };
 
-void sqlite3FpDecode(FpDecode*,double,int,int);
-char *sqlite3MPrintf(sqlite3*,const char*, ...);
-char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
-#if defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
-  void sqlite3DebugPrintf(const char*, ...);
-#endif
-#if defined(SQLITE_TEST)
-  void *sqlite3TestTextToPtr(const char*);
-  const char *sqlite3TestPtrToText(void*);
-#endif
+ಶೂನ್ಯ sqlite3FpDecode(FpDecode*,ದ್ವಿಗುಣ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಅಕ್ಷರ *sqlite3MPrintf(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ...);
+ಅಕ್ಷರ *sqlite3VMPrintf(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, va_list);
+#ಆದರೆ defined(SQLITE_DEBUG) || defined(SQLITE_HAVE_OS_TRACE)
+  ಶೂನ್ಯ sqlite3DebugPrintf(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ...);
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(SQLITE_TEST)
+  ಶೂನ್ಯ *sqlite3_Test_ಪಠ್ಯ_ಗಮ್ಯ_Ptr(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3_Test_Ptr_ಗಮ್ಯ_ಪಠ್ಯ(ಶೂನ್ಯ*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(SQLITE_DEBUG)
-  void sqlite3TreeViewLine(TreeView*, const char *zFormat, ...);
-  void sqlite3TreeViewExpr(TreeView*, const Expr*, u8);
-  void sqlite3TreeViewBareExprList(TreeView*, const ExprList*, const char*);
-  void sqlite3TreeViewExprList(TreeView*, const ExprList*, u8, const char*);
-  void sqlite3TreeViewBareIdList(TreeView*, const IdList*, const char*);
-  void sqlite3TreeViewIdList(TreeView*, const IdList*, u8, const char*);
-  void sqlite3TreeViewColumnList(TreeView*, const Column*, int, u8);
-  void sqlite3TreeViewSrcList(TreeView*, const SrcList*);
-  void sqlite3TreeViewSelect(TreeView*, const Select*, u8);
-  void sqlite3TreeViewWith(TreeView*, const With*, u8);
-  void sqlite3TreeViewUpsert(TreeView*, const Upsert*, u8);
-#if TREETRACE_ENABLED
-  void sqlite3TreeViewDelete(const With*, const SrcList*, const Expr*,
-                             const ExprList*,const Expr*, const Trigger*);
-  void sqlite3TreeViewInsert(const With*, const SrcList*,
-                             const IdList*, const Select*, const ExprList*,
-                             int, const Upsert*, const Trigger*);
-  void sqlite3TreeViewUpdate(const With*, const SrcList*, const ExprList*,
-                             const Expr*, int, const ExprList*, const Expr*,
-                             const Upsert*, const Trigger*);
-#endif
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3TreeViewTriggerStep(TreeView*, const TriggerStep*, u8, u8);
-  void sqlite3TreeViewTrigger(TreeView*, const Trigger*, u8, u8);
-#endif
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  void sqlite3TreeViewWindow(TreeView*, const Window*, u8);
-  void sqlite3TreeViewWinFunc(TreeView*, const Window*, u8);
-#endif
-  void sqlite3ShowExpr(const Expr*);
-  void sqlite3ShowExprList(const ExprList*);
-  void sqlite3ShowIdList(const IdList*);
-  void sqlite3ShowSrcList(const SrcList*);
-  void sqlite3ShowSelect(const Select*);
-  void sqlite3ShowWith(const With*);
-  void sqlite3ShowUpsert(const Upsert*);
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3ShowTriggerStep(const TriggerStep*);
-  void sqlite3ShowTriggerStepList(const TriggerStep*);
-  void sqlite3ShowTrigger(const Trigger*);
-  void sqlite3ShowTriggerList(const Trigger*);
-#endif
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  void sqlite3ShowWindow(const Window*);
-  void sqlite3ShowWinFunc(const Window*);
-#endif
-  void sqlite3ShowBitvec(Bitvec*);
-#endif
+#ಆದರೆ defined(SQLITE_DEBUG)
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_ಸಾಲು(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zFormat, ...);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_ಅಭಿವ್ಯಕ್ತಿ(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, u8);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Bare_ಅಭಿವ್ಯಕ್ತಿ_List(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_ಅಭಿವ್ಯಕ್ತಿ_List(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*, u8, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Bare_Id_List(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ IdList*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Id_List(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ IdList*, u8, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_ಸ್ತಂಭ_List(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ ಸ್ತಂಭ*, ಪೂರ್ಣಾಂಕ, u8);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Src_List(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ SrcList*);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Select(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ Select*, u8);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_With(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ With*, u8);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Upsert(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ Upsert*, u8);
+#ಆದರೆ TREETRACE_ENABLED
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Delete(ಸ್ಥಿರಾಂಕ With*, ಸ್ಥಿರಾಂಕ SrcList*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*,
+                             ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, ಸ್ಥಿರಾಂಕ Trigger*);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_ಸೇರಿಸು(ಸ್ಥಿರಾಂಕ With*, ಸ್ಥಿರಾಂಕ SrcList*,
+                             ಸ್ಥಿರಾಂಕ IdList*, ಸ್ಥಿರಾಂಕ Select*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*,
+                             ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ Upsert*, ಸ್ಥಿರಾಂಕ Trigger*);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Update(ಸ್ಥಿರಾಂಕ With*, ಸ್ಥಿರಾಂಕ SrcList*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*,
+                             ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*,
+                             ಸ್ಥಿರಾಂಕ Upsert*, ಸ್ಥಿರಾಂಕ Trigger*);
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TRIGGER
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Trigger_ಹೆಜ್ಜೆ(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ Trigger_ಹೆಜ್ಜೆ*, u8, u8);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Trigger(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ Trigger*, u8, u8);
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WINDOWFUNC
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_ಕಿಟಕಿ(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ ಕಿಟಕಿ*, u8);
+  ಶೂನ್ಯ sqlite3_ವೃಕ್ಷ_View_Win_Func(ವೃಕ್ಷ_View*, ಸ್ಥಿರಾಂಕ ಕಿಟಕಿ*, u8);
+#ಆದರೆ_ಅಂತ್ಯ
+  ಶೂನ್ಯ sqlite3_Show_ಅಭಿವ್ಯಕ್ತಿ(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
+  ಶೂನ್ಯ sqlite3_Show_ಅಭಿವ್ಯಕ್ತಿ_List(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*);
+  ಶೂನ್ಯ sqlite3ShowIdList(ಸ್ಥಿರಾಂಕ IdList*);
+  ಶೂನ್ಯ sqlite3ShowSrcList(ಸ್ಥಿರಾಂಕ SrcList*);
+  ಶೂನ್ಯ sqlite3ShowSelect(ಸ್ಥಿರಾಂಕ Select*);
+  ಶೂನ್ಯ sqlite3ShowWith(ಸ್ಥಿರಾಂಕ With*);
+  ಶೂನ್ಯ sqlite3ShowUpsert(ಸ್ಥಿರಾಂಕ Upsert*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TRIGGER
+  ಶೂನ್ಯ sqlite3_Show_Trigger_ಹೆಜ್ಜೆ(ಸ್ಥಿರಾಂಕ Trigger_ಹೆಜ್ಜೆ*);
+  ಶೂನ್ಯ sqlite3_Show_Trigger_ಹೆಜ್ಜೆ_List(ಸ್ಥಿರಾಂಕ Trigger_ಹೆಜ್ಜೆ*);
+  ಶೂನ್ಯ sqlite3ShowTrigger(ಸ್ಥಿರಾಂಕ Trigger*);
+  ಶೂನ್ಯ sqlite3ShowTriggerList(ಸ್ಥಿರಾಂಕ Trigger*);
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WINDOWFUNC
+  ಶೂನ್ಯ sqlite3_Show_ಕಿಟಕಿ(ಸ್ಥಿರಾಂಕ ಕಿಟಕಿ*);
+  ಶೂನ್ಯ sqlite3ShowWinFunc(ಸ್ಥಿರಾಂಕ ಕಿಟಕಿ*);
+#ಆದರೆ_ಅಂತ್ಯ
+  ಶೂನ್ಯ sqlite3ShowBitvec(Bitvec*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-void sqlite3SetString(char **, sqlite3*, const char*);
-void sqlite3ProgressCheck(Parse*);
-void sqlite3ErrorMsg(Parse*, const char*, ...);
-int sqlite3ErrorToParser(sqlite3*,int);
-void sqlite3Dequote(char*);
-void sqlite3DequoteExpr(Expr*);
-void sqlite3DequoteToken(Token*);
-void sqlite3DequoteNumber(Parse*, Expr*);
-void sqlite3TokenInit(Token*,char*);
-int sqlite3KeywordCode(const unsigned char*, int);
-int sqlite3RunParser(Parse*, const char*);
-void sqlite3FinishCoding(Parse*);
-int sqlite3GetTempReg(Parse*);
-void sqlite3ReleaseTempReg(Parse*,int);
-int sqlite3GetTempRange(Parse*,int);
-void sqlite3ReleaseTempRange(Parse*,int,int);
-void sqlite3ClearTempRegCache(Parse*);
-void sqlite3TouchRegister(Parse*,int);
-#if defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
-int sqlite3FirstAvailableRegister(Parse*,int);
-#endif
-#ifdef SQLITE_DEBUG
-int sqlite3NoTempsInRange(Parse*,int,int);
-#endif
-Expr *sqlite3ExprAlloc(sqlite3*,int,const Token*,int);
-Expr *sqlite3Expr(sqlite3*,int,const char*);
-Expr *sqlite3ExprInt32(sqlite3*,int);
-void sqlite3ExprAttachSubtrees(sqlite3*,Expr*,Expr*,Expr*);
-Expr *sqlite3PExpr(Parse*, int, Expr*, Expr*);
-void sqlite3PExprAddSelect(Parse*, Expr*, Select*);
-Expr *sqlite3ExprAnd(Parse*,Expr*, Expr*);
-Expr *sqlite3ExprSimplifiedAndOr(Expr*);
-Expr *sqlite3ExprFunction(Parse*,ExprList*, const Token*, int);
-void sqlite3ExprAddFunctionOrderBy(Parse*,Expr*,ExprList*);
-void sqlite3ExprOrderByAggregateError(Parse*,Expr*);
-void sqlite3ExprFunctionUsable(Parse*,const Expr*,const FuncDef*);
-void sqlite3ExprAssignVarNumber(Parse*, Expr*, u32);
-void sqlite3ExprDelete(sqlite3*, Expr*);
-void sqlite3ExprDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprDeferredDelete(Parse*, Expr*);
-void sqlite3ExprUnmapAndDelete(Parse*, Expr*);
-ExprList *sqlite3ExprListAppend(Parse*,ExprList*,Expr*);
-ExprList *sqlite3ExprListAppendVector(Parse*,ExprList*,IdList*,Expr*);
-Select *sqlite3ExprListToValues(Parse*, int, ExprList*);
-void sqlite3ExprListSetSortOrder(ExprList*,int,int);
-void sqlite3ExprListSetName(Parse*,ExprList*,const Token*,int);
-void sqlite3ExprListSetSpan(Parse*,ExprList*,const char*,const char*);
-void sqlite3ExprListDelete(sqlite3*, ExprList*);
-void sqlite3ExprListDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprCanReturnSubtype(Parse*,Expr*);
-u32 sqlite3ExprListFlags(const ExprList*);
-int sqlite3IndexHasDuplicateRootPage(Index*);
-int sqlite3Init(sqlite3*, char**);
-int sqlite3InitCallback(void*, int, char**, char**);
-int sqlite3InitOne(sqlite3*, int, char**, u32);
-void sqlite3Pragma(Parse*,Token*,Token*,Token*,int);
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-Module *sqlite3PragmaVtabRegister(sqlite3*,const char *zName);
-#endif
-void sqlite3ResetAllSchemasOfConnection(sqlite3*);
-void sqlite3ResetOneSchema(sqlite3*,int);
-void sqlite3CollapseDatabaseArray(sqlite3*);
-void sqlite3CommitInternalChanges(sqlite3*);
-void sqlite3ColumnSetExpr(Parse*,Table*,Column*,Expr*);
-Expr *sqlite3ColumnExpr(Table*,Column*);
-Expr *sqlite3ColumnExprAuth(Table*,Column*,Parse*);
-void sqlite3ColumnSetColl(sqlite3*,Column*,const char*zColl);
-const char *sqlite3ColumnColl(Column*);
-void sqlite3DeleteColumnNames(sqlite3*,Table*);
-void sqlite3GenerateColumnNames(Parse *pParse, Select *pSelect);
-int sqlite3ColumnsFromExprList(Parse*,ExprList*,i16*,Column**);
-void sqlite3SubqueryColumnTypes(Parse*,Table*,Select*,char);
-Table *sqlite3ResultSetOfSelect(Parse*,Select*,char);
-void sqlite3OpenSchemaTable(Parse *, int);
-Index *sqlite3PrimaryKeyIndex(Table*);
-int sqlite3TableColumnToIndex(Index*, int);
-#ifdef SQLITE_OMIT_GENERATED_COLUMNS
-# define sqlite3TableColumnToStorage(T,X) (X)  /* No-op pass-through */
-# define sqlite3StorageColumnToTable(T,X) (X)  /* No-op pass-through */
-#else
-  i16 sqlite3TableColumnToStorage(Table*, i16);
-  i16 sqlite3StorageColumnToTable(Table*, i16);
-#endif
-void sqlite3StartTable(Parse*,Token*,Token*,int,int,int,int);
-#if SQLITE_ENABLE_HIDDEN_COLUMNS
-  void sqlite3ColumnPropertiesFromName(Table*, Column*);
-#else
-# define sqlite3ColumnPropertiesFromName(T,C) /* no-op */
-#endif
-void sqlite3AddColumn(Parse*,Token,Token);
-void sqlite3AddNotNull(Parse*, int);
-void sqlite3AddPrimaryKey(Parse*, ExprList*, int, int, int);
-void sqlite3AddCheckConstraint(Parse*, Expr*, const char*, const char*);
-void sqlite3AddDefaultValue(Parse*,Expr*,const char*,const char*);
-void sqlite3AddCollateType(Parse*, Token*);
-void sqlite3AddGenerated(Parse*,Expr*,Token*);
-void sqlite3EndTable(Parse*,Token*,Token*,u32,Select*);
-void sqlite3AddReturning(Parse*,ExprList*);
-int sqlite3ParseUri(const char*,const char*,unsigned int*,
-                    sqlite3_vfs**,char**,char **);
-#define sqlite3CodecQueryParameters(A,B,C) 0
-Btree *sqlite3DbNameToBtree(sqlite3*,const char*);
+ಶೂನ್ಯ sqlite3_ಗಣ_String(ಅಕ್ಷರ **, sqlite3*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ಪ್ರಗತಿ_Check(Parse*);
+ಶೂನ್ಯ sqlite3_Error_ಸಂದೇಶ(Parse*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ...);
+ಪೂರ್ಣಾಂಕ sqlite3_Error_ಗಮ್ಯ_Parser(sqlite3*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3Dequote(ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_Dequote_ಅಭಿವ್ಯಕ್ತಿ(ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3DequoteToken(Token*);
+ಶೂನ್ಯ sqlite3_Dequote_ಸಂಖ್ಯೆ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3TokenInit(Token*,ಅಕ್ಷರ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Keyword_ಸಂಕೇತ(ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸತತ_Parser(Parse*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ಮುಕ್ತಾಯ_Coding(Parse*);
+ಪೂರ್ಣಾಂಕ sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(Parse*);
+ಶೂನ್ಯ sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Reg(Parse*,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Range(Parse*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Range(Parse*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Clear_ತಾತ್ಕಾಲಿಕ_Reg_Cache(Parse*);
+ಶೂನ್ಯ sqlite3_Touch_ರಿಜಿಸ್ಟರ್(Parse*,ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ defined(SQLITE_ENABLE_STAT4) || defined(SQLITE_DEBUG)
+ಪೂರ್ಣಾಂಕ sqlite3_ಮೊದಲ_ಲಭ್ಯ_ರಿಜಿಸ್ಟರ್(Parse*,ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+ಪೂರ್ಣಾಂಕ sqlite3_No_Temps_ಒಳ_Range(Parse*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Alloc(sqlite3*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ Token*,ಪೂರ್ಣಾಂಕ);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ(sqlite3*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Int32(sqlite3*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Attach_Subtrees(sqlite3*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3PExpr(Parse*, ಪೂರ್ಣಾಂಕ, ಅಭಿವ್ಯಕ್ತಿ*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3_PExpr_ಕೂಡಿಸು_Select(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, Select*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_And(Parse*,ಅಭಿವ್ಯಕ್ತಿ*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Simplified_And_Or(ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Function(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*, ಸ್ಥಿರಾಂಕ Token*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಕೂಡಿಸು_Function_ಕ್ರಮ_By(Parse*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಕ್ರಮ_By_Aggregate_Error(Parse*,ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Function_Usable(Parse*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*,ಸ್ಥಿರಾಂಕ FuncDef*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ನಿಯೋಜಿಸು_Var_ಸಂಖ್ಯೆ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, u32);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Delete(sqlite3*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Delete_Generic(sqlite3*,ಶೂನ್ಯ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Deferred_Delete(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Unmap_And_Delete(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ_List *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Append(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ_List *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Append_ಸದಿಶ(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*,IdList*,ಅಭಿವ್ಯಕ್ತಿ*);
+Select *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_ಗಮ್ಯ_ಮೌಲ್ಯಗಳು(Parse*, ಪೂರ್ಣಾಂಕ, ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_ಗಣ_ವಿಂಗಡಿಸು_ಕ್ರಮ(ಅಭಿವ್ಯಕ್ತಿ_List*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_ಗಣ_Name(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಸ್ಥಿರಾಂಕ Token*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_ಗಣ_ಹರವು(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Delete(sqlite3*, ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Delete_Generic(sqlite3*,ಶೂನ್ಯ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Can_Return_Subtype(Parse*,ಅಭಿವ್ಯಕ್ತಿ*);
+u32 sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Flags(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸೂಚ್ಯಂಕ_Has_Duplicate_ಬೇರು_ಪುಟ(ಸೂಚ್ಯಂಕ*);
+ಪೂರ್ಣಾಂಕ sqlite3Init(sqlite3*, ಅಕ್ಷರ**);
+ಪೂರ್ಣಾಂಕ sqlite3InitCallback(ಶೂನ್ಯ*, ಪೂರ್ಣಾಂಕ, ಅಕ್ಷರ**, ಅಕ್ಷರ**);
+ಪೂರ್ಣಾಂಕ sqlite3InitOne(sqlite3*, ಪೂರ್ಣಾಂಕ, ಅಕ್ಷರ**, u32);
+ಶೂನ್ಯ sqlite3Pragma(Parse*,Token*,Token*,Token*,ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+Module *sqlite3_Pragma_Vtab_ರಿಜಿಸ್ಟರ್(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_Reset_All_Schemas_ದ_Connection(sqlite3*);
+ಶೂನ್ಯ sqlite3ResetOneSchema(sqlite3*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3CollapseDatabaseArray(sqlite3*);
+ಶೂನ್ಯ sqlite3_Commit_ಆಂತರಿಕ_Changes(sqlite3*);
+ಶೂನ್ಯ sqlite3_ಸ್ತಂಭ_ಗಣ_ಅಭಿವ್ಯಕ್ತಿ(Parse*,ಕೋಷ್ಟಕ*,ಸ್ತಂಭ*,ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(ಕೋಷ್ಟಕ*,ಸ್ತಂಭ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ_Auth(ಕೋಷ್ಟಕ*,ಸ್ತಂಭ*,Parse*);
+ಶೂನ್ಯ sqlite3_ಸ್ತಂಭ_ಗಣ_Coll(sqlite3*,ಸ್ತಂಭ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*zColl);
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3_ಸ್ತಂಭ_Coll(ಸ್ತಂಭ*);
+ಶೂನ್ಯ sqlite3_Delete_ಸ್ತಂಭ_ಹೆಸರುಗಳು(sqlite3*,ಕೋಷ್ಟಕ*);
+ಶೂನ್ಯ sqlite3_Generate_ಸ್ತಂಭ_ಹೆಸರುಗಳು(Parse *pParse, Select *pSelect);
+ಪೂರ್ಣಾಂಕ sqlite3_Columns_From_ಅಭಿವ್ಯಕ್ತಿ_List(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*,i16*,ಸ್ತಂಭ**);
+ಶೂನ್ಯ sqlite3_Subquery_ಸ್ತಂಭ_Types(Parse*,ಕೋಷ್ಟಕ*,Select*,ಅಕ್ಷರ);
+ಕೋಷ್ಟಕ *sqlite3_ಫಲಿತಾಂಶ_ಗಣ_ದ_Select(Parse*,Select*,ಅಕ್ಷರ);
+ಶೂನ್ಯ sqlite3_Open_Schema_ಕೋಷ್ಟಕ(Parse *, ಪೂರ್ಣಾಂಕ);
+ಸೂಚ್ಯಂಕ *sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(ಕೋಷ್ಟಕ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(ಸೂಚ್ಯಂಕ*, ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_GENERATED_COLUMNS
+# define sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(T,X) (X)  /* No-op pass-through */
+# define sqlite3_Storage_ಸ್ತಂಭ_ಗಮ್ಯ_ಕೋಷ್ಟಕ(T,X) (X)  /* No-op pass-through */
+#ಇಲ್ಲದಿದ್ದರೆ
+  i16 sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(ಕೋಷ್ಟಕ*, i16);
+  i16 sqlite3_Storage_ಸ್ತಂಭ_ಗಮ್ಯ_ಕೋಷ್ಟಕ(ಕೋಷ್ಟಕ*, i16);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_ಆರಂಭ_ಕೋಷ್ಟಕ(Parse*,Token*,Token*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ SQLITE_ENABLE_HIDDEN_COLUMNS
+  ಶೂನ್ಯ sqlite3_ಸ್ತಂಭ_Properties_From_Name(ಕೋಷ್ಟಕ*, ಸ್ತಂಭ*);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_ಸ್ತಂಭ_Properties_From_Name(T,C) /* no-op */
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_ಸ್ತಂಭ(Parse*,Token,Token);
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_Not_Null(Parse*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_Primary_ಕೀಲಿ(Parse*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_Check_Constraint(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_Default_ಮೌಲ್ಯ(Parse*,ಅಭಿವ್ಯಕ್ತಿ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_Collate_Type(Parse*, Token*);
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_Generated(Parse*,ಅಭಿವ್ಯಕ್ತಿ*,Token*);
+ಶೂನ್ಯ sqlite3_ಕೊನೆ_ಕೋಷ್ಟಕ(Parse*,Token*,Token*,u32,Select*);
+ಶೂನ್ಯ sqlite3_ಕೂಡಿಸು_Returning(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಪೂರ್ಣಾಂಕ sqlite3ParseUri(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ*,
+                    sqlite3_vfs**,ಅಕ್ಷರ**,ಅಕ್ಷರ **);
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3CodecQueryParameters(A,B,C) 0
+Btree *sqlite3_Db_Name_ಗಮ್ಯ_Btree(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
 
-#ifdef SQLITE_UNTESTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_UNTESTABLE
 # define sqlite3FaultSim(X) SQLITE_OK
-#else
-  int sqlite3FaultSim(int);
-#endif
+#ಇಲ್ಲದಿದ್ದರೆ
+  ಪೂರ್ಣಾಂಕ sqlite3FaultSim(ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
 
 Bitvec *sqlite3BitvecCreate(u32);
-int sqlite3BitvecTest(Bitvec*, u32);
-int sqlite3BitvecTestNotNull(Bitvec*, u32);
-int sqlite3BitvecSet(Bitvec*, u32);
-void sqlite3BitvecClear(Bitvec*, u32, void*);
-void sqlite3BitvecDestroy(Bitvec*);
-u32 sqlite3BitvecSize(Bitvec*);
-#ifndef SQLITE_UNTESTABLE
-int sqlite3BitvecBuiltinTest(int,int*);
-#endif
+ಪೂರ್ಣಾಂಕ sqlite3BitvecTest(Bitvec*, u32);
+ಪೂರ್ಣಾಂಕ sqlite3BitvecTestNotNull(Bitvec*, u32);
+ಪೂರ್ಣಾಂಕ sqlite3_Bitvec_ಗಣ(Bitvec*, u32);
+ಶೂನ್ಯ sqlite3BitvecClear(Bitvec*, u32, ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3BitvecDestroy(Bitvec*);
+u32 sqlite3_Bitvec_ಗಾತ್ರ(Bitvec*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_UNTESTABLE
+ಪೂರ್ಣಾಂಕ sqlite3BitvecBuiltinTest(ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-RowSet *sqlite3RowSetInit(sqlite3*);
-void sqlite3RowSetDelete(void*);
-void sqlite3RowSetClear(void*);
-void sqlite3RowSetInsert(RowSet*, i64);
-int sqlite3RowSetTest(RowSet*, int iBatch, i64);
-int sqlite3RowSetNext(RowSet*, i64*);
+ಅಡ್ಡಸಾಲು_ಗಣ *sqlite3_ಅಡ್ಡಸಾಲು_ಗಣ_Init(sqlite3*);
+ಶೂನ್ಯ sqlite3_ಅಡ್ಡಸಾಲು_ಗಣ_Delete(ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3_ಅಡ್ಡಸಾಲು_ಗಣ_Clear(ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3_ಅಡ್ಡಸಾಲು_ಗಣ_ಸೇರಿಸು(ಅಡ್ಡಸಾಲು_ಗಣ*, i64);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಡ್ಡಸಾಲು_ಗಣ_Test(ಅಡ್ಡಸಾಲು_ಗಣ*, ಪೂರ್ಣಾಂಕ iBatch, i64);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಡ್ಡಸಾಲು_ಗಣ_ಮುಂದಿನ(ಅಡ್ಡಸಾಲು_ಗಣ*, i64*);
 
-void sqlite3CreateView(Parse*,Token*,Token*,Token*,ExprList*,Select*,int,int);
+ಶೂನ್ಯ sqlite3CreateView(Parse*,Token*,Token*,Token*,ಅಭಿವ್ಯಕ್ತಿ_List*,Select*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
 
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-  int sqlite3ViewGetColumnNames(Parse*,Table*);
-#else
-# define sqlite3ViewGetColumnNames(A,B) 0
-#endif
+#ಆದರೆ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+  ಪೂರ್ಣಾಂಕ sqlite3_View_Get_ಸ್ತಂಭ_ಹೆಸರುಗಳು(Parse*,ಕೋಷ್ಟಕ*);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_View_Get_ಸ್ತಂಭ_ಹೆಸರುಗಳು(A,B) 0
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if SQLITE_MAX_ATTACHED>30
-  int sqlite3DbMaskAllZero(yDbMask);
-#endif
-void sqlite3DropTable(Parse*, SrcList*, int, int);
-void sqlite3CodeDropTable(Parse*, Table*, int, int);
-void sqlite3DeleteTable(sqlite3*, Table*);
-void sqlite3DeleteTableGeneric(sqlite3*, void*);
-void sqlite3FreeIndex(sqlite3*, Index*);
-#ifndef SQLITE_OMIT_AUTOINCREMENT
-  void sqlite3AutoincrementBegin(Parse *pParse);
-  void sqlite3AutoincrementEnd(Parse *pParse);
-#else
+#ಆದರೆ SQLITE_MAX_ATTACHED>30
+  ಪೂರ್ಣಾಂಕ sqlite3_Db_ಮುಖವಾಡ_All_Zero(y_Db_ಮುಖವಾಡ);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_Drop_ಕೋಷ್ಟಕ(Parse*, SrcList*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸಂಕೇತ_Drop_ಕೋಷ್ಟಕ(Parse*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Delete_ಕೋಷ್ಟಕ(sqlite3*, ಕೋಷ್ಟಕ*);
+ಶೂನ್ಯ sqlite3_Delete_ಕೋಷ್ಟಕ_Generic(sqlite3*, ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3_Free_ಸೂಚ್ಯಂಕ(sqlite3*, ಸೂಚ್ಯಂಕ*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINCREMENT
+  ಶೂನ್ಯ sqlite3AutoincrementBegin(Parse *pParse);
+  ಶೂನ್ಯ sqlite3_Autoincrement_ಕೊನೆ(Parse *pParse);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define sqlite3AutoincrementBegin(X)
-# define sqlite3AutoincrementEnd(X)
-#endif
-void sqlite3Insert(Parse*, SrcList*, Select*, IdList*, int, Upsert*);
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-  void sqlite3ComputeGeneratedColumns(Parse*, int, Table*);
-#endif
-void *sqlite3ArrayAllocate(sqlite3*,void*,int,int*,int*);
+# define sqlite3_Autoincrement_ಕೊನೆ(X)
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_ಸೇರಿಸು(Parse*, SrcList*, Select*, IdList*, ಪೂರ್ಣಾಂಕ, Upsert*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
+  ಶೂನ್ಯ sqlite3ComputeGeneratedColumns(Parse*, ಪೂರ್ಣಾಂಕ, ಕೋಷ್ಟಕ*);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ *sqlite3ArrayAllocate(sqlite3*,ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ*);
 IdList *sqlite3IdListAppend(Parse*, IdList*, Token*);
-int sqlite3IdListIndex(IdList*,const char*);
-SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, int, int);
+ಪೂರ್ಣಾಂಕ sqlite3_Id_List_ಸೂಚ್ಯಂಕ(IdList*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+SrcList *sqlite3SrcListEnlarge(Parse*, SrcList*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
 SrcList *sqlite3SrcListAppendList(Parse *pParse, SrcList *p1, SrcList *p2);
 SrcList *sqlite3SrcListAppend(Parse*, SrcList*, Token*, Token*);
-void sqlite3SubqueryDelete(sqlite3*,Subquery*);
-Select *sqlite3SubqueryDetach(sqlite3*,SrcItem*);
-int sqlite3SrcItemAttachSubquery(Parse*, SrcItem*, Select*, int);
-SrcList *sqlite3SrcListAppendFromTerm(Parse*, SrcList*, Token*, Token*,
+ಶೂನ್ಯ sqlite3SubqueryDelete(sqlite3*,Subquery*);
+Select *sqlite3SubqueryDetach(sqlite3*,Src_ಅಂಶ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Src_ಅಂಶ_Attach_Subquery(Parse*, Src_ಅಂಶ*, Select*, ಪೂರ್ಣಾಂಕ);
+SrcList *sqlite3_Src_List_Append_From_ಪದ(Parse*, SrcList*, Token*, Token*,
                                       Token*, Select*, OnOrUsing*);
-void sqlite3SrcListIndexedBy(Parse *, SrcList *, Token *);
-void sqlite3SrcListFuncArgs(Parse*, SrcList*, ExprList*);
-int sqlite3IndexedByLookup(Parse *, SrcItem *);
-void sqlite3SrcListShiftJoinType(Parse*,SrcList*);
-void sqlite3SrcListAssignCursors(Parse*, SrcList*);
-void sqlite3IdListDelete(sqlite3*, IdList*);
-void sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
-void sqlite3SrcListDelete(sqlite3*, SrcList*);
-Index *sqlite3AllocateIndexObject(sqlite3*,int,int,char**);
-int sqlite3IndexBloomable(const Index*,int);
-void sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,ExprList*,int,Token*,
-                          Expr*, int, int, u8);
-void sqlite3DropIndex(Parse*, SrcList*, int);
-int sqlite3Select(Parse*, Select*, SelectDest*);
-Select *sqlite3SelectNew(Parse*,ExprList*,SrcList*,Expr*,ExprList*,
-                         Expr*,ExprList*,u32,Expr*);
-void sqlite3SelectDelete(sqlite3*, Select*);
-void sqlite3SelectDeleteGeneric(sqlite3*,void*);
-void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
-Table *sqlite3SrcListLookup(Parse*, SrcList*);
-int sqlite3IsReadOnly(Parse*, Table*, Trigger*);
-void sqlite3OpenTable(Parse*, int iCur, int iDb, Table*, int);
-#if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
-Expr *sqlite3LimitWhere(Parse*,SrcList*,Expr*,ExprList*,Expr*,char*);
-#endif
-void sqlite3CodeChangeCount(Vdbe*,int,const char*);
-void sqlite3DeleteFrom(Parse*, SrcList*, Expr*, ExprList*, Expr*);
-void sqlite3Update(Parse*, SrcList*, ExprList*,Expr*,int,ExprList*,Expr*,
+ಶೂನ್ಯ sqlite3_Src_List_ಸೂಚ್ಯಂಕಿತ_By(Parse *, SrcList *, Token *);
+ಶೂನ್ಯ sqlite3_Src_List_Func_ವಾದಗಳು(Parse*, SrcList*, ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸೂಚ್ಯಂಕಿತ_By_Lookup(Parse *, Src_ಅಂಶ *);
+ಶೂನ್ಯ sqlite3_Src_List_ಸರಿಸು_Join_Type(Parse*,SrcList*);
+ಶೂನ್ಯ sqlite3_Src_List_ನಿಯೋಜಿಸು_Cursors(Parse*, SrcList*);
+ಶೂನ್ಯ sqlite3IdListDelete(sqlite3*, IdList*);
+ಶೂನ್ಯ sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
+ಶೂನ್ಯ sqlite3SrcListDelete(sqlite3*, SrcList*);
+ಸೂಚ್ಯಂಕ *sqlite3_Allocate_ಸೂಚ್ಯಂಕ_Object(sqlite3*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಅಕ್ಷರ**);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸೂಚ್ಯಂಕ_Bloomable(ಸ್ಥಿರಾಂಕ ಸೂಚ್ಯಂಕ*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Create_ಸೂಚ್ಯಂಕ(Parse*,Token*,Token*,SrcList*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಪೂರ್ಣಾಂಕ,Token*,
+                          ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, u8);
+ಶೂನ್ಯ sqlite3_Drop_ಸೂಚ್ಯಂಕ(Parse*, SrcList*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3Select(Parse*, Select*, SelectDest*);
+Select *sqlite3SelectNew(Parse*,ಅಭಿವ್ಯಕ್ತಿ_List*,SrcList*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ_List*,
+                         ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ_List*,u32,ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3SelectDelete(sqlite3*, Select*);
+ಶೂನ್ಯ sqlite3SelectDeleteGeneric(sqlite3*,ಶೂನ್ಯ*);
+ಶೂನ್ಯ sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
+ಕೋಷ್ಟಕ *sqlite3SrcListLookup(Parse*, SrcList*);
+ಪೂರ್ಣಾಂಕ sqlite3IsReadOnly(Parse*, ಕೋಷ್ಟಕ*, Trigger*);
+ಶೂನ್ಯ sqlite3_Open_ಕೋಷ್ಟಕ(Parse*, ಪೂರ್ಣಾಂಕ iCur, ಪೂರ್ಣಾಂಕ iDb, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ defined(SQLITE_ENABLE_UPDATE_DELETE_ಎಲ್ಲೆ) && !defined(SQLITE_OMIT_SUBQUERY)
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಎಲ್ಲೆ_Where(Parse*,SrcList*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಕ್ಷರ*);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_ಸಂಕೇತ_Change_ಎಣಿಕೆ(Vdbe*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3DeleteFrom(Parse*, SrcList*, ಅಭಿವ್ಯಕ್ತಿ*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3Update(Parse*, SrcList*, ಅಭಿವ್ಯಕ್ತಿ_List*,ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ,ಅಭಿವ್ಯಕ್ತಿ_List*,ಅಭಿವ್ಯಕ್ತಿ*,
                    Upsert*);
-WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,Expr*,ExprList*,
-                             ExprList*,Select*,u16,int);
-void sqlite3WhereEnd(WhereInfo*);
-LogEst sqlite3WhereOutputRowCount(WhereInfo*);
-int sqlite3WhereIsDistinct(WhereInfo*);
-int sqlite3WhereIsOrdered(WhereInfo*);
-int sqlite3WhereOrderByLimitOptLabel(WhereInfo*);
-void sqlite3WhereMinMaxOptEarlyOut(Vdbe*,WhereInfo*);
-int sqlite3WhereIsSorted(WhereInfo*);
-int sqlite3WhereContinueLabel(WhereInfo*);
-int sqlite3WhereBreakLabel(WhereInfo*);
-int sqlite3WhereOkOnePass(WhereInfo*, int*);
-#define ONEPASS_OFF      0        /* Use of ONEPASS not allowed */
-#define ONEPASS_SINGLE   1        /* ONEPASS valid for a single row update */
-#define ONEPASS_MULTI    2        /* ONEPASS is valid for multiple rows */
-int sqlite3WhereUsesDeferredSeek(WhereInfo*);
-void sqlite3ExprCodeLoadIndexColumn(Parse*, Index*, int, int, int);
-int sqlite3ExprCodeGetColumn(Parse*, Table*, int, int, int, u8);
-void sqlite3ExprCodeGetColumnOfTable(Vdbe*, Table*, int, int, int);
-void sqlite3ExprCodeMove(Parse*, int, int, int);
-void sqlite3ExprToRegister(Expr *pExpr, int iReg);
-void sqlite3ExprCode(Parse*, Expr*, int);
-#ifndef SQLITE_OMIT_GENERATED_COLUMNS
-void sqlite3ExprCodeGeneratedColumn(Parse*, Table*, Column*, int);
-#endif
-void sqlite3ExprCodeCopy(Parse*, Expr*, int);
-void sqlite3ExprCodeFactorable(Parse*, Expr*, int);
-int sqlite3ExprCodeRunJustOnce(Parse*, Expr*, int);
-void sqlite3ExprNullRegisterRange(Parse*, int, int);
-int sqlite3ExprCodeTemp(Parse*, Expr*, int*);
-int sqlite3ExprCodeTarget(Parse*, Expr*, int);
-int sqlite3ExprCodeExprList(Parse*, ExprList*, int, int, u8);
-#define SQLITE_ECEL_DUP      0x01  /* Deep, not shallow copies */
-#define SQLITE_ECEL_FACTOR   0x02  /* Factor out constant terms */
-#define SQLITE_ECEL_REF      0x04  /* Use ExprList.u.x.iOrderByCol */
-#define SQLITE_ECEL_OMITREF  0x08  /* Omit if ExprList.u.x.iOrderByCol */
-void sqlite3ExprIfTrue(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalse(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalseDup(Parse*, Expr*, int, int);
-Table *sqlite3FindTable(sqlite3*,const char*, const char*);
-#define LOCATE_VIEW    0x01
-#define LOCATE_NOERR   0x02
-Table *sqlite3LocateTable(Parse*,u32 flags,const char*, const char*);
-const char *sqlite3PreferredTableName(const char*);
-Table *sqlite3LocateTableItem(Parse*,u32 flags,SrcItem *);
-Index *sqlite3FindIndex(sqlite3*,const char*, const char*);
-void sqlite3UnlinkAndDeleteTable(sqlite3*,int,const char*);
-void sqlite3UnlinkAndDeleteIndex(sqlite3*,int,const char*);
-void sqlite3Vacuum(Parse*,Token*,Expr*);
-int sqlite3RunVacuum(char**, sqlite3*, int, sqlite3_value*);
-char *sqlite3NameFromToken(sqlite3*, const Token*);
-int sqlite3ExprCompare(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprCompareSkip(Expr*,Expr*,int);
-int sqlite3ExprListCompare(const ExprList*,const ExprList*, int);
-int sqlite3ExprImpliesExpr(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprImpliesNonNullRow(Expr*,int,int);
-void sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
-void sqlite3ExprAnalyzeAggregates(NameContext*, Expr*);
-void sqlite3ExprAnalyzeAggList(NameContext*,ExprList*);
-int sqlite3ExprCoveredByIndex(Expr*, int iCur, Index *pIdx);
-int sqlite3ReferencesSrcList(Parse*, Expr*, SrcList*);
+WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ_List*,
+                             ಅಭಿವ್ಯಕ್ತಿ_List*,Select*,u16,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Where_ಕೊನೆ(WhereInfo*);
+LogEst sqlite3_Where_Output_ಅಡ್ಡಸಾಲು_ಎಣಿಕೆ(WhereInfo*);
+ಪೂರ್ಣಾಂಕ sqlite3WhereIsDistinct(WhereInfo*);
+ಪೂರ್ಣಾಂಕ sqlite3WhereIsOrdered(WhereInfo*);
+ಪೂರ್ಣಾಂಕ sqlite3_Where_ಕ್ರಮ_By_ಎಲ್ಲೆ_Opt_Label(WhereInfo*);
+ಶೂನ್ಯ sqlite3_Where_Min_Max_Opt_Early_ಹೊರಹೋಗು(Vdbe*,WhereInfo*);
+ಪೂರ್ಣಾಂಕ sqlite3WhereIsSorted(WhereInfo*);
+ಪೂರ್ಣಾಂಕ sqlite3WhereContinueLabel(WhereInfo*);
+ಪೂರ್ಣಾಂಕ sqlite3WhereBreakLabel(WhereInfo*);
+ಪೂರ್ಣಾಂಕ sqlite3WhereOkOnePass(WhereInfo*, ಪೂರ್ಣಾಂಕ*);
+#ವ್ಯಾಖ್ಯಾನಿಸು ONEPASS_OFF      0        /* Use of ONEPASS not allowed */
+#ವ್ಯಾಖ್ಯಾನಿಸು ONEPASS_SINGLE   1        /* ONEPASS valid for a single row update */
+#ವ್ಯಾಖ್ಯಾನಿಸು ONEPASS_MULTI    2        /* ONEPASS is valid for multiple rows */
+ಪೂರ್ಣಾಂಕ sqlite3_Where_ಬಳಸುತ್ತದೆ_Deferred_Seek(WhereInfo*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ತುಂಬು_ಸೂಚ್ಯಂಕ_ಸ್ತಂಭ(Parse*, ಸೂಚ್ಯಂಕ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Get_ಸ್ತಂಭ(Parse*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, u8);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Get_ಸ್ತಂಭ_ದ_ಕೋಷ್ಟಕ(Vdbe*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Move(Parse*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಗಮ್ಯ_ರಿಜಿಸ್ಟರ್(ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ, ಪೂರ್ಣಾಂಕ iReg);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GENERATED_COLUMNS
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Generated_ಸ್ತಂಭ(Parse*, ಕೋಷ್ಟಕ*, ಸ್ತಂಭ*, ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Copy(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Factorable(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ಸತತ_Just_Once(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Null_ರಿಜಿಸ್ಟರ್_Range(Parse*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ತಾತ್ಕಾಲಿಕ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ಗುರಿ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ಅಭಿವ್ಯಕ್ತಿ_List(Parse*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, u8);
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ECEL_DUP      0x01  /* Deep, not shallow copies */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ECEL_ಗುಣಕ   0x02  /* Factor out constant terms */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ECEL_REF      0x04  /* Use ExprList.u.x.iOrderByCol */
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_ECEL_OMITREF  0x08  /* Omit if ExprList.u.x.iOrderByCol */
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_If_True(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_If_False(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_If_False_Dup(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಕೋಷ್ಟಕ *sqlite3_ಕಂಡುಹಿಡಿ_ಕೋಷ್ಟಕ(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+#ವ್ಯಾಖ್ಯಾನಿಸು LOCATE_VIEW    0x01
+#ವ್ಯಾಖ್ಯಾನಿಸು LOCATE_NOERR   0x02
+ಕೋಷ್ಟಕ *sqlite3_Locate_ಕೋಷ್ಟಕ(Parse*,u32 flags,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3_Preferred_ಕೋಷ್ಟಕ_Name(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಕೋಷ್ಟಕ *sqlite3_Locate_ಕೋಷ್ಟಕ_ಅಂಶ(Parse*,u32 flags,Src_ಅಂಶ *);
+ಸೂಚ್ಯಂಕ *sqlite3_ಕಂಡುಹಿಡಿ_ಸೂಚ್ಯಂಕ(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_Unlink_And_Delete_ಕೋಷ್ಟಕ(sqlite3*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_Unlink_And_Delete_ಸೂಚ್ಯಂಕ(sqlite3*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3Vacuum(Parse*,Token*,ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸತತ_Vacuum(ಅಕ್ಷರ**, sqlite3*, ಪೂರ್ಣಾಂಕ, sqlite3_ಮೌಲ್ಯ*);
+ಅಕ್ಷರ *sqlite3NameFromToken(sqlite3*, ಸ್ಥಿರಾಂಕ Token*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Compare(ಸ್ಥಿರಾಂಕ Parse*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Compare_Skip(ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Compare(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸೂಚಿಸುತ್ತದೆ_ಅಭಿವ್ಯಕ್ತಿ(ಸ್ಥಿರಾಂಕ Parse*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸೂಚಿಸುತ್ತದೆ_Non_Null_ಅಡ್ಡಸಾಲು(ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Analyze_Aggregates(NameContext*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Analyze_Agg_List(NameContext*,ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Covered_By_ಸೂಚ್ಯಂಕ(ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ iCur, ಸೂಚ್ಯಂಕ *pIdx);
+ಪೂರ್ಣಾಂಕ sqlite3ReferencesSrcList(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, SrcList*);
 Vdbe *sqlite3GetVdbe(Parse*);
-#ifndef SQLITE_UNTESTABLE
-void sqlite3PrngSaveState(void);
-void sqlite3PrngRestoreState(void);
-#endif
-void sqlite3RollbackAll(sqlite3*,int);
-void sqlite3CodeVerifySchema(Parse*, int);
-void sqlite3CodeVerifyNamedSchema(Parse*, const char *zDb);
-void sqlite3BeginTransaction(Parse*, int);
-void sqlite3EndTransaction(Parse*,int);
-void sqlite3Savepoint(Parse*, int, Token*);
-void sqlite3CloseSavepoints(sqlite3 *);
-void sqlite3LeaveMutexAndCloseZombie(sqlite3*);
-u32 sqlite3IsTrueOrFalse(const char*);
-int sqlite3ExprIdToTrueFalse(Expr*);
-int sqlite3ExprTruthValue(const Expr*);
-int sqlite3ExprIsConstant(Parse*,Expr*);
-int sqlite3ExprIsConstantOrFunction(Expr*, u8);
-int sqlite3ExprIsConstantOrGroupBy(Parse*, Expr*, ExprList*);
-int sqlite3ExprIsTableConstant(Expr*,int,int);
-int sqlite3ExprIsSingleTableConstraint(Expr*,const SrcList*,int,int);
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs);
-int sqlite3ExprContainsSubquery(Expr*);
-int sqlite3ExprIsInteger(const Expr*, int*, Parse*, int);
-int sqlite3ExprCanBeNull(const Expr*);
-int sqlite3ExprNeedsNoAffinityChange(const Expr*, char);
-int sqlite3ExprIsLikeOperator(const Expr*);
-int sqlite3IsRowid(const char*);
-const char *sqlite3RowidAlias(Table *pTab);
-void sqlite3GenerateRowDelete(
-    Parse*,Table*,Trigger*,int,int,int,i16,u8,u8,u8,int);
-void sqlite3GenerateRowIndexDelete(Parse*, Table*, int, int, int*, int);
-int sqlite3GenerateIndexKey(Parse*, Index*, int, int, int, int*,Index*,int);
-void sqlite3ResolvePartIdxLabel(Parse*,int);
-int sqlite3ExprReferencesUpdatedColumn(Expr*,int*,int);
-void sqlite3GenerateConstraintChecks(Parse*,Table*,int*,int,int,int,int,
-                                     u8,u8,int,int*,int*,Upsert*);
-#ifdef SQLITE_ENABLE_NULL_TRIM
-  void sqlite3SetMakeRecordP5(Vdbe*,Table*);
-#else
-# define sqlite3SetMakeRecordP5(A,B)
-#endif
-void sqlite3CompleteInsertion(Parse*,Table*,int,int,int,int*,int,int,int);
-int sqlite3OpenTableAndIndices(Parse*, Table*, int, u8, int, u8*, int*, int*);
-void sqlite3BeginWriteOperation(Parse*, int, int);
-void sqlite3MultiWrite(Parse*);
-void sqlite3MayAbort(Parse*);
-void sqlite3HaltConstraint(Parse*, int, int, char*, i8, u8);
-void sqlite3UniqueConstraint(Parse*, int, Index*);
-void sqlite3RowidConstraint(Parse*, int, Table*);
-Expr *sqlite3ExprDup(sqlite3*,const Expr*,int);
-ExprList *sqlite3ExprListDup(sqlite3*,const ExprList*,int);
-SrcList *sqlite3SrcListDup(sqlite3*,const SrcList*,int);
-IdList *sqlite3IdListDup(sqlite3*,const IdList*);
-Select *sqlite3SelectDup(sqlite3*,const Select*,int);
-FuncDef *sqlite3FunctionSearch(int,const char*);
-void sqlite3InsertBuiltinFuncs(FuncDef*,int);
-FuncDef *sqlite3FindFunction(sqlite3*,const char*,int,u8,u8);
-void sqlite3QuoteValue(StrAccum*,sqlite3_value*,int);
-int sqlite3AppendOneUtf8Character(char*, u32);
-void sqlite3RegisterBuiltinFunctions(void);
-void sqlite3RegisterDateTimeFunctions(void);
-void sqlite3RegisterJsonFunctions(void);
-void sqlite3RegisterPerConnectionBuiltinFunctions(sqlite3*);
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
-  Module *sqlite3JsonVtabRegister(sqlite3*,const char*);
-#endif
-int sqlite3SafetyCheckOk(sqlite3*);
-int sqlite3SafetyCheckSickOrOk(sqlite3*);
-void sqlite3ChangeCookie(Parse*, int);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_UNTESTABLE
+ಶೂನ್ಯ sqlite3PrngSaveState(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3PrngRestoreState(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3RollbackAll(sqlite3*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸಂಕೇತ_Verify_Schema(Parse*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸಂಕೇತ_Verify_Named_Schema(Parse*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDb);
+ಶೂನ್ಯ sqlite3BeginTransaction(Parse*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಕೊನೆ_Transaction(Parse*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3Savepoint(Parse*, ಪೂರ್ಣಾಂಕ, Token*);
+ಶೂನ್ಯ sqlite3CloseSavepoints(sqlite3 *);
+ಶೂನ್ಯ sqlite3LeaveMutexAndCloseZombie(sqlite3*);
+u32 sqlite3IsTrueOrFalse(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Id_ಗಮ್ಯ_True_False(ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Truth_ಮೌಲ್ಯ(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_Constant(Parse*,ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_Constant_Or_Function(ಅಭಿವ್ಯಕ್ತಿ*, u8);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_Constant_Or_ಗುಂಪು_By(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_ಕೋಷ್ಟಕ_Constant(ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_Single_ಕೋಷ್ಟಕ_Constraint(ಅಭಿವ್ಯಕ್ತಿ*,ಸ್ಥಿರಾಂಕ SrcList*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Is_Constant(Parse *pParse, ಅಭಿವ್ಯಕ್ತಿ_List *pList, ಪೂರ್ಣಾಂಕ bNoIs);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಒಳಗೊಂಡಿದೆ_Subquery(ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_Integer(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ*, Parse*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Can_Be_Null(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Needs_No_Affinity_Change(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, ಅಕ್ಷರ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_Like_Operator(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3IsRowid(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3RowidAlias(ಕೋಷ್ಟಕ *pTab);
+ಶೂನ್ಯ sqlite3_Generate_ಅಡ್ಡಸಾಲು_Delete(
+    Parse*,ಕೋಷ್ಟಕ*,Trigger*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,i16,u8,u8,u8,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Generate_ಅಡ್ಡಸಾಲು_ಸೂಚ್ಯಂಕ_Delete(Parse*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_Generate_ಸೂಚ್ಯಂಕ_ಕೀಲಿ(Parse*, ಸೂಚ್ಯಂಕ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ*,ಸೂಚ್ಯಂಕ*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3ResolvePartIdxLabel(Parse*,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_References_Updated_ಸ್ತಂಭ(ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3GenerateConstraintChecks(Parse*,ಕೋಷ್ಟಕ*,ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,
+                                     u8,u8,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ*,Upsert*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_NULL_TRIM
+  ಶೂನ್ಯ sqlite3_ಗಣ_Make_ದಾಖಲೆ_P5(Vdbe*,ಕೋಷ್ಟಕ*);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_ಗಣ_Make_ದಾಖಲೆ_P5(A,B)
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3CompleteInsertion(Parse*,ಕೋಷ್ಟಕ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_Open_ಕೋಷ್ಟಕ_And_Indices(Parse*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ, u8, ಪೂರ್ಣಾಂಕ, u8*, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ*);
+ಶೂನ್ಯ sqlite3BeginWriteOperation(Parse*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3MultiWrite(Parse*);
+ಶೂನ್ಯ sqlite3MayAbort(Parse*);
+ಶೂನ್ಯ sqlite3HaltConstraint(Parse*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಅಕ್ಷರ*, i8, u8);
+ಶೂನ್ಯ sqlite3UniqueConstraint(Parse*, ಪೂರ್ಣಾಂಕ, ಸೂಚ್ಯಂಕ*);
+ಶೂನ್ಯ sqlite3RowidConstraint(Parse*, ಪೂರ್ಣಾಂಕ, ಕೋಷ್ಟಕ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Dup(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ);
+ಅಭಿವ್ಯಕ್ತಿ_List *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Dup(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ_List*,ಪೂರ್ಣಾಂಕ);
+SrcList *sqlite3SrcListDup(sqlite3*,ಸ್ಥಿರಾಂಕ SrcList*,ಪೂರ್ಣಾಂಕ);
+IdList *sqlite3IdListDup(sqlite3*,ಸ್ಥಿರಾಂಕ IdList*);
+Select *sqlite3SelectDup(sqlite3*,ಸ್ಥಿರಾಂಕ Select*,ಪೂರ್ಣಾಂಕ);
+FuncDef *sqlite3_Function_ಹುಡುಕು(ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ಸೇರಿಸು_Builtin_Funcs(FuncDef*,ಪೂರ್ಣಾಂಕ);
+FuncDef *sqlite3_ಕಂಡುಹಿಡಿ_Function(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಪೂರ್ಣಾಂಕ,u8,u8);
+ಶೂನ್ಯ sqlite3_Quote_ಮೌಲ್ಯ(StrAccum*,sqlite3_ಮೌಲ್ಯ*,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3AppendOneUtf8Character(ಅಕ್ಷರ*, u32);
+ಶೂನ್ಯ sqlite3_ರಿಜಿಸ್ಟರ್_Builtin_Functions(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3_ರಿಜಿಸ್ಟರ್_Date_ಸಮಯ_Functions(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3_ರಿಜಿಸ್ಟರ್_Json_Functions(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3_ರಿಜಿಸ್ಟರ್_ಪ್ರತಿ_Connection_Builtin_Functions(sqlite3*);
+#ಆದರೆ !defined(SQLITE_OMIT_VIRTUALTABLE) && !defined(SQLITE_OMIT_JSON)
+  Module *sqlite3_Json_Vtab_ರಿಜಿಸ್ಟರ್(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3SafetyCheckOk(sqlite3*);
+ಪೂರ್ಣಾಂಕ sqlite3SafetyCheckSickOrOk(sqlite3*);
+ಶೂನ್ಯ sqlite3ChangeCookie(Parse*, ಪೂರ್ಣಾಂಕ);
 With *sqlite3WithDup(sqlite3 *db, With *p);
 
-#if !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
-  Module *sqlite3CarrayRegister(sqlite3*);
-#endif
+#ಆದರೆ !defined(SQLITE_OMIT_VIRTUALTABLE) && defined(SQLITE_ENABLE_CARRAY)
+  Module *sqlite3_Carray_ರಿಜಿಸ್ಟರ್(sqlite3*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
-#endif
+#ಆದರೆ !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
+ಶೂನ್ಯ sqlite3MaterializeView(Parse*, ಕೋಷ್ಟಕ*, ಅಭಿವ್ಯಕ್ತಿ*, ಅಭಿವ್ಯಕ್ತಿ_List*,ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3BeginTrigger(Parse*, Token*,Token*,int,int,IdList*,SrcList*,
-                           Expr*,int, int);
-  void sqlite3FinishTrigger(Parse*, TriggerStep*, Token*);
-  void sqlite3DropTrigger(Parse*, SrcList*, int);
-  void sqlite3DropTriggerPtr(Parse*, Trigger*);
-  Trigger *sqlite3TriggersExist(Parse *, Table*, int, ExprList*, int *pMask);
-  Trigger *sqlite3TriggerList(Parse *, Table *);
-  void sqlite3CodeRowTrigger(Parse*, Trigger *, int, ExprList*, int, Table *,
-                            int, int, int);
-  void sqlite3CodeRowTriggerDirect(Parse *, Trigger *, Table *, int, int, int);
-  void sqliteViewTriggers(Parse*, Table*, Expr*, int, ExprList*);
-  void sqlite3DeleteTriggerStep(sqlite3*, TriggerStep*);
-  TriggerStep *sqlite3TriggerSelectStep(sqlite3*,Select*,
-                                        const char*,const char*);
-  TriggerStep *sqlite3TriggerInsertStep(Parse*,SrcList*, IdList*,
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TRIGGER
+  ಶೂನ್ಯ sqlite3BeginTrigger(Parse*, Token*,Token*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,IdList*,SrcList*,
+                           ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+  ಶೂನ್ಯ sqlite3_ಮುಕ್ತಾಯ_Trigger(Parse*, Trigger_ಹೆಜ್ಜೆ*, Token*);
+  ಶೂನ್ಯ sqlite3DropTrigger(Parse*, SrcList*, ಪೂರ್ಣಾಂಕ);
+  ಶೂನ್ಯ sqlite3DropTriggerPtr(Parse*, Trigger*);
+  Trigger *sqlite3TriggersExist(Parse *, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ, ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ *p_ಮುಖವಾಡ);
+  Trigger *sqlite3TriggerList(Parse *, ಕೋಷ್ಟಕ *);
+  ಶೂನ್ಯ sqlite3_ಸಂಕೇತ_ಅಡ್ಡಸಾಲು_Trigger(Parse*, Trigger *, ಪೂರ್ಣಾಂಕ, ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ, ಕೋಷ್ಟಕ *,
+                            ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+  ಶೂನ್ಯ sqlite3_ಸಂಕೇತ_ಅಡ್ಡಸಾಲು_Trigger_ನೇರ(Parse *, Trigger *, ಕೋಷ್ಟಕ *, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+  ಶೂನ್ಯ sqliteViewTriggers(Parse*, ಕೋಷ್ಟಕ*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ, ಅಭಿವ್ಯಕ್ತಿ_List*);
+  ಶೂನ್ಯ sqlite3_Delete_Trigger_ಹೆಜ್ಜೆ(sqlite3*, Trigger_ಹೆಜ್ಜೆ*);
+  Trigger_ಹೆಜ್ಜೆ *sqlite3_Trigger_Select_ಹೆಜ್ಜೆ(sqlite3*,Select*,
+                                        ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  Trigger_ಹೆಜ್ಜೆ *sqlite3_Trigger_ಸೇರಿಸು_ಹೆಜ್ಜೆ(Parse*,SrcList*, IdList*,
                                         Select*,u8,Upsert*,
-                                        const char*,const char*);
-  TriggerStep *sqlite3TriggerUpdateStep(Parse*,SrcList*,SrcList*,ExprList*,
-                                        Expr*, u8, const char*,const char*);
-  TriggerStep *sqlite3TriggerDeleteStep(Parse*,SrcList*, Expr*,
-                                        const char*,const char*);
-  void sqlite3DeleteTrigger(sqlite3*, Trigger*);
-  void sqlite3UnlinkAndDeleteTrigger(sqlite3*,int,const char*);
-  u32 sqlite3TriggerColmask(Parse*,Trigger*,ExprList*,int,int,Table*,int);
+                                        ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  Trigger_ಹೆಜ್ಜೆ *sqlite3_Trigger_Update_ಹೆಜ್ಜೆ(Parse*,SrcList*,SrcList*,ಅಭಿವ್ಯಕ್ತಿ_List*,
+                                        ಅಭಿವ್ಯಕ್ತಿ*, u8, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  Trigger_ಹೆಜ್ಜೆ *sqlite3_Trigger_Delete_ಹೆಜ್ಜೆ(Parse*,SrcList*, ಅಭಿವ್ಯಕ್ತಿ*,
+                                        ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3DeleteTrigger(sqlite3*, Trigger*);
+  ಶೂನ್ಯ sqlite3UnlinkAndDeleteTrigger(sqlite3*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  u32 sqlite3TriggerColmask(Parse*,Trigger*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಕೋಷ್ಟಕ*,ಪೂರ್ಣಾಂಕ);
 # define sqlite3ParseToplevel(p) ((p)->pToplevel ? (p)->pToplevel : (p))
 # define sqlite3IsToplevel(p) ((p)->pToplevel==0)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define sqlite3TriggersExist(B,C,D,E,F) 0
 # define sqlite3DeleteTrigger(A,B)
 # define sqlite3DropTriggerPtr(A,B)
 # define sqlite3UnlinkAndDeleteTrigger(A,B,C)
-# define sqlite3CodeRowTrigger(A,B,C,D,E,F,G,H,I)
-# define sqlite3CodeRowTriggerDirect(A,B,C,D,E,F)
+# define sqlite3_ಸಂಕೇತ_ಅಡ್ಡಸಾಲು_Trigger(A,B,C,D,E,F,G,H,I)
+# define sqlite3_ಸಂಕೇತ_ಅಡ್ಡಸಾಲು_Trigger_ನೇರ(A,B,C,D,E,F)
 # define sqlite3TriggerList(X, Y) 0
 # define sqlite3ParseToplevel(p) p
 # define sqlite3IsToplevel(p) 1
 # define sqlite3TriggerColmask(A,B,C,D,E,F,G) 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-int sqlite3JoinType(Parse*, Token*, Token*, Token*);
-int sqlite3ColumnIndex(Table *pTab, const char *zCol);
-void sqlite3SrcItemColumnUsed(SrcItem*,int);
-void sqlite3SetJoinExpr(Expr*,int,u32);
-void sqlite3CreateForeignKey(Parse*, ExprList*, Token*, ExprList*, int);
-void sqlite3DeferForeignKey(Parse*, int);
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  void sqlite3AuthRead(Parse*,Expr*,Schema*,SrcList*);
-  int sqlite3AuthCheck(Parse*,int, const char*, const char*, const char*);
-  void sqlite3AuthContextPush(Parse*, AuthContext*, const char*);
-  void sqlite3AuthContextPop(AuthContext*);
-  int sqlite3AuthReadCol(Parse*, const char *, const char *, int);
-#else
+ಪೂರ್ಣಾಂಕ sqlite3JoinType(Parse*, Token*, Token*, Token*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸ್ತಂಭ_ಸೂಚ್ಯಂಕ(ಕೋಷ್ಟಕ *pTab, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಲಂಬಸಾಲು);
+ಶೂನ್ಯ sqlite3_Src_ಅಂಶ_ಸ್ತಂಭ_ಬಳಸಿದ(Src_ಅಂಶ*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಗಣ_Join_ಅಭಿವ್ಯಕ್ತಿ(ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ,u32);
+ಶೂನ್ಯ sqlite3_Create_Foreign_ಕೀಲಿ(Parse*, ಅಭಿವ್ಯಕ್ತಿ_List*, Token*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Defer_Foreign_ಕೀಲಿ(Parse*, ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTHORIZATION
+  ಶೂನ್ಯ sqlite3AuthRead(Parse*,ಅಭಿವ್ಯಕ್ತಿ*,Schema*,SrcList*);
+  ಪೂರ್ಣಾಂಕ sqlite3AuthCheck(Parse*,ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3_Auth_Context_ತಳ್ಳು(Parse*, AuthContext*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3_Auth_Context_ತೆಗೆ(AuthContext*);
+  ಪೂರ್ಣಾಂಕ sqlite3_Auth_Read_ಲಂಬಸಾಲು(Parse*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, ಪೂರ್ಣಾಂಕ);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define sqlite3AuthRead(a,b,c,d)
 # define sqlite3AuthCheck(a,b,c,d,e)    SQLITE_OK
-# define sqlite3AuthContextPush(a,b,c)
-# define sqlite3AuthContextPop(a)  ((void)(a))
-#endif
-int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName);
-void sqlite3Attach(Parse*, Expr*, Expr*, Expr*);
-void sqlite3Detach(Parse*, Expr*);
-void sqlite3FixInit(DbFixer*, Parse*, int, const char*, const Token*);
-int sqlite3FixSrcList(DbFixer*, SrcList*);
-int sqlite3FixSelect(DbFixer*, Select*);
-int sqlite3FixExpr(DbFixer*, Expr*);
-int sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
+# define sqlite3_Auth_Context_ತಳ್ಳು(a,b,c)
+# define sqlite3_Auth_Context_ತೆಗೆ(a)  ((ಶೂನ್ಯ)(a))
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3DbIsNamed(sqlite3 *db, ಪೂರ್ಣಾಂಕ iDb, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName);
+ಶೂನ್ಯ sqlite3Attach(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಅಭಿವ್ಯಕ್ತಿ*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3Detach(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3FixInit(DbFixer*, Parse*, ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ಥಿರಾಂಕ Token*);
+ಪೂರ್ಣಾಂಕ sqlite3FixSrcList(DbFixer*, SrcList*);
+ಪೂರ್ಣಾಂಕ sqlite3FixSelect(DbFixer*, Select*);
+ಪೂರ್ಣಾಂಕ sqlite3_Fix_ಅಭಿವ್ಯಕ್ತಿ(DbFixer*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Fix_Trigger_ಹೆಜ್ಜೆ(DbFixer*, Trigger_ಹೆಜ್ಜೆ*);
 
-int sqlite3RealSameAsInt(double,sqlite3_int64);
-i64 sqlite3RealToI64(double);
-int sqlite3Int64ToText(i64,char*);
-int sqlite3AtoF(const char *z, double*);
-int sqlite3GetInt32(const char *, int*);
-int sqlite3GetUInt32(const char*, u32*);
-int sqlite3Atoi(const char*);
-#ifndef SQLITE_OMIT_UTF16
-int sqlite3Utf16ByteLen(const void *pData, int nByte, int nChar);
-#endif
-int sqlite3Utf8CharLen(const char *pData, int nByte);
-u32 sqlite3Utf8Read(const u8**);
-int sqlite3Utf8ReadLimited(const u8*, int, u32*);
+ಪೂರ್ಣಾಂಕ sqlite3RealSameAsInt(ದ್ವಿಗುಣ,sqlite3_int64);
+i64 sqlite3_Real_ಗಮ್ಯ_I64(ದ್ವಿಗುಣ);
+ಪೂರ್ಣಾಂಕ sqlite3_Int64_ಗಮ್ಯ_ಪಠ್ಯ(i64,ಅಕ್ಷರ*);
+ಪೂರ್ಣಾಂಕ sqlite3AtoF(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z, ದ್ವಿಗುಣ*);
+ಪೂರ್ಣಾಂಕ sqlite3GetInt32(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, ಪೂರ್ಣಾಂಕ*);
+ಪೂರ್ಣಾಂಕ sqlite3GetUInt32(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, u32*);
+ಪೂರ್ಣಾಂಕ sqlite3Atoi(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UTF16
+ಪೂರ್ಣಾಂಕ sqlite3Utf16ByteLen(ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *p_ದತ್ತಾಂಶ, ಪೂರ್ಣಾಂಕ nByte, ಪೂರ್ಣಾಂಕ nChar);
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3Utf8CharLen(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *p_ದತ್ತಾಂಶ, ಪೂರ್ಣಾಂಕ nByte);
+u32 sqlite3Utf8Read(ಸ್ಥಿರಾಂಕ u8**);
+ಪೂರ್ಣಾಂಕ sqlite3Utf8ReadLimited(ಸ್ಥಿರಾಂಕ u8*, ಪೂರ್ಣಾಂಕ, u32*);
 LogEst sqlite3LogEst(u64);
-LogEst sqlite3LogEstAdd(LogEst,LogEst);
-LogEst sqlite3LogEstFromDouble(double);
-u64 sqlite3LogEstToInt(LogEst);
-VList *sqlite3VListAdd(sqlite3*,VList*,const char*,int,int);
-const char *sqlite3VListNumToName(VList*,int);
-int sqlite3VListNameToNum(VList*,const char*,int);
+LogEst sqlite3_Log_Est_ಕೂಡಿಸು(LogEst,LogEst);
+LogEst sqlite3LogEstFromDouble(ದ್ವಿಗುಣ);
+u64 sqlite3_Log_Est_ಗಮ್ಯ_Int(LogEst);
+VList *sqlite3_VList_ಕೂಡಿಸು(sqlite3*,VList*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3_VList_ಅಂಕೆ_ಗಮ್ಯ_Name(VList*,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_VList_Name_ಗಮ್ಯ_ಅಂಕೆ(VList*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಪೂರ್ಣಾಂಕ);
 
 /*
 ** Routines to read and write variable-length integers.  These used to
 ** be defined locally, but now we use the varint routines in the util.c
 ** file.
 */
-int sqlite3PutVarint(unsigned char*, u64);
-u8 sqlite3GetVarint(const unsigned char *, u64 *);
-i64 sqlite3VarintValue(const unsigned char*);
-u8 sqlite3GetVarint32(const unsigned char *, u32 *);
-int sqlite3VarintLen(u64 v);
+ಪೂರ್ಣಾಂಕ sqlite3PutVarint(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ*, u64);
+u8 sqlite3GetVarint(ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *, u64 *);
+i64 sqlite3_Varint_ಮೌಲ್ಯ(ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ*);
+u8 sqlite3GetVarint32(ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *, u32 *);
+ಪೂರ್ಣಾಂಕ sqlite3VarintLen(u64 v);
 
 /*
 ** The common case is for a varint to be a single byte.  They following
 ** macros handle the common case without a procedure call, but then call
 ** the procedure for larger varints.
 */
-#define getVarint32(A,B)  \
+#ವ್ಯಾಖ್ಯಾನಿಸು getVarint32(A,B)  \
   (u8)((*(A)<(u8)0x80)?((B)=(u32)*(A)),1:sqlite3GetVarint32((A),(u32 *)&(B)))
-#define getVarint32NR(A,B) \
-  B=(u32)*(A);if(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
-#define putVarint32(A,B)  \
-  (u8)(((u32)(B)<(u32)0x80)?(*(A)=(unsigned char)(B)),1:\
+#ವ್ಯಾಖ್ಯಾನಿಸು getVarint32NR(A,B) \
+  B=(u32)*(A);ಆದರೆ(B>=0x80)sqlite3GetVarint32((A),(u32*)&(B))
+#ವ್ಯಾಖ್ಯಾನಿಸು putVarint32(A,B)  \
+  (u8)(((u32)(B)<(u32)0x80)?(*(A)=(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(B)),1:\
   sqlite3PutVarint((A),(B)))
 
-const char *sqlite3IndexAffinityStr(sqlite3*, Index*);
-char *sqlite3TableAffinityStr(sqlite3*,const Table*);
-void sqlite3TableAffinity(Vdbe*, Table*, int);
-char sqlite3CompareAffinity(const Expr *pExpr, char aff2);
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity);
-char sqlite3TableColumnAffinity(const Table*,int);
-char sqlite3ExprAffinity(const Expr *pExpr);
-int sqlite3ExprDataType(const Expr *pExpr);
-int sqlite3Atoi64(const char*, i64*, int, u8);
-int sqlite3DecOrHexToI64(const char*, i64*);
-void sqlite3ErrorWithMsg(sqlite3*, int, const char*,...);
-void sqlite3Error(sqlite3*,int);
-void sqlite3ErrorClear(sqlite3*);
-void sqlite3SystemError(sqlite3*,int);
-#if !defined(SQLITE_OMIT_BLOB_LITERAL)
-void *sqlite3HexToBlob(sqlite3*, const char *z, int n);
-#endif
-u8 sqlite3HexToInt(int h);
-int sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3_ಸೂಚ್ಯಂಕ_Affinity_Str(sqlite3*, ಸೂಚ್ಯಂಕ*);
+ಅಕ್ಷರ *sqlite3_ಕೋಷ್ಟಕ_Affinity_Str(sqlite3*,ಸ್ಥಿರಾಂಕ ಕೋಷ್ಟಕ*);
+ಶೂನ್ಯ sqlite3_ಕೋಷ್ಟಕ_Affinity(Vdbe*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ);
+ಅಕ್ಷರ sqlite3CompareAffinity(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ, ಅಕ್ಷರ aff2);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸೂಚ್ಯಂಕ_Affinity_Ok(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ, ಅಕ್ಷರ idx_affinity);
+ಅಕ್ಷರ sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_Affinity(ಸ್ಥಿರಾಂಕ ಕೋಷ್ಟಕ*,ಪೂರ್ಣಾಂಕ);
+ಅಕ್ಷರ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Affinity(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ದತ್ತಾಂಶ_Type(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ);
+ಪೂರ್ಣಾಂಕ sqlite3Atoi64(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, i64*, ಪೂರ್ಣಾಂಕ, u8);
+ಪೂರ್ಣಾಂಕ sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, i64*);
+ಶೂನ್ಯ sqlite3_Error_With_ಸಂದೇಶ(sqlite3*, ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,...);
+ಶೂನ್ಯ sqlite3Error(sqlite3*,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3ErrorClear(sqlite3*);
+ಶೂನ್ಯ sqlite3SystemError(sqlite3*,ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ !defined(SQLITE_OMIT_BLOB_LITERAL)
+ಶೂನ್ಯ *sqlite3_Hex_ಗಮ್ಯ_Blob(sqlite3*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z, ಪೂರ್ಣಾಂಕ n);
+#ಆದರೆ_ಅಂತ್ಯ
+u8 sqlite3_Hex_ಗಮ್ಯ_Int(ಪೂರ್ಣಾಂಕ h);
+ಪೂರ್ಣಾಂಕ sqlite3TwoPartName(Parse *, Token *, Token *, Token **);
 
-#if defined(SQLITE_NEED_ERR_NAME)
-const char *sqlite3ErrName(int);
-#endif
+#ಆದರೆ defined(SQLITE_NEED_ERR_NAME)
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3ErrName(ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_DESERIALIZE
-int sqlite3MemdbInit(void);
-int sqlite3IsMemdb(const sqlite3_vfs*);
-#else
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_DESERIALIZE
+ಪೂರ್ಣಾಂಕ sqlite3MemdbInit(ಶೂನ್ಯ);
+ಪೂರ್ಣಾಂಕ sqlite3IsMemdb(ಸ್ಥಿರಾಂಕ sqlite3_vfs*);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define sqlite3IsMemdb(X) 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-const char *sqlite3ErrStr(int);
-int sqlite3ReadSchema(Parse *pParse);
-CollSeq *sqlite3FindCollSeq(sqlite3*,u8 enc, const char*,int);
-int sqlite3BinaryCompare(void*,int,const void*,int,const void*);
-#if SQLITE_USES_INLINE
-static SQLITE_INLINE int sqlite3IsBinary(const CollSeq *p){
-  assert( p==0 || p->xCmp!=sqlite3BinaryCompare
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3ErrStr(ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3ReadSchema(Parse *pParse);
+CollSeq *sqlite3_ಕಂಡುಹಿಡಿ_Coll_Seq(sqlite3*,u8 enc, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ದ್ವಿಮಾನ_Compare(ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ,ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*);
+#ಆದರೆ SQLITE_ಬಳಸುತ್ತದೆ_INLINE
+ಸ್ಥಿರ SQLITE_INLINE ಪೂರ್ಣಾಂಕ sqlite3_Is_ದ್ವಿಮಾನ(ಸ್ಥಿರಾಂಕ CollSeq *p){
+  ಪ್ರತಿಜ್ಞಾ( p==0 || p->xCmp!=sqlite3_ದ್ವಿಮಾನ_Compare
        || strcmp(p->zName,"BINARY")==0 );
-  return p==0 || p->xCmp==sqlite3BinaryCompare;
+  ಹಿಂತಿರುಗಿ p==0 || p->xCmp==sqlite3_ದ್ವಿಮಾನ_Compare;
 }
-#else
-int sqlite3IsBinary(const CollSeq*);
-#endif
-CollSeq *sqlite3LocateCollSeq(Parse *pParse, const char*zName);
-void sqlite3SetTextEncoding(sqlite3 *db, u8);
-CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr);
-CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr);
-int sqlite3ExprCollSeqMatch(Parse*,const Expr*,const Expr*);
-Expr *sqlite3ExprAddCollateToken(Parse *pParse, Expr*, const Token*, int);
-Expr *sqlite3ExprAddCollateString(Parse*,Expr*,const char*);
-Expr *sqlite3ExprSkipCollate(Expr*);
-Expr *sqlite3ExprSkipCollateAndLikely(Expr*);
-int sqlite3CheckCollSeq(Parse *, CollSeq *);
-int sqlite3WritableSchema(sqlite3*);
-int sqlite3CheckObjectName(Parse*, const char*,const char*,const char*);
-void sqlite3VdbeSetChanges(sqlite3 *, i64);
-int sqlite3AddInt64(i64*,i64);
-int sqlite3SubInt64(i64*,i64);
-int sqlite3MulInt64(i64*,i64);
-int sqlite3AbsInt32(int);
-#ifdef SQLITE_ENABLE_8_3_NAMES
-void sqlite3FileSuffix3(const char*, char*);
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
+ಪೂರ್ಣಾಂಕ sqlite3_Is_ದ್ವಿಮಾನ(ಸ್ಥಿರಾಂಕ CollSeq*);
+#ಆದರೆ_ಅಂತ್ಯ
+CollSeq *sqlite3LocateCollSeq(Parse *pParse, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*zName);
+ಶೂನ್ಯ sqlite3_ಗಣ_ಪಠ್ಯ_Encoding(sqlite3 *db, u8);
+CollSeq *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Coll_Seq(Parse *pParse, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ);
+CollSeq *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_NNColl_Seq(Parse *pParse, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Coll_Seq_ಹೊಂದಿಕೆ(Parse*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಕೂಡಿಸು_Collate_Token(Parse *pParse, ಅಭಿವ್ಯಕ್ತಿ*, ಸ್ಥಿರಾಂಕ Token*, ಪೂರ್ಣಾಂಕ);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಕೂಡಿಸು_Collate_String(Parse*,ಅಭಿವ್ಯಕ್ತಿ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Skip_Collate(ಅಭಿವ್ಯಕ್ತಿ*);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Skip_Collate_And_Likely(ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3CheckCollSeq(Parse *, CollSeq *);
+ಪೂರ್ಣಾಂಕ sqlite3WritableSchema(sqlite3*);
+ಪೂರ್ಣಾಂಕ sqlite3CheckObjectName(Parse*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_Vdbe_ಗಣ_Changes(sqlite3 *, i64);
+ಪೂರ್ಣಾಂಕ sqlite3_ಕೂಡಿಸು_Int64(i64*,i64);
+ಪೂರ್ಣಾಂಕ sqlite3SubInt64(i64*,i64);
+ಪೂರ್ಣಾಂಕ sqlite3MulInt64(i64*,i64);
+ಪೂರ್ಣಾಂಕ sqlite3AbsInt32(ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_8_3_ಹೆಸರುಗಳು
+ಶೂನ್ಯ sqlite3FileSuffix3(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಅಕ್ಷರ*);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define sqlite3FileSuffix3(X,Y)
-#endif
-u8 sqlite3GetBoolean(const char *z,u8);
+#ಆದರೆ_ಅಂತ್ಯ
+u8 sqlite3GetBoolean(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z,u8);
 
-const void *sqlite3ValueText(sqlite3_value*, u8);
-int sqlite3ValueIsOfClass(const sqlite3_value*, void(*)(void*));
-int sqlite3ValueBytes(sqlite3_value*, u8);
-void sqlite3ValueSetStr(sqlite3_value*, int, const void *,u8,
-                        void(*)(void*));
-void sqlite3ValueSetNull(sqlite3_value*);
-void sqlite3ValueFree(sqlite3_value*);
-#ifndef SQLITE_UNTESTABLE
-void sqlite3ResultIntReal(sqlite3_context*);
-#endif
-sqlite3_value *sqlite3ValueNew(sqlite3 *);
-#ifndef SQLITE_OMIT_UTF16
-char *sqlite3Utf16to8(sqlite3 *, const void*, int, u8);
-#endif
-int sqlite3ValueFromExpr(sqlite3 *, const Expr *, u8, u8, sqlite3_value **);
-void sqlite3ValueApplyAffinity(sqlite3_value *, u8, u8);
-#ifndef SQLITE_AMALGAMATION
-extern const unsigned char sqlite3OpcodeProperty[];
-extern const char sqlite3StrBINARY[];
-extern const unsigned char sqlite3StdTypeLen[];
-extern const char sqlite3StdTypeAffinity[];
-extern const char *sqlite3StdType[];
-extern const unsigned char sqlite3UpperToLower[];
-extern const unsigned char *sqlite3aLTb;
-extern const unsigned char *sqlite3aEQb;
-extern const unsigned char *sqlite3aGTb;
-extern const unsigned char sqlite3CtypeMap[];
-extern SQLITE_WSD struct Sqlite3Config sqlite3Config;
-extern FuncDefHash sqlite3BuiltinFunctions;
-extern const sqlite3_str sqlite3OomStr;
-#ifndef SQLITE_OMIT_WSD
-extern int sqlite3PendingByte;
-#endif
-#endif /* SQLITE_AMALGAMATION */
-#ifdef VDBE_PROFILE
-extern sqlite3_uint64 sqlite3NProfileCnt;
-#endif
-void sqlite3RootPageMoved(sqlite3*, int, Pgno, Pgno);
-void sqlite3Reindex(Parse*, Token*, Token*);
-void sqlite3AlterFunctions(void);
-void sqlite3AlterRenameTable(Parse*, SrcList*, Token*);
-void sqlite3AlterRenameColumn(Parse*, SrcList*, Token*, Token*);
-void sqlite3AlterDropConstraint(Parse*,SrcList*,Token*,Token*);
-void sqlite3AlterAddConstraint(
+ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *sqlite3_ಮೌಲ್ಯ_ಪಠ್ಯ_2(sqlite3_ಮೌಲ್ಯ*, u8);
+ಪೂರ್ಣಾಂಕ sqlite3_ಮೌಲ್ಯ_Is_ದ_Class(ಸ್ಥಿರಾಂಕ sqlite3_ಮೌಲ್ಯ*, ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+ಪೂರ್ಣಾಂಕ sqlite3_ಮೌಲ್ಯ_ಬೈಟುಗಳು_2(sqlite3_ಮೌಲ್ಯ*, u8);
+ಶೂನ್ಯ sqlite3_ಮೌಲ್ಯ_ಗಣ_Str(sqlite3_ಮೌಲ್ಯ*, ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *,u8,
+                        ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+ಶೂನ್ಯ sqlite3_ಮೌಲ್ಯ_ಗಣ_Null(sqlite3_ಮೌಲ್ಯ*);
+ಶೂನ್ಯ sqlite3_ಮೌಲ್ಯ_Free(sqlite3_ಮೌಲ್ಯ*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_UNTESTABLE
+ಶೂನ್ಯ sqlite3_ಫಲಿತಾಂಶ_Int_Real(sqlite3_context*);
+#ಆದರೆ_ಅಂತ್ಯ
+sqlite3_ಮೌಲ್ಯ *sqlite3_ಮೌಲ್ಯ_New(sqlite3 *);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UTF16
+ಅಕ್ಷರ *sqlite3Utf16to8(sqlite3 *, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*, ಪೂರ್ಣಾಂಕ, u8);
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3_ಮೌಲ್ಯ_From_ಅಭಿವ್ಯಕ್ತಿ(sqlite3 *, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *, u8, u8, sqlite3_ಮೌಲ್ಯ **);
+ಶೂನ್ಯ sqlite3_ಮೌಲ್ಯ_Apply_Affinity(sqlite3_ಮೌಲ್ಯ *, u8, u8);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_AMALGAMATION
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ sqlite3OpcodeProperty[];
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ sqlite3_Str_ದ್ವಿಮಾನ[];
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ sqlite3StdTypeLen[];
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ sqlite3StdTypeAffinity[];
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3StdType[];
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ sqlite3_ಊರ್ಧ್ವ_ಗಮ್ಯ_ಅಧೋ[];
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *sqlite3aLTb;
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *sqlite3aEQb;
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *sqlite3aGTb;
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ sqlite3CtypeMap[];
+ಬಾಹ್ಯ SQLITE_WSD ರಚನೆ Sqlite3Config sqlite3Config;
+ಬಾಹ್ಯ FuncDefHash sqlite3BuiltinFunctions;
+ಬಾಹ್ಯ ಸ್ಥಿರಾಂಕ sqlite3_str sqlite3OomStr;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WSD
+ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ sqlite3PendingByte;
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_AMALGAMATION */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ VDBE_PROFILE
+ಬಾಹ್ಯ sqlite3_uint64 sqlite3NProfileCnt;
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_ಬೇರು_ಪುಟ_Moved(sqlite3*, ಪೂರ್ಣಾಂಕ, Pgno, Pgno);
+ಶೂನ್ಯ sqlite3Reindex(Parse*, Token*, Token*);
+ಶೂನ್ಯ sqlite3AlterFunctions(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3_Alter_Rename_ಕೋಷ್ಟಕ(Parse*, SrcList*, Token*);
+ಶೂನ್ಯ sqlite3_Alter_Rename_ಸ್ತಂಭ(Parse*, SrcList*, Token*, Token*);
+ಶೂನ್ಯ sqlite3AlterDropConstraint(Parse*,SrcList*,Token*,Token*);
+ಶೂನ್ಯ sqlite3_Alter_ಕೂಡಿಸು_Constraint(
   Parse *pParse,           /* Parse context */
   SrcList *pSrc,           /* Table to add constraint to */
-  Token *pFirst,           /* First token of new constraint */
+  Token *p_ಮೊದಲ,           /* First token of new constraint */
   Token *pName,            /* Name of new constraint. NULL if name omitted. */
-  const char *zExpr,       /* Text of CHECK expression */
-  int nExpr,               /* Size of pExpr in bytes */
-  Expr *pExpr              /* The parsed CHECK expression */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಅಭಿವ್ಯಕ್ತಿ,       /* Text of CHECK expression */
+  ಪೂರ್ಣಾಂಕ n_ಅಭಿವ್ಯಕ್ತಿ,               /* Size of pExpr in bytes */
+  ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ              /* The parsed CHECK expression */
 );
-void sqlite3AlterSetNotNull(Parse*, SrcList*, Token*, Token*);
-i64 sqlite3GetToken(const unsigned char *, int *);
-void sqlite3NestedParse(Parse*, const char*, ...);
-void sqlite3ExpirePreparedStatements(sqlite3*, int);
-void sqlite3CodeRhsOfIN(Parse*, Expr*, int, int);
-int sqlite3CodeSubselect(Parse*, Expr*);
-void sqlite3SelectPrep(Parse*, Select*, NameContext*);
-int sqlite3ExpandSubquery(Parse*, SrcItem*);
-void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p);
-int sqlite3MatchEName(
-  const struct ExprList_item*,
-  const char*,
-  const char*,
-  const char*,
-  int*
+ಶೂನ್ಯ sqlite3_Alter_ಗಣ_Not_Null(Parse*, SrcList*, Token*, Token*);
+i64 sqlite3GetToken(ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *, ಪೂರ್ಣಾಂಕ *);
+ಶೂನ್ಯ sqlite3NestedParse(Parse*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ...);
+ಶೂನ್ಯ sqlite3ExpirePreparedStatements(sqlite3*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸಂಕೇತ_Rhs_ದ_ಒಳ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಸಂಕೇತ_Subselect(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3SelectPrep(Parse*, Select*, NameContext*);
+ಪೂರ್ಣಾಂಕ sqlite3ExpandSubquery(Parse*, Src_ಅಂಶ*);
+ಶೂನ್ಯ sqlite3_Select_Wrong_ಅಂಕೆ_Terms_Error(Parse *pParse, Select *p);
+ಪೂರ್ಣಾಂಕ sqlite3_ಹೊಂದಿಕೆ_EName(
+  ಸ್ಥಿರಾಂಕ ರಚನೆ ಅಭಿವ್ಯಕ್ತಿ_List_ಅಂಶ*,
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,
+  ಪೂರ್ಣಾಂಕ*
 );
-Bitmask sqlite3ExprColUsed(Expr*);
-u8 sqlite3StrIHash(const char*);
-int sqlite3ResolveExprNames(NameContext*, Expr*);
-int sqlite3ResolveExprListNames(NameContext*, ExprList*);
-void sqlite3ResolveSelectNames(Parse*, Select*, NameContext*);
-int sqlite3ResolveSelfReference(Parse*,Table*,int,Expr*,ExprList*);
-int sqlite3ResolveOrderGroupBy(Parse*, Select*, ExprList*, const char*);
-void sqlite3ColumnDefault(Vdbe *, Table *, int, int);
-void sqlite3AlterFinishAddColumn(Parse *, Token *);
-void sqlite3AlterBeginAddColumn(Parse *, SrcList *);
-void sqlite3AlterDropColumn(Parse*, SrcList*, const Token*);
-const void *sqlite3RenameTokenMap(Parse*, const void*, const Token*);
-void sqlite3RenameTokenRemap(Parse*, const void *pTo, const void *pFrom);
-void sqlite3RenameExprUnmap(Parse*, Expr*);
-void sqlite3RenameExprlistUnmap(Parse*, ExprList*);
-CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, const char*);
-char sqlite3AffinityType(const char*, Column*);
-void sqlite3Analyze(Parse*, Token*, Token*);
-int sqlite3InvokeBusyHandler(BusyHandler*);
-int sqlite3FindDb(sqlite3*, Token*);
-int sqlite3FindDbName(sqlite3 *, const char *);
-int sqlite3AnalysisLoad(sqlite3*,int iDB);
-void sqlite3DeleteIndexSamples(sqlite3*,Index*);
-void sqlite3DefaultRowEst(Index*);
-void sqlite3RegisterLikeFunctions(sqlite3*, int);
-int sqlite3IsLikeFunction(sqlite3*,Expr*,int*,char*);
-void sqlite3SchemaClear(void *);
+Bitmask sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಲಂಬಸಾಲು_ಬಳಸಿದ(ಅಭಿವ್ಯಕ್ತಿ*);
+u8 sqlite3StrIHash(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Resolve_ಅಭಿವ್ಯಕ್ತಿ_ಹೆಸರುಗಳು(NameContext*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Resolve_ಅಭಿವ್ಯಕ್ತಿ_List_ಹೆಸರುಗಳು(NameContext*, ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಶೂನ್ಯ sqlite3_Resolve_Select_ಹೆಸರುಗಳು(Parse*, Select*, NameContext*);
+ಪೂರ್ಣಾಂಕ sqlite3ResolveSelfReference(Parse*,ಕೋಷ್ಟಕ*,ಪೂರ್ಣಾಂಕ,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ_List*);
+ಪೂರ್ಣಾಂಕ sqlite3_Resolve_ಕ್ರಮ_ಗುಂಪು_By(Parse*, Select*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ಸ್ತಂಭ_Default(Vdbe *, ಕೋಷ್ಟಕ *, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Alter_ಮುಕ್ತಾಯ_ಕೂಡಿಸು_ಸ್ತಂಭ(Parse *, Token *);
+ಶೂನ್ಯ sqlite3_Alter_Begin_ಕೂಡಿಸು_ಸ್ತಂಭ(Parse *, SrcList *);
+ಶೂನ್ಯ sqlite3_Alter_Drop_ಸ್ತಂಭ(Parse*, SrcList*, ಸ್ಥಿರಾಂಕ Token*);
+ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *sqlite3RenameTokenMap(Parse*, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*, ಸ್ಥಿರಾಂಕ Token*);
+ಶೂನ್ಯ sqlite3RenameTokenRemap(Parse*, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *p_ಗಮ್ಯ, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *pFrom);
+ಶೂನ್ಯ sqlite3_Rename_ಅಭಿವ್ಯಕ್ತಿ_Unmap(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3RenameExprlistUnmap(Parse*, ಅಭಿವ್ಯಕ್ತಿ_List*);
+CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಅಕ್ಷರ sqlite3AffinityType(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಸ್ತಂಭ*);
+ಶೂನ್ಯ sqlite3Analyze(Parse*, Token*, Token*);
+ಪೂರ್ಣಾಂಕ sqlite3InvokeBusyHandler(BusyHandler*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಕಂಡುಹಿಡಿ_Db(sqlite3*, Token*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಕಂಡುಹಿಡಿ_Db_Name(sqlite3 *, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *);
+ಪೂರ್ಣಾಂಕ sqlite3_Analysis_ತುಂಬು(sqlite3*,ಪೂರ್ಣಾಂಕ iDB);
+ಶೂನ್ಯ sqlite3_Delete_ಸೂಚ್ಯಂಕ_Samples(sqlite3*,ಸೂಚ್ಯಂಕ*);
+ಶೂನ್ಯ sqlite3_Default_ಅಡ್ಡಸಾಲು_Est(ಸೂಚ್ಯಂಕ*);
+ಶೂನ್ಯ sqlite3_ರಿಜಿಸ್ಟರ್_Like_Functions(sqlite3*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3IsLikeFunction(sqlite3*,ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ*,ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3SchemaClear(ಶೂನ್ಯ *);
 Schema *sqlite3SchemaGet(sqlite3 *, Btree *);
-int sqlite3SchemaToIndex(sqlite3 *db, Schema *);
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3*,int,int);
-void sqlite3KeyInfoUnref(KeyInfo*);
-KeyInfo *sqlite3KeyInfoRef(KeyInfo*);
-KeyInfo *sqlite3KeyInfoOfIndex(Parse*, Index*);
-KeyInfo *sqlite3KeyInfoFromExprList(Parse*, ExprList*, int, int);
-const char *sqlite3SelectOpName(int);
-int sqlite3HasExplicitNulls(Parse*, ExprList*);
+ಪೂರ್ಣಾಂಕ sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(sqlite3 *db, Schema *);
+ಕೀಲಿ_Info *sqlite3_ಕೀಲಿ_Info_Alloc(sqlite3*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಕೀಲಿ_Info_Unref(ಕೀಲಿ_Info*);
+ಕೀಲಿ_Info *sqlite3_ಕೀಲಿ_Info_Ref(ಕೀಲಿ_Info*);
+ಕೀಲಿ_Info *sqlite3_ಕೀಲಿ_Info_ದ_ಸೂಚ್ಯಂಕ(Parse*, ಸೂಚ್ಯಂಕ*);
+ಕೀಲಿ_Info *sqlite3_ಕೀಲಿ_Info_From_ಅಭಿವ್ಯಕ್ತಿ_List(Parse*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3SelectOpName(ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3HasExplicitNulls(Parse*, ಅಭಿವ್ಯಕ್ತಿ_List*);
 
-#ifdef SQLITE_DEBUG
-int sqlite3KeyInfoIsWriteable(KeyInfo*);
-#endif
-int sqlite3CreateFunc(sqlite3 *, const char *, int, int, void *,
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+ಪೂರ್ಣಾಂಕ sqlite3_ಕೀಲಿ_Info_Is_Writeable(ಕೀಲಿ_Info*);
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3CreateFunc(sqlite3 *, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಶೂನ್ಯ *,
+  ಶೂನ್ಯ (*)(sqlite3_context*,ಪೂರ್ಣಾಂಕ,sqlite3_ಮೌಲ್ಯ **),
+  ಶೂನ್ಯ (*)(sqlite3_context*,ಪೂರ್ಣಾಂಕ,sqlite3_ಮೌಲ್ಯ **),
+  ಶೂನ್ಯ (*)(sqlite3_context*),
+  ಶೂನ್ಯ (*)(sqlite3_context*),
+  ಶೂನ್ಯ (*)(sqlite3_context*,ಪೂರ್ಣಾಂಕ,sqlite3_ಮೌಲ್ಯ **),
   FuncDestructor *pDestructor
 );
-void sqlite3NoopDestructor(void*);
-void *sqlite3OomFault(sqlite3*);
-void sqlite3OomClear(sqlite3*);
-int sqlite3ApiExit(sqlite3 *db, int);
-int sqlite3OpenTempDatabase(Parse *);
+ಶೂನ್ಯ sqlite3NoopDestructor(ಶೂನ್ಯ*);
+ಶೂನ್ಯ *sqlite3OomFault(sqlite3*);
+ಶೂನ್ಯ sqlite3OomClear(sqlite3*);
+ಪೂರ್ಣಾಂಕ sqlite3ApiExit(sqlite3 *db, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_Open_ತಾತ್ಕಾಲಿಕ_Database(Parse *);
 
-char *sqlite3RCStrRef(char*);
-void sqlite3RCStrUnref(void*);
-char *sqlite3RCStrNew(u64);
-char *sqlite3RCStrResize(char*,u64);
+ಅಕ್ಷರ *sqlite3RCStrRef(ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3RCStrUnref(ಶೂನ್ಯ*);
+ಅಕ್ಷರ *sqlite3RCStrNew(u64);
+ಅಕ್ಷರ *sqlite3RCStrResize(ಅಕ್ಷರ*,u64);
 
-void sqlite3StrAccumInit(StrAccum*, sqlite3*, char*, int, int);
-int sqlite3StrAccumEnlarge(StrAccum*, i64);
-int sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
-char *sqlite3StrAccumFinish(StrAccum*);
-void sqlite3StrAccumSetError(StrAccum*, u8);
-void sqlite3SelectDestInit(SelectDest*,int,int);
-Expr *sqlite3CreateColumnExpr(sqlite3 *, SrcList *, int, int);
-void sqlite3RecordErrorByteOffset(sqlite3*,const char*);
-void sqlite3RecordErrorOffsetOfExpr(sqlite3*,const Expr*);
+ಶೂನ್ಯ sqlite3StrAccumInit(StrAccum*, sqlite3*, ಅಕ್ಷರ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3StrAccumEnlarge(StrAccum*, i64);
+ಪೂರ್ಣಾಂಕ sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
+ಅಕ್ಷರ *sqlite3_Str_Accum_ಮುಕ್ತಾಯ(StrAccum*);
+ಶೂನ್ಯ sqlite3_Str_Accum_ಗಣ_Error(StrAccum*, u8);
+ಶೂನ್ಯ sqlite3SelectDestInit(SelectDest*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_Create_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(sqlite3 *, SrcList *, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ದಾಖಲೆ_Error_Byte_ಸ್ಥಾನಾಂತರ(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ sqlite3_ದಾಖಲೆ_Error_ಸ್ಥಾನಾಂತರ_ದ_ಅಭಿವ್ಯಕ್ತಿ(sqlite3*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
 
-void sqlite3BackupRestart(sqlite3_backup *);
-void sqlite3BackupUpdate(sqlite3_backup *, Pgno, const u8 *);
+ಶೂನ್ಯ sqlite3BackupRestart(sqlite3_backup *);
+ಶೂನ್ಯ sqlite3BackupUpdate(sqlite3_backup *, Pgno, ಸ್ಥಿರಾಂಕ u8 *);
 
-#ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3ExprCheckIN(Parse*, Expr*);
-#else
-# define sqlite3ExprCheckIN(x,y) SQLITE_OK
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_SUBQUERY
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Check_ಒಳ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Check_ಒಳ(x,y) SQLITE_OK
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef SQLITE_ENABLE_STAT4
-int sqlite3Stat4ProbeSetValue(
-    Parse*,Index*,UnpackedRecord**,Expr*,int,int,int*);
-int sqlite3Stat4ValueFromExpr(Parse*, Expr*, u8, sqlite3_value**);
-void sqlite3Stat4ProbeFree(UnpackedRecord*);
-int sqlite3Stat4Column(sqlite3*, const void*, int, int, sqlite3_value**);
-char sqlite3IndexColumnAffinity(sqlite3*, Index*, int);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_STAT4
+ಪೂರ್ಣಾಂಕ sqlite3_Stat4_Probe_ಗಣ_ಮೌಲ್ಯ(
+    Parse*,ಸೂಚ್ಯಂಕ*,Unpacked_ದಾಖಲೆ**,ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Stat4_ಮೌಲ್ಯ_From_ಅಭಿವ್ಯಕ್ತಿ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*, u8, sqlite3_ಮೌಲ್ಯ**);
+ಶೂನ್ಯ sqlite3Stat4ProbeFree(Unpacked_ದಾಖಲೆ*);
+ಪೂರ್ಣಾಂಕ sqlite3_Stat4_ಸ್ತಂಭ(sqlite3*, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, sqlite3_ಮೌಲ್ಯ**);
+ಅಕ್ಷರ sqlite3_ಸೂಚ್ಯಂಕ_ಸ್ತಂಭ_Affinity(sqlite3*, ಸೂಚ್ಯಂಕ*, ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The interface to the LEMON-generated parser
 */
-#ifndef SQLITE_AMALGAMATION
-  void *sqlite3ParserAlloc(void*(*)(u64), Parse*);
-  void sqlite3ParserFree(void*, void(*)(void*));
-#endif
-void sqlite3Parser(void*, int, Token);
-int sqlite3ParserFallback(int);
-#ifdef YYTRACKMAXSTACKDEPTH
-  int sqlite3ParserStackPeak(void*);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_AMALGAMATION
+  ಶೂನ್ಯ *sqlite3ParserAlloc(ಶೂನ್ಯ*(*)(u64), Parse*);
+  ಶೂನ್ಯ sqlite3ParserFree(ಶೂನ್ಯ*, ಶೂನ್ಯ(*)(ಶೂನ್ಯ*));
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3Parser(ಶೂನ್ಯ*, ಪೂರ್ಣಾಂಕ, Token);
+ಪೂರ್ಣಾಂಕ sqlite3ParserFallback(ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ YYTRACKMAXSTACKDEPTH
+  ಪೂರ್ಣಾಂಕ sqlite3_Parser_ರಾಶಿ_Peak(ಶೂನ್ಯ*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-void sqlite3AutoLoadExtensions(sqlite3*);
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-  void sqlite3CloseExtensions(sqlite3*);
-#else
+ಶೂನ್ಯ sqlite3_Auto_ತುಂಬು_Extensions(sqlite3*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_ತುಂಬು_EXTENSION
+  ಶೂನ್ಯ sqlite3CloseExtensions(sqlite3*);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define sqlite3CloseExtensions(X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_SHARED_CACHE
-  void sqlite3TableLock(Parse *, int, Pgno, u8, const char *);
-#else
-  #define sqlite3TableLock(v,w,x,y,z)
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_SHARED_CACHE
+  ಶೂನ್ಯ sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(Parse *, ಪೂರ್ಣಾಂಕ, Pgno, u8, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *);
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(v,w,x,y,z)
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef SQLITE_TEST
-  int sqlite3Utf8To8(unsigned char*);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
+  ಪೂರ್ಣಾಂಕ sqlite3Utf8To8(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef SQLITE_OMIT_VIRTUALTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_VIRTUALTABLE
 #  define sqlite3VtabClear(D,T)
 #  define sqlite3VtabSync(X,Y) SQLITE_OK
 #  define sqlite3VtabRollback(X)
 #  define sqlite3VtabCommit(X)
-#  define sqlite3VtabInSync(db) 0
-#  define sqlite3VtabLock(X)
+#  define sqlite3_Vtab_ಒಳ_Sync(db) 0
+#  define sqlite3_Vtab_ಬೀಗ(X)
 #  define sqlite3VtabUnlock(X)
 #  define sqlite3VtabModuleUnref(D,X)
 #  define sqlite3VtabUnlockList(X)
 #  define sqlite3VtabSavepoint(X, Y, Z) SQLITE_OK
 #  define sqlite3GetVTable(X,Y)  ((VTable*)0)
-#else
-   void sqlite3VtabClear(sqlite3 *db, Table*);
-   void sqlite3VtabDisconnect(sqlite3 *db, Table *p);
-   int sqlite3VtabSync(sqlite3 *db, Vdbe*);
-   int sqlite3VtabRollback(sqlite3 *db);
-   int sqlite3VtabCommit(sqlite3 *db);
-   void sqlite3VtabLock(VTable *);
-   void sqlite3VtabUnlock(VTable *);
-   void sqlite3VtabModuleUnref(sqlite3*,Module*);
-   void sqlite3VtabUnlockList(sqlite3*);
-   int sqlite3VtabSavepoint(sqlite3 *, int, int);
-   void sqlite3VtabImportErrmsg(Vdbe*, sqlite3_vtab*);
-   VTable *sqlite3GetVTable(sqlite3*, Table*);
+#ಇಲ್ಲದಿದ್ದರೆ
+   ಶೂನ್ಯ sqlite3VtabClear(sqlite3 *db, ಕೋಷ್ಟಕ*);
+   ಶೂನ್ಯ sqlite3VtabDisconnect(sqlite3 *db, ಕೋಷ್ಟಕ *p);
+   ಪೂರ್ಣಾಂಕ sqlite3VtabSync(sqlite3 *db, Vdbe*);
+   ಪೂರ್ಣಾಂಕ sqlite3VtabRollback(sqlite3 *db);
+   ಪೂರ್ಣಾಂಕ sqlite3VtabCommit(sqlite3 *db);
+   ಶೂನ್ಯ sqlite3_Vtab_ಬೀಗ(VTable *);
+   ಶೂನ್ಯ sqlite3VtabUnlock(VTable *);
+   ಶೂನ್ಯ sqlite3VtabModuleUnref(sqlite3*,Module*);
+   ಶೂನ್ಯ sqlite3VtabUnlockList(sqlite3*);
+   ಪೂರ್ಣಾಂಕ sqlite3VtabSavepoint(sqlite3 *, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+   ಶೂನ್ಯ sqlite3VtabImportErrmsg(Vdbe*, sqlite3_vtab*);
+   VTable *sqlite3GetVTable(sqlite3*, ಕೋಷ್ಟಕ*);
    Module *sqlite3VtabCreateModule(
      sqlite3*,
-     const char*,
-     const sqlite3_module*,
-     void*,
-     void(*)(void*)
+     ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,
+     ಸ್ಥಿರಾಂಕ sqlite3_module*,
+     ಶೂನ್ಯ*,
+     ಶೂನ್ಯ(*)(ಶೂನ್ಯ*)
    );
-#  define sqlite3VtabInSync(db) ((db)->nVTrans>0 && (db)->aVTrans==0)
-#endif
-int sqlite3ReadOnlyShadowTables(sqlite3 *db);
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  int sqlite3ShadowTableName(sqlite3 *db, const char *zName);
-  int sqlite3IsShadowTableOf(sqlite3*,Table*,const char*);
-  void sqlite3MarkAllShadowTablesOf(sqlite3*, Table*);
-  void sqlite3VtabEponymousTableClearAll(sqlite3*);
-#else
-# define sqlite3ShadowTableName(A,B) 0
-# define sqlite3IsShadowTableOf(A,B,C) 0
-# define sqlite3MarkAllShadowTablesOf(A,B)
-# define sqlite3VtabEponymousTableClearAll(X)
-#endif
-int sqlite3VtabEponymousTableInit(Parse*,Module*);
-void sqlite3VtabEponymousTableClear(sqlite3*,Module*);
-void sqlite3VtabMakeWritable(Parse*,Table*);
-void sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, int);
-void sqlite3VtabFinishParse(Parse*, Token*);
-void sqlite3VtabArgInit(Parse*);
-void sqlite3VtabArgExtend(Parse*, Token*);
-int sqlite3VtabCallCreate(sqlite3*, int, const char *, char **);
-int sqlite3VtabCallConnect(Parse*, Table*);
-int sqlite3VtabCallDestroy(sqlite3*, int, const char *);
-int sqlite3VtabBegin(sqlite3 *, VTable *);
+#  define sqlite3_Vtab_ಒಳ_Sync(db) ((db)->nVTrans>0 && (db)->aVTrans==0)
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3ReadOnlyShadowTables(sqlite3 *db);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  ಪೂರ್ಣಾಂಕ sqlite3_Shadow_ಕೋಷ್ಟಕ_Name(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName);
+  ಪೂರ್ಣಾಂಕ sqlite3_Is_Shadow_ಕೋಷ್ಟಕ_ದ(sqlite3*,ಕೋಷ್ಟಕ*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+  ಶೂನ್ಯ sqlite3_Mark_All_Shadow_Tables_ದ(sqlite3*, ಕೋಷ್ಟಕ*);
+  ಶೂನ್ಯ sqlite3_Vtab_Eponymous_ಕೋಷ್ಟಕ_Clear_All(sqlite3*);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_Shadow_ಕೋಷ್ಟಕ_Name(A,B) 0
+# define sqlite3_Is_Shadow_ಕೋಷ್ಟಕ_ದ(A,B,C) 0
+# define sqlite3_Mark_All_Shadow_Tables_ದ(A,B)
+# define sqlite3_Vtab_Eponymous_ಕೋಷ್ಟಕ_Clear_All(X)
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3_Vtab_Eponymous_ಕೋಷ್ಟಕ_Init(Parse*,Module*);
+ಶೂನ್ಯ sqlite3_Vtab_Eponymous_ಕೋಷ್ಟಕ_Clear(sqlite3*,Module*);
+ಶೂನ್ಯ sqlite3VtabMakeWritable(Parse*,ಕೋಷ್ಟಕ*);
+ಶೂನ್ಯ sqlite3VtabBeginParse(Parse*, Token*, Token*, Token*, ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_Vtab_ಮುಕ್ತಾಯ_Parse(Parse*, Token*);
+ಶೂನ್ಯ sqlite3VtabArgInit(Parse*);
+ಶೂನ್ಯ sqlite3VtabArgExtend(Parse*, Token*);
+ಪೂರ್ಣಾಂಕ sqlite3VtabCallCreate(sqlite3*, ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, ಅಕ್ಷರ **);
+ಪೂರ್ಣಾಂಕ sqlite3VtabCallConnect(Parse*, ಕೋಷ್ಟಕ*);
+ಪೂರ್ಣಾಂಕ sqlite3VtabCallDestroy(sqlite3*, ಪೂರ್ಣಾಂಕ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *);
+ಪೂರ್ಣಾಂಕ sqlite3VtabBegin(sqlite3 *, VTable *);
 
-FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, int nArg, Expr*);
-void sqlite3VtabUsesAllSchemas(Parse*);
-sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context*);
-int sqlite3VdbeParameterIndex(Vdbe*, const char*, int);
-int sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
-void sqlite3ParseObjectInit(Parse*,sqlite3*);
-void sqlite3ParseObjectReset(Parse*);
-void *sqlite3ParserAddCleanup(Parse*,void(*)(sqlite3*,void*),void*);
-#ifdef SQLITE_ENABLE_NORMALIZE
-char *sqlite3Normalize(Vdbe*, const char*);
-#endif
-int sqlite3Reprepare(Vdbe*);
-void sqlite3ExprListCheckLength(Parse*, ExprList*, const char*);
-CollSeq *sqlite3ExprCompareCollSeq(Parse*,const Expr*);
-CollSeq *sqlite3BinaryCompareCollSeq(Parse *, const Expr*, const Expr*);
-int sqlite3TempInMemory(const sqlite3*);
-const char *sqlite3JournalModename(int);
-#ifndef SQLITE_OMIT_WAL
-  int sqlite3Checkpoint(sqlite3*, int, int, int*, int*);
-  int sqlite3WalDefaultHook(void*,sqlite3*,const char*,int);
-#endif
-#ifndef SQLITE_OMIT_CTE
-  Cte *sqlite3CteNew(Parse*,Token*,ExprList*,Select*,u8);
-  void sqlite3CteDelete(sqlite3*,Cte*);
-  With *sqlite3WithAdd(Parse*,With*,Cte*);
-  void sqlite3WithDelete(sqlite3*,With*);
-  void sqlite3WithDeleteGeneric(sqlite3*,void*);
-  With *sqlite3WithPush(Parse*, With*, u8);
-#else
-# define sqlite3CteNew(P,T,E,S)   ((void*)0)
+FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, ಪೂರ್ಣಾಂಕ nArg, ಅಭಿವ್ಯಕ್ತಿ*);
+ಶೂನ್ಯ sqlite3_Vtab_ಬಳಸುತ್ತದೆ_All_Schemas(Parse*);
+sqlite3_int64 sqlite3_Stmt_Current_ಸಮಯ(sqlite3_context*);
+ಪೂರ್ಣಾಂಕ sqlite3_Vdbe_Parameter_ಸೂಚ್ಯಂಕ(Vdbe*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3TransferBindings(sqlite3_stmt *, sqlite3_stmt *);
+ಶೂನ್ಯ sqlite3ParseObjectInit(Parse*,sqlite3*);
+ಶೂನ್ಯ sqlite3ParseObjectReset(Parse*);
+ಶೂನ್ಯ *sqlite3_Parser_ಕೂಡಿಸು_Cleanup(Parse*,ಶೂನ್ಯ(*)(sqlite3*,ಶೂನ್ಯ*),ಶೂನ್ಯ*);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_NORMALIZE
+ಅಕ್ಷರ *sqlite3Normalize(Vdbe*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+#ಆದರೆ_ಅಂತ್ಯ
+ಪೂರ್ಣಾಂಕ sqlite3Reprepare(Vdbe*);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Check_ಉದ್ದಳತೆ(Parse*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+CollSeq *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Compare_Coll_Seq(Parse*,ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
+CollSeq *sqlite3_ದ್ವಿಮಾನ_Compare_Coll_Seq(Parse *, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*, ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ*);
+ಪೂರ್ಣಾಂಕ sqlite3_ತಾತ್ಕಾಲಿಕ_ಒಳ_ಸ್ಮರಣೆ(ಸ್ಥಿರಾಂಕ sqlite3*);
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3JournalModename(ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WAL
+  ಪೂರ್ಣಾಂಕ sqlite3Checkpoint(sqlite3*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ*);
+  ಪೂರ್ಣಾಂಕ sqlite3WalDefaultHook(ಶೂನ್ಯ*,sqlite3*,ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_CTE
+  Cte *sqlite3CteNew(Parse*,Token*,ಅಭಿವ್ಯಕ್ತಿ_List*,Select*,u8);
+  ಶೂನ್ಯ sqlite3CteDelete(sqlite3*,Cte*);
+  With *sqlite3_With_ಕೂಡಿಸು(Parse*,With*,Cte*);
+  ಶೂನ್ಯ sqlite3WithDelete(sqlite3*,With*);
+  ಶೂನ್ಯ sqlite3WithDeleteGeneric(sqlite3*,ಶೂನ್ಯ*);
+  With *sqlite3_With_ತಳ್ಳು(Parse*, With*, u8);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3CteNew(P,T,E,S)   ((ಶೂನ್ಯ*)0)
 # define sqlite3CteDelete(D,C)
-# define sqlite3CteWithAdd(P,W,C) ((void*)0)
+# define sqlite3_Cte_With_ಕೂಡಿಸು(P,W,C) ((ಶೂನ್ಯ*)0)
 # define sqlite3WithDelete(x,y)
-# define sqlite3WithPush(x,y,z) ((void*)0)
-#endif
-#ifndef SQLITE_OMIT_UPSERT
-  Upsert *sqlite3UpsertNew(sqlite3*,ExprList*,Expr*,ExprList*,Expr*,Upsert*);
-  void sqlite3UpsertDelete(sqlite3*,Upsert*);
+# define sqlite3_With_ತಳ್ಳು(x,y,z) ((ಶೂನ್ಯ*)0)
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UPSERT
+  Upsert *sqlite3UpsertNew(sqlite3*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಅಭಿವ್ಯಕ್ತಿ*,ಅಭಿವ್ಯಕ್ತಿ_List*,ಅಭಿವ್ಯಕ್ತಿ*,Upsert*);
+  ಶೂನ್ಯ sqlite3UpsertDelete(sqlite3*,Upsert*);
   Upsert *sqlite3UpsertDup(sqlite3*,Upsert*);
-  int sqlite3UpsertAnalyzeTarget(Parse*,SrcList*,Upsert*,Upsert*);
-  void sqlite3UpsertDoUpdate(Parse*,Upsert*,Table*,Index*,int);
-  Upsert *sqlite3UpsertOfIndex(Upsert*,Index*);
-  int sqlite3UpsertNextIsIPK(Upsert*);
-#else
-#define sqlite3UpsertNew(u,v,w,x,y,z) ((Upsert*)0)
-#define sqlite3UpsertDelete(x,y)
-#define sqlite3UpsertDup(x,y)         ((Upsert*)0)
-#define sqlite3UpsertOfIndex(x,y)     ((Upsert*)0)
-#define sqlite3UpsertNextIsIPK(x)     0
-#endif
+  ಪೂರ್ಣಾಂಕ sqlite3_Upsert_Analyze_ಗುರಿ(Parse*,SrcList*,Upsert*,Upsert*);
+  ಶೂನ್ಯ sqlite3UpsertDoUpdate(Parse*,Upsert*,ಕೋಷ್ಟಕ*,ಸೂಚ್ಯಂಕ*,ಪೂರ್ಣಾಂಕ);
+  Upsert *sqlite3_Upsert_ದ_ಸೂಚ್ಯಂಕ(Upsert*,ಸೂಚ್ಯಂಕ*);
+  ಪೂರ್ಣಾಂಕ sqlite3_Upsert_ಮುಂದಿನ_Is_IPK(Upsert*);
+#ಇಲ್ಲದಿದ್ದರೆ
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3UpsertNew(u,v,w,x,y,z) ((Upsert*)0)
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3UpsertDelete(x,y)
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3UpsertDup(x,y)         ((Upsert*)0)
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_Upsert_ದ_ಸೂಚ್ಯಂಕ(x,y)     ((Upsert*)0)
+#ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_Upsert_ಮುಂದಿನ_Is_IPK(x)     0
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /* Declarations for functions in fkey.c. All of these are replaced by
@@ -5828,124 +5828,124 @@ const char *sqlite3JournalModename(int);
 ** this case foreign keys are parsed, but no other functionality is
 ** provided (enforcement of FK constraints requires the triggers sub-system).
 */
-#if !defined(SQLITE_OMIT_FOREIGN_KEY) && !defined(SQLITE_OMIT_TRIGGER)
-  void sqlite3FkCheck(Parse*, Table*, int, int, int*, int);
-  void sqlite3FkDropTable(Parse*, SrcList *, Table*);
-  void sqlite3FkActions(Parse*, Table*, ExprList*, int, int*, int);
-  int sqlite3FkRequired(Parse*, Table*, int*, int);
-  u32 sqlite3FkOldmask(Parse*, Table*);
-  FKey *sqlite3FkReferences(Table *);
-  void sqlite3FkClearTriggerCache(sqlite3*,int);
-#else
-  #define sqlite3FkActions(a,b,c,d,e,f)
-  #define sqlite3FkCheck(a,b,c,d,e,f)
-  #define sqlite3FkDropTable(a,b,c)
-  #define sqlite3FkOldmask(a,b)         0
-  #define sqlite3FkRequired(a,b,c,d)    0
-  #define sqlite3FkReferences(a)        0
-  #define sqlite3FkClearTriggerCache(a,b)
-#endif
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  void sqlite3FkDelete(sqlite3 *, Table*);
-  int sqlite3FkLocateIndex(Parse*,Table*,FKey*,Index**,int**);
-#else
-  #define sqlite3FkDelete(a,b)
-  #define sqlite3FkLocateIndex(a,b,c,d,e)
-#endif
+#ಆದರೆ !defined(SQLITE_OMIT_FOREIGN_ಕೀಲಿ) && !defined(SQLITE_OMIT_TRIGGER)
+  ಶೂನ್ಯ sqlite3FkCheck(Parse*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ);
+  ಶೂನ್ಯ sqlite3_Fk_Drop_ಕೋಷ್ಟಕ(Parse*, SrcList *, ಕೋಷ್ಟಕ*);
+  ಶೂನ್ಯ sqlite3FkActions(Parse*, ಕೋಷ್ಟಕ*, ಅಭಿವ್ಯಕ್ತಿ_List*, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ);
+  ಪೂರ್ಣಾಂಕ sqlite3FkRequired(Parse*, ಕೋಷ್ಟಕ*, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ);
+  u32 sqlite3FkOldmask(Parse*, ಕೋಷ್ಟಕ*);
+  FKey *sqlite3FkReferences(ಕೋಷ್ಟಕ *);
+  ಶೂನ್ಯ sqlite3FkClearTriggerCache(sqlite3*,ಪೂರ್ಣಾಂಕ);
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3FkActions(a,b,c,d,e,f)
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3FkCheck(a,b,c,d,e,f)
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_Fk_Drop_ಕೋಷ್ಟಕ(a,b,c)
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3FkOldmask(a,b)         0
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3FkRequired(a,b,c,d)    0
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3FkReferences(a)        0
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3FkClearTriggerCache(a,b)
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_FOREIGN_ಕೀಲಿ
+  ಶೂನ್ಯ sqlite3FkDelete(sqlite3 *, ಕೋಷ್ಟಕ*);
+  ಪೂರ್ಣಾಂಕ sqlite3_Fk_Locate_ಸೂಚ್ಯಂಕ(Parse*,ಕೋಷ್ಟಕ*,FKey*,ಸೂಚ್ಯಂಕ**,ಪೂರ್ಣಾಂಕ**);
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3FkDelete(a,b)
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_Fk_Locate_ಸೂಚ್ಯಂಕ(a,b,c,d,e)
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /*
 ** Available fault injectors.  Should be numbered beginning with 0.
 */
-#define SQLITE_FAULTINJECTOR_MALLOC     0
-#define SQLITE_FAULTINJECTOR_COUNT      1
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FAULTINJECTOR_MALLOC     0
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_FAULTINJECTOR_ಎಣಿಕೆ      1
 
 /*
 ** The interface to the code in fault.c used for identifying "benign"
 ** malloc failures. This is only present if SQLITE_UNTESTABLE
 ** is not defined.
 */
-#ifndef SQLITE_UNTESTABLE
-  void sqlite3BeginBenignMalloc(void);
-  void sqlite3EndBenignMalloc(void);
-#else
-  #define sqlite3BeginBenignMalloc()
-  #define sqlite3EndBenignMalloc()
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_UNTESTABLE
+  ಶೂನ್ಯ sqlite3BeginBenignMalloc(ಶೂನ್ಯ);
+  ಶೂನ್ಯ sqlite3_ಕೊನೆ_Benign_Malloc(ಶೂನ್ಯ);
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3BeginBenignMalloc()
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_ಕೊನೆ_Benign_Malloc()
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Allowed return values from sqlite3FindInIndex()
 */
-#define IN_INDEX_ROWID        1   /* Search the rowid of the table */
-#define IN_INDEX_EPH          2   /* Search an ephemeral b-tree */
-#define IN_INDEX_INDEX_ASC    3   /* Existing index ASCENDING */
-#define IN_INDEX_INDEX_DESC   4   /* Existing index DESCENDING */
-#define IN_INDEX_NOOP         5   /* No table available. Use comparisons */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_ROWID        1   /* Search the rowid of the table */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_EPH          2   /* Search an ephemeral b-tree */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_ಸೂಚ್ಯಂಕ_ASC    3   /* Existing index ASCENDING */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_ಸೂಚ್ಯಂಕ_DESC   4   /* Existing index DESCENDING */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_NOOP         5   /* No table available. Use comparisons */
 /*
 ** Allowed flags for the 3rd parameter to sqlite3FindInIndex().
 */
-#define IN_INDEX_NOOP_OK     0x0001  /* OK to return IN_INDEX_NOOP */
-#define IN_INDEX_MEMBERSHIP  0x0002  /* IN operator used for membership test */
-#define IN_INDEX_LOOP        0x0004  /* IN operator used as a loop */
-int sqlite3FindInIndex(Parse *, Expr *, u32, int*, int*, int*);
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_NOOP_OK     0x0001  /* OK to return IN_INDEX_NOOP */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_MEMBERSHIP  0x0002  /* IN operator used for membership test */
+#ವ್ಯಾಖ್ಯಾನಿಸು ಒಳ_ಸೂಚ್ಯಂಕ_LOOP        0x0004  /* IN operator used as a loop */
+ಪೂರ್ಣಾಂಕ sqlite3_ಕಂಡುಹಿಡಿ_ಒಳ_ಸೂಚ್ಯಂಕ(Parse *, ಅಭಿವ್ಯಕ್ತಿ *, u32, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ*, ಪೂರ್ಣಾಂಕ*);
 
-int sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int);
-int sqlite3JournalSize(sqlite3_vfs *);
-#if defined(SQLITE_ENABLE_ATOMIC_WRITE) \
+ಪೂರ್ಣಾಂಕ sqlite3JournalOpen(sqlite3_vfs *, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, sqlite3_file *, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಪೂರ್ಣಾಂಕ sqlite3_Journal_ಗಾತ್ರ(sqlite3_vfs *);
+#ಆದರೆ defined(SQLITE_ENABLE_ATOMIC_WRITE) \
  || defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
-  int sqlite3JournalCreate(sqlite3_file *);
-#endif
+  ಪೂರ್ಣಾಂಕ sqlite3JournalCreate(sqlite3_file *);
+#ಆದರೆ_ಅಂತ್ಯ
 
-int sqlite3JournalIsInMemory(sqlite3_file *p);
-void sqlite3MemJournalOpen(sqlite3_file *);
+ಪೂರ್ಣಾಂಕ sqlite3_Journal_Is_ಒಳ_ಸ್ಮರಣೆ(sqlite3_file *p);
+ಶೂನ್ಯ sqlite3MemJournalOpen(sqlite3_file *);
 
-void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p);
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int sqlite3SelectExprHeight(const Select *);
-  int sqlite3ExprCheckHeight(Parse*, int);
-#else
-  #define sqlite3SelectExprHeight(x) 0
-  #define sqlite3ExprCheckHeight(x,y)
-#endif
-void sqlite3ExprSetErrorOffset(Expr*,int);
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಗಣ_ಎತ್ತರ_And_Flags(Parse *pParse, ಅಭಿವ್ಯಕ್ತಿ *p);
+#ಆದರೆ SQLITE_MAX_ಅಭಿವ್ಯಕ್ತಿ_ಆಳ>0
+  ಪೂರ್ಣಾಂಕ sqlite3_Select_ಅಭಿವ್ಯಕ್ತಿ_ಎತ್ತರ(ಸ್ಥಿರಾಂಕ Select *);
+  ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Check_ಎತ್ತರ(Parse*, ಪೂರ್ಣಾಂಕ);
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_Select_ಅಭಿವ್ಯಕ್ತಿ_ಎತ್ತರ(x) 0
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Check_ಎತ್ತರ(x,y)
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಗಣ_Error_ಸ್ಥಾನಾಂತರ(ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ);
 
-u32 sqlite3Get4byte(const u8*);
-SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8*);
-#if SQLITE_BYTEORDER!=4321
+u32 sqlite3Get4byte(ಸ್ಥಿರಾಂಕ u8*);
+SQLITE_OPT_INLINE u64 sqlite3Get8byte(ಸ್ಥಿರಾಂಕ u8*);
+#ಆದರೆ SQLITE_BYTEORDER!=4321
 SQLITE_OPT_INLINE u64 sqlite3BSwap64(u64);
-#endif
-void sqlite3Put4byte(u8*, u32);
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ sqlite3Put4byte(u8*, u32);
 
-#ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
-  void sqlite3ConnectionBlocked(sqlite3 *, sqlite3 *);
-  void sqlite3ConnectionUnlocked(sqlite3 *db);
-  void sqlite3ConnectionClosed(sqlite3 *db);
-#else
-  #define sqlite3ConnectionBlocked(x,y)
-  #define sqlite3ConnectionUnlocked(x)
-  #define sqlite3ConnectionClosed(x)
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_UNLOCK_NOTIFY
+  ಶೂನ್ಯ sqlite3ConnectionBlocked(sqlite3 *, sqlite3 *);
+  ಶೂನ್ಯ sqlite3ConnectionUnlocked(sqlite3 *db);
+  ಶೂನ್ಯ sqlite3ConnectionClosed(sqlite3 *db);
+#ಇಲ್ಲದಿದ್ದರೆ
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3ConnectionBlocked(x,y)
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3ConnectionUnlocked(x)
+  #ವ್ಯಾಖ್ಯಾನಿಸು sqlite3ConnectionClosed(x)
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef SQLITE_DEBUG
-  void sqlite3ParserTrace(FILE*, char *);
-#endif
-#if defined(YYCOVERAGE)
-  int sqlite3ParserCoverage(FILE*);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+  ಶೂನ್ಯ sqlite3ParserTrace(FILE*, ಅಕ್ಷರ *);
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(YYCOVERAGE)
+  ಪೂರ್ಣಾಂಕ sqlite3ParserCoverage(FILE*);
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** If the SQLITE_ENABLE IOTRACE exists then the global variable
 ** sqlite3IoTrace is a pointer to a printf-like routine used to
 ** print I/O tracing messages.
 */
-#ifdef SQLITE_ENABLE_IOTRACE
-# define IOTRACE(A)  if( sqlite3IoTrace ){ sqlite3IoTrace A; }
-  void sqlite3VdbeIOTraceSql(Vdbe*);
-SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
-#else
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_IOTRACE
+# define IOTRACE(A)  ಆದರೆ( sqlite3IoTrace ){ sqlite3IoTrace A; }
+  ಶೂನ್ಯ sqlite3VdbeIOTraceSql(Vdbe*);
+SQLITE_API SQLITE_EXTERN ಶೂನ್ಯ (SQLITE_CDECL *sqlite3IoTrace)(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*,...);
+#ಇಲ್ಲದಿದ್ದರೆ
 # define IOTRACE(A)
 # define sqlite3VdbeIOTraceSql(X)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** These routines are available for the mem2.c debugging memory allocator
@@ -5975,58 +5975,58 @@ SQLITE_API SQLITE_EXTERN void (SQLITE_CDECL *sqlite3IoTrace)(const char*,...);
 ** All of this is no-op for a production build.  It only comes into
 ** play when the SQLITE_MEMDEBUG compile-time option is used.
 */
-#ifdef SQLITE_MEMDEBUG
-  void sqlite3MemdebugSetType(void*,u8);
-  int sqlite3MemdebugHasType(const void*,u8);
-  int sqlite3MemdebugNoType(const void*,u8);
-#else
-# define sqlite3MemdebugSetType(X,Y)  /* no-op */
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_MEMDEBUG
+  ಶೂನ್ಯ sqlite3_Memdebug_ಗಣ_Type(ಶೂನ್ಯ*,u8);
+  ಪೂರ್ಣಾಂಕ sqlite3MemdebugHasType(ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*,u8);
+  ಪೂರ್ಣಾಂಕ sqlite3MemdebugNoType(ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*,u8);
+#ಇಲ್ಲದಿದ್ದರೆ
+# define sqlite3_Memdebug_ಗಣ_Type(X,Y)  /* no-op */
 # define sqlite3MemdebugHasType(X,Y)  1
 # define sqlite3MemdebugNoType(X,Y)   1
-#endif
-#define MEMTYPE_HEAP       0x01  /* General heap allocations */
-#define MEMTYPE_LOOKASIDE  0x02  /* Heap that might have been lookaside */
-#define MEMTYPE_PCACHE     0x04  /* Page cache allocations */
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿಸು MEMTYPE_ರಾಶಿ       0x01  /* General heap allocations */
+#ವ್ಯಾಖ್ಯಾನಿಸು MEMTYPE_LOOKASIDE  0x02  /* Heap that might have been lookaside */
+#ವ್ಯಾಖ್ಯಾನಿಸು MEMTYPE_PCACHE     0x04  /* Page cache allocations */
 
 /*
 ** Threading interface
 */
-#if SQLITE_MAX_WORKER_THREADS>0
-int sqlite3ThreadCreate(SQLiteThread**,void*(*)(void*),void*);
-int sqlite3ThreadJoin(SQLiteThread*, void**);
-#endif
+#ಆದರೆ SQLITE_MAX_ಕೆಲಸಗಾರ_ಎಳೆಗಳು>0
+ಪೂರ್ಣಾಂಕ sqlite3ThreadCreate(SQLiteThread**,ಶೂನ್ಯ*(*)(ಶೂನ್ಯ*),ಶೂನ್ಯ*);
+ಪೂರ್ಣಾಂಕ sqlite3ThreadJoin(SQLiteThread*, ಶೂನ್ಯ**);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbpageRegister(sqlite3*);
-#endif
-#if defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
-int sqlite3DbstatRegister(sqlite3*);
-#endif
+#ಆದರೆ defined(SQLITE_ENABLE_DBPAGE_VTAB) || defined(SQLITE_TEST)
+ಪೂರ್ಣಾಂಕ sqlite3_Dbpage_ರಿಜಿಸ್ಟರ್(sqlite3*);
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)
+ಪೂರ್ಣಾಂಕ sqlite3_Dbstat_ರಿಜಿಸ್ಟರ್(sqlite3*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-int sqlite3ExprVectorSize(const Expr *pExpr);
-int sqlite3ExprIsVector(const Expr *pExpr);
-Expr *sqlite3VectorFieldSubexpr(Expr*, int);
-Expr *sqlite3ExprForVectorField(Parse*,Expr*,int,int);
-void sqlite3VectorErrorMsg(Parse*, Expr*);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸದಿಶ_ಗಾತ್ರ(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಅಭಿವ್ಯಕ್ತಿ_Is_ಸದಿಶ(ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಅಭಿವ್ಯಕ್ತಿ);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಸದಿಶ_ಕ್ಷೇತ್ರ_Subexpr(ಅಭಿವ್ಯಕ್ತಿ*, ಪೂರ್ಣಾಂಕ);
+ಅಭಿವ್ಯಕ್ತಿ *sqlite3_ಅಭಿವ್ಯಕ್ತಿ_For_ಸದಿಶ_ಕ್ಷೇತ್ರ(Parse*,ಅಭಿವ್ಯಕ್ತಿ*,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ sqlite3_ಸದಿಶ_Error_ಸಂದೇಶ(Parse*, ಅಭಿವ್ಯಕ್ತಿ*);
 
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
-const char **sqlite3CompileOptions(int *pnOpt);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_COMPILEOPTION_DIAGS
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ **sqlite3CompileOptions(ಪೂರ್ಣಾಂಕ *pnOpt);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
-int sqlite3KvvfsInit(void);
-#endif
+#ಆದರೆ SQLITE_OS_UNIX && defined(SQLITE_OS_KV_OPTIONAL)
+ಪೂರ್ಣಾಂಕ sqlite3KvvfsInit(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(VDBE_PROFILE) \
+#ಆದರೆ defined(VDBE_PROFILE) \
  || defined(SQLITE_PERFORMANCE_TRACE) \
  || defined(SQLITE_ENABLE_STMT_SCANSTATUS)
-sqlite3_uint64 sqlite3Hwtime(void);
-#endif
+sqlite3_uint64 sqlite3Hwtime(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-# define IS_STMT_SCANSTATUS(db) (db->flags & SQLITE_StmtScanStatus)
-#else
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_STMT_SCANSTATUS
+# define IS_STMT_SCANSTATUS(db) (db->flags & SQLITE_Stmt_ಪರಿಶೀಲನೆ_ಸ್ಥಿತಿ)
+#ಇಲ್ಲದಿದ್ದರೆ
 # define IS_STMT_SCANSTATUS(db) 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#endif /* SQLITEINT_H */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITEINT_H */

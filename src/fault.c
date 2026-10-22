@@ -24,17 +24,17 @@
 ** during a hash table resize is a benign fault.
 */
 
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
-#ifndef SQLITE_UNTESTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_UNTESTABLE
 
 /*
 ** Global variables.
 */
-typedef struct BenignMallocHooks BenignMallocHooks;
-static SQLITE_WSD struct BenignMallocHooks {
-  void (*xBenignBegin)(void);
-  void (*xBenignEnd)(void);
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ BenignMallocHooks BenignMallocHooks;
+ಸ್ಥಿರ SQLITE_WSD ರಚನೆ BenignMallocHooks {
+  ಶೂನ್ಯ (*xBenignBegin)(ಶೂನ್ಯ);
+  ಶೂನ್ಯ (*x_Benign_ಕೊನೆ)(ಶೂನ್ಯ);
 } sqlite3Hooks = { 0, 0 };
 
 /* The "wsdHooks" macro will resolve to the appropriate BenignMallocHooks
@@ -43,27 +43,27 @@ static SQLITE_WSD struct BenignMallocHooks {
 ** case where writable static data is supported, wsdHooks can refer directly
 ** to the "sqlite3Hooks" state vector declared above.
 */
-#ifdef SQLITE_OMIT_WSD
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_WSD
 # define wsdHooksInit \
   BenignMallocHooks *x = &GLOBAL(BenignMallocHooks,sqlite3Hooks)
 # define wsdHooks x[0]
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define wsdHooksInit
 # define wsdHooks sqlite3Hooks
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /*
 ** Register hooks to call when sqlite3BeginBenignMalloc() and
 ** sqlite3EndBenignMalloc() are called, respectively.
 */
-void sqlite3BenignMallocHooks(
-  void (*xBenignBegin)(void),
-  void (*xBenignEnd)(void)
+ಶೂನ್ಯ sqlite3BenignMallocHooks(
+  ಶೂನ್ಯ (*xBenignBegin)(ಶೂನ್ಯ),
+  ಶೂನ್ಯ (*x_Benign_ಕೊನೆ)(ಶೂನ್ಯ)
 ){
   wsdHooksInit;
   wsdHooks.xBenignBegin = xBenignBegin;
-  wsdHooks.xBenignEnd = xBenignEnd;
+  wsdHooks.x_Benign_ಕೊನೆ = x_Benign_ಕೊನೆ;
 }
 
 /*
@@ -71,17 +71,17 @@ void sqlite3BenignMallocHooks(
 ** subsequent malloc failures are benign. A call to sqlite3EndBenignMalloc()
 ** indicates that subsequent malloc failures are non-benign.
 */
-void sqlite3BeginBenignMalloc(void){
+ಶೂನ್ಯ sqlite3BeginBenignMalloc(ಶೂನ್ಯ){
   wsdHooksInit;
-  if( wsdHooks.xBenignBegin ){
+  ಆದರೆ( wsdHooks.xBenignBegin ){
     wsdHooks.xBenignBegin();
   }
 }
-void sqlite3EndBenignMalloc(void){
+ಶೂನ್ಯ sqlite3_ಕೊನೆ_Benign_Malloc(ಶೂನ್ಯ){
   wsdHooksInit;
-  if( wsdHooks.xBenignEnd ){
-    wsdHooks.xBenignEnd();
+  ಆದರೆ( wsdHooks.x_Benign_ಕೊನೆ ){
+    wsdHooks.x_Benign_ಕೊನೆ();
   }
 }
 
-#endif   /* #ifndef SQLITE_UNTESTABLE */
+#ಆದರೆ_ಅಂತ್ಯ   /* #ifndef SQLITE_UNTESTABLE */

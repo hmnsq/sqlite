@@ -12,74 +12,74 @@
 **
 ** Memory allocation functions used throughout sqlite.
 */
-#include "sqliteInt.h"
-#include <stdarg.h>
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ <stdarg.h>
 
 /*
 ** Attempt to release up to n bytes of non-essential memory currently
 ** held by SQLite. An example of non-essential memory is memory used to
 ** cache database pages that are not currently in use.
 */
-int sqlite3_release_memory(int n){
-#ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
-  return sqlite3PcacheReleaseMemory(n);
-#else
+ಪೂರ್ಣಾಂಕ sqlite3_release_ಸ್ಮರಣೆ(ಪೂರ್ಣಾಂಕ n){
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_ಸ್ಮರಣೆ_MANAGEMENT
+  ಹಿಂತಿರುಗಿ sqlite3_Pcache_Release_ಸ್ಮರಣೆ(n);
+#ಇಲ್ಲದಿದ್ದರೆ
   /* IMPLEMENTATION-OF: R-34391-24921 The sqlite3_release_memory() routine
   ** is a no-op returning zero if SQLite is not compiled with
   ** SQLITE_ENABLE_MEMORY_MANAGEMENT. */
-  UNUSED_PARAMETER(n);
-  return 0;
-#endif
+  ಬಳಸದ_PARAMETER(n);
+  ಹಿಂತಿರುಗಿ 0;
+#ಆದರೆ_ಅಂತ್ಯ
 }
 
 /*
 ** Default value of the hard heap limit.  0 means "no limit".
 */
-#ifndef SQLITE_MAX_MEMORY
-# define SQLITE_MAX_MEMORY 0
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_MAX_ಸ್ಮರಣೆ
+# define SQLITE_MAX_ಸ್ಮರಣೆ 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** State information local to the memory allocation subsystem.
 */
-static SQLITE_WSD struct Mem0Global {
+ಸ್ಥಿರ SQLITE_WSD ರಚನೆ Mem0Global {
   sqlite3_mutex *mutex;         /* Mutex to serialize access */
-  sqlite3_int64 alarmThreshold; /* The soft heap limit */
-  sqlite3_int64 hardLimit;      /* The hard upper bound on memory */
+  sqlite3_int64 alarm_ಮಿತಿ; /* The soft heap limit */
+  sqlite3_int64 hard_ಎಲ್ಲೆ;      /* The hard upper bound on memory */
 
   /*
   ** True if heap is nearly "full" where "full" is defined by the
   ** sqlite3_soft_heap_limit() setting.
   */
-  int nearlyFull;
-} mem0 = { 0, SQLITE_MAX_MEMORY, SQLITE_MAX_MEMORY, 0 };
+  ಪೂರ್ಣಾಂಕ nearly_ತುಂಬಿದ;
+} mem0 = { 0, SQLITE_MAX_ಸ್ಮರಣೆ, SQLITE_MAX_ಸ್ಮರಣೆ, 0 };
 
-#define mem0 GLOBAL(struct Mem0Global, mem0)
+#ವ್ಯಾಖ್ಯಾನಿಸು mem0 GLOBAL(ರಚನೆ Mem0Global, mem0)
 
 /*
 ** Return the memory allocator mutex. sqlite3_status() needs it.
 */
-sqlite3_mutex *sqlite3MallocMutex(void){
-  return mem0.mutex;
+sqlite3_mutex *sqlite3MallocMutex(ಶೂನ್ಯ){
+  ಹಿಂತಿರುಗಿ mem0.mutex;
 }
 
-#ifndef SQLITE_OMIT_DEPRECATED
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_DEPRECATED
 /*
 ** Deprecated external interface.  It used to set an alarm callback
 ** that was invoked when memory usage grew too large.  Now it is a
 ** no-op.
 */
-int sqlite3_memory_alarm(
-  void(*xCallback)(void *pArg, sqlite3_int64 used,int N),
-  void *pArg,
-  sqlite3_int64 iThreshold
+ಪೂರ್ಣಾಂಕ sqlite3_ಸ್ಮರಣೆ_alarm(
+  ಶೂನ್ಯ(*xCallback)(ಶೂನ್ಯ *pArg, sqlite3_int64 ಬಳಸಿದ,ಪೂರ್ಣಾಂಕ N),
+  ಶೂನ್ಯ *pArg,
+  sqlite3_int64 i_ಮಿತಿ
 ){
-  (void)xCallback;
-  (void)pArg;
-  (void)iThreshold;
-  return SQLITE_OK;
+  (ಶೂನ್ಯ)xCallback;
+  (ಶೂನ್ಯ)pArg;
+  (ಶೂನ್ಯ)i_ಮಿತಿ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Set the soft heap-size limit for the library.  An argument of
@@ -92,34 +92,34 @@ int sqlite3_memory_alarm(
 ** If the hard heap limit is enabled, then the soft heap limit cannot
 ** be disabled nor raised above the hard heap limit.
 */
-sqlite3_int64 sqlite3_soft_heap_limit64(sqlite3_int64 n){
-  sqlite3_int64 priorLimit;
+sqlite3_int64 sqlite3_soft_ರಾಶಿ_limit64(sqlite3_int64 n){
+  sqlite3_int64 ಪೂರ್ವ_ಎಲ್ಲೆ;
   sqlite3_int64 excess;
-  sqlite3_int64 nUsed;
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return -1;
-#endif
+  sqlite3_int64 n_ಬಳಸಿದ;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINIT
+  ಪೂರ್ಣಾಂಕ rc = sqlite3_initialize();
+  ಆದರೆ( rc ) ಹಿಂತಿರುಗಿ -1;
+#ಆದರೆ_ಅಂತ್ಯ
   sqlite3_mutex_enter(mem0.mutex);
-  priorLimit = mem0.alarmThreshold;
-  if( n<0 ){
+  ಪೂರ್ವ_ಎಲ್ಲೆ = mem0.alarm_ಮಿತಿ;
+  ಆದರೆ( n<0 ){
     sqlite3_mutex_leave(mem0.mutex);
-    return priorLimit;
+    ಹಿಂತಿರುಗಿ ಪೂರ್ವ_ಎಲ್ಲೆ;
   }
-  if( mem0.hardLimit>0 && (n>mem0.hardLimit || n==0) ){
-    n = mem0.hardLimit;
+  ಆದರೆ( mem0.hard_ಎಲ್ಲೆ>0 && (n>mem0.hard_ಎಲ್ಲೆ || n==0) ){
+    n = mem0.hard_ಎಲ್ಲೆ;
   }
-  mem0.alarmThreshold = n;
-  nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
-  AtomicStore(&mem0.nearlyFull, n>0 && n<=nUsed);
+  mem0.alarm_ಮಿತಿ = n;
+  n_ಬಳಸಿದ = sqlite3_ಸ್ಥಿತಿ_ಮೌಲ್ಯ(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ);
+  AtomicStore(&mem0.nearly_ತುಂಬಿದ, n>0 && n<=n_ಬಳಸಿದ);
   sqlite3_mutex_leave(mem0.mutex);
-  excess = sqlite3_memory_used() - n;
-  if( excess>0 ) sqlite3_release_memory((int)(excess & 0x7fffffff));
-  return priorLimit;
+  excess = sqlite3_ಸ್ಮರಣೆ_ಬಳಸಿದ() - n;
+  ಆದರೆ( excess>0 ) sqlite3_release_ಸ್ಮರಣೆ((ಪೂರ್ಣಾಂಕ)(excess & 0x7fffffff));
+  ಹಿಂತಿರುಗಿ ಪೂರ್ವ_ಎಲ್ಲೆ;
 }
-void sqlite3_soft_heap_limit(int n){
-  if( n<0 ) n = 0;
-  sqlite3_soft_heap_limit64(n);
+ಶೂನ್ಯ sqlite3_soft_ರಾಶಿ_ಎಲ್ಲೆ(ಪೂರ್ಣಾಂಕ n){
+  ಆದರೆ( n<0 ) n = 0;
+  sqlite3_soft_ರಾಶಿ_limit64(n);
 }
 
 /*
@@ -134,42 +134,42 @@ void sqlite3_soft_heap_limit(int n){
 ** and constrain the soft heap limit to be no more than the hard heap
 ** limit.
 */
-sqlite3_int64 sqlite3_hard_heap_limit64(sqlite3_int64 n){
-  sqlite3_int64 priorLimit;
-#ifndef SQLITE_OMIT_AUTOINIT
-  int rc = sqlite3_initialize();
-  if( rc ) return -1;
-#endif
+sqlite3_int64 sqlite3_hard_ರಾಶಿ_limit64(sqlite3_int64 n){
+  sqlite3_int64 ಪೂರ್ವ_ಎಲ್ಲೆ;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINIT
+  ಪೂರ್ಣಾಂಕ rc = sqlite3_initialize();
+  ಆದರೆ( rc ) ಹಿಂತಿರುಗಿ -1;
+#ಆದರೆ_ಅಂತ್ಯ
   sqlite3_mutex_enter(mem0.mutex);
-  priorLimit = mem0.hardLimit;
-  if( n>=0 ){
-    mem0.hardLimit = n;
-    if( n<mem0.alarmThreshold || mem0.alarmThreshold==0 ){
-      mem0.alarmThreshold = n;
+  ಪೂರ್ವ_ಎಲ್ಲೆ = mem0.hard_ಎಲ್ಲೆ;
+  ಆದರೆ( n>=0 ){
+    mem0.hard_ಎಲ್ಲೆ = n;
+    ಆದರೆ( n<mem0.alarm_ಮಿತಿ || mem0.alarm_ಮಿತಿ==0 ){
+      mem0.alarm_ಮಿತಿ = n;
     }
   }
   sqlite3_mutex_leave(mem0.mutex);
-  return priorLimit;
+  ಹಿಂತಿರುಗಿ ಪೂರ್ವ_ಎಲ್ಲೆ;
 }
 
 
 /*
 ** Initialize the memory allocation subsystem.
 */
-int sqlite3MallocInit(void){
-  int rc;
-  if( sqlite3GlobalConfig.m.xMalloc==0 ){
-    sqlite3MemSetDefault();
+ಪೂರ್ಣಾಂಕ sqlite3MallocInit(ಶೂನ್ಯ){
+  ಪೂರ್ಣಾಂಕ rc;
+  ಆದರೆ( sqlite3GlobalConfig.m.xMalloc==0 ){
+    sqlite3_Mem_ಗಣ_Default();
   }
   mem0.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
-  if( sqlite3GlobalConfig.pPage==0 || sqlite3GlobalConfig.szPage<512
-      || sqlite3GlobalConfig.nPage<=0 ){
-    sqlite3GlobalConfig.pPage = 0;
-    sqlite3GlobalConfig.szPage = 0;
+  ಆದರೆ( sqlite3GlobalConfig.p_ಪುಟ==0 || sqlite3GlobalConfig.sz_ಪುಟ<512
+      || sqlite3GlobalConfig.n_ಪುಟ<=0 ){
+    sqlite3GlobalConfig.p_ಪುಟ = 0;
+    sqlite3GlobalConfig.sz_ಪುಟ = 0;
   }
-  rc = sqlite3GlobalConfig.m.xInit(sqlite3GlobalConfig.m.pAppData);
-  if( rc!=SQLITE_OK ) memset(&mem0, 0, sizeof(mem0));
-  return rc;
+  rc = sqlite3GlobalConfig.m.xInit(sqlite3GlobalConfig.m.p_App_ದತ್ತಾಂಶ);
+  ಆದರೆ( rc!=SQLITE_OK ) memset(&mem0, 0, ಗಾತ್ರ(mem0));
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
@@ -177,27 +177,27 @@ int sqlite3MallocInit(void){
 ** words if the amount of heap used is close to the limit set by
 ** sqlite3_soft_heap_limit().
 */
-int sqlite3HeapNearlyFull(void){
-  return AtomicLoad(&mem0.nearlyFull);
+ಪೂರ್ಣಾಂಕ sqlite3_ರಾಶಿ_Nearly_ತುಂಬಿದ(ಶೂನ್ಯ){
+  ಹಿಂತಿರುಗಿ Atomic_ತುಂಬು(&mem0.nearly_ತುಂಬಿದ);
 }
 
 /*
 ** Deinitialize the memory allocation subsystem.
 */
-void sqlite3MallocEnd(void){
-  if( sqlite3GlobalConfig.m.xShutdown ){
-    sqlite3GlobalConfig.m.xShutdown(sqlite3GlobalConfig.m.pAppData);
+ಶೂನ್ಯ sqlite3_Malloc_ಕೊನೆ(ಶೂನ್ಯ){
+  ಆದರೆ( sqlite3GlobalConfig.m.xShutdown ){
+    sqlite3GlobalConfig.m.xShutdown(sqlite3GlobalConfig.m.p_App_ದತ್ತಾಂಶ);
   }
-  memset(&mem0, 0, sizeof(mem0));
+  memset(&mem0, 0, ಗಾತ್ರ(mem0));
 }
 
 /*
 ** Return the amount of memory currently checked out.
 */
-sqlite3_int64 sqlite3_memory_used(void){
+sqlite3_int64 sqlite3_ಸ್ಮರಣೆ_ಬಳಸಿದ(ಶೂನ್ಯ){
   sqlite3_int64 res, mx;
-  sqlite3_status64(SQLITE_STATUS_MEMORY_USED, &res, &mx, 0);
-  return res;
+  sqlite3_status64(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ, &res, &mx, 0);
+  ಹಿಂತಿರುಗಿ res;
 }
 
 /*
@@ -205,86 +205,86 @@ sqlite3_int64 sqlite3_memory_used(void){
 ** checked out since either the beginning of this process
 ** or since the most recent reset.
 */
-sqlite3_int64 sqlite3_memory_highwater(int resetFlag){
+sqlite3_int64 sqlite3_ಸ್ಮರಣೆ_highwater(ಪೂರ್ಣಾಂಕ resetFlag){
   sqlite3_int64 res, mx;
-  sqlite3_status64(SQLITE_STATUS_MEMORY_USED, &res, &mx, resetFlag);
-  return mx;
+  sqlite3_status64(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ, &res, &mx, resetFlag);
+  ಹಿಂತಿರುಗಿ mx;
 }
 
 /*
 ** Trigger the alarm 
 */
-static void sqlite3MallocAlarm(int nByte){
-  if( mem0.alarmThreshold<=0 ) return;
+ಸ್ಥಿರ ಶೂನ್ಯ sqlite3MallocAlarm(ಪೂರ್ಣಾಂಕ nByte){
+  ಆದರೆ( mem0.alarm_ಮಿತಿ<=0 ) ಹಿಂತಿರುಗಿ;
   sqlite3_mutex_leave(mem0.mutex);
-  sqlite3_release_memory(nByte);
+  sqlite3_release_ಸ್ಮರಣೆ(nByte);
   sqlite3_mutex_enter(mem0.mutex);
 }
 
-#ifdef SQLITE_DEBUG
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
 /*
 ** This routine is called whenever an out-of-memory condition is seen,
 ** It's only purpose to to serve as a breakpoint for gdb or similar
 ** code debuggers when working on out-of-memory conditions, for example
 ** caused by PRAGMA hard_heap_limit=N.
 */
-static SQLITE_NOINLINE void test_oom_breakpoint(u64 n){
-  static u64 nOomFault = 0;
+ಸ್ಥಿರ SQLITE_NOINLINE ಶೂನ್ಯ test_oom_breakpoint(u64 n){
+  ಸ್ಥಿರ u64 nOomFault = 0;
   nOomFault += n;
   /* The assert() is never reached in a human lifetime.  It  is here mostly
   ** to prevent code optimizers from optimizing out this function. */
-  assert( (nOomFault>>32) < 0xffffffff );
+  ಪ್ರತಿಜ್ಞಾ( (nOomFault>>32) < 0xffffffff );
 }
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define test_oom_breakpoint(X)   /* No-op for production builds */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Do a memory allocation with statistics and alarms.  Assume the
 ** lock is already held.
 */
-static void mallocWithAlarm(int n, void **pp){
-  void *p;
-  int nFull;
-  assert( sqlite3_mutex_held(mem0.mutex) );
-  assert( n>0 );
+ಸ್ಥಿರ ಶೂನ್ಯ mallocWithAlarm(ಪೂರ್ಣಾಂಕ n, ಶೂನ್ಯ **pp){
+  ಶೂನ್ಯ *p;
+  ಪೂರ್ಣಾಂಕ n_ತುಂಬಿದ;
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(mem0.mutex) );
+  ಪ್ರತಿಜ್ಞಾ( n>0 );
 
   /* In Firefox (circa 2017-02-08), xRoundup() is remapped to an internal
   ** implementation of malloc_good_size(), which must be called in debug
   ** mode and specifically when the DMD "Dark Matter Detector" is enabled
   ** or else a crash results.  Hence, do not attempt to optimize out the
   ** following xRoundup() call. */
-  nFull = sqlite3GlobalConfig.m.xRoundup(n);
+  n_ತುಂಬಿದ = sqlite3GlobalConfig.m.xRoundup(n);
 
-  sqlite3StatusHighwater(SQLITE_STATUS_MALLOC_SIZE, n);
-  if( mem0.alarmThreshold>0 ){
-    sqlite3_int64 nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
-    if( nUsed >= mem0.alarmThreshold - nFull ){
-      AtomicStore(&mem0.nearlyFull, 1);
-      sqlite3MallocAlarm(nFull);
-      if( mem0.hardLimit ){
-        nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
-        if( nUsed >= mem0.hardLimit - nFull ){
+  sqlite3_ಸ್ಥಿತಿ_Highwater(SQLITE_ಸ್ಥಿತಿ_MALLOC_ಗಾತ್ರ, n);
+  ಆದರೆ( mem0.alarm_ಮಿತಿ>0 ){
+    sqlite3_int64 n_ಬಳಸಿದ = sqlite3_ಸ್ಥಿತಿ_ಮೌಲ್ಯ(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ);
+    ಆದರೆ( n_ಬಳಸಿದ >= mem0.alarm_ಮಿತಿ - n_ತುಂಬಿದ ){
+      AtomicStore(&mem0.nearly_ತುಂಬಿದ, 1);
+      sqlite3MallocAlarm(n_ತುಂಬಿದ);
+      ಆದರೆ( mem0.hard_ಎಲ್ಲೆ ){
+        n_ಬಳಸಿದ = sqlite3_ಸ್ಥಿತಿ_ಮೌಲ್ಯ(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ);
+        ಆದರೆ( n_ಬಳಸಿದ >= mem0.hard_ಎಲ್ಲೆ - n_ತುಂಬಿದ ){
           test_oom_breakpoint(1);
           *pp = 0;
-          return;
+          ಹಿಂತಿರುಗಿ;
         }
       }
-    }else{
-      AtomicStore(&mem0.nearlyFull, 0);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      AtomicStore(&mem0.nearly_ತುಂಬಿದ, 0);
     }
   }
-  p = sqlite3GlobalConfig.m.xMalloc(nFull);
-#ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
-  if( p==0 && mem0.alarmThreshold>0 ){
-    sqlite3MallocAlarm(nFull);
-    p = sqlite3GlobalConfig.m.xMalloc(nFull);
+  p = sqlite3GlobalConfig.m.xMalloc(n_ತುಂಬಿದ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_ಸ್ಮರಣೆ_MANAGEMENT
+  ಆದರೆ( p==0 && mem0.alarm_ಮಿತಿ>0 ){
+    sqlite3MallocAlarm(n_ತುಂಬಿದ);
+    p = sqlite3GlobalConfig.m.xMalloc(n_ತುಂಬಿದ);
   }
-#endif
-  if( p ){
-    nFull = sqlite3MallocSize(p);
-    sqlite3StatusUp(SQLITE_STATUS_MEMORY_USED, nFull);
-    sqlite3StatusUp(SQLITE_STATUS_MALLOC_COUNT, 1);
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆದರೆ( p ){
+    n_ತುಂಬಿದ = sqlite3_Malloc_ಗಾತ್ರ(p);
+    sqlite3_ಸ್ಥಿತಿ_ಮೇಲೆ(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ, n_ತುಂಬಿದ);
+    sqlite3_ಸ್ಥಿತಿ_ಮೇಲೆ(SQLITE_ಸ್ಥಿತಿ_MALLOC_ಎಣಿಕೆ, 1);
   }
   *pp = p;
 }
@@ -293,19 +293,19 @@ static void mallocWithAlarm(int n, void **pp){
 ** Allocate memory.  This routine is like sqlite3_malloc() except that it
 ** assumes the memory subsystem has already been initialized.
 */
-void *sqlite3Malloc(u64 n){
-  void *p;
-  if( n==0 || n>SQLITE_MAX_ALLOCATION_SIZE ){
+ಶೂನ್ಯ *sqlite3Malloc(u64 n){
+  ಶೂನ್ಯ *p;
+  ಆದರೆ( n==0 || n>SQLITE_MAX_ಹಂಚಿಕೆ_ಗಾತ್ರ ){
     p = 0;
-  }else if( sqlite3GlobalConfig.bMemstat ){
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3GlobalConfig.bMemstat ){
     sqlite3_mutex_enter(mem0.mutex);
-    mallocWithAlarm((int)n, &p);
+    mallocWithAlarm((ಪೂರ್ಣಾಂಕ)n, &p);
     sqlite3_mutex_leave(mem0.mutex);
-  }else{
-    p = sqlite3GlobalConfig.m.xMalloc((int)n);
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    p = sqlite3GlobalConfig.m.xMalloc((ಪೂರ್ಣಾಂಕ)n);
   }
-  assert( EIGHT_BYTE_ALIGNMENT(p) );  /* IMP: R-11148-40995 */
-  return p;
+  ಪ್ರತಿಜ್ಞಾ( EIGHT_BYTE_ALIGNMENT(p) );  /* IMP: R-11148-40995 */
+  ಹಿಂತಿರುಗಿ p;
 }
 
 /*
@@ -313,92 +313,92 @@ void *sqlite3Malloc(u64 n){
 ** First make sure the memory subsystem is initialized, then do the
 ** allocation.
 */
-void *sqlite3_malloc(int n){
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return n<=0 ? 0 : sqlite3Malloc(n);
+ಶೂನ್ಯ *sqlite3_malloc(ಪೂರ್ಣಾಂಕ n){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINIT
+  ಆದರೆ( sqlite3_initialize() ) ಹಿಂತಿರುಗಿ 0;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ n<=0 ? 0 : sqlite3Malloc(n);
 }
-void *sqlite3_malloc64(sqlite3_uint64 n){
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return sqlite3Malloc(n);
+ಶೂನ್ಯ *sqlite3_malloc64(sqlite3_uint64 n){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINIT
+  ಆದರೆ( sqlite3_initialize() ) ಹಿಂತಿರುಗಿ 0;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ sqlite3Malloc(n);
 }
 
 /*
 ** TRUE if p is a lookaside memory allocation from db
 */
-#ifndef SQLITE_OMIT_LOOKASIDE
-static int isLookaside(sqlite3 *db, const void *p){
-  return SQLITE_WITHIN(p, db->lookaside.pStart, db->lookaside.pTrueEnd);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_LOOKASIDE
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ isLookaside(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *p){
+  ಹಿಂತಿರುಗಿ SQLITE_WITHIN(p, db->lookaside.p_ಆರಂಭ, db->lookaside.p_True_ಕೊನೆ);
 }
-#else
-#define isLookaside(A,B) 0
-#endif
+#ಇಲ್ಲದಿದ್ದರೆ
+#ವ್ಯಾಖ್ಯಾನಿಸು isLookaside(A,B) 0
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Return the size of a memory allocation previously obtained from
 ** sqlite3Malloc() or sqlite3_malloc().
 */
-int sqlite3MallocSize(const void *p){
-  assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
-  return sqlite3GlobalConfig.m.xSize((void*)p);
+ಪೂರ್ಣಾಂಕ sqlite3_Malloc_ಗಾತ್ರ(ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *p){
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, MEMTYPE_ರಾಶಿ) );
+  ಹಿಂತಿರುಗಿ sqlite3GlobalConfig.m.x_ಗಾತ್ರ((ಶೂನ್ಯ*)p);
 }
-static int lookasideMallocSize(sqlite3 *db, const void *p){
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE    
-  return p<db->lookaside.pMiddle ? db->lookaside.szTrue : LOOKASIDE_SMALL;
-#else
-  return db->lookaside.szTrue;
-#endif  
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ lookaside_Malloc_ಗಾತ್ರ(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *p){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE    
+  ಹಿಂತಿರುಗಿ p<db->lookaside.p_ಮಧ್ಯ ? db->lookaside.szTrue : LOOKASIDE_SMALL;
+#ಇಲ್ಲದಿದ್ದರೆ
+  ಹಿಂತಿರುಗಿ db->lookaside.szTrue;
+#ಆದರೆ_ಅಂತ್ಯ  
 }
-int sqlite3DbMallocSize(sqlite3 *db, const void *p){
-  assert( p!=0 );
-#ifdef SQLITE_DEBUG
-  if( db==0 ){
-    assert( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_HEAP) );
-    assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
-  }else if( !isLookaside(db,p) ){
-    assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
-    assert( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
+ಪೂರ್ಣಾಂಕ sqlite3_Db_Malloc_ಗಾತ್ರ(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *p){
+  ಪ್ರತಿಜ್ಞಾ( p!=0 );
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+  ಆದರೆ( db==0 ){
+    ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_ರಾಶಿ) );
+    ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, MEMTYPE_ರಾಶಿ) );
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( !isLookaside(db,p) ){
+    ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
+    ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
   }
-#endif
-  if( db ){
-    if( ((uptr)p)<(uptr)(db->lookaside.pTrueEnd) ){
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-      if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
-        assert( sqlite3_mutex_held(db->mutex) );
-        return LOOKASIDE_SMALL;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆದರೆ( db ){
+    ಆದರೆ( ((uptr)p)<(uptr)(db->lookaside.p_True_ಕೊನೆ) ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE
+      ಆದರೆ( ((uptr)p)>=(uptr)(db->lookaside.p_ಮಧ್ಯ) ){
+        ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+        ಹಿಂತಿರುಗಿ LOOKASIDE_SMALL;
       }
-#endif
-      if( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
-        assert( sqlite3_mutex_held(db->mutex) );
-        return db->lookaside.szTrue;
+#ಆದರೆ_ಅಂತ್ಯ
+      ಆದರೆ( ((uptr)p)>=(uptr)(db->lookaside.p_ಆರಂಭ) ){
+        ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+        ಹಿಂತಿರುಗಿ db->lookaside.szTrue;
       }
     }
   }
-  return sqlite3GlobalConfig.m.xSize((void*)p);
+  ಹಿಂತಿರುಗಿ sqlite3GlobalConfig.m.x_ಗಾತ್ರ((ಶೂನ್ಯ*)p);
 }
-sqlite3_uint64 sqlite3_msize(void *p){
-  assert( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_HEAP) );
-  assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
-  return p ? sqlite3GlobalConfig.m.xSize(p) : 0;
+sqlite3_uint64 sqlite3_msize(ಶೂನ್ಯ *p){
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_ರಾಶಿ) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, MEMTYPE_ರಾಶಿ) );
+  ಹಿಂತಿರುಗಿ p ? sqlite3GlobalConfig.m.x_ಗಾತ್ರ(p) : 0;
 }
 
 /*
 ** Free memory previously obtained from sqlite3Malloc().
 */
-void sqlite3_free(void *p){
-  if( p==0 ) return;  /* IMP: R-49053-54554 */
-  assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
-  assert( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_HEAP) );
-  if( sqlite3GlobalConfig.bMemstat ){
+ಶೂನ್ಯ sqlite3_free(ಶೂನ್ಯ *p){
+  ಆದರೆ( p==0 ) ಹಿಂತಿರುಗಿ;  /* IMP: R-49053-54554 */
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, MEMTYPE_ರಾಶಿ) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(p, (u8)~MEMTYPE_ರಾಶಿ) );
+  ಆದರೆ( sqlite3GlobalConfig.bMemstat ){
     sqlite3_mutex_enter(mem0.mutex);
-    sqlite3StatusDown(SQLITE_STATUS_MEMORY_USED, sqlite3MallocSize(p));
-    sqlite3StatusDown(SQLITE_STATUS_MALLOC_COUNT, 1);
+    sqlite3_ಸ್ಥಿತಿ_ಕೆಳಕ್ಕೆ(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ, sqlite3_Malloc_ಗಾತ್ರ(p));
+    sqlite3_ಸ್ಥಿತಿ_ಕೆಳಕ್ಕೆ(SQLITE_ಸ್ಥಿತಿ_MALLOC_ಎಣಿಕೆ, 1);
     sqlite3GlobalConfig.m.xFree(p);
     sqlite3_mutex_leave(mem0.mutex);
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     sqlite3GlobalConfig.m.xFree(p);
   }
 }
@@ -407,8 +407,8 @@ void sqlite3_free(void *p){
 ** Add the size of memory allocation "p" to the count in
 ** *db->pnBytesFreed.
 */
-static SQLITE_NOINLINE void measureAllocationSize(sqlite3 *db, void *p){
-  *db->pnBytesFreed += sqlite3DbMallocSize(db,p);
+ಸ್ಥಿರ SQLITE_NOINLINE ಶೂನ್ಯ measure_ಹಂಚಿಕೆ_ಗಾತ್ರ(sqlite3 *db, ಶೂನ್ಯ *p){
+  *db->pn_ಬೈಟುಗಳು_Freed += sqlite3_Db_Malloc_ಗಾತ್ರ(db,p);
 }
 
 /*
@@ -416,199 +416,199 @@ static SQLITE_NOINLINE void measureAllocationSize(sqlite3 *db, void *p){
 ** connection.  Calling sqlite3DbFree(D,X) for X==0 is a harmless no-op.
 ** The sqlite3DbFreeNN(D,X) version requires that X be non-NULL.
 */
-void sqlite3DbFreeNN(sqlite3 *db, void *p){
-  assert( db==0 || sqlite3_mutex_held(db->mutex) );
-  assert( p!=0 );
-  if( db ){
-    if( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-      if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
-        LookasideSlot *pBuf = (LookasideSlot*)p;
-        assert( db->pnBytesFreed==0 );
-#ifdef SQLITE_DEBUG
+ಶೂನ್ಯ sqlite3DbFreeNN(sqlite3 *db, ಶೂನ್ಯ *p){
+  ಪ್ರತಿಜ್ಞಾ( db==0 || sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( p!=0 );
+  ಆದರೆ( db ){
+    ಆದರೆ( ((uptr)p)<(uptr)(db->lookaside.p_ಕೊನೆ) ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE
+      ಆದರೆ( ((uptr)p)>=(uptr)(db->lookaside.p_ಮಧ್ಯ) ){
+        Lookaside_ಸ್ಥಾನ *pBuf = (Lookaside_ಸ್ಥಾನ*)p;
+        ಪ್ರತಿಜ್ಞಾ( db->pn_ಬೈಟುಗಳು_Freed==0 );
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
         memset(p, 0xaa, LOOKASIDE_SMALL);  /* Trash freed content */
-#endif
-        pBuf->pNext = db->lookaside.pSmallFree;
+#ಆದರೆ_ಅಂತ್ಯ
+        pBuf->p_ಮುಂದಿನ = db->lookaside.pSmallFree;
         db->lookaside.pSmallFree = pBuf;
-        return;
+        ಹಿಂತಿರುಗಿ;
       }
-#endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-      if( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
-        LookasideSlot *pBuf = (LookasideSlot*)p;
-        assert( db->pnBytesFreed==0 );
-#ifdef SQLITE_DEBUG
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
+      ಆದರೆ( ((uptr)p)>=(uptr)(db->lookaside.p_ಆರಂಭ) ){
+        Lookaside_ಸ್ಥಾನ *pBuf = (Lookaside_ಸ್ಥಾನ*)p;
+        ಪ್ರತಿಜ್ಞಾ( db->pn_ಬೈಟುಗಳು_Freed==0 );
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
         memset(p, 0xaa, db->lookaside.szTrue);  /* Trash freed content */
-#endif
-        pBuf->pNext = db->lookaside.pFree;
+#ಆದರೆ_ಅಂತ್ಯ
+        pBuf->p_ಮುಂದಿನ = db->lookaside.pFree;
         db->lookaside.pFree = pBuf;
-        return;
+        ಹಿಂತಿರುಗಿ;
       }
     }
-    if( db->pnBytesFreed ){
-      measureAllocationSize(db, p);
-      return;
+    ಆದರೆ( db->pn_ಬೈಟುಗಳು_Freed ){
+      measure_ಹಂಚಿಕೆ_ಗಾತ್ರ(db, p);
+      ಹಿಂತಿರುಗಿ;
     }
   }
-  assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
-  assert( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
-  assert( db!=0 || sqlite3MemdebugNoType(p, MEMTYPE_LOOKASIDE) );
-  sqlite3MemdebugSetType(p, MEMTYPE_HEAP);
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
+  ಪ್ರತಿಜ್ಞಾ( db!=0 || sqlite3MemdebugNoType(p, MEMTYPE_LOOKASIDE) );
+  sqlite3_Memdebug_ಗಣ_Type(p, MEMTYPE_ರಾಶಿ);
   sqlite3_free(p);
 }
-void sqlite3DbNNFreeNN(sqlite3 *db, void *p){
-  assert( db!=0 );
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( p!=0 );
-  if( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-    if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
-      LookasideSlot *pBuf = (LookasideSlot*)p;
-      assert( db->pnBytesFreed==0 );
-#ifdef SQLITE_DEBUG
+ಶೂನ್ಯ sqlite3DbNNFreeNN(sqlite3 *db, ಶೂನ್ಯ *p){
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( p!=0 );
+  ಆದರೆ( ((uptr)p)<(uptr)(db->lookaside.p_ಕೊನೆ) ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE
+    ಆದರೆ( ((uptr)p)>=(uptr)(db->lookaside.p_ಮಧ್ಯ) ){
+      Lookaside_ಸ್ಥಾನ *pBuf = (Lookaside_ಸ್ಥಾನ*)p;
+      ಪ್ರತಿಜ್ಞಾ( db->pn_ಬೈಟುಗಳು_Freed==0 );
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
       memset(p, 0xaa, LOOKASIDE_SMALL);  /* Trash freed content */
-#endif
-      pBuf->pNext = db->lookaside.pSmallFree;
+#ಆದರೆ_ಅಂತ್ಯ
+      pBuf->p_ಮುಂದಿನ = db->lookaside.pSmallFree;
       db->lookaside.pSmallFree = pBuf;
-      return;
+      ಹಿಂತಿರುಗಿ;
     }
-#endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
-    if( ((uptr)p)>=(uptr)(db->lookaside.pStart) ){
-      LookasideSlot *pBuf = (LookasideSlot*)p;
-      assert( db->pnBytesFreed==0 );
-#ifdef SQLITE_DEBUG
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
+    ಆದರೆ( ((uptr)p)>=(uptr)(db->lookaside.p_ಆರಂಭ) ){
+      Lookaside_ಸ್ಥಾನ *pBuf = (Lookaside_ಸ್ಥಾನ*)p;
+      ಪ್ರತಿಜ್ಞಾ( db->pn_ಬೈಟುಗಳು_Freed==0 );
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
       memset(p, 0xaa, db->lookaside.szTrue);  /* Trash freed content */
-#endif
-      pBuf->pNext = db->lookaside.pFree;
+#ಆದರೆ_ಅಂತ್ಯ
+      pBuf->p_ಮುಂದಿನ = db->lookaside.pFree;
       db->lookaside.pFree = pBuf;
-      return;
+      ಹಿಂತಿರುಗಿ;
     }
   }
-  if( db->pnBytesFreed ){
-    measureAllocationSize(db, p);
-    return;
+  ಆದರೆ( db->pn_ಬೈಟುಗಳು_Freed ){
+    measure_ಹಂಚಿಕೆ_ಗಾತ್ರ(db, p);
+    ಹಿಂತಿರುಗಿ;
   }
-  assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
-  assert( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
-  sqlite3MemdebugSetType(p, MEMTYPE_HEAP);
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
+  sqlite3_Memdebug_ಗಣ_Type(p, MEMTYPE_ರಾಶಿ);
   sqlite3_free(p);
 }
-void sqlite3DbFree(sqlite3 *db, void *p){
-  assert( db==0 || sqlite3_mutex_held(db->mutex) );
-  if( p ) sqlite3DbFreeNN(db, p);
+ಶೂನ್ಯ sqlite3DbFree(sqlite3 *db, ಶೂನ್ಯ *p){
+  ಪ್ರತಿಜ್ಞಾ( db==0 || sqlite3_mutex_held(db->mutex) );
+  ಆದರೆ( p ) sqlite3DbFreeNN(db, p);
 }
 
 /*
 ** Change the size of an existing memory allocation
 */
-void *sqlite3Realloc(void *pOld, u64 nBytes){
-  int nOld, nNew, nDiff;
-  void *pNew;
-  assert( sqlite3MemdebugHasType(pOld, MEMTYPE_HEAP) );
-  assert( sqlite3MemdebugNoType(pOld, (u8)~MEMTYPE_HEAP) );
-  if( pOld==0 ){
-    return sqlite3Malloc(nBytes); /* IMP: R-04300-56712 */
+ಶೂನ್ಯ *sqlite3Realloc(ಶೂನ್ಯ *pOld, u64 n_ಬೈಟುಗಳು){
+  ಪೂರ್ಣಾಂಕ nOld, nNew, nDiff;
+  ಶೂನ್ಯ *pNew;
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(pOld, MEMTYPE_ರಾಶಿ) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(pOld, (u8)~MEMTYPE_ರಾಶಿ) );
+  ಆದರೆ( pOld==0 ){
+    ಹಿಂತಿರುಗಿ sqlite3Malloc(n_ಬೈಟುಗಳು); /* IMP: R-04300-56712 */
   }
-  if( nBytes==0 ){
+  ಆದರೆ( n_ಬೈಟುಗಳು==0 ){
     sqlite3_free(pOld); /* IMP: R-26507-47431 */
-    return 0;
+    ಹಿಂತಿರುಗಿ 0;
   }
-  if( nBytes>SQLITE_MAX_ALLOCATION_SIZE ){
-    return 0;
+  ಆದರೆ( n_ಬೈಟುಗಳು>SQLITE_MAX_ಹಂಚಿಕೆ_ಗಾತ್ರ ){
+    ಹಿಂತಿರುಗಿ 0;
   }
-  nOld = sqlite3MallocSize(pOld);
+  nOld = sqlite3_Malloc_ಗಾತ್ರ(pOld);
   /* IMPLEMENTATION-OF: R-46199-30249 SQLite guarantees that the second
   ** argument to xRealloc is always a value returned by a prior call to
   ** xRoundup. */
-  nNew = sqlite3GlobalConfig.m.xRoundup((int)nBytes);
-  if( nOld==nNew ){
+  nNew = sqlite3GlobalConfig.m.xRoundup((ಪೂರ್ಣಾಂಕ)n_ಬೈಟುಗಳು);
+  ಆದರೆ( nOld==nNew ){
     pNew = pOld;
-  }else if( sqlite3GlobalConfig.bMemstat ){
-    sqlite3_int64 nUsed;
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3GlobalConfig.bMemstat ){
+    sqlite3_int64 n_ಬಳಸಿದ;
     sqlite3_mutex_enter(mem0.mutex);
-    sqlite3StatusHighwater(SQLITE_STATUS_MALLOC_SIZE, (int)nBytes);
+    sqlite3_ಸ್ಥಿತಿ_Highwater(SQLITE_ಸ್ಥಿತಿ_MALLOC_ಗಾತ್ರ, (ಪೂರ್ಣಾಂಕ)n_ಬೈಟುಗಳು);
     nDiff = nNew - nOld;
-    if( nDiff>0 && (nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED)) >= 
-          mem0.alarmThreshold-nDiff ){
+    ಆದರೆ( nDiff>0 && (n_ಬಳಸಿದ = sqlite3_ಸ್ಥಿತಿ_ಮೌಲ್ಯ(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ)) >= 
+          mem0.alarm_ಮಿತಿ-nDiff ){
       sqlite3MallocAlarm(nDiff);
-      if( mem0.hardLimit>0 && nUsed >= mem0.hardLimit - nDiff ){
+      ಆದರೆ( mem0.hard_ಎಲ್ಲೆ>0 && n_ಬಳಸಿದ >= mem0.hard_ಎಲ್ಲೆ - nDiff ){
         sqlite3_mutex_leave(mem0.mutex);
         test_oom_breakpoint(1);
-        return 0;
+        ಹಿಂತಿರುಗಿ 0;
       }
     }
     pNew = sqlite3GlobalConfig.m.xRealloc(pOld, nNew);
-#ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
-    if( pNew==0 && mem0.alarmThreshold>0 ){
-      sqlite3MallocAlarm((int)nBytes);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_ಸ್ಮರಣೆ_MANAGEMENT
+    ಆದರೆ( pNew==0 && mem0.alarm_ಮಿತಿ>0 ){
+      sqlite3MallocAlarm((ಪೂರ್ಣಾಂಕ)n_ಬೈಟುಗಳು);
       pNew = sqlite3GlobalConfig.m.xRealloc(pOld, nNew);
     }
-#endif
-    if( pNew ){
-      nNew = sqlite3MallocSize(pNew);
-      sqlite3StatusUp(SQLITE_STATUS_MEMORY_USED, nNew-nOld);
+#ಆದರೆ_ಅಂತ್ಯ
+    ಆದರೆ( pNew ){
+      nNew = sqlite3_Malloc_ಗಾತ್ರ(pNew);
+      sqlite3_ಸ್ಥಿತಿ_ಮೇಲೆ(SQLITE_ಸ್ಥಿತಿ_ಸ್ಮರಣೆ_ಬಳಸಿದ, nNew-nOld);
     }
     sqlite3_mutex_leave(mem0.mutex);
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     pNew = sqlite3GlobalConfig.m.xRealloc(pOld, nNew);
   }
-  assert( EIGHT_BYTE_ALIGNMENT(pNew) ); /* IMP: R-11148-40995 */
-  return pNew;
+  ಪ್ರತಿಜ್ಞಾ( EIGHT_BYTE_ALIGNMENT(pNew) ); /* IMP: R-11148-40995 */
+  ಹಿಂತಿರುಗಿ pNew;
 }
 
 /*
 ** The public interface to sqlite3Realloc.  Make sure that the memory
 ** subsystem is initialized prior to invoking sqliteRealloc.
 */
-void *sqlite3_realloc(void *pOld, int n){
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  if( n<0 ) n = 0;  /* IMP: R-26507-47431 */
-  return sqlite3Realloc(pOld, n);
+ಶೂನ್ಯ *sqlite3_realloc(ಶೂನ್ಯ *pOld, ಪೂರ್ಣಾಂಕ n){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINIT
+  ಆದರೆ( sqlite3_initialize() ) ಹಿಂತಿರುಗಿ 0;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆದರೆ( n<0 ) n = 0;  /* IMP: R-26507-47431 */
+  ಹಿಂತಿರುಗಿ sqlite3Realloc(pOld, n);
 }
-void *sqlite3_realloc64(void *pOld, sqlite3_uint64 n){
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
-  return sqlite3Realloc(pOld, n);
+ಶೂನ್ಯ *sqlite3_realloc64(ಶೂನ್ಯ *pOld, sqlite3_uint64 n){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOINIT
+  ಆದರೆ( sqlite3_initialize() ) ಹಿಂತಿರುಗಿ 0;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ sqlite3Realloc(pOld, n);
 }
 
 
 /*
 ** Allocate and zero memory.
 */ 
-void *sqlite3MallocZero(u64 n){
-  void *p = sqlite3Malloc(n);
-  if( p ){
+ಶೂನ್ಯ *sqlite3MallocZero(u64 n){
+  ಶೂನ್ಯ *p = sqlite3Malloc(n);
+  ಆದರೆ( p ){
     memset(p, 0, (size_t)n);
   }
-  return p;
+  ಹಿಂತಿರುಗಿ p;
 }
 
 /*
 ** Allocate and zero memory.  If the allocation fails, make
 ** the mallocFailed flag in the connection pointer.
 */
-void *sqlite3DbMallocZero(sqlite3 *db, u64 n){
-  void *p;
+ಶೂನ್ಯ *sqlite3DbMallocZero(sqlite3 *db, u64 n){
+  ಶೂನ್ಯ *p;
   testcase( db==0 );
   p = sqlite3DbMallocRaw(db, n);
-  if( p ) memset(p, 0, (size_t)n);
-  return p;
+  ಆದರೆ( p ) memset(p, 0, (size_t)n);
+  ಹಿಂತಿರುಗಿ p;
 }
 
 
 /* Finish the work of sqlite3DbMallocRawNN for the unusual and
 ** slower case when the allocation cannot be fulfilled using lookaside.
 */
-static SQLITE_NOINLINE void *dbMallocRawFinish(sqlite3 *db, u64 n){
-  void *p;
-  assert( db!=0 );
+ಸ್ಥಿರ SQLITE_NOINLINE ಶೂನ್ಯ *db_Malloc_Raw_ಮುಕ್ತಾಯ(sqlite3 *db, u64 n){
+  ಶೂನ್ಯ *p;
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
   p = sqlite3Malloc(n);
-  if( !p ) sqlite3OomFault(db);
-  sqlite3MemdebugSetType(p, 
-         (db->lookaside.bDisable==0) ? MEMTYPE_LOOKASIDE : MEMTYPE_HEAP);
-  return p;
+  ಆದರೆ( !p ) sqlite3OomFault(db);
+  sqlite3_Memdebug_ಗಣ_Type(p, 
+         (db->lookaside.bDisable==0) ? MEMTYPE_LOOKASIDE : MEMTYPE_ರಾಶಿ);
+  ಹಿಂತಿರುಗಿ p;
 }
 
 /*
@@ -633,122 +633,122 @@ static SQLITE_NOINLINE void *dbMallocRawFinish(sqlite3 *db, u64 n){
 ** The sqlite3MallocRawNN() variant guarantees that the "db" parameter is
 ** not a NULL pointer.
 */
-void *sqlite3DbMallocRaw(sqlite3 *db, u64 n){
-  void *p;
-  if( db ) return sqlite3DbMallocRawNN(db, n);
+ಶೂನ್ಯ *sqlite3DbMallocRaw(sqlite3 *db, u64 n){
+  ಶೂನ್ಯ *p;
+  ಆದರೆ( db ) ಹಿಂತಿರುಗಿ sqlite3DbMallocRawNN(db, n);
   p = sqlite3Malloc(n);
-  sqlite3MemdebugSetType(p, MEMTYPE_HEAP);
-  return p;
+  sqlite3_Memdebug_ಗಣ_Type(p, MEMTYPE_ರಾಶಿ);
+  ಹಿಂತಿರುಗಿ p;
 }
-void *sqlite3DbMallocRawNN(sqlite3 *db, u64 n){
-#ifndef SQLITE_OMIT_LOOKASIDE
-  LookasideSlot *pBuf;
-  assert( db!=0 );
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( db->pnBytesFreed==0 );
-  if( n>db->lookaside.sz ){
-    if( !db->lookaside.bDisable ){
+ಶೂನ್ಯ *sqlite3DbMallocRawNN(sqlite3 *db, u64 n){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_LOOKASIDE
+  Lookaside_ಸ್ಥಾನ *pBuf;
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( db->pn_ಬೈಟುಗಳು_Freed==0 );
+  ಆದರೆ( n>db->lookaside.sz ){
+    ಆದರೆ( !db->lookaside.bDisable ){
       db->lookaside.anStat[1]++;      
-    }else if( db->mallocFailed ){
-      return 0;
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( db->mallocFailed ){
+      ಹಿಂತಿರುಗಿ 0;
     }
-    return dbMallocRawFinish(db, n);
+    ಹಿಂತಿರುಗಿ db_Malloc_Raw_ಮುಕ್ತಾಯ(db, n);
   }
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-  if( n<=LOOKASIDE_SMALL ){
-    if( (pBuf = db->lookaside.pSmallFree)!=0 ){
-      db->lookaside.pSmallFree = pBuf->pNext;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE
+  ಆದರೆ( n<=LOOKASIDE_SMALL ){
+    ಆದರೆ( (pBuf = db->lookaside.pSmallFree)!=0 ){
+      db->lookaside.pSmallFree = pBuf->p_ಮುಂದಿನ;
       db->lookaside.anStat[0]++;
-      return (void*)pBuf;
-    }else if( (pBuf = db->lookaside.pSmallInit)!=0 ){
-      db->lookaside.pSmallInit = pBuf->pNext;
+      ಹಿಂತಿರುಗಿ (ಶೂನ್ಯ*)pBuf;
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( (pBuf = db->lookaside.pSmallInit)!=0 ){
+      db->lookaside.pSmallInit = pBuf->p_ಮುಂದಿನ;
       db->lookaside.anStat[0]++;
-      return (void*)pBuf;
+      ಹಿಂತಿರುಗಿ (ಶೂನ್ಯ*)pBuf;
     }
   }
-#endif
-  if( (pBuf = db->lookaside.pFree)!=0 ){
-    db->lookaside.pFree = pBuf->pNext;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆದರೆ( (pBuf = db->lookaside.pFree)!=0 ){
+    db->lookaside.pFree = pBuf->p_ಮುಂದಿನ;
     db->lookaside.anStat[0]++;
-    return (void*)pBuf;
-  }else if( (pBuf = db->lookaside.pInit)!=0 ){
-    db->lookaside.pInit = pBuf->pNext;
+    ಹಿಂತಿರುಗಿ (ಶೂನ್ಯ*)pBuf;
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( (pBuf = db->lookaside.pInit)!=0 ){
+    db->lookaside.pInit = pBuf->p_ಮುಂದಿನ;
     db->lookaside.anStat[0]++;
-    return (void*)pBuf;
-  }else{
+    ಹಿಂತಿರುಗಿ (ಶೂನ್ಯ*)pBuf;
+  }ಇಲ್ಲದಿದ್ದರೆ{
     db->lookaside.anStat[2]++;
   }
-#else
-  assert( db!=0 );
-  assert( sqlite3_mutex_held(db->mutex) );
-  assert( db->pnBytesFreed==0 );
-  if( db->mallocFailed ){
-    return 0;
+#ಇಲ್ಲದಿದ್ದರೆ
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಪ್ರತಿಜ್ಞಾ( db->pn_ಬೈಟುಗಳು_Freed==0 );
+  ಆದರೆ( db->mallocFailed ){
+    ಹಿಂತಿರುಗಿ 0;
   }
-#endif
-  return dbMallocRawFinish(db, n);
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ db_Malloc_Raw_ಮುಕ್ತಾಯ(db, n);
 }
 
 /* Forward declaration */
-static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n);
+ಸ್ಥಿರ SQLITE_NOINLINE ಶೂನ್ಯ *db_Realloc_ಮುಕ್ತಾಯ(sqlite3 *db, ಶೂನ್ಯ *p, u64 n);
 
 /*
 ** Resize the block of memory pointed to by p to n bytes. If the
 ** resize fails, set the mallocFailed flag in the connection object.
 */
-void *sqlite3DbRealloc(sqlite3 *db, void *p, u64 n){
-  assert( db!=0 );
-  if( p==0 ) return sqlite3DbMallocRawNN(db, n);
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( ((uptr)p)<(uptr)db->lookaside.pEnd ){
-#ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-    if( ((uptr)p)>=(uptr)db->lookaside.pMiddle ){
-      if( n<=LOOKASIDE_SMALL ) return p;
-    }else
-#endif
-    if( ((uptr)p)>=(uptr)db->lookaside.pStart ){
-      if( n<=db->lookaside.szTrue ) return p;
+ಶೂನ್ಯ *sqlite3DbRealloc(sqlite3 *db, ಶೂನ್ಯ *p, u64 n){
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಆದರೆ( p==0 ) ಹಿಂತಿರುಗಿ sqlite3DbMallocRawNN(db, n);
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಆದರೆ( ((uptr)p)<(uptr)db->lookaside.p_ಕೊನೆ ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TWOSIZE_LOOKASIDE
+    ಆದರೆ( ((uptr)p)>=(uptr)db->lookaside.p_ಮಧ್ಯ ){
+      ಆದರೆ( n<=LOOKASIDE_SMALL ) ಹಿಂತಿರುಗಿ p;
+    }ಇಲ್ಲದಿದ್ದರೆ
+#ಆದರೆ_ಅಂತ್ಯ
+    ಆದರೆ( ((uptr)p)>=(uptr)db->lookaside.p_ಆರಂಭ ){
+      ಆದರೆ( n<=db->lookaside.szTrue ) ಹಿಂತಿರುಗಿ p;
     }
   }
-  return dbReallocFinish(db, p, n);
+  ಹಿಂತಿರುಗಿ db_Realloc_ಮುಕ್ತಾಯ(db, p, n);
 }
-static SQLITE_NOINLINE void *dbReallocFinish(sqlite3 *db, void *p, u64 n){
-  void *pNew = 0;
-  assert( db!=0 );
-  assert( p!=0 );
-  if( db->mallocFailed==0 ){
-    if( isLookaside(db, p) ){
+ಸ್ಥಿರ SQLITE_NOINLINE ಶೂನ್ಯ *db_Realloc_ಮುಕ್ತಾಯ(sqlite3 *db, ಶೂನ್ಯ *p, u64 n){
+  ಶೂನ್ಯ *pNew = 0;
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಪ್ರತಿಜ್ಞಾ( p!=0 );
+  ಆದರೆ( db->mallocFailed==0 ){
+    ಆದರೆ( isLookaside(db, p) ){
       pNew = sqlite3DbMallocRawNN(db, n);
-      if( pNew ){
-        memcpy(pNew, p, lookasideMallocSize(db, p));
+      ಆದರೆ( pNew ){
+        ಸ್ಮರಣೆ_ನಕಲು(pNew, p, lookaside_Malloc_ಗಾತ್ರ(db, p));
         sqlite3DbFree(db, p);
       }
-    }else{
-      assert( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
-      assert( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_HEAP)) );
-      sqlite3MemdebugSetType(p, MEMTYPE_HEAP);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugHasType(p, (MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
+      ಪ್ರತಿಜ್ಞಾ( sqlite3MemdebugNoType(p, (u8)~(MEMTYPE_LOOKASIDE|MEMTYPE_ರಾಶಿ)) );
+      sqlite3_Memdebug_ಗಣ_Type(p, MEMTYPE_ರಾಶಿ);
       pNew = sqlite3Realloc(p, n);
-      if( !pNew ){
+      ಆದರೆ( !pNew ){
         sqlite3OomFault(db);
       }
-      sqlite3MemdebugSetType(pNew,
-            (db->lookaside.bDisable==0 ? MEMTYPE_LOOKASIDE : MEMTYPE_HEAP));
+      sqlite3_Memdebug_ಗಣ_Type(pNew,
+            (db->lookaside.bDisable==0 ? MEMTYPE_LOOKASIDE : MEMTYPE_ರಾಶಿ));
     }
   }
-  return pNew;
+  ಹಿಂತಿರುಗಿ pNew;
 }
 
 /*
 ** Attempt to reallocate p.  If the reallocation fails, then free p
 ** and set the mallocFailed flag in the database connection.
 */
-void *sqlite3DbReallocOrFree(sqlite3 *db, void *p, u64 n){
-  void *pNew;
+ಶೂನ್ಯ *sqlite3DbReallocOrFree(sqlite3 *db, ಶೂನ್ಯ *p, u64 n){
+  ಶೂನ್ಯ *pNew;
   pNew = sqlite3DbRealloc(db, p, n);
-  if( !pNew ){
+  ಆದರೆ( !pNew ){
     sqlite3DbFree(db, p);
   }
-  return pNew;
+  ಹಿಂತಿರುಗಿ pNew;
 }
 
 /*
@@ -758,30 +758,30 @@ void *sqlite3DbReallocOrFree(sqlite3 *db, void *p, u64 n){
 ** called via macros that record the current file and line number in the
 ** ThreadData structure.
 */
-char *sqlite3DbStrDup(sqlite3 *db, const char *z){
-  char *zNew;
+ಅಕ್ಷರ *sqlite3DbStrDup(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z){
+  ಅಕ್ಷರ *zNew;
   size_t n;
-  if( z==0 ){
-    return 0;
+  ಆದರೆ( z==0 ){
+    ಹಿಂತಿರುಗಿ 0;
   }
-  n = strlen(z) + 1;
+  n = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(z) + 1;
   zNew = sqlite3DbMallocRaw(db, n);
-  if( zNew ){
-    memcpy(zNew, z, n);
+  ಆದರೆ( zNew ){
+    ಸ್ಮರಣೆ_ನಕಲು(zNew, z, n);
   }
-  return zNew;
+  ಹಿಂತಿರುಗಿ zNew;
 }
-char *sqlite3DbStrNDup(sqlite3 *db, const char *z, u64 n){
-  char *zNew;
-  assert( db!=0 );
-  assert( z!=0 || n==0 );
-  assert( (n&0x7fffffff)==n );
+ಅಕ್ಷರ *sqlite3DbStrNDup(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z, u64 n){
+  ಅಕ್ಷರ *zNew;
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಪ್ರತಿಜ್ಞಾ( z!=0 || n==0 );
+  ಪ್ರತಿಜ್ಞಾ( (n&0x7fffffff)==n );
   zNew = z ? sqlite3DbMallocRawNN(db, n+1) : 0;
-  if( zNew ){
-    memcpy(zNew, z, (size_t)n);
+  ಆದರೆ( zNew ){
+    ಸ್ಮರಣೆ_ನಕಲು(zNew, z, (size_t)n);
     zNew[n] = 0;
   }
-  return zNew;
+  ಹಿಂತಿರುಗಿ zNew;
 }
 
 /*
@@ -789,24 +789,24 @@ char *sqlite3DbStrNDup(sqlite3 *db, const char *z, u64 n){
 ** SQL statement.  Make a copy of this phrase in space obtained form
 ** sqlite3DbMalloc().  Omit leading and trailing whitespace.
 */
-char *sqlite3DbSpanDup(sqlite3 *db, const char *zStart, const char *zEnd){
-  int n;
-#ifdef SQLITE_DEBUG
+ಅಕ್ಷರ *sqlite3_Db_ಹರವು_Dup(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಆರಂಭ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಕೊನೆ){
+  ಪೂರ್ಣಾಂಕ n;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
   /* Because of the way the parser works, the span is guaranteed to contain
   ** at least one non-space character */
-  for(n=0; sqlite3Isspace(zStart[n]); n++){ assert( &zStart[n]<zEnd ); }
-#endif
-  while( sqlite3Isspace(zStart[0]) ) zStart++;
-  n = (int)(zEnd - zStart);
-  while( sqlite3Isspace(zStart[n-1]) ) n--;
-  return sqlite3DbStrNDup(db, zStart, n);
+  ಗಾಗಿ(n=0; sqlite3Isspace(z_ಆರಂಭ[n]); n++){ ಪ್ರತಿಜ್ಞಾ( &z_ಆರಂಭ[n]<z_ಕೊನೆ ); }
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆಗ( sqlite3Isspace(z_ಆರಂಭ[0]) ) z_ಆರಂಭ++;
+  n = (ಪೂರ್ಣಾಂಕ)(z_ಕೊನೆ - z_ಆರಂಭ);
+  ಆಗ( sqlite3Isspace(z_ಆರಂಭ[n-1]) ) n--;
+  ಹಿಂತಿರುಗಿ sqlite3DbStrNDup(db, z_ಆರಂಭ, n);
 }
 
 /*
 ** Free any prior content in *pz and replace it with a copy of zNew.
 */
-void sqlite3SetString(char **pz, sqlite3 *db, const char *zNew){
-  char *z = sqlite3DbStrDup(db, zNew);
+ಶೂನ್ಯ sqlite3_ಗಣ_String(ಅಕ್ಷರ **pz, sqlite3 *db, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zNew){
+  ಅಕ್ಷರ *z = sqlite3DbStrDup(db, zNew);
   sqlite3DbFree(db, *pz);
   *pz = z;
 }
@@ -824,24 +824,24 @@ void sqlite3SetString(char **pz, sqlite3 *db, const char *zNew){
 ** and thereby avoid unnecessary stack frame allocations for the overwhelmingly
 ** common case where no OOM occurs.
 */
-void *sqlite3OomFault(sqlite3 *db){
-  if( db->mallocFailed==0 && db->bBenignMalloc==0 ){
+ಶೂನ್ಯ *sqlite3OomFault(sqlite3 *db){
+  ಆದರೆ( db->mallocFailed==0 && db->bBenignMalloc==0 ){
     db->mallocFailed = 1;
-    if( db->nVdbeExec>0 ){
+    ಆದರೆ( db->nVdbeExec>0 ){
       AtomicStore(&db->u1.isInterrupted, 1);
     }
     DisableLookaside;
-    if( db->pParse ){
+    ಆದರೆ( db->pParse ){
       Parse *pParse;
-      sqlite3ErrorMsg(db->pParse, "out of memory");
+      sqlite3_Error_ಸಂದೇಶ(db->pParse, "out of memory");
       db->pParse->rc = SQLITE_NOMEM_BKPT;
-      for(pParse=db->pParse->pOuterParse; pParse; pParse = pParse->pOuterParse){
+      ಗಾಗಿ(pParse=db->pParse->pOuterParse; pParse; pParse = pParse->pOuterParse){
         pParse->nErr++;
         pParse->rc = SQLITE_NOMEM;
       } 
     }
   }
-  return 0;
+  ಹಿಂತಿರುಗಿ 0;
 }
 
 /*
@@ -851,11 +851,11 @@ void *sqlite3OomFault(sqlite3 *db){
 ** The memory allocator is not restarted if there are running
 ** VDBEs.
 */
-void sqlite3OomClear(sqlite3 *db){
-  if( db->mallocFailed && db->nVdbeExec==0 ){
+ಶೂನ್ಯ sqlite3OomClear(sqlite3 *db){
+  ಆದರೆ( db->mallocFailed && db->nVdbeExec==0 ){
     db->mallocFailed = 0;
     AtomicStore(&db->u1.isInterrupted, 0);
-    assert( db->lookaside.bDisable>0 );
+    ಪ್ರತಿಜ್ಞಾ( db->lookaside.bDisable>0 );
     EnableLookaside;
   }
 }
@@ -863,13 +863,13 @@ void sqlite3OomClear(sqlite3 *db){
 /*
 ** Take actions at the end of an API call to deal with error codes.
 */
-static SQLITE_NOINLINE int apiHandleError(sqlite3 *db, int rc){
-  if( db->mallocFailed || rc==SQLITE_IOERR_NOMEM ){
+ಸ್ಥಿರ SQLITE_NOINLINE ಪೂರ್ಣಾಂಕ apiHandleError(sqlite3 *db, ಪೂರ್ಣಾಂಕ rc){
+  ಆದರೆ( db->mallocFailed || rc==SQLITE_IOERR_NOMEM ){
     sqlite3OomClear(db);
     sqlite3Error(db, SQLITE_NOMEM);
-    return SQLITE_NOMEM_BKPT;
+    ಹಿಂತಿರುಗಿ SQLITE_NOMEM_BKPT;
   }
-  return rc & db->errMask;
+  ಹಿಂತಿರುಗಿ rc & db->err_ಮುಖವಾಡ;
 }
 
 /*
@@ -884,15 +884,15 @@ static SQLITE_NOINLINE int apiHandleError(sqlite3 *db, int rc){
 ** If an OOM as occurred, then the connection error-code (the value
 ** returned by sqlite3_errcode()) is set to SQLITE_NOMEM.
 */
-int sqlite3ApiExit(sqlite3* db, int rc){
+ಪೂರ್ಣಾಂಕ sqlite3ApiExit(sqlite3* db, ಪೂರ್ಣಾಂಕ rc){
   /* If the db handle must hold the connection handle mutex here.
   ** Otherwise the read (and possible write) of db->mallocFailed 
   ** is unsafe, as is the call to sqlite3Error().
   */
-  assert( db!=0 );
-  assert( sqlite3_mutex_held(db->mutex) );
-  if( db->mallocFailed || rc ){
-    return apiHandleError(db, rc);
+  ಪ್ರತಿಜ್ಞಾ( db!=0 );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(db->mutex) );
+  ಆದರೆ( db->mallocFailed || rc ){
+    ಹಿಂತಿರುಗಿ apiHandleError(db, rc);
   }
-  return 0;
+  ಹಿಂತಿರುಗಿ 0;
 }

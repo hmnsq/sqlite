@@ -13,26 +13,26 @@
 ** subsystem. 
 */
 
-#ifndef _PCACHE_H_
-#define _PCACHE_H_
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ _PCACHE_H_
+#ವ್ಯಾಖ್ಯಾನಿಸು _PCACHE_H_
 
-typedef struct PgHdr PgHdr;
-typedef struct PCache PCache;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ PgHdr PgHdr;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ PCache PCache;
 
 /*
 ** Every page in the cache is controlled by an instance of the following
 ** structure.
 */
-struct PgHdr {
-  sqlite3_pcache_page *pPage;    /* Pcache object page handle */
-  void *pData;                   /* Page data */
-  void *pExtra;                  /* Extra content */
+ರಚನೆ PgHdr {
+  sqlite3_pcache_ಪುಟ *p_ಪುಟ;    /* Pcache object page handle */
+  ಶೂನ್ಯ *p_ದತ್ತಾಂಶ;                   /* Page data */
+  ಶೂನ್ಯ *pExtra;                  /* Extra content */
   PCache *pCache;                /* PRIVATE: Cache that owns this page */
   PgHdr *pDirty;                 /* Transient list of dirty sorted by pgno */
   Pager *pPager;                 /* The pager this page is part of */
-#ifdef SQLITE_CHECK_PAGES
-  u64 pageHash;                  /* Hash of page content */
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_CHECK_ಪುಟಗಳು
+  u64 ಪುಟ_Hash;                  /* Hash of page content */
+#ಆದರೆ_ಅಂತ್ಯ
   Pgno pgno;                     /* Page number for this page */
   u16 flags;                     /* PGHDR flags defined below */
 
@@ -42,108 +42,108 @@ struct PgHdr {
   ** pCache is grouped with the public elements for efficiency.
   */
   i64 nRef;                      /* Number of users of this page */
-  PgHdr *pDirtyNext;             /* Next element in list of dirty pages */
+  PgHdr *p_Dirty_ಮುಂದಿನ;             /* Next element in list of dirty pages */
   PgHdr *pDirtyPrev;             /* Previous element in list of dirty pages */
                           /* NB: pDirtyNext and pDirtyPrev are undefined if the
                           ** PgHdr object is not dirty */
 };
 
 /* Bit values for PgHdr.flags */
-#define PGHDR_CLEAN           0x001  /* Page not on the PCache.pDirty list */
-#define PGHDR_DIRTY           0x002  /* Page is on the PCache.pDirty list */
-#define PGHDR_WRITEABLE       0x004  /* Journaled and ready to modify */
-#define PGHDR_NEED_SYNC       0x008  /* Fsync the rollback journal before
+#ವ್ಯಾಖ್ಯಾನಿಸು PGHDR_CLEAN           0x001  /* Page not on the PCache.pDirty list */
+#ವ್ಯಾಖ್ಯಾನಿಸು PGHDR_DIRTY           0x002  /* Page is on the PCache.pDirty list */
+#ವ್ಯಾಖ್ಯಾನಿಸು PGHDR_WRITEABLE       0x004  /* Journaled and ready to modify */
+#ವ್ಯಾಖ್ಯಾನಿಸು PGHDR_NEED_SYNC       0x008  /* Fsync the rollback journal before
                                      ** writing this page to the database */
-#define PGHDR_DONT_WRITE      0x010  /* Do not write content to disk */
-#define PGHDR_MMAP            0x020  /* This is an mmap page object */
+#ವ್ಯಾಖ್ಯಾನಿಸು PGHDR_DONT_WRITE      0x010  /* Do not write content to disk */
+#ವ್ಯಾಖ್ಯಾನಿಸು PGHDR_MMAP            0x020  /* This is an mmap page object */
 
-#define PGHDR_WAL_APPEND      0x040  /* Appended to wal file */
+#ವ್ಯಾಖ್ಯಾನಿಸು PGHDR_WAL_APPEND      0x040  /* Appended to wal file */
 
 /* Initialize and shutdown the page cache subsystem */
-int sqlite3PcacheInitialize(void);
-void sqlite3PcacheShutdown(void);
+ಪೂರ್ಣಾಂಕ sqlite3PcacheInitialize(ಶೂನ್ಯ);
+ಶೂನ್ಯ sqlite3PcacheShutdown(ಶೂನ್ಯ);
 
 /* Page cache buffer management:
 ** These routines implement SQLITE_CONFIG_PAGECACHE.
 */
-void sqlite3PCacheBufferSetup(void *, int sz, int n);
+ಶೂನ್ಯ sqlite3_PCache_ಬಫರ್_ಸಿದ್ಧತೆ(ಶೂನ್ಯ *, ಪೂರ್ಣಾಂಕ sz, ಪೂರ್ಣಾಂಕ n);
 
 /* Create a new pager cache.
 ** Under memory stress, invoke xStress to try to make pages clean.
 ** Only clean and unpinned pages can be reclaimed.
 */
-int sqlite3PcacheOpen(
-  int szPage,                    /* Size of every page */
-  int szExtra,                   /* Extra space associated with each page */
-  int bPurgeable,                /* True if pages are on backing store */
-  int (*xStress)(void*, PgHdr*), /* Call to try to make pages clean */
-  void *pStress,                 /* Argument to xStress */
-  PCache *pToInit                /* Preallocated space for the PCache */
+ಪೂರ್ಣಾಂಕ sqlite3PcacheOpen(
+  ಪೂರ್ಣಾಂಕ sz_ಪುಟ,                    /* Size of every page */
+  ಪೂರ್ಣಾಂಕ szExtra,                   /* Extra space associated with each page */
+  ಪೂರ್ಣಾಂಕ bPurgeable,                /* True if pages are on backing store */
+  ಪೂರ್ಣಾಂಕ (*xStress)(ಶೂನ್ಯ*, PgHdr*), /* Call to try to make pages clean */
+  ಶೂನ್ಯ *pStress,                 /* Argument to xStress */
+  PCache *p_ಗಮ್ಯ_Init                /* Preallocated space for the PCache */
 );
 
 /* Modify the page-size after the cache has been created. */
-int sqlite3PcacheSetPageSize(PCache *, int);
+ಪೂರ್ಣಾಂಕ sqlite3_Pcache_ಗಣ_ಪುಟ_ಗಾತ್ರ(PCache *, ಪೂರ್ಣಾಂಕ);
 
 /* Return the size in bytes of a PCache object.  Used to preallocate
 ** storage space.
 */
-int sqlite3PcacheSize(void);
+ಪೂರ್ಣಾಂಕ sqlite3_Pcache_ಗಾತ್ರ(ಶೂನ್ಯ);
 
 /* One release per successful fetch.  Page is pinned until released.
 ** Reference counted. 
 */
-sqlite3_pcache_page *sqlite3PcacheFetch(PCache*, Pgno, int createFlag);
-int sqlite3PcacheFetchStress(PCache*, Pgno, sqlite3_pcache_page**);
-PgHdr *sqlite3PcacheFetchFinish(PCache*, Pgno, sqlite3_pcache_page *pPage);
-void sqlite3PcacheRelease(PgHdr*);
+sqlite3_pcache_ಪುಟ *sqlite3PcacheFetch(PCache*, Pgno, ಪೂರ್ಣಾಂಕ createFlag);
+ಪೂರ್ಣಾಂಕ sqlite3PcacheFetchStress(PCache*, Pgno, sqlite3_pcache_ಪುಟ**);
+PgHdr *sqlite3_Pcache_Fetch_ಮುಕ್ತಾಯ(PCache*, Pgno, sqlite3_pcache_ಪುಟ *p_ಪುಟ);
+ಶೂನ್ಯ sqlite3PcacheRelease(PgHdr*);
 
-void sqlite3PcacheDrop(PgHdr*);         /* Remove page from cache */
-void sqlite3PcacheMakeDirty(PgHdr*);    /* Make sure page is marked dirty */
-void sqlite3PcacheMakeClean(PgHdr*);    /* Mark a single page as clean */
-void sqlite3PcacheCleanAll(PCache*);    /* Mark all dirty list pages as clean */
-void sqlite3PcacheClearWritable(PCache*);
+ಶೂನ್ಯ sqlite3PcacheDrop(PgHdr*);         /* Remove page from cache */
+ಶೂನ್ಯ sqlite3PcacheMakeDirty(PgHdr*);    /* Make sure page is marked dirty */
+ಶೂನ್ಯ sqlite3PcacheMakeClean(PgHdr*);    /* Mark a single page as clean */
+ಶೂನ್ಯ sqlite3PcacheCleanAll(PCache*);    /* Mark all dirty list pages as clean */
+ಶೂನ್ಯ sqlite3PcacheClearWritable(PCache*);
 
 /* Change a page number.  Used by incr-vacuum. */
-void sqlite3PcacheMove(PgHdr*, Pgno);
+ಶೂನ್ಯ sqlite3PcacheMove(PgHdr*, Pgno);
 
 /* Remove all pages with pgno>x.  Reset the cache if x==0 */
-void sqlite3PcacheTruncate(PCache*, Pgno x);
+ಶೂನ್ಯ sqlite3PcacheTruncate(PCache*, Pgno x);
 
 /* Get a list of all dirty pages in the cache, sorted by page number */
 PgHdr *sqlite3PcacheDirtyList(PCache*);
 
 /* Reset and close the cache object */
-void sqlite3PcacheClose(PCache*);
+ಶೂನ್ಯ sqlite3PcacheClose(PCache*);
 
 /* Clear flags from pages of the page cache */
-void sqlite3PcacheClearSyncFlags(PCache *);
+ಶೂನ್ಯ sqlite3PcacheClearSyncFlags(PCache *);
 
 /* Discard the contents of the cache */
-void sqlite3PcacheClear(PCache*);
+ಶೂನ್ಯ sqlite3PcacheClear(PCache*);
 
 /* Return the total number of outstanding page references */
-i64 sqlite3PcacheRefCount(PCache*);
+i64 sqlite3_Pcache_Ref_ಎಣಿಕೆ(PCache*);
 
 /* Increment the reference count of an existing page */
-void sqlite3PcacheRef(PgHdr*);
+ಶೂನ್ಯ sqlite3PcacheRef(PgHdr*);
 
-i64 sqlite3PcachePageRefcount(PgHdr*);
+i64 sqlite3_Pcache_ಪುಟ_Refcount(PgHdr*);
 
 /* Return the total number of pages stored in the cache */
-int sqlite3PcachePagecount(PCache*);
+ಪೂರ್ಣಾಂಕ sqlite3PcachePagecount(PCache*);
 
-#if defined(SQLITE_CHECK_PAGES) || defined(SQLITE_DEBUG)
+#ಆದರೆ defined(SQLITE_CHECK_ಪುಟಗಳು) || defined(SQLITE_DEBUG)
 /* Iterate through all dirty pages currently stored in the cache. This
 ** interface is only available if SQLITE_CHECK_PAGES is defined when the 
 ** library is built.
 */
-void sqlite3PcacheIterateDirty(PCache *pCache, void (*xIter)(PgHdr *));
-#endif
+ಶೂನ್ಯ sqlite3PcacheIterateDirty(PCache *pCache, ಶೂನ್ಯ (*xIter)(PgHdr *));
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(SQLITE_DEBUG)
+#ಆದರೆ defined(SQLITE_DEBUG)
 /* Check invariants on a PgHdr object */
-int sqlite3PcachePageSanity(PgHdr*);
-#endif
+ಪೂರ್ಣಾಂಕ sqlite3_Pcache_ಪುಟ_Sanity(PgHdr*);
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Set and get the suggested cache-size for the specified pager-cache.
 **
@@ -151,41 +151,41 @@ int sqlite3PcachePageSanity(PgHdr*);
 ** the total number of pages cached by purgeable pager-caches to the sum
 ** of the suggested cache-sizes.
 */
-void sqlite3PcacheSetCachesize(PCache *, int);
-#ifdef SQLITE_TEST
-int sqlite3PcacheGetCachesize(PCache *);
-#endif
+ಶೂನ್ಯ sqlite3_Pcache_ಗಣ_Cachesize(PCache *, ಪೂರ್ಣಾಂಕ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
+ಪೂರ್ಣಾಂಕ sqlite3PcacheGetCachesize(PCache *);
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Set or get the suggested spill-size for the specified pager-cache.
 **
 ** The spill-size is the minimum number of pages in cache before the cache
 ** will attempt to spill dirty pages by calling xStress.
 */
-int sqlite3PcacheSetSpillsize(PCache *, int);
+ಪೂರ್ಣಾಂಕ sqlite3_Pcache_ಗಣ_Spillsize(PCache *, ಪೂರ್ಣಾಂಕ);
 
 /* Free up as much memory as possible from the page cache */
-void sqlite3PcacheShrink(PCache*);
+ಶೂನ್ಯ sqlite3PcacheShrink(PCache*);
 
-#ifdef SQLITE_ENABLE_MEMORY_MANAGEMENT
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_ಸ್ಮರಣೆ_MANAGEMENT
 /* Try to return memory used by the pcache module to the main memory heap */
-int sqlite3PcacheReleaseMemory(int);
-#endif
+ಪೂರ್ಣಾಂಕ sqlite3_Pcache_Release_ಸ್ಮರಣೆ(ಪೂರ್ಣಾಂಕ);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef SQLITE_TEST
-void sqlite3PcacheStats(int*,int*,int*,int*);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
+ಶೂನ್ಯ sqlite3PcacheStats(ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ*,ಪೂರ್ಣಾಂಕ*);
+#ಆದರೆ_ಅಂತ್ಯ
 
-void sqlite3PCacheSetDefault(void);
+ಶೂನ್ಯ sqlite3_PCache_ಗಣ_Default(ಶೂನ್ಯ);
 
 /* Return the header size */
-int sqlite3HeaderSizePcache(void);
-int sqlite3HeaderSizePcache1(void);
+ಪೂರ್ಣಾಂಕ sqlite3_ಶೀರ್ಷಿಕೆ_ಗಾತ್ರ_Pcache(ಶೂನ್ಯ);
+ಪೂರ್ಣಾಂಕ sqlite3_ಶೀರ್ಷಿಕೆ_ಗಾತ್ರ_Pcache1(ಶೂನ್ಯ);
 
 /* Number of dirty pages as a percentage of the configured cache size */
-int sqlite3PCachePercentDirty(PCache*);
+ಪೂರ್ಣಾಂಕ sqlite3PCachePercentDirty(PCache*);
 
-#ifdef SQLITE_DIRECT_OVERFLOW_READ
-int sqlite3PCacheIsDirty(PCache *pCache);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ನೇರ_ಅತಿಪ್ರವಾಹ_READ
+ಪೂರ್ಣಾಂಕ sqlite3PCacheIsDirty(PCache *pCache);
+#ಆದರೆ_ಅಂತ್ಯ
 
-#endif /* _PCACHE_H_ */
+#ಆದರೆ_ಅಂತ್ಯ /* _PCACHE_H_ */

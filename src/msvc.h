@@ -12,34 +12,34 @@
 **
 ** This file contains code that is specific to MSVC.
 */
-#ifndef SQLITE_MSVC_H
-#define SQLITE_MSVC_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_MSVC_H
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_MSVC_H
 
-#if defined(_MSC_VER)
-#pragma warning(disable : 4054)
-#pragma warning(disable : 4055)
-#pragma warning(disable : 4100)
-#pragma warning(disable : 4127)
-#pragma warning(disable : 4130)
-#pragma warning(disable : 4152)
-#pragma warning(disable : 4189)
-#pragma warning(disable : 4206)
-#pragma warning(disable : 4210)
-#pragma warning(disable : 4232)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4305)
-#pragma warning(disable : 4306)
-#pragma warning(disable : 4702)
-#pragma warning(disable : 4706)
-#endif /* defined(_MSC_VER) */
+#ಆದರೆ defined(_MSC_VER)
+#ಸೂಚನೆ warning(disable : 4054)
+#ಸೂಚನೆ warning(disable : 4055)
+#ಸೂಚನೆ warning(disable : 4100)
+#ಸೂಚನೆ warning(disable : 4127)
+#ಸೂಚನೆ warning(disable : 4130)
+#ಸೂಚನೆ warning(disable : 4152)
+#ಸೂಚನೆ warning(disable : 4189)
+#ಸೂಚನೆ warning(disable : 4206)
+#ಸೂಚನೆ warning(disable : 4210)
+#ಸೂಚನೆ warning(disable : 4232)
+#ಸೂಚನೆ warning(disable : 4244)
+#ಸೂಚನೆ warning(disable : 4305)
+#ಸೂಚನೆ warning(disable : 4306)
+#ಸೂಚನೆ warning(disable : 4702)
+#ಸೂಚನೆ warning(disable : 4706)
+#ಆದರೆ_ಅಂತ್ಯ /* defined(_MSC_VER) */
 
-#if defined(_MSC_VER) && !defined(_WIN64)
-#undef SQLITE_4_BYTE_ALIGNED_MALLOC
-#define SQLITE_4_BYTE_ALIGNED_MALLOC
-#endif /* defined(_MSC_VER) && !defined(_WIN64) */
+#ಆದರೆ defined(_MSC_VER) && !defined(_WIN64)
+#ವ್ಯಾಖ್ಯಾನ_ರದ್ದು SQLITE_4_BYTE_ALIGNED_MALLOC
+#ವ್ಯಾಖ್ಯಾನಿಸು SQLITE_4_BYTE_ALIGNED_MALLOC
+#ಆದರೆ_ಅಂತ್ಯ /* defined(_MSC_VER) && !defined(_WIN64) */
 
-#if !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
-#define HAVE_LOG2 0
-#endif /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
+#ಆದರೆ !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800
+#ವ್ಯಾಖ್ಯಾನಿಸು HAVE_LOG2 0
+#ಆದರೆ_ಅಂತ್ಯ /* !defined(HAVE_LOG2) && defined(_MSC_VER) && _MSC_VER<1800 */
 
-#endif /* SQLITE_MSVC_H */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_MSVC_H */

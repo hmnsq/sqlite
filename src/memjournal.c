@@ -23,12 +23,12 @@
 ** in the common case, they are usually small and no file I/O needs to
 ** occur.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
 /* Forward references to internal structures */
-typedef struct MemJournal MemJournal;
-typedef struct FilePoint FilePoint;
-typedef struct FileChunk FileChunk;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ MemJournal MemJournal;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ File_ಬಿಂದು File_ಬಿಂದು;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ FileChunk FileChunk;
 
 /*
 ** The rollback journal is composed of a linked list of these structures.
@@ -36,28 +36,28 @@ typedef struct FileChunk FileChunk;
 ** The zChunk array is always at least 8 bytes in size - usually much more.
 ** Its actual size is stored in the MemJournal.nChunkSize variable.
 */
-struct FileChunk {
-  FileChunk *pNext;               /* Next chunk in the journal */
+ರಚನೆ FileChunk {
+  FileChunk *p_ಮುಂದಿನ;               /* Next chunk in the journal */
   u8 zChunk[8];                   /* Content of this chunk */
 };
 
 /*
 ** By default, allocate this many bytes of memory for each FileChunk object.
 */
-#define MEMJOURNAL_DFLT_FILECHUNKSIZE 1024
+#ವ್ಯಾಖ್ಯಾನಿಸು MEMJOURNAL_DFLT_FILECHUNKSIZE 1024
 
 /*
 ** For chunk size nChunkSize, return the number of bytes that should
 ** be allocated for each FileChunk structure.
 */
-#define fileChunkSize(nChunkSize) (sizeof(FileChunk) + ((nChunkSize)-8))
+#ವ್ಯಾಖ್ಯಾನಿಸು file_Chunk_ಗಾತ್ರ(n_Chunk_ಗಾತ್ರ) (ಗಾತ್ರ(FileChunk) + ((n_Chunk_ಗಾತ್ರ)-8))
 
 /*
 ** An instance of this object serves as a cursor into the rollback journal.
 ** The cursor can be either for reading or writing.
 */
-struct FilePoint {
-  sqlite3_int64 iOffset;          /* Offset from the beginning of the file */
+ರಚನೆ File_ಬಿಂದು {
+  sqlite3_int64 i_ಸ್ಥಾನಾಂತರ;          /* Offset from the beginning of the file */
   FileChunk *pChunk;              /* Specific chunk into which cursor points */
 };
 
@@ -65,76 +65,76 @@ struct FilePoint {
 ** This structure is a subclass of sqlite3_file. Each open memory-journal
 ** is an instance of this class.
 */
-struct MemJournal {
-  const sqlite3_io_methods *pMethod; /* Parent class. MUST BE FIRST */
-  int nChunkSize;                 /* In-memory chunk-size */
+ರಚನೆ MemJournal {
+  ಸ್ಥಿರಾಂಕ sqlite3_io_methods *p_ವಿಧಾನ; /* Parent class. MUST BE FIRST */
+  ಪೂರ್ಣಾಂಕ n_Chunk_ಗಾತ್ರ;                 /* In-memory chunk-size */
 
-  int nSpill;                     /* Bytes of data before flushing */
-  FileChunk *pFirst;              /* Head of in-memory chunk-list */
-  FilePoint endpoint;             /* Pointer to the end of the file */
-  FilePoint readpoint;            /* Pointer to the end of the last xRead() */
+  ಪೂರ್ಣಾಂಕ nSpill;                     /* Bytes of data before flushing */
+  FileChunk *p_ಮೊದಲ;              /* Head of in-memory chunk-list */
+  File_ಬಿಂದು endpoint;             /* Pointer to the end of the file */
+  File_ಬಿಂದು readpoint;            /* Pointer to the end of the last xRead() */
 
-  int flags;                      /* xOpen flags */
+  ಪೂರ್ಣಾಂಕ flags;                      /* xOpen flags */
   sqlite3_vfs *pVfs;              /* The "real" underlying VFS */
-  const char *zJournal;           /* Name of the journal file */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zJournal;           /* Name of the journal file */
 };
 
 /*
 ** Read data from the in-memory journal file.  This is the implementation
 ** of the sqlite3_vfs.xRead method.
 */
-static int memjrnlRead(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnlRead(
   sqlite3_file *pJfd,    /* The journal file from which to read */
-  void *zBuf,            /* Put the results here */
-  int iAmt,              /* Number of bytes to read */
+  ಶೂನ್ಯ *zBuf,            /* Put the results here */
+  ಪೂರ್ಣಾಂಕ iAmt,              /* Number of bytes to read */
   sqlite_int64 iOfst     /* Begin reading at this offset */
 ){
   MemJournal *p = (MemJournal *)pJfd;
-  u8 *zOut = zBuf;
-  int nRead = iAmt;
-  int iChunkOffset;
+  u8 *z_ಹೊರಹೋಗು = zBuf;
+  ಪೂರ್ಣಾಂಕ nRead = iAmt;
+  ಪೂರ್ಣಾಂಕ i_Chunk_ಸ್ಥಾನಾಂತರ;
   FileChunk *pChunk;
 
-  if( (iAmt+iOfst)>p->endpoint.iOffset ){
-    return SQLITE_IOERR_SHORT_READ;
+  ಆದರೆ( (iAmt+iOfst)>p->endpoint.i_ಸ್ಥಾನಾಂತರ ){
+    ಹಿಂತಿರುಗಿ SQLITE_IOERR_SHORT_READ;
   }
-  assert( p->readpoint.iOffset==0 || p->readpoint.pChunk!=0 );
-  if( p->readpoint.iOffset!=iOfst || iOfst==0 ){
+  ಪ್ರತಿಜ್ಞಾ( p->readpoint.i_ಸ್ಥಾನಾಂತರ==0 || p->readpoint.pChunk!=0 );
+  ಆದರೆ( p->readpoint.i_ಸ್ಥಾನಾಂತರ!=iOfst || iOfst==0 ){
     sqlite3_int64 iOff = 0;
-    for(pChunk=p->pFirst; 
-        ALWAYS(pChunk) && (iOff+p->nChunkSize)<=iOfst;
-        pChunk=pChunk->pNext
+    ಗಾಗಿ(pChunk=p->p_ಮೊದಲ; 
+        ALWAYS(pChunk) && (iOff+p->n_Chunk_ಗಾತ್ರ)<=iOfst;
+        pChunk=pChunk->p_ಮುಂದಿನ
     ){
-      iOff += p->nChunkSize;
+      iOff += p->n_Chunk_ಗಾತ್ರ;
     }
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     pChunk = p->readpoint.pChunk;
-    assert( pChunk!=0 );
+    ಪ್ರತಿಜ್ಞಾ( pChunk!=0 );
   }
 
-  iChunkOffset = (int)(iOfst%p->nChunkSize);
-  do {
-    int iSpace = p->nChunkSize - iChunkOffset;
-    int nCopy = MIN(nRead, (p->nChunkSize - iChunkOffset));
-    memcpy(zOut, (u8*)pChunk->zChunk + iChunkOffset, nCopy);
-    zOut += nCopy;
+  i_Chunk_ಸ್ಥಾನಾಂತರ = (ಪೂರ್ಣಾಂಕ)(iOfst%p->n_Chunk_ಗಾತ್ರ);
+  ಮಾಡು {
+    ಪೂರ್ಣಾಂಕ iSpace = p->n_Chunk_ಗಾತ್ರ - i_Chunk_ಸ್ಥಾನಾಂತರ;
+    ಪೂರ್ಣಾಂಕ nCopy = MIN(nRead, (p->n_Chunk_ಗಾತ್ರ - i_Chunk_ಸ್ಥಾನಾಂತರ));
+    ಸ್ಮರಣೆ_ನಕಲು(z_ಹೊರಹೋಗು, (u8*)pChunk->zChunk + i_Chunk_ಸ್ಥಾನಾಂತರ, nCopy);
+    z_ಹೊರಹೋಗು += nCopy;
     nRead -= iSpace;
-    iChunkOffset = 0;
-  } while( nRead>=0 && (pChunk=pChunk->pNext)!=0 && nRead>0 );
-  p->readpoint.iOffset = pChunk ? iOfst+iAmt : 0;
+    i_Chunk_ಸ್ಥಾನಾಂತರ = 0;
+  } ಆಗ( nRead>=0 && (pChunk=pChunk->p_ಮುಂದಿನ)!=0 && nRead>0 );
+  p->readpoint.i_ಸ್ಥಾನಾಂತರ = pChunk ? iOfst+iAmt : 0;
   p->readpoint.pChunk = pChunk;
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Free the list of FileChunk structures headed at MemJournal.pFirst.
 */
-static void memjrnlFreeChunks(FileChunk *pFirst){
+ಸ್ಥಿರ ಶೂನ್ಯ memjrnlFreeChunks(FileChunk *p_ಮೊದಲ){
   FileChunk *pIter;
-  FileChunk *pNext;
-  for(pIter=pFirst; pIter; pIter=pNext){
-    pNext = pIter->pNext;
+  FileChunk *p_ಮುಂದಿನ;
+  ಗಾಗಿ(pIter=p_ಮೊದಲ; pIter; pIter=p_ಮುಂದಿನ){
+    p_ಮುಂದಿನ = pIter->p_ಮುಂದಿನ;
     sqlite3_free(pIter);
   } 
 }
@@ -142,31 +142,31 @@ static void memjrnlFreeChunks(FileChunk *pFirst){
 /*
 ** Flush the contents of memory to a real file on disk.
 */
-static int memjrnlCreateFile(MemJournal *p){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnlCreateFile(MemJournal *p){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_file *pReal = (sqlite3_file*)p;
   MemJournal copy = *p;
 
-  memset(p, 0, sizeof(MemJournal));
+  memset(p, 0, ಗಾತ್ರ(MemJournal));
   rc = sqlite3OsOpen(copy.pVfs, copy.zJournal, pReal, copy.flags, 0);
-  if( rc==SQLITE_OK ){
-    int nChunk = copy.nChunkSize;
+  ಆದರೆ( rc==SQLITE_OK ){
+    ಪೂರ್ಣಾಂಕ nChunk = copy.n_Chunk_ಗಾತ್ರ;
     i64 iOff = 0;
     FileChunk *pIter;
-    for(pIter=copy.pFirst; pIter; pIter=pIter->pNext){
-      if( iOff + nChunk > copy.endpoint.iOffset ){
-        nChunk = copy.endpoint.iOffset - iOff;
+    ಗಾಗಿ(pIter=copy.p_ಮೊದಲ; pIter; pIter=pIter->p_ಮುಂದಿನ){
+      ಆದರೆ( iOff + nChunk > copy.endpoint.i_ಸ್ಥಾನಾಂತರ ){
+        nChunk = copy.endpoint.i_ಸ್ಥಾನಾಂತರ - iOff;
       }
       rc = sqlite3OsWrite(pReal, (u8*)pIter->zChunk, nChunk, iOff);
-      if( rc ) break;
+      ಆದರೆ( rc ) ನಿಲ್ಲಿಸು;
       iOff += nChunk;
     }
-    if( rc==SQLITE_OK ){
+    ಆದರೆ( rc==SQLITE_OK ){
       /* No error has occurred. Free the in-memory buffers. */
-      memjrnlFreeChunks(copy.pFirst);
+      memjrnlFreeChunks(copy.p_ಮೊದಲ);
     }
   }
-  if( rc!=SQLITE_OK ){
+  ಆದರೆ( rc!=SQLITE_OK ){
     /* If an error occurred while creating or writing to the file, restore
     ** the original before returning. This way, SQLite uses the in-memory
     ** journal data to roll back changes made to the internal page-cache
@@ -174,123 +174,123 @@ static int memjrnlCreateFile(MemJournal *p){
     sqlite3OsClose(pReal);
     *p = copy;
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 
 /* Forward reference */
-static int memjrnlTruncate(sqlite3_file *pJfd, sqlite_int64 size);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnlTruncate(sqlite3_file *pJfd, sqlite_int64 ಗಾತ್ರ_2);
 
 /*
 ** Write data to the file.
 */
-static int memjrnlWrite(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnlWrite(
   sqlite3_file *pJfd,    /* The journal file into which to write */
-  const void *zBuf,      /* Take data to be written from here */
-  int iAmt,              /* Number of bytes to write */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *zBuf,      /* Take data to be written from here */
+  ಪೂರ್ಣಾಂಕ iAmt,              /* Number of bytes to write */
   sqlite_int64 iOfst     /* Begin writing at this offset into the file */
 ){
   MemJournal *p = (MemJournal *)pJfd;
-  int nWrite = iAmt;
+  ಪೂರ್ಣಾಂಕ nWrite = iAmt;
   u8 *zWrite = (u8 *)zBuf;
 
   /* If the file should be created now, create it and write the new data
   ** into the file on disk. */
-  if( p->nSpill>0 && (iAmt+iOfst)>p->nSpill ){
-    int rc = memjrnlCreateFile(p);
-    if( rc==SQLITE_OK ){
+  ಆದರೆ( p->nSpill>0 && (iAmt+iOfst)>p->nSpill ){
+    ಪೂರ್ಣಾಂಕ rc = memjrnlCreateFile(p);
+    ಆದರೆ( rc==SQLITE_OK ){
       rc = sqlite3OsWrite(pJfd, zBuf, iAmt, iOfst);
     }
-    return rc;
+    ಹಿಂತಿರುಗಿ rc;
   }
 
   /* If the contents of this write should be stored in memory */
-  else{
+  ಇಲ್ಲದಿದ್ದರೆ{
     /* An in-memory journal file should only ever be appended to. Random
     ** access writes are not required. The only exception to this is when
     ** the in-memory journal is being used by a connection using the
     ** atomic-write optimization. In this case the first 28 bytes of the
     ** journal file may be written as part of committing the transaction. */
-    assert( iOfst<=p->endpoint.iOffset );
-    if( iOfst>0 && iOfst!=p->endpoint.iOffset ){
+    ಪ್ರತಿಜ್ಞಾ( iOfst<=p->endpoint.i_ಸ್ಥಾನಾಂತರ );
+    ಆದರೆ( iOfst>0 && iOfst!=p->endpoint.i_ಸ್ಥಾನಾಂತರ ){
       memjrnlTruncate(pJfd, iOfst);
     }
-    if( iOfst==0 && p->pFirst ){
-      assert( p->nChunkSize>iAmt );
-      memcpy((u8*)p->pFirst->zChunk, zBuf, iAmt);
-    }else{
-      while( nWrite>0 ){
+    ಆದರೆ( iOfst==0 && p->p_ಮೊದಲ ){
+      ಪ್ರತಿಜ್ಞಾ( p->n_Chunk_ಗಾತ್ರ>iAmt );
+      ಸ್ಮರಣೆ_ನಕಲು((u8*)p->p_ಮೊದಲ->zChunk, zBuf, iAmt);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಆಗ( nWrite>0 ){
         FileChunk *pChunk = p->endpoint.pChunk;
-        int iChunkOffset = (int)(p->endpoint.iOffset%p->nChunkSize);
-        int iSpace = MIN(nWrite, p->nChunkSize - iChunkOffset);
+        ಪೂರ್ಣಾಂಕ i_Chunk_ಸ್ಥಾನಾಂತರ = (ಪೂರ್ಣಾಂಕ)(p->endpoint.i_ಸ್ಥಾನಾಂತರ%p->n_Chunk_ಗಾತ್ರ);
+        ಪೂರ್ಣಾಂಕ iSpace = MIN(nWrite, p->n_Chunk_ಗಾತ್ರ - i_Chunk_ಸ್ಥಾನಾಂತರ);
 
-        assert( pChunk!=0 || iChunkOffset==0 );
-        if( iChunkOffset==0 ){
+        ಪ್ರತಿಜ್ಞಾ( pChunk!=0 || i_Chunk_ಸ್ಥಾನಾಂತರ==0 );
+        ಆದರೆ( i_Chunk_ಸ್ಥಾನಾಂತರ==0 ){
           /* New chunk is required to extend the file. */
-          FileChunk *pNew = sqlite3_malloc(fileChunkSize(p->nChunkSize));
-          if( !pNew ){
-            return SQLITE_IOERR_NOMEM_BKPT;
+          FileChunk *pNew = sqlite3_malloc(file_Chunk_ಗಾತ್ರ(p->n_Chunk_ಗಾತ್ರ));
+          ಆದರೆ( !pNew ){
+            ಹಿಂತಿರುಗಿ SQLITE_IOERR_NOMEM_BKPT;
           }
-          pNew->pNext = 0;
-          if( pChunk ){
-            assert( p->pFirst );
-            pChunk->pNext = pNew;
-          }else{
-            assert( !p->pFirst );
-            p->pFirst = pNew;
+          pNew->p_ಮುಂದಿನ = 0;
+          ಆದರೆ( pChunk ){
+            ಪ್ರತಿಜ್ಞಾ( p->p_ಮೊದಲ );
+            pChunk->p_ಮುಂದಿನ = pNew;
+          }ಇಲ್ಲದಿದ್ದರೆ{
+            ಪ್ರತಿಜ್ಞಾ( !p->p_ಮೊದಲ );
+            p->p_ಮೊದಲ = pNew;
           }
           pChunk = p->endpoint.pChunk = pNew;
         }
 
-        assert( pChunk!=0 );
-        memcpy((u8*)pChunk->zChunk + iChunkOffset, zWrite, iSpace);
+        ಪ್ರತಿಜ್ಞಾ( pChunk!=0 );
+        ಸ್ಮರಣೆ_ನಕಲು((u8*)pChunk->zChunk + i_Chunk_ಸ್ಥಾನಾಂತರ, zWrite, iSpace);
         zWrite += iSpace;
         nWrite -= iSpace;
-        p->endpoint.iOffset += iSpace;
+        p->endpoint.i_ಸ್ಥಾನಾಂತರ += iSpace;
       }
     }
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Truncate the in-memory file.
 */
-static int memjrnlTruncate(sqlite3_file *pJfd, sqlite_int64 size){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnlTruncate(sqlite3_file *pJfd, sqlite_int64 ಗಾತ್ರ_2){
   MemJournal *p = (MemJournal *)pJfd;
-  assert( p->endpoint.pChunk==0 || p->endpoint.pChunk->pNext==0 );
-  if( size<p->endpoint.iOffset ){
+  ಪ್ರತಿಜ್ಞಾ( p->endpoint.pChunk==0 || p->endpoint.pChunk->p_ಮುಂದಿನ==0 );
+  ಆದರೆ( ಗಾತ್ರ_2<p->endpoint.i_ಸ್ಥಾನಾಂತರ ){
     FileChunk *pIter = 0;
-    if( size==0 ){
-      memjrnlFreeChunks(p->pFirst);
-      p->pFirst = 0;
-    }else{
-      i64 iOff = p->nChunkSize;
-      for(pIter=p->pFirst; ALWAYS(pIter) && iOff<size; pIter=pIter->pNext){
-        iOff += p->nChunkSize;
+    ಆದರೆ( ಗಾತ್ರ_2==0 ){
+      memjrnlFreeChunks(p->p_ಮೊದಲ);
+      p->p_ಮೊದಲ = 0;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      i64 iOff = p->n_Chunk_ಗಾತ್ರ;
+      ಗಾಗಿ(pIter=p->p_ಮೊದಲ; ALWAYS(pIter) && iOff<ಗಾತ್ರ_2; pIter=pIter->p_ಮುಂದಿನ){
+        iOff += p->n_Chunk_ಗಾತ್ರ;
       }
-      if( ALWAYS(pIter) ){
-        memjrnlFreeChunks(pIter->pNext);
-        pIter->pNext = 0;
+      ಆದರೆ( ALWAYS(pIter) ){
+        memjrnlFreeChunks(pIter->p_ಮುಂದಿನ);
+        pIter->p_ಮುಂದಿನ = 0;
       }
     }
 
     p->endpoint.pChunk = pIter;
-    p->endpoint.iOffset = size;
+    p->endpoint.i_ಸ್ಥಾನಾಂತರ = ಗಾತ್ರ_2;
     p->readpoint.pChunk = 0;
-    p->readpoint.iOffset = 0;
+    p->readpoint.i_ಸ್ಥಾನಾಂತರ = 0;
   }
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Close the file.
 */
-static int memjrnlClose(sqlite3_file *pJfd){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnlClose(sqlite3_file *pJfd){
   MemJournal *p = (MemJournal *)pJfd;
-  memjrnlFreeChunks(p->pFirst);
-  return SQLITE_OK;
+  memjrnlFreeChunks(p->p_ಮೊದಲ);
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -299,31 +299,31 @@ static int memjrnlClose(sqlite3_file *pJfd){
 ** If the real file has been created, call its xSync method. Otherwise, 
 ** syncing an in-memory journal is a no-op. 
 */
-static int memjrnlSync(sqlite3_file *pJfd, int flags){
-  UNUSED_PARAMETER2(pJfd, flags);
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnlSync(sqlite3_file *pJfd, ಪೂರ್ಣಾಂಕ flags){
+  ಬಳಸದ_PARAMETER2(pJfd, flags);
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Query the size of the file in bytes.
 */
-static int memjrnlFileSize(sqlite3_file *pJfd, sqlite_int64 *pSize){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ memjrnl_File_ಗಾತ್ರ(sqlite3_file *pJfd, sqlite_int64 *p_ಗಾತ್ರ){
   MemJournal *p = (MemJournal *)pJfd;
-  *pSize = (sqlite_int64) p->endpoint.iOffset;
-  return SQLITE_OK;
+  *p_ಗಾತ್ರ = (sqlite_int64) p->endpoint.i_ಸ್ಥಾನಾಂತರ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Table of methods for MemJournal sqlite3_file object.
 */
-static const struct sqlite3_io_methods MemJournalMethods = {
+ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ರಚನೆ sqlite3_io_methods MemJournalMethods = {
   1,                /* iVersion */
   memjrnlClose,     /* xClose */
   memjrnlRead,      /* xRead */
   memjrnlWrite,     /* xWrite */
   memjrnlTruncate,  /* xTruncate */
   memjrnlSync,      /* xSync */
-  memjrnlFileSize,  /* xFileSize */
+  memjrnl_File_ಗಾತ್ರ,  /* xFileSize */
   0,                /* xLock */
   0,                /* xUnlock */
   0,                /* xCheckReservedLock */
@@ -350,49 +350,49 @@ static const struct sqlite3_io_methods MemJournalMethods = {
 ** flushed to disk either when it grows larger than nSpill bytes in size,
 ** or when sqlite3JournalCreate() is called.
 */
-int sqlite3JournalOpen(
+ಪೂರ್ಣಾಂಕ sqlite3JournalOpen(
   sqlite3_vfs *pVfs,         /* The VFS to use for actual file I/O */
-  const char *zName,         /* Name of the journal file */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName,         /* Name of the journal file */
   sqlite3_file *pJfd,        /* Preallocated, blank file handle */
-  int flags,                 /* Opening flags */
-  int nSpill                 /* Bytes buffered before opening the file */
+  ಪೂರ್ಣಾಂಕ flags,                 /* Opening flags */
+  ಪೂರ್ಣಾಂಕ nSpill                 /* Bytes buffered before opening the file */
 ){
   MemJournal *p = (MemJournal*)pJfd;
 
-  assert( zName || nSpill<0 || (flags & SQLITE_OPEN_EXCLUSIVE) );
+  ಪ್ರತಿಜ್ಞಾ( zName || nSpill<0 || (flags & SQLITE_OPEN_EXCLUSIVE) );
 
   /* Zero the file-handle object. If nSpill was passed zero, initialize
   ** it using the sqlite3OsOpen() function of the underlying VFS. In this
   ** case none of the code in this module is executed as a result of calls
   ** made on the journal file-handle.  */
-  memset(p, 0, sizeof(MemJournal));
-  if( nSpill==0 ){
-    return sqlite3OsOpen(pVfs, zName, pJfd, flags, 0);
+  memset(p, 0, ಗಾತ್ರ(MemJournal));
+  ಆದರೆ( nSpill==0 ){
+    ಹಿಂತಿರುಗಿ sqlite3OsOpen(pVfs, zName, pJfd, flags, 0);
   }
 
-  if( nSpill>0 ){
-    p->nChunkSize = nSpill;
-  }else{
-    p->nChunkSize = 8 + MEMJOURNAL_DFLT_FILECHUNKSIZE - sizeof(FileChunk);
-    assert( MEMJOURNAL_DFLT_FILECHUNKSIZE==fileChunkSize(p->nChunkSize) );
+  ಆದರೆ( nSpill>0 ){
+    p->n_Chunk_ಗಾತ್ರ = nSpill;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    p->n_Chunk_ಗಾತ್ರ = 8 + MEMJOURNAL_DFLT_FILECHUNKSIZE - ಗಾತ್ರ(FileChunk);
+    ಪ್ರತಿಜ್ಞಾ( MEMJOURNAL_DFLT_FILECHUNKSIZE==file_Chunk_ಗಾತ್ರ(p->n_Chunk_ಗಾತ್ರ) );
   }
 
-  pJfd->pMethods = (const sqlite3_io_methods*)&MemJournalMethods;
+  pJfd->pMethods = (ಸ್ಥಿರಾಂಕ sqlite3_io_methods*)&MemJournalMethods;
   p->nSpill = nSpill;
   p->flags = flags;
   p->zJournal = zName;
   p->pVfs = pVfs;
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Open an in-memory journal file.
 */
-void sqlite3MemJournalOpen(sqlite3_file *pJfd){
+ಶೂನ್ಯ sqlite3MemJournalOpen(sqlite3_file *pJfd){
   sqlite3JournalOpen(0, 0, pJfd, 0, -1);
 }
 
-#if defined(SQLITE_ENABLE_ATOMIC_WRITE) \
+#ಆದರೆ defined(SQLITE_ENABLE_ATOMIC_WRITE) \
  || defined(SQLITE_ENABLE_BATCH_ATOMIC_WRITE)
 /*
 ** If the argument p points to a MemJournal structure that is not an 
@@ -400,41 +400,41 @@ void sqlite3MemJournalOpen(sqlite3_file *pJfd){
 ** nSpill parameter or as SQLITE_OPEN_MAIN_JOURNAL), and the underlying 
 ** file has not yet been created, create it now.
 */
-int sqlite3JournalCreate(sqlite3_file *pJfd){
-  int rc = SQLITE_OK;
+ಪೂರ್ಣಾಂಕ sqlite3JournalCreate(sqlite3_file *pJfd){
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
   MemJournal *p = (MemJournal*)pJfd;
-  if( pJfd->pMethods==&MemJournalMethods && (
-#ifdef SQLITE_ENABLE_ATOMIC_WRITE
+  ಆದರೆ( pJfd->pMethods==&MemJournalMethods && (
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_ATOMIC_WRITE
      p->nSpill>0
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
      /* While this appears to not be possible without ATOMIC_WRITE, the
      ** paths are complex, so it seems prudent to leave the test in as
      ** a NEVER(), in case our analysis is subtly flawed. */
      NEVER(p->nSpill>0)
-#endif
-#ifdef SQLITE_ENABLE_BATCH_ATOMIC_WRITE
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_BATCH_ATOMIC_WRITE
      || (p->flags & SQLITE_OPEN_MAIN_JOURNAL)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   )){
     rc = memjrnlCreateFile(p);
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The file-handle passed as the only argument is open on a journal file.
 ** Return true if this "journal file" is currently stored in heap memory,
 ** or false otherwise.
 */
-int sqlite3JournalIsInMemory(sqlite3_file *p){
-  return p->pMethods==&MemJournalMethods;
+ಪೂರ್ಣಾಂಕ sqlite3_Journal_Is_ಒಳ_ಸ್ಮರಣೆ(sqlite3_file *p){
+  ಹಿಂತಿರುಗಿ p->pMethods==&MemJournalMethods;
 }
 
 /* 
 ** Return the number of bytes required to store a JournalFile that uses vfs
 ** pVfs to create the underlying on-disk files.
 */
-int sqlite3JournalSize(sqlite3_vfs *pVfs){
-  return MAX(pVfs->szOsFile, (int)sizeof(MemJournal));
+ಪೂರ್ಣಾಂಕ sqlite3_Journal_ಗಾತ್ರ(sqlite3_vfs *pVfs){
+  ಹಿಂತಿರುಗಿ MAX(pVfs->szOsFile, (ಪೂರ್ಣಾಂಕ)ಗಾತ್ರ(MemJournal));
 }

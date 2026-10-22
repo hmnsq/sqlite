@@ -69,116 +69,116 @@
 **       );
 */
 
-#include "sqlite3.h"
+#ಅನ್ತರ್ಭಾವ "sqlite3.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ _WIN32
+#ಅನ್ತರ್ಭಾವ <windows.h>
+#ಆದರೆ_ಅಂತ್ಯ
 
-#include <string.h>
-#include <assert.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
 
 
 /*
 ** Maximum pathname length supported by the vfslog backend.
 */
-#define INST_MAX_PATHNAME 512
+#ವ್ಯಾಖ್ಯಾನಿಸು INST_MAX_PATHNAME 512
 
-#define OS_ACCESS            1
-#define OS_CHECKRESERVEDLOCK 2
-#define OS_CLOSE             3
-#define OS_CURRENTTIME       4
-#define OS_DELETE            5
-#define OS_DEVCHAR           6
-#define OS_FILECONTROL       7
-#define OS_FILESIZE          8
-#define OS_FULLPATHNAME      9
-#define OS_LOCK              11
-#define OS_OPEN              12
-#define OS_RANDOMNESS        13
-#define OS_READ              14 
-#define OS_SECTORSIZE        15
-#define OS_SLEEP             16
-#define OS_SYNC              17
-#define OS_TRUNCATE          18
-#define OS_UNLOCK            19
-#define OS_WRITE             20
-#define OS_SHMUNMAP          22
-#define OS_SHMMAP            23
-#define OS_SHMLOCK           25
-#define OS_SHMBARRIER        26
-#define OS_ANNOTATE          28
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_ACCESS            1
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_CHECKRESERVEDLOCK 2
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_CLOSE             3
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_CURRENTTIME       4
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_DELETE            5
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_DEVCHAR           6
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_FILECONTROL       7
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_FILESIZE          8
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_FULLPATHNAME      9
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_ಬೀಗ              11
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_OPEN              12
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_RANDOMNESS        13
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_READ              14 
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_SECTORSIZE        15
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_SLEEP             16
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_SYNC              17
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_TRUNCATE          18
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_UNLOCK            19
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_WRITE             20
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_SHMUNMAP          22
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_SHMMAP            23
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_SHMLOCK           25
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_SHMBARRIER        26
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_ANNOTATE          28
 
-#define OS_NUMEVENTS         29
+#ವ್ಯಾಖ್ಯಾನಿಸು OS_NUMEVENTS         29
 
-#define VFSLOG_BUFFERSIZE 8192
+#ವ್ಯಾಖ್ಯಾನಿಸು VFSLOG_BUFFERSIZE 8192
 
-typedef struct VfslogVfs VfslogVfs;
-typedef struct VfslogFile VfslogFile;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ VfslogVfs VfslogVfs;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ VfslogFile VfslogFile;
 
-struct VfslogVfs {
-  sqlite3_vfs base;               /* VFS methods */
+ರಚನೆ VfslogVfs {
+  sqlite3_vfs ತಳ;               /* VFS methods */
   sqlite3_vfs *pVfs;              /* Parent VFS */
-  int iNextFileId;                /* Next file id */
+  ಪೂರ್ಣಾಂಕ i_ಮುಂದಿನ_File_Id;                /* Next file id */
   sqlite3_file *pLog;             /* Log file handle */
-  sqlite3_int64 iOffset;          /* Log file offset of start of write buffer */
-  int nBuf;                       /* Number of valid bytes in aBuf[] */
-  char aBuf[VFSLOG_BUFFERSIZE];   /* Write buffer */
+  sqlite3_int64 i_ಸ್ಥಾನಾಂತರ;          /* Log file offset of start of write buffer */
+  ಪೂರ್ಣಾಂಕ nBuf;                       /* Number of valid bytes in aBuf[] */
+  ಅಕ್ಷರ aBuf[VFSLOG_BUFFERSIZE];   /* Write buffer */
 };
 
-struct VfslogFile {
-  sqlite3_file base;              /* IO methods */
+ರಚನೆ VfslogFile {
+  sqlite3_file ತಳ;              /* IO methods */
   sqlite3_file *pReal;            /* Underlying file handle */
   sqlite3_vfs *pVfslog;           /* Associated VsflogVfs object */
-  int iFileId;                    /* File id number */
+  ಪೂರ್ಣಾಂಕ iFileId;                    /* File id number */
 };
 
-#define REALVFS(p) (((VfslogVfs *)(p))->pVfs)
+#ವ್ಯಾಖ್ಯಾನಿಸು REALVFS(p) (((VfslogVfs *)(p))->pVfs)
 
 
 
 /*
 ** Method declarations for vfslog_file.
 */
-static int vfslogClose(sqlite3_file*);
-static int vfslogRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int vfslogWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int vfslogTruncate(sqlite3_file*, sqlite3_int64 size);
-static int vfslogSync(sqlite3_file*, int flags);
-static int vfslogFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int vfslogLock(sqlite3_file*, int);
-static int vfslogUnlock(sqlite3_file*, int);
-static int vfslogCheckReservedLock(sqlite3_file*, int *pResOut);
-static int vfslogFileControl(sqlite3_file*, int op, void *pArg);
-static int vfslogSectorSize(sqlite3_file*);
-static int vfslogDeviceCharacteristics(sqlite3_file*);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogClose(sqlite3_file*);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogRead(sqlite3_file*, ಶೂನ್ಯ*, ಪೂರ್ಣಾಂಕ iAmt, sqlite3_int64 iOfst);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogWrite(sqlite3_file*,ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ*,ಪೂರ್ಣಾಂಕ iAmt, sqlite3_int64 iOfst);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogTruncate(sqlite3_file*, sqlite3_int64 ಗಾತ್ರ_2);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogSync(sqlite3_file*, ಪೂರ್ಣಾಂಕ flags);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_File_ಗಾತ್ರ(sqlite3_file*, sqlite3_int64 *p_ಗಾತ್ರ);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_ಬೀಗ(sqlite3_file*, ಪೂರ್ಣಾಂಕ);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogUnlock(sqlite3_file*, ಪೂರ್ಣಾಂಕ);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Check_Reserved_ಬೀಗ(sqlite3_file*, ಪೂರ್ಣಾಂಕ *p_Res_ಹೊರಹೋಗು);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogFileControl(sqlite3_file*, ಪೂರ್ಣಾಂಕ op, ಶೂನ್ಯ *pArg);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Sector_ಗಾತ್ರ(sqlite3_file*);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogDeviceCharacteristics(sqlite3_file*);
 
-static int vfslogShmLock(sqlite3_file *pFile, int ofst, int n, int flags);
-static int vfslogShmMap(sqlite3_file *pFile,int,int,int,volatile void **);
-static void vfslogShmBarrier(sqlite3_file*);
-static int vfslogShmUnmap(sqlite3_file *pFile, int deleteFlag);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Shm_ಬೀಗ(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ ofst, ಪೂರ್ಣಾಂಕ n, ಪೂರ್ಣಾಂಕ flags);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogShmMap(sqlite3_file *pFile,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಪೂರ್ಣಾಂಕ,ಅಸ್ಥಿರ ಶೂನ್ಯ **);
+ಸ್ಥಿರ ಶೂನ್ಯ vfslogShmBarrier(sqlite3_file*);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogShmUnmap(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ deleteFlag);
 
 /*
 ** Method declarations for vfslog_vfs.
 */
-static int vfslogOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int vfslogDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int vfslogAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int vfslogFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-static void *vfslogDlOpen(sqlite3_vfs*, const char *zFilename);
-static void vfslogDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*vfslogDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
-static void vfslogDlClose(sqlite3_vfs*, void*);
-static int vfslogRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int vfslogSleep(sqlite3_vfs*, int microseconds);
-static int vfslogCurrentTime(sqlite3_vfs*, double*);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogOpen(sqlite3_vfs*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *, sqlite3_file*, ಪೂರ್ಣಾಂಕ , ಪೂರ್ಣಾಂಕ *);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogDelete(sqlite3_vfs*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName, ಪೂರ್ಣಾಂಕ syncDir);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogAccess(sqlite3_vfs*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName, ಪೂರ್ಣಾಂಕ flags, ಪೂರ್ಣಾಂಕ *);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_ತುಂಬಿದ_Pathname(sqlite3_vfs*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName, ಪೂರ್ಣಾಂಕ, ಅಕ್ಷರ *z_ಹೊರಹೋಗು);
+ಸ್ಥಿರ ಶೂನ್ಯ *vfslogDlOpen(sqlite3_vfs*, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zFilename);
+ಸ್ಥಿರ ಶೂನ್ಯ vfslogDlError(sqlite3_vfs*, ಪೂರ್ಣಾಂಕ nByte, ಅಕ್ಷರ *z_Err_ಸಂದೇಶ);
+ಸ್ಥಿರ ಶೂನ್ಯ (*vfslogDlSym(sqlite3_vfs *pVfs, ಶೂನ್ಯ *p, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*zSym))(ಶೂನ್ಯ);
+ಸ್ಥಿರ ಶೂನ್ಯ vfslogDlClose(sqlite3_vfs*, ಶೂನ್ಯ*);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogRandomness(sqlite3_vfs*, ಪೂರ್ಣಾಂಕ nByte, ಅಕ್ಷರ *z_ಹೊರಹೋಗು);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogSleep(sqlite3_vfs*, ಪೂರ್ಣಾಂಕ microseconds);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Current_ಸಮಯ(sqlite3_vfs*, ದ್ವಿಗುಣ*);
 
-static int vfslogGetLastError(sqlite3_vfs*, int, char *);
-static int vfslogCurrentTimeInt64(sqlite3_vfs*, sqlite3_int64*);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Get_ಕೊನೆಯ_Error(sqlite3_vfs*, ಪೂರ್ಣಾಂಕ, ಅಕ್ಷರ *);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Current_ಸಮಯ_Int64(sqlite3_vfs*, sqlite3_int64*);
 
-static sqlite3_vfs vfslog_vfs = {
+ಸ್ಥಿರ sqlite3_vfs vfslog_vfs = {
   1,                              /* iVersion */
-  sizeof(VfslogFile),             /* szOsFile */
+  ಗಾತ್ರ(VfslogFile),             /* szOsFile */
   INST_MAX_PATHNAME,              /* mxPathname */
   0,                              /* pNext */
   0,                              /* zName */
@@ -186,305 +186,305 @@ static sqlite3_vfs vfslog_vfs = {
   vfslogOpen,                     /* xOpen */
   vfslogDelete,                   /* xDelete */
   vfslogAccess,                   /* xAccess */
-  vfslogFullPathname,             /* xFullPathname */
+  vfslog_ತುಂಬಿದ_Pathname,             /* xFullPathname */
   vfslogDlOpen,                   /* xDlOpen */
   vfslogDlError,                  /* xDlError */
   vfslogDlSym,                    /* xDlSym */
   vfslogDlClose,                  /* xDlClose */
   vfslogRandomness,               /* xRandomness */
   vfslogSleep,                    /* xSleep */
-  vfslogCurrentTime,              /* xCurrentTime */
-  vfslogGetLastError,             /* xGetLastError */
-  vfslogCurrentTimeInt64          /* xCurrentTime */
+  vfslog_Current_ಸಮಯ,              /* xCurrentTime */
+  vfslog_Get_ಕೊನೆಯ_Error,             /* xGetLastError */
+  vfslog_Current_ಸಮಯ_Int64          /* xCurrentTime */
 };
 
-static sqlite3_io_methods vfslog_io_methods = {
+ಸ್ಥಿರ sqlite3_io_methods vfslog_io_methods = {
   2,                              /* iVersion */
   vfslogClose,                    /* xClose */
   vfslogRead,                     /* xRead */
   vfslogWrite,                    /* xWrite */
   vfslogTruncate,                 /* xTruncate */
   vfslogSync,                     /* xSync */
-  vfslogFileSize,                 /* xFileSize */
-  vfslogLock,                     /* xLock */
+  vfslog_File_ಗಾತ್ರ,                 /* xFileSize */
+  vfslog_ಬೀಗ,                     /* xLock */
   vfslogUnlock,                   /* xUnlock */
-  vfslogCheckReservedLock,        /* xCheckReservedLock */
+  vfslog_Check_Reserved_ಬೀಗ,        /* xCheckReservedLock */
   vfslogFileControl,              /* xFileControl */
-  vfslogSectorSize,               /* xSectorSize */
+  vfslog_Sector_ಗಾತ್ರ,               /* xSectorSize */
   vfslogDeviceCharacteristics,    /* xDeviceCharacteristics */
   vfslogShmMap,                   /* xShmMap */
-  vfslogShmLock,                  /* xShmLock */
+  vfslog_Shm_ಬೀಗ,                  /* xShmLock */
   vfslogShmBarrier,               /* xShmBarrier */
   vfslogShmUnmap                  /* xShmUnmap */
 };
 
-#ifdef _WIN32
-#include <time.h>
-static sqlite3_uint64 vfslog_time(){
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ _WIN32
+#ಅನ್ತರ್ಭಾವ <time.h>
+ಸ್ಥಿರ sqlite3_uint64 vfslog_ಸಮಯ(){
   FILETIME ft;
   sqlite3_uint64 u64time = 0;
  
-  GetSystemTimeAsFileTime(&ft);
+  Get_System_ಸಮಯ_As_File_ಸಮಯ(&ft);
 
-  u64time |= ft.dwHighDateTime;
+  u64time |= ft.dw_ಮೇಲಿನ_Date_ಸಮಯ;
   u64time <<= 32;
-  u64time |= ft.dwLowDateTime;
+  u64time |= ft.dw_ಕೆಳಗಿನ_Date_ಸಮಯ;
 
   /* ft is 100-nanosecond intervals, we want microseconds */
-  return u64time /(sqlite3_uint64)10;
+  ಹಿಂತಿರುಗಿ u64time /(sqlite3_uint64)10;
 }
-#elif !defined(NO_GETTOD)
-#include <sys/time.h>
-static sqlite3_uint64 vfslog_time(){
-  struct timeval sTime;
-  gettimeofday(&sTime, 0);
-  return sTime.tv_usec + (sqlite3_uint64)sTime.tv_sec * 1000000;
+#ಅಥವಾಆದರೆ !defined(NO_GETTOD)
+#ಅನ್ತರ್ಭಾವ <sys/time.h>
+ಸ್ಥಿರ sqlite3_uint64 vfslog_ಸಮಯ(){
+  ರಚನೆ timeval s_ಸಮಯ;
+  gettimeofday(&s_ಸಮಯ, 0);
+  ಹಿಂತಿರುಗಿ s_ಸಮಯ.tv_usec + (sqlite3_uint64)s_ಸಮಯ.tv_sec * 1000000;
 }
-#else
-static sqlite3_uint64 vfslog_time(){
-  return 0;
+#ಇಲ್ಲದಿದ್ದರೆ
+ಸ್ಥಿರ sqlite3_uint64 vfslog_ಸಮಯ(){
+  ಹಿಂತಿರುಗಿ 0;
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-static void vfslog_call(sqlite3_vfs *, int, int, sqlite3_int64, int, int, int);
-static void vfslog_string(sqlite3_vfs *, const char *);
+ಸ್ಥಿರ ಶೂನ್ಯ vfslog_call(sqlite3_vfs *, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, sqlite3_int64, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ, ಪೂರ್ಣಾಂಕ);
+ಸ್ಥಿರ ಶೂನ್ಯ vfslog_string(sqlite3_vfs *, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *);
 
 /*
 ** Close an vfslog-file.
 */
-static int vfslogClose(sqlite3_file *pFile){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogClose(sqlite3_file *pFile){
   sqlite3_uint64 t;
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
   VfslogFile *p = (VfslogFile *)pFile;
 
-  t = vfslog_time();
-  if( p->pReal->pMethods ){
+  t = vfslog_ಸಮಯ();
+  ಆದರೆ( p->pReal->pMethods ){
     rc = p->pReal->pMethods->xClose(p->pReal);
   }
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_CLOSE, p->iFileId, t, rc, 0, 0);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Read data from an vfslog-file.
 */
-static int vfslogRead(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  ಶೂನ್ಯ *zBuf, 
+  ಪೂರ್ಣಾಂಕ iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
+  t = vfslog_ಸಮಯ();
   rc = p->pReal->pMethods->xRead(p->pReal, zBuf, iAmt, iOfst);
-  t = vfslog_time() - t;
-  vfslog_call(p->pVfslog, OS_READ, p->iFileId, t, rc, iAmt, (int)iOfst);
-  return rc;
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(p->pVfslog, OS_READ, p->iFileId, t, rc, iAmt, (ಪೂರ್ಣಾಂಕ)iOfst);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Write data to an vfslog-file.
 */
-static int vfslogWrite(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogWrite(
   sqlite3_file *pFile,
-  const void *z,
-  int iAmt,
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *z,
+  ಪೂರ್ಣಾಂಕ iAmt,
   sqlite_int64 iOfst
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
+  t = vfslog_ಸಮಯ();
   rc = p->pReal->pMethods->xWrite(p->pReal, z, iAmt, iOfst);
-  t = vfslog_time() - t;
-  vfslog_call(p->pVfslog, OS_WRITE, p->iFileId, t, rc, iAmt, (int)iOfst);
-  return rc;
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(p->pVfslog, OS_WRITE, p->iFileId, t, rc, iAmt, (ಪೂರ್ಣಾಂಕ)iOfst);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Truncate an vfslog-file.
 */
-static int vfslogTruncate(sqlite3_file *pFile, sqlite_int64 size){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogTruncate(sqlite3_file *pFile, sqlite_int64 ಗಾತ್ರ_2){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
-  rc = p->pReal->pMethods->xTruncate(p->pReal, size);
-  t = vfslog_time() - t;
-  vfslog_call(p->pVfslog, OS_TRUNCATE, p->iFileId, t, rc, 0, (int)size);
-  return rc;
+  t = vfslog_ಸಮಯ();
+  rc = p->pReal->pMethods->xTruncate(p->pReal, ಗಾತ್ರ_2);
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(p->pVfslog, OS_TRUNCATE, p->iFileId, t, rc, 0, (ಪೂರ್ಣಾಂಕ)ಗಾತ್ರ_2);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Sync an vfslog-file.
 */
-static int vfslogSync(sqlite3_file *pFile, int flags){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogSync(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ flags){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
+  t = vfslog_ಸಮಯ();
   rc = p->pReal->pMethods->xSync(p->pReal, flags);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_SYNC, p->iFileId, t, rc, flags, 0);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Return the current file-size of an vfslog-file.
 */
-static int vfslogFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_File_ಗಾತ್ರ(sqlite3_file *pFile, sqlite_int64 *p_ಗಾತ್ರ){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
-  rc = p->pReal->pMethods->xFileSize(p->pReal, pSize);
-  t = vfslog_time() - t;
-  vfslog_call(p->pVfslog, OS_FILESIZE, p->iFileId, t, rc, 0, (int)*pSize);
-  return rc;
+  t = vfslog_ಸಮಯ();
+  rc = p->pReal->pMethods->x_File_ಗಾತ್ರ(p->pReal, p_ಗಾತ್ರ);
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(p->pVfslog, OS_FILESIZE, p->iFileId, t, rc, 0, (ಪೂರ್ಣಾಂಕ)*p_ಗಾತ್ರ);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Lock an vfslog-file.
 */
-static int vfslogLock(sqlite3_file *pFile, int eLock){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_ಬೀಗ(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ e_ಬೀಗ){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
-  rc = p->pReal->pMethods->xLock(p->pReal, eLock);
-  t = vfslog_time() - t;
-  vfslog_call(p->pVfslog, OS_LOCK, p->iFileId, t, rc, eLock, 0);
-  return rc;
+  t = vfslog_ಸಮಯ();
+  rc = p->pReal->pMethods->x_ಬೀಗ(p->pReal, e_ಬೀಗ);
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(p->pVfslog, OS_ಬೀಗ, p->iFileId, t, rc, e_ಬೀಗ, 0);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Unlock an vfslog-file.
 */
-static int vfslogUnlock(sqlite3_file *pFile, int eLock){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogUnlock(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ e_ಬೀಗ){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
-  rc = p->pReal->pMethods->xUnlock(p->pReal, eLock);
-  t = vfslog_time() - t;
-  vfslog_call(p->pVfslog, OS_UNLOCK, p->iFileId, t, rc, eLock, 0);
-  return rc;
+  t = vfslog_ಸಮಯ();
+  rc = p->pReal->pMethods->xUnlock(p->pReal, e_ಬೀಗ);
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(p->pVfslog, OS_UNLOCK, p->iFileId, t, rc, e_ಬೀಗ, 0);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an vfslog-file.
 */
-static int vfslogCheckReservedLock(sqlite3_file *pFile, int *pResOut){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Check_Reserved_ಬೀಗ(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ *p_Res_ಹೊರಹೋಗು){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
-  rc = p->pReal->pMethods->xCheckReservedLock(p->pReal, pResOut);
-  t = vfslog_time() - t;
-  vfslog_call(p->pVfslog, OS_CHECKRESERVEDLOCK, p->iFileId, t, rc, *pResOut, 0);
-  return rc;
+  t = vfslog_ಸಮಯ();
+  rc = p->pReal->pMethods->x_Check_Reserved_ಬೀಗ(p->pReal, p_Res_ಹೊರಹೋಗು);
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(p->pVfslog, OS_CHECKRESERVEDLOCK, p->iFileId, t, rc, *p_Res_ಹೊರಹೋಗು, 0);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** File control method. For custom operations on an vfslog-file.
 */
-static int vfslogFileControl(sqlite3_file *pFile, int op, void *pArg){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogFileControl(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ op, ಶೂನ್ಯ *pArg){
   VfslogFile *p = (VfslogFile *)pFile;
-  int rc = p->pReal->pMethods->xFileControl(p->pReal, op, pArg);
-  if( op==SQLITE_FCNTL_VFSNAME && rc==SQLITE_OK ){
-    *(char**)pArg = sqlite3_mprintf("vfslog/%z", *(char**)pArg);
+  ಪೂರ್ಣಾಂಕ rc = p->pReal->pMethods->xFileControl(p->pReal, op, pArg);
+  ಆದರೆ( op==SQLITE_FCNTL_VFSNAME && rc==SQLITE_OK ){
+    *(ಅಕ್ಷರ**)pArg = sqlite3_mprintf("vfslog/%z", *(ಅಕ್ಷರ**)pArg);
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Return the sector-size in bytes for an vfslog-file.
 */
-static int vfslogSectorSize(sqlite3_file *pFile){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Sector_ಗಾತ್ರ(sqlite3_file *pFile){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
-  rc = p->pReal->pMethods->xSectorSize(p->pReal);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ();
+  rc = p->pReal->pMethods->x_Sector_ಗಾತ್ರ(p->pReal);
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_SECTORSIZE, p->iFileId, t, rc, 0, 0);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Return the device characteristic flags supported by an vfslog-file.
 */
-static int vfslogDeviceCharacteristics(sqlite3_file *pFile){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogDeviceCharacteristics(sqlite3_file *pFile){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
+  t = vfslog_ಸಮಯ();
   rc = p->pReal->pMethods->xDeviceCharacteristics(p->pReal);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_DEVCHAR, p->iFileId, t, rc, 0, 0);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
-static int vfslogShmLock(sqlite3_file *pFile, int ofst, int n, int flags){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Shm_ಬೀಗ(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ ofst, ಪೂರ್ಣಾಂಕ n, ಪೂರ್ಣಾಂಕ flags){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
-  rc = p->pReal->pMethods->xShmLock(p->pReal, ofst, n, flags);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ();
+  rc = p->pReal->pMethods->x_Shm_ಬೀಗ(p->pReal, ofst, n, flags);
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_SHMLOCK, p->iFileId, t, rc, 0, 0);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
-static int vfslogShmMap(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogShmMap(
   sqlite3_file *pFile, 
-  int iRegion, 
-  int szRegion, 
-  int isWrite, 
-  volatile void **pp
+  ಪೂರ್ಣಾಂಕ iRegion, 
+  ಪೂರ್ಣಾಂಕ szRegion, 
+  ಪೂರ್ಣಾಂಕ isWrite, 
+  ಅಸ್ಥಿರ ಶೂನ್ಯ **pp
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
+  t = vfslog_ಸಮಯ();
   rc = p->pReal->pMethods->xShmMap(p->pReal, iRegion, szRegion, isWrite, pp);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_SHMMAP, p->iFileId, t, rc, 0, 0);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
-static void vfslogShmBarrier(sqlite3_file *pFile){
+ಸ್ಥಿರ ಶೂನ್ಯ vfslogShmBarrier(sqlite3_file *pFile){
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
+  t = vfslog_ಸಮಯ();
   p->pReal->pMethods->xShmBarrier(p->pReal);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_SHMBARRIER, p->iFileId, t, SQLITE_OK, 0, 0);
 }
-static int vfslogShmUnmap(sqlite3_file *pFile, int deleteFlag){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogShmUnmap(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ deleteFlag){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
-  t = vfslog_time();
+  t = vfslog_ಸಮಯ();
   rc = p->pReal->pMethods->xShmUnmap(p->pReal, deleteFlag);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(p->pVfslog, OS_SHMUNMAP, p->iFileId, t, rc, 0, 0);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 
 /*
 ** Open an vfslog file handle.
 */
-static int vfslogOpen(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  ಪೂರ್ಣಾಂಕ flags,
+  ಪೂರ್ಣಾಂಕ *p_ಹೊರಹೋಗು_Flags
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
   VfslogFile *p = (VfslogFile *)pFile;
   VfslogVfs *pLog = (VfslogVfs *)pVfs;
@@ -492,15 +492,15 @@ static int vfslogOpen(
   pFile->pMethods = &vfslog_io_methods;
   p->pReal = (sqlite3_file *)&p[1];
   p->pVfslog = pVfs;
-  p->iFileId = ++pLog->iNextFileId;
+  p->iFileId = ++pLog->i_ಮುಂದಿನ_File_Id;
 
-  t = vfslog_time();
-  rc = REALVFS(pVfs)->xOpen(REALVFS(pVfs), zName, p->pReal, flags, pOutFlags);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ();
+  rc = REALVFS(pVfs)->xOpen(REALVFS(pVfs), zName, p->pReal, flags, p_ಹೊರಹೋಗು_Flags);
+  t = vfslog_ಸಮಯ() - t;
 
   vfslog_call(pVfs, OS_OPEN, p->iFileId, t, rc, 0, 0);
   vfslog_string(pVfs, zName);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
@@ -508,35 +508,35 @@ static int vfslogOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int vfslogDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogDelete(sqlite3_vfs *pVfs, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ, ಪೂರ್ಣಾಂಕ dirSync){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
-  t = vfslog_time();
-  rc = REALVFS(pVfs)->xDelete(REALVFS(pVfs), zPath, dirSync);
-  t = vfslog_time() - t;
+  t = vfslog_ಸಮಯ();
+  rc = REALVFS(pVfs)->xDelete(REALVFS(pVfs), z_ಮಾರ್ಗ, dirSync);
+  t = vfslog_ಸಮಯ() - t;
   vfslog_call(pVfs, OS_DELETE, 0, t, rc, dirSync, 0);
-  vfslog_string(pVfs, zPath);
-  return rc;
+  vfslog_string(pVfs, z_ಮಾರ್ಗ);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int vfslogAccess(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ, 
+  ಪೂರ್ಣಾಂಕ flags, 
+  ಪೂರ್ಣಾಂಕ *p_Res_ಹೊರಹೋಗು
 ){
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_uint64 t;
-  t = vfslog_time();
-  rc = REALVFS(pVfs)->xAccess(REALVFS(pVfs), zPath, flags, pResOut);
-  t = vfslog_time() - t;
-  vfslog_call(pVfs, OS_ACCESS, 0, t, rc, flags, *pResOut);
-  vfslog_string(pVfs, zPath);
-  return rc;
+  t = vfslog_ಸಮಯ();
+  rc = REALVFS(pVfs)->xAccess(REALVFS(pVfs), z_ಮಾರ್ಗ, flags, p_Res_ಹೊರಹೋಗು);
+  t = vfslog_ಸಮಯ() - t;
+  vfslog_call(pVfs, OS_ACCESS, 0, t, rc, flags, *p_Res_ಹೊರಹೋಗು);
+  vfslog_string(pVfs, z_ಮಾರ್ಗ);
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
@@ -544,20 +544,20 @@ static int vfslogAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (INST_MAX_PATHNAME+1) bytes.
 */
-static int vfslogFullPathname(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_ತುಂಬಿದ_Pathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ, 
+  ಪೂರ್ಣಾಂಕ n_ಹೊರಹೋಗು, 
+  ಅಕ್ಷರ *z_ಹೊರಹೋಗು
 ){
-  return REALVFS(pVfs)->xFullPathname(REALVFS(pVfs), zPath, nOut, zOut);
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->x_ತುಂಬಿದ_Pathname(REALVFS(pVfs), z_ಮಾರ್ಗ, n_ಹೊರಹೋಗು, z_ಹೊರಹೋಗು);
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *vfslogDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return REALVFS(pVfs)->xDlOpen(REALVFS(pVfs), zPath);
+ಸ್ಥಿರ ಶೂನ್ಯ *vfslogDlOpen(sqlite3_vfs *pVfs, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ){
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->xDlOpen(REALVFS(pVfs), z_ಮಾರ್ಗ);
 }
 
 /*
@@ -565,21 +565,21 @@ static void *vfslogDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void vfslogDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  REALVFS(pVfs)->xDlError(REALVFS(pVfs), nByte, zErrMsg);
+ಸ್ಥಿರ ಶೂನ್ಯ vfslogDlError(sqlite3_vfs *pVfs, ಪೂರ್ಣಾಂಕ nByte, ಅಕ್ಷರ *z_Err_ಸಂದೇಶ){
+  REALVFS(pVfs)->xDlError(REALVFS(pVfs), nByte, z_Err_ಸಂದೇಶ);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*vfslogDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return REALVFS(pVfs)->xDlSym(REALVFS(pVfs), p, zSym);
+ಸ್ಥಿರ ಶೂನ್ಯ (*vfslogDlSym(sqlite3_vfs *pVfs, ಶೂನ್ಯ *p, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSym))(ಶೂನ್ಯ){
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->xDlSym(REALVFS(pVfs), p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void vfslogDlClose(sqlite3_vfs *pVfs, void *pHandle){
+ಸ್ಥಿರ ಶೂನ್ಯ vfslogDlClose(sqlite3_vfs *pVfs, ಶೂನ್ಯ *pHandle){
   REALVFS(pVfs)->xDlClose(REALVFS(pVfs), pHandle);
 }
 
@@ -587,247 +587,247 @@ static void vfslogDlClose(sqlite3_vfs *pVfs, void *pHandle){
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int vfslogRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return REALVFS(pVfs)->xRandomness(REALVFS(pVfs), nByte, zBufOut);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogRandomness(sqlite3_vfs *pVfs, ಪೂರ್ಣಾಂಕ nByte, ಅಕ್ಷರ *z_Buf_ಹೊರಹೋಗು){
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->xRandomness(REALVFS(pVfs), nByte, z_Buf_ಹೊರಹೋಗು);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int vfslogSleep(sqlite3_vfs *pVfs, int nMicro){
-  return REALVFS(pVfs)->xSleep(REALVFS(pVfs), nMicro);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslogSleep(sqlite3_vfs *pVfs, ಪೂರ್ಣಾಂಕ nMicro){
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->xSleep(REALVFS(pVfs), nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int vfslogCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return REALVFS(pVfs)->xCurrentTime(REALVFS(pVfs), pTimeOut);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Current_ಸಮಯ(sqlite3_vfs *pVfs, ದ್ವಿಗುಣ *p_ಸಮಯ_ಹೊರಹೋಗು){
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->x_Current_ಸಮಯ(REALVFS(pVfs), p_ಸಮಯ_ಹೊರಹೋಗು);
 }
 
-static int vfslogGetLastError(sqlite3_vfs *pVfs, int a, char *b){
-  return REALVFS(pVfs)->xGetLastError(REALVFS(pVfs), a, b);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Get_ಕೊನೆಯ_Error(sqlite3_vfs *pVfs, ಪೂರ್ಣಾಂಕ a, ಅಕ್ಷರ *b){
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->x_Get_ಕೊನೆಯ_Error(REALVFS(pVfs), a, b);
 }
-static int vfslogCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
-  return REALVFS(pVfs)->xCurrentTimeInt64(REALVFS(pVfs), p);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vfslog_Current_ಸಮಯ_Int64(sqlite3_vfs *pVfs, sqlite3_int64 *p){
+  ಹಿಂತಿರುಗಿ REALVFS(pVfs)->x_Current_ಸಮಯ_Int64(REALVFS(pVfs), p);
 }
 
-static void vfslog_flush(VfslogVfs *p){
-#ifdef SQLITE_TEST
-  extern int sqlite3_io_error_pending;
-  extern int sqlite3_io_error_persist;
-  extern int sqlite3_diskfull_pending;
+ಸ್ಥಿರ ಶೂನ್ಯ vfslog_flush(VfslogVfs *p){
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
+  ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ sqlite3_io_error_pending;
+  ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ sqlite3_io_error_persist;
+  ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ sqlite3_diskfull_pending;
 
-  int pending = sqlite3_io_error_pending;
-  int persist = sqlite3_io_error_persist;
-  int diskfull = sqlite3_diskfull_pending;
+  ಪೂರ್ಣಾಂಕ pending = sqlite3_io_error_pending;
+  ಪೂರ್ಣಾಂಕ persist = sqlite3_io_error_persist;
+  ಪೂರ್ಣಾಂಕ diskfull = sqlite3_diskfull_pending;
 
   sqlite3_io_error_pending = 0;
   sqlite3_io_error_persist = 0;
   sqlite3_diskfull_pending = 0;
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-  if( p->nBuf ){
-    p->pLog->pMethods->xWrite(p->pLog, p->aBuf, p->nBuf, p->iOffset);
-    p->iOffset += p->nBuf;
+  ಆದರೆ( p->nBuf ){
+    p->pLog->pMethods->xWrite(p->pLog, p->aBuf, p->nBuf, p->i_ಸ್ಥಾನಾಂತರ);
+    p->i_ಸ್ಥಾನಾಂತರ += p->nBuf;
     p->nBuf = 0;
   }
 
-#ifdef SQLITE_TEST
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
   sqlite3_io_error_pending = pending;
   sqlite3_io_error_persist = persist;
   sqlite3_diskfull_pending = diskfull;
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 }
 
-static void put32bits(unsigned char *p, unsigned int v){
+ಸ್ಥಿರ ಶೂನ್ಯ put32bits(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *p, ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ v){
   p[0] = v>>24;
-  p[1] = (unsigned char)(v>>16);
-  p[2] = (unsigned char)(v>>8);
-  p[3] = (unsigned char)v;
+  p[1] = (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(v>>16);
+  p[2] = (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)(v>>8);
+  p[3] = (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)v;
 }
 
-static void vfslog_call(
+ಸ್ಥಿರ ಶೂನ್ಯ vfslog_call(
   sqlite3_vfs *pVfs,
-  int eEvent,
-  int iFileid,
+  ಪೂರ್ಣಾಂಕ eEvent,
+  ಪೂರ್ಣಾಂಕ iFileid,
   sqlite3_int64 nClick,
-  int return_code,
-  int size,
-  int offset
+  ಪೂರ್ಣಾಂಕ return_ಸಂಕೇತ,
+  ಪೂರ್ಣಾಂಕ ಗಾತ್ರ_2,
+  ಪೂರ್ಣಾಂಕ ಸ್ಥಾನಾಂತರ
 ){
   VfslogVfs *p = (VfslogVfs *)pVfs;
-  unsigned char *zRec;
-  if( (24+p->nBuf)>sizeof(p->aBuf) ){
+  ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *zRec;
+  ಆದರೆ( (24+p->nBuf)>ಗಾತ್ರ(p->aBuf) ){
     vfslog_flush(p);
   }
-  zRec = (unsigned char *)&p->aBuf[p->nBuf];
+  zRec = (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *)&p->aBuf[p->nBuf];
   put32bits(&zRec[0], eEvent);
   put32bits(&zRec[4], iFileid);
-  put32bits(&zRec[8], (unsigned int)(nClick&0xffff));
-  put32bits(&zRec[12], return_code);
-  put32bits(&zRec[16], size);
-  put32bits(&zRec[20], offset);
+  put32bits(&zRec[8], (ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ)(nClick&0xffff));
+  put32bits(&zRec[12], return_ಸಂಕೇತ);
+  put32bits(&zRec[16], ಗಾತ್ರ_2);
+  put32bits(&zRec[20], ಸ್ಥಾನಾಂತರ);
   p->nBuf += 24;
 }
 
-static void vfslog_string(sqlite3_vfs *pVfs, const char *zStr){
+ಸ್ಥಿರ ಶೂನ್ಯ vfslog_string(sqlite3_vfs *pVfs, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zStr){
   VfslogVfs *p = (VfslogVfs *)pVfs;
-  unsigned char *zRec;
-  int nStr = zStr ? (int)strlen(zStr) : 0;
-  if( (4+nStr+p->nBuf)>sizeof(p->aBuf) ){
+  ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *zRec;
+  ಪೂರ್ಣಾಂಕ nStr = zStr ? (ಪೂರ್ಣಾಂಕ)ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zStr) : 0;
+  ಆದರೆ( (4+nStr+p->nBuf)>ಗಾತ್ರ(p->aBuf) ){
     vfslog_flush(p);
   }
-  zRec = (unsigned char *)&p->aBuf[p->nBuf];
+  zRec = (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *)&p->aBuf[p->nBuf];
   put32bits(&zRec[0], nStr);
-  if( zStr ){
-    memcpy(&zRec[4], zStr, nStr);
+  ಆದರೆ( zStr ){
+    ಸ್ಮರಣೆ_ನಕಲು(&zRec[4], zStr, nStr);
   }
   p->nBuf += (4 + nStr);
 }
 
-static void vfslog_finalize(VfslogVfs *p){
-  if( p->pLog->pMethods ){
+ಸ್ಥಿರ ಶೂನ್ಯ vfslog_finalize(VfslogVfs *p){
+  ಆದರೆ( p->pLog->pMethods ){
     vfslog_flush(p);
     p->pLog->pMethods->xClose(p->pLog);
   }
   sqlite3_free(p);
 }
 
-int sqlite3_vfslog_finalize(const char *zVfs){
+ಪೂರ್ಣಾಂಕ sqlite3_vfslog_finalize(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zVfs){
   sqlite3_vfs *pVfs;
-  pVfs = sqlite3_vfs_find(zVfs);
-  if( !pVfs || pVfs->xOpen!=vfslogOpen ){
-    return SQLITE_ERROR;
+  pVfs = sqlite3_vfs_ಕಂಡುಹಿಡಿ(zVfs);
+  ಆದರೆ( !pVfs || pVfs->xOpen!=vfslogOpen ){
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   } 
   sqlite3_vfs_unregister(pVfs);
   vfslog_finalize((VfslogVfs *)pVfs);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-int sqlite3_vfslog_new(
-  const char *zVfs,               /* New VFS name */
-  const char *zParentVfs,         /* Parent VFS name (or NULL) */
-  const char *zLog                /* Log file name */
+ಪೂರ್ಣಾಂಕ sqlite3_vfslog_new(
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zVfs,               /* New VFS name */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಪೋಷಕ_Vfs,         /* Parent VFS name (or NULL) */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zLog                /* Log file name */
 ){
   VfslogVfs *p;
-  sqlite3_vfs *pParent;
-  int nByte;
-  int flags;
-  int rc;
-  char *zFile;
-  int nVfs;
+  sqlite3_vfs *p_ಪೋಷಕ;
+  ಪೂರ್ಣಾಂಕ nByte;
+  ಪೂರ್ಣಾಂಕ flags;
+  ಪೂರ್ಣಾಂಕ rc;
+  ಅಕ್ಷರ *zFile;
+  ಪೂರ್ಣಾಂಕ nVfs;
 
-  pParent = sqlite3_vfs_find(zParentVfs);
-  if( !pParent ){
-    return SQLITE_ERROR;
+  p_ಪೋಷಕ = sqlite3_vfs_ಕಂಡುಹಿಡಿ(z_ಪೋಷಕ_Vfs);
+  ಆದರೆ( !p_ಪೋಷಕ ){
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   }
 
-  nVfs = (int)strlen(zVfs);
-  nByte = sizeof(VfslogVfs) + pParent->szOsFile + nVfs+1+pParent->mxPathname+1;
+  nVfs = (ಪೂರ್ಣಾಂಕ)ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zVfs);
+  nByte = ಗಾತ್ರ(VfslogVfs) + p_ಪೋಷಕ->szOsFile + nVfs+1+p_ಪೋಷಕ->mxPathname+1;
   p = (VfslogVfs *)sqlite3_malloc(nByte);
   memset(p, 0, nByte);
 
-  p->pVfs = pParent;
+  p->pVfs = p_ಪೋಷಕ;
   p->pLog = (sqlite3_file *)&p[1];
-  memcpy(&p->base, &vfslog_vfs, sizeof(sqlite3_vfs));
-  p->base.zName = &((char *)p->pLog)[pParent->szOsFile];
-  p->base.szOsFile += pParent->szOsFile;
-  memcpy((char *)p->base.zName, zVfs, nVfs);
+  ಸ್ಮರಣೆ_ನಕಲು(&p->ತಳ, &vfslog_vfs, ಗಾತ್ರ(sqlite3_vfs));
+  p->ತಳ.zName = &((ಅಕ್ಷರ *)p->pLog)[p_ಪೋಷಕ->szOsFile];
+  p->ತಳ.szOsFile += p_ಪೋಷಕ->szOsFile;
+  ಸ್ಮರಣೆ_ನಕಲು((ಅಕ್ಷರ *)p->ತಳ.zName, zVfs, nVfs);
 
-  zFile = (char *)&p->base.zName[nVfs+1];
-  pParent->xFullPathname(pParent, zLog, pParent->mxPathname, zFile);
+  zFile = (ಅಕ್ಷರ *)&p->ತಳ.zName[nVfs+1];
+  p_ಪೋಷಕ->x_ತುಂಬಿದ_Pathname(p_ಪೋಷಕ, zLog, p_ಪೋಷಕ->mxPathname, zFile);
 
   flags = SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_SUPER_JOURNAL;
-  pParent->xDelete(pParent, zFile, 0);
-  rc = pParent->xOpen(pParent, zFile, p->pLog, flags, &flags);
-  if( rc==SQLITE_OK ){
-    memcpy(p->aBuf, "sqlite_ostrace1.....", 20);
-    p->iOffset = 0;
+  p_ಪೋಷಕ->xDelete(p_ಪೋಷಕ, zFile, 0);
+  rc = p_ಪೋಷಕ->xOpen(p_ಪೋಷಕ, zFile, p->pLog, flags, &flags);
+  ಆದರೆ( rc==SQLITE_OK ){
+    ಸ್ಮರಣೆ_ನಕಲು(p->aBuf, "sqlite_ostrace1.....", 20);
+    p->i_ಸ್ಥಾನಾಂತರ = 0;
     p->nBuf = 20;
-    rc = sqlite3_vfs_register((sqlite3_vfs *)p, 1);
+    rc = sqlite3_vfs_ರಿಜಿಸ್ಟರ್((sqlite3_vfs *)p, 1);
   }
-  if( rc ){
+  ಆದರೆ( rc ){
     vfslog_finalize(p);
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
-int sqlite3_vfslog_annotate(const char *zVfs, const char *zMsg){
+ಪೂರ್ಣಾಂಕ sqlite3_vfslog_annotate(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zVfs, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಸಂದೇಶ){
   sqlite3_vfs *pVfs;
-  pVfs = sqlite3_vfs_find(zVfs);
-  if( !pVfs || pVfs->xOpen!=vfslogOpen ){
-    return SQLITE_ERROR;
+  pVfs = sqlite3_vfs_ಕಂಡುಹಿಡಿ(zVfs);
+  ಆದರೆ( !pVfs || pVfs->xOpen!=vfslogOpen ){
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   } 
   vfslog_call(pVfs, OS_ANNOTATE, 0, 0, 0, 0, 0);
-  vfslog_string(pVfs, zMsg);
-  return SQLITE_OK;
+  vfslog_string(pVfs, z_ಸಂದೇಶ);
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-static const char *vfslog_eventname(int eEvent){
-  const char *zEvent = 0;
+ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *vfslog_eventname(ಪೂರ್ಣಾಂಕ eEvent){
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zEvent = 0;
 
-  switch( eEvent ){
-    case OS_CLOSE:             zEvent = "xClose"; break;
-    case OS_READ:              zEvent = "xRead"; break;
-    case OS_WRITE:             zEvent = "xWrite"; break;
-    case OS_TRUNCATE:          zEvent = "xTruncate"; break;
-    case OS_SYNC:              zEvent = "xSync"; break;
-    case OS_FILESIZE:          zEvent = "xFilesize"; break;
-    case OS_LOCK:              zEvent = "xLock"; break;
-    case OS_UNLOCK:            zEvent = "xUnlock"; break;
-    case OS_CHECKRESERVEDLOCK: zEvent = "xCheckResLock"; break;
-    case OS_FILECONTROL:       zEvent = "xFileControl"; break;
-    case OS_SECTORSIZE:        zEvent = "xSectorSize"; break;
-    case OS_DEVCHAR:           zEvent = "xDeviceChar"; break;
-    case OS_OPEN:              zEvent = "xOpen"; break;
-    case OS_DELETE:            zEvent = "xDelete"; break;
-    case OS_ACCESS:            zEvent = "xAccess"; break;
-    case OS_FULLPATHNAME:      zEvent = "xFullPathname"; break;
-    case OS_RANDOMNESS:        zEvent = "xRandomness"; break;
-    case OS_SLEEP:             zEvent = "xSleep"; break;
-    case OS_CURRENTTIME:       zEvent = "xCurrentTime"; break;
+  ಆಯ್ಕೆ( eEvent ){
+    ಸ್ಥಿತಿ OS_CLOSE:             zEvent = "xClose"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_READ:              zEvent = "xRead"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_WRITE:             zEvent = "xWrite"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_TRUNCATE:          zEvent = "xTruncate"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_SYNC:              zEvent = "xSync"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_FILESIZE:          zEvent = "xFilesize"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_ಬೀಗ:              zEvent = "xLock"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_UNLOCK:            zEvent = "xUnlock"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_CHECKRESERVEDLOCK: zEvent = "xCheckResLock"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_FILECONTROL:       zEvent = "xFileControl"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_SECTORSIZE:        zEvent = "xSectorSize"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_DEVCHAR:           zEvent = "xDeviceChar"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_OPEN:              zEvent = "xOpen"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_DELETE:            zEvent = "xDelete"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_ACCESS:            zEvent = "xAccess"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_FULLPATHNAME:      zEvent = "xFullPathname"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_RANDOMNESS:        zEvent = "xRandomness"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_SLEEP:             zEvent = "xSleep"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_CURRENTTIME:       zEvent = "xCurrentTime"; ನಿಲ್ಲಿಸು;
 
-    case OS_SHMUNMAP:          zEvent = "xShmUnmap"; break;
-    case OS_SHMLOCK:           zEvent = "xShmLock"; break;
-    case OS_SHMBARRIER:        zEvent = "xShmBarrier"; break;
-    case OS_SHMMAP:            zEvent = "xShmMap"; break;
+    ಸ್ಥಿತಿ OS_SHMUNMAP:          zEvent = "xShmUnmap"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_SHMLOCK:           zEvent = "xShmLock"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_SHMBARRIER:        zEvent = "xShmBarrier"; ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OS_SHMMAP:            zEvent = "xShmMap"; ನಿಲ್ಲಿಸು;
 
-    case OS_ANNOTATE:          zEvent = "annotation"; break;
+    ಸ್ಥಿತಿ OS_ANNOTATE:          zEvent = "annotation"; ನಿಲ್ಲಿಸು;
   }
 
-  return zEvent;
+  ಹಿಂತಿರುಗಿ zEvent;
 }
 
-typedef struct VfslogVtab VfslogVtab;
-typedef struct VfslogCsr VfslogCsr;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ VfslogVtab VfslogVtab;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ VfslogCsr VfslogCsr;
 
 /*
 ** Virtual table type for the vfslog reader module.
 */
-struct VfslogVtab {
-  sqlite3_vtab base;              /* Base class */
+ರಚನೆ VfslogVtab {
+  sqlite3_vtab ತಳ;              /* Base class */
   sqlite3_file *pFd;              /* File descriptor open on vfslog file */
   sqlite3_int64 nByte;            /* Size of file in bytes */
-  char *zFile;                    /* File name for pFd */
+  ಅಕ್ಷರ *zFile;                    /* File name for pFd */
 };
 
 /*
 ** Virtual table cursor type for the vfslog reader module.
 */
-struct VfslogCsr {
-  sqlite3_vtab_cursor base;       /* Base class */
+ರಚನೆ VfslogCsr {
+  sqlite3_vtab_cursor ತಳ;       /* Base class */
   sqlite3_int64 iRowid;           /* Current rowid. */
-  sqlite3_int64 iOffset;          /* Offset of next record in file */
-  char *zTransient;               /* Transient 'file' string */
-  int nFile;                      /* Size of array azFile[] */
-  char **azFile;                  /* File strings */
-  unsigned char aBuf[1024];       /* Current vfs log entry (read from file) */
+  sqlite3_int64 i_ಸ್ಥಾನಾಂತರ;          /* Offset of next record in file */
+  ಅಕ್ಷರ *zTransient;               /* Transient 'file' string */
+  ಪೂರ್ಣಾಂಕ nFile;                      /* Size of array azFile[] */
+  ಅಕ್ಷರ **azFile;                  /* File strings */
+  ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ aBuf[1024];       /* Current vfs log entry (read from file) */
 };
 
-static unsigned int get32bits(unsigned char *p){
-  return (p[0]<<24) + (p[1]<<16) + (p[2]<<8) + p[3];
+ಸ್ಥಿರ ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ get32bits(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *p){
+  ಹಿಂತಿರುಗಿ (p[0]<<24) + (p[1]<<16) + (p[2]<<8) + p[3];
 }
 
 /*
@@ -835,172 +835,172 @@ static unsigned int get32bits(unsigned char *p){
 ** If the string begins with an SQL quote character it is overwritten by
 ** the dequoted version. Otherwise the buffer is left unmodified.
 */
-static void dequote(char *z){
-  char quote;                     /* Quote character (if any ) */
+ಸ್ಥಿರ ಶೂನ್ಯ dequote(ಅಕ್ಷರ *z){
+  ಅಕ್ಷರ quote;                     /* Quote character (if any ) */
   quote = z[0];
-  if( quote=='[' || quote=='\'' || quote=='"' || quote=='`' ){
-    int iIn = 1;                  /* Index of next byte to read from input */
-    int iOut = 0;                 /* Index of next byte to write to output */
-    if( quote=='[' ) quote = ']';  
-    while( z[iIn] ){
-      if( z[iIn]==quote ){
-        if( z[iIn+1]!=quote ) break;
-        z[iOut++] = quote;
-        iIn += 2;
-      }else{
-        z[iOut++] = z[iIn++];
+  ಆದರೆ( quote=='[' || quote=='\'' || quote=='"' || quote=='`' ){
+    ಪೂರ್ಣಾಂಕ i_ಒಳ = 1;                  /* Index of next byte to read from input */
+    ಪೂರ್ಣಾಂಕ i_ಹೊರಹೋಗು = 0;                 /* Index of next byte to write to output */
+    ಆದರೆ( quote=='[' ) quote = ']';  
+    ಆಗ( z[i_ಒಳ] ){
+      ಆದರೆ( z[i_ಒಳ]==quote ){
+        ಆದರೆ( z[i_ಒಳ+1]!=quote ) ನಿಲ್ಲಿಸು;
+        z[i_ಹೊರಹೋಗು++] = quote;
+        i_ಒಳ += 2;
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        z[i_ಹೊರಹೋಗು++] = z[i_ಒಳ++];
       }
     }
-    z[iOut] = '\0';
+    z[i_ಹೊರಹೋಗು] = '\0';
   }
 }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
 /*
 ** Connect to or create a vfslog virtual table.
 */
-static int vlogConnect(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlogConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಂಕ argc, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ಅಕ್ಷರ **pzErr
 ){
   sqlite3_vfs *pVfs;              /* VFS used to read log file */
-  int flags;                      /* flags passed to pVfs->xOpen() */
+  ಪೂರ್ಣಾಂಕ flags;                      /* flags passed to pVfs->xOpen() */
   VfslogVtab *p;
-  int rc;
-  int nByte;
-  char *zFile;
+  ಪೂರ್ಣಾಂಕ rc;
+  ಪೂರ್ಣಾಂಕ nByte;
+  ಅಕ್ಷರ *zFile;
 
   *ppVtab = 0;
-  pVfs = sqlite3_vfs_find(0);
-  nByte = sizeof(VfslogVtab) + pVfs->szOsFile + pVfs->mxPathname;
+  pVfs = sqlite3_vfs_ಕಂಡುಹಿಡಿ(0);
+  nByte = ಗಾತ್ರ(VfslogVtab) + pVfs->szOsFile + pVfs->mxPathname;
   p = sqlite3_malloc(nByte);
-  if( p==0 ) return SQLITE_NOMEM;
+  ಆದರೆ( p==0 ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
   memset(p, 0, nByte);
 
   p->pFd = (sqlite3_file *)&p[1];
-  p->zFile = &((char *)p->pFd)[pVfs->szOsFile];
+  p->zFile = &((ಅಕ್ಷರ *)p->pFd)[pVfs->szOsFile];
 
   zFile = sqlite3_mprintf("%s", argv[3]);
-  if( !zFile ){
+  ಆದರೆ( !zFile ){
     sqlite3_free(p);
-    return SQLITE_NOMEM;
+    ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
   }
   dequote(zFile);
-  pVfs->xFullPathname(pVfs, zFile, pVfs->mxPathname, p->zFile);
+  pVfs->x_ತುಂಬಿದ_Pathname(pVfs, zFile, pVfs->mxPathname, p->zFile);
   sqlite3_free(zFile);
 
   flags = SQLITE_OPEN_READWRITE|SQLITE_OPEN_SUPER_JOURNAL;
   rc = pVfs->xOpen(pVfs, p->zFile, p->pFd, flags, &flags);
 
-  if( rc==SQLITE_OK ){
-    p->pFd->pMethods->xFileSize(p->pFd, &p->nByte);
+  ಆದರೆ( rc==SQLITE_OK ){
+    p->pFd->pMethods->x_File_ಗಾತ್ರ(p->pFd, &p->nByte);
     sqlite3_declare_vtab(db, 
         "CREATE TABLE xxx(event, file, click, rc, size, offset)"
     );
-    *ppVtab = &p->base;
-  }else{
+    *ppVtab = &p->ತಳ;
+  }ಇಲ್ಲದಿದ್ದರೆ{
     sqlite3_free(p);
   }
 
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** There is no "best-index". This virtual table always does a linear
 ** scan of the binary VFS log file.
 */
-static int vlogBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  pIdxInfo->estimatedCost = 10.0;
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlog_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ(sqlite3_vtab *tab, sqlite3_ಸೂಚ್ಯಂಕ_info *pIdxInfo){
+  pIdxInfo->estimated_ವೆಚ್ಚ = 10.0;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Disconnect from or destroy a vfslog virtual table.
 */
-static int vlogDisconnect(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlogDisconnect(sqlite3_vtab *pVtab){
   VfslogVtab *p = (VfslogVtab *)pVtab;
-  if( p->pFd->pMethods ){
+  ಆದರೆ( p->pFd->pMethods ){
     p->pFd->pMethods->xClose(p->pFd);
     p->pFd->pMethods = 0;
   }
   sqlite3_free(p);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Open a new vfslog cursor.
 */
-static int vlogOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlogOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   VfslogCsr *pCsr;                /* Newly allocated cursor object */
 
-  pCsr = sqlite3_malloc(sizeof(VfslogCsr));
-  if( !pCsr ) return SQLITE_NOMEM;
-  memset(pCsr, 0, sizeof(VfslogCsr));
-  *ppCursor = &pCsr->base;
-  return SQLITE_OK;
+  pCsr = sqlite3_malloc(ಗಾತ್ರ(VfslogCsr));
+  ಆದರೆ( !pCsr ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+  memset(pCsr, 0, ಗಾತ್ರ(VfslogCsr));
+  *ppCursor = &pCsr->ತಳ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Close a vfslog cursor.
 */
-static int vlogClose(sqlite3_vtab_cursor *pCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlogClose(sqlite3_vtab_cursor *pCursor){
   VfslogCsr *p = (VfslogCsr *)pCursor;
-  int i;
-  for(i=0; i<p->nFile; i++){
+  ಪೂರ್ಣಾಂಕ i;
+  ಗಾಗಿ(i=0; i<p->nFile; i++){
     sqlite3_free(p->azFile[i]);
   }
   sqlite3_free(p->azFile);
   sqlite3_free(p->zTransient);
   sqlite3_free(p);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Move a vfslog cursor to the next entry in the file.
 */
-static int vlogNext(sqlite3_vtab_cursor *pCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlog_ಮುಂದಿನ(sqlite3_vtab_cursor *pCursor){
   VfslogCsr *pCsr = (VfslogCsr *)pCursor;
   VfslogVtab *p = (VfslogVtab *)pCursor->pVtab;
-  int rc = SQLITE_OK;
-  int nRead;
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
+  ಪೂರ್ಣಾಂಕ nRead;
 
   sqlite3_free(pCsr->zTransient);
   pCsr->zTransient = 0;
 
   nRead = 24;
-  if( pCsr->iOffset+nRead<=p->nByte ){
-    int eEvent;
-    rc = p->pFd->pMethods->xRead(p->pFd, pCsr->aBuf, nRead, pCsr->iOffset);
+  ಆದರೆ( pCsr->i_ಸ್ಥಾನಾಂತರ+nRead<=p->nByte ){
+    ಪೂರ್ಣಾಂಕ eEvent;
+    rc = p->pFd->pMethods->xRead(p->pFd, pCsr->aBuf, nRead, pCsr->i_ಸ್ಥಾನಾಂತರ);
 
     eEvent = get32bits(pCsr->aBuf);
-    if( (rc==SQLITE_OK)
+    ಆದರೆ( (rc==SQLITE_OK)
      && (eEvent==OS_OPEN || eEvent==OS_DELETE || eEvent==OS_ACCESS) 
     ){
-      char buf[4];
-      rc = p->pFd->pMethods->xRead(p->pFd, buf, 4, pCsr->iOffset+nRead);
+      ಅಕ್ಷರ buf[4];
+      rc = p->pFd->pMethods->xRead(p->pFd, buf, 4, pCsr->i_ಸ್ಥಾನಾಂತರ+nRead);
       nRead += 4;
-      if( rc==SQLITE_OK ){
-        int nStr = get32bits((unsigned char *)buf);
-        char *zStr = sqlite3_malloc(nStr+1);
-        rc = p->pFd->pMethods->xRead(p->pFd, zStr, nStr, pCsr->iOffset+nRead);
+      ಆದರೆ( rc==SQLITE_OK ){
+        ಪೂರ್ಣಾಂಕ nStr = get32bits((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *)buf);
+        ಅಕ್ಷರ *zStr = sqlite3_malloc(nStr+1);
+        rc = p->pFd->pMethods->xRead(p->pFd, zStr, nStr, pCsr->i_ಸ್ಥಾನಾಂತರ+nRead);
         zStr[nStr] = '\0';
         nRead += nStr;
 
-        if( eEvent==OS_OPEN ){
-          int iFileid = get32bits(&pCsr->aBuf[4]);
-          if( iFileid>=pCsr->nFile ){
-            int nNew = sizeof(pCsr->azFile[0])*(iFileid+1);
-            pCsr->azFile = (char **)sqlite3_realloc(pCsr->azFile, nNew);
-            nNew -= sizeof(pCsr->azFile[0])*pCsr->nFile;
+        ಆದರೆ( eEvent==OS_OPEN ){
+          ಪೂರ್ಣಾಂಕ iFileid = get32bits(&pCsr->aBuf[4]);
+          ಆದರೆ( iFileid>=pCsr->nFile ){
+            ಪೂರ್ಣಾಂಕ nNew = ಗಾತ್ರ(pCsr->azFile[0])*(iFileid+1);
+            pCsr->azFile = (ಅಕ್ಷರ **)sqlite3_realloc(pCsr->azFile, nNew);
+            nNew -= ಗಾತ್ರ(pCsr->azFile[0])*pCsr->nFile;
             memset(&pCsr->azFile[pCsr->nFile], 0, nNew);
             pCsr->nFile = iFileid+1;
           }
           sqlite3_free(pCsr->azFile[iFileid]);
           pCsr->azFile[iFileid] = zStr;
-        }else{
+        }ಇಲ್ಲದಿದ್ದರೆ{
           pCsr->zTransient = zStr;
         }
       }
@@ -1008,79 +1008,79 @@ static int vlogNext(sqlite3_vtab_cursor *pCursor){
   }
 
   pCsr->iRowid += 1;
-  pCsr->iOffset += nRead;
-  return rc;
+  pCsr->i_ಸ್ಥಾನಾಂತರ += nRead;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
-static int vlogEof(sqlite3_vtab_cursor *pCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlogEof(sqlite3_vtab_cursor *pCursor){
   VfslogCsr *pCsr = (VfslogCsr *)pCursor;
   VfslogVtab *p = (VfslogVtab *)pCursor->pVtab;
-  return (pCsr->iOffset>=p->nByte);
+  ಹಿಂತಿರುಗಿ (pCsr->i_ಸ್ಥಾನಾಂತರ>=p->nByte);
 }
 
-static int vlogFilter(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlogFilter(
   sqlite3_vtab_cursor *pCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ಪೂರ್ಣಾಂಕ idx_ಅಂಕೆ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *idxStr,
+  ಪೂರ್ಣಾಂಕ argc, sqlite3_ಮೌಲ್ಯ **argv
 ){
   VfslogCsr *pCsr = (VfslogCsr *)pCursor;
   pCsr->iRowid = 0;
-  pCsr->iOffset = 20;
-  return vlogNext(pCursor);
+  pCsr->i_ಸ್ಥಾನಾಂತರ = 20;
+  ಹಿಂತಿರುಗಿ vlog_ಮುಂದಿನ(pCursor);
 }
 
-static int vlogColumn(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlog_ಸ್ತಂಭ(
   sqlite3_vtab_cursor *pCursor, 
   sqlite3_context *ctx, 
-  int i
+  ಪೂರ್ಣಾಂಕ i
 ){
-  unsigned int val;
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ val;
   VfslogCsr *pCsr = (VfslogCsr *)pCursor;
 
-  assert( i<7 );
+  ಪ್ರತಿಜ್ಞಾ( i<7 );
   val = get32bits(&pCsr->aBuf[4*i]);
 
-  switch( i ){
-    case 0: {
-      sqlite3_result_text(ctx, vfslog_eventname(val), -1, SQLITE_STATIC);
-      break;
+  ಆಯ್ಕೆ( i ){
+    ಸ್ಥಿತಿ 0: {
+      sqlite3_ಫಲಿತಾಂಶ_ಪಠ್ಯ(ctx, vfslog_eventname(val), -1, SQLITE_STATIC);
+      ನಿಲ್ಲಿಸು;
     }
-    case 1: {
-      char *zStr = pCsr->zTransient;
-      if( val!=0 && val<(unsigned)pCsr->nFile ){
+    ಸ್ಥಿತಿ 1: {
+      ಅಕ್ಷರ *zStr = pCsr->zTransient;
+      ಆದರೆ( val!=0 && val<(ಚಿಹ್ನೆರಹಿತ)pCsr->nFile ){
         zStr = pCsr->azFile[val];
       }
-      sqlite3_result_text(ctx, zStr, -1, SQLITE_TRANSIENT);
-      break;
+      sqlite3_ಫಲಿತಾಂಶ_ಪಠ್ಯ(ctx, zStr, -1, SQLITE_TRANSIENT);
+      ನಿಲ್ಲಿಸು;
     }
-    default:
-      sqlite3_result_int(ctx, val);
-      break;
+    ಪೂರ್ವನಿಯೋಜಿತ:
+      sqlite3_ಫಲಿತಾಂಶ_int(ctx, val);
+      ನಿಲ್ಲಿಸು;
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-static int vlogRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ vlogRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   VfslogCsr *pCsr = (VfslogCsr *)pCursor;
   *pRowid = pCsr->iRowid;
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
-int sqlite3_vfslog_register(sqlite3 *db){
-  static sqlite3_module vfslog_module = {
+ಪೂರ್ಣಾಂಕ sqlite3_vfslog_ರಿಜಿಸ್ಟರ್(sqlite3 *db){
+  ಸ್ಥಿರ sqlite3_module vfslog_module = {
     0,                            /* iVersion */
     vlogConnect,                /* xCreate */
     vlogConnect,                /* xConnect */
-    vlogBestIndex,              /* xBestIndex */
+    vlog_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ,              /* xBestIndex */
     vlogDisconnect,             /* xDisconnect */
     vlogDisconnect,             /* xDestroy */
     vlogOpen,                   /* xOpen - open a cursor */
     vlogClose,                  /* xClose - close a cursor */
     vlogFilter,                 /* xFilter - configure scan constraints */
-    vlogNext,                   /* xNext - advance a cursor */
+    vlog_ಮುಂದಿನ,                   /* xNext - advance a cursor */
     vlogEof,                    /* xEof - check for end of scan */
-    vlogColumn,                 /* xColumn - read data */
+    vlog_ಸ್ತಂಭ,                 /* xColumn - read data */
     vlogRowid,                  /* xRowid - read data */
     0,                            /* xUpdate */
     0,                            /* xBegin */
@@ -1097,125 +1097,125 @@ int sqlite3_vfslog_register(sqlite3 *db){
  };
 
   sqlite3_create_module(db, "vfslog", &vfslog_module, 0);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_VIRTUALTABLE */
 
 /**************************************************************************
 ***************************************************************************
 ** Tcl interface starts here.
 */
 
-#if defined(SQLITE_TEST) || defined(TCLSH)
+#ಆದರೆ defined(SQLITE_TEST) || defined(TCLSH)
 
-#include "tclsqlite.h"
+#ಅನ್ತರ್ಭಾವ "tclsqlite.h"
 
-static int SQLITE_TCLAPI test_vfslog(
-  void *clientData,
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ SQLITE_TCLAPI test_vfslog(
+  ಶೂನ್ಯ *client_ದತ್ತಾಂಶ,
   Tcl_Interp *interp,
-  int objc,
+  ಪೂರ್ಣಾಂಕ objc,
   Tcl_Obj *CONST objv[]
 ){
-  struct SqliteDb { sqlite3 *db; };
+  ರಚನೆ SqliteDb { sqlite3 *db; };
   sqlite3 *db;
   Tcl_CmdInfo cmdInfo;
-  int rc = SQLITE_ERROR;
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_ERROR;
 
-  static const char *strs[] = { "annotate", "finalize", "new",  "register", 0 };
-  enum VL_enum { VL_ANNOTATE, VL_FINALIZE, VL_NEW, VL_REGISTER };
-  int iSub;
+  ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *strs[] = { "annotate", "finalize", "new",  "register", 0 };
+  ಎಣಿಕೆ VL_enum { VL_ANNOTATE, VL_FINALIZE, VL_NEW, VL_ರಿಜಿಸ್ಟರ್ };
+  ಪೂರ್ಣಾಂಕ iSub;
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
-    return TCL_ERROR;
+  ಆದರೆ( objc<2 ){
+    Tcl_Wrong_ಅಂಕೆ_ವಾದಗಳು(interp, 1, objv, "SUB-COMMAND ...");
+    ಹಿಂತಿರುಗಿ TCL_ERROR;
   }
-  if( Tcl_GetIndexFromObj(interp, objv[1], strs, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  ಆದರೆ( Tcl_Get_ಸೂಚ್ಯಂಕ_From_Obj(interp, objv[1], strs, "sub-command", 0, &iSub) ){
+    ಹಿಂತಿರುಗಿ TCL_ERROR;
   }
 
-  switch( (enum VL_enum)iSub ){
-    case VL_ANNOTATE: {
-      char *zVfs;
-      char *zMsg;
-      if( objc!=4 ){
-        Tcl_WrongNumArgs(interp, 3, objv, "VFS");
-        return TCL_ERROR;
+  ಆಯ್ಕೆ( (ಎಣಿಕೆ VL_enum)iSub ){
+    ಸ್ಥಿತಿ VL_ANNOTATE: {
+      ಅಕ್ಷರ *zVfs;
+      ಅಕ್ಷರ *z_ಸಂದೇಶ;
+      ಆದರೆ( objc!=4 ){
+        Tcl_Wrong_ಅಂಕೆ_ವಾದಗಳು(interp, 3, objv, "VFS");
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
       zVfs = Tcl_GetString(objv[2]);
-      zMsg = Tcl_GetString(objv[3]);
-      rc = sqlite3_vfslog_annotate(zVfs, zMsg);
-      if( rc!=SQLITE_OK ){
-        Tcl_AppendResult(interp, "failed", (char*)0);
-        return TCL_ERROR;
+      z_ಸಂದೇಶ = Tcl_GetString(objv[3]);
+      rc = sqlite3_vfslog_annotate(zVfs, z_ಸಂದೇಶ);
+      ಆದರೆ( rc!=SQLITE_OK ){
+        Tcl_Append_ಫಲಿತಾಂಶ(interp, "failed", (ಅಕ್ಷರ*)0);
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
-      break;
+      ನಿಲ್ಲಿಸು;
     }
-    case VL_FINALIZE: {
-      char *zVfs;
-      if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "VFS");
-        return TCL_ERROR;
+    ಸ್ಥಿತಿ VL_FINALIZE: {
+      ಅಕ್ಷರ *zVfs;
+      ಆದರೆ( objc!=3 ){
+        Tcl_Wrong_ಅಂಕೆ_ವಾದಗಳು(interp, 2, objv, "VFS");
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
       zVfs = Tcl_GetString(objv[2]);
       rc = sqlite3_vfslog_finalize(zVfs);
-      if( rc!=SQLITE_OK ){
-        Tcl_AppendResult(interp, "failed", (char*)0);
-        return TCL_ERROR;
+      ಆದರೆ( rc!=SQLITE_OK ){
+        Tcl_Append_ಫಲಿತಾಂಶ(interp, "failed", (ಅಕ್ಷರ*)0);
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
-      break;
+      ನಿಲ್ಲಿಸು;
     };
 
-    case VL_NEW: {
-      char *zVfs;
-      char *zParent;
-      char *zLog;
-      if( objc!=5 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "VFS PARENT LOGFILE");
-        return TCL_ERROR;
+    ಸ್ಥಿತಿ VL_NEW: {
+      ಅಕ್ಷರ *zVfs;
+      ಅಕ್ಷರ *z_ಪೋಷಕ;
+      ಅಕ್ಷರ *zLog;
+      ಆದರೆ( objc!=5 ){
+        Tcl_Wrong_ಅಂಕೆ_ವಾದಗಳು(interp, 2, objv, "VFS PARENT LOGFILE");
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
       zVfs = Tcl_GetString(objv[2]);
-      zParent = Tcl_GetString(objv[3]);
+      z_ಪೋಷಕ = Tcl_GetString(objv[3]);
       zLog = Tcl_GetString(objv[4]);
-      if( *zParent=='\0' ) zParent = 0;
-      rc = sqlite3_vfslog_new(zVfs, zParent, zLog);
-      if( rc!=SQLITE_OK ){
-        Tcl_AppendResult(interp, "failed", (char*)0);
-        return TCL_ERROR;
+      ಆದರೆ( *z_ಪೋಷಕ=='\0' ) z_ಪೋಷಕ = 0;
+      rc = sqlite3_vfslog_new(zVfs, z_ಪೋಷಕ, zLog);
+      ಆದರೆ( rc!=SQLITE_OK ){
+        Tcl_Append_ಫಲಿತಾಂಶ(interp, "failed", (ಅಕ್ಷರ*)0);
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
-      break;
+      ನಿಲ್ಲಿಸು;
     };
 
-    case VL_REGISTER: {
-      char *zDb;
-      if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "DB");
-        return TCL_ERROR;
+    ಸ್ಥಿತಿ VL_ರಿಜಿಸ್ಟರ್: {
+      ಅಕ್ಷರ *zDb;
+      ಆದರೆ( objc!=3 ){
+        Tcl_Wrong_ಅಂಕೆ_ವಾದಗಳು(interp, 2, objv, "DB");
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
-#ifdef SQLITE_OMIT_VIRTUALTABLE
-      Tcl_AppendResult(interp, "vfslog not available because of "
-                               "SQLITE_OMIT_VIRTUALTABLE", (void*)0);
-      return TCL_ERROR;
-#else
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_OMIT_VIRTUALTABLE
+      Tcl_Append_ಫಲಿತಾಂಶ(interp, "vfslog not available because of "
+                               "SQLITE_OMIT_VIRTUALTABLE", (ಶೂನ್ಯ*)0);
+      ಹಿಂತಿರುಗಿ TCL_ERROR;
+#ಇಲ್ಲದಿದ್ದರೆ
       zDb = Tcl_GetString(objv[2]);
-      if( Tcl_GetCommandInfo(interp, zDb, &cmdInfo) ){
-        db = ((struct SqliteDb*)cmdInfo.objClientData)->db;
-        rc = sqlite3_vfslog_register(db);
+      ಆದರೆ( Tcl_GetCommandInfo(interp, zDb, &cmdInfo) ){
+        db = ((ರಚನೆ SqliteDb*)cmdInfo.obj_Client_ದತ್ತಾಂಶ)->db;
+        rc = sqlite3_vfslog_ರಿಜಿಸ್ಟರ್(db);
       }
-      if( rc!=SQLITE_OK ){
-        Tcl_AppendResult(interp, "bad sqlite3 handle: ", zDb, (void*)0);
-        return TCL_ERROR;
+      ಆದರೆ( rc!=SQLITE_OK ){
+        Tcl_Append_ಫಲಿತಾಂಶ(interp, "bad sqlite3 handle: ", zDb, (ಶೂನ್ಯ*)0);
+        ಹಿಂತಿರುಗಿ TCL_ERROR;
       }
-      break;
-#endif
+      ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
     }
   }
 
-  return TCL_OK;
+  ಹಿಂತಿರುಗಿ TCL_OK;
 }
 
-int SqlitetestOsinst_Init(Tcl_Interp *interp){
+ಪೂರ್ಣಾಂಕ SqlitetestOsinst_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "vfslog", test_vfslog, 0, 0);
-  return TCL_OK;
+  ಹಿಂತಿರುಗಿ TCL_OK;
 }
 
-#endif /* SQLITE_TEST */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_TEST */

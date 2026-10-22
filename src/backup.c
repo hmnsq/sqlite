@@ -12,33 +12,33 @@
 ** This file contains the implementation of the sqlite3_backup_XXX() 
 ** API functions and the related features.
 */
-#include "sqliteInt.h"
-#include "btreeInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "btreeInt.h"
 
 /*
 ** Structure allocated for each backup operation.
 */
-struct sqlite3_backup {
+ರಚನೆ sqlite3_backup {
   sqlite3* pDestDb;        /* Destination database handle */
-  char *zDestDb;
+  ಅಕ್ಷರ *zDestDb;
   Btree *pDest;            /* Destination b-tree file */
   u32 iDestSchema;         /* Original schema cookie in destination */
-  int bDestLocked;         /* True once a write-transaction is open on pDest */
+  ಪೂರ್ಣಾಂಕ bDestLocked;         /* True once a write-transaction is open on pDest */
 
-  Pgno iNext;              /* Page number of the next source page to copy */
+  Pgno i_ಮುಂದಿನ;              /* Page number of the next source page to copy */
   sqlite3* pSrcDb;         /* Source database handle */
   Btree *pSrc;             /* Source b-tree file */
 
-  int rc;                  /* Backup process error code */
+  ಪೂರ್ಣಾಂಕ rc;                  /* Backup process error code */
 
   /* These two variables are set by every call to backup_step(). They are
   ** read by calls to backup_remaining() and backup_pagecount().
   */
-  Pgno nRemaining;         /* Number of pages left to copy */
+  Pgno n_ಉಳಿದ;         /* Number of pages left to copy */
   Pgno nPagecount;         /* Total number of pages to copy */
 
-  int isAttached;          /* True once backup has been registered with pager */
-  sqlite3_backup *pNext;   /* Next backup associated with source pager */
+  ಪೂರ್ಣಾಂಕ isAttached;          /* True once backup has been registered with pager */
+  sqlite3_backup *p_ಮುಂದಿನ;   /* Next backup associated with source pager */
 };
 
 /*
@@ -80,40 +80,40 @@ struct sqlite3_backup {
 ** function. If an error occurs while doing so, return 0 and write an 
 ** error message to pErrorDb.
 */
-static Btree *findBtree(sqlite3 *pErrorDb, sqlite3 *pDb, const char *zDb){
-  int i;
+ಸ್ಥಿರ Btree *ಕಂಡುಹಿಡಿ_Btree(sqlite3 *pErrorDb, sqlite3 *pDb, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDb){
+  ಪೂರ್ಣಾಂಕ i;
 
-  assert( pDb!=0 );
-  i = sqlite3FindDbName(pDb, zDb);
-  if( i==1 ){
+  ಪ್ರತಿಜ್ಞಾ( pDb!=0 );
+  i = sqlite3_ಕಂಡುಹಿಡಿ_Db_Name(pDb, zDb);
+  ಆದರೆ( i==1 ){
     Parse sParse;
-    int rc = 0;
+    ಪೂರ್ಣಾಂಕ rc = 0;
     sqlite3ParseObjectInit(&sParse,pDb);
-    if( sqlite3OpenTempDatabase(&sParse) ){
-      sqlite3ErrorWithMsg(pErrorDb, sParse.rc, "%s", sParse.zErrMsg);
+    ಆದರೆ( sqlite3_Open_ತಾತ್ಕಾಲಿಕ_Database(&sParse) ){
+      sqlite3_Error_With_ಸಂದೇಶ(pErrorDb, sParse.rc, "%s", sParse.z_Err_ಸಂದೇಶ);
       rc = SQLITE_ERROR;
     }
-    sqlite3DbFree(pErrorDb, sParse.zErrMsg);
+    sqlite3DbFree(pErrorDb, sParse.z_Err_ಸಂದೇಶ);
     sqlite3ParseObjectReset(&sParse);
-    if( rc ){
-      return 0;
+    ಆದರೆ( rc ){
+      ಹಿಂತಿರುಗಿ 0;
     }
   }
 
-  if( i<0 ){
-    sqlite3ErrorWithMsg(pErrorDb, SQLITE_ERROR, "unknown database %s", zDb);
-    return 0;
+  ಆದರೆ( i<0 ){
+    sqlite3_Error_With_ಸಂದೇಶ(pErrorDb, SQLITE_ERROR, "unknown database %s", zDb);
+    ಹಿಂತಿರುಗಿ 0;
   }
 
-  return pDb->aDb[i].pBt;
+  ಹಿಂತಿರುಗಿ pDb->aDb[i].pBt;
 }
 
 /*
 ** Attempt to set the page size of the destination to match the page size
 ** of the source.
 */
-static int setDestPgsz(Btree *pDest, Btree *pSrc){
-  return sqlite3BtreeSetPageSize(pDest, sqlite3BtreeGetPageSize(pSrc), 0, 0);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಗಣ_Dest_Pgsz(Btree *pDest, Btree *pSrc){
+  ಹಿಂತಿರುಗಿ sqlite3_Btree_ಗಣ_ಪುಟ_ಗಾತ್ರ(pDest, sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(pSrc), 0, 0);
 }
 
 /*
@@ -122,12 +122,12 @@ static int setDestPgsz(Btree *pDest, Btree *pSrc){
 ** is an open read-transaction, return SQLITE_ERROR and leave an error 
 ** message in database handle db.
 */
-static int checkReadTransaction(sqlite3 *db, Btree *p){
-  if( sqlite3BtreeTxnState(p)!=SQLITE_TXN_NONE ){
-    sqlite3ErrorWithMsg(db, SQLITE_ERROR, "destination database is in use");
-    return SQLITE_ERROR;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ checkReadTransaction(sqlite3 *db, Btree *p){
+  ಆದರೆ( sqlite3BtreeTxnState(p)!=SQLITE_TXN_NONE ){
+    sqlite3_Error_With_ಸಂದೇಶ(db, SQLITE_ERROR, "destination database is in use");
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   }
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -140,18 +140,18 @@ static int checkReadTransaction(sqlite3 *db, Btree *p){
 */
 sqlite3_backup *sqlite3_backup_init(
   sqlite3* pDestDb,                     /* Database to write to */
-  const char *zDestDb,                  /* Name of database within pDestDb */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDestDb,                  /* Name of database within pDestDb */
   sqlite3* pSrcDb,                      /* Database connection to read from */
-  const char *zSrcDb                    /* Name of database within pSrcDb */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSrcDb                    /* Name of database within pSrcDb */
 ){
   sqlite3_backup *p;                    /* Value to return */
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(pSrcDb)||!sqlite3SafetyCheckOk(pDestDb) ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_API_ARMOR
+  ಆದರೆ( !sqlite3SafetyCheckOk(pSrcDb)||!sqlite3SafetyCheckOk(pDestDb) ){
+    (ಶೂನ್ಯ)SQLITE_MISUSE_BKPT;
+    ಹಿಂತಿರುಗಿ 0;
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
   /* Lock the source database handle. The destination database
   ** handle is not locked in this routine, but it is locked in
@@ -164,42 +164,42 @@ sqlite3_backup *sqlite3_backup_init(
   sqlite3_mutex_enter(pSrcDb->mutex);
   sqlite3_mutex_enter(pDestDb->mutex);
 
-  if( pSrcDb==pDestDb ){
-    sqlite3ErrorWithMsg(
+  ಆದರೆ( pSrcDb==pDestDb ){
+    sqlite3_Error_With_ಸಂದೇಶ(
         pDestDb, SQLITE_ERROR, "source and destination must be distinct"
     );
     p = 0;
-  }else {
-    int nDest = sqlite3Strlen30(zDestDb);
+  }ಇಲ್ಲದಿದ್ದರೆ {
+    ಪೂರ್ಣಾಂಕ nDest = sqlite3Strlen30(zDestDb);
 
     /* Allocate space for a new sqlite3_backup object...
     ** EVIDENCE-OF: R-64852-21591 The sqlite3_backup object is created by a
     ** call to sqlite3_backup_init() and is destroyed by a call to
     ** sqlite3_backup_finish(). */
-    p = (sqlite3_backup*)sqlite3MallocZero(sizeof(sqlite3_backup)+nDest+1);
-    if( !p ){
+    p = (sqlite3_backup*)sqlite3MallocZero(ಗಾತ್ರ(sqlite3_backup)+nDest+1);
+    ಆದರೆ( !p ){
       sqlite3Error(pDestDb, SQLITE_NOMEM_BKPT);
-    }else{
-      p->zDestDb = (char*)&p[1];
-      memcpy(p->zDestDb, zDestDb, nDest);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      p->zDestDb = (ಅಕ್ಷರ*)&p[1];
+      ಸ್ಮರಣೆ_ನಕಲು(p->zDestDb, zDestDb, nDest);
     }
   }
 
   /* If the allocation succeeded, populate the new object. */
-  if( p ){
+  ಆದರೆ( p ){
     /* Do not store the pointer to the destination b-tree at this point.
     ** This is because there is nothing preventing it from being detached
     ** or otherwise freed before the first call to sqlite3_backup_step()
     ** on this object. The source b-tree does not have this problem, as
     ** incrementing Btree.nBackup (see below) effectively locks the object. */
-    Btree *pDest = findBtree(pDestDb, pDestDb, zDestDb);
-    p->pSrc = findBtree(pDestDb, pSrcDb, zSrcDb);
+    Btree *pDest = ಕಂಡುಹಿಡಿ_Btree(pDestDb, pDestDb, zDestDb);
+    p->pSrc = ಕಂಡುಹಿಡಿ_Btree(pDestDb, pSrcDb, zSrcDb);
     p->pDestDb = pDestDb;
     p->pSrcDb = pSrcDb;
-    p->iNext = 1;
+    p->i_ಮುಂದಿನ = 1;
     p->isAttached = 0;
 
-    if( 0==p->pSrc || 0==pDest 
+    ಆದರೆ( 0==p->pSrc || 0==pDest 
      || checkReadTransaction(pDestDb, pDest)!=SQLITE_OK 
      ){
       /* One (or both) of the named databases did not exist or an OOM
@@ -211,13 +211,13 @@ sqlite3_backup *sqlite3_backup_init(
       p = 0;
     }
   }
-  if( p ){
+  ಆದರೆ( p ){
     p->pSrc->nBackup++;
   }
 
   sqlite3_mutex_leave(pDestDb->mutex);
   sqlite3_mutex_leave(pSrcDb->mutex);
-  return p;
+  ಹಿಂತಿರುಗಿ p;
 }
 
 /*
@@ -225,8 +225,8 @@ sqlite3_backup *sqlite3_backup_init(
 ** considered fatal if encountered during a backup operation. All errors
 ** are considered fatal except for SQLITE_BUSY and SQLITE_LOCKED.
 */
-static int isFatalError(int rc){
-  return (rc!=SQLITE_OK && rc!=SQLITE_BUSY && ALWAYS(rc!=SQLITE_LOCKED));
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ isFatalError(ಪೂರ್ಣಾಂಕ rc){
+  ಹಿಂತಿರುಗಿ (rc!=SQLITE_OK && rc!=SQLITE_BUSY && ALWAYS(rc!=SQLITE_LOCKED));
 }
 
 /*
@@ -234,41 +234,41 @@ static int isFatalError(int rc){
 ** page iSrcPg from the source database. Copy this data into the 
 ** destination database.
 */
-static int backupOnePage(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ backup_One_ಪುಟ(
   sqlite3_backup *p,              /* Backup handle */
   Pgno iSrcPg,                    /* Source database page to backup */
-  const u8 *zSrcData,             /* Source database page data */
-  int bUpdate                     /* True for an update, false otherwise */
+  ಸ್ಥಿರಾಂಕ u8 *z_Src_ದತ್ತಾಂಶ,             /* Source database page data */
+  ಪೂರ್ಣಾಂಕ bUpdate                     /* True for an update, false otherwise */
 ){
-  Pager * const pDestPager = sqlite3BtreePager(p->pDest);
-  const int nSrcPgsz = sqlite3BtreeGetPageSize(p->pSrc);
-  int nDestPgsz = sqlite3BtreeGetPageSize(p->pDest);
-  const int nCopy = MIN(nSrcPgsz, nDestPgsz);
-  const i64 iEnd = (i64)iSrcPg*(i64)nSrcPgsz;
-  int rc = SQLITE_OK;
+  Pager * ಸ್ಥಿರಾಂಕ pDestPager = sqlite3BtreePager(p->pDest);
+  ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ nSrcPgsz = sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(p->pSrc);
+  ಪೂರ್ಣಾಂಕ nDestPgsz = sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(p->pDest);
+  ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ nCopy = MIN(nSrcPgsz, nDestPgsz);
+  ಸ್ಥಿರಾಂಕ i64 i_ಕೊನೆ = (i64)iSrcPg*(i64)nSrcPgsz;
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
   i64 iOff;
 
-  assert( sqlite3BtreeGetReserveNoMutex(p->pSrc)>=0 );
-  assert( p->bDestLocked );
-  assert( !isFatalError(p->rc) );
-  assert( iSrcPg!=PENDING_BYTE_PAGE(p->pSrc->pBt) );
-  assert( zSrcData );
-  assert( nSrcPgsz==nDestPgsz || sqlite3PagerIsMemdb(pDestPager)==0 );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3BtreeGetReserveNoMutex(p->pSrc)>=0 );
+  ಪ್ರತಿಜ್ಞಾ( p->bDestLocked );
+  ಪ್ರತಿಜ್ಞಾ( !isFatalError(p->rc) );
+  ಪ್ರತಿಜ್ಞಾ( iSrcPg!=PENDING_BYTE_ಪುಟ(p->pSrc->pBt) );
+  ಪ್ರತಿಜ್ಞಾ( z_Src_ದತ್ತಾಂಶ );
+  ಪ್ರತಿಜ್ಞಾ( nSrcPgsz==nDestPgsz || sqlite3PagerIsMemdb(pDestPager)==0 );
 
   /* This loop runs once for each destination page spanned by the source 
   ** page. For each iteration, variable iOff is set to the byte offset
   ** of the destination page.
   */
-  for(iOff=iEnd-(i64)nSrcPgsz; rc==SQLITE_OK && iOff<iEnd; iOff+=nDestPgsz){
-    DbPage *pDestPg = 0;
+  ಗಾಗಿ(iOff=i_ಕೊನೆ-(i64)nSrcPgsz; rc==SQLITE_OK && iOff<i_ಕೊನೆ; iOff+=nDestPgsz){
+    Db_ಪುಟ *pDestPg = 0;
     Pgno iDest = (Pgno)(iOff/nDestPgsz)+1;
-    if( iDest==PENDING_BYTE_PAGE(p->pDest->pBt) ) continue;
-    if( SQLITE_OK==(rc = sqlite3PagerGet(pDestPager, iDest, &pDestPg, 0))
+    ಆದರೆ( iDest==PENDING_BYTE_ಪುಟ(p->pDest->pBt) ) ಮುಂದುವರಿ;
+    ಆದರೆ( SQLITE_OK==(rc = sqlite3PagerGet(pDestPager, iDest, &pDestPg, 0))
      && SQLITE_OK==(rc = sqlite3PagerWrite(pDestPg))
     ){
-      const u8 *zIn = &zSrcData[iOff%nSrcPgsz];
-      u8 *zDestData = sqlite3PagerGetData(pDestPg);
-      u8 *zOut = &zDestData[iOff%nDestPgsz];
+      ಸ್ಥಿರಾಂಕ u8 *z_ಒಳ = &z_Src_ದತ್ತಾಂಶ[iOff%nSrcPgsz];
+      u8 *z_Dest_ದತ್ತಾಂಶ = sqlite3_Pager_Get_ದತ್ತಾಂಶ(pDestPg);
+      u8 *z_ಹೊರಹೋಗು = &z_Dest_ದತ್ತಾಂಶ[iOff%nDestPgsz];
 
       /* Copy the data from the source page into the destination page.
       ** Then clear the Btree layer MemPage.isInit flag. Both this module
@@ -277,16 +277,16 @@ static int backupOnePage(
       ** cached parse of the page). MemPage.isInit is marked 
       ** "MUST BE FIRST" for this purpose.
       */
-      memcpy(zOut, zIn, nCopy);
+      ಸ್ಮರಣೆ_ನಕಲು(z_ಹೊರಹೋಗು, z_ಒಳ, nCopy);
       ((u8 *)sqlite3PagerGetExtra(pDestPg))[0] = 0;
-      if( iOff==0 && bUpdate==0 ){
-        sqlite3Put4byte(&zOut[28], sqlite3BtreeLastPage(p->pSrc));
+      ಆದರೆ( iOff==0 && bUpdate==0 ){
+        sqlite3Put4byte(&z_ಹೊರಹೋಗು[28], sqlite3_Btree_ಕೊನೆಯ_ಪುಟ(p->pSrc));
       }
     }
     sqlite3PagerUnref(pDestPg);
   }
 
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
@@ -297,24 +297,24 @@ static int backupOnePage(
 ** Return SQLITE_OK if everything is successful, or an SQLite error 
 ** code if an error occurs.
 */
-static int backupTruncateFile(sqlite3_file *pFile, i64 iSize){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ backupTruncateFile(sqlite3_file *pFile, i64 i_ಗಾತ್ರ){
   i64 iCurrent;
-  int rc = sqlite3OsFileSize(pFile, &iCurrent);
-  if( rc==SQLITE_OK && iCurrent>iSize ){
-    rc = sqlite3OsTruncate(pFile, iSize);
+  ಪೂರ್ಣಾಂಕ rc = sqlite3_Os_File_ಗಾತ್ರ(pFile, &iCurrent);
+  ಆದರೆ( rc==SQLITE_OK && iCurrent>i_ಗಾತ್ರ ){
+    rc = sqlite3OsTruncate(pFile, i_ಗಾತ್ರ);
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Register this backup object with the associated source pager for
 ** callbacks when pages are changed or the cache invalidated.
 */
-static void attachBackupObject(sqlite3_backup *p){
+ಸ್ಥಿರ ಶೂನ್ಯ attachBackupObject(sqlite3_backup *p){
   sqlite3_backup **pp;
-  assert( sqlite3BtreeHoldsMutex(p->pSrc) );
+  ಪ್ರತಿಜ್ಞಾ( sqlite3BtreeHoldsMutex(p->pSrc) );
   pp = sqlite3PagerBackupPtr(sqlite3BtreePager(p->pSrc));
-  p->pNext = *pp;
+  p->p_ಮುಂದಿನ = *pp;
   *pp = p;
   p->isAttached = 1;
 }
@@ -322,36 +322,36 @@ static void attachBackupObject(sqlite3_backup *p){
 /*
 ** Copy nPage pages from the source b-tree to the destination.
 */
-int sqlite3_backup_step(sqlite3_backup *p, int nPage){
-  int rc;
-  int destMode = 0;   /* Destination journal mode */
-  int pgszSrc = 0;    /* Source page size */
-  int pgszDest = 0;   /* Destination page size */
+ಪೂರ್ಣಾಂಕ sqlite3_backup_ಹೆಜ್ಜೆ(sqlite3_backup *p, ಪೂರ್ಣಾಂಕ n_ಪುಟ){
+  ಪೂರ್ಣಾಂಕ rc;
+  ಪೂರ್ಣಾಂಕ dest_ಬಹುಲಕ = 0;   /* Destination journal mode */
+  ಪೂರ್ಣಾಂಕ pgszSrc = 0;    /* Source page size */
+  ಪೂರ್ಣಾಂಕ pgszDest = 0;   /* Destination page size */
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_API_ARMOR
+  ಆದರೆ( p==0 ) ಹಿಂತಿರುಗಿ SQLITE_MISUSE_BKPT;
+#ಆದರೆ_ಅಂತ್ಯ
   sqlite3_mutex_enter(p->pSrcDb->mutex);
   sqlite3BtreeEnter(p->pSrc);
-  if( p->pDestDb ){
+  ಆದರೆ( p->pDestDb ){
     sqlite3_mutex_enter(p->pDestDb->mutex);
   }
 
   rc = p->rc;
-  if( !isFatalError(rc) ){
-    Pager * const pSrcPager = sqlite3BtreePager(p->pSrc);     /* Source pager */
+  ಆದರೆ( !isFatalError(rc) ){
+    Pager * ಸ್ಥಿರಾಂಕ pSrcPager = sqlite3BtreePager(p->pSrc);     /* Source pager */
     Btree * pDest = 0;                                        /* Dest btree */
     Pager * pDestPager = 0;                                   /* Dest pager */
-    int ii;                            /* Iterator variable */
-    int nSrcPage = -1;                 /* Size of source db in pages */
-    int bCloseTrans = 0;               /* True if src db requires unlocking */
+    ಪೂರ್ಣಾಂಕ ii;                            /* Iterator variable */
+    ಪೂರ್ಣಾಂಕ n_Src_ಪುಟ = -1;                 /* Size of source db in pages */
+    ಪೂರ್ಣಾಂಕ bCloseTrans = 0;               /* True if src db requires unlocking */
 
     /* If the source pager is currently in a write-transaction, return
     ** SQLITE_BUSY immediately.
     */
-    if( p->pDestDb && p->pSrc->pBt->inTransaction==TRANS_WRITE ){
+    ಆದರೆ( p->pDestDb && p->pSrc->pBt->ಒಳ_Transaction==TRANS_WRITE ){
       rc = SQLITE_BUSY;
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       rc = SQLITE_OK;
     }
 
@@ -360,18 +360,18 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
     ** one now. If a transaction is opened here, then it will be closed
     ** before this function exits.
     */
-    if( rc==SQLITE_OK && SQLITE_TXN_NONE==sqlite3BtreeTxnState(p->pSrc) ){
+    ಆದರೆ( rc==SQLITE_OK && SQLITE_TXN_NONE==sqlite3BtreeTxnState(p->pSrc) ){
       rc = sqlite3BtreeBeginTrans(p->pSrc, 0, 0);
       bCloseTrans = 1;
     }
 
     /* Locate the destination btree and pager. */
-    if( (pDest = p->pDest)==0 ){
-      pDest = findBtree(p->pDestDb, p->pDestDb, p->zDestDb);
+    ಆದರೆ( (pDest = p->pDest)==0 ){
+      pDest = ಕಂಡುಹಿಡಿ_Btree(p->pDestDb, p->pDestDb, p->zDestDb);
     }
-    if( pDest==0 ){
+    ಆದರೆ( pDest==0 ){
       rc = SQLITE_ERROR;
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       pDestPager = sqlite3BtreePager(pDest);
     }
 
@@ -381,16 +381,16 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
     ** is especially important on ZipVFS systems, as in that case it is
     ** not possible to create a database file that uses one page size by
     ** writing to it with another.  */
-    if( p->bDestLocked==0 && rc==SQLITE_OK 
-     && setDestPgsz(pDest, p->pSrc)==SQLITE_NOMEM
+    ಆದರೆ( p->bDestLocked==0 && rc==SQLITE_OK 
+     && ಗಣ_Dest_Pgsz(pDest, p->pSrc)==SQLITE_NOMEM
     ){
       rc = SQLITE_NOMEM;
     }
 
     /* Lock the destination database, if it is not locked already. */
-    if( SQLITE_OK==rc && p->bDestLocked==0
+    ಆದರೆ( SQLITE_OK==rc && p->bDestLocked==0
      && SQLITE_OK==(rc = sqlite3BtreeBeginTrans(pDest, 2,
-                                                (int*)&p->iDestSchema)) 
+                                                (ಪೂರ್ಣಾಂಕ*)&p->iDestSchema)) 
     ){
       p->bDestLocked = 1;
       p->pDest = pDest;
@@ -398,11 +398,11 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
 
     /* Do not allow backup if the destination database is in WAL mode
     ** and the page sizes are different between source and destination */
-    if( rc==SQLITE_OK ){
-      pgszSrc = sqlite3BtreeGetPageSize(p->pSrc);
-      pgszDest = sqlite3BtreeGetPageSize(p->pDest);
-      destMode = sqlite3PagerGetJournalMode(sqlite3BtreePager(p->pDest));
-      if( (destMode==PAGER_JOURNALMODE_WAL || sqlite3PagerIsMemdb(pDestPager))
+    ಆದರೆ( rc==SQLITE_OK ){
+      pgszSrc = sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(p->pSrc);
+      pgszDest = sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(p->pDest);
+      dest_ಬಹುಲಕ = sqlite3_Pager_Get_Journal_ಬಹುಲಕ(sqlite3BtreePager(p->pDest));
+      ಆದರೆ( (dest_ಬಹುಲಕ==PAGER_JOURNALMODE_WAL || sqlite3PagerIsMemdb(pDestPager))
         && pgszSrc!=pgszDest 
       ){
         rc = SQLITE_READONLY;
@@ -412,26 +412,26 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
     /* Now that there is a read-lock on the source database, query the
     ** source pager for the number of pages in the database.
     */
-    nSrcPage = (int)sqlite3BtreeLastPage(p->pSrc);
-    assert( nSrcPage>=0 );
-    for(ii=0; (nPage<0 || ii<nPage) && p->iNext<=(Pgno)nSrcPage && !rc; ii++){
-      const Pgno iSrcPg = p->iNext;                 /* Source page number */
-      if( iSrcPg!=PENDING_BYTE_PAGE(p->pSrc->pBt) ){
-        DbPage *pSrcPg;                             /* Source page object */
+    n_Src_ಪುಟ = (ಪೂರ್ಣಾಂಕ)sqlite3_Btree_ಕೊನೆಯ_ಪುಟ(p->pSrc);
+    ಪ್ರತಿಜ್ಞಾ( n_Src_ಪುಟ>=0 );
+    ಗಾಗಿ(ii=0; (n_ಪುಟ<0 || ii<n_ಪುಟ) && p->i_ಮುಂದಿನ<=(Pgno)n_Src_ಪುಟ && !rc; ii++){
+      ಸ್ಥಿರಾಂಕ Pgno iSrcPg = p->i_ಮುಂದಿನ;                 /* Source page number */
+      ಆದರೆ( iSrcPg!=PENDING_BYTE_ಪುಟ(p->pSrc->pBt) ){
+        Db_ಪುಟ *pSrcPg;                             /* Source page object */
         rc = sqlite3PagerGet(pSrcPager, iSrcPg, &pSrcPg,PAGER_GET_READONLY);
-        if( rc==SQLITE_OK ){
-          rc = backupOnePage(p, iSrcPg, sqlite3PagerGetData(pSrcPg), 0);
+        ಆದರೆ( rc==SQLITE_OK ){
+          rc = backup_One_ಪುಟ(p, iSrcPg, sqlite3_Pager_Get_ದತ್ತಾಂಶ(pSrcPg), 0);
           sqlite3PagerUnref(pSrcPg);
         }
       }
-      p->iNext++;
+      p->i_ಮುಂದಿನ++;
     }
-    if( rc==SQLITE_OK ){
-      p->nPagecount = nSrcPage;
-      p->nRemaining = nSrcPage+1-p->iNext;
-      if( p->iNext>(Pgno)nSrcPage ){
-        rc = SQLITE_DONE;
-      }else if( !p->isAttached ){
+    ಆದರೆ( rc==SQLITE_OK ){
+      p->nPagecount = n_Src_ಪುಟ;
+      p->n_ಉಳಿದ = n_Src_ಪುಟ+1-p->i_ಮುಂದಿನ;
+      ಆದರೆ( p->i_ಮುಂದಿನ>(Pgno)n_Src_ಪುಟ ){
+        rc = SQLITE_ಮುಗಿದ;
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( !p->isAttached ){
         attachBackupObject(p);
       }
     }
@@ -441,24 +441,24 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
     ** the case where the source and destination databases have the
     ** same schema version.
     */
-    if( rc==SQLITE_DONE ){
-      if( nSrcPage==0 ){
+    ಆದರೆ( rc==SQLITE_ಮುಗಿದ ){
+      ಆದರೆ( n_Src_ಪುಟ==0 ){
         rc = sqlite3BtreeNewDb(p->pDest);
-        nSrcPage = 1;
+        n_Src_ಪುಟ = 1;
       }
-      if( rc==SQLITE_OK || rc==SQLITE_DONE ){
+      ಆದರೆ( rc==SQLITE_OK || rc==SQLITE_ಮುಗಿದ ){
         rc = sqlite3BtreeUpdateMeta(p->pDest,1,p->iDestSchema+1);
       }
-      if( rc==SQLITE_OK ){
-        if( p->pDestDb ){
-          sqlite3ResetAllSchemasOfConnection(p->pDestDb);
+      ಆದರೆ( rc==SQLITE_OK ){
+        ಆದರೆ( p->pDestDb ){
+          sqlite3_Reset_All_Schemas_ದ_Connection(p->pDestDb);
         }
-        if( destMode==PAGER_JOURNALMODE_WAL ){
-          rc = sqlite3BtreeSetVersion(p->pDest, 2);
+        ಆದರೆ( dest_ಬಹುಲಕ==PAGER_JOURNALMODE_WAL ){
+          rc = sqlite3_Btree_ಗಣ_ಆವೃತ್ತಿ(p->pDest, 2);
         }
       }
-      if( rc==SQLITE_OK ){
-        int nDestTruncate;
+      ಆದರೆ( rc==SQLITE_OK ){
+        ಪೂರ್ಣಾಂಕ nDestTruncate;
         /* Set nDestTruncate to the final number of pages in the destination
         ** database. The complication here is that the destination page
         ** size may be different to the source page size. 
@@ -471,20 +471,20 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
         ** journalled by PagerCommitPhaseOne() before they are destroyed
         ** by the file truncation.
         */
-        assert( pgszSrc==sqlite3BtreeGetPageSize(p->pSrc) );
-        assert( pgszDest==sqlite3BtreeGetPageSize(p->pDest) );
-        if( pgszSrc<pgszDest ){
-          int ratio = pgszDest/pgszSrc;
-          nDestTruncate = (nSrcPage+ratio-1)/ratio;
-          if( nDestTruncate==(int)PENDING_BYTE_PAGE(p->pDest->pBt) ){
+        ಪ್ರತಿಜ್ಞಾ( pgszSrc==sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(p->pSrc) );
+        ಪ್ರತಿಜ್ಞಾ( pgszDest==sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(p->pDest) );
+        ಆದರೆ( pgszSrc<pgszDest ){
+          ಪೂರ್ಣಾಂಕ ಅನುಪಾತ = pgszDest/pgszSrc;
+          nDestTruncate = (n_Src_ಪುಟ+ಅನುಪಾತ-1)/ಅನುಪಾತ;
+          ಆದರೆ( nDestTruncate==(ಪೂರ್ಣಾಂಕ)PENDING_BYTE_ಪುಟ(p->pDest->pBt) ){
             nDestTruncate--;
           }
-        }else{
-          nDestTruncate = nSrcPage * (pgszSrc/pgszDest);
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          nDestTruncate = n_Src_ಪುಟ * (pgszSrc/pgszDest);
         }
-        assert( nDestTruncate>0 );
+        ಪ್ರತಿಜ್ಞಾ( nDestTruncate>0 );
 
-        if( pgszSrc<pgszDest ){
+        ಆದರೆ( pgszSrc<pgszDest ){
           /* If the source page-size is smaller than the destination page-size,
           ** two extra things may need to happen:
           **
@@ -494,18 +494,18 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
           **     pending-byte page in the source database may need to be
           **     copied into the destination database.
           */
-          const i64 iSize = (i64)pgszSrc * (i64)nSrcPage;
-          sqlite3_file * const pFile = sqlite3PagerFile(pDestPager);
+          ಸ್ಥಿರಾಂಕ i64 i_ಗಾತ್ರ = (i64)pgszSrc * (i64)n_Src_ಪುಟ;
+          sqlite3_file * ಸ್ಥಿರಾಂಕ pFile = sqlite3PagerFile(pDestPager);
           Pgno iPg;
-          int nDstPage;
+          ಪೂರ್ಣಾಂಕ n_Dst_ಪುಟ;
           i64 iOff;
-          i64 iEnd;
+          i64 i_ಕೊನೆ;
 
-          assert( pFile );
-          assert( nDestTruncate==0 
-              || (i64)nDestTruncate*(i64)pgszDest >= iSize || (
-                nDestTruncate==(int)(PENDING_BYTE_PAGE(p->pDest->pBt)-1)
-             && iSize>=PENDING_BYTE && iSize<=PENDING_BYTE+pgszDest
+          ಪ್ರತಿಜ್ಞಾ( pFile );
+          ಪ್ರತಿಜ್ಞಾ( nDestTruncate==0 
+              || (i64)nDestTruncate*(i64)pgszDest >= i_ಗಾತ್ರ || (
+                nDestTruncate==(ಪೂರ್ಣಾಂಕ)(PENDING_BYTE_ಪುಟ(p->pDest->pBt)-1)
+             && i_ಗಾತ್ರ>=PENDING_BYTE && i_ಗಾತ್ರ<=PENDING_BYTE+pgszDest
           ));
 
           /* This block ensures that all data required to recreate the original
@@ -514,55 +514,55 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
           ** the database file in any way, knowing that if a power failure
           ** occurs, the original database will be reconstructed from the 
           ** journal file.  */
-          sqlite3PagerPagecount(pDestPager, &nDstPage);
-          for(iPg=nDestTruncate; rc==SQLITE_OK && iPg<=(Pgno)nDstPage; iPg++){
-            if( iPg!=PENDING_BYTE_PAGE(p->pDest->pBt) ){
-              DbPage *pPg;
+          sqlite3PagerPagecount(pDestPager, &n_Dst_ಪುಟ);
+          ಗಾಗಿ(iPg=nDestTruncate; rc==SQLITE_OK && iPg<=(Pgno)n_Dst_ಪುಟ; iPg++){
+            ಆದರೆ( iPg!=PENDING_BYTE_ಪುಟ(p->pDest->pBt) ){
+              Db_ಪುಟ *pPg;
               rc = sqlite3PagerGet(pDestPager, iPg, &pPg, 0);
-              if( rc==SQLITE_OK ){
+              ಆದರೆ( rc==SQLITE_OK ){
                 rc = sqlite3PagerWrite(pPg);
                 sqlite3PagerUnref(pPg);
               }
             }
           }
-          if( rc==SQLITE_OK ){
+          ಆದರೆ( rc==SQLITE_OK ){
             rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 1);
           }
 
           /* Write the extra pages and truncate the database file as required */
-          iEnd = MIN(PENDING_BYTE + pgszDest, iSize);
-          for(
+          i_ಕೊನೆ = MIN(PENDING_BYTE + pgszDest, i_ಗಾತ್ರ);
+          ಗಾಗಿ(
             iOff=PENDING_BYTE+pgszSrc; 
-            rc==SQLITE_OK && iOff<iEnd; 
+            rc==SQLITE_OK && iOff<i_ಕೊನೆ; 
             iOff+=pgszSrc
           ){
             PgHdr *pSrcPg = 0;
-            const Pgno iSrcPg = (Pgno)((iOff/pgszSrc)+1);
+            ಸ್ಥಿರಾಂಕ Pgno iSrcPg = (Pgno)((iOff/pgszSrc)+1);
             rc = sqlite3PagerGet(pSrcPager, iSrcPg, &pSrcPg, 0);
-            if( rc==SQLITE_OK ){
-              u8 *zData = sqlite3PagerGetData(pSrcPg);
-              rc = sqlite3OsWrite(pFile, zData, pgszSrc, iOff);
+            ಆದರೆ( rc==SQLITE_OK ){
+              u8 *z_ದತ್ತಾಂಶ = sqlite3_Pager_Get_ದತ್ತಾಂಶ(pSrcPg);
+              rc = sqlite3OsWrite(pFile, z_ದತ್ತಾಂಶ, pgszSrc, iOff);
             }
             sqlite3PagerUnref(pSrcPg);
           }
-          if( rc==SQLITE_OK ){
-            rc = backupTruncateFile(pFile, iSize);
+          ಆದರೆ( rc==SQLITE_OK ){
+            rc = backupTruncateFile(pFile, i_ಗಾತ್ರ);
           }
 
           /* Sync the database file to disk. */
-          if( rc==SQLITE_OK ){
+          ಆದರೆ( rc==SQLITE_OK ){
             rc = sqlite3PagerSync(pDestPager, 0);
           }
-        }else{
+        }ಇಲ್ಲದಿದ್ದರೆ{
           sqlite3PagerTruncateImage(pDestPager, nDestTruncate);
           rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 0);
         }
     
         /* Finish committing the transaction to the destination database. */
-        if( SQLITE_OK==rc
+        ಆದರೆ( SQLITE_OK==rc
          && SQLITE_OK==(rc = sqlite3BtreeCommitPhaseTwo(p->pDest, 0))
         ){
-          rc = SQLITE_DONE;
+          rc = SQLITE_ಮುಗಿದ;
         }
       }
     }
@@ -572,107 +572,107 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
     ** no need to check the return values of the btree methods here, as
     ** "committing" a read-only transaction cannot fail.
     */
-    if( bCloseTrans ){
-      TESTONLY( int rc2 );
+    ಆದರೆ( bCloseTrans ){
+      TESTONLY( ಪೂರ್ಣಾಂಕ rc2 );
       TESTONLY( rc2  = ) sqlite3BtreeCommitPhaseOne(p->pSrc, 0);
       TESTONLY( rc2 |= ) sqlite3BtreeCommitPhaseTwo(p->pSrc, 0);
-      assert( rc2==SQLITE_OK );
+      ಪ್ರತಿಜ್ಞಾ( rc2==SQLITE_OK );
     }
   
-    if( rc==SQLITE_IOERR_NOMEM ){
+    ಆದರೆ( rc==SQLITE_IOERR_NOMEM ){
       rc = SQLITE_NOMEM_BKPT;
     }
     p->rc = rc;
   }
-  if( p->pDestDb ){
+  ಆದರೆ( p->pDestDb ){
     sqlite3_mutex_leave(p->pDestDb->mutex);
   }
   sqlite3BtreeLeave(p->pSrc);
   sqlite3_mutex_leave(p->pSrcDb->mutex);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Release all resources associated with an sqlite3_backup* handle.
 */
-int sqlite3_backup_finish(sqlite3_backup *p){
+ಪೂರ್ಣಾಂಕ sqlite3_backup_ಮುಕ್ತಾಯ(sqlite3_backup *p){
   sqlite3_backup **pp;                 /* Ptr to head of pagers backup list */
   sqlite3 *pSrcDb;                     /* Source database connection */
-  int rc;                              /* Value to return */
+  ಪೂರ್ಣಾಂಕ rc;                              /* Value to return */
 
   /* Enter the mutexes */
-  if( p==0 ) return SQLITE_OK;
+  ಆದರೆ( p==0 ) ಹಿಂತಿರುಗಿ SQLITE_OK;
   pSrcDb = p->pSrcDb;
   sqlite3_mutex_enter(pSrcDb->mutex);
   sqlite3BtreeEnter(p->pSrc);
-  if( p->pDestDb ){
+  ಆದರೆ( p->pDestDb ){
     sqlite3_mutex_enter(p->pDestDb->mutex);
   }
 
   /* Detach this backup from the source pager. */
-  if( p->pDestDb ){
+  ಆದರೆ( p->pDestDb ){
     p->pSrc->nBackup--;
   }
-  if( p->isAttached ){
+  ಆದರೆ( p->isAttached ){
     pp = sqlite3PagerBackupPtr(sqlite3BtreePager(p->pSrc));
-    assert( pp!=0 );
-    while( *pp!=p ){
-      pp = &(*pp)->pNext;
-      assert( pp!=0 );
+    ಪ್ರತಿಜ್ಞಾ( pp!=0 );
+    ಆಗ( *pp!=p ){
+      pp = &(*pp)->p_ಮುಂದಿನ;
+      ಪ್ರತಿಜ್ಞಾ( pp!=0 );
     }
-    *pp = p->pNext;
+    *pp = p->p_ಮುಂದಿನ;
   }
 
   /* If a transaction is still open on the Btree, roll it back. */
-  if( p->pDest ){
+  ಆದರೆ( p->pDest ){
     sqlite3BtreeRollback(p->pDest, SQLITE_OK, 0);
   }
 
   /* Set the error code of the destination database handle. */
-  rc = (p->rc==SQLITE_DONE) ? SQLITE_OK : p->rc;
-  if( p->pDestDb ){
+  rc = (p->rc==SQLITE_ಮುಗಿದ) ? SQLITE_OK : p->rc;
+  ಆದರೆ( p->pDestDb ){
     sqlite3Error(p->pDestDb, rc);
 
     /* Exit the mutexes and free the backup context structure. */
     sqlite3LeaveMutexAndCloseZombie(p->pDestDb);
   }
   sqlite3BtreeLeave(p->pSrc);
-  if( p->pDestDb ){
+  ಆದರೆ( p->pDestDb ){
     /* EVIDENCE-OF: R-64852-21591 The sqlite3_backup object is created by a
     ** call to sqlite3_backup_init() and is destroyed by a call to
     ** sqlite3_backup_finish(). */
     sqlite3_free(p);
   }
   sqlite3LeaveMutexAndCloseZombie(pSrcDb);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Return the number of pages still to be backed up as of the most recent
 ** call to sqlite3_backup_step().
 */
-int sqlite3_backup_remaining(sqlite3_backup *p){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+ಪೂರ್ಣಾಂಕ sqlite3_backup_ಉಳಿದ(sqlite3_backup *p){
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_API_ARMOR
+  ಆದರೆ( p==0 ){
+    (ಶೂನ್ಯ)SQLITE_MISUSE_BKPT;
+    ಹಿಂತಿರುಗಿ 0;
   }
-#endif
-  return p->nRemaining;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ p->n_ಉಳಿದ;
 }
 
 /*
 ** Return the total number of pages in the source database as of the most 
 ** recent call to sqlite3_backup_step().
 */
-int sqlite3_backup_pagecount(sqlite3_backup *p){
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( p==0 ){
-    (void)SQLITE_MISUSE_BKPT;
-    return 0;
+ಪೂರ್ಣಾಂಕ sqlite3_backup_pagecount(sqlite3_backup *p){
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_API_ARMOR
+  ಆದರೆ( p==0 ){
+    (ಶೂನ್ಯ)SQLITE_MISUSE_BKPT;
+    ಹಿಂತಿರುಗಿ 0;
   }
-#endif
-  return p->nPagecount;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ p->nPagecount;
 }
 
 /*
@@ -687,33 +687,33 @@ int sqlite3_backup_pagecount(sqlite3_backup *p){
 ** corresponding to the source database is held when this function is
 ** called.
 */
-static SQLITE_NOINLINE void backupUpdate(
+ಸ್ಥಿರ SQLITE_NOINLINE ಶೂನ್ಯ backupUpdate(
   sqlite3_backup *p,
-  Pgno iPage,
-  const u8 *aData
+  Pgno i_ಪುಟ,
+  ಸ್ಥಿರಾಂಕ u8 *a_ದತ್ತಾಂಶ
 ){
-  assert( p!=0 );
-  do{
-    assert( sqlite3_mutex_held(p->pSrc->pBt->mutex) );
-    if( !isFatalError(p->rc) && iPage<p->iNext ){
+  ಪ್ರತಿಜ್ಞಾ( p!=0 );
+  ಮಾಡು{
+    ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(p->pSrc->pBt->mutex) );
+    ಆದರೆ( !isFatalError(p->rc) && i_ಪುಟ<p->i_ಮುಂದಿನ ){
       /* The backup process p has already copied page iPage. But now it
       ** has been modified by a transaction on the source pager. Copy
       ** the new data into the backup.
       */
-      int rc;
-      assert( p->pDestDb );
+      ಪೂರ್ಣಾಂಕ rc;
+      ಪ್ರತಿಜ್ಞಾ( p->pDestDb );
       sqlite3_mutex_enter(p->pDestDb->mutex);
-      rc = backupOnePage(p, iPage, aData, 1);
+      rc = backup_One_ಪುಟ(p, i_ಪುಟ, a_ದತ್ತಾಂಶ, 1);
       sqlite3_mutex_leave(p->pDestDb->mutex);
-      assert( rc!=SQLITE_BUSY && rc!=SQLITE_LOCKED );
-      if( rc!=SQLITE_OK ){
+      ಪ್ರತಿಜ್ಞಾ( rc!=SQLITE_BUSY && rc!=SQLITE_LOCKED );
+      ಆದರೆ( rc!=SQLITE_OK ){
         p->rc = rc;
       }
     }
-  }while( (p = p->pNext)!=0 );
+  }ಆಗ( (p = p->p_ಮುಂದಿನ)!=0 );
 }
-void sqlite3BackupUpdate(sqlite3_backup *pBackup, Pgno iPage, const u8 *aData){
-  if( pBackup ) backupUpdate(pBackup, iPage, aData);
+ಶೂನ್ಯ sqlite3BackupUpdate(sqlite3_backup *pBackup, Pgno i_ಪುಟ, ಸ್ಥಿರಾಂಕ u8 *a_ದತ್ತಾಂಶ){
+  ಆದರೆ( pBackup ) backupUpdate(pBackup, i_ಪುಟ, a_ದತ್ತಾಂಶ);
 }
 
 /*
@@ -727,15 +727,15 @@ void sqlite3BackupUpdate(sqlite3_backup *pBackup, Pgno iPage, const u8 *aData){
 ** corresponding to the source database is held when this function is
 ** called.
 */
-void sqlite3BackupRestart(sqlite3_backup *pBackup){
+ಶೂನ್ಯ sqlite3BackupRestart(sqlite3_backup *pBackup){
   sqlite3_backup *p;                   /* Iterator variable */
-  for(p=pBackup; p; p=p->pNext){
-    assert( sqlite3_mutex_held(p->pSrc->pBt->mutex) );
-    p->iNext = 1;
+  ಗಾಗಿ(p=pBackup; p; p=p->p_ಮುಂದಿನ){
+    ಪ್ರತಿಜ್ಞಾ( sqlite3_mutex_held(p->pSrc->pBt->mutex) );
+    p->i_ಮುಂದಿನ = 1;
   }
 }
 
-#ifndef SQLITE_OMIT_VACUUM
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VACUUM
 /*
 ** Copy the complete content of pBtFrom into pBtTo.  A transaction
 ** must be active for both files.
@@ -744,20 +744,20 @@ void sqlite3BackupRestart(sqlite3_backup *pBackup){
 ** goes wrong, the transaction on pTo is rolled back. If successful, the 
 ** transaction is committed before returning.
 */
-int sqlite3BtreeCopyFile(Btree *pTo, Btree *pFrom){
-  int rc;
+ಪೂರ್ಣಾಂಕ sqlite3BtreeCopyFile(Btree *p_ಗಮ್ಯ, Btree *pFrom){
+  ಪೂರ್ಣಾಂಕ rc;
   sqlite3_file *pFd;              /* File descriptor for database pTo */
   sqlite3_backup b;
-  sqlite3BtreeEnter(pTo);
+  sqlite3BtreeEnter(p_ಗಮ್ಯ);
   sqlite3BtreeEnter(pFrom);
 
-  assert( sqlite3BtreeTxnState(pTo)==SQLITE_TXN_WRITE );
-  pFd = sqlite3PagerFile(sqlite3BtreePager(pTo));
-  if( pFd->pMethods ){
-    i64 nByte = sqlite3BtreeGetPageSize(pFrom)*(i64)sqlite3BtreeLastPage(pFrom);
+  ಪ್ರತಿಜ್ಞಾ( sqlite3BtreeTxnState(p_ಗಮ್ಯ)==SQLITE_TXN_WRITE );
+  pFd = sqlite3PagerFile(sqlite3BtreePager(p_ಗಮ್ಯ));
+  ಆದರೆ( pFd->pMethods ){
+    i64 nByte = sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(pFrom)*(i64)sqlite3_Btree_ಕೊನೆಯ_ಪುಟ(pFrom);
     rc = sqlite3OsFileControl(pFd, SQLITE_FCNTL_OVERWRITE, &nByte);
-    if( rc==SQLITE_NOTFOUND ) rc = SQLITE_OK;
-    if( rc ) goto copy_finished;
+    ಆದರೆ( rc==SQLITE_NOTFOUND ) rc = SQLITE_OK;
+    ಆದರೆ( rc ) ಹೋಗು copy_ಪೂರ್ಣಗೊಂಡ;
   }
 
   /* Set up an sqlite3_backup object. sqlite3_backup.pDestDb must be set
@@ -765,11 +765,11 @@ int sqlite3BtreeCopyFile(Btree *pTo, Btree *pFrom){
   ** and sqlite3_backup_finish() to detect that they are being called
   ** from this function, not directly by the user.
   */
-  memset(&b, 0, sizeof(b));
+  memset(&b, 0, ಗಾತ್ರ(b));
   b.pSrcDb = pFrom->db;
   b.pSrc = pFrom;
-  b.pDest = pTo;
-  b.iNext = 1;
+  b.pDest = p_ಗಮ್ಯ;
+  b.i_ಮುಂದಿನ = 1;
 
   /* 0x7FFFFFFF is the hard limit for the number of pages in a database
   ** file. By passing this as the number of pages to copy to
@@ -777,20 +777,20 @@ int sqlite3BtreeCopyFile(Btree *pTo, Btree *pFrom){
   ** within a single call (unless an error occurs). The assert() statement
   ** checks this assumption - (p->rc) should be set to either SQLITE_DONE 
   ** or an error code.  */
-  sqlite3_backup_step(&b, 0x7FFFFFFF);
-  assert( b.rc!=SQLITE_OK );
+  sqlite3_backup_ಹೆಜ್ಜೆ(&b, 0x7FFFFFFF);
+  ಪ್ರತಿಜ್ಞಾ( b.rc!=SQLITE_OK );
 
-  rc = sqlite3_backup_finish(&b);
-  if( rc==SQLITE_OK ){
-    pTo->pBt->btsFlags &= ~BTS_PAGESIZE_FIXED;
-  }else{
+  rc = sqlite3_backup_ಮುಕ್ತಾಯ(&b);
+  ಆದರೆ( rc==SQLITE_OK ){
+    p_ಗಮ್ಯ->pBt->btsFlags &= ~BTS_PAGESIZE_FIXED;
+  }ಇಲ್ಲದಿದ್ದರೆ{
     sqlite3PagerClearCache(sqlite3BtreePager(b.pDest));
   }
 
-  assert( sqlite3BtreeTxnState(pTo)!=SQLITE_TXN_WRITE );
-copy_finished:
+  ಪ್ರತಿಜ್ಞಾ( sqlite3BtreeTxnState(p_ಗಮ್ಯ)!=SQLITE_TXN_WRITE );
+copy_ಪೂರ್ಣಗೊಂಡ:
   sqlite3BtreeLeave(pFrom);
-  sqlite3BtreeLeave(pTo);
-  return rc;
+  sqlite3BtreeLeave(p_ಗಮ್ಯ);
+  ಹಿಂತಿರುಗಿ rc;
 }
-#endif /* SQLITE_OMIT_VACUUM */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_VACUUM */

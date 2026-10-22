@@ -11,15 +11,15 @@
 *************************************************************************
 ** This file contains code used to implement the PRAGMA command.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
-#if !defined(SQLITE_ENABLE_LOCKING_STYLE)
-#  if defined(__APPLE__)
+#ಆದರೆ !defined(SQLITE_ENABLE_LOCKING_STYLE)
+#  ಆದರೆ defined(__APPLE__)
 #    define SQLITE_ENABLE_LOCKING_STYLE 1
-#  else
+#  ಇಲ್ಲದಿದ್ದರೆ
 #    define SQLITE_ENABLE_LOCKING_STYLE 0
 #  endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /***************************************************************************
 ** The "pragma.h" include file is an automatically generated file that
@@ -28,7 +28,7 @@
 ** lexicographical order to facility a binary search of the pragma name.
 ** Do not edit pragma.h directly.  Edit and rerun the script in at
 ** ../tool/mkpragmatab.tcl. */
-#include "pragma.h"
+#ಅನ್ತರ್ಭಾವ "pragma.h"
 
 /*
 ** When the 0x10 bit of PRAGMA optimize is set, any ANALYZE commands
@@ -54,9 +54,9 @@
 ** planner to fully characterize an index.  The additional accuracy from
 ** a larger analysis is not usually helpful.
 */
-#ifndef SQLITE_DEFAULT_OPTIMIZE_LIMIT
-# define SQLITE_DEFAULT_OPTIMIZE_LIMIT 2000
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEFAULT_OPTIMIZE_ಎಲ್ಲೆ
+# define SQLITE_DEFAULT_OPTIMIZE_ಎಲ್ಲೆ 2000
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Interpret the given string as a safety level.  Return 0 for OFF,
@@ -69,144 +69,144 @@
 ** to support legacy SQL code.  The safety level used to be boolean
 ** and older scripts may have used numbers 0 for OFF and 1 for ON.
 */
-static u8 getSafetyLevel(const char *z, int omitFull, u8 dflt){
+ಸ್ಥಿರ u8 getSafetyLevel(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z, ಪೂರ್ಣಾಂಕ omit_ತುಂಬಿದ, u8 dflt){
                              /* 123456789 123456789 123 */
-  static const char zText[] = "onoffalseyestruextrafull";
-  static const u8 iOffset[] = {0, 1, 2,  4,    9,  12,  15,   20};
-  static const u8 iLength[] = {2, 2, 3,  5,    3,   4,   5,    4};
-  static const u8 iValue[] =  {1, 0, 0,  0,    1,   1,   3,    2};
+  ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ z_ಪಠ್ಯ[] = "onoffalseyestruextrafull";
+  ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ u8 i_ಸ್ಥಾನಾಂತರ[] = {0, 1, 2,  4,    9,  12,  15,   20};
+  ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ u8 i_ಉದ್ದಳತೆ[] = {2, 2, 3,  5,    3,   4,   5,    4};
+  ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ u8 i_ಮೌಲ್ಯ[] =  {1, 0, 0,  0,    1,   1,   3,    2};
                             /* on no off false yes true extra full */
-  int i, n;
-  if( sqlite3Isdigit(*z) ){
-    return sqlite3Atoi(z)!=0;
+  ಪೂರ್ಣಾಂಕ i, n;
+  ಆದರೆ( sqlite3Isdigit(*z) ){
+    ಹಿಂತಿರುಗಿ sqlite3Atoi(z)!=0;
   }
   n = sqlite3Strlen30(z);
-  for(i=0; i<ArraySize(iLength); i++){
-    if( iLength[i]==n && sqlite3StrNICmp(&zText[iOffset[i]],z,n)==0
-     && (!omitFull || iValue[i]<=1)
+  ಗಾಗಿ(i=0; i<Array_ಗಾತ್ರ(i_ಉದ್ದಳತೆ); i++){
+    ಆದರೆ( i_ಉದ್ದಳತೆ[i]==n && sqlite3StrNICmp(&z_ಪಠ್ಯ[i_ಸ್ಥಾನಾಂತರ[i]],z,n)==0
+     && (!omit_ತುಂಬಿದ || i_ಮೌಲ್ಯ[i]<=1)
     ){
-      return iValue[i];
+      ಹಿಂತಿರುಗಿ i_ಮೌಲ್ಯ[i];
     }
   }
-  return dflt;
+  ಹಿಂತಿರುಗಿ dflt;
 }
 
 /*
 ** Interpret the given string as a boolean value.
 */
-u8 sqlite3GetBoolean(const char *z, u8 dflt){
-  return getSafetyLevel(z,1,dflt)!=0;
+u8 sqlite3GetBoolean(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z, u8 dflt){
+  ಹಿಂತಿರುಗಿ getSafetyLevel(z,1,dflt)!=0;
 }
 
 /* The sqlite3GetBoolean() function is used by other modules but the
 ** remainder of this file is specific to PRAGMA processing.  So omit
 ** the rest of the file if PRAGMAs are omitted from the build.
 */
-#if !defined(SQLITE_OMIT_PRAGMA)
+#ಆದರೆ !defined(SQLITE_OMIT_PRAGMA)
 
 /*
 ** Interpret the given string as a locking mode value.
 */
-static int getLockingMode(const char *z){
-  if( z ){
-    if( 0==sqlite3StrICmp(z, "exclusive") ) return PAGER_LOCKINGMODE_EXCLUSIVE;
-    if( 0==sqlite3StrICmp(z, "normal") ) return PAGER_LOCKINGMODE_NORMAL;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ get_Locking_ಬಹುಲಕ(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z){
+  ಆದರೆ( z ){
+    ಆದರೆ( 0==sqlite3StrICmp(z, "exclusive") ) ಹಿಂತಿರುಗಿ PAGER_LOCKINGMODE_EXCLUSIVE;
+    ಆದರೆ( 0==sqlite3StrICmp(z, "normal") ) ಹಿಂತಿರುಗಿ PAGER_LOCKINGMODE_ಸಾಮಾನ್ಯ;
   }
-  return PAGER_LOCKINGMODE_QUERY;
+  ಹಿಂತಿರುಗಿ PAGER_LOCKINGMODE_QUERY;
 }
 
-#ifndef SQLITE_OMIT_AUTOVACUUM
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOVACUUM
 /*
 ** Interpret the given string as an auto-vacuum mode value.
 **
 ** The following strings, "none", "full" and "incremental" are
 ** acceptable, as are their numeric equivalents: 0, 1 and 2 respectively.
 */
-static int getAutoVacuum(const char *z){
-  int i;
-  if( 0==sqlite3StrICmp(z, "none") ) return BTREE_AUTOVACUUM_NONE;
-  if( 0==sqlite3StrICmp(z, "full") ) return BTREE_AUTOVACUUM_FULL;
-  if( 0==sqlite3StrICmp(z, "incremental") ) return BTREE_AUTOVACUUM_INCR;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ getAutoVacuum(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z){
+  ಪೂರ್ಣಾಂಕ i;
+  ಆದರೆ( 0==sqlite3StrICmp(z, "none") ) ಹಿಂತಿರುಗಿ BTREE_AUTOVACUUM_NONE;
+  ಆದರೆ( 0==sqlite3StrICmp(z, "full") ) ಹಿಂತಿರುಗಿ BTREE_AUTOVACUUM_ತುಂಬಿದ;
+  ಆದರೆ( 0==sqlite3StrICmp(z, "incremental") ) ಹಿಂತಿರುಗಿ BTREE_AUTOVACUUM_INCR;
   i = sqlite3Atoi(z);
-  return (u8)((i>=0&&i<=2)?i:0);
+  ಹಿಂತಿರುಗಿ (u8)((i>=0&&i<=2)?i:0);
 }
-#endif /* ifndef SQLITE_OMIT_AUTOVACUUM */
+#ಆದರೆ_ಅಂತ್ಯ /* ifndef SQLITE_OMIT_AUTOVACUUM */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** Interpret the given string as a temp db location. Return 1 for file
 ** backed temporary databases, 2 for the Red-Black tree in memory database
 ** and 0 to use the compile-time default.
 */
-static int getTempStore(const char *z){
-  if( z[0]>='0' && z[0]<='2' ){
-    return z[0] - '0';
-  }else if( sqlite3StrICmp(z, "file")==0 ){
-    return 1;
-  }else if( sqlite3StrICmp(z, "memory")==0 ){
-    return 2;
-  }else{
-    return 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ get_ತಾತ್ಕಾಲಿಕ_Store(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z){
+  ಆದರೆ( z[0]>='0' && z[0]<='2' ){
+    ಹಿಂತಿರುಗಿ z[0] - '0';
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3StrICmp(z, "file")==0 ){
+    ಹಿಂತಿರುಗಿ 1;
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3StrICmp(z, "memory")==0 ){
+    ಹಿಂತಿರುಗಿ 2;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಹಿಂತಿರುಗಿ 0;
   }
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** Invalidate temp storage, either when the temp storage is changed
 ** from default, or when 'file' and the temp_store_directory has changed
 */
-static int invalidateTempStorage(Parse *pParse){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ invalidate_ತಾತ್ಕಾಲಿಕ_Storage(Parse *pParse){
   sqlite3 *db = pParse->db;
-  if( db->aDb[1].pBt!=0 ){
-    if( !db->autoCommit
+  ಆದರೆ( db->aDb[1].pBt!=0 ){
+    ಆದರೆ( !db->autoCommit
      || sqlite3BtreeTxnState(db->aDb[1].pBt)!=SQLITE_TXN_NONE
     ){
-      sqlite3ErrorMsg(pParse, "temporary storage cannot be changed "
+      sqlite3_Error_ಸಂದೇಶ(pParse, "temporary storage cannot be changed "
         "from within a transaction");
-      return SQLITE_ERROR;
+      ಹಿಂತಿರುಗಿ SQLITE_ERROR;
     }
     sqlite3BtreeClose(db->aDb[1].pBt);
     db->aDb[1].pBt = 0;
-    sqlite3ResetAllSchemasOfConnection(db);
+    sqlite3_Reset_All_Schemas_ದ_Connection(db);
   }
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_PAGER_PRAGMAS
 /*
 ** If the TEMP database is open, close it and mark the database schema
 ** as needing reloading.  This must be done when using the SQLITE_TEMP_STORE
 ** or DEFAULT_TEMP_STORE pragmas.
 */
-static int changeTempStorage(Parse *pParse, const char *zStorageType){
-  int ts = getTempStore(zStorageType);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ change_ತಾತ್ಕಾಲಿಕ_Storage(Parse *pParse, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zStorageType){
+  ಪೂರ್ಣಾಂಕ ts = get_ತಾತ್ಕಾಲಿಕ_Store(zStorageType);
   sqlite3 *db = pParse->db;
-  if( db->temp_store==ts ) return SQLITE_OK;
-  if( invalidateTempStorage( pParse ) != SQLITE_OK ){
-    return SQLITE_ERROR;
+  ಆದರೆ( db->ತಾತ್ಕಾಲಿಕ_store==ts ) ಹಿಂತಿರುಗಿ SQLITE_OK;
+  ಆದರೆ( invalidate_ತಾತ್ಕಾಲಿಕ_Storage( pParse ) != SQLITE_OK ){
+    ಹಿಂತಿರುಗಿ SQLITE_ERROR;
   }
-  db->temp_store = (u8)ts;
-  return SQLITE_OK;
+  db->ತಾತ್ಕಾಲಿಕ_store = (u8)ts;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
-#endif /* SQLITE_PAGER_PRAGMAS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_PAGER_PRAGMAS */
 
 /*
 ** Set result column names for a pragma.
 */
-static void setPragmaResultColumnNames(
+ಸ್ಥಿರ ಶೂನ್ಯ ಗಣ_Pragma_ಫಲಿತಾಂಶ_ಸ್ತಂಭ_ಹೆಸರುಗಳು(
   Vdbe *v,                     /* The query under construction */
-  const PragmaName *pPragma    /* The pragma */
+  ಸ್ಥಿರಾಂಕ PragmaName *pPragma    /* The pragma */
 ){
   u8 n = pPragma->nPragCName;
-  sqlite3VdbeSetNumCols(v, n==0 ? 1 : n);
-  if( n==0 ){
-    sqlite3VdbeSetColName(v, 0, COLNAME_NAME, pPragma->zName, SQLITE_STATIC);
-  }else{
-    int i, j;
-    for(i=0, j=pPragma->iPragCName; i<n; i++, j++){
-      sqlite3VdbeSetColName(v, i, COLNAME_NAME, pragCName[j], SQLITE_STATIC);
+  sqlite3_Vdbe_ಗಣ_ಅಂಕೆ_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ(v, n==0 ? 1 : n);
+  ಆದರೆ( n==0 ){
+    sqlite3_Vdbe_ಗಣ_ಲಂಬಸಾಲು_Name(v, 0, COLNAME_NAME, pPragma->zName, SQLITE_STATIC);
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಪೂರ್ಣಾಂಕ i, j;
+    ಗಾಗಿ(i=0, j=pPragma->iPragCName; i<n; i++, j++){
+      sqlite3_Vdbe_ಗಣ_ಲಂಬಸಾಲು_Name(v, i, COLNAME_NAME, pragCName[j], SQLITE_STATIC);
     }
   }
 }
@@ -214,21 +214,21 @@ static void setPragmaResultColumnNames(
 /*
 ** Generate code to return a single integer value.
 */
-static void returnSingleInt(Vdbe *v, i64 value){
-  sqlite3VdbeAddInt64(v, 1, value);
-  sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+ಸ್ಥಿರ ಶೂನ್ಯ returnSingleInt(Vdbe *v, i64 ಮೌಲ್ಯ){
+  sqlite3_Vdbe_ಕೂಡಿಸು_Int64(v, 1, ಮೌಲ್ಯ);
+  sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1, 1);
 }
 
 /*
 ** Generate code to return a single text value.
 */
-static void returnSingleText(
+ಸ್ಥಿರ ಶೂನ್ಯ return_Single_ಪಠ್ಯ(
   Vdbe *v,                /* Prepared statement under construction */
-  const char *zValue      /* Value to be returned */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮೌಲ್ಯ      /* Value to be returned */
 ){
-  if( zValue ){
-    sqlite3VdbeLoadString(v, 1, (const char*)zValue);
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+  ಆದರೆ( z_ಮೌಲ್ಯ ){
+    sqlite3_Vdbe_ತುಂಬು_String(v, 1, (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)z_ಮೌಲ್ಯ);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1, 1);
   }
 }
 
@@ -237,48 +237,48 @@ static void returnSingleText(
 ** Set the safety_level and pager flags for pager iDb.  Or if iDb<0
 ** set these values for all pagers.
 */
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
-static void setAllPagerFlags(sqlite3 *db){
-  if( db->autoCommit ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_PAGER_PRAGMAS
+ಸ್ಥಿರ ಶೂನ್ಯ ಗಣ_All_Pager_Flags(sqlite3 *db){
+  ಆದರೆ( db->autoCommit ){
     Db *pDb = db->aDb;
-    int n = db->nDb;
-    assert( SQLITE_FullFSync==PAGER_FULLFSYNC );
-    assert( SQLITE_CkptFullFSync==PAGER_CKPT_FULLFSYNC );
-    assert( SQLITE_CacheSpill==PAGER_CACHESPILL );
-    assert( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
-             ==  PAGER_FLAGS_MASK );
-    assert( (pDb->safety_level & PAGER_SYNCHRONOUS_MASK)==pDb->safety_level );
-    while( (n--) > 0 ){
-      if( pDb->pBt ){
-        sqlite3BtreeSetPagerFlags(pDb->pBt,
-                 pDb->safety_level | (db->flags & PAGER_FLAGS_MASK) );
+    ಪೂರ್ಣಾಂಕ n = db->nDb;
+    ಪ್ರತಿಜ್ಞಾ( SQLITE_ತುಂಬಿದ_FSync==PAGER_FULLFSYNC );
+    ಪ್ರತಿಜ್ಞಾ( SQLITE_Ckpt_ತುಂಬಿದ_FSync==PAGER_CKPT_FULLFSYNC );
+    ಪ್ರತಿಜ್ಞಾ( SQLITE_CacheSpill==PAGER_CACHESPILL );
+    ಪ್ರತಿಜ್ಞಾ( (PAGER_FULLFSYNC | PAGER_CKPT_FULLFSYNC | PAGER_CACHESPILL)
+             ==  PAGER_FLAGS_ಮುಖವಾಡ );
+    ಪ್ರತಿಜ್ಞಾ( (pDb->safety_level & PAGER_SYNCHRONOUS_ಮುಖವಾಡ)==pDb->safety_level );
+    ಆಗ( (n--) > 0 ){
+      ಆದರೆ( pDb->pBt ){
+        sqlite3_Btree_ಗಣ_Pager_Flags(pDb->pBt,
+                 pDb->safety_level | (db->flags & PAGER_FLAGS_ಮುಖವಾಡ) );
       }
       pDb++;
     }
   }
 }
-#else
-# define setAllPagerFlags(X)  /* no-op */
-#endif
+#ಇಲ್ಲದಿದ್ದರೆ
+# define ಗಣ_All_Pager_Flags(X)  /* no-op */
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /*
 ** Return a human-readable name for a constraint resolution action.
 */
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-static const char *actionName(u8 action){
-  const char *zName;
-  switch( action ){
-    case OE_SetNull:  zName = "SET NULL";        break;
-    case OE_SetDflt:  zName = "SET DEFAULT";     break;
-    case OE_Cascade:  zName = "CASCADE";         break;
-    case OE_Restrict: zName = "RESTRICT";        break;
-    default:          zName = "NO ACTION"; 
-                      assert( action==OE_None ); break;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_FOREIGN_ಕೀಲಿ
+ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *actionName(u8 action){
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName;
+  ಆಯ್ಕೆ( action ){
+    ಸ್ಥಿತಿ OE_ಗಣ_Null:  zName = "SET NULL";        ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OE_ಗಣ_Dflt:  zName = "SET DEFAULT";     ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OE_Cascade:  zName = "CASCADE";         ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ OE_Restrict: zName = "RESTRICT";        ನಿಲ್ಲಿಸು;
+    ಪೂರ್ವನಿಯೋಜಿತ:          zName = "NO ACTION"; 
+                      ಪ್ರತಿಜ್ಞಾ( action==OE_None ); ನಿಲ್ಲಿಸು;
   }
-  return zName;
+  ಹಿಂತಿರುಗಿ zName;
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 
 /*
@@ -286,90 +286,90 @@ static const char *actionName(u8 action){
 ** defined in pager.h. This function returns the associated lowercase
 ** journal-mode name.
 */
-const char *sqlite3JournalModename(int eMode){
-  static char * const azModeName[] = {
+ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *sqlite3JournalModename(ಪೂರ್ಣಾಂಕ e_ಬಹುಲಕ){
+  ಸ್ಥಿರ ಅಕ್ಷರ * ಸ್ಥಿರಾಂಕ az_ಬಹುಲಕ_Name[] = {
     "delete", "persist", "off", "truncate", "memory"
-#ifndef SQLITE_OMIT_WAL
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WAL
      , "wal"
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
   };
-  assert( PAGER_JOURNALMODE_DELETE==0 );
-  assert( PAGER_JOURNALMODE_PERSIST==1 );
-  assert( PAGER_JOURNALMODE_OFF==2 );
-  assert( PAGER_JOURNALMODE_TRUNCATE==3 );
-  assert( PAGER_JOURNALMODE_MEMORY==4 );
-  assert( PAGER_JOURNALMODE_WAL==5 );
-  assert( eMode>=0 && eMode<=ArraySize(azModeName) );
+  ಪ್ರತಿಜ್ಞಾ( PAGER_JOURNALMODE_DELETE==0 );
+  ಪ್ರತಿಜ್ಞಾ( PAGER_JOURNALMODE_PERSIST==1 );
+  ಪ್ರತಿಜ್ಞಾ( PAGER_JOURNALMODE_OFF==2 );
+  ಪ್ರತಿಜ್ಞಾ( PAGER_JOURNALMODE_TRUNCATE==3 );
+  ಪ್ರತಿಜ್ಞಾ( PAGER_JOURNALMODE_ಸ್ಮರಣೆ==4 );
+  ಪ್ರತಿಜ್ಞಾ( PAGER_JOURNALMODE_WAL==5 );
+  ಪ್ರತಿಜ್ಞಾ( e_ಬಹುಲಕ>=0 && e_ಬಹುಲಕ<=Array_ಗಾತ್ರ(az_ಬಹುಲಕ_Name) );
 
-  if( eMode==ArraySize(azModeName) ) return 0;
-  return azModeName[eMode];
+  ಆದರೆ( e_ಬಹುಲಕ==Array_ಗಾತ್ರ(az_ಬಹುಲಕ_Name) ) ಹಿಂತಿರುಗಿ 0;
+  ಹಿಂತಿರುಗಿ az_ಬಹುಲಕ_Name[e_ಬಹುಲಕ];
 }
 
 /*
 ** Locate a pragma in the aPragmaName[] array.
 */
-static const PragmaName *pragmaLocate(const char *zName){
-  int upr, lwr, mid = 0, rc;
+ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ PragmaName *pragmaLocate(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName){
+  ಪೂರ್ಣಾಂಕ upr, lwr, mid = 0, rc;
   lwr = 0;
-  upr = ArraySize(aPragmaName)-1;
-  while( lwr<=upr ){
+  upr = Array_ಗಾತ್ರ(aPragmaName)-1;
+  ಆಗ( lwr<=upr ){
     mid = (lwr+upr)/2;
     rc = sqlite3_stricmp(zName, aPragmaName[mid].zName);
-    if( rc==0 ) break;
-    if( rc<0 ){
+    ಆದರೆ( rc==0 ) ನಿಲ್ಲಿಸು;
+    ಆದರೆ( rc<0 ){
       upr = mid - 1;
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       lwr = mid + 1;
     }
   }
-  return lwr>upr ? 0 : &aPragmaName[mid];
+  ಹಿಂತಿರುಗಿ lwr>upr ? 0 : &aPragmaName[mid];
 }
 
 /*
 ** Create zero or more entries in the output for the SQL functions
 ** defined by FuncDef p.
 */
-static void pragmaFunclistLine(
+ಸ್ಥಿರ ಶೂನ್ಯ pragma_Funclist_ಸಾಲು(
   Vdbe *v,               /* The prepared statement being created */
   FuncDef *p,            /* A particular function definition */
-  int isBuiltin,         /* True if this is a built-in function */
-  int showInternFuncs    /* True if showing internal functions */
+  ಪೂರ್ಣಾಂಕ isBuiltin,         /* True if this is a built-in function */
+  ಪೂರ್ಣಾಂಕ showInternFuncs    /* True if showing internal functions */
 ){
-  u32 mask =
+  u32 ಮುಖವಾಡ =
       SQLITE_DETERMINISTIC |
       SQLITE_DIRECTONLY |
       SQLITE_SUBTYPE |
       SQLITE_INNOCUOUS |
-      SQLITE_FUNC_INTERNAL
+      SQLITE_FUNC_ಆಂತರಿಕ
   ;
-  if( showInternFuncs ) mask = 0xffffffff;
-  for(; p; p=p->pNext){
-    const char *zType;
-    static const char *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
+  ಆದರೆ( showInternFuncs ) ಮುಖವಾಡ = 0xffffffff;
+  ಗಾಗಿ(; p; p=p->p_ಮುಂದಿನ){
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zType;
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *azEnc[] = { 0, "utf8", "utf16le", "utf16be" };
 
-    assert( SQLITE_FUNC_ENCMASK==0x3 );
-    assert( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
-    assert( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
+    ಪ್ರತಿಜ್ಞಾ( SQLITE_FUNC_ENCMASK==0x3 );
+    ಪ್ರತಿಜ್ಞಾ( strcmp(azEnc[SQLITE_UTF8],"utf8")==0 );
+    ಪ್ರತಿಜ್ಞಾ( strcmp(azEnc[SQLITE_UTF16LE],"utf16le")==0 );
+    ಪ್ರತಿಜ್ಞಾ( strcmp(azEnc[SQLITE_UTF16BE],"utf16be")==0 );
 
-    if( p->xSFunc==0 ) continue;
-    if( (p->funcFlags & SQLITE_FUNC_INTERNAL)!=0
+    ಆದರೆ( p->xSFunc==0 ) ಮುಂದುವರಿ;
+    ಆದರೆ( (p->funcFlags & SQLITE_FUNC_ಆಂತರಿಕ)!=0
      && showInternFuncs==0
     ){
-      continue;
+      ಮುಂದುವರಿ;
     }   
-    if( p->xValue!=0 ){
+    ಆದರೆ( p->x_ಮೌಲ್ಯ!=0 ){
       zType = "w";
-    }else if( p->xFinalize!=0 ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( p->xFinalize!=0 ){
       zType = "a";
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       zType = "s";
     }
-    sqlite3VdbeMultiLoad(v, 1, "sissii",
+    sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "sissii",
        p->zName, isBuiltin,
        zType, azEnc[p->funcFlags&SQLITE_FUNC_ENCMASK],
        p->nArg,
-       (p->funcFlags & mask) ^ SQLITE_INNOCUOUS
+       (p->funcFlags & ಮುಖವಾಡ) ^ SQLITE_INNOCUOUS
     );
   }
 }
@@ -382,13 +382,13 @@ static void pragmaFunclistLine(
 ** string held in register 3.  Decrement the result count in register 1
 ** and halt if the maximum number of result rows have been issued.
 */
-static int integrityCheckResultRow(Vdbe *v){
-  int addr;
-  sqlite3VdbeAddOp2(v, OP_ResultRow, 3, 1);
-  addr = sqlite3VdbeAddOp3(v, OP_IfPos, 1, sqlite3VdbeCurrentAddr(v)+2, 1);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(Vdbe *v){
+  ಪೂರ್ಣಾಂಕ addr;
+  sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 3, 1);
+  addr = sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_IfPos, 1, sqlite3VdbeCurrentAddr(v)+2, 1);
   VdbeCoverage(v);
-  sqlite3VdbeAddOp0(v, OP_Halt);
-  return addr;
+  sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Halt);
+  ಹಿಂತಿರುಗಿ addr;
 }
 
 /*
@@ -399,11 +399,11 @@ static int integrityCheckResultRow(Vdbe *v){
 **
 ** If pObjTab is null, then return true only if pTab is an imposter table.
 */
-static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
-  if( pObjTab ){
-    return pTab!=pObjTab;
-  }else{
-    return (pTab->tabFlags & TF_Imposter)!=0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಕೋಷ್ಟಕ_Skip_Integrity_Check(ಸ್ಥಿರಾಂಕ ಕೋಷ್ಟಕ *pTab, ಸ್ಥಿರಾಂಕ ಕೋಷ್ಟಕ *pObjTab){
+  ಆದರೆ( pObjTab ){
+    ಹಿಂತಿರುಗಿ pTab!=pObjTab;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಹಿಂತಿರುಗಿ (pTab->tabFlags & TF_Imposter)!=0;
   }
 }
 
@@ -422,54 +422,54 @@ static int tableSkipIntegrityCheck(const Table *pTab, const Table *pObjTab){
 ** and pId2 is the id.  If the left side is just "id" then pId1 is the
 ** id and pId2 is any empty string.
 */
-void sqlite3Pragma(
+ಶೂನ್ಯ sqlite3Pragma(
   Parse *pParse,
   Token *pId1,        /* First part of [schema.]id field */
   Token *pId2,        /* Second part of [schema.]id field, or NULL */
-  Token *pValue,      /* Token for <value>, or NULL */
-  int minusFlag       /* True if a '-' sign preceded <value> */
+  Token *p_ಮೌಲ್ಯ,      /* Token for <value>, or NULL */
+  ಪೂರ್ಣಾಂಕ minusFlag       /* True if a '-' sign preceded <value> */
 ){
-  char *zLeft = 0;       /* Nul-terminated UTF-8 string <id> */
-  char *zRight = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
-  const char *zDb = 0;   /* The database name */
+  ಅಕ್ಷರ *z_ಎಡ = 0;       /* Nul-terminated UTF-8 string <id> */
+  ಅಕ್ಷರ *z_ಬಲ = 0;      /* Nul-terminated UTF-8 string <value>, or NULL */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zDb = 0;   /* The database name */
   Token *pId;            /* Pointer to <id> token */
-  char *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
-  int iDb;               /* Database index for <database> */
-  int rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
+  ಅಕ್ಷರ *aFcntl[4];       /* Argument to SQLITE_FCNTL_PRAGMA */
+  ಪೂರ್ಣಾಂಕ iDb;               /* Database index for <database> */
+  ಪೂರ್ಣಾಂಕ rc;                      /* return value form SQLITE_FCNTL_PRAGMA */
   sqlite3 *db = pParse->db;    /* The database connection */
   Db *pDb;                     /* The specific database being pragmaed */
   Vdbe *v = sqlite3GetVdbe(pParse);  /* Prepared statement */
-  const PragmaName *pPragma;   /* The pragma */
+  ಸ್ಥಿರಾಂಕ PragmaName *pPragma;   /* The pragma */
 
-  if( v==0 ) return;
-  sqlite3VdbeRunOnlyOnce(v);
+  ಆದರೆ( v==0 ) ಹಿಂತಿರುಗಿ;
+  sqlite3_Vdbe_ಸತತ_Only_Once(v);
   pParse->nMem = 2;
 
   /* Interpret the [schema.] part of the pragma statement. iDb is the
   ** index of the database this pragma is being applied to in db.aDb[]. */
   iDb = sqlite3TwoPartName(pParse, pId1, pId2, &pId);
-  if( iDb<0 ) return;
+  ಆದರೆ( iDb<0 ) ಹಿಂತಿರುಗಿ;
   pDb = &db->aDb[iDb];
 
   /* If the temp database has been explicitly named as part of the
   ** pragma, make sure it is open.
   */
-  if( iDb==1 && sqlite3OpenTempDatabase(pParse) ){
-    return;
+  ಆದರೆ( iDb==1 && sqlite3_Open_ತಾತ್ಕಾಲಿಕ_Database(pParse) ){
+    ಹಿಂತಿರುಗಿ;
   }
 
-  zLeft = sqlite3NameFromToken(db, pId);
-  if( !zLeft ) return;
-  if( minusFlag ){
-    zRight = sqlite3MPrintf(db, "-%T", pValue);
-  }else{
-    zRight = sqlite3NameFromToken(db, pValue);
+  z_ಎಡ = sqlite3NameFromToken(db, pId);
+  ಆದರೆ( !z_ಎಡ ) ಹಿಂತಿರುಗಿ;
+  ಆದರೆ( minusFlag ){
+    z_ಬಲ = sqlite3MPrintf(db, "-%T", p_ಮೌಲ್ಯ);
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    z_ಬಲ = sqlite3NameFromToken(db, p_ಮೌಲ್ಯ);
   }
 
-  assert( pId2 );
+  ಪ್ರತಿಜ್ಞಾ( pId2 );
   zDb = pId2->n>0 ? pDb->zDbSName : 0;
-  if( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, zLeft, zRight, zDb) ){
-    goto pragma_out;
+  ಆದರೆ( sqlite3AuthCheck(pParse, SQLITE_PRAGMA, z_ಎಡ, z_ಬಲ, zDb) ){
+    ಹೋಗು pragma_ಹೊರಹೋಗು;
   }
 
   /* Send an SQLITE_FCNTL_PRAGMA file-control to the underlying VFS
@@ -488,52 +488,52 @@ void sqlite3Pragma(
   ** argument.
   */
   aFcntl[0] = 0;
-  aFcntl[1] = zLeft;
-  aFcntl[2] = zRight;
+  aFcntl[1] = z_ಎಡ;
+  aFcntl[2] = z_ಬಲ;
   aFcntl[3] = 0;
   db->busyHandler.nBusy = 0;
-  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (void*)aFcntl);
-  if( rc==SQLITE_OK ){
-    sqlite3VdbeSetNumCols(v, 1);
-    sqlite3VdbeSetColName(v, 0, COLNAME_NAME, aFcntl[0], SQLITE_TRANSIENT);
-    returnSingleText(v, aFcntl[0]);
+  rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_PRAGMA, (ಶೂನ್ಯ*)aFcntl);
+  ಆದರೆ( rc==SQLITE_OK ){
+    sqlite3_Vdbe_ಗಣ_ಅಂಕೆ_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ(v, 1);
+    sqlite3_Vdbe_ಗಣ_ಲಂಬಸಾಲು_Name(v, 0, COLNAME_NAME, aFcntl[0], SQLITE_TRANSIENT);
+    return_Single_ಪಠ್ಯ(v, aFcntl[0]);
     sqlite3_free(aFcntl[0]);
-    goto pragma_out;
+    ಹೋಗು pragma_ಹೊರಹೋಗು;
   }
-  if( rc!=SQLITE_NOTFOUND ){
-    if( aFcntl[0] ){
-      sqlite3ErrorMsg(pParse, "%s", aFcntl[0]);
+  ಆದರೆ( rc!=SQLITE_NOTFOUND ){
+    ಆದರೆ( aFcntl[0] ){
+      sqlite3_Error_ಸಂದೇಶ(pParse, "%s", aFcntl[0]);
       sqlite3_free(aFcntl[0]);
     }
     pParse->nErr++;
     pParse->rc = rc;
-    goto pragma_out;
+    ಹೋಗು pragma_ಹೊರಹೋಗು;
   }
 
   /* Locate the pragma in the lookup table */
-  pPragma = pragmaLocate(zLeft);
-  if( pPragma==0 ){
+  pPragma = pragmaLocate(z_ಎಡ);
+  ಆದರೆ( pPragma==0 ){
     /* IMP: R-43042-22504 No error messages are generated if an
     ** unknown pragma is issued. */
-    goto pragma_out;
+    ಹೋಗು pragma_ಹೊರಹೋಗು;
   }
 
   /* Make sure the database schema is loaded if the pragma requires that */
-  if( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
-    if( sqlite3ReadSchema(pParse) ) goto pragma_out;
+  ಆದರೆ( (pPragma->mPragFlg & PragFlg_NeedSchema)!=0 ){
+    ಆದರೆ( sqlite3ReadSchema(pParse) ) ಹೋಗು pragma_ಹೊರಹೋಗು;
   }
 
   /* Register the result column names for pragmas that return results */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns)==0
-   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || zRight==0)
+  ಆದರೆ( (pPragma->mPragFlg & PragFlg_NoColumns)==0
+   && ((pPragma->mPragFlg & PragFlg_NoColumns1)==0 || z_ಬಲ==0)
   ){
-    setPragmaResultColumnNames(v, pPragma);
+    ಗಣ_Pragma_ಫಲಿತಾಂಶ_ಸ್ತಂಭ_ಹೆಸರುಗಳು(v, pPragma);
   }
 
   /* Jump to the appropriate pragma handler */
-  switch( pPragma->ePragTyp ){
+  ಆಯ್ಕೆ( pPragma->ePragTyp ){
  
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
+#ಆದರೆ !defined(SQLITE_OMIT_PAGER_PRAGMAS) && !defined(SQLITE_OMIT_DEPRECATED)
   /*
   **  PRAGMA [schema.]default_cache_size
   **  PRAGMA [schema.]default_cache_size=N
@@ -550,42 +550,42 @@ void sqlite3Pragma(
   ** size.  But continue to take the absolute value of the default cache
   ** size of historical compatibility.
   */
-  case PragTyp_DEFAULT_CACHE_SIZE: {
-    static const int iLn = VDBE_OFFSET_LINENO(2);
-    static const VdbeOpList getCacheSize[] = {
+  ಸ್ಥಿತಿ Prag_Typ_DEFAULT_CACHE_ಗಾತ್ರ: {
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ iLn = VDBE_ಸ್ಥಾನಾಂತರ_LINENO(2);
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ VdbeOpList get_Cache_ಗಾತ್ರ[] = {
       { OP_Transaction, 0, 0,        0},                         /* 0 */
-      { OP_ReadCookie,  0, 1,        BTREE_DEFAULT_CACHE_SIZE},  /* 1 */
+      { OP_ReadCookie,  0, 1,        BTREE_DEFAULT_CACHE_ಗಾತ್ರ},  /* 1 */
       { OP_IfPos,       1, 8,        0},
       { OP_Integer,     0, 2,        0},
-      { OP_Subtract,    1, 2,        1},
+      { OP_ಕಳೆ,    1, 2,        1},
       { OP_IfPos,       1, 8,        0},
       { OP_Integer,     0, 1,        0},                         /* 6 */
       { OP_Noop,        0, 0,        0},
-      { OP_ResultRow,   1, 1,        0},
+      { OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು,   1, 1,        0},
     };
     VdbeOp *aOp;
-    sqlite3VdbeUsesBtree(v, iDb);
-    if( !zRight ){
+    sqlite3_Vdbe_ಬಳಸುತ್ತದೆ_Btree(v, iDb);
+    ಆದರೆ( !z_ಬಲ ){
       pParse->nMem += 2;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(getCacheSize));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(getCacheSize), getCacheSize, iLn);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_ಗಾತ್ರ(get_Cache_ಗಾತ್ರ));
+      aOp = sqlite3_Vdbe_ಕೂಡಿಸು_Op_List(v, Array_ಗಾತ್ರ(get_Cache_ಗಾತ್ರ), get_Cache_ಗಾತ್ರ, iLn);
+      ಆದರೆ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ನಿಲ್ಲಿಸು;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
-      aOp[6].p1 = SQLITE_DEFAULT_CACHE_SIZE;
-    }else{
-      int size = sqlite3AbsInt32(sqlite3Atoi(zRight));
+      aOp[6].p1 = SQLITE_DEFAULT_CACHE_ಗಾತ್ರ;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪೂರ್ಣಾಂಕ ಗಾತ್ರ_2 = sqlite3AbsInt32(sqlite3Atoi(z_ಬಲ));
       sqlite3BeginWriteOperation(pParse, 0, iDb);
-      sqlite3VdbeAddOp3(v, OP_SetCookie, iDb, BTREE_DEFAULT_CACHE_SIZE, size);
-      assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-      pDb->pSchema->cache_size = size;
-      sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಗಣ_Cookie, iDb, BTREE_DEFAULT_CACHE_ಗಾತ್ರ, ಗಾತ್ರ_2);
+      ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+      pDb->pSchema->cache_ಗಾತ್ರ = ಗಾತ್ರ_2;
+      sqlite3_Btree_ಗಣ_Cache_ಗಾತ್ರ(pDb->pBt, pDb->pSchema->cache_ಗಾತ್ರ);
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
-#endif /* !SQLITE_OMIT_PAGER_PRAGMAS && !SQLITE_OMIT_DEPRECATED */
+#ಆದರೆ_ಅಂತ್ಯ /* !SQLITE_OMIT_PAGER_PRAGMAS && !SQLITE_OMIT_DEPRECATED */
 
-#if !defined(SQLITE_OMIT_PAGER_PRAGMAS)
+#ಆದರೆ !defined(SQLITE_OMIT_PAGER_PRAGMAS)
   /*
   **  PRAGMA [schema.]page_size
   **  PRAGMA [schema.]page_size=N
@@ -595,22 +595,22 @@ void sqlite3Pragma(
   ** database page size value.  The value can only be set if
   ** the database has not yet been created.
   */
-  case PragTyp_PAGE_SIZE: {
+  ಸ್ಥಿತಿ Prag_Typ_ಪುಟ_ಗಾತ್ರ: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
-      int size = ALWAYS(pBt) ? sqlite3BtreeGetPageSize(pBt) : 0;
-      returnSingleInt(v, size);
-    }else{
+    ಪ್ರತಿಜ್ಞಾ( pBt!=0 );
+    ಆದರೆ( !z_ಬಲ ){
+      ಪೂರ್ಣಾಂಕ ಗಾತ್ರ_2 = ALWAYS(pBt) ? sqlite3_Btree_Get_ಪುಟ_ಗಾತ್ರ(pBt) : 0;
+      returnSingleInt(v, ಗಾತ್ರ_2);
+    }ಇಲ್ಲದಿದ್ದರೆ{
       /* Malloc may fail when setting the page-size, as there is an internal
       ** buffer that the pager module resizes using sqlite3_realloc().
       */
-      db->nextPagesize = sqlite3Atoi(zRight);
-      if( SQLITE_NOMEM==sqlite3BtreeSetPageSize(pBt, db->nextPagesize,0,0) ){
+      db->ಮುಂದಿನ_Pagesize = sqlite3Atoi(z_ಬಲ);
+      ಆದರೆ( SQLITE_NOMEM==sqlite3_Btree_ಗಣ_ಪುಟ_ಗಾತ್ರ(pBt, db->ಮುಂದಿನ_Pagesize,0,0) ){
         sqlite3OomFault(db);
       }
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -621,26 +621,26 @@ void sqlite3Pragma(
   ** secure_delete flag.  The second form changes the secure_delete
   ** flag setting and reports the new value.
   */
-  case PragTyp_SECURE_DELETE: {
+  ಸ್ಥಿತಿ PragTyp_SECURE_DELETE: {
     Btree *pBt = pDb->pBt;
-    int b = -1;
-    assert( pBt!=0 );
-    if( zRight ){
-      if( sqlite3_stricmp(zRight, "fast")==0 ){
+    ಪೂರ್ಣಾಂಕ b = -1;
+    ಪ್ರತಿಜ್ಞಾ( pBt!=0 );
+    ಆದರೆ( z_ಬಲ ){
+      ಆದರೆ( sqlite3_stricmp(z_ಬಲ, "fast")==0 ){
         b = 2;
-      }else{
-        b = sqlite3GetBoolean(zRight, 0);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        b = sqlite3GetBoolean(z_ಬಲ, 0);
       }
     }
-    if( pId2->n==0 && b>=0 ){
-      int ii;
-      for(ii=0; ii<db->nDb; ii++){
+    ಆದರೆ( pId2->n==0 && b>=0 ){
+      ಪೂರ್ಣಾಂಕ ii;
+      ಗಾಗಿ(ii=0; ii<db->nDb; ii++){
         sqlite3BtreeSecureDelete(db->aDb[ii].pBt, b);
       }
     }
     b = sqlite3BtreeSecureDelete(pBt, b);
     returnSingleInt(v, b);
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -660,43 +660,43 @@ void sqlite3Pragma(
   **
   ** Return the number of pages in the specified database.
   */
-  case PragTyp_PAGE_COUNT: {
-    int iReg;
+  ಸ್ಥಿತಿ Prag_Typ_ಪುಟ_ಎಣಿಕೆ: {
+    ಪೂರ್ಣಾಂಕ iReg;
     i64 x = 0;
-    sqlite3CodeVerifySchema(pParse, iDb);
+    sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iDb);
     iReg = ++pParse->nMem;
-    if( sqlite3Tolower(zLeft[0])=='p' ){
-      sqlite3VdbeAddOp2(v, OP_Pagecount, iDb, iReg);
-    }else{
-      if( zRight && sqlite3DecOrHexToI64(zRight,&x)==0 ){
-        if( x<0 ) x = 0;
-        else if( x>0xfffffffe ) x = 0xfffffffe;
-      }else{
+    ಆದರೆ( sqlite3Tolower(z_ಎಡ[0])=='p' ){
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Pagecount, iDb, iReg);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಆದರೆ( z_ಬಲ && sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(z_ಬಲ,&x)==0 ){
+        ಆದರೆ( x<0 ) x = 0;
+        ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( x>0xfffffffe ) x = 0xfffffffe;
+      }ಇಲ್ಲದಿದ್ದರೆ{
         x = 0;
       }
-      sqlite3VdbeAddOp3(v, OP_MaxPgcnt, iDb, iReg, (int)x);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_MaxPgcnt, iDb, iReg, (ಪೂರ್ಣಾಂಕ)x);
     }
-    sqlite3VdbeAddOp2(v, OP_ResultRow, iReg, 1);
-    break;
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, iReg, 1);
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
   **  PRAGMA [schema.]locking_mode
   **  PRAGMA [schema.]locking_mode = (normal|exclusive)
   */
-  case PragTyp_LOCKING_MODE: {
-    const char *zRet = "normal";
-    int eMode = getLockingMode(zRight);
+  ಸ್ಥಿತಿ Prag_Typ_LOCKING_ಬಹುಲಕ: {
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zRet = "normal";
+    ಪೂರ್ಣಾಂಕ e_ಬಹುಲಕ = get_Locking_ಬಹುಲಕ(z_ಬಲ);
 
-    if( pId2->n==0 && eMode==PAGER_LOCKINGMODE_QUERY ){
+    ಆದರೆ( pId2->n==0 && e_ಬಹುಲಕ==PAGER_LOCKINGMODE_QUERY ){
       /* Simple "PRAGMA locking_mode;" statement. This is a query for
       ** the current default locking mode (which may be different to
       ** the locking-mode of the main database).
       */
-      eMode = db->dfltLockMode;
-    }else{
+      e_ಬಹುಲಕ = db->dflt_ಬೀಗ_ಬಹುಲಕ;
+    }ಇಲ್ಲದಿದ್ದರೆ{
       Pager *pPager;
-      if( pId2->n==0 ){
+      ಆದರೆ( pId2->n==0 ){
         /* This indicates that no database name was specified as part
         ** of the PRAGMA command. In this case the locking-mode must be
         ** set on all attached databases, as well as the main db file.
@@ -705,25 +705,25 @@ void sqlite3Pragma(
         ** any subsequently attached databases also use the specified
         ** locking mode.
         */
-        int ii;
-        assert(pDb==&db->aDb[0]);
-        for(ii=2; ii<db->nDb; ii++){
+        ಪೂರ್ಣಾಂಕ ii;
+        ಪ್ರತಿಜ್ಞಾ(pDb==&db->aDb[0]);
+        ಗಾಗಿ(ii=2; ii<db->nDb; ii++){
           pPager = sqlite3BtreePager(db->aDb[ii].pBt);
-          sqlite3PagerLockingMode(pPager, eMode);
+          sqlite3_Pager_Locking_ಬಹುಲಕ(pPager, e_ಬಹುಲಕ);
         }
-        db->dfltLockMode = (u8)eMode;
+        db->dflt_ಬೀಗ_ಬಹುಲಕ = (u8)e_ಬಹುಲಕ;
       }
       pPager = sqlite3BtreePager(pDb->pBt);
-      eMode = sqlite3PagerLockingMode(pPager, eMode);
+      e_ಬಹುಲಕ = sqlite3_Pager_Locking_ಬಹುಲಕ(pPager, e_ಬಹುಲಕ);
     }
 
-    assert( eMode==PAGER_LOCKINGMODE_NORMAL
-            || eMode==PAGER_LOCKINGMODE_EXCLUSIVE );
-    if( eMode==PAGER_LOCKINGMODE_EXCLUSIVE ){
+    ಪ್ರತಿಜ್ಞಾ( e_ಬಹುಲಕ==PAGER_LOCKINGMODE_ಸಾಮಾನ್ಯ
+            || e_ಬಹುಲಕ==PAGER_LOCKINGMODE_EXCLUSIVE );
+    ಆದರೆ( e_ಬಹುಲಕ==PAGER_LOCKINGMODE_EXCLUSIVE ){
       zRet = "exclusive";
     }
-    returnSingleText(v, zRet);
-    break;
+    return_Single_ಪಠ್ಯ(v, zRet);
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -731,44 +731,44 @@ void sqlite3Pragma(
   **  PRAGMA [schema.]journal_mode =
   **                      (delete|persist|off|truncate|memory|wal|off)
   */
-  case PragTyp_JOURNAL_MODE: {
-    int eMode;        /* One of the PAGER_JOURNALMODE_XXX symbols */
-    int ii;           /* Loop counter */
+  ಸ್ಥಿತಿ Prag_Typ_JOURNAL_ಬಹುಲಕ: {
+    ಪೂರ್ಣಾಂಕ e_ಬಹುಲಕ;        /* One of the PAGER_JOURNALMODE_XXX symbols */
+    ಪೂರ್ಣಾಂಕ ii;           /* Loop counter */
 
-    if( zRight==0 ){
+    ಆದರೆ( z_ಬಲ==0 ){
       /* If there is no "=MODE" part of the pragma, do a query for the
       ** current mode */
-      eMode = PAGER_JOURNALMODE_QUERY;
-    }else{
-      const char *zMode;
-      int n = sqlite3Strlen30(zRight);
-      for(eMode=0; (zMode = sqlite3JournalModename(eMode))!=0; eMode++){
-        if( sqlite3StrNICmp(zRight, zMode, n)==0 ) break;
+      e_ಬಹುಲಕ = PAGER_JOURNALMODE_QUERY;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಬಹುಲಕ;
+      ಪೂರ್ಣಾಂಕ n = sqlite3Strlen30(z_ಬಲ);
+      ಗಾಗಿ(e_ಬಹುಲಕ=0; (z_ಬಹುಲಕ = sqlite3JournalModename(e_ಬಹುಲಕ))!=0; e_ಬಹುಲಕ++){
+        ಆದರೆ( sqlite3StrNICmp(z_ಬಲ, z_ಬಹುಲಕ, n)==0 ) ನಿಲ್ಲಿಸು;
       }
-      if( !zMode ){
+      ಆದರೆ( !z_ಬಹುಲಕ ){
         /* If the "=MODE" part does not match any known journal mode,
         ** then do a query */
-        eMode = PAGER_JOURNALMODE_QUERY;
+        e_ಬಹುಲಕ = PAGER_JOURNALMODE_QUERY;
       }
-      if( eMode==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
+      ಆದರೆ( e_ಬಹುಲಕ==PAGER_JOURNALMODE_OFF && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow journal-mode "OFF" in defensive since the database
         ** can become corrupted using ordinary SQL when the journal is off */
-        eMode = PAGER_JOURNALMODE_QUERY;
+        e_ಬಹುಲಕ = PAGER_JOURNALMODE_QUERY;
       }
     }
-    if( eMode==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
+    ಆದರೆ( e_ಬಹುಲಕ==PAGER_JOURNALMODE_QUERY && pId2->n==0 ){
       /* Convert "PRAGMA journal_mode" into "PRAGMA main.journal_mode" */
       iDb = 0;
       pId2->n = 1;
     }
-    for(ii=db->nDb-1; ii>=0; ii--){
-      if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
-        sqlite3VdbeUsesBtree(v, ii);
-        sqlite3VdbeAddOp3(v, OP_JournalMode, ii, 1, eMode);
+    ಗಾಗಿ(ii=db->nDb-1; ii>=0; ii--){
+      ಆದರೆ( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+        sqlite3_Vdbe_ಬಳಸುತ್ತದೆ_Btree(v, ii);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Journal_ಬಹುಲಕ, ii, 1, e_ಬಹುಲಕ);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
-    break;
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1, 1);
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -777,19 +777,19 @@ void sqlite3Pragma(
   **
   ** Get or set the size limit on rollback journal files.
   */
-  case PragTyp_JOURNAL_SIZE_LIMIT: {
+  ಸ್ಥಿತಿ Prag_Typ_JOURNAL_ಗಾತ್ರ_ಎಲ್ಲೆ: {
     Pager *pPager = sqlite3BtreePager(pDb->pBt);
-    i64 iLimit = -2;
-    if( zRight ){
-      sqlite3DecOrHexToI64(zRight, &iLimit);
-      if( iLimit<-1 ) iLimit = -1;
+    i64 i_ಎಲ್ಲೆ = -2;
+    ಆದರೆ( z_ಬಲ ){
+      sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(z_ಬಲ, &i_ಎಲ್ಲೆ);
+      ಆದರೆ( i_ಎಲ್ಲೆ<-1 ) i_ಎಲ್ಲೆ = -1;
     }
-    iLimit = sqlite3PagerJournalSizeLimit(pPager, iLimit);
-    returnSingleInt(v, iLimit);
-    break;
+    i_ಎಲ್ಲೆ = sqlite3_Pager_Journal_ಗಾತ್ರ_ಎಲ್ಲೆ(pPager, i_ಎಲ್ಲೆ);
+    returnSingleInt(v, i_ಎಲ್ಲೆ);
+    ನಿಲ್ಲಿಸು;
   }
 
-#endif /* SQLITE_OMIT_PAGER_PRAGMAS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_PAGER_PRAGMAS */
 
   /*
   **  PRAGMA [schema.]auto_vacuum
@@ -798,76 +798,76 @@ void sqlite3Pragma(
   ** Get or set the value of the database 'auto-vacuum' parameter.
   ** The value is one of:  0 NONE 1 FULL 2 INCREMENTAL
   */
-#ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_AUTO_VACUUM: {
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOVACUUM
+  ಸ್ಥಿತಿ PragTyp_AUTO_VACUUM: {
     Btree *pBt = pDb->pBt;
-    assert( pBt!=0 );
-    if( !zRight ){
+    ಪ್ರತಿಜ್ಞಾ( pBt!=0 );
+    ಆದರೆ( !z_ಬಲ ){
       returnSingleInt(v, sqlite3BtreeGetAutoVacuum(pBt));
-    }else{
-      int eAuto = getAutoVacuum(zRight);
-      assert( eAuto>=0 && eAuto<=2 );
-      db->nextAutovac = (u8)eAuto;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪೂರ್ಣಾಂಕ eAuto = getAutoVacuum(z_ಬಲ);
+      ಪ್ರತಿಜ್ಞಾ( eAuto>=0 && eAuto<=2 );
+      db->ಮುಂದಿನ_Autovac = (u8)eAuto;
       /* Call SetAutoVacuum() to set initialize the internal auto and
       ** incr-vacuum flags. This is required in case this connection
       ** creates the database file. It is important that it is created
       ** as an auto-vacuum capable db.
       */
-      rc = sqlite3BtreeSetAutoVacuum(pBt, eAuto);
-      if( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
+      rc = sqlite3_Btree_ಗಣ_Auto_Vacuum(pBt, eAuto);
+      ಆದರೆ( rc==SQLITE_OK && (eAuto==1 || eAuto==2) ){
         /* When setting the auto_vacuum mode to either "full" or
         ** "incremental", write the value of meta[6] in the database
         ** file. Before writing to meta[6], check that meta[3] indicates
         ** that this really is an auto-vacuum capable database.
         */
-        static const int iLn = VDBE_OFFSET_LINENO(2);
-        static const VdbeOpList setMeta6[] = {
+        ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ iLn = VDBE_ಸ್ಥಾನಾಂತರ_LINENO(2);
+        ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ VdbeOpList ಗಣ_Meta6[] = {
           { OP_Transaction,    0,         1,                 0},    /* 0 */
-          { OP_ReadCookie,     0,         1,         BTREE_LARGEST_ROOT_PAGE},
+          { OP_ReadCookie,     0,         1,         BTREE_ಅತಿದೊಡ್ಡ_ಬೇರು_ಪುಟ},
           { OP_If,             1,         0,                 0},    /* 2 */
           { OP_Halt,           SQLITE_OK, OE_Abort,          0},    /* 3 */
-          { OP_SetCookie,      0,         BTREE_INCR_VACUUM, 0},    /* 4 */
+          { OP_ಗಣ_Cookie,      0,         BTREE_INCR_VACUUM, 0},    /* 4 */
         };
         VdbeOp *aOp;
-        int iAddr = sqlite3VdbeCurrentAddr(v);
-        sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setMeta6));
-        aOp = sqlite3VdbeAddOpList(v, ArraySize(setMeta6), setMeta6, iLn);
-        if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+        ಪೂರ್ಣಾಂಕ iAddr = sqlite3VdbeCurrentAddr(v);
+        sqlite3VdbeVerifyNoMallocRequired(v, Array_ಗಾತ್ರ(ಗಣ_Meta6));
+        aOp = sqlite3_Vdbe_ಕೂಡಿಸು_Op_List(v, Array_ಗಾತ್ರ(ಗಣ_Meta6), ಗಣ_Meta6, iLn);
+        ಆದರೆ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ನಿಲ್ಲಿಸು;
         aOp[0].p1 = iDb;
         aOp[1].p1 = iDb;
         aOp[2].p2 = iAddr+4;
         aOp[4].p1 = iDb;
         aOp[4].p3 = eAuto - 1;
-        sqlite3VdbeUsesBtree(v, iDb);
+        sqlite3_Vdbe_ಬಳಸುತ್ತದೆ_Btree(v, iDb);
       }
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
   /*
   **  PRAGMA [schema.]incremental_vacuum(N)
   **
   ** Do N steps of incremental vacuuming on a database.
   */
-#ifndef SQLITE_OMIT_AUTOVACUUM
-  case PragTyp_INCREMENTAL_VACUUM: {
-    int iLimit = 0, addr;
-    if( zRight==0 || !sqlite3GetInt32(zRight, &iLimit) || iLimit<=0 ){
-      iLimit = 0x7fffffff;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_AUTOVACUUM
+  ಸ್ಥಿತಿ PragTyp_INCREMENTAL_VACUUM: {
+    ಪೂರ್ಣಾಂಕ i_ಎಲ್ಲೆ = 0, addr;
+    ಆದರೆ( z_ಬಲ==0 || !sqlite3GetInt32(z_ಬಲ, &i_ಎಲ್ಲೆ) || i_ಎಲ್ಲೆ<=0 ){
+      i_ಎಲ್ಲೆ = 0x7fffffff;
     }
     sqlite3BeginWriteOperation(pParse, 0, iDb);
-    sqlite3VdbeAddOp2(v, OP_Integer, iLimit, 1);
-    addr = sqlite3VdbeAddOp1(v, OP_IncrVacuum, iDb); VdbeCoverage(v);
-    sqlite3VdbeAddOp1(v, OP_ResultRow, 1);
-    sqlite3VdbeAddOp2(v, OP_AddImm, 1, -1);
-    sqlite3VdbeAddOp2(v, OP_IfPos, 1, addr); VdbeCoverage(v);
-    sqlite3VdbeJumpHere(v, addr);
-    break;
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, i_ಎಲ್ಲೆ, 1);
+    addr = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_IncrVacuum, iDb); VdbeCoverage(v);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಕೂಡಿಸು_Imm, 1, -1);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IfPos, 1, addr); VdbeCoverage(v);
+    sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr);
+    ನಿಲ್ಲಿಸು;
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_PAGER_PRAGMAS
   /*
   **  PRAGMA [schema.]cache_size
   **  PRAGMA [schema.]cache_size=N
@@ -879,16 +879,16 @@ void sqlite3Pragma(
   ** number of pages is adjusted so that the cache uses -N kibibytes
   ** of memory.
   */
-  case PragTyp_CACHE_SIZE: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
-      returnSingleInt(v, pDb->pSchema->cache_size);
-    }else{
-      int size = sqlite3Atoi(zRight);
-      pDb->pSchema->cache_size = size;
-      sqlite3BtreeSetCacheSize(pDb->pBt, pDb->pSchema->cache_size);
+  ಸ್ಥಿತಿ Prag_Typ_CACHE_ಗಾತ್ರ: {
+    ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ಆದರೆ( !z_ಬಲ ){
+      returnSingleInt(v, pDb->pSchema->cache_ಗಾತ್ರ);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪೂರ್ಣಾಂಕ ಗಾತ್ರ_2 = sqlite3Atoi(z_ಬಲ);
+      pDb->pSchema->cache_ಗಾತ್ರ = ಗಾತ್ರ_2;
+      sqlite3_Btree_ಗಣ_Cache_ಗಾತ್ರ(pDb->pBt, pDb->pSchema->cache_ಗಾತ್ರ);
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -913,25 +913,25 @@ void sqlite3Pragma(
   ** The cache_spill=BOOLEAN setting applies to all attached schemas,
   ** not just the schema specified.
   */
-  case PragTyp_CACHE_SPILL: {
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( !zRight ){
+  ಸ್ಥಿತಿ PragTyp_CACHE_SPILL: {
+    ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ಆದರೆ( !z_ಬಲ ){
       returnSingleInt(v,
          (db->flags & SQLITE_CacheSpill)==0 ? 0 :
-            sqlite3BtreeSetSpillSize(pDb->pBt,0));
-    }else{
-      int size = 1;
-      if( sqlite3GetInt32(zRight, &size) ){
-        sqlite3BtreeSetSpillSize(pDb->pBt, size);
+            sqlite3_Btree_ಗಣ_Spill_ಗಾತ್ರ(pDb->pBt,0));
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಪೂರ್ಣಾಂಕ ಗಾತ್ರ_2 = 1;
+      ಆದರೆ( sqlite3GetInt32(z_ಬಲ, &ಗಾತ್ರ_2) ){
+        sqlite3_Btree_ಗಣ_Spill_ಗಾತ್ರ(pDb->pBt, ಗಾತ್ರ_2);
       }
-      if( sqlite3GetBoolean(zRight, size!=0) ){
+      ಆದರೆ( sqlite3GetBoolean(z_ಬಲ, ಗಾತ್ರ_2!=0) ){
         db->flags |= SQLITE_CacheSpill;
-      }else{
+      }ಇಲ್ಲದಿದ್ದರೆ{
         db->flags &= ~(u64)SQLITE_CacheSpill;
       }
-      setAllPagerFlags(db);
+      ಗಣ_All_Pager_Flags(db);
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -948,34 +948,34 @@ void sqlite3Pragma(
   ** as little or as much as it wants.  Except, if N is set to 0 then the
   ** upper layers will never invoke the xFetch interfaces to the VFS.
   */
-  case PragTyp_MMAP_SIZE: {
+  ಸ್ಥಿತಿ Prag_Typ_MMAP_ಗಾತ್ರ: {
     sqlite3_int64 sz;
-#if SQLITE_MAX_MMAP_SIZE>0
-    assert( sqlite3SchemaMutexHeld(db, iDb, 0) );
-    if( zRight ){
-      int ii;
-      sqlite3DecOrHexToI64(zRight, &sz);
-      if( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
-      if( pId2->n==0 ) db->szMmap = sz;
-      for(ii=db->nDb-1; ii>=0; ii--){
-        if( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
-          sqlite3BtreeSetMmapLimit(db->aDb[ii].pBt, sz);
+#ಆದರೆ SQLITE_MAX_MMAP_ಗಾತ್ರ>0
+    ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, iDb, 0) );
+    ಆದರೆ( z_ಬಲ ){
+      ಪೂರ್ಣಾಂಕ ii;
+      sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(z_ಬಲ, &sz);
+      ಆದರೆ( sz<0 ) sz = sqlite3GlobalConfig.szMmap;
+      ಆದರೆ( pId2->n==0 ) db->szMmap = sz;
+      ಗಾಗಿ(ii=db->nDb-1; ii>=0; ii--){
+        ಆದರೆ( db->aDb[ii].pBt && (ii==iDb || pId2->n==0) ){
+          sqlite3_Btree_ಗಣ_Mmap_ಎಲ್ಲೆ(db->aDb[ii].pBt, sz);
         }
       }
     }
     sz = -1;
-    rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_MMAP_SIZE, &sz);
-#else
+    rc = sqlite3_file_control(db, zDb, SQLITE_FCNTL_MMAP_ಗಾತ್ರ, &sz);
+#ಇಲ್ಲದಿದ್ದರೆ
     sz = 0;
     rc = SQLITE_OK;
-#endif
-    if( rc==SQLITE_OK ){
+#ಆದರೆ_ಅಂತ್ಯ
+    ಆದರೆ( rc==SQLITE_OK ){
       returnSingleInt(v, sz);
-    }else if( rc!=SQLITE_NOTFOUND ){
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( rc!=SQLITE_NOTFOUND ){
       pParse->nErr++;
       pParse->rc = rc;
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -989,13 +989,13 @@ void sqlite3Pragma(
   ** Note that it is possible for the library compile-time options to
   ** override this setting
   */
-  case PragTyp_TEMP_STORE: {
-    if( !zRight ){
-      returnSingleInt(v, db->temp_store);
-    }else{
-      changeTempStorage(pParse, zRight);
+  ಸ್ಥಿತಿ Prag_Typ_ತಾತ್ಕಾಲಿಕ_STORE: {
+    ಆದರೆ( !z_ಬಲ ){
+      returnSingleInt(v, db->ತಾತ್ಕಾಲಿಕ_store);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      change_ತಾತ್ಕಾಲಿಕ_Storage(pParse, z_ಬಲ);
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -1008,40 +1008,40 @@ void sqlite3Pragma(
   ** If temporary directory is changed, then invalidateTempStorage.
   **
   */
-  case PragTyp_TEMP_STORE_DIRECTORY: {
+  ಸ್ಥಿತಿ Prag_Typ_ತಾತ್ಕಾಲಿಕ_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
-      returnSingleText(v, sqlite3_temp_directory);
-    }else{
-#ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+    ಆದರೆ( !z_ಬಲ ){
+      return_Single_ಪಠ್ಯ(v, sqlite3_ತಾತ್ಕಾಲಿಕ_directory);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WSD
+      ಆದರೆ( z_ಬಲ[0] ){
+        ಪೂರ್ಣಾಂಕ res;
+        rc = sqlite3OsAccess(db->pVfs, z_ಬಲ, SQLITE_ACCESS_READWRITE, &res);
+        ಆದರೆ( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_ಸಂದೇಶ(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          ಹೋಗು pragma_ಹೊರಹೋಗು;
         }
       }
-      if( SQLITE_TEMP_STORE==0
-       || (SQLITE_TEMP_STORE==1 && db->temp_store<=1)
-       || (SQLITE_TEMP_STORE==2 && db->temp_store==1)
+      ಆದರೆ( SQLITE_ತಾತ್ಕಾಲಿಕ_STORE==0
+       || (SQLITE_ತಾತ್ಕಾಲಿಕ_STORE==1 && db->ತಾತ್ಕಾಲಿಕ_store<=1)
+       || (SQLITE_ತಾತ್ಕಾಲಿಕ_STORE==2 && db->ತಾತ್ಕಾಲಿಕ_store==1)
       ){
-        invalidateTempStorage(pParse);
+        invalidate_ತಾತ್ಕಾಲಿಕ_Storage(pParse);
       }
-      sqlite3_free(sqlite3_temp_directory);
-      if( zRight[0] ){
-        sqlite3_temp_directory = sqlite3_mprintf("%s", zRight);
-      }else{
-        sqlite3_temp_directory = 0;
+      sqlite3_free(sqlite3_ತಾತ್ಕಾಲಿಕ_directory);
+      ಆದರೆ( z_ಬಲ[0] ){
+        sqlite3_ತಾತ್ಕಾಲಿಕ_directory = sqlite3_mprintf("%s", z_ಬಲ);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        sqlite3_ತಾತ್ಕಾಲಿಕ_directory = 0;
       }
-#endif /* SQLITE_OMIT_WSD */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
-#if SQLITE_OS_WIN
+#ಆದರೆ SQLITE_OS_WIN
   /*
   **   PRAGMA data_store_directory
   **   PRAGMA data_store_directory = ""|"directory_name"
@@ -1055,35 +1055,35 @@ void sqlite3Pragma(
   ** by this setting, regardless of its value.
   **
   */
-  case PragTyp_DATA_STORE_DIRECTORY: {
+  ಸ್ಥಿತಿ Prag_Typ_ದತ್ತಾಂಶ_STORE_DIRECTORY: {
     sqlite3_mutex_enter(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    if( !zRight ){
-      returnSingleText(v, sqlite3_data_directory);
-    }else{
-#ifndef SQLITE_OMIT_WSD
-      if( zRight[0] ){
-        int res;
-        rc = sqlite3OsAccess(db->pVfs, zRight, SQLITE_ACCESS_READWRITE, &res);
-        if( rc!=SQLITE_OK || res==0 ){
-          sqlite3ErrorMsg(pParse, "not a writable directory");
+    ಆದರೆ( !z_ಬಲ ){
+      return_Single_ಪಠ್ಯ(v, sqlite3_ದತ್ತಾಂಶ_directory);
+    }ಇಲ್ಲದಿದ್ದರೆ{
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WSD
+      ಆದರೆ( z_ಬಲ[0] ){
+        ಪೂರ್ಣಾಂಕ res;
+        rc = sqlite3OsAccess(db->pVfs, z_ಬಲ, SQLITE_ACCESS_READWRITE, &res);
+        ಆದರೆ( rc!=SQLITE_OK || res==0 ){
+          sqlite3_Error_ಸಂದೇಶ(pParse, "not a writable directory");
           sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-          goto pragma_out;
+          ಹೋಗು pragma_ಹೊರಹೋಗು;
         }
       }
-      sqlite3_free(sqlite3_data_directory);
-      if( zRight[0] ){
-        sqlite3_data_directory = sqlite3_mprintf("%s", zRight);
-      }else{
-        sqlite3_data_directory = 0;
+      sqlite3_free(sqlite3_ದತ್ತಾಂಶ_directory);
+      ಆದರೆ( z_ಬಲ[0] ){
+        sqlite3_ದತ್ತಾಂಶ_directory = sqlite3_mprintf("%s", z_ಬಲ);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        sqlite3_ದತ್ತಾಂಶ_directory = 0;
       }
-#endif /* SQLITE_OMIT_WSD */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_WSD */
     }
     sqlite3_mutex_leave(sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_TEMPDIR));
-    break;
+    ನಿಲ್ಲಿಸು;
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if SQLITE_ENABLE_LOCKING_STYLE
+#ಆದರೆ SQLITE_ENABLE_LOCKING_STYLE
   /*
   **   PRAGMA [schema.]lock_proxy_file
   **   PRAGMA [schema.]lock_proxy_file = ":auto:"|"lock_file_path"
@@ -1092,33 +1092,33 @@ void sqlite3Pragma(
   ** the value sets a specific file to be used for database access locks.
   **
   */
-  case PragTyp_LOCK_PROXY_FILE: {
-    if( !zRight ){
+  ಸ್ಥಿತಿ Prag_Typ_ಬೀಗ_PROXY_FILE: {
+    ಆದರೆ( !z_ಬಲ ){
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
-      char *proxy_file_path = NULL;
+      ಅಕ್ಷರ *proxy_file_ಮಾರ್ಗ = ಖಾಲಿ;
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
       sqlite3OsFileControlHint(pFile, SQLITE_GET_LOCKPROXYFILE,
-                           &proxy_file_path);
-      returnSingleText(v, proxy_file_path);
-    }else{
+                           &proxy_file_ಮಾರ್ಗ);
+      return_Single_ಪಠ್ಯ(v, proxy_file_ಮಾರ್ಗ);
+    }ಇಲ್ಲದಿದ್ದರೆ{
       Pager *pPager = sqlite3BtreePager(pDb->pBt);
       sqlite3_file *pFile = sqlite3PagerFile(pPager);
-      int res;
-      if( zRight[0] ){
-        res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     zRight);
-      } else {
-        res=sqlite3OsFileControl(pFile, SQLITE_SET_LOCKPROXYFILE,
-                                     NULL);
+      ಪೂರ್ಣಾಂಕ res;
+      ಆದರೆ( z_ಬಲ[0] ){
+        res=sqlite3OsFileControl(pFile, SQLITE_ಗಣ_LOCKPROXYFILE,
+                                     z_ಬಲ);
+      } ಇಲ್ಲದಿದ್ದರೆ {
+        res=sqlite3OsFileControl(pFile, SQLITE_ಗಣ_LOCKPROXYFILE,
+                                     ಖಾಲಿ);
       }
-      if( res!=SQLITE_OK ){
-        sqlite3ErrorMsg(pParse, "failed to set lock proxy file");
-        goto pragma_out;
+      ಆದರೆ( res!=SQLITE_OK ){
+        sqlite3_Error_ಸಂದೇಶ(pParse, "failed to set lock proxy file");
+        ಹೋಗು pragma_ಹೊರಹೋಗು;
       }
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
-#endif /* SQLITE_ENABLE_LOCKING_STYLE */     
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_ENABLE_LOCKING_STYLE */     
    
   /*
   **   PRAGMA [schema.]synchronous
@@ -1129,63 +1129,63 @@ void sqlite3Pragma(
   ** default value will be restored the next time the database is
   ** opened.
   */
-  case PragTyp_SYNCHRONOUS: {
-    if( !zRight ){
+  ಸ್ಥಿತಿ PragTyp_SYNCHRONOUS: {
+    ಆದರೆ( !z_ಬಲ ){
       returnSingleInt(v, pDb->safety_level-1);
-    }else{
-      if( !db->autoCommit ){
-        sqlite3ErrorMsg(pParse,
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      ಆದರೆ( !db->autoCommit ){
+        sqlite3_Error_ಸಂದೇಶ(pParse,
             "Safety level may not be changed inside a transaction");
-      }else if( iDb!=1 ){
-        int iLevel;
-        if( sqlite3Isdigit(zRight[0]) ){
-          iLevel = sqlite3Atoi(zRight);
-        }else{
-          iLevel = getSafetyLevel(zRight,0,1);
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( iDb!=1 ){
+        ಪೂರ್ಣಾಂಕ iLevel;
+        ಆದರೆ( sqlite3Isdigit(z_ಬಲ[0]) ){
+          iLevel = sqlite3Atoi(z_ಬಲ);
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          iLevel = getSafetyLevel(z_ಬಲ,0,1);
         }
-        iLevel = (iLevel+1) & PAGER_SYNCHRONOUS_MASK;
-        if( iLevel==0 ) iLevel = 1;
+        iLevel = (iLevel+1) & PAGER_SYNCHRONOUS_ಮುಖವಾಡ;
+        ಆದರೆ( iLevel==0 ) iLevel = 1;
         pDb->safety_level = iLevel;
-        pDb->bSyncSet = 1;
-        setAllPagerFlags(db);
+        pDb->b_Sync_ಗಣ = 1;
+        ಗಣ_All_Pager_Flags(db);
       }
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
-#endif /* SQLITE_OMIT_PAGER_PRAGMAS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_PAGER_PRAGMAS */
 
-#ifndef SQLITE_OMIT_FLAG_PRAGMAS
-  case PragTyp_FLAG: {
-    if( zRight==0 ){
-      setPragmaResultColumnNames(v, pPragma);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_FLAG_PRAGMAS
+  ಸ್ಥಿತಿ PragTyp_FLAG: {
+    ಆದರೆ( z_ಬಲ==0 ){
+      ಗಣ_Pragma_ಫಲಿತಾಂಶ_ಸ್ತಂಭ_ಹೆಸರುಗಳು(v, pPragma);
       returnSingleInt(v, (db->flags & pPragma->iArg)!=0 );
-    }else{
-      u64 mask = pPragma->iArg;    /* Mask of bits to set or clear. */
-      if( db->autoCommit==0 ){
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      u64 ಮುಖವಾಡ = pPragma->iArg;    /* Mask of bits to set or clear. */
+      ಆದರೆ( db->autoCommit==0 ){
         /* Foreign key support may not be enabled or disabled while not
         ** in auto-commit mode.  */
-        mask &= ~(SQLITE_ForeignKeys);
+        ಮುಖವಾಡ &= ~(SQLITE_Foreign_ಕೀಲಿಗಳು);
       }
 
-      if( sqlite3GetBoolean(zRight, 0) ){
-        if( (mask & SQLITE_WriteSchema)==0
+      ಆದರೆ( sqlite3GetBoolean(z_ಬಲ, 0) ){
+        ಆದರೆ( (ಮುಖವಾಡ & SQLITE_WriteSchema)==0
          || (db->flags & SQLITE_Defensive)==0
         ){
-          db->flags |= mask;
+          db->flags |= ಮುಖವಾಡ;
         }
-      }else{
-        db->flags &= ~mask;
-        if( mask==SQLITE_DeferFKs ){
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        db->flags &= ~ಮುಖವಾಡ;
+        ಆದರೆ( ಮುಖವಾಡ==SQLITE_DeferFKs ){
           db->nDeferredImmCons = 0;
           db->nDeferredCons = 0;
         }
-        if( (mask & SQLITE_WriteSchema)!=0
-         && sqlite3_stricmp(zRight, "reset")==0
+        ಆದರೆ( (ಮುಖವಾಡ & SQLITE_WriteSchema)!=0
+         && sqlite3_stricmp(z_ಬಲ, "reset")==0
         ){
           /* IMP: R-60817-01178 If the argument is "RESET" then schema
           ** writing is disabled (as with "PRAGMA writable_schema=OFF") and,
           ** in addition, the schema is reloaded. */
-          sqlite3ResetAllSchemasOfConnection(db);
+          sqlite3_Reset_All_Schemas_ದ_Connection(db);
         }
       }
 
@@ -1193,14 +1193,14 @@ void sqlite3Pragma(
       ** compiler (eg. count_changes). So add an opcode to expire all
       ** compiled SQL statements after modifying a pragma value.
       */
-      sqlite3VdbeAddOp0(v, OP_Expire);
-      setAllPagerFlags(db);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Expire);
+      ಗಣ_All_Pager_Flags(db);
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
-#endif /* SQLITE_OMIT_FLAG_PRAGMAS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_FLAG_PRAGMAS */
 
-#ifndef SQLITE_OMIT_SCHEMA_PRAGMAS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_SCHEMA_PRAGMAS
   /*
   **   PRAGMA table_info(<table>)
   **
@@ -1214,56 +1214,56 @@ void sqlite3Pragma(
   ** dflt_value: The default value for the column, if any.
   ** pk:         Non-zero for PK fields.
   */
-  case PragTyp_TABLE_INFO: if( zRight ){
-    Table *pTab;
-    sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-    if( pTab ){
-      int i, k;
-      int nHidden = 0;
-      Column *pCol;
-      Index *pPk = sqlite3PrimaryKeyIndex(pTab);
+  ಸ್ಥಿತಿ Prag_Typ_ಕೋಷ್ಟಕ_INFO: ಆದರೆ( z_ಬಲ ){
+    ಕೋಷ್ಟಕ *pTab;
+    sqlite3_ಸಂಕೇತ_Verify_Named_Schema(pParse, zDb);
+    pTab = sqlite3_Locate_ಕೋಷ್ಟಕ(pParse, LOCATE_NOERR, z_ಬಲ, zDb);
+    ಆದರೆ( pTab ){
+      ಪೂರ್ಣಾಂಕ i, k;
+      ಪೂರ್ಣಾಂಕ nHidden = 0;
+      ಸ್ತಂಭ *p_ಲಂಬಸಾಲು;
+      ಸೂಚ್ಯಂಕ *pPk = sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pTab);
       pParse->nMem = 7;
-      sqlite3ViewGetColumnNames(pParse, pTab);
-      for(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
-        int isHidden = 0;
-        const Expr *pColExpr;
-        if( pCol->colFlags & COLFLAG_NOINSERT ){
-          if( pPragma->iArg==0 ){
+      sqlite3_View_Get_ಸ್ತಂಭ_ಹೆಸರುಗಳು(pParse, pTab);
+      ಗಾಗಿ(i=0, p_ಲಂಬಸಾಲು=pTab->a_ಲಂಬಸಾಲು; i<pTab->n_ಲಂಬಸಾಲು; i++, p_ಲಂಬಸಾಲು++){
+        ಪೂರ್ಣಾಂಕ isHidden = 0;
+        ಸ್ಥಿರಾಂಕ ಅಭಿವ್ಯಕ್ತಿ *p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ;
+        ಆದರೆ( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_NOINSERT ){
+          ಆದರೆ( pPragma->iArg==0 ){
             nHidden++;
-            continue;
+            ಮುಂದುವರಿ;
           }
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
+          ಆದರೆ( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL ){
             isHidden = 2;  /* GENERATED ALWAYS AS ... VIRTUAL */
-          }else if( pCol->colFlags & COLFLAG_STORED ){
+          }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_STORED ){
             isHidden = 3;  /* GENERATED ALWAYS AS ... STORED */
-          }else{ assert( pCol->colFlags & COLFLAG_HIDDEN );
+          }ಇಲ್ಲದಿದ್ದರೆ{ ಪ್ರತಿಜ್ಞಾ( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_HIDDEN );
             isHidden = 1;  /* HIDDEN */
           }
         }
-        if( (pCol->colFlags & COLFLAG_PRIMKEY)==0 ){
+        ಆದರೆ( (p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_PRIMKEY)==0 ){
           k = 0;
-        }else if( pPk==0 ){
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pPk==0 ){
           k = 1;
-        }else{
-          for(k=1; k<=pTab->nCol && pPk->aiColumn[k-1]!=i; k++){}
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          ಗಾಗಿ(k=1; k<=pTab->n_ಲಂಬಸಾಲು && pPk->ai_ಸ್ತಂಭ[k-1]!=i; k++){}
         }
-        pColExpr = sqlite3ColumnExpr(pTab,pCol);
-        assert( pColExpr==0 || pColExpr->op==TK_SPAN || isHidden>=2 );
-        assert( pColExpr==0 || !ExprHasProperty(pColExpr, EP_IntValue)
+        p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ = sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ(pTab,p_ಲಂಬಸಾಲು);
+        ಪ್ರತಿಜ್ಞಾ( p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ==0 || p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ->op==TK_ಹರವು || isHidden>=2 );
+        ಪ್ರತಿಜ್ಞಾ( p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ==0 || !ಅಭಿವ್ಯಕ್ತಿ_Has_Property(p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ, EP_Int_ಮೌಲ್ಯ)
                   || isHidden>=2 );
-        sqlite3VdbeMultiLoad(v, 1, pPragma->iArg ? "issisii" : "issisi",
+        sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, pPragma->iArg ? "issisii" : "issisi",
                i-nHidden,
-               pCol->zCnName,
-               sqlite3ColumnType(pCol,""),
-               pCol->notNull ? 1 : 0,
-               (isHidden>=2 || pColExpr==0) ? 0 : pColExpr->u.zToken,
+               p_ಲಂಬಸಾಲು->zCnName,
+               sqlite3_ಸ್ತಂಭ_Type(p_ಲಂಬಸಾಲು,""),
+               p_ಲಂಬಸಾಲು->notNull ? 1 : 0,
+               (isHidden>=2 || p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ==0) ? 0 : p_ಲಂಬಸಾಲು_ಅಭಿವ್ಯಕ್ತಿ->u.zToken,
                k,
                isHidden);
       }
     }
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
   /*
   **   PRAGMA table_list
@@ -1278,15 +1278,15 @@ void sqlite3Pragma(
   ** wr:         True for a WITHOUT ROWID table
   ** strict:     True for a STRICT table
   */
-  case PragTyp_TABLE_LIST: {
-    int ii;
+  ಸ್ಥಿತಿ Prag_Typ_ಕೋಷ್ಟಕ_LIST: {
+    ಪೂರ್ಣಾಂಕ ii;
     pParse->nMem = 6;
-    sqlite3CodeVerifyNamedSchema(pParse, zDb);
-    for(ii=0; ii<db->nDb; ii++){
+    sqlite3_ಸಂಕೇತ_Verify_Named_Schema(pParse, zDb);
+    ಗಾಗಿ(ii=0; ii<db->nDb; ii++){
       HashElem *k;
       Hash *pHash;
-      int initNCol;
-      if( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) continue;
+      ಪೂರ್ಣಾಂಕ initNCol;
+      ಆದರೆ( zDb && sqlite3_stricmp(zDb, db->aDb[ii].zDbSName)!=0 ) ಮುಂದುವರಿ;
 
       /* Ensure that the Table.nCol field is initialized for all views
       ** and virtual tables.  Each time we initialize a Table.nCol value
@@ -1294,322 +1294,322 @@ void sqlite3Pragma(
       ** the initialization scan.
       */
       pHash = &db->aDb[ii].pSchema->tblHash;
-      initNCol = sqliteHashCount(pHash);
-      while( initNCol-- ){
-        for(k=sqliteHashFirst(pHash); 1; k=sqliteHashNext(k) ){
-          Table *pTab;
-          if( k==0 ){ initNCol = 0; break; }
-          pTab = sqliteHashData(k);
-          if( pTab->nCol==0 ){
-            char *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
-            if( zSql ){
+      initNCol = sqlite_Hash_ಎಣಿಕೆ(pHash);
+      ಆಗ( initNCol-- ){
+        ಗಾಗಿ(k=sqlite_Hash_ಮೊದಲ(pHash); 1; k=sqlite_Hash_ಮುಂದಿನ(k) ){
+          ಕೋಷ್ಟಕ *pTab;
+          ಆದರೆ( k==0 ){ initNCol = 0; ನಿಲ್ಲಿಸು; }
+          pTab = sqlite_Hash_ದತ್ತಾಂಶ(k);
+          ಆದರೆ( pTab->n_ಲಂಬಸಾಲು==0 ){
+            ಅಕ್ಷರ *zSql = sqlite3MPrintf(db, "SELECT*FROM\"%w\"", pTab->zName);
+            ಆದರೆ( zSql ){
               sqlite3_stmt *pDummy = 0;
-              (void)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
+              (ಶೂನ್ಯ)sqlite3_prepare_v3(db, zSql, -1, SQLITE_PREPARE_DONT_LOG,
                                        &pDummy, 0);
-              (void)sqlite3_finalize(pDummy);
+              (ಶೂನ್ಯ)sqlite3_finalize(pDummy);
               sqlite3DbFree(db, zSql);
             }
-            if( db->mallocFailed ){
-              sqlite3ErrorMsg(db->pParse, "out of memory");
+            ಆದರೆ( db->mallocFailed ){
+              sqlite3_Error_ಸಂದೇಶ(db->pParse, "out of memory");
               db->pParse->rc = SQLITE_NOMEM_BKPT;
             }
             pHash = &db->aDb[ii].pSchema->tblHash;
-            break;
+            ನಿಲ್ಲಿಸು;
           }
         }
       }
 
-      for(k=sqliteHashFirst(pHash); k; k=sqliteHashNext(k) ){
-        Table *pTab = sqliteHashData(k);
-        const char *zType;
-        if( zRight && sqlite3_stricmp(zRight, pTab->zName)!=0 ) continue;
-        if( IsView(pTab) ){
+      ಗಾಗಿ(k=sqlite_Hash_ಮೊದಲ(pHash); k; k=sqlite_Hash_ಮುಂದಿನ(k) ){
+        ಕೋಷ್ಟಕ *pTab = sqlite_Hash_ದತ್ತಾಂಶ(k);
+        ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zType;
+        ಆದರೆ( z_ಬಲ && sqlite3_stricmp(z_ಬಲ, pTab->zName)!=0 ) ಮುಂದುವರಿ;
+        ಆದರೆ( IsView(pTab) ){
           zType = "view";
-        }else if( IsVirtual(pTab) ){
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( IsVirtual(pTab) ){
           zType = "virtual";
-        }else if( pTab->tabFlags & TF_Shadow ){
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pTab->tabFlags & TF_Shadow ){
           zType = "shadow";
-        }else{
+        }ಇಲ್ಲದಿದ್ದರೆ{
           zType = "table";
         }
-        sqlite3VdbeMultiLoad(v, 1, "sssiii",
+        sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "sssiii",
            db->aDb[ii].zDbSName,
-           sqlite3PreferredTableName(pTab->zName),
+           sqlite3_Preferred_ಕೋಷ್ಟಕ_Name(pTab->zName),
            zType,
-           pTab->nCol,
+           pTab->n_ಲಂಬಸಾಲು,
            (pTab->tabFlags & TF_WithoutRowid)!=0,
            (pTab->tabFlags & TF_Strict)!=0
         );
       }
     }
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
-#ifdef SQLITE_DEBUG
-  case PragTyp_STATS: {
-    Index *pIdx;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_DEBUG
+  ಸ್ಥಿತಿ PragTyp_STATS: {
+    ಸೂಚ್ಯಂಕ *pIdx;
     HashElem *i;
     pParse->nMem = 5;
-    sqlite3CodeVerifySchema(pParse, iDb);
-    for(i=sqliteHashFirst(&pDb->pSchema->tblHash); i; i=sqliteHashNext(i)){
-      Table *pTab = sqliteHashData(i);
-      sqlite3VdbeMultiLoad(v, 1, "ssiii",
-           sqlite3PreferredTableName(pTab->zName),
+    sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iDb);
+    ಗಾಗಿ(i=sqlite_Hash_ಮೊದಲ(&pDb->pSchema->tblHash); i; i=sqlite_Hash_ಮುಂದಿನ(i)){
+      ಕೋಷ್ಟಕ *pTab = sqlite_Hash_ದತ್ತಾಂಶ(i);
+      sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "ssiii",
+           sqlite3_Preferred_ಕೋಷ್ಟಕ_Name(pTab->zName),
            0,
-           pTab->szTabRow,
-           pTab->nRowLogEst,
+           pTab->sz_Tab_ಅಡ್ಡಸಾಲು,
+           pTab->n_ಅಡ್ಡಸಾಲು_Log_Est,
            pTab->tabFlags);
-      for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-        sqlite3VdbeMultiLoad(v, 2, "siiiX",
+      ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ){
+        sqlite3_Vdbe_Multi_ತುಂಬು(v, 2, "siiiX",
            pIdx->zName,
-           pIdx->szIdxRow,
-           pIdx->aiRowLogEst[0],
+           pIdx->sz_Idx_ಅಡ್ಡಸಾಲು,
+           pIdx->ai_ಅಡ್ಡಸಾಲು_Log_Est[0],
            pIdx->hasStat1);
-        sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 5);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1, 5);
       }
     }
   }
-  break;
-#endif
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
 
-  case PragTyp_INDEX_INFO: if( zRight ){
-    Index *pIdx;
-    Table *pTab;
-    pIdx = sqlite3FindIndex(db, zRight, zDb);
-    if( pIdx==0 ){
+  ಸ್ಥಿತಿ Prag_Typ_ಸೂಚ್ಯಂಕ_INFO: ಆದರೆ( z_ಬಲ ){
+    ಸೂಚ್ಯಂಕ *pIdx;
+    ಕೋಷ್ಟಕ *pTab;
+    pIdx = sqlite3_ಕಂಡುಹಿಡಿ_ಸೂಚ್ಯಂಕ(db, z_ಬಲ, zDb);
+    ಆದರೆ( pIdx==0 ){
       /* If there is no index named zRight, check to see if there is a
       ** WITHOUT ROWID table named zRight, and if there is, show the
       ** structure of the PRIMARY KEY index for that table. */
-      pTab = sqlite3LocateTable(pParse, LOCATE_NOERR, zRight, zDb);
-      if( pTab && !HasRowid(pTab) ){
-        pIdx = sqlite3PrimaryKeyIndex(pTab);
+      pTab = sqlite3_Locate_ಕೋಷ್ಟಕ(pParse, LOCATE_NOERR, z_ಬಲ, zDb);
+      ಆದರೆ( pTab && !HasRowid(pTab) ){
+        pIdx = sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pTab);
       }
     }
-    if( pIdx ){
-      int iIdxDb = sqlite3SchemaToIndex(db, pIdx->pSchema);
-      int i;
-      int mx;
-      if( pPragma->iArg ){
+    ಆದರೆ( pIdx ){
+      ಪೂರ್ಣಾಂಕ iIdxDb = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(db, pIdx->pSchema);
+      ಪೂರ್ಣಾಂಕ i;
+      ಪೂರ್ಣಾಂಕ mx;
+      ಆದರೆ( pPragma->iArg ){
         /* PRAGMA index_xinfo (newer version with more rows and columns) */
-        mx = pIdx->nColumn;
+        mx = pIdx->n_ಸ್ತಂಭ;
         pParse->nMem = 6;
-      }else{
+      }ಇಲ್ಲದಿದ್ದರೆ{
         /* PRAGMA index_info (legacy version) */
-        mx = pIdx->nKeyCol;
+        mx = pIdx->n_ಕೀಲಿ_ಲಂಬಸಾಲು;
         pParse->nMem = 3;
       }
-      pTab = pIdx->pTable;
-      sqlite3CodeVerifySchema(pParse, iIdxDb);
-      assert( pParse->nMem<=pPragma->nPragCName );
-      for(i=0; i<mx; i++){
-        i16 cnum = pIdx->aiColumn[i];
-        sqlite3VdbeMultiLoad(v, 1, "iisX", i, cnum,
-                             cnum<0 ? 0 : pTab->aCol[cnum].zCnName);
-        if( pPragma->iArg ){
-          sqlite3VdbeMultiLoad(v, 4, "isiX",
-            pIdx->aSortOrder[i],
+      pTab = pIdx->p_ಕೋಷ್ಟಕ;
+      sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iIdxDb);
+      ಪ್ರತಿಜ್ಞಾ( pParse->nMem<=pPragma->nPragCName );
+      ಗಾಗಿ(i=0; i<mx; i++){
+        i16 cnum = pIdx->ai_ಸ್ತಂಭ[i];
+        sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "iisX", i, cnum,
+                             cnum<0 ? 0 : pTab->a_ಲಂಬಸಾಲು[cnum].zCnName);
+        ಆದರೆ( pPragma->iArg ){
+          sqlite3_Vdbe_Multi_ತುಂಬು(v, 4, "isiX",
+            pIdx->a_ವಿಂಗಡಿಸು_ಕ್ರಮ[i],
             pIdx->azColl[i],
-            i<pIdx->nKeyCol);
+            i<pIdx->n_ಕೀಲಿ_ಲಂಬಸಾಲು);
         }
-        sqlite3VdbeAddOp2(v, OP_ResultRow, 1, pParse->nMem);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1, pParse->nMem);
       }
     }
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
-  case PragTyp_INDEX_LIST: if( zRight ){
-    Index *pIdx;
-    Table *pTab;
-    int i;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab ){
-      int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+  ಸ್ಥಿತಿ Prag_Typ_ಸೂಚ್ಯಂಕ_LIST: ಆದರೆ( z_ಬಲ ){
+    ಸೂಚ್ಯಂಕ *pIdx;
+    ಕೋಷ್ಟಕ *pTab;
+    ಪೂರ್ಣಾಂಕ i;
+    pTab = sqlite3_ಕಂಡುಹಿಡಿ_ಕೋಷ್ಟಕ(db, z_ಬಲ, zDb);
+    ಆದರೆ( pTab ){
+      ಪೂರ್ಣಾಂಕ iTabDb = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(db, pTab->pSchema);
       pParse->nMem = 5;
-      sqlite3CodeVerifySchema(pParse, iTabDb);
-      for(pIdx=pTab->pIndex, i=0; pIdx; pIdx=pIdx->pNext, i++){
-        const char *azOrigin[] = { "c", "u", "pk" };
-        sqlite3VdbeMultiLoad(v, 1, "isisi",
+      sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iTabDb);
+      ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ, i=0; pIdx; pIdx=pIdx->p_ಮುಂದಿನ, i++){
+        ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *azOrigin[] = { "c", "u", "pk" };
+        sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "isisi",
            i,
            pIdx->zName,
-           IsUniqueIndex(pIdx),
+           Is_Unique_ಸೂಚ್ಯಂಕ(pIdx),
            azOrigin[pIdx->idxType],
            pIdx->pPartIdxWhere!=0);
       }
     }
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
-  case PragTyp_DATABASE_LIST: {
-    int i;
+  ಸ್ಥಿತಿ PragTyp_DATABASE_LIST: {
+    ಪೂರ್ಣಾಂಕ i;
     pParse->nMem = 3;
-    for(i=0; i<db->nDb; i++){
-      if( db->aDb[i].pBt==0 ) continue;
-      assert( db->aDb[i].zDbSName!=0 );
-      sqlite3VdbeMultiLoad(v, 1, "iss",
+    ಗಾಗಿ(i=0; i<db->nDb; i++){
+      ಆದರೆ( db->aDb[i].pBt==0 ) ಮುಂದುವರಿ;
+      ಪ್ರತಿಜ್ಞಾ( db->aDb[i].zDbSName!=0 );
+      sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "iss",
          i,
          db->aDb[i].zDbSName,
          sqlite3BtreeGetFilename(db->aDb[i].pBt));
     }
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
-  case PragTyp_COLLATION_LIST: {
-    int i = 0;
+  ಸ್ಥಿತಿ PragTyp_COLLATION_LIST: {
+    ಪೂರ್ಣಾಂಕ i = 0;
     HashElem *p;
     pParse->nMem = 2;
-    for(p=sqliteHashFirst(&db->aCollSeq); p; p=sqliteHashNext(p)){
-      CollSeq *pColl = (CollSeq *)sqliteHashData(p);
-      sqlite3VdbeMultiLoad(v, 1, "is", i++, pColl->zName);
+    ಗಾಗಿ(p=sqlite_Hash_ಮೊದಲ(&db->aCollSeq); p; p=sqlite_Hash_ಮುಂದಿನ(p)){
+      CollSeq *pColl = (CollSeq *)sqlite_Hash_ದತ್ತಾಂಶ(p);
+      sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "is", i++, pColl->zName);
     }
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
-#ifndef SQLITE_OMIT_INTROSPECTION_PRAGMAS
-  case PragTyp_FUNCTION_LIST: {
-    int i;
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_INTROSPECTION_PRAGMAS
+  ಸ್ಥಿತಿ PragTyp_FUNCTION_LIST: {
+    ಪೂರ್ಣಾಂಕ i;
     HashElem *j;
     FuncDef *p;
-    int showInternFunc = (db->mDbFlags & DBFLAG_InternalFunc)!=0;
+    ಪೂರ್ಣಾಂಕ showInternFunc = (db->mDbFlags & DBFLAG_ಆಂತರಿಕ_Func)!=0;
     pParse->nMem = 6;
-    for(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
-      for(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
-        assert( p->funcFlags & SQLITE_FUNC_BUILTIN );
-        pragmaFunclistLine(v, p, 1, showInternFunc);
+    ಗಾಗಿ(i=0; i<SQLITE_FUNC_HASH_SZ; i++){
+      ಗಾಗಿ(p=sqlite3BuiltinFunctions.a[i]; p; p=p->u.pHash ){
+        ಪ್ರತಿಜ್ಞಾ( p->funcFlags & SQLITE_FUNC_BUILTIN );
+        pragma_Funclist_ಸಾಲು(v, p, 1, showInternFunc);
       }
     }
-    for(j=sqliteHashFirst(&db->aFunc); j; j=sqliteHashNext(j)){
-      p = (FuncDef*)sqliteHashData(j);
-      assert( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
-      pragmaFunclistLine(v, p, 0, showInternFunc);
+    ಗಾಗಿ(j=sqlite_Hash_ಮೊದಲ(&db->aFunc); j; j=sqlite_Hash_ಮುಂದಿನ(j)){
+      p = (FuncDef*)sqlite_Hash_ದತ್ತಾಂಶ(j);
+      ಪ್ರತಿಜ್ಞಾ( (p->funcFlags & SQLITE_FUNC_BUILTIN)==0 );
+      pragma_Funclist_ಸಾಲು(v, p, 0, showInternFunc);
     }
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
-  case PragTyp_MODULE_LIST: {
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
+  ಸ್ಥಿತಿ PragTyp_MODULE_LIST: {
     HashElem *j;
     pParse->nMem = 1;
-    for(j=sqliteHashFirst(&db->aModule); j; j=sqliteHashNext(j)){
-      Module *pMod = (Module*)sqliteHashData(j);
-      sqlite3VdbeMultiLoad(v, 1, "s", pMod->zName);
+    ಗಾಗಿ(j=sqlite_Hash_ಮೊದಲ(&db->aModule); j; j=sqlite_Hash_ಮುಂದಿನ(j)){
+      Module *pMod = (Module*)sqlite_Hash_ದತ್ತಾಂಶ(j);
+      sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "s", pMod->zName);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_VIRTUALTABLE */
 
-  case PragTyp_PRAGMA_LIST: {
-    int i;
-    for(i=0; i<ArraySize(aPragmaName); i++){
-      sqlite3VdbeMultiLoad(v, 1, "s", aPragmaName[i].zName);
+  ಸ್ಥಿತಿ PragTyp_PRAGMA_LIST: {
+    ಪೂರ್ಣಾಂಕ i;
+    ಗಾಗಿ(i=0; i<Array_ಗಾತ್ರ(aPragmaName); i++){
+      sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "s", aPragmaName[i].zName);
     }
   }
-  break;
-#endif /* SQLITE_INTROSPECTION_PRAGMAS */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_INTROSPECTION_PRAGMAS */
 
-#endif /* SQLITE_OMIT_SCHEMA_PRAGMAS */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_SCHEMA_PRAGMAS */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-  case PragTyp_FOREIGN_KEY_LIST: if( zRight ){
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_FOREIGN_ಕೀಲಿ
+  ಸ್ಥಿತಿ Prag_Typ_FOREIGN_ಕೀಲಿ_LIST: ಆದರೆ( z_ಬಲ ){
     FKey *pFK;
-    Table *pTab;
-    pTab = sqlite3FindTable(db, zRight, zDb);
-    if( pTab && IsOrdinaryTable(pTab) ){
+    ಕೋಷ್ಟಕ *pTab;
+    pTab = sqlite3_ಕಂಡುಹಿಡಿ_ಕೋಷ್ಟಕ(db, z_ಬಲ, zDb);
+    ಆದರೆ( pTab && Is_Ordinary_ಕೋಷ್ಟಕ(pTab) ){
       pFK = pTab->u.tab.pFKey;
-      if( pFK ){
-        int iTabDb = sqlite3SchemaToIndex(db, pTab->pSchema);
-        int i = 0;
+      ಆದರೆ( pFK ){
+        ಪೂರ್ಣಾಂಕ iTabDb = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(db, pTab->pSchema);
+        ಪೂರ್ಣಾಂಕ i = 0;
         pParse->nMem = 8;
-        sqlite3CodeVerifySchema(pParse, iTabDb);
-        while(pFK){
-          int j;
-          for(j=0; j<pFK->nCol; j++){
-            sqlite3VdbeMultiLoad(v, 1, "iissssss",
+        sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iTabDb);
+        ಆಗ(pFK){
+          ಪೂರ್ಣಾಂಕ j;
+          ಗಾಗಿ(j=0; j<pFK->n_ಲಂಬಸಾಲು; j++){
+            sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "iissssss",
                    i,
                    j,
-                   pFK->zTo,
-                   pTab->aCol[pFK->aCol[j].iFrom].zCnName,
-                   pFK->aCol[j].zCol,
+                   pFK->z_ಗಮ್ಯ,
+                   pTab->a_ಲಂಬಸಾಲು[pFK->a_ಲಂಬಸಾಲು[j].iFrom].zCnName,
+                   pFK->a_ಲಂಬಸಾಲು[j].z_ಲಂಬಸಾಲು,
                    actionName(pFK->aAction[1]),  /* ON UPDATE */
                    actionName(pFK->aAction[0]),  /* ON DELETE */
                    "NONE");
           }
           ++i;
-          pFK = pFK->pNextFrom;
+          pFK = pFK->p_ಮುಂದಿನ_From;
         }
       }
     }
   }
-  break;
-#endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-#ifndef SQLITE_OMIT_TRIGGER
-  case PragTyp_FOREIGN_KEY_CHECK: {
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_FOREIGN_ಕೀಲಿ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_TRIGGER
+  ಸ್ಥಿತಿ Prag_Typ_FOREIGN_ಕೀಲಿ_CHECK: {
     FKey *pFK;             /* A foreign key constraint */
-    Table *pTab;           /* Child table contain "REFERENCES" keyword */
-    Table *pParent;        /* Parent table that child points to */
-    Index *pIdx;           /* Index in the parent table */
-    int i;                 /* Loop counter:  Foreign key number for pTab */
-    int j;                 /* Loop counter:  Field of the foreign key */
+    ಕೋಷ್ಟಕ *pTab;           /* Child table contain "REFERENCES" keyword */
+    ಕೋಷ್ಟಕ *p_ಪೋಷಕ;        /* Parent table that child points to */
+    ಸೂಚ್ಯಂಕ *pIdx;           /* Index in the parent table */
+    ಪೂರ್ಣಾಂಕ i;                 /* Loop counter:  Foreign key number for pTab */
+    ಪೂರ್ಣಾಂಕ j;                 /* Loop counter:  Field of the foreign key */
     HashElem *k;           /* Loop counter:  Next table in schema */
-    int x;                 /* result variable */
-    int regResult;         /* 3 registers to hold a result row */
-    int regRow;            /* Registers to hold a row from pTab */
-    int addrTop;           /* Top of a loop checking foreign keys */
-    int addrOk;            /* Jump here if the key is OK */
-    int *aiCols;           /* child to parent column mapping */
+    ಪೂರ್ಣಾಂಕ x;                 /* result variable */
+    ಪೂರ್ಣಾಂಕ reg_ಫಲಿತಾಂಶ;         /* 3 registers to hold a result row */
+    ಪೂರ್ಣಾಂಕ reg_ಅಡ್ಡಸಾಲು;            /* Registers to hold a row from pTab */
+    ಪೂರ್ಣಾಂಕ addr_ತುದಿ;           /* Top of a loop checking foreign keys */
+    ಪೂರ್ಣಾಂಕ addrOk;            /* Jump here if the key is OK */
+    ಪೂರ್ಣಾಂಕ *ai_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ;           /* child to parent column mapping */
 
-    regResult = pParse->nMem+1;
+    reg_ಫಲಿತಾಂಶ = pParse->nMem+1;
     pParse->nMem += 4;
-    regRow = ++pParse->nMem;
-    k = sqliteHashFirst(&db->aDb[iDb].pSchema->tblHash);
-    while( k ){
-      if( zRight ){
-        pTab = sqlite3LocateTable(pParse, 0, zRight, zDb);
+    reg_ಅಡ್ಡಸಾಲು = ++pParse->nMem;
+    k = sqlite_Hash_ಮೊದಲ(&db->aDb[iDb].pSchema->tblHash);
+    ಆಗ( k ){
+      ಆದರೆ( z_ಬಲ ){
+        pTab = sqlite3_Locate_ಕೋಷ್ಟಕ(pParse, 0, z_ಬಲ, zDb);
         k = 0;
-      }else{
-        pTab = (Table*)sqliteHashData(k);
-        k = sqliteHashNext(k);
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        pTab = (ಕೋಷ್ಟಕ*)sqlite_Hash_ದತ್ತಾಂಶ(k);
+        k = sqlite_Hash_ಮುಂದಿನ(k);
       }
-      if( pTab==0 || !IsOrdinaryTable(pTab) || pTab->u.tab.pFKey==0 ) continue;
-      iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
+      ಆದರೆ( pTab==0 || !Is_Ordinary_ಕೋಷ್ಟಕ(pTab) || pTab->u.tab.pFKey==0 ) ಮುಂದುವರಿ;
+      iDb = sqlite3_Schema_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(db, pTab->pSchema);
       zDb = db->aDb[iDb].zDbSName;
-      sqlite3CodeVerifySchema(pParse, iDb);
-      sqlite3TableLock(pParse, iDb, pTab->tnum, 0, pTab->zName);
-      sqlite3TouchRegister(pParse, pTab->nCol+regRow);
-      sqlite3OpenTable(pParse, 0, iDb, pTab, OP_OpenRead);
-      sqlite3VdbeLoadString(v, regResult, pTab->zName);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
-        pParent = sqlite3FindTable(db, pFK->zTo, zDb);
-        if( pParent==0 ) continue;
+      sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iDb);
+      sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(pParse, iDb, pTab->tnum, 0, pTab->zName);
+      sqlite3_Touch_ರಿಜಿಸ್ಟರ್(pParse, pTab->n_ಲಂಬಸಾಲು+reg_ಅಡ್ಡಸಾಲು);
+      sqlite3_Open_ಕೋಷ್ಟಕ(pParse, 0, iDb, pTab, OP_OpenRead);
+      sqlite3_Vdbe_ತುಂಬು_String(v, reg_ಫಲಿತಾಂಶ, pTab->zName);
+      ಪ್ರತಿಜ್ಞಾ( Is_Ordinary_ಕೋಷ್ಟಕ(pTab) );
+      ಗಾಗಿ(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->p_ಮುಂದಿನ_From){
+        p_ಪೋಷಕ = sqlite3_ಕಂಡುಹಿಡಿ_ಕೋಷ್ಟಕ(db, pFK->z_ಗಮ್ಯ, zDb);
+        ಆದರೆ( p_ಪೋಷಕ==0 ) ಮುಂದುವರಿ;
         pIdx = 0;
-        sqlite3TableLock(pParse, iDb, pParent->tnum, 0, pParent->zName);
-        x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, 0);
-        if( x==0 ){
-          if( pIdx==0 ){
-            sqlite3OpenTable(pParse, i, iDb, pParent, OP_OpenRead);
-          }else{
-            sqlite3VdbeAddOp3(v, OP_OpenRead, i, pIdx->tnum, iDb);
-            sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+        sqlite3_ಕೋಷ್ಟಕ_ಬೀಗ(pParse, iDb, p_ಪೋಷಕ->tnum, 0, p_ಪೋಷಕ->zName);
+        x = sqlite3_Fk_Locate_ಸೂಚ್ಯಂಕ(pParse, p_ಪೋಷಕ, pFK, &pIdx, 0);
+        ಆದರೆ( x==0 ){
+          ಆದರೆ( pIdx==0 ){
+            sqlite3_Open_ಕೋಷ್ಟಕ(pParse, i, iDb, p_ಪೋಷಕ, OP_OpenRead);
+          }ಇಲ್ಲದಿದ್ದರೆ{
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_OpenRead, i, pIdx->tnum, iDb);
+            sqlite3_Vdbe_ಗಣ_P4_ಕೀಲಿ_Info(pParse, pIdx);
           }
-        }else{
+        }ಇಲ್ಲದಿದ್ದರೆ{
           k = 0;
-          break;
+          ನಿಲ್ಲಿಸು;
         }
       }
-      assert( pParse->nErr>0 || pFK==0 );
-      if( pFK ) break;
-      if( pParse->nTab<i ) pParse->nTab = i;
-      addrTop = sqlite3VdbeAddOp1(v, OP_Rewind, 0); VdbeCoverage(v);
-      assert( IsOrdinaryTable(pTab) );
-      for(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->pNextFrom){
-        pParent = sqlite3FindTable(db, pFK->zTo, zDb);
+      ಪ್ರತಿಜ್ಞಾ( pParse->nErr>0 || pFK==0 );
+      ಆದರೆ( pFK ) ನಿಲ್ಲಿಸು;
+      ಆದರೆ( pParse->nTab<i ) pParse->nTab = i;
+      addr_ತುದಿ = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_Rewind, 0); VdbeCoverage(v);
+      ಪ್ರತಿಜ್ಞಾ( Is_Ordinary_ಕೋಷ್ಟಕ(pTab) );
+      ಗಾಗಿ(i=1, pFK=pTab->u.tab.pFKey; pFK; i++, pFK=pFK->p_ಮುಂದಿನ_From){
+        p_ಪೋಷಕ = sqlite3_ಕಂಡುಹಿಡಿ_ಕೋಷ್ಟಕ(db, pFK->z_ಗಮ್ಯ, zDb);
         pIdx = 0;
-        aiCols = 0;
-        if( pParent ){
-          x = sqlite3FkLocateIndex(pParse, pParent, pFK, &pIdx, &aiCols);
-          assert( x==0 || db->mallocFailed );
+        ai_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ = 0;
+        ಆದರೆ( p_ಪೋಷಕ ){
+          x = sqlite3_Fk_Locate_ಸೂಚ್ಯಂಕ(pParse, p_ಪೋಷಕ, pFK, &pIdx, &ai_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ);
+          ಪ್ರತಿಜ್ಞಾ( x==0 || db->mallocFailed );
         }
         addrOk = sqlite3VdbeMakeLabel(pParse);
 
@@ -1617,63 +1617,63 @@ void sqlite3Pragma(
         ** regRow..regRow+n. If any of the child key values are NULL, this
         ** row cannot cause an FK violation. Jump directly to addrOk in
         ** this case. */
-        sqlite3TouchRegister(pParse, regRow + pFK->nCol);
-        for(j=0; j<pFK->nCol; j++){
-          int iCol = aiCols ? aiCols[j] : pFK->aCol[j].iFrom;
-          sqlite3ExprCodeGetColumnOfTable(v, pTab, 0, iCol, regRow+j);
-          sqlite3VdbeAddOp2(v, OP_IsNull, regRow+j, addrOk); VdbeCoverage(v);
+        sqlite3_Touch_ರಿಜಿಸ್ಟರ್(pParse, reg_ಅಡ್ಡಸಾಲು + pFK->n_ಲಂಬಸಾಲು);
+        ಗಾಗಿ(j=0; j<pFK->n_ಲಂಬಸಾಲು; j++){
+          ಪೂರ್ಣಾಂಕ i_ಲಂಬಸಾಲು = ai_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ ? ai_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ[j] : pFK->a_ಲಂಬಸಾಲು[j].iFrom;
+          sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Get_ಸ್ತಂಭ_ದ_ಕೋಷ್ಟಕ(v, pTab, 0, i_ಲಂಬಸಾಲು, reg_ಅಡ್ಡಸಾಲು+j);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IsNull, reg_ಅಡ್ಡಸಾಲು+j, addrOk); VdbeCoverage(v);
         }
 
         /* Generate code to query the parent index for a matching parent
         ** key. If a match is found, jump to addrOk. */
-        if( pIdx ){
-          sqlite3VdbeAddOp4(v, OP_Affinity, regRow, pFK->nCol, 0,
-              sqlite3IndexAffinityStr(db,pIdx), pFK->nCol);
-          sqlite3VdbeAddOp4Int(v, OP_Found, i, addrOk, regRow, pFK->nCol);
+        ಆದರೆ( pIdx ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_Affinity, reg_ಅಡ್ಡಸಾಲು, pFK->n_ಲಂಬಸಾಲು, 0,
+              sqlite3_ಸೂಚ್ಯಂಕ_Affinity_Str(db,pIdx), pFK->n_ಲಂಬಸಾಲು);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_ಸಿಕ್ಕಿತು, i, addrOk, reg_ಅಡ್ಡಸಾಲು, pFK->n_ಲಂಬಸಾಲು);
           VdbeCoverage(v);
-        }else if( pParent ){
-          int jmp = sqlite3VdbeCurrentAddr(v)+2;
-          sqlite3VdbeAddOp3(v, OP_SeekRowid, i, jmp, regRow); VdbeCoverage(v);
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( p_ಪೋಷಕ ){
+          ಪೂರ್ಣಾಂಕ jmp = sqlite3VdbeCurrentAddr(v)+2;
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_SeekRowid, i, jmp, reg_ಅಡ್ಡಸಾಲು); VdbeCoverage(v);
           sqlite3VdbeGoto(v, addrOk);
-          assert( pFK->nCol==1 || db->mallocFailed );
+          ಪ್ರತಿಜ್ಞಾ( pFK->n_ಲಂಬಸಾಲು==1 || db->mallocFailed );
         }
 
         /* Generate code to report an FK violation to the caller. */
-        if( HasRowid(pTab) ){
-          sqlite3VdbeAddOp2(v, OP_Rowid, 0, regResult+1);
-        }else{
-          sqlite3VdbeAddOp2(v, OP_Null, 0, regResult+1);
+        ಆದರೆ( HasRowid(pTab) ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rowid, 0, reg_ಫಲಿತಾಂಶ+1);
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Null, 0, reg_ಫಲಿತಾಂಶ+1);
         }
-        sqlite3VdbeMultiLoad(v, regResult+2, "siX", pFK->zTo, i-1);
-        sqlite3VdbeAddOp2(v, OP_ResultRow, regResult, 4);
+        sqlite3_Vdbe_Multi_ತುಂಬು(v, reg_ಫಲಿತಾಂಶ+2, "siX", pFK->z_ಗಮ್ಯ, i-1);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, reg_ಫಲಿತಾಂಶ, 4);
         sqlite3VdbeResolveLabel(v, addrOk);
-        sqlite3DbFree(db, aiCols);
+        sqlite3DbFree(db, ai_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ);
       }
-      sqlite3VdbeAddOp2(v, OP_Next, 0, addrTop+1); VdbeCoverage(v);
-      sqlite3VdbeJumpHere(v, addrTop);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಮುಂದಿನ, 0, addr_ತುದಿ+1); VdbeCoverage(v);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr_ತುದಿ);
     }
   }
-  break;
-#endif /* !defined(SQLITE_OMIT_TRIGGER) */
-#endif /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* !defined(SQLITE_OMIT_TRIGGER) */
+#ಆದರೆ_ಅಂತ್ಯ /* !defined(SQLITE_OMIT_FOREIGN_KEY) */
 
-#ifndef SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA
   /* Reinstall the LIKE and GLOB functions.  The variant of LIKE
   ** used will be case sensitive or not depending on the RHS.
   */
-  case PragTyp_CASE_SENSITIVE_LIKE: {
-    if( zRight ){
-      sqlite3RegisterLikeFunctions(db, sqlite3GetBoolean(zRight, 0));
+  ಸ್ಥಿತಿ PragTyp_CASE_SENSITIVE_LIKE: {
+    ಆದರೆ( z_ಬಲ ){
+      sqlite3_ರಿಜಿಸ್ಟರ್_Like_Functions(db, sqlite3GetBoolean(z_ಬಲ, 0));
     }
   }
-  break;
-#endif /* SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_CASE_SENSITIVE_LIKE_PRAGMA */
 
-#ifndef SQLITE_INTEGRITY_CHECK_ERROR_MAX
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_INTEGRITY_CHECK_ERROR_MAX
 # define SQLITE_INTEGRITY_CHECK_ERROR_MAX 100
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SQLITE_OMIT_INTEGRITY_CHECK
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_INTEGRITY_CHECK
   /*    PRAGMA integrity_check
   **    PRAGMA integrity_check(N)
   **    PRAGMA quick_check
@@ -1698,11 +1698,11 @@ void sqlite3Pragma(
   **
   **      PRAGMA schema.integrity_check;
   */
-  case PragTyp_INTEGRITY_CHECK: {
-    int i, j, addr, mxErr;
-    Table *pObjTab = 0;     /* Check only this one table, if not NULL */
+  ಸ್ಥಿತಿ PragTyp_INTEGRITY_CHECK: {
+    ಪೂರ್ಣಾಂಕ i, j, addr, mxErr;
+    ಕೋಷ್ಟಕ *pObjTab = 0;     /* Check only this one table, if not NULL */
 
-    int isQuick = (sqlite3Tolower(zLeft[0])=='q');
+    ಪೂರ್ಣಾಂಕ is_ಶೀಘ್ರ = (sqlite3Tolower(z_ಎಡ[0])=='q');
 
     /* If the PRAGMA command was of the form "PRAGMA <db>.integrity_check",
     ** then iDb is set to the index of the database identified by <db>.
@@ -1713,112 +1713,112 @@ void sqlite3Pragma(
     ** "PRAGMA quick_check"), then iDb is set to 0. In this case, set iDb
     ** to -1 here, to indicate that the VDBE should verify the integrity
     ** of all attached databases.  */
-    assert( iDb>=0 );
-    assert( iDb==0 || pId2->z );
-    if( pId2->z==0 ) iDb = -1;
+    ಪ್ರತಿಜ್ಞಾ( iDb>=0 );
+    ಪ್ರತಿಜ್ಞಾ( iDb==0 || pId2->z );
+    ಆದರೆ( pId2->z==0 ) iDb = -1;
 
     /* Initialize the VDBE program */
     pParse->nMem = 6;
 
     /* Set the maximum error count */
     mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
-    if( zRight ){
-      if( sqlite3GetInt32(pValue->z, &mxErr) ){
-        if( mxErr<=0 ){
+    ಆದರೆ( z_ಬಲ ){
+      ಆದರೆ( sqlite3GetInt32(p_ಮೌಲ್ಯ->z, &mxErr) ){
+        ಆದರೆ( mxErr<=0 ){
           mxErr = SQLITE_INTEGRITY_CHECK_ERROR_MAX;
         }
-      }else{
-        pObjTab = sqlite3LocateTable(pParse, 0, zRight,
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        pObjTab = sqlite3_Locate_ಕೋಷ್ಟಕ(pParse, 0, z_ಬಲ,
                       iDb>=0 ? db->aDb[iDb].zDbSName : 0);
       }
     }
-    sqlite3VdbeAddOp2(v, OP_Integer, mxErr-1, 1); /* reg[1] holds errors left */
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, mxErr-1, 1); /* reg[1] holds errors left */
 
     /* Do an integrity check on each database file */
-    for(i=0; i<db->nDb; i++){
+    ಗಾಗಿ(i=0; i<db->nDb; i++){
       HashElem *x;     /* For looping over tables in the schema */
       Hash *pTbls;     /* Set of all tables in the schema */
-      int *aRoot;      /* Array of root page numbers of all btrees */
-      int cnt = 0;     /* Number of entries in aRoot[] */
+      ಪೂರ್ಣಾಂಕ *a_ಬೇರು;      /* Array of root page numbers of all btrees */
+      ಪೂರ್ಣಾಂಕ cnt = 0;     /* Number of entries in aRoot[] */
 
-      if( OMIT_TEMPDB && i==1 ) continue;
-      if( iDb>=0 && i!=iDb ) continue;
+      ಆದರೆ( OMIT_TEMPDB && i==1 ) ಮುಂದುವರಿ;
+      ಆದರೆ( iDb>=0 && i!=iDb ) ಮುಂದುವರಿ;
 
-      sqlite3CodeVerifySchema(pParse, i);
-      pParse->okConstFactor = 0;  /* tag-20230327-1 */
+      sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, i);
+      pParse->ok_Const_ಗುಣಕ = 0;  /* tag-20230327-1 */
 
       /* Do an integrity check of the B-Tree
       **
       ** Begin by finding the root pages numbers
       ** for all tables and indices in the database.
       */
-      assert( sqlite3SchemaMutexHeld(db, i, 0) );
+      ಪ್ರತಿಜ್ಞಾ( sqlite3SchemaMutexHeld(db, i, 0) );
       pTbls = &db->aDb[i].pSchema->tblHash;
-      for(cnt=0, x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);  /* Current table */
-        Index *pIdx;                      /* An index on pTab */
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) cnt++;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){ cnt++; }
+      ಗಾಗಿ(cnt=0, x=sqlite_Hash_ಮೊದಲ(pTbls); x; x=sqlite_Hash_ಮುಂದಿನ(x)){
+        ಕೋಷ್ಟಕ *pTab = sqlite_Hash_ದತ್ತಾಂಶ(x);  /* Current table */
+        ಸೂಚ್ಯಂಕ *pIdx;                      /* An index on pTab */
+        ಆದರೆ( ಕೋಷ್ಟಕ_Skip_Integrity_Check(pTab,pObjTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( HasRowid(pTab) ) cnt++;
+        ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ){ cnt++; }
       }
-      if( cnt==0 ) continue;
-      if( pObjTab ) cnt++;
-      aRoot = sqlite3DbMallocRawNN(db, sizeof(int)*(cnt+1));
-      if( aRoot==0 ) break;
+      ಆದರೆ( cnt==0 ) ಮುಂದುವರಿ;
+      ಆದರೆ( pObjTab ) cnt++;
+      a_ಬೇರು = sqlite3DbMallocRawNN(db, ಗಾತ್ರ(ಪೂರ್ಣಾಂಕ)*(cnt+1));
+      ಆದರೆ( a_ಬೇರು==0 ) ನಿಲ್ಲಿಸು;
       cnt = 0;
-      if( pObjTab ) aRoot[++cnt] = 0;
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ) aRoot[++cnt] = pTab->tnum;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          aRoot[++cnt] = pIdx->tnum;
+      ಆದರೆ( pObjTab ) a_ಬೇರು[++cnt] = 0;
+      ಗಾಗಿ(x=sqlite_Hash_ಮೊದಲ(pTbls); x; x=sqlite_Hash_ಮುಂದಿನ(x)){
+        ಕೋಷ್ಟಕ *pTab = sqlite_Hash_ದತ್ತಾಂಶ(x);
+        ಸೂಚ್ಯಂಕ *pIdx;
+        ಆದರೆ( ಕೋಷ್ಟಕ_Skip_Integrity_Check(pTab,pObjTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( HasRowid(pTab) ) a_ಬೇರು[++cnt] = pTab->tnum;
+        ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ){
+          a_ಬೇರು[++cnt] = pIdx->tnum;
         }
       }
-      aRoot[0] = cnt;
+      a_ಬೇರು[0] = cnt;
 
       /* Make sure sufficient number of registers have been allocated */
-      sqlite3TouchRegister(pParse, 8+cnt);
-      sqlite3VdbeAddOp3(v, OP_Null, 0, 8, 8+cnt);
-      sqlite3ClearTempRegCache(pParse);
+      sqlite3_Touch_ರಿಜಿಸ್ಟರ್(pParse, 8+cnt);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Null, 0, 8, 8+cnt);
+      sqlite3_Clear_ತಾತ್ಕಾಲಿಕ_Reg_Cache(pParse);
 
       /* Do the b-tree integrity checks */
-      sqlite3VdbeAddOp4(v, OP_IntegrityCk, 1, cnt, 8, (char*)aRoot,P4_INTARRAY);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_IntegrityCk, 1, cnt, 8, (ಅಕ್ಷರ*)a_ಬೇರು,P4_INTARRAY);
       sqlite3VdbeChangeP5(v, (u16)i);
-      addr = sqlite3VdbeAddOp1(v, OP_IsNull, 2); VdbeCoverage(v);
-      sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
+      addr = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_IsNull, 2); VdbeCoverage(v);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0,
          sqlite3MPrintf(db, "*** in database %s ***\n", db->aDb[i].zDbSName),
          P4_DYNAMIC);
-      sqlite3VdbeAddOp3(v, OP_Concat, 2, 3, 3);
-      integrityCheckResultRow(v);
-      sqlite3VdbeJumpHere(v, addr);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 2, 3, 3);
+      integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
+      sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr);
 
       /* Check that the indexes all have the right number of rows */
       cnt = pObjTab ? 1 : 0;
-      sqlite3VdbeLoadString(v, 2, "wrong # of entries in index ");
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        int iTab = 0;
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( HasRowid(pTab) ){
+      sqlite3_Vdbe_ತುಂಬು_String(v, 2, "wrong # of entries in index ");
+      ಗಾಗಿ(x=sqlite_Hash_ಮೊದಲ(pTbls); x; x=sqlite_Hash_ಮುಂದಿನ(x)){
+        ಪೂರ್ಣಾಂಕ iTab = 0;
+        ಕೋಷ್ಟಕ *pTab = sqlite_Hash_ದತ್ತಾಂಶ(x);
+        ಸೂಚ್ಯಂಕ *pIdx;
+        ಆದರೆ( ಕೋಷ್ಟಕ_Skip_Integrity_Check(pTab,pObjTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( HasRowid(pTab) ){
           iTab = cnt++;
-        }else{
+        }ಇಲ್ಲದಿದ್ದರೆ{
           iTab = cnt;
-          for(pIdx=pTab->pIndex; ALWAYS(pIdx); pIdx=pIdx->pNext){
-            if( IsPrimaryKeyIndex(pIdx) ) break;
+          ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ; ALWAYS(pIdx); pIdx=pIdx->p_ಮುಂದಿನ){
+            ಆದರೆ( Is_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pIdx) ) ನಿಲ್ಲಿಸು;
             iTab++;
           }
         }
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          if( pIdx->pPartIdxWhere==0 ){
-            addr = sqlite3VdbeAddOp3(v, OP_Eq, 8+cnt, 0, 8+iTab);
+        ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ){
+          ಆದರೆ( pIdx->pPartIdxWhere==0 ){
+            addr = sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Eq, 8+cnt, 0, 8+iTab);
             VdbeCoverageNeverNull(v);
-            sqlite3VdbeLoadString(v, 4, pIdx->zName);
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 2, 3);
-            integrityCheckResultRow(v);
-            sqlite3VdbeJumpHere(v, addr);
+            sqlite3_Vdbe_ತುಂಬು_String(v, 4, pIdx->zName);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 4, 2, 3);
+            integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
+            sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, addr);
           }
           cnt++;
         }
@@ -1826,81 +1826,81 @@ void sqlite3Pragma(
 
       /* Make sure all the indices are constructed correctly.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
-        Index *pIdx, *pPk;
-        Index *pPrior = 0;      /* Previous index */
-        int loopTop;
-        int iDataCur, iIdxCur;
-        int r1 = -1;
-        int bStrict;            /* True for a STRICT table */
-        int r2;                 /* Previous key for WITHOUT ROWID tables */
-        int mxCol;              /* Maximum non-virtual column number */
+      ಗಾಗಿ(x=sqlite_Hash_ಮೊದಲ(pTbls); x; x=sqlite_Hash_ಮುಂದಿನ(x)){
+        ಕೋಷ್ಟಕ *pTab = sqlite_Hash_ದತ್ತಾಂಶ(x);
+        ಸೂಚ್ಯಂಕ *pIdx, *pPk;
+        ಸೂಚ್ಯಂಕ *p_ಪೂರ್ವ = 0;      /* Previous index */
+        ಪೂರ್ಣಾಂಕ loop_ತುದಿ;
+        ಪೂರ್ಣಾಂಕ i_ದತ್ತಾಂಶ_Cur, iIdxCur;
+        ಪೂರ್ಣಾಂಕ r1 = -1;
+        ಪೂರ್ಣಾಂಕ bStrict;            /* True for a STRICT table */
+        ಪೂರ್ಣಾಂಕ r2;                 /* Previous key for WITHOUT ROWID tables */
+        ಪೂರ್ಣಾಂಕ mx_ಲಂಬಸಾಲು;              /* Maximum non-virtual column number */
 
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( !IsOrdinaryTable(pTab) ) continue;
-        if( isQuick || HasRowid(pTab) ){
+        ಆದರೆ( ಕೋಷ್ಟಕ_Skip_Integrity_Check(pTab,pObjTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( !Is_Ordinary_ಕೋಷ್ಟಕ(pTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( is_ಶೀಘ್ರ || HasRowid(pTab) ){
           pPk = 0;
           r2 = 0;
-        }else{
-          pPk = sqlite3PrimaryKeyIndex(pTab);
-          r2 = sqlite3GetTempRange(pParse, pPk->nKeyCol);
-          sqlite3VdbeAddOp3(v, OP_Null, 1, r2, r2+pPk->nKeyCol-1);
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          pPk = sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pTab);
+          r2 = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Range(pParse, pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Null, 1, r2, r2+pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು-1);
         }
-        sqlite3OpenTableAndIndices(pParse, pTab, OP_OpenRead, 0,
-                                   1, 0, &iDataCur, &iIdxCur);
+        sqlite3_Open_ಕೋಷ್ಟಕ_And_Indices(pParse, pTab, OP_OpenRead, 0,
+                                   1, 0, &i_ದತ್ತಾಂಶ_Cur, &iIdxCur);
         /* reg[7] counts the number of entries in the table.
         ** reg[8+i] counts the number of entries in the i-th index
         */
-        sqlite3VdbeAddOp2(v, OP_Integer, 0, 7);
-        for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
-          sqlite3VdbeAddOp2(v, OP_Integer, 0, 8+j); /* index entries counter */
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, 0, 7);
+        ಗಾಗಿ(j=0, pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ, j++){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Integer, 0, 8+j); /* index entries counter */
         }
-        assert( pParse->nMem>=8+j );
-        assert( sqlite3NoTempsInRange(pParse,1,7+j) );
-        sqlite3VdbeAddOp2(v, OP_Rewind, iDataCur, 0); VdbeCoverage(v);
-        loopTop = sqlite3VdbeAddOp2(v, OP_AddImm, 7, 1);
+        ಪ್ರತಿಜ್ಞಾ( pParse->nMem>=8+j );
+        ಪ್ರತಿಜ್ಞಾ( sqlite3_No_Temps_ಒಳ_Range(pParse,1,7+j) );
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rewind, i_ದತ್ತಾಂಶ_Cur, 0); VdbeCoverage(v);
+        loop_ತುದಿ = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಕೂಡಿಸು_Imm, 7, 1);
 
         /* Fetch the right-most column from the table.  This will cause
         ** the entire record header to be parsed and sanity checked.  It
         ** will also prepopulate the cursor column cache that is used
         ** by the OP_IsType code, so it is a required step.
         */
-        assert( !IsVirtual(pTab) );
-        if( HasRowid(pTab) ){
-          mxCol = -1;
-          for(j=0; j<pTab->nCol; j++){
-            if( (pTab->aCol[j].colFlags & COLFLAG_VIRTUAL)==0 ) mxCol++;
+        ಪ್ರತಿಜ್ಞಾ( !IsVirtual(pTab) );
+        ಆದರೆ( HasRowid(pTab) ){
+          mx_ಲಂಬಸಾಲು = -1;
+          ಗಾಗಿ(j=0; j<pTab->n_ಲಂಬಸಾಲು; j++){
+            ಆದರೆ( (pTab->a_ಲಂಬಸಾಲು[j].ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL)==0 ) mx_ಲಂಬಸಾಲು++;
           }
-          if( mxCol==pTab->iPKey ) mxCol--;
-        }else{
+          ಆದರೆ( mx_ಲಂಬಸಾಲು==pTab->iPKey ) mx_ಲಂಬಸಾಲು--;
+        }ಇಲ್ಲದಿದ್ದರೆ{
           /* COLFLAG_VIRTUAL columns are not included in the WITHOUT ROWID
           ** PK index column-count, so there is no need to account for them
           ** in this case. */
-          mxCol = sqlite3PrimaryKeyIndex(pTab)->nColumn-1;
+          mx_ಲಂಬಸಾಲು = sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pTab)->n_ಸ್ತಂಭ-1;
         }
-        if( mxCol>=0 ){
-          sqlite3VdbeAddOp3(v, OP_Column, iDataCur, mxCol, 3);
-          sqlite3VdbeTypeofColumn(v, 3);
+        ಆದರೆ( mx_ಲಂಬಸಾಲು>=0 ){
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸ್ತಂಭ, i_ದತ್ತಾಂಶ_Cur, mx_ಲಂಬಸಾಲು, 3);
+          sqlite3_Vdbe_Typeof_ಸ್ತಂಭ(v, 3);
         }
 
-        if( !isQuick ){
-          if( pPk ){
+        ಆದರೆ( !is_ಶೀಘ್ರ ){
+          ಆದರೆ( pPk ){
             /* Verify WITHOUT ROWID keys are in ascending order */
-            int a1;
-            char *zErr;
-            a1 = sqlite3VdbeAddOp4Int(v, OP_IdxGT, iDataCur, 0,r2,pPk->nKeyCol);
+            ಪೂರ್ಣಾಂಕ a1;
+            ಅಕ್ಷರ *zErr;
+            a1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_IdxGT, i_ದತ್ತಾಂಶ_Cur, 0,r2,pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು);
             VdbeCoverage(v);
-            sqlite3VdbeAddOp1(v, OP_IsNull, r2); VdbeCoverage(v);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_IsNull, r2); VdbeCoverage(v);
             zErr = sqlite3MPrintf(db,
                    "row not in PRIMARY KEY order for %s",
                     pTab->zName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            integrityCheckResultRow(v);
-            sqlite3VdbeJumpHere(v, a1);
-            sqlite3VdbeJumpHere(v, a1+1);
-            for(j=0; j<pPk->nKeyCol; j++){
-              sqlite3ExprCodeLoadIndexColumn(pParse, pPk, iDataCur, j, r2+j);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
+            sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, a1);
+            sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, a1+1);
+            ಗಾಗಿ(j=0; j<pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು; j++){
+              sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_ತುಂಬು_ಸೂಚ್ಯಂಕ_ಸ್ತಂಭ(pParse, pPk, i_ದತ್ತಾಂಶ_Cur, j, r2+j);
             }
           }
         }
@@ -1914,317 +1914,317 @@ void sqlite3Pragma(
         **       be a TEXT value that can be losslessly converted to numeric.
         */
         bStrict = (pTab->tabFlags & TF_Strict)!=0;
-        for(j=0; j<pTab->nCol; j++){
-          char *zErr;
-          Column *pCol = pTab->aCol + j;  /* The column to be checked */
-          int labelError;               /* Jump here to report an error */
-          int labelOk;                  /* Jump here if all looks ok */
-          int p1, p3, p4;               /* Operands to the OP_IsType opcode */
-          int doTypeCheck;              /* Check datatypes (besides NOT NULL) */
+        ಗಾಗಿ(j=0; j<pTab->n_ಲಂಬಸಾಲು; j++){
+          ಅಕ್ಷರ *zErr;
+          ಸ್ತಂಭ *p_ಲಂಬಸಾಲು = pTab->a_ಲಂಬಸಾಲು + j;  /* The column to be checked */
+          ಪೂರ್ಣಾಂಕ labelError;               /* Jump here to report an error */
+          ಪೂರ್ಣಾಂಕ labelOk;                  /* Jump here if all looks ok */
+          ಪೂರ್ಣಾಂಕ p1, p3, p4;               /* Operands to the OP_IsType opcode */
+          ಪೂರ್ಣಾಂಕ doTypeCheck;              /* Check datatypes (besides NOT NULL) */
 
-          if( j==pTab->iPKey ) continue;
-          if( bStrict ){
-            doTypeCheck = pCol->eCType>COLTYPE_ANY;
-          }else{
-            doTypeCheck = pCol->affinity>SQLITE_AFF_BLOB;
+          ಆದರೆ( j==pTab->iPKey ) ಮುಂದುವರಿ;
+          ಆದರೆ( bStrict ){
+            doTypeCheck = p_ಲಂಬಸಾಲು->eCType>COLTYPE_ANY;
+          }ಇಲ್ಲದಿದ್ದರೆ{
+            doTypeCheck = p_ಲಂಬಸಾಲು->affinity>SQLITE_AFF_BLOB;
           }
-          if( pCol->notNull==0 && !doTypeCheck ) continue;
+          ಆದರೆ( p_ಲಂಬಸಾಲು->notNull==0 && !doTypeCheck ) ಮುಂದುವರಿ;
 
           /* Compute the operands that will be needed for OP_IsType */
           p4 = SQLITE_NULL;
-          if( pCol->colFlags & COLFLAG_VIRTUAL ){
-            sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+          ಆದರೆ( p_ಲಂಬಸಾಲು->ಲಂಬಸಾಲು_Flags & COLFLAG_VIRTUAL ){
+            sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Get_ಸ್ತಂಭ_ದ_ಕೋಷ್ಟಕ(v, pTab, i_ದತ್ತಾಂಶ_Cur, j, 3);
             p1 = -1;
             p3 = 3;
-          }else{
-            if( pCol->iDflt ){
-              sqlite3_value *pDfltValue = 0;
-              sqlite3ValueFromExpr(db, sqlite3ColumnExprAuth(pTab,pCol,pParse),
-                                   ENC(db), pCol->affinity, &pDfltValue);
-              if( pDfltValue ){
-                p4 = sqlite3_value_type(pDfltValue);
-                sqlite3ValueFree(pDfltValue);
+          }ಇಲ್ಲದಿದ್ದರೆ{
+            ಆದರೆ( p_ಲಂಬಸಾಲು->iDflt ){
+              sqlite3_ಮೌಲ್ಯ *p_Dflt_ಮೌಲ್ಯ = 0;
+              sqlite3_ಮೌಲ್ಯ_From_ಅಭಿವ್ಯಕ್ತಿ(db, sqlite3_ಸ್ತಂಭ_ಅಭಿವ್ಯಕ್ತಿ_Auth(pTab,p_ಲಂಬಸಾಲು,pParse),
+                                   ENC(db), p_ಲಂಬಸಾಲು->affinity, &p_Dflt_ಮೌಲ್ಯ);
+              ಆದರೆ( p_Dflt_ಮೌಲ್ಯ ){
+                p4 = sqlite3_ಮೌಲ್ಯ_type(p_Dflt_ಮೌಲ್ಯ);
+                sqlite3_ಮೌಲ್ಯ_Free(p_Dflt_ಮೌಲ್ಯ);
               }
             }
-            p1 = iDataCur;
-            if( !HasRowid(pTab) ){
-              testcase( j!=sqlite3TableColumnToStorage(pTab, j) );
-              p3 = sqlite3TableColumnToIndex(sqlite3PrimaryKeyIndex(pTab), j);
-            }else{
-              p3 = sqlite3TableColumnToStorage(pTab,j);
+            p1 = i_ದತ್ತಾಂಶ_Cur;
+            ಆದರೆ( !HasRowid(pTab) ){
+              testcase( j!=sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab, j) );
+              p3 = sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_ಸೂಚ್ಯಂಕ(sqlite3_Primary_ಕೀಲಿ_ಸೂಚ್ಯಂಕ(pTab), j);
+            }ಇಲ್ಲದಿದ್ದರೆ{
+              p3 = sqlite3_ಕೋಷ್ಟಕ_ಸ್ತಂಭ_ಗಮ್ಯ_Storage(pTab,j);
               testcase( p3!=j);
             }
           }
 
           labelError = sqlite3VdbeMakeLabel(pParse);
           labelOk = sqlite3VdbeMakeLabel(pParse);
-          if( pCol->notNull ){
+          ಆದರೆ( p_ಲಂಬಸಾಲು->notNull ){
             /* (1) NOT NULL columns may not contain a NULL */
-            int jmp3;
-            int jmp2 = sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            ಪೂರ್ಣಾಂಕ jmp3;
+            ಪೂರ್ಣಾಂಕ jmp2 = sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             VdbeCoverage(v);
-            if( p1<0 ){
+            ಆದರೆ( p1<0 ){
               sqlite3VdbeChangeP5(v, 0x0f); /* INT, REAL, TEXT, or BLOB */
               jmp3 = jmp2;
-            }else{
+            }ಇಲ್ಲದಿದ್ದರೆ{
               sqlite3VdbeChangeP5(v, 0x0d); /* INT, TEXT, or BLOB */
               /* OP_IsType does not detect NaN values in the database file
               ** which should be treated as a NULL.  So if the header type
               ** is REAL, we have to load the actual data using OP_Column
               ** to reliably determine if the value is a NULL. */
-              sqlite3VdbeAddOp3(v, OP_Column, p1, p3, 3);
-              sqlite3ColumnDefault(v, pTab, j, 3);
-              jmp3 = sqlite3VdbeAddOp2(v, OP_NotNull, 3, labelOk);
+              sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸ್ತಂಭ, p1, p3, 3);
+              sqlite3_ಸ್ತಂಭ_Default(v, pTab, j, 3);
+              jmp3 = sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_NotNull, 3, labelOk);
               VdbeCoverage(v);
             }           
             zErr = sqlite3MPrintf(db, "NULL value in %s.%s", pTab->zName,
-                                pCol->zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            if( doTypeCheck ){
+                                p_ಲಂಬಸಾಲು->zCnName);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            ಆದರೆ( doTypeCheck ){
               sqlite3VdbeGoto(v, labelError);
-              sqlite3VdbeJumpHere(v, jmp2);
-              sqlite3VdbeJumpHere(v, jmp3);
-            }else{
+              sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, jmp2);
+              sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, jmp3);
+            }ಇಲ್ಲದಿದ್ದರೆ{
               /* VDBE byte code will fall thru */
             }
           }
-          if( bStrict && doTypeCheck ){
+          ಆದರೆ( bStrict && doTypeCheck ){
             /* (2) Datatype must be exact for non-ANY columns in STRICT tables*/
-            static unsigned char aStdTypeMask[] = {
+            ಸ್ಥಿರ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ a_Std_Type_ಮುಖವಾಡ[] = {
                0x1f,    /* ANY */
                0x18,    /* BLOB */
                0x11,    /* INT */
                0x11,    /* INTEGER */
                0x13,    /* REAL */
-               0x14     /* TEXT */
+               0x14     /*ಪಠ್ಯ*/
             };
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
-            assert( pCol->eCType>=1 && pCol->eCType<=sizeof(aStdTypeMask) );
-            sqlite3VdbeChangeP5(v, aStdTypeMask[pCol->eCType-1]);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
+            ಪ್ರತಿಜ್ಞಾ( p_ಲಂಬಸಾಲು->eCType>=1 && p_ಲಂಬಸಾಲು->eCType<=ಗಾತ್ರ(a_Std_Type_ಮುಖವಾಡ) );
+            sqlite3VdbeChangeP5(v, a_Std_Type_ಮುಖವಾಡ[p_ಲಂಬಸಾಲು->eCType-1]);
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "non-%s value in %s.%s",
-                                  sqlite3StdType[pCol->eCType-1],
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity==SQLITE_AFF_TEXT ){
+                                  sqlite3StdType[p_ಲಂಬಸಾಲು->eCType-1],
+                                  pTab->zName, pTab->a_ಲಂಬಸಾಲು[j].zCnName);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+          }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( !bStrict && p_ಲಂಬಸಾಲು->affinity==SQLITE_AFF_ಪಠ್ಯ ){
             /* (3) Datatype for TEXT columns in non-STRICT tables must be
             **     NULL, TEXT, or BLOB. */
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             sqlite3VdbeChangeP5(v, 0x1c); /* NULL, TEXT, or BLOB */
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "NUMERIC value in %s.%s",
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-          }else if( !bStrict && pCol->affinity>=SQLITE_AFF_NUMERIC ){
+                                  pTab->zName, pTab->a_ಲಂಬಸಾಲು[j].zCnName);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+          }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( !bStrict && p_ಲಂಬಸಾಲು->affinity>=SQLITE_AFF_NUMERIC ){
             /* (4) Datatype for numeric columns in non-STRICT tables must not
             **     be a TEXT value that can be converted to numeric. */
-            sqlite3VdbeAddOp4Int(v, OP_IsType, p1, labelOk, p3, p4);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_IsType, p1, labelOk, p3, p4);
             sqlite3VdbeChangeP5(v, 0x1b); /* NULL, INT, FLOAT, or BLOB */
             VdbeCoverage(v);
-            if( p1>=0 ){
-              sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
+            ಆದರೆ( p1>=0 ){
+              sqlite3_ಅಭಿವ್ಯಕ್ತಿ_ಸಂಕೇತ_Get_ಸ್ತಂಭ_ದ_ಕೋಷ್ಟಕ(v, pTab, i_ದತ್ತಾಂಶ_Cur, j, 3);
             }
-            sqlite3VdbeAddOp4(v, OP_Affinity, 3, 1, 0, "C", P4_STATIC);
-            sqlite3VdbeAddOp4Int(v, OP_IsType, -1, labelOk, 3, p4);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_Affinity, 3, 1, 0, "C", P4_STATIC);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_IsType, -1, labelOk, 3, p4);
             sqlite3VdbeChangeP5(v, 0x1c); /* NULL, TEXT, or BLOB */
             VdbeCoverage(v);
             zErr = sqlite3MPrintf(db, "TEXT value in %s.%s",
-                                  pTab->zName, pTab->aCol[j].zCnName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+                                  pTab->zName, pTab->a_ಲಂಬಸಾಲು[j].zCnName);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
           }
           sqlite3VdbeResolveLabel(v, labelError);
-          integrityCheckResultRow(v);
+          integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
           sqlite3VdbeResolveLabel(v, labelOk);
         }
         /* Verify CHECK constraints */
-        if( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
-          ExprList *pCheck = sqlite3ExprListDup(db, pTab->pCheck, 0);
-          if( db->mallocFailed==0 ){
-            int addrCkFault = sqlite3VdbeMakeLabel(pParse);
-            int addrCkOk = sqlite3VdbeMakeLabel(pParse);
-            char *zErr;
-            int k;
-            pParse->iSelfTab = iDataCur + 1;
-            for(k=pCheck->nExpr-1; k>0; k--){
-              sqlite3ExprIfFalse(pParse, pCheck->a[k].pExpr, addrCkFault, 0);
+        ಆದರೆ( pTab->pCheck && (db->flags & SQLITE_IgnoreChecks)==0 ){
+          ಅಭಿವ್ಯಕ್ತಿ_List *pCheck = sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Dup(db, pTab->pCheck, 0);
+          ಆದರೆ( db->mallocFailed==0 ){
+            ಪೂರ್ಣಾಂಕ addrCkFault = sqlite3VdbeMakeLabel(pParse);
+            ಪೂರ್ಣಾಂಕ addrCkOk = sqlite3VdbeMakeLabel(pParse);
+            ಅಕ್ಷರ *zErr;
+            ಪೂರ್ಣಾಂಕ k;
+            pParse->iSelfTab = i_ದತ್ತಾಂಶ_Cur + 1;
+            ಗಾಗಿ(k=pCheck->n_ಅಭಿವ್ಯಕ್ತಿ-1; k>0; k--){
+              sqlite3_ಅಭಿವ್ಯಕ್ತಿ_If_False(pParse, pCheck->a[k].p_ಅಭಿವ್ಯಕ್ತಿ, addrCkFault, 0);
             }
-            sqlite3ExprIfTrue(pParse, pCheck->a[0].pExpr, addrCkOk,
+            sqlite3_ಅಭಿವ್ಯಕ್ತಿ_If_True(pParse, pCheck->a[0].p_ಅಭಿವ್ಯಕ್ತಿ, addrCkOk,
                 SQLITE_JUMPIFNULL);
             sqlite3VdbeResolveLabel(v, addrCkFault);
             pParse->iSelfTab = 0;
             zErr = sqlite3MPrintf(db, "CHECK constraint failed in %s",
                 pTab->zName);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
-            integrityCheckResultRow(v);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0, zErr, P4_DYNAMIC);
+            integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
             sqlite3VdbeResolveLabel(v, addrCkOk);
           }
-          sqlite3ExprListDelete(db, pCheck);
+          sqlite3_ಅಭಿವ್ಯಕ್ತಿ_List_Delete(db, pCheck);
         }
-        if( !isQuick ){ /* Omit the remaining tests for quick_check */
+        ಆದರೆ( !is_ಶೀಘ್ರ ){ /* Omit the remaining tests for quick_check */
           /* Validate index entries for the current row */
-          for(j=0, pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext, j++){
-            int jmp2, jmp3, jmp4, jmp5, label6;
-            int kk;
-            int ckUniq = sqlite3VdbeMakeLabel(pParse);
-            if( pPk==pIdx ) continue;
-            r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 0, &jmp3,
-                                         pPrior, r1);
-            pPrior = pIdx;
-            sqlite3VdbeAddOp2(v, OP_AddImm, 8+j, 1);/* increment entry count */
+          ಗಾಗಿ(j=0, pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ, j++){
+            ಪೂರ್ಣಾಂಕ jmp2, jmp3, jmp4, jmp5, label6;
+            ಪೂರ್ಣಾಂಕ kk;
+            ಪೂರ್ಣಾಂಕ ckUniq = sqlite3VdbeMakeLabel(pParse);
+            ಆದರೆ( pPk==pIdx ) ಮುಂದುವರಿ;
+            r1 = sqlite3_Generate_ಸೂಚ್ಯಂಕ_ಕೀಲಿ(pParse, pIdx, i_ದತ್ತಾಂಶ_Cur, 0, 0, &jmp3,
+                                         p_ಪೂರ್ವ, r1);
+            p_ಪೂರ್ವ = pIdx;
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಕೂಡಿಸು_Imm, 8+j, 1);/* increment entry count */
             /* Verify that an index entry exists for the current table row */
-            sqlite3VdbeAddOp4Int(v, OP_Found, iIdxCur+j, ckUniq, r1,
-                                        pIdx->nColumn); VdbeCoverage(v);
-            jmp2 = sqlite3VdbeAddOp3(v, OP_IFindKey, iIdxCur+j, ckUniq, r1); 
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_ಸಿಕ್ಕಿತು, iIdxCur+j, ckUniq, r1,
+                                        pIdx->n_ಸ್ತಂಭ); VdbeCoverage(v);
+            jmp2 = sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_IFind_ಕೀಲಿ, iIdxCur+j, ckUniq, r1); 
             VdbeCoverage(v);
-            sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
-            sqlite3VdbeAddOp4(v, OP_String8, 0, 3, 0,
+            sqlite3VdbeChangeP4(v, -1, (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)pIdx, P4_ಸೂಚ್ಯಂಕ);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, 3, 0,
               sqlite3MPrintf(db, "index %s stores an imprecise floating-point "
                                  "value for row ", pIdx->zName),
               P4_DYNAMIC);
-            sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-            integrityCheckResultRow(v);
-            sqlite3VdbeAddOp2(v, OP_Goto, 0, ckUniq);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 7, 3, 3);
+            integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Goto, 0, ckUniq);
 
-            sqlite3VdbeJumpHere(v, jmp2);
-            sqlite3VdbeLoadString(v, 3, "row ");
-            sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-            sqlite3VdbeLoadString(v, 4, " missing from index ");
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 3, 3);
-            jmp5 = sqlite3VdbeLoadString(v, 4, pIdx->zName);
-            sqlite3VdbeAddOp3(v, OP_Concat, 4, 3, 3);
-            jmp4 = integrityCheckResultRow(v);
+            sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, jmp2);
+            sqlite3_Vdbe_ತುಂಬು_String(v, 3, "row ");
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 7, 3, 3);
+            sqlite3_Vdbe_ತುಂಬು_String(v, 4, " missing from index ");
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 4, 3, 3);
+            jmp5 = sqlite3_Vdbe_ತುಂಬು_String(v, 4, pIdx->zName);
+            sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 4, 3, 3);
+            jmp4 = integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
             sqlite3VdbeResolveLabel(v, ckUniq);
 
             /* The OP_IdxRowid opcode is an optimized version of OP_Column
             ** that extracts the rowid off the end of the index record.
             ** But it only works correctly if index record does not have
             ** any extra bytes at the end.  Verify that this is the case. */
-            if( HasRowid(pTab) ){
-              int jmp7;
-              sqlite3VdbeAddOp2(v, OP_IdxRowid, iIdxCur+j, 3);
-              jmp7 = sqlite3VdbeAddOp3(v, OP_Eq, 3, 0, r1+pIdx->nColumn-1);
+            ಆದರೆ( HasRowid(pTab) ){
+              ಪೂರ್ಣಾಂಕ jmp7;
+              sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IdxRowid, iIdxCur+j, 3);
+              jmp7 = sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Eq, 3, 0, r1+pIdx->n_ಸ್ತಂಭ-1);
               VdbeCoverageNeverNull(v);
-              sqlite3VdbeLoadString(v, 3,
+              sqlite3_Vdbe_ತುಂಬು_String(v, 3,
                  "rowid not at end-of-record for row ");
-              sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-              sqlite3VdbeLoadString(v, 4, " of index ");
+              sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 7, 3, 3);
+              sqlite3_Vdbe_ತುಂಬು_String(v, 4, " of index ");
               sqlite3VdbeGoto(v, jmp5-1);
-              sqlite3VdbeJumpHere(v, jmp7);
+              sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, jmp7);
             }
 
             /* Any indexed columns with non-BINARY collations must still hold
             ** the exact same text value as the table. */
             label6 = 0;
-            for(kk=0; kk<pIdx->nKeyCol; kk++){
-              if( pIdx->azColl[kk]==sqlite3StrBINARY ) continue;
-              if( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
-              sqlite3VdbeAddOp3(v, OP_Column, iIdxCur+j, kk, 3);
-              sqlite3VdbeAddOp3(v, OP_Ne, 3, label6, r1+kk); VdbeCoverage(v);
+            ಗಾಗಿ(kk=0; kk<pIdx->n_ಕೀಲಿ_ಲಂಬಸಾಲು; kk++){
+              ಆದರೆ( pIdx->azColl[kk]==sqlite3_Str_ದ್ವಿಮಾನ ) ಮುಂದುವರಿ;
+              ಆದರೆ( label6==0 ) label6 = sqlite3VdbeMakeLabel(pParse);
+              sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_ಸ್ತಂಭ, iIdxCur+j, kk, 3);
+              sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Ne, 3, label6, r1+kk); VdbeCoverage(v);
             }
-            if( label6 ){
-              int jmp6 = sqlite3VdbeAddOp0(v, OP_Goto);
+            ಆದರೆ( label6 ){
+              ಪೂರ್ಣಾಂಕ jmp6 = sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Goto);
               sqlite3VdbeResolveLabel(v, label6);
-              sqlite3VdbeLoadString(v, 3, "row ");
-              sqlite3VdbeAddOp3(v, OP_Concat, 7, 3, 3);
-              sqlite3VdbeLoadString(v, 4, " values differ from index ");
+              sqlite3_Vdbe_ತುಂಬು_String(v, 3, "row ");
+              sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Concat, 7, 3, 3);
+              sqlite3_Vdbe_ತುಂಬು_String(v, 4, " values differ from index ");
               sqlite3VdbeGoto(v, jmp5-1);
-              sqlite3VdbeJumpHere(v, jmp6);
+              sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, jmp6);
             }
              
             /* For UNIQUE indexes, verify that only one entry exists with the
             ** current key.  The entry is unique if (1) any column is NULL
             ** or (2) the next entry has a different key */
-            if( IsUniqueIndex(pIdx) ){
-              int uniqOk = sqlite3VdbeMakeLabel(pParse);
-              int jmp6;
-              for(kk=0; kk<pIdx->nKeyCol; kk++){
-                int iCol = pIdx->aiColumn[kk];
-                assert( iCol!=XN_ROWID && iCol<pTab->nCol );
-                if( iCol>=0 && pTab->aCol[iCol].notNull ) continue;
-                sqlite3VdbeAddOp2(v, OP_IsNull, r1+kk, uniqOk);
+            ಆದರೆ( Is_Unique_ಸೂಚ್ಯಂಕ(pIdx) ){
+              ಪೂರ್ಣಾಂಕ uniqOk = sqlite3VdbeMakeLabel(pParse);
+              ಪೂರ್ಣಾಂಕ jmp6;
+              ಗಾಗಿ(kk=0; kk<pIdx->n_ಕೀಲಿ_ಲಂಬಸಾಲು; kk++){
+                ಪೂರ್ಣಾಂಕ i_ಲಂಬಸಾಲು = pIdx->ai_ಸ್ತಂಭ[kk];
+                ಪ್ರತಿಜ್ಞಾ( i_ಲಂಬಸಾಲು!=XN_ROWID && i_ಲಂಬಸಾಲು<pTab->n_ಲಂಬಸಾಲು );
+                ಆದರೆ( i_ಲಂಬಸಾಲು>=0 && pTab->a_ಲಂಬಸಾಲು[i_ಲಂಬಸಾಲು].notNull ) ಮುಂದುವರಿ;
+                sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_IsNull, r1+kk, uniqOk);
                 VdbeCoverage(v);
               }
-              jmp6 = sqlite3VdbeAddOp1(v, OP_Next, iIdxCur+j); VdbeCoverage(v);
+              jmp6 = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_ಮುಂದಿನ, iIdxCur+j); VdbeCoverage(v);
               sqlite3VdbeGoto(v, uniqOk);
-              sqlite3VdbeJumpHere(v, jmp6);
-              sqlite3VdbeAddOp4Int(v, OP_IdxGT, iIdxCur+j, uniqOk, r1,
-                                   pIdx->nKeyCol); VdbeCoverage(v);
-              sqlite3VdbeLoadString(v, 3, "non-unique entry in index ");
+              sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, jmp6);
+              sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_IdxGT, iIdxCur+j, uniqOk, r1,
+                                   pIdx->n_ಕೀಲಿ_ಲಂಬಸಾಲು); VdbeCoverage(v);
+              sqlite3_Vdbe_ತುಂಬು_String(v, 3, "non-unique entry in index ");
               sqlite3VdbeGoto(v, jmp5);
               sqlite3VdbeResolveLabel(v, uniqOk);
             }
-            sqlite3VdbeJumpHere(v, jmp4);
+            sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, jmp4);
             sqlite3ResolvePartIdxLabel(pParse, jmp3);
           }
         }
-        sqlite3VdbeAddOp2(v, OP_Next, iDataCur, loopTop); VdbeCoverage(v);
-        sqlite3VdbeJumpHere(v, loopTop-1);
-        if( pPk ){
-          assert( !isQuick );
-          sqlite3ReleaseTempRange(pParse, r2, pPk->nKeyCol);
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಮುಂದಿನ, i_ದತ್ತಾಂಶ_Cur, loop_ತುದಿ); VdbeCoverage(v);
+        sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, loop_ತುದಿ-1);
+        ಆದರೆ( pPk ){
+          ಪ್ರತಿಜ್ಞಾ( !is_ಶೀಘ್ರ );
+          sqlite3_Release_ತಾತ್ಕಾಲಿಕ_Range(pParse, r2, pPk->n_ಕೀಲಿ_ಲಂಬಸಾಲು);
         }
       }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
       /* Second pass to invoke the xIntegrity method on all virtual
       ** tables.
       */
-      for(x=sqliteHashFirst(pTbls); x; x=sqliteHashNext(x)){
-        Table *pTab = sqliteHashData(x);
+      ಗಾಗಿ(x=sqlite_Hash_ಮೊದಲ(pTbls); x; x=sqlite_Hash_ಮುಂದಿನ(x)){
+        ಕೋಷ್ಟಕ *pTab = sqlite_Hash_ದತ್ತಾಂಶ(x);
         sqlite3_vtab *pVTab;
-        int a1;
-        if( tableSkipIntegrityCheck(pTab,pObjTab) ) continue;
-        if( IsOrdinaryTable(pTab) ) continue;
-        if( !IsVirtual(pTab) ) continue;
-        if( pTab->nCol<=0 ){
-          const char *zMod = pTab->u.vtab.azArg[0];
-          if( sqlite3HashFind(&db->aModule, zMod)==0 ) continue;
+        ಪೂರ್ಣಾಂಕ a1;
+        ಆದರೆ( ಕೋಷ್ಟಕ_Skip_Integrity_Check(pTab,pObjTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( Is_Ordinary_ಕೋಷ್ಟಕ(pTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( !IsVirtual(pTab) ) ಮುಂದುವರಿ;
+        ಆದರೆ( pTab->n_ಲಂಬಸಾಲು<=0 ){
+          ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zMod = pTab->u.vtab.azArg[0];
+          ಆದರೆ( sqlite3_Hash_ಕಂಡುಹಿಡಿ(&db->aModule, zMod)==0 ) ಮುಂದುವರಿ;
         }
-        sqlite3ViewGetColumnNames(pParse, pTab);
-        if( pTab->u.vtab.p==0 ) continue;
+        sqlite3_View_Get_ಸ್ತಂಭ_ಹೆಸರುಗಳು(pParse, pTab);
+        ಆದರೆ( pTab->u.vtab.p==0 ) ಮುಂದುವರಿ;
         pVTab = pTab->u.vtab.p->pVtab;
-        if( NEVER(pVTab==0) ) continue;
-        if( NEVER(pVTab->pModule==0) ) continue;
-        if( pVTab->pModule->iVersion<4 ) continue;
-        if( pVTab->pModule->xIntegrity==0 ) continue;
-        sqlite3VdbeAddOp3(v, OP_VCheck, i, 3, isQuick);
+        ಆದರೆ( NEVER(pVTab==0) ) ಮುಂದುವರಿ;
+        ಆದರೆ( NEVER(pVTab->pModule==0) ) ಮುಂದುವರಿ;
+        ಆದರೆ( pVTab->pModule->i_ಆವೃತ್ತಿ<4 ) ಮುಂದುವರಿ;
+        ಆದರೆ( pVTab->pModule->xIntegrity==0 ) ಮುಂದುವರಿ;
+        sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_VCheck, i, 3, is_ಶೀಘ್ರ);
         pTab->nTabRef++;
         sqlite3VdbeAppendP4(v, pTab, P4_TABLEREF);
-        a1 = sqlite3VdbeAddOp1(v, OP_IsNull, 3); VdbeCoverage(v);
-        integrityCheckResultRow(v);
-        sqlite3VdbeJumpHere(v, a1);
-        continue;
+        a1 = sqlite3_Vdbe_ಕೂಡಿಸು_Op1(v, OP_IsNull, 3); VdbeCoverage(v);
+        integrity_Check_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
+        sqlite3_Vdbe_Jump_ಇಲ್ಲಿ(v, a1);
+        ಮುಂದುವರಿ;
       }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
     }
     {
-      static const int iLn = VDBE_OFFSET_LINENO(2);
-      static const VdbeOpList endCode[] = {
-        { OP_AddImm,      1, 0,        0},    /* 0 */
+      ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ iLn = VDBE_ಸ್ಥಾನಾಂತರ_LINENO(2);
+      ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ VdbeOpList ಕೊನೆ_ಸಂಕೇತ[] = {
+        { OP_ಕೂಡಿಸು_Imm,      1, 0,        0},    /* 0 */
         { OP_IfNotZero,   1, 4,        0},    /* 1 */
         { OP_String8,     0, 3,        0},    /* 2 */
-        { OP_ResultRow,   3, 1,        0},    /* 3 */
+        { OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು,   3, 1,        0},    /* 3 */
         { OP_Halt,        0, 0,        0},    /* 4 */
         { OP_String8,     0, 3,        0},    /* 5 */
         { OP_Goto,        0, 3,        0},    /* 6 */
       };
       VdbeOp *aOp;
 
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(endCode), endCode, iLn);
-      if( aOp ){
+      aOp = sqlite3_Vdbe_ಕೂಡಿಸು_Op_List(v, Array_ಗಾತ್ರ(ಕೊನೆ_ಸಂಕೇತ), ಕೊನೆ_ಸಂಕೇತ, iLn);
+      ಆದರೆ( aOp ){
         aOp[0].p2 = 1-mxErr;
         aOp[2].p4type = P4_STATIC;
         aOp[2].p4.z = "ok";
         aOp[5].p4type = P4_STATIC;
-        aOp[5].p4.z = (char*)sqlite3ErrStr(SQLITE_CORRUPT);
+        aOp[5].p4.z = (ಅಕ್ಷರ*)sqlite3ErrStr(SQLITE_CORRUPT);
       }
       sqlite3VdbeChangeP3(v, 0, sqlite3VdbeCurrentAddr(v)-2);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_INTEGRITY_CHECK */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_INTEGRITY_CHECK */
 
-#ifndef SQLITE_OMIT_UTF16
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_UTF16
   /*
   **   PRAGMA encoding
   **   PRAGMA encoding = "utf-8"|"utf-16"|"utf-16le"|"utf-16be"
@@ -2247,9 +2247,9 @@ void sqlite3Pragma(
   ** new database files created using this database handle. It is only
   ** useful if invoked immediately after the main database i
   */
-  case PragTyp_ENCODING: {
-    static const struct EncName {
-      char *zName;
+  ಸ್ಥಿತಿ PragTyp_ENCODING: {
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ರಚನೆ EncName {
+      ಅಕ್ಷರ *zName;
       u8 enc;
     } encnames[] = {
       { "UTF8",     SQLITE_UTF8        },
@@ -2262,38 +2262,38 @@ void sqlite3Pragma(
       { "UTF16",    0                  }, /* SQLITE_UTF16NATIVE */
       { 0, 0 }
     };
-    const struct EncName *pEnc;
-    if( !zRight ){    /* "PRAGMA encoding" */
-      if( sqlite3ReadSchema(pParse) ) goto pragma_out;
-      assert( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
-      assert( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
-      assert( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
-      returnSingleText(v, encnames[ENC(pParse->db)].zName);
-    }else{                        /* "PRAGMA encoding = XXX" */
+    ಸ್ಥಿರಾಂಕ ರಚನೆ EncName *pEnc;
+    ಆದರೆ( !z_ಬಲ ){    /* "PRAGMA encoding" */
+      ಆದರೆ( sqlite3ReadSchema(pParse) ) ಹೋಗು pragma_ಹೊರಹೋಗು;
+      ಪ್ರತಿಜ್ಞಾ( encnames[SQLITE_UTF8].enc==SQLITE_UTF8 );
+      ಪ್ರತಿಜ್ಞಾ( encnames[SQLITE_UTF16LE].enc==SQLITE_UTF16LE );
+      ಪ್ರತಿಜ್ಞಾ( encnames[SQLITE_UTF16BE].enc==SQLITE_UTF16BE );
+      return_Single_ಪಠ್ಯ(v, encnames[ENC(pParse->db)].zName);
+    }ಇಲ್ಲದಿದ್ದರೆ{                        /* "PRAGMA encoding = XXX" */
       /* Only change the value of sqlite.enc if the database handle is not
       ** initialized. If the main database exists, the new sqlite.enc value
       ** will be overwritten when the schema is next loaded. If it does not
       ** already exists, it will be created to use the new encoding value.
       */
-      if( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
-        for(pEnc=&encnames[0]; pEnc->zName; pEnc++){
-          if( 0==sqlite3StrICmp(zRight, pEnc->zName) ){
+      ಆದರೆ( (db->mDbFlags & DBFLAG_EncodingFixed)==0 ){
+        ಗಾಗಿ(pEnc=&encnames[0]; pEnc->zName; pEnc++){
+          ಆದರೆ( 0==sqlite3StrICmp(z_ಬಲ, pEnc->zName) ){
             u8 enc = pEnc->enc ? pEnc->enc : SQLITE_UTF16NATIVE;
             SCHEMA_ENC(db) = enc;
-            sqlite3SetTextEncoding(db, enc);
-            break;
+            sqlite3_ಗಣ_ಪಠ್ಯ_Encoding(db, enc);
+            ನಿಲ್ಲಿಸು;
           }
         }
-        if( !pEnc->zName ){
-          sqlite3ErrorMsg(pParse, "unsupported encoding: %s", zRight);
+        ಆದರೆ( !pEnc->zName ){
+          sqlite3_Error_ಸಂದೇಶ(pParse, "unsupported encoding: %s", z_ಬಲ);
         }
       }
     }
   }
-  break;
-#endif /* SQLITE_OMIT_UTF16 */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_UTF16 */
 
-#ifndef SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_SCHEMA_ಆವೃತ್ತಿ_PRAGMAS
   /*
   **   PRAGMA [schema.]schema_version
   **   PRAGMA [schema.]schema_version = <integer>
@@ -2326,94 +2326,94 @@ void sqlite3Pragma(
   ** The user-version is not used internally by SQLite. It may be used by
   ** applications for any purpose.
   */
-  case PragTyp_HEADER_VALUE: {
-    int iCookie = pPragma->iArg;  /* Which cookie to read or write */
-    sqlite3VdbeUsesBtree(v, iDb);
-    if( zRight && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
+  ಸ್ಥಿತಿ Prag_Typ_ಶೀರ್ಷಿಕೆ_ಮೌಲ್ಯ: {
+    ಪೂರ್ಣಾಂಕ iCookie = pPragma->iArg;  /* Which cookie to read or write */
+    sqlite3_Vdbe_ಬಳಸುತ್ತದೆ_Btree(v, iDb);
+    ಆದರೆ( z_ಬಲ && (pPragma->mPragFlg & PragFlg_ReadOnly)==0 ){
       /* Write the specified cookie value */
-      static const VdbeOpList setCookie[] = {
+      ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ VdbeOpList ಗಣ_Cookie[] = {
         { OP_Transaction,    0,  1,  0},    /* 0 */
-        { OP_SetCookie,      0,  0,  0},    /* 1 */
+        { OP_ಗಣ_Cookie,      0,  0,  0},    /* 1 */
       };
       VdbeOp *aOp;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(setCookie));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(setCookie), setCookie, 0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_ಗಾತ್ರ(ಗಣ_Cookie));
+      aOp = sqlite3_Vdbe_ಕೂಡಿಸು_Op_List(v, Array_ಗಾತ್ರ(ಗಣ_Cookie), ಗಣ_Cookie, 0);
+      ಆದರೆ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ನಿಲ್ಲಿಸು;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p2 = iCookie;
-      aOp[1].p3 = sqlite3Atoi(zRight);
+      aOp[1].p3 = sqlite3Atoi(z_ಬಲ);
       aOp[1].p5 = 1;
-      if( iCookie==BTREE_SCHEMA_VERSION && (db->flags & SQLITE_Defensive)!=0 ){
+      ಆದರೆ( iCookie==BTREE_SCHEMA_ಆವೃತ್ತಿ && (db->flags & SQLITE_Defensive)!=0 ){
         /* Do not allow the use of PRAGMA schema_version=VALUE in defensive
         ** mode.  Change the OP_SetCookie opcode into a no-op.  */
         aOp[1].opcode = OP_Noop;
       }
-    }else{
+    }ಇಲ್ಲದಿದ್ದರೆ{
       /* Read the specified cookie value */
-      static const VdbeOpList readCookie[] = {
+      ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ VdbeOpList readCookie[] = {
         { OP_Transaction,     0,  0,  0},    /* 0 */
         { OP_ReadCookie,      0,  1,  0},    /* 1 */
-        { OP_ResultRow,       1,  1,  0}
+        { OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು,       1,  1,  0}
       };
       VdbeOp *aOp;
-      sqlite3VdbeVerifyNoMallocRequired(v, ArraySize(readCookie));
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(readCookie),readCookie,0);
-      if( ONLY_IF_REALLOC_STRESS(aOp==0) ) break;
+      sqlite3VdbeVerifyNoMallocRequired(v, Array_ಗಾತ್ರ(readCookie));
+      aOp = sqlite3_Vdbe_ಕೂಡಿಸು_Op_List(v, Array_ಗಾತ್ರ(readCookie),readCookie,0);
+      ಆದರೆ( ONLY_IF_REALLOC_STRESS(aOp==0) ) ನಿಲ್ಲಿಸು;
       aOp[0].p1 = iDb;
       aOp[1].p1 = iDb;
       aOp[1].p3 = iCookie;
       sqlite3VdbeReusable(v);
     }
   }
-  break;
-#endif /* SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS */
 
-#ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_COMPILEOPTION_DIAGS
   /*
   **   PRAGMA compile_options
   **
   ** Return the names of all compile-time options used in this build,
   ** one option per row.
   */
-  case PragTyp_COMPILE_OPTIONS: {
-    int i = 0;
-    const char *zOpt;
+  ಸ್ಥಿತಿ PragTyp_COMPILE_OPTIONS: {
+    ಪೂರ್ಣಾಂಕ i = 0;
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zOpt;
     pParse->nMem = 1;
-    while( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
-      sqlite3VdbeLoadString(v, 1, zOpt);
-      sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 1);
+    ಆಗ( (zOpt = sqlite3_compileoption_get(i++))!=0 ){
+      sqlite3_Vdbe_ತುಂಬು_String(v, 1, zOpt);
+      sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1, 1);
     }
     sqlite3VdbeReusable(v);
   }
-  break;
-#endif /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_COMPILEOPTION_DIAGS */
 
-#ifndef SQLITE_OMIT_WAL
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_WAL
   /*
   **   PRAGMA [schema.]wal_checkpoint = passive|full|restart|truncate
   **
   ** Checkpoint the database.
   */
-  case PragTyp_WAL_CHECKPOINT: {
-    int iBt = (pId2->z?iDb:SQLITE_MAX_DB);
-    int eMode = SQLITE_CHECKPOINT_PASSIVE;
-    if( zRight ){
-      if( sqlite3StrICmp(zRight, "full")==0 ){
-        eMode = SQLITE_CHECKPOINT_FULL;
-      }else if( sqlite3StrICmp(zRight, "restart")==0 ){
-        eMode = SQLITE_CHECKPOINT_RESTART;
-      }else if( sqlite3StrICmp(zRight, "truncate")==0 ){
-        eMode = SQLITE_CHECKPOINT_TRUNCATE;
-      }else if( sqlite3StrICmp(zRight, "noop")==0 ){
-        eMode = SQLITE_CHECKPOINT_NOOP;
+  ಸ್ಥಿತಿ PragTyp_WAL_CHECKPOINT: {
+    ಪೂರ್ಣಾಂಕ iBt = (pId2->z?iDb:SQLITE_MAX_DB);
+    ಪೂರ್ಣಾಂಕ e_ಬಹುಲಕ = SQLITE_CHECKPOINT_PASSIVE;
+    ಆದರೆ( z_ಬಲ ){
+      ಆದರೆ( sqlite3StrICmp(z_ಬಲ, "full")==0 ){
+        e_ಬಹುಲಕ = SQLITE_CHECKPOINT_ತುಂಬಿದ;
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3StrICmp(z_ಬಲ, "restart")==0 ){
+        e_ಬಹುಲಕ = SQLITE_CHECKPOINT_RESTART;
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3StrICmp(z_ಬಲ, "truncate")==0 ){
+        e_ಬಹುಲಕ = SQLITE_CHECKPOINT_TRUNCATE;
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3StrICmp(z_ಬಲ, "noop")==0 ){
+        e_ಬಹುಲಕ = SQLITE_CHECKPOINT_NOOP;
       }
     }
     pParse->nMem = 3;
-    sqlite3VdbeAddOp3(v, OP_Checkpoint, iBt, eMode, 1);
-    sqlite3VdbeAddOp2(v, OP_ResultRow, 1, 3);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op3(v, OP_Checkpoint, iBt, e_ಬಹುಲಕ, 1);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, 1, 3);
   }
-  break;
+  ನಿಲ್ಲಿಸು;
 
   /*
   **   PRAGMA wal_autocheckpoint
@@ -2423,16 +2423,16 @@ void sqlite3Pragma(
   ** after accumulating N frames in the log. Or query for the current value
   ** of N.
   */
-  case PragTyp_WAL_AUTOCHECKPOINT: {
-    if( zRight ){
-      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(zRight));
+  ಸ್ಥಿತಿ PragTyp_WAL_AUTOCHECKPOINT: {
+    ಆದರೆ( z_ಬಲ ){
+      sqlite3_wal_autocheckpoint(db, sqlite3Atoi(z_ಬಲ));
     }
     returnSingleInt(v,
        db->xWalCallback==sqlite3WalDefaultHook ?
-           SQLITE_PTR_TO_INT(db->pWalArg) : 0);
+           SQLITE_PTR_ಗಮ್ಯ_INT(db->pWalArg) : 0);
   }
-  break;
-#endif
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
 
   /*
   **  PRAGMA shrink_memory
@@ -2441,9 +2441,9 @@ void sqlite3Pragma(
   ** connection on which it is invoked to free up as much memory as it
   ** can, by calling sqlite3_db_release_memory().
   */
-  case PragTyp_SHRINK_MEMORY: {
-    sqlite3_db_release_memory(db);
-    break;
+  ಸ್ಥಿತಿ Prag_Typ_SHRINK_ಸ್ಮರಣೆ: {
+    sqlite3_db_release_ಸ್ಮರಣೆ(db);
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -2519,129 +2519,129 @@ void sqlite3Pragma(
   ** literal argument to this pragma that contains a mnemonic description
   ** of the options rather than a bitmap.
   */
-  case PragTyp_OPTIMIZE: {
-    int iDbLast;           /* Loop termination point for the schema loop */
-    int iTabCur;           /* Cursor for a table whose size needs checking */
+  ಸ್ಥಿತಿ PragTyp_OPTIMIZE: {
+    ಪೂರ್ಣಾಂಕ i_Db_ಕೊನೆಯ;           /* Loop termination point for the schema loop */
+    ಪೂರ್ಣಾಂಕ iTabCur;           /* Cursor for a table whose size needs checking */
     HashElem *k;           /* Loop over tables of a schema */
     Schema *pSchema;       /* The current schema */
-    Table *pTab;           /* A table in the schema */
-    Index *pIdx;           /* An index of the table */
-    LogEst szThreshold;    /* Size threshold above which reanalysis needed */
-    char *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
-    u32 opMask;            /* Mask of operations to perform */
-    int nLimit;            /* Analysis limit to use */
-    int nCheck = 0;        /* Number of tables to be optimized */
-    int nBtree = 0;        /* Number of btrees to scan */
-    int nIndex;            /* Number of indexes on the current table */
+    ಕೋಷ್ಟಕ *pTab;           /* A table in the schema */
+    ಸೂಚ್ಯಂಕ *pIdx;           /* An index of the table */
+    LogEst sz_ಮಿತಿ;    /* Size threshold above which reanalysis needed */
+    ಅಕ್ಷರ *zSubSql;         /* SQL statement for the OP_SqlExec opcode */
+    u32 op_ಮುಖವಾಡ;            /* Mask of operations to perform */
+    ಪೂರ್ಣಾಂಕ n_ಎಲ್ಲೆ;            /* Analysis limit to use */
+    ಪೂರ್ಣಾಂಕ nCheck = 0;        /* Number of tables to be optimized */
+    ಪೂರ್ಣಾಂಕ nBtree = 0;        /* Number of btrees to scan */
+    ಪೂರ್ಣಾಂಕ n_ಸೂಚ್ಯಂಕ;            /* Number of indexes on the current table */
 
-    if( zRight ){
-      opMask = (u32)sqlite3Atoi(zRight);
-      if( (opMask & 0x02)==0 ) break;
-    }else{
-      opMask = 0xfffe;
+    ಆದರೆ( z_ಬಲ ){
+      op_ಮುಖವಾಡ = (u32)sqlite3Atoi(z_ಬಲ);
+      ಆದರೆ( (op_ಮುಖವಾಡ & 0x02)==0 ) ನಿಲ್ಲಿಸು;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      op_ಮುಖವಾಡ = 0xfffe;
     }
-    if( (opMask & 0x10)==0 ){
-      nLimit = 0;
-    }else if( db->nAnalysisLimit>0
-           && db->nAnalysisLimit<SQLITE_DEFAULT_OPTIMIZE_LIMIT ){
-      nLimit = 0;
-    }else{
-      nLimit = SQLITE_DEFAULT_OPTIMIZE_LIMIT;
+    ಆದರೆ( (op_ಮುಖವಾಡ & 0x10)==0 ){
+      n_ಎಲ್ಲೆ = 0;
+    }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( db->n_Analysis_ಎಲ್ಲೆ>0
+           && db->n_Analysis_ಎಲ್ಲೆ<SQLITE_DEFAULT_OPTIMIZE_ಎಲ್ಲೆ ){
+      n_ಎಲ್ಲೆ = 0;
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      n_ಎಲ್ಲೆ = SQLITE_DEFAULT_OPTIMIZE_ಎಲ್ಲೆ;
     }
     iTabCur = pParse->nTab++;
-    for(iDbLast = zDb?iDb:db->nDb-1; iDb<=iDbLast; iDb++){
-      if( iDb==1 ) continue;
-      sqlite3CodeVerifySchema(pParse, iDb);
+    ಗಾಗಿ(i_Db_ಕೊನೆಯ = zDb?iDb:db->nDb-1; iDb<=i_Db_ಕೊನೆಯ; iDb++){
+      ಆದರೆ( iDb==1 ) ಮುಂದುವರಿ;
+      sqlite3_ಸಂಕೇತ_Verify_Schema(pParse, iDb);
       pSchema = db->aDb[iDb].pSchema;
-      for(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
-        pTab = (Table*)sqliteHashData(k);
+      ಗಾಗಿ(k=sqlite_Hash_ಮೊದಲ(&pSchema->tblHash); k; k=sqlite_Hash_ಮುಂದಿನ(k)){
+        pTab = (ಕೋಷ್ಟಕ*)sqlite_Hash_ದತ್ತಾಂಶ(k);
 
         /* This only works for ordinary tables */
-        if( !IsOrdinaryTable(pTab) ) continue;
+        ಆದರೆ( !Is_Ordinary_ಕೋಷ್ಟಕ(pTab) ) ಮುಂದುವರಿ;
 
         /* Do not scan system tables */
-        if( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) continue;
+        ಆದರೆ( 0==sqlite3StrNICmp(pTab->zName, "sqlite_", 7) ) ಮುಂದುವರಿ;
 
         /* Find the size of the table as last recorded in sqlite_stat1.
         ** If any index is unanalyzed, then the threshold is -1 to
         ** indicate a new, unanalyzed index
         */
-        szThreshold = pTab->nRowLogEst;
-        nIndex = 0;
-        for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-          nIndex++;
-          if( !pIdx->hasStat1 ){
-            szThreshold = -1; /* Always analyze if any index lacks statistics */
+        sz_ಮಿತಿ = pTab->n_ಅಡ್ಡಸಾಲು_Log_Est;
+        n_ಸೂಚ್ಯಂಕ = 0;
+        ಗಾಗಿ(pIdx=pTab->p_ಸೂಚ್ಯಂಕ; pIdx; pIdx=pIdx->p_ಮುಂದಿನ){
+          n_ಸೂಚ್ಯಂಕ++;
+          ಆದರೆ( !pIdx->hasStat1 ){
+            sz_ಮಿತಿ = -1; /* Always analyze if any index lacks statistics */
           }
         }
 
         /* If table pTab has not been used in a way that would benefit from
         ** having analysis statistics during the current session, then skip it,
         ** unless the 0x10000 MASK bit is set. */
-        if( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
+        ಆದರೆ( (pTab->tabFlags & TF_MaybeReanalyze)!=0 ){
           /* Check for size change if stat1 has been used for a query */
-        }else if( opMask & 0x10000 ){
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( op_ಮುಖವಾಡ & 0x10000 ){
           /* Check for size change if 0x10000 is set */
-        }else if( pTab->pIndex!=0 && szThreshold<0 ){
+        }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( pTab->p_ಸೂಚ್ಯಂಕ!=0 && sz_ಮಿತಿ<0 ){
           /* Do analysis if unanalyzed indexes exists */
-        }else{
+        }ಇಲ್ಲದಿದ್ದರೆ{
           /* Otherwise, we can skip this table */
-          continue;
+          ಮುಂದುವರಿ;
         }
 
         nCheck++;
-        if( nCheck==2 ){
+        ಆದರೆ( nCheck==2 ){
           /* If ANALYZE might be invoked two or more times, hold a write
           ** transaction for efficiency */
           sqlite3BeginWriteOperation(pParse, 0, iDb);
         }
-        nBtree += nIndex+1;
+        nBtree += n_ಸೂಚ್ಯಂಕ+1;
 
         /* Reanalyze if the table is 10 times larger or smaller than
         ** the last analysis.  Unconditional reanalysis if there are
         ** unanalyzed indexes. */
-        sqlite3OpenTable(pParse, iTabCur, iDb, pTab, OP_OpenRead);
-        if( szThreshold>=0 ){
-          const LogEst iRange = 33;   /* 10x size change */
-          sqlite3VdbeAddOp4Int(v, OP_IfSizeBetween, iTabCur,
-                         sqlite3VdbeCurrentAddr(v)+2+(opMask&1),
-                         szThreshold>=iRange ? szThreshold-iRange : -1,
-                         szThreshold+iRange);
+        sqlite3_Open_ಕೋಷ್ಟಕ(pParse, iTabCur, iDb, pTab, OP_OpenRead);
+        ಆದರೆ( sz_ಮಿತಿ>=0 ){
+          ಸ್ಥಿರಾಂಕ LogEst iRange = 33;   /* 10x size change */
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op4_Int(v, OP_If_ಗಾತ್ರ_Between, iTabCur,
+                         sqlite3VdbeCurrentAddr(v)+2+(op_ಮುಖವಾಡ&1),
+                         sz_ಮಿತಿ>=iRange ? sz_ಮಿತಿ-iRange : -1,
+                         sz_ಮಿತಿ+iRange);
           VdbeCoverage(v);
-        }else{
-          sqlite3VdbeAddOp2(v, OP_Rewind, iTabCur,
-                         sqlite3VdbeCurrentAddr(v)+2+(opMask&1));
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_Rewind, iTabCur,
+                         sqlite3VdbeCurrentAddr(v)+2+(op_ಮುಖವಾಡ&1));
           VdbeCoverage(v);
         }
         zSubSql = sqlite3MPrintf(db, "ANALYZE \"%w\".\"%w\"",
                                  db->aDb[iDb].zDbSName, pTab->zName);
-        if( opMask & 0x01 ){
-          int r1 = sqlite3GetTempReg(pParse);
-          sqlite3VdbeAddOp4(v, OP_String8, 0, r1, 0, zSubSql, P4_DYNAMIC);
-          sqlite3VdbeAddOp2(v, OP_ResultRow, r1, 1);
-        }else{
-          sqlite3VdbeAddOp4(v, OP_SqlExec, nLimit ? 0x02 : 00, nLimit, 0,
+        ಆದರೆ( op_ಮುಖವಾಡ & 0x01 ){
+          ಪೂರ್ಣಾಂಕ r1 = sqlite3_Get_ತಾತ್ಕಾಲಿಕ_Reg(pParse);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_String8, 0, r1, 0, zSubSql, P4_DYNAMIC);
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op2(v, OP_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು, r1, 1);
+        }ಇಲ್ಲದಿದ್ದರೆ{
+          sqlite3_Vdbe_ಕೂಡಿಸು_Op4(v, OP_SqlExec, n_ಎಲ್ಲೆ ? 0x02 : 00, n_ಎಲ್ಲೆ, 0,
                             zSubSql, P4_DYNAMIC);
         }
       }
     }
-    sqlite3VdbeAddOp0(v, OP_Expire);
+    sqlite3_Vdbe_ಕೂಡಿಸು_Op0(v, OP_Expire);
 
     /* In a schema with a large number of tables and indexes, scale back
     ** the analysis_limit to avoid excess run-time in the worst case.
     */
-    if( !db->mallocFailed && nLimit>0 && nBtree>100 ){
-      int iAddr, iEnd;
+    ಆದರೆ( !db->mallocFailed && n_ಎಲ್ಲೆ>0 && nBtree>100 ){
+      ಪೂರ್ಣಾಂಕ iAddr, i_ಕೊನೆ;
       VdbeOp *aOp;
-      nLimit = 100*nLimit/nBtree;
-      if( nLimit<100 ) nLimit = 100;
+      n_ಎಲ್ಲೆ = 100*n_ಎಲ್ಲೆ/nBtree;
+      ಆದರೆ( n_ಎಲ್ಲೆ<100 ) n_ಎಲ್ಲೆ = 100;
       aOp = sqlite3VdbeGetOp(v, 0);
-      iEnd = sqlite3VdbeCurrentAddr(v);
-      for(iAddr=0; iAddr<iEnd; iAddr++){
-        if( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = nLimit;
+      i_ಕೊನೆ = sqlite3VdbeCurrentAddr(v);
+      ಗಾಗಿ(iAddr=0; iAddr<i_ಕೊನೆ; iAddr++){
+        ಆದರೆ( aOp[iAddr].opcode==OP_SqlExec ) aOp[iAddr].p2 = n_ಎಲ್ಲೆ;
       }
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -2653,14 +2653,14 @@ void sqlite3Pragma(
   ** then 0 is returned.  Setting the busy_timeout to 0 or negative
   ** disables the timeout.
   */
-  /*case PragTyp_BUSY_TIMEOUT*/ default: {
-    int n = 0;
-    assert( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
-    if( zRight && sqlite3GetInt32(zRight,&n) ){
+  /*case PragTyp_BUSY_TIMEOUT*/ ಪೂರ್ವನಿಯೋಜಿತ: {
+    ಪೂರ್ಣಾಂಕ n = 0;
+    ಪ್ರತಿಜ್ಞಾ( pPragma->ePragTyp==PragTyp_BUSY_TIMEOUT );
+    ಆದರೆ( z_ಬಲ && sqlite3GetInt32(z_ಬಲ,&n) ){
       sqlite3_busy_timeout(db, n);
     }
     returnSingleInt(v, db->busyTimeout);
-    break;
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -2674,13 +2674,13 @@ void sqlite3Pragma(
   ** returns the same integer that would be returned by the
   ** sqlite3_soft_heap_limit64(-1) C-language function.
   */
-  case PragTyp_SOFT_HEAP_LIMIT: {
+  ಸ್ಥಿತಿ Prag_Typ_SOFT_ರಾಶಿ_ಎಲ್ಲೆ: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
-      sqlite3_soft_heap_limit64(N);
+    ಆದರೆ( z_ಬಲ && sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(z_ಬಲ, &N)==SQLITE_OK ){
+      sqlite3_soft_ರಾಶಿ_limit64(N);
     }
-    returnSingleInt(v, sqlite3_soft_heap_limit64(-1));
-    break;
+    returnSingleInt(v, sqlite3_soft_ರಾಶಿ_limit64(-1));
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -2694,14 +2694,14 @@ void sqlite3Pragma(
   ** the hard heap limit.  This allows an application to set a heap limit
   ** constraint that cannot be relaxed by an untrusted SQL script.
   */
-  case PragTyp_HARD_HEAP_LIMIT: {
+  ಸ್ಥಿತಿ Prag_Typ_HARD_ರಾಶಿ_ಎಲ್ಲೆ: {
     sqlite3_int64 N;
-    if( zRight && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK ){
-      sqlite3_int64 iPrior = sqlite3_hard_heap_limit64(-1);
-      if( N>0 && (iPrior==0 || iPrior>N) ) sqlite3_hard_heap_limit64(N);
+    ಆದರೆ( z_ಬಲ && sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(z_ಬಲ, &N)==SQLITE_OK ){
+      sqlite3_int64 i_ಪೂರ್ವ = sqlite3_hard_ರಾಶಿ_limit64(-1);
+      ಆದರೆ( N>0 && (i_ಪೂರ್ವ==0 || i_ಪೂರ್ವ>N) ) sqlite3_hard_ರಾಶಿ_limit64(N);
     }
-    returnSingleInt(v, sqlite3_hard_heap_limit64(-1));
-    break;
+    returnSingleInt(v, sqlite3_hard_ರಾಶಿ_limit64(-1));
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -2711,16 +2711,16 @@ void sqlite3Pragma(
   ** Configure the maximum number of worker threads.  Return the new
   ** maximum, which might be less than requested.
   */
-  case PragTyp_THREADS: {
+  ಸ್ಥಿತಿ Prag_Typ_ಎಳೆಗಳು: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK
+    ಆದರೆ( z_ಬಲ
+     && sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(z_ಬಲ, &N)==SQLITE_OK
      && N>=0
     ){
-      sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, (int)(N&0x7fffffff));
+      sqlite3_ಎಲ್ಲೆ(db, SQLITE_ಎಲ್ಲೆ_ಕೆಲಸಗಾರ_ಎಳೆಗಳು, (ಪೂರ್ಣಾಂಕ)(N&0x7fffffff));
     }
-    returnSingleInt(v, sqlite3_limit(db, SQLITE_LIMIT_WORKER_THREADS, -1));
-    break;
+    returnSingleInt(v, sqlite3_ಎಲ್ಲೆ(db, SQLITE_ಎಲ್ಲೆ_ಕೆಲಸಗಾರ_ಎಳೆಗಳು, -1));
+    ನಿಲ್ಲಿಸು;
   }
 
   /*
@@ -2730,54 +2730,54 @@ void sqlite3Pragma(
   ** Configure the maximum number of rows that ANALYZE will examine
   ** in each index that it looks at.  Return the new limit.
   */
-  case PragTyp_ANALYSIS_LIMIT: {
+  ಸ್ಥಿತಿ Prag_Typ_ANALYSIS_ಎಲ್ಲೆ: {
     sqlite3_int64 N;
-    if( zRight
-     && sqlite3DecOrHexToI64(zRight, &N)==SQLITE_OK /* IMP: R-40975-20399 */
+    ಆದರೆ( z_ಬಲ
+     && sqlite3_Dec_Or_Hex_ಗಮ್ಯ_I64(z_ಬಲ, &N)==SQLITE_OK /* IMP: R-40975-20399 */
      && N>=0
     ){
-      db->nAnalysisLimit = (int)(N&0x7fffffff);
+      db->n_Analysis_ಎಲ್ಲೆ = (ಪೂರ್ಣಾಂಕ)(N&0x7fffffff);
     }
-    returnSingleInt(v, db->nAnalysisLimit); /* IMP: R-57594-65522 */
-    break;
+    returnSingleInt(v, db->n_Analysis_ಎಲ್ಲೆ); /* IMP: R-57594-65522 */
+    ನಿಲ್ಲಿಸು;
   }
 
-#if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
+#ಆದರೆ defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
   /*
   ** Report the current state of file logs for all databases
   */
-  case PragTyp_LOCK_STATUS: {
-    static const char *const azLockName[] = {
+  ಸ್ಥಿತಿ Prag_Typ_ಬೀಗ_ಸ್ಥಿತಿ: {
+    ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ az_ಬೀಗ_Name[] = {
       "unlocked", "shared", "reserved", "pending", "exclusive"
     };
-    int i;
+    ಪೂರ್ಣಾಂಕ i;
     pParse->nMem = 2;
-    for(i=0; i<db->nDb; i++){
+    ಗಾಗಿ(i=0; i<db->nDb; i++){
       Btree *pBt;
-      const char *zState = "unknown";
-      int j;
-      if( db->aDb[i].zDbSName==0 ) continue;
+      ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zState = "unknown";
+      ಪೂರ್ಣಾಂಕ j;
+      ಆದರೆ( db->aDb[i].zDbSName==0 ) ಮುಂದುವರಿ;
       pBt = db->aDb[i].pBt;
-      if( pBt==0 || sqlite3BtreePager(pBt)==0 ){
+      ಆದರೆ( pBt==0 || sqlite3BtreePager(pBt)==0 ){
         zState = "closed";
-      }else if( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
+      }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( sqlite3_file_control(db, i ? db->aDb[i].zDbSName : 0,
                                      SQLITE_FCNTL_LOCKSTATE, &j)==SQLITE_OK ){
-         zState = azLockName[j];
+         zState = az_ಬೀಗ_Name[j];
       }
-      sqlite3VdbeMultiLoad(v, 1, "ss", db->aDb[i].zDbSName, zState);
+      sqlite3_Vdbe_Multi_ತುಂಬು(v, 1, "ss", db->aDb[i].zDbSName, zState);
     }
-    break;
+    ನಿಲ್ಲಿಸು;
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(SQLITE_ENABLE_CEROD)
-  case PragTyp_ACTIVATE_EXTENSIONS: if( zRight ){
-    if( sqlite3StrNICmp(zRight, "cerod-", 6)==0 ){
-      sqlite3_activate_cerod(&zRight[6]);
+#ಆದರೆ defined(SQLITE_ENABLE_CEROD)
+  ಸ್ಥಿತಿ PragTyp_ACTIVATE_EXTENSIONS: ಆದರೆ( z_ಬಲ ){
+    ಆದರೆ( sqlite3StrNICmp(z_ಬಲ, "cerod-", 6)==0 ){
+      sqlite3_activate_cerod(&z_ಬಲ[6]);
     }
   }
-  break;
-#endif
+  ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
 
   } /* End of the PRAGMA switch */
 
@@ -2786,104 +2786,104 @@ void sqlite3Pragma(
   ** PragFlg_NoColumns1 flag is set and the caller specified an argument
   ** to the PRAGMA, the implementation has not added any OP_ResultRow
   ** instructions to the VM.  */
-  if( (pPragma->mPragFlg & PragFlg_NoColumns1) && zRight ){
-    sqlite3VdbeVerifyNoResultRow(v);
+  ಆದರೆ( (pPragma->mPragFlg & PragFlg_NoColumns1) && z_ಬಲ ){
+    sqlite3_Vdbe_Verify_No_ಫಲಿತಾಂಶ_ಅಡ್ಡಸಾಲು(v);
   }
 
-pragma_out:
-  sqlite3DbFree(db, zLeft);
-  sqlite3DbFree(db, zRight);
+pragma_ಹೊರಹೋಗು:
+  sqlite3DbFree(db, z_ಎಡ);
+  sqlite3DbFree(db, z_ಬಲ);
 }
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_VIRTUALTABLE
 /*****************************************************************************
 ** Implementation of an eponymous virtual table that runs a pragma.
 **
 */
-typedef struct PragmaVtab PragmaVtab;
-typedef struct PragmaVtabCursor PragmaVtabCursor;
-struct PragmaVtab {
-  sqlite3_vtab base;        /* Base class.  Must be first */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ PragmaVtab PragmaVtab;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ PragmaVtabCursor PragmaVtabCursor;
+ರಚನೆ PragmaVtab {
+  sqlite3_vtab ತಳ;        /* Base class.  Must be first */
   sqlite3 *db;              /* The database connection to which it belongs */
-  const PragmaName *pName;  /* Name of the pragma */
+  ಸ್ಥಿರಾಂಕ PragmaName *pName;  /* Name of the pragma */
   u8 nHidden;               /* Number of hidden columns */
   u8 iHidden;               /* Index of the first hidden column */
 };
-struct PragmaVtabCursor {
-  sqlite3_vtab_cursor base; /* Base class.  Must be first */
+ರಚನೆ PragmaVtabCursor {
+  sqlite3_vtab_cursor ತಳ; /* Base class.  Must be first */
   sqlite3_stmt *pPragma;    /* The pragma statement to run */
   sqlite_int64 iRowid;      /* Current rowid */
-  char *azArg[2];           /* Value of the argument and schema */
+  ಅಕ್ಷರ *azArg[2];           /* Value of the argument and schema */
 };
 
 /*
 ** Pragma virtual table module xConnect method.
 */
-static int pragmaVtabConnect(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragmaVtabConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ಶೂನ್ಯ *pAux,
+  ಪೂರ್ಣಾಂಕ argc, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ಅಕ್ಷರ **pzErr
 ){
-  const PragmaName *pPragma = (const PragmaName*)pAux;
+  ಸ್ಥಿರಾಂಕ PragmaName *pPragma = (ಸ್ಥಿರಾಂಕ PragmaName*)pAux;
   PragmaVtab *pTab = 0;
-  int rc;
-  int i, j;
-  char cSep = '(';
+  ಪೂರ್ಣಾಂಕ rc;
+  ಪೂರ್ಣಾಂಕ i, j;
+  ಅಕ್ಷರ cSep = '(';
   StrAccum acc;
-  char zBuf[200];
+  ಅಕ್ಷರ zBuf[200];
 
-  UNUSED_PARAMETER(argc);
-  UNUSED_PARAMETER(argv);
-  sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
+  ಬಳಸದ_PARAMETER(argc);
+  ಬಳಸದ_PARAMETER(argv);
+  sqlite3StrAccumInit(&acc, 0, zBuf, ಗಾತ್ರ(zBuf), 0);
   sqlite3_str_appendall(&acc, "CREATE TABLE x");
-  for(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
+  ಗಾಗಿ(i=0, j=pPragma->iPragCName; i<pPragma->nPragCName; i++, j++){
     sqlite3_str_appendf(&acc, "%c\"%s\"", cSep, pragCName[j]);
     cSep = ',';
   }
-  if( i==0 ){
+  ಆದರೆ( i==0 ){
     sqlite3_str_appendf(&acc, "(\"%s\"", pPragma->zName);
     i++;
   }
   j = 0;
-  if( pPragma->mPragFlg & PragFlg_Result1 ){
+  ಆದರೆ( pPragma->mPragFlg & PragFlg_Result1 ){
     sqlite3_str_appendall(&acc, ",arg HIDDEN");
     j++;
   }
-  if( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
+  ಆದರೆ( pPragma->mPragFlg & (PragFlg_SchemaOpt|PragFlg_SchemaReq) ){
     sqlite3_str_appendall(&acc, ",schema HIDDEN");
     j++;
   }
   sqlite3_str_append(&acc, ")", 1);
-  sqlite3StrAccumFinish(&acc);
-  assert( strlen(zBuf) < sizeof(zBuf)-1 );
+  sqlite3_Str_Accum_ಮುಕ್ತಾಯ(&acc);
+  ಪ್ರತಿಜ್ಞಾ( ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(zBuf) < ಗಾತ್ರ(zBuf)-1 );
   rc = sqlite3_declare_vtab(db, zBuf);
-  if( rc==SQLITE_OK ){
-    pTab = (PragmaVtab*)sqlite3_malloc(sizeof(PragmaVtab));
-    if( pTab==0 ){
+  ಆದರೆ( rc==SQLITE_OK ){
+    pTab = (PragmaVtab*)sqlite3_malloc(ಗಾತ್ರ(PragmaVtab));
+    ಆದರೆ( pTab==0 ){
       rc = SQLITE_NOMEM;
-    }else{
-      memset(pTab, 0, sizeof(PragmaVtab));
+    }ಇಲ್ಲದಿದ್ದರೆ{
+      memset(pTab, 0, ಗಾತ್ರ(PragmaVtab));
       pTab->pName = pPragma;
       pTab->db = db;
       pTab->iHidden = i;
       pTab->nHidden = j;
     }
-  }else{
+  }ಇಲ್ಲದಿದ್ದರೆ{
     *pzErr = sqlite3_mprintf("%s", sqlite3_errmsg(db));
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Pragma virtual table module xDisconnect method.
 */
-static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragmaVtabDisconnect(sqlite3_vtab *pVtab){
   PragmaVtab *pTab = (PragmaVtab*)pVtab;
   sqlite3_free(pTab);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /* Figure out the best index to use to search a pragma virtual table.
@@ -2893,189 +2893,189 @@ static int pragmaVtabDisconnect(sqlite3_vtab *pVtab){
 ** possible, and especially on the first hidden parameter.  So return a
 ** high cost if hidden parameters are unconstrained.
 */
-static int pragmaVtabBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragma_Vtab_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ(sqlite3_vtab *tab, sqlite3_ಸೂಚ್ಯಂಕ_info *pIdxInfo){
   PragmaVtab *pTab = (PragmaVtab*)tab;
-  const struct sqlite3_index_constraint *pConstraint;
-  int i, j;
-  int seen[2];
+  ಸ್ಥಿರಾಂಕ ರಚನೆ sqlite3_ಸೂಚ್ಯಂಕ_constraint *pConstraint;
+  ಪೂರ್ಣಾಂಕ i, j;
+  ಪೂರ್ಣಾಂಕ ನೋಡಿದ[2];
 
-  pIdxInfo->estimatedCost = (double)1;
-  if( pTab->nHidden==0 ){ return SQLITE_OK; }
+  pIdxInfo->estimated_ವೆಚ್ಚ = (ದ್ವಿಗುಣ)1;
+  ಆದರೆ( pTab->nHidden==0 ){ ಹಿಂತಿರುಗಿ SQLITE_OK; }
   pConstraint = pIdxInfo->aConstraint;
-  seen[0] = 0;
-  seen[1] = 0;
-  for(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
-    if( pConstraint->iColumn < pTab->iHidden ) continue;
-    if( pConstraint->op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pConstraint->usable==0 ) return SQLITE_CONSTRAINT;
-    j = pConstraint->iColumn - pTab->iHidden;
-    assert( j < 2 );
-    seen[j] = i+1;
+  ನೋಡಿದ[0] = 0;
+  ನೋಡಿದ[1] = 0;
+  ಗಾಗಿ(i=0; i<pIdxInfo->nConstraint; i++, pConstraint++){
+    ಆದರೆ( pConstraint->i_ಸ್ತಂಭ < pTab->iHidden ) ಮುಂದುವರಿ;
+    ಆದರೆ( pConstraint->op!=SQLITE_ಸೂಚ್ಯಂಕ_CONSTRAINT_EQ ) ಮುಂದುವರಿ;
+    ಆದರೆ( pConstraint->usable==0 ) ಹಿಂತಿರುಗಿ SQLITE_CONSTRAINT;
+    j = pConstraint->i_ಸ್ತಂಭ - pTab->iHidden;
+    ಪ್ರತಿಜ್ಞಾ( j < 2 );
+    ನೋಡಿದ[j] = i+1;
   }
-  if( seen[0]==0 ){
-    pIdxInfo->estimatedCost = (double)2147483647;
-    pIdxInfo->estimatedRows = 2147483647;
-    return SQLITE_OK;
+  ಆದರೆ( ನೋಡಿದ[0]==0 ){
+    pIdxInfo->estimated_ವೆಚ್ಚ = (ದ್ವಿಗುಣ)2147483647;
+    pIdxInfo->estimated_ಅಡ್ಡಸಾಲುಗಳು = 2147483647;
+    ಹಿಂತಿರುಗಿ SQLITE_OK;
   }
-  j = seen[0]-1;
-  pIdxInfo->aConstraintUsage[j].argvIndex = 1;
+  j = ನೋಡಿದ[0]-1;
+  pIdxInfo->aConstraintUsage[j].argv_ಸೂಚ್ಯಂಕ = 1;
   pIdxInfo->aConstraintUsage[j].omit = 1;
-  pIdxInfo->estimatedCost = (double)20;
-  pIdxInfo->estimatedRows = 20;
-  if( seen[1] ){
-    j = seen[1]-1;
-    pIdxInfo->aConstraintUsage[j].argvIndex = 2;
+  pIdxInfo->estimated_ವೆಚ್ಚ = (ದ್ವಿಗುಣ)20;
+  pIdxInfo->estimated_ಅಡ್ಡಸಾಲುಗಳು = 20;
+  ಆದರೆ( ನೋಡಿದ[1] ){
+    j = ನೋಡಿದ[1]-1;
+    pIdxInfo->aConstraintUsage[j].argv_ಸೂಚ್ಯಂಕ = 2;
     pIdxInfo->aConstraintUsage[j].omit = 1;
   }
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /* Create a new cursor for the pragma virtual table */
-static int pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragmaVtabOpen(sqlite3_vtab *pVtab, sqlite3_vtab_cursor **ppCursor){
   PragmaVtabCursor *pCsr;
-  pCsr = (PragmaVtabCursor*)sqlite3_malloc(sizeof(*pCsr));
-  if( pCsr==0 ) return SQLITE_NOMEM;
-  memset(pCsr, 0, sizeof(PragmaVtabCursor));
-  pCsr->base.pVtab = pVtab;
-  *ppCursor = &pCsr->base;
-  return SQLITE_OK;
+  pCsr = (PragmaVtabCursor*)sqlite3_malloc(ಗಾತ್ರ(*pCsr));
+  ಆದರೆ( pCsr==0 ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
+  memset(pCsr, 0, ಗಾತ್ರ(PragmaVtabCursor));
+  pCsr->ತಳ.pVtab = pVtab;
+  *ppCursor = &pCsr->ತಳ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /* Clear all content from pragma virtual table cursor. */
-static void pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
-  int i;
+ಸ್ಥಿರ ಶೂನ್ಯ pragmaVtabCursorClear(PragmaVtabCursor *pCsr){
+  ಪೂರ್ಣಾಂಕ i;
   sqlite3_finalize(pCsr->pPragma);
   pCsr->pPragma = 0;
   pCsr->iRowid = 0;
-  for(i=0; i<ArraySize(pCsr->azArg); i++){
+  ಗಾಗಿ(i=0; i<Array_ಗಾತ್ರ(pCsr->azArg); i++){
     sqlite3_free(pCsr->azArg[i]);
     pCsr->azArg[i] = 0;
   }
 }
 
 /* Close a pragma virtual table cursor */
-static int pragmaVtabClose(sqlite3_vtab_cursor *cur){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragmaVtabClose(sqlite3_vtab_cursor *cur){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)cur;
   pragmaVtabCursorClear(pCsr);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /* Advance the pragma virtual table cursor to the next row */
-static int pragmaVtabNext(sqlite3_vtab_cursor *pVtabCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragma_Vtab_ಮುಂದಿನ(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  int rc = SQLITE_OK;
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
 
   /* Increment the xRowid value */
   pCsr->iRowid++;
-  assert( pCsr->pPragma );
-  if( SQLITE_ROW!=sqlite3_step(pCsr->pPragma) ){
+  ಪ್ರತಿಜ್ಞಾ( pCsr->pPragma );
+  ಆದರೆ( SQLITE_ಅಡ್ಡಸಾಲು!=sqlite3_ಹೆಜ್ಜೆ(pCsr->pPragma) ){
     rc = sqlite3_finalize(pCsr->pPragma);
     pCsr->pPragma = 0;
     pragmaVtabCursorClear(pCsr);
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Pragma virtual table module xFilter method.
 */
-static int pragmaVtabFilter(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragmaVtabFilter(
   sqlite3_vtab_cursor *pVtabCursor,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ಪೂರ್ಣಾಂಕ idx_ಅಂಕೆ, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *idxStr,
+  ಪೂರ್ಣಾಂಕ argc, sqlite3_ಮೌಲ್ಯ **argv
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  int rc;
-  int i, j;
+  ಪೂರ್ಣಾಂಕ rc;
+  ಪೂರ್ಣಾಂಕ i, j;
   StrAccum acc;
-  char *zSql;
+  ಅಕ್ಷರ *zSql;
 
-  UNUSED_PARAMETER(idxNum);
-  UNUSED_PARAMETER(idxStr);
+  ಬಳಸದ_PARAMETER(idx_ಅಂಕೆ);
+  ಬಳಸದ_PARAMETER(idxStr);
   pragmaVtabCursorClear(pCsr);
   j = (pTab->pName->mPragFlg & PragFlg_Result1)!=0 ? 0 : 1;
-  for(i=0; i<argc; i++, j++){
-    const char *zText = (const char*)sqlite3_value_text(argv[i]);
-    assert( j<ArraySize(pCsr->azArg) );
-    assert( pCsr->azArg[j]==0 );
-    if( zText ){
-      pCsr->azArg[j] = sqlite3_mprintf("%s", zText);
-      if( pCsr->azArg[j]==0 ){
-        return SQLITE_NOMEM;
+  ಗಾಗಿ(i=0; i<argc; i++, j++){
+    ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಪಠ್ಯ = (ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*)sqlite3_ಮೌಲ್ಯ_ಪಠ್ಯ(argv[i]);
+    ಪ್ರತಿಜ್ಞಾ( j<Array_ಗಾತ್ರ(pCsr->azArg) );
+    ಪ್ರತಿಜ್ಞಾ( pCsr->azArg[j]==0 );
+    ಆದರೆ( z_ಪಠ್ಯ ){
+      pCsr->azArg[j] = sqlite3_mprintf("%s", z_ಪಠ್ಯ);
+      ಆದರೆ( pCsr->azArg[j]==0 ){
+        ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
       }
     }
   }
-  sqlite3StrAccumInit(&acc, 0, 0, 0, pTab->db->aLimit[SQLITE_LIMIT_SQL_LENGTH]);
+  sqlite3StrAccumInit(&acc, 0, 0, 0, pTab->db->a_ಎಲ್ಲೆ[SQLITE_ಎಲ್ಲೆ_SQL_ಉದ್ದಳತೆ]);
   sqlite3_str_appendall(&acc, "PRAGMA ");
-  if( pCsr->azArg[1] ){
+  ಆದರೆ( pCsr->azArg[1] ){
     sqlite3_str_appendf(&acc, "%Q.", pCsr->azArg[1]);
   }
   sqlite3_str_appendall(&acc, pTab->pName->zName);
-  if( pCsr->azArg[0] ){
+  ಆದರೆ( pCsr->azArg[0] ){
     sqlite3_str_appendf(&acc, "=%Q", pCsr->azArg[0]);
   }
-  zSql = sqlite3StrAccumFinish(&acc);
-  if( zSql==0 ) return SQLITE_NOMEM;
+  zSql = sqlite3_Str_Accum_ಮುಕ್ತಾಯ(&acc);
+  ಆದರೆ( zSql==0 ) ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pPragma, 0);
   sqlite3_free(zSql);
-  if( rc!=SQLITE_OK ){
-    pTab->base.zErrMsg = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
-    return rc;
+  ಆದರೆ( rc!=SQLITE_OK ){
+    pTab->ತಳ.z_Err_ಸಂದೇಶ = sqlite3_mprintf("%s", sqlite3_errmsg(pTab->db));
+    ಹಿಂತಿರುಗಿ rc;
   }
-  return pragmaVtabNext(pVtabCursor);
+  ಹಿಂತಿರುಗಿ pragma_Vtab_ಮುಂದಿನ(pVtabCursor);
 }
 
 /*
 ** Pragma virtual table module xEof method.
 */
-static int pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragmaVtabEof(sqlite3_vtab_cursor *pVtabCursor){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
-  return (pCsr->pPragma==0);
+  ಹಿಂತಿರುಗಿ (pCsr->pPragma==0);
 }
 
 /* The xColumn method simply returns the corresponding column from
 ** the PRAGMA. 
 */
-static int pragmaVtabColumn(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragma_Vtab_ಸ್ತಂಭ(
   sqlite3_vtab_cursor *pVtabCursor,
   sqlite3_context *ctx,
-  int i
+  ಪೂರ್ಣಾಂಕ i
 ){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   PragmaVtab *pTab = (PragmaVtab*)(pVtabCursor->pVtab);
-  if( i<pTab->iHidden ){
-    sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pPragma, i));
-  }else{
-    sqlite3_result_text(ctx, pCsr->azArg[i-pTab->iHidden],-1,SQLITE_TRANSIENT);
+  ಆದರೆ( i<pTab->iHidden ){
+    sqlite3_ಫಲಿತಾಂಶ_ಮೌಲ್ಯ(ctx, sqlite3_ಸ್ತಂಭ_ಮೌಲ್ಯ(pCsr->pPragma, i));
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    sqlite3_ಫಲಿತಾಂಶ_ಪಠ್ಯ(ctx, pCsr->azArg[i-pTab->iHidden],-1,SQLITE_TRANSIENT);
   }
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Pragma virtual table module xRowid method.
 */
-static int pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pragmaVtabRowid(sqlite3_vtab_cursor *pVtabCursor, sqlite_int64 *p){
   PragmaVtabCursor *pCsr = (PragmaVtabCursor*)pVtabCursor;
   *p = pCsr->iRowid;
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /* The pragma virtual table object */
-static const sqlite3_module pragmaVtabModule = {
+ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ sqlite3_module pragmaVtabModule = {
   0,                           /* iVersion */
   0,                           /* xCreate - create a table */
   pragmaVtabConnect,           /* xConnect - connect to an existing table */
-  pragmaVtabBestIndex,         /* xBestIndex - Determine search strategy */
+  pragma_Vtab_ಉತ್ತಮ_ಸೂಚ್ಯಂಕ,         /* xBestIndex - Determine search strategy */
   pragmaVtabDisconnect,        /* xDisconnect - Disconnect from a table */
   0,                           /* xDestroy - Drop a table */
   pragmaVtabOpen,              /* xOpen - open a cursor */
   pragmaVtabClose,             /* xClose - close a cursor */
   pragmaVtabFilter,            /* xFilter - configure scan constraints */
-  pragmaVtabNext,              /* xNext - advance a cursor */
+  pragma_Vtab_ಮುಂದಿನ,              /* xNext - advance a cursor */
   pragmaVtabEof,               /* xEof */
-  pragmaVtabColumn,            /* xColumn - read data */
+  pragma_Vtab_ಸ್ತಂಭ,            /* xColumn - read data */
   pragmaVtabRowid,             /* xRowid - read data */
   0,                           /* xUpdate - write data */
   0,                           /* xBegin - begin transaction */
@@ -3096,16 +3096,16 @@ static const sqlite3_module pragmaVtabModule = {
 ** then register an eponymous virtual table for that pragma and return
 ** a pointer to the Module object for the new virtual table.
 */
-Module *sqlite3PragmaVtabRegister(sqlite3 *db, const char *zName){
-  const PragmaName *pName;
-  assert( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
+Module *sqlite3_Pragma_Vtab_ರಿಜಿಸ್ಟರ್(sqlite3 *db, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName){
+  ಸ್ಥಿರಾಂಕ PragmaName *pName;
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_strnicmp(zName, "pragma_", 7)==0 );
   pName = pragmaLocate(zName+7);
-  if( pName==0 ) return 0;
-  if( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) return 0;
-  assert( sqlite3HashFind(&db->aModule, zName)==0 );
-  return sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (void*)pName, 0);
+  ಆದರೆ( pName==0 ) ಹಿಂತಿರುಗಿ 0;
+  ಆದರೆ( (pName->mPragFlg & (PragFlg_Result0|PragFlg_Result1))==0 ) ಹಿಂತಿರುಗಿ 0;
+  ಪ್ರತಿಜ್ಞಾ( sqlite3_Hash_ಕಂಡುಹಿಡಿ(&db->aModule, zName)==0 );
+  ಹಿಂತಿರುಗಿ sqlite3VtabCreateModule(db, zName, &pragmaVtabModule, (ಶೂನ್ಯ*)pName, 0);
 }
 
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_VIRTUALTABLE */
 
-#endif /* SQLITE_OMIT_PRAGMA */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_PRAGMA */

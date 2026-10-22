@@ -113,71 +113,71 @@
 **   operations.
 */
 
-#if !defined(SQLITE_TEST) || SQLITE_OS_UNIX
+#ಆದರೆ !defined(SQLITE_TEST) || SQLITE_OS_UNIX
 
-#include "sqlite3.h"
+#ಅನ್ತರ್ಭಾವ "sqlite3.h"
 
-#include <assert.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/file.h>
-#include <sys/param.h>
-#include <unistd.h>
-#include <time.h>
-#include <errno.h>
-#include <fcntl.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <sys/stat.h>
+#ಅನ್ತರ್ಭಾವ <sys/file.h>
+#ಅನ್ತರ್ಭಾವ <sys/param.h>
+#ಅನ್ತರ್ಭಾವ <unistd.h>
+#ಅನ್ತರ್ಭಾವ <time.h>
+#ಅನ್ತರ್ಭಾವ <errno.h>
+#ಅನ್ತರ್ಭಾವ <fcntl.h>
 
 /*
 ** Size of the write buffer used by journal files in bytes.
 */
-#ifndef SQLITE_DEMOVFS_BUFFERSZ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_DEMOVFS_BUFFERSZ
 # define SQLITE_DEMOVFS_BUFFERSZ 8192
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** The maximum pathname length supported by this VFS.
 */
-#define MAXPATHNAME 512
+#ವ್ಯಾಖ್ಯಾನಿಸು MAXPATHNAME 512
 
 /*
 ** When using this VFS, the sqlite3_file* handles that SQLite uses are
 ** actually pointers to instances of type DemoFile.
 */
-typedef struct DemoFile DemoFile;
-struct DemoFile {
-  sqlite3_file base;              /* Base class. Must be first. */
-  int fd;                         /* File descriptor */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ DemoFile DemoFile;
+ರಚನೆ DemoFile {
+  sqlite3_file ತಳ;              /* Base class. Must be first. */
+  ಪೂರ್ಣಾಂಕ fd;                         /* File descriptor */
 
-  char *aBuffer;                  /* Pointer to malloc'd buffer */
-  int nBuffer;                    /* Valid bytes of data in zBuffer */
-  sqlite3_int64 iBufferOfst;      /* Offset in file of zBuffer[0] */
+  ಅಕ್ಷರ *a_ಬಫರ್;                  /* Pointer to malloc'd buffer */
+  ಪೂರ್ಣಾಂಕ n_ಬಫರ್;                    /* Valid bytes of data in zBuffer */
+  sqlite3_int64 i_ಬಫರ್_Ofst;      /* Offset in file of zBuffer[0] */
 };
 
 /*
 ** Write directly to the file passed as the first argument. Even if the
 ** file has a write-buffer (DemoFile.aBuffer), ignore it.
 */
-static int demoDirectWrite(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_ನೇರ_Write(
   DemoFile *p,                    /* File handle */
-  const void *zBuf,               /* Buffer containing data to write */
-  int iAmt,                       /* Size of data to write in bytes */
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *zBuf,               /* Buffer containing data to write */
+  ಪೂರ್ಣಾಂಕ iAmt,                       /* Size of data to write in bytes */
   sqlite_int64 iOfst              /* File offset to write to */
 ){
   off_t ofst;                     /* Return value from lseek() */
   size_t nWrite;                  /* Return value from write() */
 
   ofst = lseek(p->fd, iOfst, SEEK_SET);
-  if( ofst!=iOfst ){
-    return SQLITE_IOERR_WRITE;
+  ಆದರೆ( ofst!=iOfst ){
+    ಹಿಂತಿರುಗಿ SQLITE_IOERR_WRITE;
   }
 
-  nWrite = write(p->fd, zBuf, iAmt);
-  if( nWrite!=iAmt ){
-    return SQLITE_IOERR_WRITE;
+  nWrite = ಲಿಖ(p->fd, zBuf, iAmt);
+  ಆದರೆ( nWrite!=iAmt ){
+    ಹಿಂತಿರುಗಿ SQLITE_IOERR_WRITE;
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -185,40 +185,40 @@ static int demoDirectWrite(
 ** no-op if this particular file does not have a buffer (i.e. it is not
 ** a journal file) or if the buffer is currently empty.
 */
-static int demoFlushBuffer(DemoFile *p){
-  int rc = SQLITE_OK;
-  if( p->nBuffer ){
-    rc = demoDirectWrite(p, p->aBuffer, p->nBuffer, p->iBufferOfst);
-    p->nBuffer = 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_Flush_ಬಫರ್(DemoFile *p){
+  ಪೂರ್ಣಾಂಕ rc = SQLITE_OK;
+  ಆದರೆ( p->n_ಬಫರ್ ){
+    rc = demo_ನೇರ_Write(p, p->a_ಬಫರ್, p->n_ಬಫರ್, p->i_ಬಫರ್_Ofst);
+    p->n_ಬಫರ್ = 0;
   }
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Close a file.
 */
-static int demoClose(sqlite3_file *pFile){
-  int rc;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoClose(sqlite3_file *pFile){
+  ಪೂರ್ಣಾಂಕ rc;
   DemoFile *p = (DemoFile*)pFile;
-  rc = demoFlushBuffer(p);
-  sqlite3_free(p->aBuffer);
+  rc = demo_Flush_ಬಫರ್(p);
+  sqlite3_free(p->a_ಬಫರ್);
   close(p->fd);
-  return rc;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** Read data from a file.
 */
-static int demoRead(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  ಶೂನ್ಯ *zBuf, 
+  ಪೂರ್ಣಾಂಕ iAmt, 
   sqlite_int64 iOfst
 ){
   DemoFile *p = (DemoFile*)pFile;
   off_t ofst;                     /* Return value from lseek() */
-  int nRead;                      /* Return value from read() */
-  int rc;                         /* Return code from demoFlushBuffer() */
+  ಪೂರ್ಣಾಂಕ nRead;                      /* Return value from read() */
+  ಪೂರ್ಣಾಂಕ rc;                         /* Return code from demoFlushBuffer() */
 
   /* Flush any data in the write buffer to disk in case this operation
   ** is trying to read data the file-region currently cached in the buffer.
@@ -226,129 +226,129 @@ static int demoRead(
   ** unnecessary write here, but in practice SQLite will rarely read from
   ** a journal file when there is data cached in the write-buffer.
   */
-  rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  rc = demo_Flush_ಬಫರ್(p);
+  ಆದರೆ( rc!=SQLITE_OK ){
+    ಹಿಂತಿರುಗಿ rc;
   }
 
   ofst = lseek(p->fd, iOfst, SEEK_SET);
-  if( ofst!=iOfst ){
-    return SQLITE_IOERR_READ;
+  ಆದರೆ( ofst!=iOfst ){
+    ಹಿಂತಿರುಗಿ SQLITE_IOERR_READ;
   }
-  nRead = read(p->fd, zBuf, iAmt);
+  nRead = ಪಠ(p->fd, zBuf, iAmt);
 
-  if( nRead==iAmt ){
-    return SQLITE_OK;
-  }else if( nRead>=0 ){
-    if( nRead<iAmt ){
-      memset(&((char*)zBuf)[nRead], 0, iAmt-nRead);
+  ಆದರೆ( nRead==iAmt ){
+    ಹಿಂತಿರುಗಿ SQLITE_OK;
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( nRead>=0 ){
+    ಆದರೆ( nRead<iAmt ){
+      memset(&((ಅಕ್ಷರ*)zBuf)[nRead], 0, iAmt-nRead);
     }
-    return SQLITE_IOERR_SHORT_READ;
+    ಹಿಂತಿರುಗಿ SQLITE_IOERR_SHORT_READ;
   }
 
-  return SQLITE_IOERR_READ;
+  ಹಿಂತಿರುಗಿ SQLITE_IOERR_READ;
 }
 
 /*
 ** Write data to a crash-file.
 */
-static int demoWrite(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *zBuf, 
+  ಪೂರ್ಣಾಂಕ iAmt, 
   sqlite_int64 iOfst
 ){
   DemoFile *p = (DemoFile*)pFile;
   
-  if( p->aBuffer ){
-    char *z = (char *)zBuf;       /* Pointer to remaining data to write */
-    int n = iAmt;                 /* Number of bytes at z */
+  ಆದರೆ( p->a_ಬಫರ್ ){
+    ಅಕ್ಷರ *z = (ಅಕ್ಷರ *)zBuf;       /* Pointer to remaining data to write */
+    ಪೂರ್ಣಾಂಕ n = iAmt;                 /* Number of bytes at z */
     sqlite3_int64 i = iOfst;      /* File offset to write to */
 
-    while( n>0 ){
-      int nCopy;                  /* Number of bytes to copy into buffer */
+    ಆಗ( n>0 ){
+      ಪೂರ್ಣಾಂಕ nCopy;                  /* Number of bytes to copy into buffer */
 
       /* If the buffer is full, or if this data is not being written directly
       ** following the data already buffered, flush the buffer. Flushing
       ** the buffer is a no-op if it is empty.  
       */
-      if( p->nBuffer==SQLITE_DEMOVFS_BUFFERSZ || p->iBufferOfst+p->nBuffer!=i ){
-        int rc = demoFlushBuffer(p);
-        if( rc!=SQLITE_OK ){
-          return rc;
+      ಆದರೆ( p->n_ಬಫರ್==SQLITE_DEMOVFS_BUFFERSZ || p->i_ಬಫರ್_Ofst+p->n_ಬಫರ್!=i ){
+        ಪೂರ್ಣಾಂಕ rc = demo_Flush_ಬಫರ್(p);
+        ಆದರೆ( rc!=SQLITE_OK ){
+          ಹಿಂತಿರುಗಿ rc;
         }
       }
-      assert( p->nBuffer==0 || p->iBufferOfst+p->nBuffer==i );
-      p->iBufferOfst = i - p->nBuffer;
+      ಪ್ರತಿಜ್ಞಾ( p->n_ಬಫರ್==0 || p->i_ಬಫರ್_Ofst+p->n_ಬಫರ್==i );
+      p->i_ಬಫರ್_Ofst = i - p->n_ಬಫರ್;
 
       /* Copy as much data as possible into the buffer. */
-      nCopy = SQLITE_DEMOVFS_BUFFERSZ - p->nBuffer;
-      if( nCopy>n ){
+      nCopy = SQLITE_DEMOVFS_BUFFERSZ - p->n_ಬಫರ್;
+      ಆದರೆ( nCopy>n ){
         nCopy = n;
       }
-      memcpy(&p->aBuffer[p->nBuffer], z, nCopy);
-      p->nBuffer += nCopy;
+      ಸ್ಮರಣೆ_ನಕಲು(&p->a_ಬಫರ್[p->n_ಬಫರ್], z, nCopy);
+      p->n_ಬಫರ್ += nCopy;
 
       n -= nCopy;
       i += nCopy;
       z += nCopy;
     }
-  }else{
-    return demoDirectWrite(p, zBuf, iAmt, iOfst);
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಹಿಂತಿರುಗಿ demo_ನೇರ_Write(p, zBuf, iAmt, iOfst);
   }
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Truncate a file. This is a no-op for this VFS (see header comments at
 ** the top of the file).
 */
-static int demoTruncate(sqlite3_file *pFile, sqlite_int64 size){
-#if 0
-  if( ftruncate(((DemoFile *)pFile)->fd, size) ) return SQLITE_IOERR_TRUNCATE;
-#endif
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoTruncate(sqlite3_file *pFile, sqlite_int64 ಗಾತ್ರ_2){
+#ಆದರೆ 0
+  ಆದರೆ( ftruncate(((DemoFile *)pFile)->fd, ಗಾತ್ರ_2) ) ಹಿಂತಿರುಗಿ SQLITE_IOERR_TRUNCATE;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Sync the contents of the file to the persistent media.
 */
-static int demoSync(sqlite3_file *pFile, int flags){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoSync(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ flags){
   DemoFile *p = (DemoFile*)pFile;
-  int rc;
+  ಪೂರ್ಣಾಂಕ rc;
 
-  rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  rc = demo_Flush_ಬಫರ್(p);
+  ಆದರೆ( rc!=SQLITE_OK ){
+    ಹಿಂತಿರುಗಿ rc;
   }
 
   rc = fsync(p->fd);
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
+  ಹಿಂತಿರುಗಿ (rc==0 ? SQLITE_OK : SQLITE_IOERR_FSYNC);
 }
 
 /*
 ** Write the size of the file in bytes to *pSize.
 */
-static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_File_ಗಾತ್ರ(sqlite3_file *pFile, sqlite_int64 *p_ಗಾತ್ರ){
   DemoFile *p = (DemoFile*)pFile;
-  int rc;                         /* Return code from fstat() call */
-  struct stat sStat;              /* Output of fstat() call */
+  ಪೂರ್ಣಾಂಕ rc;                         /* Return code from fstat() call */
+  ರಚನೆ stat sStat;              /* Output of fstat() call */
 
   /* Flush the contents of the buffer to disk. As with the flush in the
   ** demoRead() method, it would be possible to avoid this and save a write
   ** here and there. But in practice this comes up so infrequently it is
   ** not worth the trouble.
   */
-  rc = demoFlushBuffer(p);
-  if( rc!=SQLITE_OK ){
-    return rc;
+  rc = demo_Flush_ಬಫರ್(p);
+  ಆದರೆ( rc!=SQLITE_OK ){
+    ಹಿಂತಿರುಗಿ rc;
   }
 
   rc = fstat(p->fd, &sStat);
-  if( rc!=0 ) return SQLITE_IOERR_FSTAT;
-  *pSize = sStat.st_size;
-  return SQLITE_OK;
+  ಆದರೆ( rc!=0 ) ಹಿಂತಿರುಗಿ SQLITE_IOERR_FSTAT;
+  *p_ಗಾತ್ರ = sStat.st_ಗಾತ್ರ;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -357,22 +357,22 @@ static int demoFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
 ** a reserved lock on the database file. This ensures that if a hot-journal
 ** file is found in the file-system it is rolled back.
 */
-static int demoLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_ಬೀಗ(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ e_ಬೀಗ){
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
-static int demoUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoUnlock(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ e_ಬೀಗ){
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
-static int demoCheckReservedLock(sqlite3_file *pFile, int *pResOut){
-  *pResOut = 0;
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_Check_Reserved_ಬೀಗ(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ *p_Res_ಹೊರಹೋಗು){
+  *p_Res_ಹೊರಹೋಗು = 0;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** No xFileControl() verbs are implemented by this VFS.
 */
-static int demoFileControl(sqlite3_file *pFile, int op, void *pArg){
-  return SQLITE_NOTFOUND;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoFileControl(sqlite3_file *pFile, ಪೂರ್ಣಾಂಕ op, ಶೂನ್ಯ *pArg){
+  ಹಿಂತಿರುಗಿ SQLITE_NOTFOUND;
 }
 
 /*
@@ -380,72 +380,72 @@ static int demoFileControl(sqlite3_file *pFile, int op, void *pArg){
 ** may return special values allowing SQLite to optimize file-system 
 ** access to some extent. But it is also safe to simply return 0.
 */
-static int demoSectorSize(sqlite3_file *pFile){
-  return 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_Sector_ಗಾತ್ರ(sqlite3_file *pFile){
+  ಹಿಂತಿರುಗಿ 0;
 }
-static int demoDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoDeviceCharacteristics(sqlite3_file *pFile){
+  ಹಿಂತಿರುಗಿ 0;
 }
 
 /*
 ** Open a file handle.
 */
-static int demoOpen(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoOpen(
   sqlite3_vfs *pVfs,              /* VFS */
-  const char *zName,              /* File to open, or 0 for a temp file */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zName,              /* File to open, or 0 for a temp file */
   sqlite3_file *pFile,            /* Pointer to DemoFile struct to populate */
-  int flags,                      /* Input SQLITE_OPEN_XXX flags */
-  int *pOutFlags                  /* Output SQLITE_OPEN_XXX flags (or NULL) */
+  ಪೂರ್ಣಾಂಕ flags,                      /* Input SQLITE_OPEN_XXX flags */
+  ಪೂರ್ಣಾಂಕ *p_ಹೊರಹೋಗು_Flags                  /* Output SQLITE_OPEN_XXX flags (or NULL) */
 ){
-  static const sqlite3_io_methods demoio = {
+  ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ sqlite3_io_methods demoio = {
     1,                            /* iVersion */
     demoClose,                    /* xClose */
     demoRead,                     /* xRead */
     demoWrite,                    /* xWrite */
     demoTruncate,                 /* xTruncate */
     demoSync,                     /* xSync */
-    demoFileSize,                 /* xFileSize */
-    demoLock,                     /* xLock */
+    demo_File_ಗಾತ್ರ,                 /* xFileSize */
+    demo_ಬೀಗ,                     /* xLock */
     demoUnlock,                   /* xUnlock */
-    demoCheckReservedLock,        /* xCheckReservedLock */
+    demo_Check_Reserved_ಬೀಗ,        /* xCheckReservedLock */
     demoFileControl,              /* xFileControl */
-    demoSectorSize,               /* xSectorSize */
+    demo_Sector_ಗಾತ್ರ,               /* xSectorSize */
     demoDeviceCharacteristics     /* xDeviceCharacteristics */
   };
 
   DemoFile *p = (DemoFile*)pFile; /* Populate this structure */
-  int oflags = 0;                 /* flags to pass to open() call */
-  char *aBuf = 0;
+  ಪೂರ್ಣಾಂಕ oflags = 0;                 /* flags to pass to open() call */
+  ಅಕ್ಷರ *aBuf = 0;
 
-  if( zName==0 ){
-    return SQLITE_IOERR;
+  ಆದರೆ( zName==0 ){
+    ಹಿಂತಿರುಗಿ SQLITE_IOERR;
   }
 
-  if( flags&SQLITE_OPEN_MAIN_JOURNAL ){
-    aBuf = (char *)sqlite3_malloc(SQLITE_DEMOVFS_BUFFERSZ);
-    if( !aBuf ){
-      return SQLITE_NOMEM;
+  ಆದರೆ( flags&SQLITE_OPEN_MAIN_JOURNAL ){
+    aBuf = (ಅಕ್ಷರ *)sqlite3_malloc(SQLITE_DEMOVFS_BUFFERSZ);
+    ಆದರೆ( !aBuf ){
+      ಹಿಂತಿರುಗಿ SQLITE_NOMEM;
     }
   }
 
-  if( flags&SQLITE_OPEN_EXCLUSIVE ) oflags |= O_EXCL;
-  if( flags&SQLITE_OPEN_CREATE )    oflags |= O_CREAT;
-  if( flags&SQLITE_OPEN_READONLY )  oflags |= O_RDONLY;
-  if( flags&SQLITE_OPEN_READWRITE ) oflags |= O_RDWR;
+  ಆದರೆ( flags&SQLITE_OPEN_EXCLUSIVE ) oflags |= O_EXCL;
+  ಆದರೆ( flags&SQLITE_OPEN_CREATE )    oflags |= O_CREAT;
+  ಆದರೆ( flags&SQLITE_OPEN_READONLY )  oflags |= O_RDONLY;
+  ಆದರೆ( flags&SQLITE_OPEN_READWRITE ) oflags |= O_RDWR;
 
-  memset(p, 0, sizeof(DemoFile));
+  memset(p, 0, ಗಾತ್ರ(DemoFile));
   p->fd = open(zName, oflags, 0600);
-  if( p->fd<0 ){
+  ಆದರೆ( p->fd<0 ){
     sqlite3_free(aBuf);
-    return SQLITE_CANTOPEN;
+    ಹಿಂತಿರುಗಿ SQLITE_CANTOPEN;
   }
-  p->aBuffer = aBuf;
+  p->a_ಬಫರ್ = aBuf;
 
-  if( pOutFlags ){
-    *pOutFlags = flags;
+  ಆದರೆ( p_ಹೊರಹೋಗು_Flags ){
+    *p_ಹೊರಹೋಗು_Flags = flags;
   }
-  p->base.pMethods = &demoio;
-  return SQLITE_OK;
+  p->ತಳ.pMethods = &demoio;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -453,70 +453,70 @@ static int demoOpen(
 ** is non-zero, then ensure the file-system modification to delete the
 ** file has been synced to disk before returning.
 */
-static int demoDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc;                         /* Return code */
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoDelete(sqlite3_vfs *pVfs, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ, ಪೂರ್ಣಾಂಕ dirSync){
+  ಪೂರ್ಣಾಂಕ rc;                         /* Return code */
 
-  rc = unlink(zPath);
-  if( rc!=0 && errno==ENOENT ) return SQLITE_OK;
+  rc = unlink(z_ಮಾರ್ಗ);
+  ಆದರೆ( rc!=0 && errno==ENOENT ) ಹಿಂತಿರುಗಿ SQLITE_OK;
 
-  if( rc==0 && dirSync ){
-    int dfd;                      /* File descriptor open on directory */
-    char *zSlash;
-    char zDir[MAXPATHNAME+1];     /* Name of directory containing file zPath */
+  ಆದರೆ( rc==0 && dirSync ){
+    ಪೂರ್ಣಾಂಕ dfd;                      /* File descriptor open on directory */
+    ಅಕ್ಷರ *zSlash;
+    ಅಕ್ಷರ zDir[MAXPATHNAME+1];     /* Name of directory containing file zPath */
 
     /* Figure out the directory name from the path of the file deleted. */
-    sqlite3_snprintf(MAXPATHNAME, zDir, "%s", zPath);
+    sqlite3_snprintf(MAXPATHNAME, zDir, "%s", z_ಮಾರ್ಗ);
     zDir[MAXPATHNAME] = '\0';
     zSlash = strrchr(zDir,'/');
-    if( zSlash ){
+    ಆದರೆ( zSlash ){
       /* Open a file-descriptor on the directory. Sync. Close. */
       zSlash[0] = 0;
       dfd = open(zDir, O_RDONLY, 0);
-      if( dfd<0 ){
+      ಆದರೆ( dfd<0 ){
         rc = -1;
-      }else{
+      }ಇಲ್ಲದಿದ್ದರೆ{
         rc = fsync(dfd);
         close(dfd);
       }
     }
   }
-  return (rc==0 ? SQLITE_OK : SQLITE_IOERR_DELETE);
+  ಹಿಂತಿರುಗಿ (rc==0 ? SQLITE_OK : SQLITE_IOERR_DELETE);
 }
 
-#ifndef F_OK
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ F_OK
 # define F_OK 0
-#endif
-#ifndef R_OK
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ R_OK
 # define R_OK 4
-#endif
-#ifndef W_OK
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ W_OK
 # define W_OK 2
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /*
 ** Query the file-system to see if the named file exists, is readable or
 ** is both readable and writable.
 */
-static int demoAccess(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ, 
+  ಪೂರ್ಣಾಂಕ flags, 
+  ಪೂರ್ಣಾಂಕ *p_Res_ಹೊರಹೋಗು
 ){
-  int rc;                         /* access() return code */
-  int eAccess = F_OK;             /* Second argument to access() */
+  ಪೂರ್ಣಾಂಕ rc;                         /* access() return code */
+  ಪೂರ್ಣಾಂಕ eAccess = F_OK;             /* Second argument to access() */
 
-  assert( flags==SQLITE_ACCESS_EXISTS       /* access(zPath, F_OK) */
+  ಪ್ರತಿಜ್ಞಾ( flags==SQLITE_ACCESS_EXISTS       /* access(zPath, F_OK) */
        || flags==SQLITE_ACCESS_READ         /* access(zPath, R_OK) */
        || flags==SQLITE_ACCESS_READWRITE    /* access(zPath, R_OK|W_OK) */
   );
 
-  if( flags==SQLITE_ACCESS_READWRITE ) eAccess = R_OK|W_OK;
-  if( flags==SQLITE_ACCESS_READ )      eAccess = R_OK;
+  ಆದರೆ( flags==SQLITE_ACCESS_READWRITE ) eAccess = R_OK|W_OK;
+  ಆದರೆ( flags==SQLITE_ACCESS_READ )      eAccess = R_OK;
 
-  rc = access(zPath, eAccess);
-  *pResOut = (rc==0);
-  return SQLITE_OK;
+  rc = access(z_ಮಾರ್ಗ, eAccess);
+  *p_Res_ಹೊರಹೋಗು = (rc==0);
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -530,24 +530,24 @@ static int demoAccess(
 **   1. Path components are separated by a '/'. and 
 **   2. Full paths begin with a '/' character.
 */
-static int demoFullPathname(
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_ತುಂಬಿದ_Pathname(
   sqlite3_vfs *pVfs,              /* VFS */
-  const char *zPath,              /* Input path (possibly a relative path) */
-  int nPathOut,                   /* Size of output buffer in bytes */
-  char *zPathOut                  /* Pointer to output buffer */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ,              /* Input path (possibly a relative path) */
+  ಪೂರ್ಣಾಂಕ n_ಮಾರ್ಗ_ಹೊರಹೋಗು,                   /* Size of output buffer in bytes */
+  ಅಕ್ಷರ *z_ಮಾರ್ಗ_ಹೊರಹೋಗು                  /* Pointer to output buffer */
 ){
-  char zDir[MAXPATHNAME+1];
-  if( zPath[0]=='/' ){
+  ಅಕ್ಷರ zDir[MAXPATHNAME+1];
+  ಆದರೆ( z_ಮಾರ್ಗ[0]=='/' ){
     zDir[0] = '\0';
-  }else{
-    if( getcwd(zDir, sizeof(zDir))==0 ) return SQLITE_IOERR;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    ಆದರೆ( getcwd(zDir, ಗಾತ್ರ(zDir))==0 ) ಹಿಂತಿರುಗಿ SQLITE_IOERR;
   }
   zDir[MAXPATHNAME] = '\0';
 
-  sqlite3_snprintf(nPathOut, zPathOut, "%s/%s", zDir, zPath);
-  zPathOut[nPathOut-1] = '\0';
+  sqlite3_snprintf(n_ಮಾರ್ಗ_ಹೊರಹೋಗು, z_ಮಾರ್ಗ_ಹೊರಹೋಗು, "%s/%s", zDir, z_ಮಾರ್ಗ);
+  z_ಮಾರ್ಗ_ಹೊರಹೋಗು[n_ಮಾರ್ಗ_ಹೊರಹೋಗು-1] = '\0';
 
-  return SQLITE_OK;
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -562,36 +562,36 @@ static int demoFullPathname(
 ** extensions compiled as shared objects. This simple VFS does not support
 ** this functionality, so the following functions are no-ops.
 */
-static void *demoDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return 0;
+ಸ್ಥಿರ ಶೂನ್ಯ *demoDlOpen(sqlite3_vfs *pVfs, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z_ಮಾರ್ಗ){
+  ಹಿಂತಿರುಗಿ 0;
 }
-static void demoDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3_snprintf(nByte, zErrMsg, "Loadable extensions are not supported");
-  zErrMsg[nByte-1] = '\0';
+ಸ್ಥಿರ ಶೂನ್ಯ demoDlError(sqlite3_vfs *pVfs, ಪೂರ್ಣಾಂಕ nByte, ಅಕ್ಷರ *z_Err_ಸಂದೇಶ){
+  sqlite3_snprintf(nByte, z_Err_ಸಂದೇಶ, "Loadable extensions are not supported");
+  z_Err_ಸಂದೇಶ[nByte-1] = '\0';
 }
-static void (*demoDlSym(sqlite3_vfs *pVfs, void *pH, const char *z))(void){
-  return 0;
+ಸ್ಥಿರ ಶೂನ್ಯ (*demoDlSym(sqlite3_vfs *pVfs, ಶೂನ್ಯ *pH, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *z))(ಶೂನ್ಯ){
+  ಹಿಂತಿರುಗಿ 0;
 }
-static void demoDlClose(sqlite3_vfs *pVfs, void *pHandle){
-  return;
+ಸ್ಥಿರ ಶೂನ್ಯ demoDlClose(sqlite3_vfs *pVfs, ಶೂನ್ಯ *pHandle){
+  ಹಿಂತಿರುಗಿ;
 }
 
 /*
 ** Parameter zByte points to a buffer nByte bytes in size. Populate this
 ** buffer with pseudo-random data.
 */
-static int demoRandomness(sqlite3_vfs *pVfs, int nByte, char *zByte){
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoRandomness(sqlite3_vfs *pVfs, ಪೂರ್ಣಾಂಕ nByte, ಅಕ್ಷರ *zByte){
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
 ** Sleep for at least nMicro microseconds. Return the (approximate) number 
 ** of microseconds slept for.
 */
-static int demoSleep(sqlite3_vfs *pVfs, int nMicro){
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demoSleep(sqlite3_vfs *pVfs, ಪೂರ್ಣಾಂಕ nMicro){
   sleep(nMicro / 1000000);
   usleep(nMicro % 1000000);
-  return nMicro;
+  ಹಿಂತಿರುಗಿ nMicro;
 }
 
 /*
@@ -605,10 +605,10 @@ static int demoSleep(sqlite3_vfs *pVfs, int nMicro){
 ** value, it will stop working some time in the year 2038 AD (the so-called
 ** "year 2038" problem that afflicts systems that store time this way). 
 */
-static int demoCurrentTime(sqlite3_vfs *pVfs, double *pTime){
-  time_t t = time(0);
-  *pTime = t/86400.0 + 2440587.5; 
-  return SQLITE_OK;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ demo_Current_ಸಮಯ(sqlite3_vfs *pVfs, ದ್ವಿಗುಣ *p_ಸಮಯ){
+  ಸಮಯ_t t = ಸಮಯ(0);
+  *p_ಸಮಯ = t/86400.0 + 2440587.5; 
+  ಹಿಂತಿರುಗಿ SQLITE_OK;
 }
 
 /*
@@ -617,10 +617,10 @@ static int demoCurrentTime(sqlite3_vfs *pVfs, double *pTime){
 **
 **   sqlite3_vfs_register(sqlite3_demovfs(), 0);
 */
-sqlite3_vfs *sqlite3_demovfs(void){
-  static sqlite3_vfs demovfs = {
+sqlite3_vfs *sqlite3_demovfs(ಶೂನ್ಯ){
+  ಸ್ಥಿರ sqlite3_vfs demovfs = {
     1,                            /* iVersion */
-    sizeof(DemoFile),             /* szOsFile */
+    ಗಾತ್ರ(DemoFile),             /* szOsFile */
     MAXPATHNAME,                  /* mxPathname */
     0,                            /* pNext */
     "demo",                       /* zName */
@@ -628,56 +628,56 @@ sqlite3_vfs *sqlite3_demovfs(void){
     demoOpen,                     /* xOpen */
     demoDelete,                   /* xDelete */
     demoAccess,                   /* xAccess */
-    demoFullPathname,             /* xFullPathname */
+    demo_ತುಂಬಿದ_Pathname,             /* xFullPathname */
     demoDlOpen,                   /* xDlOpen */
     demoDlError,                  /* xDlError */
     demoDlSym,                    /* xDlSym */
     demoDlClose,                  /* xDlClose */
     demoRandomness,               /* xRandomness */
     demoSleep,                    /* xSleep */
-    demoCurrentTime,              /* xCurrentTime */
+    demo_Current_ಸಮಯ,              /* xCurrentTime */
   };
-  return &demovfs;
+  ಹಿಂತಿರುಗಿ &demovfs;
 }
 
-#endif /* !defined(SQLITE_TEST) || SQLITE_OS_UNIX */
+#ಆದರೆ_ಅಂತ್ಯ /* !defined(SQLITE_TEST) || SQLITE_OS_UNIX */
 
 
-#ifdef SQLITE_TEST
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_TEST
 
-#include "tclsqlite.h"
+#ಅನ್ತರ್ಭಾವ "tclsqlite.h"
 
-#if SQLITE_OS_UNIX
-static int SQLITE_TCLAPI register_demovfs(
-  ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
+#ಆದರೆ SQLITE_OS_UNIX
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ SQLITE_TCLAPI ರಿಜಿಸ್ಟರ್_demovfs(
+  Client_ದತ್ತಾಂಶ client_ದತ್ತಾಂಶ, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ಪೂರ್ಣಾಂಕ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  sqlite3_vfs_register(sqlite3_demovfs(), 1);
-  return TCL_OK;
+  sqlite3_vfs_ರಿಜಿಸ್ಟರ್(sqlite3_demovfs(), 1);
+  ಹಿಂತಿರುಗಿ TCL_OK;
 }
-static int SQLITE_TCLAPI unregister_demovfs(
-  ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ SQLITE_TCLAPI unregister_demovfs(
+  Client_ದತ್ತಾಂಶ client_ದತ್ತಾಂಶ, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ಪೂರ್ಣಾಂಕ objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_vfs_unregister(sqlite3_demovfs());
-  return TCL_OK;
+  ಹಿಂತಿರುಗಿ TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_demovfs_Init(Tcl_Interp *interp){
-  Tcl_CreateObjCommand(interp, "register_demovfs", register_demovfs, 0, 0);
+ಪೂರ್ಣಾಂಕ Sqlitetest_demovfs_Init(Tcl_Interp *interp){
+  Tcl_CreateObjCommand(interp, "register_demovfs", ರಿಜಿಸ್ಟರ್_demovfs, 0, 0);
   Tcl_CreateObjCommand(interp, "unregister_demovfs", unregister_demovfs, 0, 0);
-  return TCL_OK;
+  ಹಿಂತಿರುಗಿ TCL_OK;
 }
 
-#else
-int Sqlitetest_demovfs_Init(Tcl_Interp *interp){ return TCL_OK; }
-#endif
+#ಇಲ್ಲದಿದ್ದರೆ
+ಪೂರ್ಣಾಂಕ Sqlitetest_demovfs_Init(Tcl_Interp *interp){ ಹಿಂತಿರುಗಿ TCL_OK; }
+#ಆದರೆ_ಅಂತ್ಯ
 
-#endif /* SQLITE_TEST */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_TEST */

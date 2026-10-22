@@ -16,91 +16,91 @@
 ** These routines are in a separate files so that they will not be linked
 ** if they are not used.
 */
-#include "sqliteInt.h"
+#ಅನ್ತರ್ಭಾವ "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_GET_TABLE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SQLITE_OMIT_GET_ಕೋಷ್ಟಕ
 
 /*
 ** This structure is used to pass data from sqlite3_get_table() through
 ** to the callback function is uses to build the result.
 */
-typedef struct TabResult {
-  char **azResult;   /* Accumulated output */
-  char *zErrMsg;     /* Error message text, if an error occurs */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ Tab_ಫಲಿತಾಂಶ {
+  ಅಕ್ಷರ **az_ಫಲಿತಾಂಶ;   /* Accumulated output */
+  ಅಕ್ಷರ *z_Err_ಸಂದೇಶ;     /* Error message text, if an error occurs */
   u32 nAlloc;        /* Slots allocated for azResult[] */
-  u32 nRow;          /* Number of rows in the result */
-  u32 nColumn;       /* Number of columns in the result */
-  u32 nData;         /* Slots used in azResult[].  (nRow+1)*nColumn */
-  int rc;            /* Return code from sqlite3_exec() */
-} TabResult;
+  u32 n_ಅಡ್ಡಸಾಲು;          /* Number of rows in the result */
+  u32 n_ಸ್ತಂಭ;       /* Number of columns in the result */
+  u32 n_ದತ್ತಾಂಶ;         /* Slots used in azResult[].  (nRow+1)*nColumn */
+  ಪೂರ್ಣಾಂಕ rc;            /* Return code from sqlite3_exec() */
+} Tab_ಫಲಿತಾಂಶ;
 
 /*
 ** This routine is called once for each row in the result table.  Its job
 ** is to fill in the TabResult structure appropriately, allocating new
 ** memory as necessary.
 */
-static int sqlite3_get_table_cb(void *pArg, int nCol, char **argv, char **colv){
-  TabResult *p = (TabResult*)pArg;  /* Result accumulator */
-  int need;                         /* Slots needed in p->azResult[] */
-  int i;                            /* Loop counter */
-  char *z;                          /* A single column of result */
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ sqlite3_get_ಕೋಷ್ಟಕ_cb(ಶೂನ್ಯ *pArg, ಪೂರ್ಣಾಂಕ n_ಲಂಬಸಾಲು, ಅಕ್ಷರ **argv, ಅಕ್ಷರ **colv){
+  Tab_ಫಲಿತಾಂಶ *p = (Tab_ಫಲಿತಾಂಶ*)pArg;  /* Result accumulator */
+  ಪೂರ್ಣಾಂಕ need;                         /* Slots needed in p->azResult[] */
+  ಪೂರ್ಣಾಂಕ i;                            /* Loop counter */
+  ಅಕ್ಷರ *z;                          /* A single column of result */
 
   /* Make sure there is enough space in p->azResult to hold everything
   ** we need to remember from this invocation of the callback.
   */
-  if( p->nRow==0 && argv!=0 ){
-    need = nCol*2;
-  }else{
-    need = nCol;
+  ಆದರೆ( p->n_ಅಡ್ಡಸಾಲು==0 && argv!=0 ){
+    need = n_ಲಂಬಸಾಲು*2;
+  }ಇಲ್ಲದಿದ್ದರೆ{
+    need = n_ಲಂಬಸಾಲು;
   }
-  if( p->nData + need > p->nAlloc ){
-    char **azNew;
+  ಆದರೆ( p->n_ದತ್ತಾಂಶ + need > p->nAlloc ){
+    ಅಕ್ಷರ **azNew;
     p->nAlloc = p->nAlloc*2 + need;
-    azNew = sqlite3Realloc( p->azResult, sizeof(char*)*p->nAlloc );
-    if( azNew==0 ) goto malloc_failed;
-    p->azResult = azNew;
+    azNew = sqlite3Realloc( p->az_ಫಲಿತಾಂಶ, ಗಾತ್ರ(ಅಕ್ಷರ*)*p->nAlloc );
+    ಆದರೆ( azNew==0 ) ಹೋಗು malloc_failed;
+    p->az_ಫಲಿತಾಂಶ = azNew;
   }
 
   /* If this is the first row, then generate an extra row containing
   ** the names of all columns.
   */
-  if( p->nRow==0 ){
-    p->nColumn = nCol;
-    for(i=0; i<nCol; i++){
+  ಆದರೆ( p->n_ಅಡ್ಡಸಾಲು==0 ){
+    p->n_ಸ್ತಂಭ = n_ಲಂಬಸಾಲು;
+    ಗಾಗಿ(i=0; i<n_ಲಂಬಸಾಲು; i++){
       z = sqlite3_mprintf("%s", colv[i]);
-      if( z==0 ) goto malloc_failed;
-      p->azResult[p->nData++] = z;
+      ಆದರೆ( z==0 ) ಹೋಗು malloc_failed;
+      p->az_ಫಲಿತಾಂಶ[p->n_ದತ್ತಾಂಶ++] = z;
     }
-  }else if( (int)p->nColumn!=nCol ){
-    sqlite3_free(p->zErrMsg);
-    p->zErrMsg = sqlite3_mprintf(
+  }ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ( (ಪೂರ್ಣಾಂಕ)p->n_ಸ್ತಂಭ!=n_ಲಂಬಸಾಲು ){
+    sqlite3_free(p->z_Err_ಸಂದೇಶ);
+    p->z_Err_ಸಂದೇಶ = sqlite3_mprintf(
        "sqlite3_get_table() called with two or more incompatible queries"
     );
     p->rc = SQLITE_ERROR;
-    return 1;
+    ಹಿಂತಿರುಗಿ 1;
   }
 
   /* Copy over the row data
   */
-  if( argv!=0 ){
-    for(i=0; i<nCol; i++){
-      if( argv[i]==0 ){
+  ಆದರೆ( argv!=0 ){
+    ಗಾಗಿ(i=0; i<n_ಲಂಬಸಾಲು; i++){
+      ಆದರೆ( argv[i]==0 ){
         z = 0;
-      }else{
-        int n = sqlite3Strlen30(argv[i])+1;
+      }ಇಲ್ಲದಿದ್ದರೆ{
+        ಪೂರ್ಣಾಂಕ n = sqlite3Strlen30(argv[i])+1;
         z = sqlite3_malloc64( n );
-        if( z==0 ) goto malloc_failed;
-        memcpy(z, argv[i], n);
+        ಆದರೆ( z==0 ) ಹೋಗು malloc_failed;
+        ಸ್ಮರಣೆ_ನಕಲು(z, argv[i], n);
       }
-      p->azResult[p->nData++] = z;
+      p->az_ಫಲಿತಾಂಶ[p->n_ದತ್ತಾಂಶ++] = z;
     }
-    p->nRow++;
+    p->n_ಅಡ್ಡಸಾಲು++;
   }
-  return 0;
+  ಹಿಂತಿರುಗಿ 0;
 
 malloc_failed:
   p->rc = SQLITE_NOMEM_BKPT;
-  return 1;
+  ಹಿಂತಿರುಗಿ 1;
 }
 
 /*
@@ -113,86 +113,86 @@ malloc_failed:
 ** Instead, the entire table should be passed to sqlite3_free_table() when
 ** the calling procedure is finished using it.
 */
-int sqlite3_get_table(
+ಪೂರ್ಣಾಂಕ sqlite3_get_ಕೋಷ್ಟಕ(
   sqlite3 *db,                /* The database on which the SQL executes */
-  const char *zSql,           /* The SQL to be executed */
-  char ***pazResult,          /* Write the result table here */
-  int *pnRow,                 /* Write the number of rows in the result here */
-  int *pnColumn,              /* Write the number of columns of result here */
-  char **pzErrMsg             /* Write error messages here */
+  ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *zSql,           /* The SQL to be executed */
+  ಅಕ್ಷರ ***paz_ಫಲಿತಾಂಶ,          /* Write the result table here */
+  ಪೂರ್ಣಾಂಕ *pn_ಅಡ್ಡಸಾಲು,                 /* Write the number of rows in the result here */
+  ಪೂರ್ಣಾಂಕ *pn_ಸ್ತಂಭ,              /* Write the number of columns of result here */
+  ಅಕ್ಷರ **pz_Err_ಸಂದೇಶ             /* Write error messages here */
 ){
-  int rc;
-  TabResult res;
+  ಪೂರ್ಣಾಂಕ rc;
+  Tab_ಫಲಿತಾಂಶ res;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || pazResult==0 ) return SQLITE_MISUSE_BKPT;
-#endif
-  *pazResult = 0;
-  if( pnColumn ) *pnColumn = 0;
-  if( pnRow ) *pnRow = 0;
-  if( pzErrMsg ) *pzErrMsg = 0;
-  res.zErrMsg = 0;
-  res.nRow = 0;
-  res.nColumn = 0;
-  res.nData = 1;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SQLITE_ENABLE_API_ARMOR
+  ಆದರೆ( !sqlite3SafetyCheckOk(db) || paz_ಫಲಿತಾಂಶ==0 ) ಹಿಂತಿರುಗಿ SQLITE_MISUSE_BKPT;
+#ಆದರೆ_ಅಂತ್ಯ
+  *paz_ಫಲಿತಾಂಶ = 0;
+  ಆದರೆ( pn_ಸ್ತಂಭ ) *pn_ಸ್ತಂಭ = 0;
+  ಆದರೆ( pn_ಅಡ್ಡಸಾಲು ) *pn_ಅಡ್ಡಸಾಲು = 0;
+  ಆದರೆ( pz_Err_ಸಂದೇಶ ) *pz_Err_ಸಂದೇಶ = 0;
+  res.z_Err_ಸಂದೇಶ = 0;
+  res.n_ಅಡ್ಡಸಾಲು = 0;
+  res.n_ಸ್ತಂಭ = 0;
+  res.n_ದತ್ತಾಂಶ = 1;
   res.nAlloc = 20;
   res.rc = SQLITE_OK;
-  res.azResult = sqlite3_malloc64(sizeof(char*)*res.nAlloc );
-  if( res.azResult==0 ){
-     db->errCode = SQLITE_NOMEM;
-     return SQLITE_NOMEM_BKPT;
+  res.az_ಫಲಿತಾಂಶ = sqlite3_malloc64(ಗಾತ್ರ(ಅಕ್ಷರ*)*res.nAlloc );
+  ಆದರೆ( res.az_ಫಲಿತಾಂಶ==0 ){
+     db->err_ಸಂಕೇತ = SQLITE_NOMEM;
+     ಹಿಂತಿರುಗಿ SQLITE_NOMEM_BKPT;
   }
-  res.azResult[0] = 0;
-  rc = sqlite3_exec(db, zSql, sqlite3_get_table_cb, &res, pzErrMsg);
-  assert( sizeof(res.azResult[0])>= sizeof(res.nData) );
-  res.azResult[0] = SQLITE_INT_TO_PTR(res.nData);
-  if( (rc&0xff)==SQLITE_ABORT ){
-    sqlite3_free_table(&res.azResult[1]);
-    if( res.zErrMsg ){
-      if( pzErrMsg ){
-        sqlite3_free(*pzErrMsg);
-        *pzErrMsg = sqlite3_mprintf("%s",res.zErrMsg);
+  res.az_ಫಲಿತಾಂಶ[0] = 0;
+  rc = sqlite3_exec(db, zSql, sqlite3_get_ಕೋಷ್ಟಕ_cb, &res, pz_Err_ಸಂದೇಶ);
+  ಪ್ರತಿಜ್ಞಾ( ಗಾತ್ರ(res.az_ಫಲಿತಾಂಶ[0])>= ಗಾತ್ರ(res.n_ದತ್ತಾಂಶ) );
+  res.az_ಫಲಿತಾಂಶ[0] = SQLITE_INT_ಗಮ್ಯ_PTR(res.n_ದತ್ತಾಂಶ);
+  ಆದರೆ( (rc&0xff)==SQLITE_ABORT ){
+    sqlite3_free_ಕೋಷ್ಟಕ(&res.az_ಫಲಿತಾಂಶ[1]);
+    ಆದರೆ( res.z_Err_ಸಂದೇಶ ){
+      ಆದರೆ( pz_Err_ಸಂದೇಶ ){
+        sqlite3_free(*pz_Err_ಸಂದೇಶ);
+        *pz_Err_ಸಂದೇಶ = sqlite3_mprintf("%s",res.z_Err_ಸಂದೇಶ);
       }
-      sqlite3_free(res.zErrMsg);
+      sqlite3_free(res.z_Err_ಸಂದೇಶ);
     }
-    db->errCode = res.rc;  /* Assume 32-bit assignment is atomic */
-    return res.rc;
+    db->err_ಸಂಕೇತ = res.rc;  /* Assume 32-bit assignment is atomic */
+    ಹಿಂತಿರುಗಿ res.rc;
   }
-  sqlite3_free(res.zErrMsg);
-  if( rc!=SQLITE_OK ){
-    sqlite3_free_table(&res.azResult[1]);
-    return rc;
+  sqlite3_free(res.z_Err_ಸಂದೇಶ);
+  ಆದರೆ( rc!=SQLITE_OK ){
+    sqlite3_free_ಕೋಷ್ಟಕ(&res.az_ಫಲಿತಾಂಶ[1]);
+    ಹಿಂತಿರುಗಿ rc;
   }
-  if( res.nAlloc>res.nData ){
-    char **azNew;
-    azNew = sqlite3Realloc( res.azResult, sizeof(char*)*res.nData );
-    if( azNew==0 ){
-      sqlite3_free_table(&res.azResult[1]);
-      db->errCode = SQLITE_NOMEM;
-      return SQLITE_NOMEM_BKPT;
+  ಆದರೆ( res.nAlloc>res.n_ದತ್ತಾಂಶ ){
+    ಅಕ್ಷರ **azNew;
+    azNew = sqlite3Realloc( res.az_ಫಲಿತಾಂಶ, ಗಾತ್ರ(ಅಕ್ಷರ*)*res.n_ದತ್ತಾಂಶ );
+    ಆದರೆ( azNew==0 ){
+      sqlite3_free_ಕೋಷ್ಟಕ(&res.az_ಫಲಿತಾಂಶ[1]);
+      db->err_ಸಂಕೇತ = SQLITE_NOMEM;
+      ಹಿಂತಿರುಗಿ SQLITE_NOMEM_BKPT;
     }
-    res.azResult = azNew;
+    res.az_ಫಲಿತಾಂಶ = azNew;
   }
-  *pazResult = &res.azResult[1];
-  if( pnColumn ) *pnColumn = res.nColumn;
-  if( pnRow ) *pnRow = res.nRow;
-  return rc;
+  *paz_ಫಲಿತಾಂಶ = &res.az_ಫಲಿತಾಂಶ[1];
+  ಆದರೆ( pn_ಸ್ತಂಭ ) *pn_ಸ್ತಂಭ = res.n_ಸ್ತಂಭ;
+  ಆದರೆ( pn_ಅಡ್ಡಸಾಲು ) *pn_ಅಡ್ಡಸಾಲು = res.n_ಅಡ್ಡಸಾಲು;
+  ಹಿಂತಿರುಗಿ rc;
 }
 
 /*
 ** This routine frees the space the sqlite3_get_table() malloced.
 */
-void sqlite3_free_table(
-  char **azResult            /* Result returned from sqlite3_get_table() */
+ಶೂನ್ಯ sqlite3_free_ಕೋಷ್ಟಕ(
+  ಅಕ್ಷರ **az_ಫಲಿತಾಂಶ            /* Result returned from sqlite3_get_table() */
 ){
-  if( azResult ){
-    int i, n;
-    azResult--;
-    assert( azResult!=0 );
-    n = SQLITE_PTR_TO_INT(azResult[0]);
-    for(i=1; i<n; i++){ if( azResult[i] ) sqlite3_free(azResult[i]); }
-    sqlite3_free(azResult);
+  ಆದರೆ( az_ಫಲಿತಾಂಶ ){
+    ಪೂರ್ಣಾಂಕ i, n;
+    az_ಫಲಿತಾಂಶ--;
+    ಪ್ರತಿಜ್ಞಾ( az_ಫಲಿತಾಂಶ!=0 );
+    n = SQLITE_PTR_ಗಮ್ಯ_INT(az_ಫಲಿತಾಂಶ[0]);
+    ಗಾಗಿ(i=1; i<n; i++){ ಆದರೆ( az_ಫಲಿತಾಂಶ[i] ) sqlite3_free(az_ಫಲಿತಾಂಶ[i]); }
+    sqlite3_free(az_ಫಲಿತಾಂಶ);
   }
 }
 
-#endif /* SQLITE_OMIT_GET_TABLE */
+#ಆದರೆ_ಅಂತ್ಯ /* SQLITE_OMIT_GET_TABLE */
