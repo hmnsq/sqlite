@@ -25,7 +25,7 @@
 ** that does error checking on mutexes to make sure they are being
 ** called correctly.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
 #ifndef SQLITE_MUTEX_OMIT
 
@@ -35,22 +35,22 @@
 **
 ** This routines provide no mutual exclusion or error checking.
 */
-static int noopMutexInit(void){ return SQLITE_OK; }
-static int noopMutexEnd(void){ return SQLITE_OK; }
-static sqlite3_mutex *noopMutexAlloc(int id){ 
+ساكن صحيح noopMutexInit(فراغ){ أرجع SQLITE_OK; }
+ساكن صحيح noopMutexEnd(فراغ){ أرجع SQLITE_OK; }
+ساكن sqlite3_mutex *noopMutexAlloc(صحيح id){ 
   UNUSED_PARAMETER(id);
-  return (sqlite3_mutex*)8; 
+  أرجع (sqlite3_mutex*)8; 
 }
-static void noopMutexFree(sqlite3_mutex *p){ UNUSED_PARAMETER(p); return; }
-static void noopMutexEnter(sqlite3_mutex *p){ UNUSED_PARAMETER(p); return; }
-static int noopMutexTry(sqlite3_mutex *p){
+ساكن فراغ noopMutexFree(sqlite3_mutex *p){ UNUSED_PARAMETER(p); أرجع; }
+ساكن فراغ noopMutexEnter(sqlite3_mutex *p){ UNUSED_PARAMETER(p); أرجع; }
+ساكن صحيح noopMutexTry(sqlite3_mutex *p){
   UNUSED_PARAMETER(p);
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
-static void noopMutexLeave(sqlite3_mutex *p){ UNUSED_PARAMETER(p); return; }
+ساكن فراغ noopMutexLeave(sqlite3_mutex *p){ UNUSED_PARAMETER(p); أرجع; }
 
-sqlite3_mutex_methods const *sqlite3NoopMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods ثابت *sqlite3NoopMutex(فراغ){
+  ساكن ثابت sqlite3_mutex_methods sMutex = {
     noopMutexInit,
     noopMutexEnd,
     noopMutexAlloc,
@@ -63,7 +63,7 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
     0,
   };
 
-  return &sMutex;
+  أرجع &sMutex;
 }
 #endif /* !SQLITE_DEBUG */
 
@@ -77,74 +77,74 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
 /*
 ** The mutex object
 */
-typedef struct sqlite3_debug_mutex {
-  int id;     /* The mutex type */
-  int cnt;    /* Number of entries without a matching leave */
+تعريفنوع بنية sqlite3_debug_mutex {
+  صحيح id;     /* The mutex type */
+  صحيح cnt;    /* Number of entries without a matching leave */
 } sqlite3_debug_mutex;
 
 /*
 ** The sqlite3_mutex_held() and sqlite3_mutex_notheld() routine are
 ** intended for use inside assert() statements.
 */
-static int debugMutexHeld(sqlite3_mutex *pX){
+ساكن صحيح debugMutexHeld(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  return p==0 || p->cnt>0;
+  أرجع p==0 || p->cnt>0;
 }
-static int debugMutexNotheld(sqlite3_mutex *pX){
+ساكن صحيح debugMutexNotheld(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  return p==0 || p->cnt==0;
+  أرجع p==0 || p->cnt==0;
 }
 
 /*
 ** Initialize and deinitialize the mutex subsystem.
 */
-static int debugMutexInit(void){ return SQLITE_OK; }
-static int debugMutexEnd(void){ return SQLITE_OK; }
+ساكن صحيح debugMutexInit(فراغ){ أرجع SQLITE_OK; }
+ساكن صحيح debugMutexEnd(فراغ){ أرجع SQLITE_OK; }
 
 /*
 ** The sqlite3_mutex_alloc() routine allocates a new
 ** mutex and returns a pointer to it.  If it returns NULL
 ** that means that a mutex could not be allocated. 
 */
-static sqlite3_mutex *debugMutexAlloc(int id){
-  static sqlite3_debug_mutex aStatic[SQLITE_MUTEX_STATIC_VFS3 - 1];
+ساكن sqlite3_mutex *debugMutexAlloc(صحيح id){
+  ساكن sqlite3_debug_mutex aStatic[SQLITE_MUTEX_STATIC_VFS3 - 1];
   sqlite3_debug_mutex *pNew = 0;
-  switch( id ){
-    case SQLITE_MUTEX_FAST:
-    case SQLITE_MUTEX_RECURSIVE: {
-      pNew = sqlite3Malloc(sizeof(*pNew));
-      if( pNew ){
+  بدل( id ){
+    حالة SQLITE_MUTEX_FAST:
+    حالة SQLITE_MUTEX_RECURSIVE: {
+      pNew = sqlite3Malloc(حجم(*pNew));
+      إذا( pNew ){
         pNew->id = id;
         pNew->cnt = 0;
       }
-      break;
+      اكسر;
     }
-    default: {
+    افتراضي: {
 #ifdef SQLITE_ENABLE_API_ARMOR
-      if( id-2<0 || id-2>=ArraySize(aStatic) ){
-        (void)SQLITE_MISUSE_BKPT;
-        return 0;
+      إذا( id-2<0 || id-2>=ArraySize(aStatic) ){
+        (فراغ)SQLITE_MISUSE_BKPT;
+        أرجع 0;
       }
 #endif
       pNew = &aStatic[id-2];
       pNew->id = id;
-      break;
+      اكسر;
     }
   }
-  return (sqlite3_mutex*)pNew;
+  أرجع (sqlite3_mutex*)pNew;
 }
 
 /*
 ** This routine deallocates a previously allocated mutex.
 */
-static void debugMutexFree(sqlite3_mutex *pX){
+ساكن فراغ debugMutexFree(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( p->cnt==0 );
-  if( p->id==SQLITE_MUTEX_RECURSIVE || p->id==SQLITE_MUTEX_FAST ){
+  أكد( p->cnt==0 );
+  إذا( p->id==SQLITE_MUTEX_RECURSIVE || p->id==SQLITE_MUTEX_FAST ){
     sqlite3_free(p);
-  }else{
+  }وإلا{
 #ifdef SQLITE_ENABLE_API_ARMOR
-    (void)SQLITE_MISUSE_BKPT;
+    (فراغ)SQLITE_MISUSE_BKPT;
 #endif
   }
 }
@@ -160,16 +160,16 @@ static void debugMutexFree(sqlite3_mutex *pX){
 ** can enter.  If the same thread tries to enter any other kind of mutex
 ** more than once, the behavior is undefined.
 */
-static void debugMutexEnter(sqlite3_mutex *pX){
+ساكن فراغ debugMutexEnter(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
+  أكد( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
   p->cnt++;
 }
-static int debugMutexTry(sqlite3_mutex *pX){
+ساكن صحيح debugMutexTry(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
+  أكد( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
   p->cnt++;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -178,15 +178,15 @@ static int debugMutexTry(sqlite3_mutex *pX){
 ** is undefined if the mutex is not currently entered or
 ** is not currently allocated.  SQLite will never do either.
 */
-static void debugMutexLeave(sqlite3_mutex *pX){
+ساكن فراغ debugMutexLeave(sqlite3_mutex *pX){
   sqlite3_debug_mutex *p = (sqlite3_debug_mutex*)pX;
-  assert( debugMutexHeld(pX) );
+  أكد( debugMutexHeld(pX) );
   p->cnt--;
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
+  أكد( p->id==SQLITE_MUTEX_RECURSIVE || debugMutexNotheld(pX) );
 }
 
-sqlite3_mutex_methods const *sqlite3NoopMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods ثابت *sqlite3NoopMutex(فراغ){
+  ساكن ثابت sqlite3_mutex_methods sMutex = {
     debugMutexInit,
     debugMutexEnd,
     debugMutexAlloc,
@@ -199,7 +199,7 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
     debugMutexNotheld
   };
 
-  return &sMutex;
+  أرجع &sMutex;
 }
 #endif /* SQLITE_DEBUG */
 
@@ -208,8 +208,8 @@ sqlite3_mutex_methods const *sqlite3NoopMutex(void){
 ** is used regardless of the run-time threadsafety setting.
 */
 #ifdef SQLITE_MUTEX_NOOP
-sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
-  return sqlite3NoopMutex();
+sqlite3_mutex_methods ثابت *sqlite3DefaultMutex(فراغ){
+  أرجع sqlite3NoopMutex();
 }
 #endif /* defined(SQLITE_MUTEX_NOOP) */
 #endif /* !defined(SQLITE_MUTEX_OMIT) */

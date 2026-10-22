@@ -11,21 +11,21 @@
 *************************************************************************
 ** This file contains test logic for the sqlite3_mutex interfaces.
 */
-#include "tclsqlite.h"
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#ضمن "tclsqlite.h"
+#ضمن "sqlite3.h"
+#ضمن "sqliteInt.h"
+#ضمن <stdlib.h>
+#ضمن <assert.h>
+#ضمن <string.h>
 
 #define MAX_MUTEXES        (SQLITE_MUTEX_STATIC_VFS3+1)
 #define STATIC_MUTEXES     (MAX_MUTEXES-(SQLITE_MUTEX_RECURSIVE+1))
 
 /* defined in main.c */
-extern const char *sqlite3ErrName(int);
-int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+خارجي ثابت حرف *sqlite3ErrName(صحيح);
+صحيح getDbPointer(Tcl_Interp *interp, ثابت حرف *zA, sqlite3 **ppDb);
 
-static const char *aName[MAX_MUTEXES+1] = {
+ساكن ثابت حرف *aName[MAX_MUTEXES+1] = {
   "fast",        "recursive",   "static_main",   "static_mem",
   "static_open", "static_prng", "static_lru",    "static_pmem",
   "static_app1", "static_app2", "static_app3",   "static_vfs1",
@@ -33,30 +33,30 @@ static const char *aName[MAX_MUTEXES+1] = {
 };
 
 /* A countable mutex */
-struct sqlite3_mutex {
+بنية sqlite3_mutex {
   sqlite3_mutex *pReal;
-  int eType;
+  صحيح eType;
 };
 
 /* State variables */
-static struct test_mutex_globals {
-  int isInstalled;           /* True if installed */
-  int disableInit;           /* True to cause sqlite3_initialize() to fail */
-  int disableTry;            /* True to force sqlite3_mutex_try() to fail */
-  int isInit;                /* True if initialized */
+ساكن بنية test_mutex_globals {
+  صحيح isInstalled;           /* True if installed */
+  صحيح disableInit;           /* True to cause sqlite3_initialize() to fail */
+  صحيح disableTry;            /* True to force sqlite3_mutex_try() to fail */
+  صحيح isInit;                /* True if initialized */
   sqlite3_mutex_methods m;   /* Interface to "real" mutex system */
-  int aCounter[MAX_MUTEXES]; /* Number of grabs of each type of mutex */
+  صحيح aCounter[MAX_MUTEXES]; /* Number of grabs of each type of mutex */
   sqlite3_mutex aStatic[STATIC_MUTEXES]; /* The static mutexes */
 } g = {0};
 
 /* Return true if the countable mutex is currently held */
-static int counterMutexHeld(sqlite3_mutex *p){
-  return g.m.xMutexHeld(p->pReal);
+ساكن صحيح counterMutexHeld(sqlite3_mutex *p){
+  أرجع g.m.xMutexHeld(p->pReal);
 }
 
 /* Return true if the countable mutex is not currently held */
-static int counterMutexNotheld(sqlite3_mutex *p){
-  return g.m.xMutexNotheld(p->pReal);
+ساكن صحيح counterMutexNotheld(sqlite3_mutex *p){
+  أرجع g.m.xMutexNotheld(p->pReal);
 }
 
 /* Initialize the countable mutex interface
@@ -64,68 +64,68 @@ static int counterMutexNotheld(sqlite3_mutex *p){
 ** return the value of g.disableInit as the result code.  This can be used
 ** to simulate an initialization failure.
 */
-static int counterMutexInit(void){ 
-  int rc;
-  if( g.disableInit ) return g.disableInit;
+ساكن صحيح counterMutexInit(فراغ){ 
+  صحيح rc;
+  إذا( g.disableInit ) أرجع g.disableInit;
   rc = g.m.xMutexInit();
   g.isInit = 1;
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Uninitialize the mutex subsystem
 */
-static int counterMutexEnd(void){ 
+ساكن صحيح counterMutexEnd(فراغ){ 
   g.isInit = 0;
-  return g.m.xMutexEnd();
+  أرجع g.m.xMutexEnd();
 }
 
 /*
 ** Allocate a countable mutex
 */
-static sqlite3_mutex *counterMutexAlloc(int eType){
+ساكن sqlite3_mutex *counterMutexAlloc(صحيح eType){
   sqlite3_mutex *pReal;
   sqlite3_mutex *pRet = 0;
 
-  assert( g.isInit );
-  assert( eType>=SQLITE_MUTEX_FAST );
-  assert( eType<=SQLITE_MUTEX_STATIC_VFS3 );
+  أكد( g.isInit );
+  أكد( eType>=SQLITE_MUTEX_FAST );
+  أكد( eType<=SQLITE_MUTEX_STATIC_VFS3 );
 
   pReal = g.m.xMutexAlloc(eType);
-  if( !pReal ) return 0;
+  إذا( !pReal ) أرجع 0;
 
-  if( eType==SQLITE_MUTEX_FAST || eType==SQLITE_MUTEX_RECURSIVE ){
-    pRet = (sqlite3_mutex *)malloc(sizeof(sqlite3_mutex));
-  }else{
-    int eStaticType = eType - (MAX_MUTEXES - STATIC_MUTEXES);
-    assert( eStaticType>=0 );
-    assert( eStaticType<STATIC_MUTEXES );
+  إذا( eType==SQLITE_MUTEX_FAST || eType==SQLITE_MUTEX_RECURSIVE ){
+    pRet = (sqlite3_mutex *)malloc(حجم(sqlite3_mutex));
+  }وإلا{
+    صحيح eStaticType = eType - (MAX_MUTEXES - STATIC_MUTEXES);
+    أكد( eStaticType>=0 );
+    أكد( eStaticType<STATIC_MUTEXES );
     pRet = &g.aStatic[eStaticType];
   }
 
   pRet->eType = eType;
   pRet->pReal = pReal;
-  return pRet;
+  أرجع pRet;
 }
 
 /*
 ** Free a countable mutex
 */
-static void counterMutexFree(sqlite3_mutex *p){
-  assert( g.isInit );
+ساكن فراغ counterMutexFree(sqlite3_mutex *p){
+  أكد( g.isInit );
   g.m.xMutexFree(p->pReal);
-  if( p->eType==SQLITE_MUTEX_FAST || p->eType==SQLITE_MUTEX_RECURSIVE ){
-    free(p);
+  إذا( p->eType==SQLITE_MUTEX_FAST || p->eType==SQLITE_MUTEX_RECURSIVE ){
+    حرر(p);
   }
 }
 
 /*
 ** Enter a countable mutex.  Block until entry is safe.
 */
-static void counterMutexEnter(sqlite3_mutex *p){
-  assert( g.isInit );
-  assert( p->eType>=0 );
-  assert( p->eType<MAX_MUTEXES );
+ساكن فراغ counterMutexEnter(sqlite3_mutex *p){
+  أكد( g.isInit );
+  أكد( p->eType>=0 );
+  أكد( p->eType<MAX_MUTEXES );
   g.aCounter[p->eType]++;
   g.m.xMutexEnter(p->pReal);
 }
@@ -133,75 +133,75 @@ static void counterMutexEnter(sqlite3_mutex *p){
 /*
 ** Try to enter a mutex.  Return true on success.
 */
-static int counterMutexTry(sqlite3_mutex *p){
-  assert( g.isInit );
-  assert( p->eType>=0 );
-  assert( p->eType<MAX_MUTEXES );
+ساكن صحيح counterMutexTry(sqlite3_mutex *p){
+  أكد( g.isInit );
+  أكد( p->eType>=0 );
+  أكد( p->eType<MAX_MUTEXES );
   g.aCounter[p->eType]++;
-  if( g.disableTry ) return SQLITE_BUSY;
-  return g.m.xMutexTry(p->pReal);
+  إذا( g.disableTry ) أرجع SQLITE_BUSY;
+  أرجع g.m.xMutexTry(p->pReal);
 }
 
 /* Leave a mutex
 */
-static void counterMutexLeave(sqlite3_mutex *p){
-  assert( g.isInit );
+ساكن فراغ counterMutexLeave(sqlite3_mutex *p){
+  أكد( g.isInit );
   g.m.xMutexLeave(p->pReal);
 }
 
 /*
 ** sqlite3_shutdown
 */
-static int SQLITE_TCLAPI test_shutdown(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_shutdown(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
+  صحيح rc;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  إذا( objc!=1 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "");
+    أرجع TCL_ERROR;
   }
 
   rc = sqlite3_shutdown();
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (حرف *)sqlite3ErrName(rc), TCL_VOLATILE);
+  أرجع TCL_OK;
 }
 
 /*
 ** sqlite3_initialize
 */
-static int SQLITE_TCLAPI test_initialize(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_initialize(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
+  صحيح rc;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  إذا( objc!=1 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "");
+    أرجع TCL_ERROR;
   }
 
   rc = sqlite3_initialize();
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (حرف *)sqlite3ErrName(rc), TCL_VOLATILE);
+  أرجع TCL_OK;
 }
 
 /*
 ** install_mutex_counters BOOLEAN
 */
-static int SQLITE_TCLAPI test_install_mutex_counters(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_install_mutex_counters(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = SQLITE_OK;
-  int isInstall;
+  صحيح rc = SQLITE_OK;
+  صحيح isInstall;
 
   sqlite3_mutex_methods counter_methods = {
     counterMutexInit,
@@ -215,92 +215,92 @@ static int SQLITE_TCLAPI test_install_mutex_counters(
     counterMutexNotheld
   };
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "BOOLEAN");
+    أرجع TCL_ERROR;
   }
-  if( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
-    return TCL_ERROR;
-  }
-
-  assert(isInstall==0 || isInstall==1);
-  assert(g.isInstalled==0 || g.isInstalled==1);
-  if( isInstall==g.isInstalled ){
-    Tcl_AppendResult(interp, "mutex counters are ", NULL);
-    Tcl_AppendResult(interp, isInstall?"already installed":"not installed", NULL);
-    return TCL_ERROR;
+  إذا( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
+    أرجع TCL_ERROR;
   }
 
-  if( isInstall ){
-    assert( g.m.xMutexAlloc==0 );
+  أكد(isInstall==0 || isInstall==1);
+  أكد(g.isInstalled==0 || g.isInstalled==1);
+  إذا( isInstall==g.isInstalled ){
+    Tcl_AppendResult(interp, "mutex counters are ", عدم);
+    Tcl_AppendResult(interp, isInstall?"already installed":"not installed", عدم);
+    أرجع TCL_ERROR;
+  }
+
+  إذا( isInstall ){
+    أكد( g.m.xMutexAlloc==0 );
     rc = sqlite3_config(SQLITE_CONFIG_GETMUTEX, &g.m);
-    if( rc==SQLITE_OK ){
+    إذا( rc==SQLITE_OK ){
       sqlite3_config(SQLITE_CONFIG_MUTEX, &counter_methods);
     }
     g.disableTry = 0;
-  }else{
-    assert( g.m.xMutexAlloc );
+  }وإلا{
+    أكد( g.m.xMutexAlloc );
     rc = sqlite3_config(SQLITE_CONFIG_MUTEX, &g.m);
-    memset(&g.m, 0, sizeof(sqlite3_mutex_methods));
+    memset(&g.m, 0, حجم(sqlite3_mutex_methods));
   }
 
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     g.isInstalled = isInstall;
   }
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (حرف *)sqlite3ErrName(rc), TCL_VOLATILE);
+  أرجع TCL_OK;
 }
 
 /*
 ** read_mutex_counters
 */
-static int SQLITE_TCLAPI test_read_mutex_counters(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_read_mutex_counters(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Obj *pRet;
-  int ii;
+  صحيح ii;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  إذا( objc!=1 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "");
+    أرجع TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  Tcl_IncrRefCount(pRet);
-  for(ii=0; ii<MAX_MUTEXES; ii++){
+  Tcl_Incr_Ref_کيراءن(pRet);
+  لكل(ii=0; ii<MAX_MUTEXES; ii++){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj(aName[ii], -1));
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewIntObj(g.aCounter[ii]));
   }
   Tcl_SetObjResult(interp, pRet);
-  Tcl_DecrRefCount(pRet);
+  Tcl_Decr_Ref_کيراءن(pRet);
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
 ** clear_mutex_counters
 */
-static int SQLITE_TCLAPI test_clear_mutex_counters(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_clear_mutex_counters(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int ii;
+  صحيح ii;
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  إذا( objc!=1 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "");
+    أرجع TCL_ERROR;
   }
 
-  for(ii=0; ii<MAX_MUTEXES; ii++){
+  لكل(ii=0; ii<MAX_MUTEXES; ii++){
     g.aCounter[ii] = 0;
   }
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
@@ -308,20 +308,20 @@ static int SQLITE_TCLAPI test_clear_mutex_counters(
 ** will be invalid since the mutex has already been freed.  The
 ** return pointer just checks to see if the mutex really was allocated.
 */
-static int SQLITE_TCLAPI test_alloc_mutex(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_alloc_mutex(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-#if SQLITE_THREADSAFE
+#إذا SQLITE_THREADSAFE
   sqlite3_mutex *p = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-  char zBuf[100];
+  حرف zBuf[100];
   sqlite3_mutex_free(p);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%p", p);
-  Tcl_AppendResult(interp, zBuf, (char*)0);
+  sqlite3_snprintf(حجم(zBuf), zBuf, "%p", p);
+  Tcl_AppendResult(interp, zBuf, (حرف*)0);
 #endif
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
@@ -335,138 +335,138 @@ static int SQLITE_TCLAPI test_alloc_mutex(
 **
 ** Or OPTION can be an raw integer.
 */
-static int SQLITE_TCLAPI test_config(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_config(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  struct ConfigOption {
-    const char *zName;
-    int iValue;
+  بنية ConfigOption {
+    ثابت حرف *zName;
+    صحيح i_نيلاي;
   } aOpt[] = {
     {"singlethread", SQLITE_CONFIG_SINGLETHREAD},
     {"multithread",  SQLITE_CONFIG_MULTITHREAD},
     {"serialized",   SQLITE_CONFIG_SERIALIZED},
     {0, 0}
   };
-  int s = sizeof(struct ConfigOption);
-  int i;
-  int rc;
+  صحيح s = حجم(بنية ConfigOption);
+  صحيح i;
+  صحيح rc;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "");
+    أرجع TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObjStruct(interp, objv[1], aOpt, s, "flag", 0, &i) ){
-    if( Tcl_GetIntFromObj(interp, objv[1], &i) ){
-      return TCL_ERROR;
+  إذا( Tcl_GetIndexFromObjStruct(interp, objv[1], aOpt, s, "flag", 0, &i) ){
+    إذا( Tcl_GetIntFromObj(interp, objv[1], &i) ){
+      أرجع TCL_ERROR;
     }
-  }else{
-    i = aOpt[i].iValue;
+  }وإلا{
+    i = aOpt[i].i_نيلاي;
   }
 
   rc = sqlite3_config(i);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (حرف *)sqlite3ErrName(rc), TCL_VOLATILE);
+  أرجع TCL_OK;
 }
 
-static sqlite3_mutex *getStaticMutexPointer(
+ساكن sqlite3_mutex *getStaticMutexPointer(
   Tcl_Interp *pInterp,
   Tcl_Obj *pObj
 ){
-  int iMutex;
-  if( Tcl_GetIndexFromObj(pInterp, pObj, aName, "mutex name", 0, &iMutex) ){
-    return 0;
+  صحيح iMutex;
+  إذا( Tcl_GetIndexFromObj(pInterp, pObj, aName, "mutex name", 0, &iMutex) ){
+    أرجع 0;
   }
-  assert( iMutex!=SQLITE_MUTEX_FAST && iMutex!=SQLITE_MUTEX_RECURSIVE );
-  return counterMutexAlloc(iMutex);
+  أكد( iMutex!=SQLITE_MUTEX_FAST && iMutex!=SQLITE_MUTEX_RECURSIVE );
+  أرجع counterMutexAlloc(iMutex);
 }
 
-static int SQLITE_TCLAPI test_enter_static_mutex(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_enter_static_mutex(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_mutex *pMutex;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "NAME");
+    أرجع TCL_ERROR;
   }
   pMutex = getStaticMutexPointer(interp, objv[1]);
-  if( !pMutex ){
-    return TCL_ERROR;
+  إذا( !pMutex ){
+    أرجع TCL_ERROR;
   }
   sqlite3_mutex_enter(pMutex);
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_leave_static_mutex(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_leave_static_mutex(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_mutex *pMutex;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "NAME");
+    أرجع TCL_ERROR;
   }
   pMutex = getStaticMutexPointer(interp, objv[1]);
-  if( !pMutex ){
-    return TCL_ERROR;
+  إذا( !pMutex ){
+    أرجع TCL_ERROR;
   }
   sqlite3_mutex_leave(pMutex);
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_enter_db_mutex(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_enter_db_mutex(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "DB");
+    أرجع TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
-    return TCL_ERROR;
+  إذا( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
+    أرجع TCL_ERROR;
   }
-  if( !db ){
-    return TCL_ERROR;
+  إذا( !db ){
+    أرجع TCL_ERROR;
   }
   sqlite3_mutex_enter(sqlite3_db_mutex(db));
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_leave_db_mutex(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_leave_db_mutex(
+  فراغ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_اڠک_Args(interp, 1, objv, "DB");
+    أرجع TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
-    return TCL_ERROR;
+  إذا( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
+    أرجع TCL_ERROR;
   }
-  if( !db ){
-    return TCL_ERROR;
+  إذا( !db ){
+    أرجع TCL_ERROR;
   }
   sqlite3_mutex_leave(sqlite3_db_mutex(db));
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-int Sqlitetest_mutex_Init(Tcl_Interp *interp){
-  static struct {
-    char *zName;
+صحيح Sqlitetest_mutex_Init(Tcl_Interp *interp){
+  ساكن بنية {
+    حرف *zName;
     Tcl_ObjCmdProc *xProc;
   } aCmd[] = {
     { "sqlite3_shutdown",        (Tcl_ObjCmdProc*)test_shutdown },
@@ -484,14 +484,14 @@ int Sqlitetest_mutex_Init(Tcl_Interp *interp){
     { "read_mutex_counters",     (Tcl_ObjCmdProc*)test_read_mutex_counters },
     { "clear_mutex_counters",    (Tcl_ObjCmdProc*)test_clear_mutex_counters },
   };
-  int i;
-  for(i=0; i<sizeof(aCmd)/sizeof(aCmd[0]); i++){
+  صحيح i;
+  لكل(i=0; i<حجم(aCmd)/حجم(aCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
 
   Tcl_LinkVar(interp, "disable_mutex_init", 
-              (char*)&g.disableInit, TCL_LINK_INT);
+              (حرف*)&g.disableInit, TCL_LINK_INT);
   Tcl_LinkVar(interp, "disable_mutex_try", 
-              (char*)&g.disableTry, TCL_LINK_INT);
-  return SQLITE_OK;
+              (حرف*)&g.disableTry, TCL_LINK_INT);
+  أرجع SQLITE_OK;
 }
