@@ -12,65 +12,65 @@
 ** Code for testing all sorts of SQLite interfaces.  This code
 ** implements new SQL functions used by the test scripts.
 */
-#include "sqlite3.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#ଅନ୍ତର୍ଭାଵ "sqlite3.h"
+#ଅନ୍ତର୍ଭାଵ "tclsqlite.h"
+#ଅନ୍ତର୍ଭାଵ <stdlib.h>
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
 
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#ଅନ୍ତର୍ଭାଵ "sqliteInt.h"
+#ଅନ୍ତର୍ଭାଵ "vdbeInt.h"
 
 /*
 ** Allocate nByte bytes of space using sqlite3_malloc(). If the
 ** allocation fails, call sqlite3_result_error_nomem() to notify
 ** the database handle that malloc() has failed.
 */
-static void *testContextMalloc(sqlite3_context *context, int nByte){
-  char *z = sqlite3_malloc(nByte);
-  if( !z && nByte>0 ){
+ସ୍ଥିର ଶୂନ୍ୟ *testContextMalloc(sqlite3_context *context, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nByte){
+  ଅକ୍ଷର *z = sqlite3_malloc(nByte);
+  ଯଦି( !z && nByte>0 ){
     sqlite3_result_error_nomem(context);
   }
-  return z;
+  ଫେରନ୍ତୁ z;
 }
 
 /*
 ** This function generates a string of random characters.  Used for
 ** generating test data.
 */
-static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
-  static const unsigned char zSrc[] = 
+ସ୍ଥିର ଶୂନ୍ୟ randStr(sqlite3_context *context, ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, sqlite3_ମୂଲ୍ୟ **argv){
+  ସ୍ଥିର ଅଚଳ unsigned ଅକ୍ଷର zSrc[] = 
      "abcdefghijklmnopqrstuvwxyz"
      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
      "0123456789"
      ".-!,:*^+=_|?/<> ";
-  int iMin, iMax, n, r, i;
-  unsigned char zBuf[1000];
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iMin, iMax, n, r, i;
+  unsigned ଅକ୍ଷର zBuf[1000];
 
   /* It used to be possible to call randstr() with any number of arguments,
   ** but now it is registered with SQLite as requiring exactly 2.
   */
-  assert(argc==2);
+  ପ୍ରତିଜ୍ଞା(argc==2);
 
-  iMin = sqlite3_value_int(argv[0]);
-  if( iMin<0 ) iMin = 0;
-  if( iMin>=sizeof(zBuf) ) iMin = sizeof(zBuf)-1;
-  iMax = sqlite3_value_int(argv[1]);
-  if( iMax<iMin ) iMax = iMin;
-  if( iMax>=sizeof(zBuf) ) iMax = sizeof(zBuf)-1;
+  iMin = sqlite3_ମୂଲ୍ୟ_int(argv[0]);
+  ଯଦି( iMin<0 ) iMin = 0;
+  ଯଦି( iMin>=ଆକାର(zBuf) ) iMin = ଆକାର(zBuf)-1;
+  iMax = sqlite3_ମୂଲ୍ୟ_int(argv[1]);
+  ଯଦି( iMax<iMin ) iMax = iMin;
+  ଯଦି( iMax>=ଆକାର(zBuf) ) iMax = ଆକାର(zBuf)-1;
   n = iMin;
-  if( iMax>iMin ){
-    sqlite3_randomness(sizeof(r), &r);
+  ଯଦି( iMax>iMin ){
+    sqlite3_randomness(ଆକାର(r), &r);
     r &= 0x7fffffff;
     n += r%(iMax + 1 - iMin);
   }
-  assert( n<sizeof(zBuf) );
+  ପ୍ରତିଜ୍ଞା( n<ଆକାର(zBuf) );
   sqlite3_randomness(n, zBuf);
-  for(i=0; i<n; i++){
-    zBuf[i] = zSrc[zBuf[i]%(sizeof(zSrc)-1)];
+  ପାଇଁ(i=0; i<n; i++){
+    zBuf[i] = zSrc[zBuf[i]%(ଆକାର(zSrc)-1)];
   }
   zBuf[n] = 0;
-  sqlite3_result_text(context, (char*)zBuf, n, SQLITE_TRANSIENT);
+  sqlite3_result_text(context, (ଅକ୍ଷର*)zBuf, n, SQLITE_TRANSIENT);
 }
 
 /*
@@ -84,66 +84,66 @@ static void randStr(sqlite3_context *context, int argc, sqlite3_value **argv){
 **
 ** WARNING: Not threadsafe.
 */
-static int test_destructor_count_var = 0;
-static void destructor(void *p){
-  char *zVal = (char *)p;
-  assert(zVal);
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା test_destructor_ଗଣନା_var = 0;
+ସ୍ଥିର ଶୂନ୍ୟ destructor(ଶୂନ୍ୟ *p){
+  ଅକ୍ଷର *zVal = (ଅକ୍ଷର *)p;
+  ପ୍ରତିଜ୍ଞା(zVal);
   zVal--;
   sqlite3_free(zVal);
-  test_destructor_count_var--;
+  test_destructor_ଗଣନା_var--;
 }
-static void test_destructor(
+ସ୍ଥିର ଶୂନ୍ୟ test_destructor(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  char *zVal;
-  int len;
+  ଅକ୍ଷର *zVal;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା len;
   
-  test_destructor_count_var++;
-  assert( nArg==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  len = sqlite3_value_bytes(argv[0]); 
+  test_destructor_ଗଣନା_var++;
+  ପ୍ରତିଜ୍ଞା( nArg==1 );
+  ଯଦି( sqlite3_ମୂଲ୍ୟ_type(argv[0])==SQLITE_NULL ) ଫେରନ୍ତୁ;
+  len = sqlite3_ମୂଲ୍ୟ_bytes(argv[0]); 
   zVal = testContextMalloc(pCtx, len+3);
-  if( !zVal ){
-    return;
+  ଯଦି( !zVal ){
+    ଫେରନ୍ତୁ;
   }
   zVal[len+1] = 0;
   zVal[len+2] = 0;
   zVal++;
-  memcpy(zVal, sqlite3_value_text(argv[0]), len);
+  memcpy(zVal, sqlite3_ମୂଲ୍ୟ_text(argv[0]), len);
   sqlite3_result_text(pCtx, zVal, -1, destructor);
 }
 #ifndef SQLITE_OMIT_UTF16
-static void test_destructor16(
+ସ୍ଥିର ଶୂନ୍ୟ test_destructor16(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  char *zVal;
-  int len;
+  ଅକ୍ଷର *zVal;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା len;
   
-  test_destructor_count_var++;
-  assert( nArg==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ) return;
-  len = sqlite3_value_bytes16(argv[0]); 
+  test_destructor_ଗଣନା_var++;
+  ପ୍ରତିଜ୍ଞା( nArg==1 );
+  ଯଦି( sqlite3_ମୂଲ୍ୟ_type(argv[0])==SQLITE_NULL ) ଫେରନ୍ତୁ;
+  len = sqlite3_ମୂଲ୍ୟ_bytes16(argv[0]); 
   zVal = testContextMalloc(pCtx, len+3);
-  if( !zVal ){
-    return;
+  ଯଦି( !zVal ){
+    ଫେରନ୍ତୁ;
   }
   zVal[len+1] = 0;
   zVal[len+2] = 0;
   zVal++;
-  memcpy(zVal, sqlite3_value_text16(argv[0]), len);
+  memcpy(zVal, sqlite3_ମୂଲ୍ୟ_text16(argv[0]), len);
   sqlite3_result_text16(pCtx, zVal, -1, destructor);
 }
 #endif
-static void test_destructor_count(
+ସ୍ଥିର ଶୂନ୍ୟ test_destructor_ଗଣନା(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  sqlite3_result_int(pCtx, test_destructor_count_var);
+  sqlite3_result_int(pCtx, test_destructor_ଗଣନା_var);
 }
 
 /*
@@ -152,17 +152,17 @@ static void test_destructor_count(
 ** API function.
 */
 #ifndef SQLITE_UNTESTABLE
-void sqlite3BeginBenignMalloc(void);
-void sqlite3EndBenignMalloc(void);
-#else
+ଶୂନ୍ୟ sqlite3BeginBenignMalloc(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ sqlite3EndBenignMalloc(ଶୂନ୍ୟ);
+#ଅନ୍ୟଥା
   #define sqlite3BeginBenignMalloc()
   #define sqlite3EndBenignMalloc()
 #endif
-static void test_agg_errmsg16_step(sqlite3_context *a, int b,sqlite3_value **c){
+ସ୍ଥିର ଶୂନ୍ୟ test_agg_errmsg16_step(sqlite3_context *a, ପୂର୍ଣ୍ଣସଂଖ୍ୟା b,sqlite3_ମୂଲ୍ୟ **c){
 }
-static void test_agg_errmsg16_final(sqlite3_context *ctx){
+ସ୍ଥିର ଶୂନ୍ୟ test_agg_errmsg16_final(sqlite3_context *ctx){
 #ifndef SQLITE_OMIT_UTF16
-  const void *z;
+  ଅଚଳ ଶୂନ୍ୟ *z;
   sqlite3 * db = sqlite3_context_db_handle(ctx);
   sqlite3_aggregate_context(ctx, 2048);
   z = sqlite3_errmsg16(db);
@@ -181,30 +181,30 @@ static void test_agg_errmsg16_final(sqlite3_context *ctx){
 ** registration, the result for that argument is 1.  The overall result
 ** is the individual argument results separated by spaces.
 */
-static void free_test_auxdata(void *p) {sqlite3_free(p);}
-static void test_auxdata(
+ସ୍ଥିର ଶୂନ୍ୟ free_test_auxdata(ଶୂନ୍ୟ *p) {sqlite3_free(p);}
+ସ୍ଥିର ଶୂନ୍ୟ test_auxdata(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  int i;
-  char *zRet = testContextMalloc(pCtx, nArg*2);
-  if( !zRet ) return;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ଅକ୍ଷର *zRet = testContextMalloc(pCtx, nArg*2);
+  ଯଦି( !zRet ) ଫେରନ୍ତୁ;
   memset(zRet, 0, nArg*2);
-  for(i=0; i<nArg; i++){
-    char const *z = (char*)sqlite3_value_text(argv[i]);
-    if( z ){
-      int n;
-      char *zAux = sqlite3_get_auxdata(pCtx, i);
-      if( zAux ){
+  ପାଇଁ(i=0; i<nArg; i++){
+    ଅକ୍ଷର ଅଚଳ *z = (ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[i]);
+    ଯଦି( z ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା n;
+      ଅକ୍ଷର *zAux = sqlite3_get_auxdata(pCtx, i);
+      ଯଦି( zAux ){
         zRet[i*2] = '1';
-        assert( strcmp(zAux,z)==0 );
-      }else {
+        ପ୍ରତିଜ୍ଞା( strcmp(zAux,z)==0 );
+      }ଅନ୍ୟଥା {
         zRet[i*2] = '0';
       }
-      n = (int)strlen(z) + 1;
+      n = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)strlen(z) + 1;
       zAux = testContextMalloc(pCtx, n);
-      if( zAux ){
+      ଯଦି( zAux ){
         memcpy(zAux, z, n);
         sqlite3_set_auxdata(pCtx, i, zAux, free_test_auxdata);
       }
@@ -219,14 +219,14 @@ static void test_auxdata(
 ** returns a copy of its first argument as the error message.  If the
 ** second argument exists, it becomes the error code.
 */
-static void test_error(
+ସ୍ଥିର ଶୂନ୍ୟ test_error(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  sqlite3_result_error(pCtx, (char*)sqlite3_value_text(argv[0]), -1);
-  if( nArg==2 ){
-    sqlite3_result_error_code(pCtx, sqlite3_value_int(argv[1]));
+  sqlite3_result_error(pCtx, (ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[0]), -1);
+  ଯଦି( nArg==2 ){
+    sqlite3_result_error_code(pCtx, sqlite3_ମୂଲ୍ୟ_int(argv[1]));
   }
 }
 
@@ -236,21 +236,21 @@ static void test_error(
 ** and so forth.  Can be used (for example) to provide a sequence number
 ** in a result set.
 */
-static void counterFunc(
+ସ୍ଥିର ଶୂନ୍ୟ counterFunc(
   sqlite3_context *pCtx,   /* Function context */
-  int nArg,                /* Number of function arguments */
-  sqlite3_value **argv     /* Values for all function arguments */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,                /* Number of function arguments */
+  sqlite3_ମୂଲ୍ୟ **argv     /* Values for all function arguments */
 ){
-  int *pCounter = (int*)sqlite3_get_auxdata(pCtx, 0);
-  if( pCounter==0 ){
-    pCounter = sqlite3_malloc( sizeof(*pCounter) );
-    if( pCounter==0 ){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *pCounter = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା*)sqlite3_get_auxdata(pCtx, 0);
+  ଯଦି( pCounter==0 ){
+    pCounter = sqlite3_malloc( ଆକାର(*pCounter) );
+    ଯଦି( pCounter==0 ){
       sqlite3_result_error_nomem(pCtx);
-      return;
+      ଫେରନ୍ତୁ;
     }
-    *pCounter = sqlite3_value_int(argv[0]);
+    *pCounter = sqlite3_ମୂଲ୍ୟ_int(argv[0]);
     sqlite3_set_auxdata(pCtx, 0, pCounter, sqlite3_free);
-  }else{
+  }ଅନ୍ୟଥା{
     ++*pCounter;
   }
   sqlite3_result_int(pCtx, *pCounter);
@@ -269,52 +269,52 @@ static void counterFunc(
 ** We want to verify that the type conversions that occur on the
 ** first argument do not invalidate the second argument.
 */
-static void test_isolation(
+ସ୍ଥିର ଶୂନ୍ୟ test_isolation(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
 #ifndef SQLITE_OMIT_UTF16
-  sqlite3_value_text16(argv[0]);
-  sqlite3_value_text(argv[0]);
-  sqlite3_value_text16(argv[0]);
-  sqlite3_value_text(argv[0]);
+  sqlite3_ମୂଲ୍ୟ_text16(argv[0]);
+  sqlite3_ମୂଲ୍ୟ_text(argv[0]);
+  sqlite3_ମୂଲ୍ୟ_text16(argv[0]);
+  sqlite3_ମୂଲ୍ୟ_text(argv[0]);
 #endif
-  sqlite3_result_value(pCtx, argv[1]);
+  sqlite3_result_ମୂଲ୍ୟ(pCtx, argv[1]);
 }
 
 /*
 ** Invoke an SQL statement recursively.  The function result is the 
 ** first column of the first row of the result set.
 */
-static void test_eval(
+ସ୍ଥିର ଶୂନ୍ୟ test_eval(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
   sqlite3_stmt *pStmt;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
   sqlite3 *db = sqlite3_context_db_handle(pCtx);
-  const char *zSql;
-  static const char zTag[] = "test_eval()";
+  ଅଚଳ ଅକ୍ଷର *zSql;
+  ସ୍ଥିର ଅଚଳ ଅକ୍ଷର zTag[] = "test_eval()";
 
-  if( sqlite3_get_clientdata(db, zTag) ){
+  ଯଦି( sqlite3_get_clientdata(db, zTag) ){
     sqlite3_result_error(pCtx, "nested test_eval()", -1);
-    return;
+    ଫେରନ୍ତୁ;
   }
-  zSql = (char*)sqlite3_value_text(argv[0]);
+  zSql = (ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[0]);
   sqlite3_set_clientdata(db, zTag, &rc, 0);
   rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, 0);
-  if( rc==SQLITE_OK ){
+  ଯଦି( rc==SQLITE_OK ){
     rc = sqlite3_step(pStmt);
-    if( rc==SQLITE_ROW ){
-      sqlite3_result_value(pCtx, sqlite3_column_value(pStmt, 0));
+    ଯଦି( rc==SQLITE_ROW ){
+      sqlite3_result_ମୂଲ୍ୟ(pCtx, sqlite3_column_ମୂଲ୍ୟ(pStmt, 0));
     }
     rc = sqlite3_finalize(pStmt);
   }
   sqlite3_set_clientdata(db, zTag, 0, 0);
-  if( rc ){
-    char *zErr;
+  ଯଦି( rc ){
+    ଅକ୍ଷର *zErr;
     zErr = sqlite3_mprintf("sqlite3_prepare_v2() error: %s",sqlite3_errmsg(db));
     sqlite3_result_text(pCtx, zErr, -1, sqlite3_free);
     sqlite3_result_error_code(pCtx, rc);
@@ -325,22 +325,22 @@ static void test_eval(
 /*
 ** convert one character from hex to binary
 */
-static int testHexChar(char c){
-  if( c>='0' && c<='9' ){
-    return c - '0';
-  }else if( c>='a' && c<='f' ){
-    return c - 'a' + 10;
-  }else if( c>='A' && c<='F' ){
-    return c - 'A' + 10;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା testHexChar(ଅକ୍ଷର c){
+  ଯଦି( c>='0' && c<='9' ){
+    ଫେରନ୍ତୁ c - '0';
+  }ଅନ୍ୟଥା ଯଦି( c>='a' && c<='f' ){
+    ଫେରନ୍ତୁ c - 'a' + 10;
+  }ଅନ୍ୟଥା ଯଦି( c>='A' && c<='F' ){
+    ଫେରନ୍ତୁ c - 'A' + 10;
   }
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 /*
 ** Convert hex to binary.
 */
-static void testHexToBin(const char *zIn, char *zOut){
-  while( zIn[0] && zIn[1] ){
+ସ୍ଥିର ଶୂନ୍ୟ testHexToBin(ଅଚଳ ଅକ୍ଷର *zIn, ଅକ୍ଷର *zOut){
+  ଯେତେବେଳେ( zIn[0] && zIn[1] ){
     *(zOut++) = (testHexChar(zIn[0])<<4) + testHexChar(zIn[1]);
     zIn += 2;
   }
@@ -353,21 +353,21 @@ static void testHexToBin(const char *zIn, char *zOut){
 ** result using sqlite3_result_text16le().
 */
 #ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16be(
+ସ୍ଥିର ଶୂନ୍ୟ testHexToUtf16be(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା n;
+  ଅଚଳ ଅକ୍ଷର *zIn;
+  ଅକ୍ଷର *zOut;
+  ପ୍ରତିଜ୍ଞା( nArg==1 );
+  n = sqlite3_ମୂଲ୍ୟ_bytes(argv[0]);
+  zIn = (ଅଚଳ ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[0]);
   zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
+  ଯଦି( zOut==0 ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }ଅନ୍ୟଥା{
     testHexToBin(zIn, zOut);
     sqlite3_result_text16be(pCtx, zOut, n/2, sqlite3_free);
   }
@@ -380,21 +380,21 @@ static void testHexToUtf16be(
 ** Convert the input string from HEX into binary.  Then return the
 ** result using sqlite3_result_text16le().
 */
-static void testHexToUtf8(
+ସ୍ଥିର ଶୂନ୍ୟ testHexToUtf8(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା n;
+  ଅଚଳ ଅକ୍ଷର *zIn;
+  ଅକ୍ଷର *zOut;
+  ପ୍ରତିଜ୍ଞା( nArg==1 );
+  n = sqlite3_ମୂଲ୍ୟ_bytes(argv[0]);
+  zIn = (ଅଚଳ ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[0]);
   zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
+  ଯଦି( zOut==0 ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }ଅନ୍ୟଥା{
     testHexToBin(zIn, zOut);
     sqlite3_result_text(pCtx, zOut, n/2, sqlite3_free);
   }
@@ -407,21 +407,21 @@ static void testHexToUtf8(
 ** result using sqlite3_result_text16le().
 */
 #ifndef SQLITE_OMIT_UTF16
-static void testHexToUtf16le(
+ସ୍ଥିର ଶୂନ୍ୟ testHexToUtf16le(
   sqlite3_context *pCtx, 
-  int nArg,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  int n;
-  const char *zIn;
-  char *zOut;
-  assert( nArg==1 );
-  n = sqlite3_value_bytes(argv[0]);
-  zIn = (const char*)sqlite3_value_text(argv[0]);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା n;
+  ଅଚଳ ଅକ୍ଷର *zIn;
+  ଅକ୍ଷର *zOut;
+  ପ୍ରତିଜ୍ଞା( nArg==1 );
+  n = sqlite3_ମୂଲ୍ୟ_bytes(argv[0]);
+  zIn = (ଅଚଳ ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[0]);
   zOut = sqlite3_malloc( n/2 );
-  if( zOut==0 ){
+  ଯଦି( zOut==0 ){
     sqlite3_result_error_nomem(pCtx);
-  }else{
+  }ଅନ୍ୟଥା{
     testHexToBin(zIn, zOut);
     sqlite3_result_text16le(pCtx, zOut, n/2, sqlite3_free);
   }
@@ -435,27 +435,27 @@ static void testHexToUtf16le(
 ** the big-endian hexadecimal representation of the ieee754 encoding of
 ** that number.  If X is not a real number, return NULL.
 */
-static void real2hex(
+ସ୍ଥିର ଶୂନ୍ୟ real2hex(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  union {
+  ସଂଘ {
     sqlite3_uint64 i;
-    double r;
-    unsigned char x[8];
+    ଦ୍ୱିଗୁଣ r;
+    unsigned ଅକ୍ଷର x[8];
   } v;
-  char zOut[20];
-  int i;
-  int bigEndian;
+  ଅକ୍ଷର zOut[20];
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା bigEndian;
   v.i = 1;
   bigEndian = v.x[0]==0;
-  v.r = sqlite3_value_double(argv[0]);
-  for(i=0; i<8; i++){
-    if( bigEndian ){
+  v.r = sqlite3_ମୂଲ୍ୟ_double(argv[0]);
+  ପାଇଁ(i=0; i<8; i++){
+    ଯଦି( bigEndian ){
       zOut[i*2]   = "0123456789abcdef"[v.x[i]>>4];
       zOut[i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
-    }else{
+    }ଅନ୍ୟଥା{
       zOut[14-i*2]   = "0123456789abcdef"[v.x[i]>>4];
       zOut[14-i*2+1] = "0123456789abcdef"[v.x[i]&0xf];
     }
@@ -472,10 +472,10 @@ static void real2hex(
 ** second argument is the index of the field within that record to
 ** extract and return.
 */
-static void test_extract(
+ସ୍ଥିର ଶୂନ୍ୟ test_extract(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   u8 *pRec;
@@ -483,32 +483,32 @@ static void test_extract(
   u8 *pHdr;                       /* Current point in record header */
   u8 *pBody;                      /* Current point in record data */
   u64 nHdr;                       /* Bytes in record header */
-  int iIdx;                       /* Required field */
-  int iCurrent = 0;               /* Current field */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iIdx;                       /* Required field */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iCurrent = 0;               /* Current field */
 
-  assert( argc==2 );
-  pRec = (u8*)sqlite3_value_blob(argv[0]);
-  iIdx = sqlite3_value_int(argv[1]);
+  ପ୍ରତିଜ୍ଞା( argc==2 );
+  pRec = (u8*)sqlite3_ମୂଲ୍ୟ_blob(argv[0]);
+  iIdx = sqlite3_ମୂଲ୍ୟ_int(argv[1]);
 
   pHdr = pRec + sqlite3GetVarint(pRec, &nHdr);
   pBody = pEndHdr = &pRec[nHdr];
 
-  for(iCurrent=0; pHdr<pEndHdr && iCurrent<=iIdx; iCurrent++){
+  ପାଇଁ(iCurrent=0; pHdr<pEndHdr && iCurrent<=iIdx; iCurrent++){
     u64 iSerialType;
     Mem mem;
 
-    memset(&mem, 0, sizeof(mem));
+    memset(&mem, 0, ଆକାର(mem));
     mem.db = db;
     mem.enc = ENC(db);
     pHdr += sqlite3GetVarint(pHdr, &iSerialType);
     sqlite3VdbeSerialGet(pBody, (u32)iSerialType, &mem);
     pBody += sqlite3VdbeSerialTypeLen((u32)iSerialType);
 
-    if( iCurrent==iIdx ){
-      sqlite3_result_value(context, &mem);
+    ଯଦି( iCurrent==iIdx ){
+      sqlite3_result_ମୂଲ୍ୟ(context, &mem);
     }
 
-    if( mem.szMalloc ) sqlite3DbFree(db, mem.zMalloc);
+    ଯଦି( mem.szMalloc ) sqlite3DbFree(db, mem.zMalloc);
   }
 }
 
@@ -520,10 +520,10 @@ static void test_extract(
 ** a tcl list (type SQLITE_TEXT) containing each of the values stored
 ** in the record.
 */
-static void test_decode(
+ସ୍ଥିର ଶୂନ୍ୟ test_decode(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
   sqlite3 *db = sqlite3_context_db_handle(context);
   u8 *pRec;
@@ -534,75 +534,75 @@ static void test_decode(
   Tcl_Obj *pRet;                  /* Return value */
 
   pRet = Tcl_NewObj();
-  Tcl_IncrRefCount(pRet);
+  Tcl_Incr_Ref_ଗଣନା(pRet);
 
-  assert( argc==1 );
-  pRec = (u8*)sqlite3_value_blob(argv[0]);
+  ପ୍ରତିଜ୍ଞା( argc==1 );
+  pRec = (u8*)sqlite3_ମୂଲ୍ୟ_blob(argv[0]);
 
   pHdr = pRec + sqlite3GetVarint(pRec, &nHdr);
   pBody = pEndHdr = &pRec[nHdr];
-  while( pHdr<pEndHdr ){
+  ଯେତେବେଳେ( pHdr<pEndHdr ){
     Tcl_Obj *pVal = 0;
     u64 iSerialType;
     Mem mem;
 
-    memset(&mem, 0, sizeof(mem));
+    memset(&mem, 0, ଆକାର(mem));
     mem.db = db;
     mem.enc = ENC(db);
     pHdr += sqlite3GetVarint(pHdr, &iSerialType);
     sqlite3VdbeSerialGet(pBody, (u32)iSerialType, &mem);
     pBody += sqlite3VdbeSerialTypeLen((u32)iSerialType);
 
-    switch( sqlite3_value_type(&mem) ){
-      case SQLITE_TEXT:
-        pVal = Tcl_NewStringObj((const char*)sqlite3_value_text(&mem), -1);
-        break;
+    ବାଛ( sqlite3_ମୂଲ୍ୟ_type(&mem) ){
+      ସ୍ଥିତି SQLITE_TEXT:
+        pVal = Tcl_NewStringObj((ଅଚଳ ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(&mem), -1);
+        ଭାଙ୍ଗ;
 
-      case SQLITE_BLOB: {
-        char hexdigit[] = {
+      ସ୍ଥିତି SQLITE_BLOB: {
+        ଅକ୍ଷର hexdigit[] = {
           '0', '1', '2', '3', '4', '5', '6', '7',
           '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
         };
-        int n = sqlite3_value_bytes(&mem);
-        u8 *z = (u8*)sqlite3_value_blob(&mem);
-        int i;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା n = sqlite3_ମୂଲ୍ୟ_bytes(&mem);
+        u8 *z = (u8*)sqlite3_ମୂଲ୍ୟ_blob(&mem);
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
         pVal = Tcl_NewStringObj("x'", -1);
-        for(i=0; i<n; i++){
-          char hex[3];
+        ପାଇଁ(i=0; i<n; i++){
+          ଅକ୍ଷର hex[3];
           hex[0] = hexdigit[((z[i] >> 4) & 0x0F)];
           hex[1] = hexdigit[(z[i] & 0x0F)];
           hex[2] = '\0';
           Tcl_AppendStringsToObj(pVal, hex, 0);
         }
         Tcl_AppendStringsToObj(pVal, "'", 0);
-        break;
+        ଭାଙ୍ଗ;
       }
 
-      case SQLITE_FLOAT:
-        pVal = Tcl_NewDoubleObj(sqlite3_value_double(&mem));
-        break;
+      ସ୍ଥିତି SQLITE_FLOAT:
+        pVal = Tcl_NewDoubleObj(sqlite3_ମୂଲ୍ୟ_double(&mem));
+        ଭାଙ୍ଗ;
 
-      case SQLITE_INTEGER:
-        pVal = Tcl_NewWideIntObj(sqlite3_value_int64(&mem));
-        break;
+      ସ୍ଥିତି SQLITE_INTEGER:
+        pVal = Tcl_NewWideIntObj(sqlite3_ମୂଲ୍ୟ_int64(&mem));
+        ଭାଙ୍ଗ;
 
-      case SQLITE_NULL:
+      ସ୍ଥିତି SQLITE_NULL:
         pVal = Tcl_NewStringObj("NULL", -1);
-        break;
+        ଭାଙ୍ଗ;
 
-      default:
-        assert( 0 );
+      ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
+        ପ୍ରତିଜ୍ଞା( 0 );
     }
 
     Tcl_ListObjAppendElement(0, pRet, pVal);
 
-    if( mem.szMalloc ){
+    ଯଦି( mem.szMalloc ){
       sqlite3DbFree(db, mem.zMalloc);
     }
   }
 
   sqlite3_result_text(context, Tcl_GetString(pRet), -1, SQLITE_TRANSIENT);
-  Tcl_DecrRefCount(pRet);
+  Tcl_Decr_Ref_ଗଣନା(pRet);
 }
 
 /*
@@ -613,12 +613,12 @@ static void test_decode(
 ** check that the integer parameter is within range before passing it
 ** to sqlite3_result_zeroblob().
 */
-static void test_zeroblob(
+ସ୍ଥିର ଶୂନ୍ୟ test_zeroblob(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  int nZero = sqlite3_value_int(argv[0]);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nZero = sqlite3_ମୂଲ୍ୟ_int(argv[0]);
   sqlite3_result_zeroblob(context, nZero);
 }
 
@@ -626,12 +626,12 @@ static void test_zeroblob(
 **
 ** Return the subtype for value V.
 */
-static void test_getsubtype(
+ସ୍ଥିର ଶୂନ୍ୟ test_getsubtype(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  sqlite3_result_int(context, (int)sqlite3_value_subtype(argv[0]));
+  sqlite3_result_int(context, (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)sqlite3_ମୂଲ୍ୟ_subtype(argv[0]));
 }
 
 /*         test_frombind(A,B,C,...)
@@ -639,15 +639,15 @@ static void test_getsubtype(
 ** Return an integer bitmask that has a bit set for every argument
 ** (up to the first 63 arguments) that originates from a bind a parameter.
 */
-static void test_frombind(
+ସ୍ଥିର ଶୂନ୍ୟ test_frombind(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
   sqlite3_uint64 m = 0;
-  int i;
-  for(i=0; i<argc && i<63; i++){
-    if( sqlite3_value_frombind(argv[i]) ) m |= ((sqlite3_uint64)1)<<i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପାଇଁ(i=0; i<argc && i<63; i++){
+    ଯଦି( sqlite3_ମୂଲ୍ୟ_frombind(argv[i]) ) m |= ((sqlite3_uint64)1)<<i;
   }
   sqlite3_result_int64(context, (sqlite3_int64)m);
 }
@@ -656,25 +656,25 @@ static void test_frombind(
 **
 ** Return the value V with its subtype changed to T
 */
-static void test_setsubtype(
+ସ୍ଥିର ଶୂନ୍ୟ test_setsubtype(
   sqlite3_context *context,
-  int argc,
-  sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,
+  sqlite3_ମୂଲ୍ୟ **argv
 ){
-  sqlite3_result_value(context, argv[0]);
-  sqlite3_result_subtype(context, (unsigned int)sqlite3_value_int(argv[1]));
+  sqlite3_result_ମୂଲ୍ୟ(context, argv[0]);
+  sqlite3_result_subtype(context, (unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା)sqlite3_ମୂଲ୍ୟ_int(argv[1]));
 }
 
-static int registerTestFunctions(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା registerTestFunctions(
   sqlite3 *db,
-  char **pzErrMsg,
-  const sqlite3_api_routines *pThunk
+  ଅକ୍ଷର **pz_Err_ସନ୍ଦେଶ,
+  ଅଚଳ sqlite3_api_routines *pThunk
 ){
-  static const struct {
-     char *zName;
-     signed char nArg;
-     unsigned int eTextRep; /* 1: UTF-16.  0: UTF-8 */
-     void (*xFunc)(sqlite3_context*,int,sqlite3_value **);
+  ସ୍ଥିର ଅଚଳ ସଂରଚନା {
+     ଅକ୍ଷର *zName;
+     signed ଅକ୍ଷର nArg;
+     unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା eTextRep; /* 1: UTF-16.  0: UTF-8 */
+     ଶୂନ୍ୟ (*xFunc)(sqlite3_context*,ପୂର୍ଣ୍ଣସଂଖ୍ୟା,sqlite3_ମୂଲ୍ୟ **);
   } aFuncs[] = {
     { "randstr",               2, SQLITE_UTF8, randStr    },
     { "test_destructor",       1, SQLITE_UTF8, test_destructor},
@@ -684,7 +684,7 @@ static int registerTestFunctions(
     { "hex_to_utf16le",        1, SQLITE_UTF8, testHexToUtf16le},
 #endif
     { "hex_to_utf8",           1, SQLITE_UTF8, testHexToUtf8},
-    { "test_destructor_count", 0, SQLITE_UTF8, test_destructor_count},
+    { "test_destructor_count", 0, SQLITE_UTF8, test_destructor_ଗଣନା},
     { "test_auxdata",         -1, SQLITE_UTF8, test_auxdata},
     { "test_error",            1, SQLITE_UTF8, test_error},
     { "test_error",            2, SQLITE_UTF8, test_error},
@@ -700,9 +700,9 @@ static int registerTestFunctions(
                                                test_setsubtype},
     { "test_frombind",        -1, SQLITE_UTF8, test_frombind},
   };
-  int i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
 
-  for(i=0; i<sizeof(aFuncs)/sizeof(aFuncs[0]); i++){
+  ପାଇଁ(i=0; i<ଆକାର(aFuncs)/ଆକାର(aFuncs[0]); i++){
     sqlite3_create_function(db, aFuncs[i].zName, aFuncs[i].nArg,
         aFuncs[i].eTextRep, 0, aFuncs[i].xFunc, 0, 0);
   }
@@ -710,7 +710,7 @@ static int registerTestFunctions(
   sqlite3_create_function(db, "test_agg_errmsg16", 0, SQLITE_ANY, 0, 0, 
       test_agg_errmsg16_step, test_agg_errmsg16_final);
       
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
@@ -720,26 +720,26 @@ static int registerTestFunctions(
 ** the standard set of test functions to be loaded into each new
 ** database connection.
 */
-static int SQLITE_TCLAPI autoinstall_test_funcs(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI autoinstall_test_funcs(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int Md5_Register(sqlite3 *, char **, const sqlite3_api_routines *);
-  int rc = sqlite3_auto_extension((void(*)(void))registerTestFunctions);
-  if( rc==SQLITE_OK ){
-    rc = sqlite3_auto_extension((void(*)(void))Md5_Register);
+  ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା Md5_Register(sqlite3 *, ଅକ୍ଷର **, ଅଚଳ sqlite3_api_routines *);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = sqlite3_auto_extension((ଶୂନ୍ୟ(*)(ଶୂନ୍ୟ))registerTestFunctions);
+  ଯଦି( rc==SQLITE_OK ){
+    rc = sqlite3_auto_extension((ଶୂନ୍ୟ(*)(ଶୂନ୍ୟ))Md5_Register);
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
 ** A bogus step function and finalizer function.
 */
-static void tStep(sqlite3_context *a, int b, sqlite3_value **c){}
-static void tFinal(sqlite3_context *a){}
+ସ୍ଥିର ଶୂନ୍ୟ tStep(sqlite3_context *a, ପୂର୍ଣ୍ଣସଂଖ୍ୟା b, sqlite3_ମୂଲ୍ୟ **c){}
+ସ୍ଥିର ଶୂନ୍ୟ tFinal(sqlite3_context *a){}
 
 
 /*
@@ -748,39 +748,39 @@ static void tFinal(sqlite3_context *a){}
 ** Make various calls to sqlite3_create_function that do not have valid
 ** parameters.  Verify that the error condition is detected and reported.
 */
-static int SQLITE_TCLAPI abuse_create_function(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI abuse_create_function(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା getDbPointer(Tcl_Interp*, ଅଚଳ ଅକ୍ଷର*, sqlite3**);
   sqlite3 *db;
-  int rc;
-  int mxArg;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା mxArg;
 
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ଯଦି( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ଫେରନ୍ତୁ TCL_ERROR;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep,tStep,tFinal);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE ) ଯାଅ abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep, tStep, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE ) ଯାଅ abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, tStep, 0, tFinal);
-  if( rc!=SQLITE_MISUSE) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE) ଯାଅ abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, 0, 0, tFinal);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE ) ଯାଅ abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 1, SQLITE_UTF8, 0, 0, tStep, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE ) ଯାଅ abuse_err;
 
   rc = sqlite3_create_function(db, "tx", -2, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE ) ଯାଅ abuse_err;
 
   rc = sqlite3_create_function(db, "tx", 32768, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE ) ଯାଅ abuse_err;
 
   rc = sqlite3_create_function(db, "funcxx"
        "_123456789_123456789_123456789_123456789_123456789"
@@ -789,7 +789,7 @@ static int SQLITE_TCLAPI abuse_create_function(
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789",
        1, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_MISUSE ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_MISUSE ) ଯାଅ abuse_err;
 
   /* This last function registration should actually work.  Generate
   ** a no-op function (that always returns NULL) and which has the
@@ -804,14 +804,14 @@ static int SQLITE_TCLAPI abuse_create_function(
        "_123456789_123456789_123456789_123456789_123456789"
        "_123456789_123456789_123456789_123456789_123456789",
        mxArg, SQLITE_UTF8, 0, tStep, 0, 0);
-  if( rc!=SQLITE_OK ) goto abuse_err;
+  ଯଦି( rc!=SQLITE_OK ) ଯାଅ abuse_err;
                                 
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 
 abuse_err:
   Tcl_AppendResult(interp, "sqlite3_create_function abused test failed", 
-                   (char*)0);
-  return TCL_ERROR;
+                   (ଅକ୍ଷର*)0);
+  ଫେରନ୍ତୁ TCL_ERROR;
 }
 
 
@@ -849,15 +849,15 @@ abuse_err:
 **     WHERE documents MATCH <query> 
 **     ORDER BY rank(matchinfo(documents), 1.0, 0.5) DESC
 */
-static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
-  int *aMatchinfo;                /* Return value of matchinfo() */
-  int nMatchinfo;                 /* Number of elements in aMatchinfo[] */
-  int nCol = 0;                   /* Number of columns in the table */
-  int nPhrase = 0;                /* Number of phrases in the query */
-  int iPhrase;                    /* Current phrase */
-  double score = 0.0;             /* Value to return */
+ସ୍ଥିର ଶୂନ୍ୟ rankfunc(sqlite3_context *pCtx, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nVal, sqlite3_ମୂଲ୍ୟ **apVal){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *aMatchinfo;                /* Return value of matchinfo() */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nMatchinfo;                 /* Number of elements in aMatchinfo[] */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCol = 0;                   /* Number of columns in the table */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nPhrase = 0;                /* Number of phrases in the query */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iPhrase;                    /* Current phrase */
+  ଦ୍ୱିଗୁଣ score = 0.0;             /* Value to return */
 
-  assert( sizeof(int)==4 );
+  ପ୍ରତିଜ୍ଞା( ଆକାର(ପୂର୍ଣ୍ଣସଂଖ୍ୟା)==4 );
 
   /* Check that the number of arguments passed to this function is correct.
   ** If not, jump to wrong_number_args. Set aMatchinfo to point to the array
@@ -866,23 +866,23 @@ static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
   ** query, and nCol to the number of columns in the table. Then check that the
   ** size of the matchinfo blob is as expected. Return an error if it is not.
   */
-  if( nVal<1 ) goto wrong_number_args;
-  aMatchinfo = (int*)sqlite3_value_blob(apVal[0]);
-  nMatchinfo = sqlite3_value_bytes(apVal[0]) / sizeof(int);
-  if( nMatchinfo>=2 ){
+  ଯଦି( nVal<1 ) ଯାଅ wrong_ସଂଖ୍ୟା_args;
+  aMatchinfo = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା*)sqlite3_ମୂଲ୍ୟ_blob(apVal[0]);
+  nMatchinfo = sqlite3_ମୂଲ୍ୟ_bytes(apVal[0]) / ଆକାର(ପୂର୍ଣ୍ଣସଂଖ୍ୟା);
+  ଯଦି( nMatchinfo>=2 ){
     nPhrase = aMatchinfo[0];
     nCol = aMatchinfo[1];
   }
-  if( nMatchinfo!=(2+3*nCol*nPhrase) ){
+  ଯଦି( nMatchinfo!=(2+3*nCol*nPhrase) ){
     sqlite3_result_error(pCtx,
         "invalid matchinfo blob passed to function rank()", -1);
-    return;
+    ଫେରନ୍ତୁ;
   }
-  if( nVal!=(1+nCol) ) goto wrong_number_args;
+  ଯଦି( nVal!=(1+nCol) ) ଯାଅ wrong_ସଂଖ୍ୟା_args;
 
   /* Iterate through each phrase in the users query. */
-  for(iPhrase=0; iPhrase<nPhrase; iPhrase++){
-    int iCol;                     /* Current column */
+  ପାଇଁ(iPhrase=0; iPhrase<nPhrase; iPhrase++){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା iCol;                     /* Current column */
 
     /* Now iterate through each column in the users query. For each column,
     ** increment the relevancy score by:
@@ -893,65 +893,65 @@ static void rankfunc(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
     ** the hit count and global hit counts for each column are found in 
     ** aPhraseinfo[iCol*3] and aPhraseinfo[iCol*3+1], respectively.
     */
-    int *aPhraseinfo = &aMatchinfo[2 + iPhrase*nCol*3];
-    for(iCol=0; iCol<nCol; iCol++){
-      int nHitCount = aPhraseinfo[3*iCol];
-      int nGlobalHitCount = aPhraseinfo[3*iCol+1];
-      double weight = sqlite3_value_double(apVal[iCol+1]);
-      if( nHitCount>0 ){
-        score += ((double)nHitCount / (double)nGlobalHitCount) * weight;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା *aPhraseinfo = &aMatchinfo[2 + iPhrase*nCol*3];
+    ପାଇଁ(iCol=0; iCol<nCol; iCol++){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା n_Hit_ଗଣନା = aPhraseinfo[3*iCol];
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା n_Global_Hit_ଗଣନା = aPhraseinfo[3*iCol+1];
+      ଦ୍ୱିଗୁଣ weight = sqlite3_ମୂଲ୍ୟ_double(apVal[iCol+1]);
+      ଯଦି( n_Hit_ଗଣନା>0 ){
+        score += ((ଦ୍ୱିଗୁଣ)n_Hit_ଗଣନା / (ଦ୍ୱିଗୁଣ)n_Global_Hit_ଗଣନା) * weight;
       }
     }
   }
 
   sqlite3_result_double(pCtx, score);
-  return;
+  ଫେରନ୍ତୁ;
 
   /* Jump here if the wrong number of arguments are passed to this function */
-wrong_number_args:
+wrong_ସଂଖ୍ୟା_args:
   sqlite3_result_error(pCtx, "wrong number of arguments to function rank()", -1);
 }
 
-static int SQLITE_TCLAPI install_fts3_rank_function(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI install_fts3_rank_function(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା getDbPointer(Tcl_Interp*, ଅଚଳ ଅକ୍ଷର*, sqlite3**);
   sqlite3 *db;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ଯଦି( objc!=2 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "DB");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ଯଦି( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ଫେରନ୍ତୁ TCL_ERROR;
   sqlite3_create_function(db, "rank", -1, SQLITE_UTF8, 0, rankfunc, 0, 0);
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_func_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlitetest_func_Init(Tcl_Interp *interp){
+  ସ୍ଥିର ସଂରଚନା {
+     ଅକ୍ଷର *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
      { "autoinstall_test_functions",    autoinstall_test_funcs },
      { "abuse_create_function",         abuse_create_function  },
      { "install_fts3_rank_function",    install_fts3_rank_function  },
   };
-  int i;
-  extern int Md5_Register(sqlite3 *, char **, const sqlite3_api_routines *);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା Md5_Register(sqlite3 *, ଅକ୍ଷର **, ଅଚଳ sqlite3_api_routines *);
 
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  ପାଇଁ(i=0; i<ଆକାର(aObjCmd)/ଆକାର(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
   sqlite3_initialize();
-  sqlite3_auto_extension((void(*)(void))registerTestFunctions);
-  sqlite3_auto_extension((void(*)(void))Md5_Register);
-  return TCL_OK;
+  sqlite3_auto_extension((ଶୂନ୍ୟ(*)(ଶୂନ୍ୟ))registerTestFunctions);
+  sqlite3_auto_extension((ଶୂନ୍ୟ(*)(ଶୂନ୍ୟ))Md5_Register);
+  ଫେରନ୍ତୁ TCL_OK;
 }

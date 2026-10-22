@@ -14,17 +14,17 @@
 ** the effect on the database file of an OS crash or power failure.  This
 ** is used to test the ability of SQLite to recover from those situations.
 */
-#if SQLITE_TEST          /* This file is used for testing only */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#ଯଦି SQLITE_TEST          /* This file is used for testing only */
+#ଅନ୍ତର୍ଭାଵ "sqliteInt.h"
+#ଅନ୍ତର୍ଭାଵ "tclsqlite.h"
 
 #ifndef SQLITE_OMIT_DISKIO  /* This file is a no-op if disk I/O is disabled */
 
 /* #define TRACE_CRASHTEST */
 
-typedef struct CrashFile CrashFile;
-typedef struct CrashGlobal CrashGlobal;
-typedef struct WriteBuffer WriteBuffer;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା CrashFile CrashFile;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା CrashGlobal CrashGlobal;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା WriteBuffer WriteBuffer;
 
 /*
 ** Method:
@@ -114,78 +114,78 @@ typedef struct WriteBuffer WriteBuffer;
 ** not xWrite(). In that case, iOffset is the size that the file is
 ** truncated to.
 */
-struct WriteBuffer {
+ସଂରଚନା WriteBuffer {
   i64 iOffset;                 /* Byte offset of the start of this write() */
-  int nBuf;                    /* Number of bytes written */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nBuf;                    /* Number of bytes written */
   u8 *zBuf;                    /* Pointer to copy of written data */
   CrashFile *pFile;            /* File this write() applies to */
 
   WriteBuffer *pNext;          /* Next in CrashGlobal.pWriteList */
 };
 
-struct CrashFile {
-  const sqlite3_io_methods *pMethod;   /* Must be first */
+ସଂରଚନା CrashFile {
+  ଅଚଳ sqlite3_io_methods *pMethod;   /* Must be first */
   sqlite3_file *pRealFile;             /* Underlying "real" file handle */
-  char *zName;
-  int flags;                           /* Flags the file was opened with */
+  ଅକ୍ଷର *zName;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags;                           /* Flags the file was opened with */
 
   /* Cache of the entire file. This is used to speed up OsRead() and
   ** OsFileSize() calls. Although both could be done by traversing the
   ** write-list, in practice this is impractically slow.
   */
   u8 *zData;                           /* Buffer containing file contents */
-  int nData;                           /* Size of buffer allocated at zData */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nData;                           /* Size of buffer allocated at zData */
   i64 iSize;                           /* Size of file in bytes */
 };
 
-struct CrashGlobal {
+ସଂରଚନା CrashGlobal {
   WriteBuffer *pWriteList;     /* Head of write-list */
   WriteBuffer *pWriteListEnd;  /* End of write-list */
 
-  int iSectorSize;             /* Value of simulated sector size */
-  int iDeviceCharacteristics;  /* Value of simulated device characteristics */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iSectorSize;             /* Value of simulated sector size */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDeviceCharacteristics;  /* Value of simulated device characteristics */
 
-  int iCrash;                  /* Crash on the iCrash'th call to xSync() */
-  char zCrashFile[500];        /* Crash during an xSync() on this file */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iCrash;                  /* Crash on the iCrash'th call to xSync() */
+  ଅକ୍ଷର zCrashFile[500];        /* Crash during an xSync() on this file */
 };
 
-static CrashGlobal g = {0, 0, SQLITE_DEFAULT_SECTOR_SIZE, 0, 0};
+ସ୍ଥିର CrashGlobal g = {0, 0, SQLITE_DEFAULT_SECTOR_SIZE, 0, 0};
 
 /*
 ** Set this global variable to 1 to enable crash testing.
 */
-static int sqlite3CrashTestEnable = 0;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3CrashTestEnable = 0;
 
-static void *crash_malloc(int nByte){
-  return (void *)Tcl_AttemptAlloc((size_t)nByte);
+ସ୍ଥିର ଶୂନ୍ୟ *crash_malloc(ପୂର୍ଣ୍ଣସଂଖ୍ୟା nByte){
+  ଫେରନ୍ତୁ (ଶୂନ୍ୟ *)Tcl_AttemptAlloc((size_t)nByte);
 }
-static void crash_free(void *p){
+ସ୍ଥିର ଶୂନ୍ୟ crash_free(ଶୂନ୍ୟ *p){
   Tcl_Free(p);
 }
-static void *crash_realloc(void *p, int n){
-  return (void *)Tcl_AttemptRealloc(p, (size_t)n);
+ସ୍ଥିର ଶୂନ୍ୟ *crash_realloc(ଶୂନ୍ୟ *p, ପୂର୍ଣ୍ଣସଂଖ୍ୟା n){
+  ଫେରନ୍ତୁ (ଶୂନ୍ୟ *)Tcl_AttemptRealloc(p, (size_t)n);
 }
 
 /*
 ** Wrapper around the sqlite3OsWrite() function that avoids writing to the
 ** 512 byte block beginning at offset PENDING_BYTE.
 */
-static int writeDbFile(CrashFile *p, u8 *z, i64 iAmt, i64 iOff){
-  int rc = SQLITE_OK;
-  int iSkip = 0;
-  if( (iAmt-iSkip)>0 ){
-    rc = sqlite3OsWrite(p->pRealFile, &z[iSkip], (int)(iAmt-iSkip), iOff+iSkip);
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା writeDbFile(CrashFile *p, u8 *z, i64 iAmt, i64 iOff){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iSkip = 0;
+  ଯଦି( (iAmt-iSkip)>0 ){
+    rc = sqlite3OsWrite(p->pRealFile, &z[iSkip], (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)(iAmt-iSkip), iOff+iSkip);
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Flush the write-list as if xSync() had been called on file handle
 ** pFile. If isCrash is true, simulate a crash.
 */
-static int writeListSync(CrashFile *pFile, int isCrash){
-  int rc = SQLITE_OK;
-  int iDc = g.iDeviceCharacteristics;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା writeListSync(CrashFile *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା isCrash){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDc = g.iDeviceCharacteristics;
 
   WriteBuffer *pWrite;
   WriteBuffer **ppPtr;
@@ -198,50 +198,50 @@ static int writeListSync(CrashFile *pFile, int isCrash){
   ** element of the write-list.
   */
   WriteBuffer *pFinal = 0;
-  if( !isCrash ){
-    for(pWrite=g.pWriteList; pWrite; pWrite=pWrite->pNext){
-      if( pWrite->pFile==pFile ){
+  ଯଦି( !isCrash ){
+    ପାଇଁ(pWrite=g.pWriteList; pWrite; pWrite=pWrite->pNext){
+      ଯଦି( pWrite->pFile==pFile ){
         pFinal = pWrite;
       }
     }
-  }else if( iDc&(SQLITE_IOCAP_SEQUENTIAL|SQLITE_IOCAP_SAFE_APPEND) ){
-    int nWrite = 0;
-    int iFinal;
-    for(pWrite=g.pWriteList; pWrite; pWrite=pWrite->pNext) nWrite++;
-    sqlite3_randomness(sizeof(int), &iFinal);
+  }ଅନ୍ୟଥା ଯଦି( iDc&(SQLITE_IOCAP_SEQUENTIAL|SQLITE_IOCAP_SAFE_APPEND) ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nWrite = 0;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା iFinal;
+    ପାଇଁ(pWrite=g.pWriteList; pWrite; pWrite=pWrite->pNext) nWrite++;
+    sqlite3_randomness(ଆକାର(ପୂର୍ଣ୍ଣସଂଖ୍ୟା), &iFinal);
     iFinal = ((iFinal<0)?-1*iFinal:iFinal)%nWrite;
-    for(pWrite=g.pWriteList; iFinal>0; pWrite=pWrite->pNext) iFinal--;
+    ପାଇଁ(pWrite=g.pWriteList; iFinal>0; pWrite=pWrite->pNext) iFinal--;
     pFinal = pWrite;
   }
 
 #ifdef TRACE_CRASHTEST
-  if( pFile ){
+  ଯଦି( pFile ){
     printf("Sync %s (is %s crash)\n", pFile->zName, (isCrash?"a":"not a"));
   }
 #endif
 
   ppPtr = &g.pWriteList;
-  for(pWrite=*ppPtr; rc==SQLITE_OK && pWrite; pWrite=*ppPtr){
+  ପାଇଁ(pWrite=*ppPtr; rc==SQLITE_OK && pWrite; pWrite=*ppPtr){
     sqlite3_file *pRealFile = pWrite->pFile->pRealFile;
 
     /* (eAction==1)      -> write block out normally,
     ** (eAction==2)      -> do nothing,
     ** (eAction==3)      -> trash sectors.
     */
-    int eAction = 0;
-    if( !isCrash ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା eAction = 0;
+    ଯଦି( !isCrash ){
       eAction = 2;
-      if( (pWrite->pFile==pFile || iDc&SQLITE_IOCAP_SEQUENTIAL) ){
+      ଯଦି( (pWrite->pFile==pFile || iDc&SQLITE_IOCAP_SEQUENTIAL) ){
         eAction = 1;
       }
-    }else{
-      char random;
+    }ଅନ୍ୟଥା{
+      ଅକ୍ଷର random;
       sqlite3_randomness(1, &random);
 
       /* Do not select option 3 (sector trashing) if the IOCAP_ATOMIC flag
       ** is set or this is an OsTruncate(), not an Oswrite().
       */
-      if( (iDc&SQLITE_IOCAP_ATOMIC) || (pWrite->zBuf==0) ){
+      ଯଦି( (iDc&SQLITE_IOCAP_ATOMIC) || (pWrite->zBuf==0) ){
         random &= 0x01;
       }
 
@@ -249,7 +249,7 @@ static int writeListSync(CrashFile *pFile, int isCrash){
       ** in the truncated write-list, always select option 1 (write
       ** out correctly).
       */
-      if( (iDc&SQLITE_IOCAP_SEQUENTIAL && pWrite!=pFinal) ){
+      ଯଦି( (iDc&SQLITE_IOCAP_SEQUENTIAL && pWrite!=pFinal) ){
         random = 0;
       }
 
@@ -257,58 +257,58 @@ static int writeListSync(CrashFile *pFile, int isCrash){
       ** an append (first byte of the written region is 1 byte past the
       ** current EOF), always select option 1 (write out correctly).
       */
-      if( iDc&SQLITE_IOCAP_SAFE_APPEND && pWrite->zBuf ){
+      ଯଦି( iDc&SQLITE_IOCAP_SAFE_APPEND && pWrite->zBuf ){
         i64 iSize;
         sqlite3OsFileSize(pRealFile, &iSize);
-        if( iSize==pWrite->iOffset ){
+        ଯଦି( iSize==pWrite->iOffset ){
           random = 0;
         }
       }
 
-      if( (random&0x06)==0x06 ){
+      ଯଦି( (random&0x06)==0x06 ){
         eAction = 3;
-      }else{
+      }ଅନ୍ୟଥା{
         eAction = ((random&0x01)?2:1);
       }
     }
 
-    switch( eAction ){
-      case 1: {               /* Write out correctly */
-        if( pWrite->zBuf ){
+    ବାଛ( eAction ){
+      ସ୍ଥିତି 1: {               /* Write out correctly */
+        ଯଦି( pWrite->zBuf ){
           rc = writeDbFile(
               pWrite->pFile, pWrite->zBuf, pWrite->nBuf, pWrite->iOffset
           );
-        }else{
+        }ଅନ୍ୟଥା{
           rc = sqlite3OsTruncate(pRealFile, pWrite->iOffset);
         }
         *ppPtr = pWrite->pNext;
 #ifdef TRACE_CRASHTEST
-        if( isCrash ){
+        ଯଦି( isCrash ){
           printf("Writing %d bytes @ %d (%s)\n",
-            pWrite->nBuf, (int)pWrite->iOffset, pWrite->pFile->zName
+            pWrite->nBuf, (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)pWrite->iOffset, pWrite->pFile->zName
           );
         }
 #endif
         crash_free(pWrite);
-        break;
+        ଭାଙ୍ଗ;
       }
-      case 2: {               /* Do nothing */
+      ସ୍ଥିତି 2: {               /* Do nothing */
         ppPtr = &pWrite->pNext;
 #ifdef TRACE_CRASHTEST
-        if( isCrash ){
+        ଯଦି( isCrash ){
           printf("Omiting %d bytes @ %d (%s)\n",
-            pWrite->nBuf, (int)pWrite->iOffset, pWrite->pFile->zName
+            pWrite->nBuf, (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)pWrite->iOffset, pWrite->pFile->zName
           );
         }
 #endif
-        break;
+        ଭାଙ୍ଗ;
       }
-      case 3: {               /* Trash sectors */
+      ସ୍ଥିତି 3: {               /* Trash sectors */
         u8 *zGarbage;
-        int iFirst = (int)(pWrite->iOffset/g.iSectorSize);
-        int iLast = (int)((pWrite->iOffset+pWrite->nBuf-1)/g.iSectorSize);
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା iFirst = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)(pWrite->iOffset/g.iSectorSize);
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା iLast = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)((pWrite->iOffset+pWrite->nBuf-1)/g.iSectorSize);
 
-        assert(pWrite->zBuf);
+        ପ୍ରତିଜ୍ଞା(pWrite->zBuf);
 
 #ifdef TRACE_CRASHTEST
         printf("Trashing %d sectors (%d bytes) @ %lld (sector %d) (%s)\n",
@@ -318,166 +318,166 @@ static int writeListSync(CrashFile *pFile, int isCrash){
 #endif
 
         zGarbage = crash_malloc(g.iSectorSize);
-        if( zGarbage ){
+        ଯଦି( zGarbage ){
           sqlite3_int64 i;
-          for(i=iFirst; rc==SQLITE_OK && i<=iLast; i++){
+          ପାଇଁ(i=iFirst; rc==SQLITE_OK && i<=iLast; i++){
             sqlite3_randomness(g.iSectorSize, zGarbage);
             rc = writeDbFile(
               pWrite->pFile, zGarbage, g.iSectorSize, i*g.iSectorSize
             );
           }
           crash_free(zGarbage);
-        }else{
+        }ଅନ୍ୟଥା{
           rc = SQLITE_NOMEM;
         }
 
         ppPtr = &pWrite->pNext;
-        break;
+        ଭାଙ୍ଗ;
       }
 
-      default:
-        assert(!"Cannot happen");
+      ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
+        ପ୍ରତିଜ୍ଞା(!"Cannot happen");
     }
 
-    if( pWrite==pFinal ) break;
+    ଯଦି( pWrite==pFinal ) ଭାଙ୍ଗ;
   }
 
-  if( rc==SQLITE_OK && isCrash ){
+  ଯଦି( rc==SQLITE_OK && isCrash ){
     exit(-1);
   }
 
-  for(pWrite=g.pWriteList; pWrite && pWrite->pNext; pWrite=pWrite->pNext);
+  ପାଇଁ(pWrite=g.pWriteList; pWrite && pWrite->pNext; pWrite=pWrite->pNext);
   g.pWriteListEnd = pWrite;
 
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Add an entry to the end of the write-list.
 */
-static int writeListAppend(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା writeListAppend(
   sqlite3_file *pFile,
   sqlite3_int64 iOffset,
-  const u8 *zBuf,
-  int nBuf
+  ଅଚଳ u8 *zBuf,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nBuf
 ){
   WriteBuffer *pNew;
 
-  assert((zBuf && nBuf) || (!nBuf && !zBuf));
+  ପ୍ରତିଜ୍ଞା((zBuf && nBuf) || (!nBuf && !zBuf));
 
-  pNew = (WriteBuffer *)crash_malloc(sizeof(WriteBuffer) + nBuf);
-  if( pNew==0 ){
+  pNew = (WriteBuffer *)crash_malloc(ଆକାର(WriteBuffer) + nBuf);
+  ଯଦି( pNew==0 ){
     fprintf(stderr, "out of memory in the crash simulator\n");
   }
-  memset(pNew, 0, sizeof(WriteBuffer)+nBuf);
+  memset(pNew, 0, ଆକାର(WriteBuffer)+nBuf);
   pNew->iOffset = iOffset;
   pNew->nBuf = nBuf;
   pNew->pFile = (CrashFile *)pFile;
-  if( zBuf ){
+  ଯଦି( zBuf ){
     pNew->zBuf = (u8 *)&pNew[1];
     memcpy(pNew->zBuf, zBuf, nBuf);
   }
 
-  if( g.pWriteList ){
-    assert(g.pWriteListEnd);
+  ଯଦି( g.pWriteList ){
+    ପ୍ରତିଜ୍ଞା(g.pWriteListEnd);
     g.pWriteListEnd->pNext = pNew;
-  }else{
+  }ଅନ୍ୟଥା{
     g.pWriteList = pNew;
   }
   g.pWriteListEnd = pNew;
  
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Close a crash-file.
 */
-static int cfClose(sqlite3_file *pFile){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfClose(sqlite3_file *pFile){
   CrashFile *pCrash = (CrashFile *)pFile;
   writeListSync(pCrash, 0);
   sqlite3OsClose(pCrash->pRealFile);
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Read data from a crash-file.
 */
-static int cfRead(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfRead(
   sqlite3_file *pFile,
-  void *zBuf,
-  int iAmt,
+  ଶୂନ୍ୟ *zBuf,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iAmt,
   sqlite_int64 iOfst
 ){
   CrashFile *pCrash = (CrashFile *)pFile;
-  int nCopy = (int)MIN((i64)iAmt, (pCrash->iSize - iOfst));
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCopy = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)MIN((i64)iAmt, (pCrash->iSize - iOfst));
 
-  if( nCopy>0 ){
+  ଯଦି( nCopy>0 ){
     memcpy(zBuf, &pCrash->zData[iOfst], nCopy);
   }
 
   /* Check the file-size to see if this is a short-read */
-  if( nCopy<iAmt ){
-    return SQLITE_IOERR_SHORT_READ;
+  ଯଦି( nCopy<iAmt ){
+    ଫେରନ୍ତୁ SQLITE_IOERR_SHORT_READ;
   }
 
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Write data to a crash-file.
 */
-static int cfWrite(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfWrite(
   sqlite3_file *pFile,
-  const void *zBuf,
-  int iAmt,
+  ଅଚଳ ଶୂନ୍ୟ *zBuf,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iAmt,
   sqlite_int64 iOfst
 ){
   CrashFile *pCrash = (CrashFile *)pFile;
-  if( iAmt+iOfst>pCrash->iSize ){
-    pCrash->iSize = (int)(iAmt+iOfst);
+  ଯଦି( iAmt+iOfst>pCrash->iSize ){
+    pCrash->iSize = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)(iAmt+iOfst);
   }
-  while( pCrash->iSize>pCrash->nData ){
+  ଯେତେବେଳେ( pCrash->iSize>pCrash->nData ){
     u8 *zNew;
-    int nNew = (pCrash->nData*2) + 4096;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nNew = (pCrash->nData*2) + 4096;
     zNew = crash_realloc(pCrash->zData, nNew);
-    if( !zNew ){
-      return SQLITE_NOMEM;
+    ଯଦି( !zNew ){
+      ଫେରନ୍ତୁ SQLITE_NOMEM;
     }
     memset(&zNew[pCrash->nData], 0, nNew-pCrash->nData);
     pCrash->nData = nNew;
     pCrash->zData = zNew;
   }
   memcpy(&pCrash->zData[iOfst], zBuf, iAmt);
-  return writeListAppend(pFile, iOfst, zBuf, iAmt);
+  ଫେରନ୍ତୁ writeListAppend(pFile, iOfst, zBuf, iAmt);
 }
 
 /*
 ** Truncate a crash-file.
 */
-static int cfTruncate(sqlite3_file *pFile, sqlite_int64 size){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfTruncate(sqlite3_file *pFile, sqlite_int64 size){
   CrashFile *pCrash = (CrashFile *)pFile;
-  assert(size>=0);
-  if( pCrash->iSize>size ){
-    pCrash->iSize = (int)size;
+  ପ୍ରତିଜ୍ଞା(size>=0);
+  ଯଦି( pCrash->iSize>size ){
+    pCrash->iSize = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)size;
   }
-  return writeListAppend(pFile, size, 0, 0);
+  ଫେରନ୍ତୁ writeListAppend(pFile, size, 0, 0);
 }
 
 /*
 ** Sync a crash-file.
 */
-static int cfSync(sqlite3_file *pFile, int flags){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfSync(sqlite3_file *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){
   CrashFile *pCrash = (CrashFile *)pFile;
-  int isCrash = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା isCrash = 0;
 
-  const char *zName = pCrash->zName;
-  const char *zCrashFile = g.zCrashFile;
-  int nName = (int)strlen(zName);
-  int nCrashFile = (int)strlen(zCrashFile);
+  ଅଚଳ ଅକ୍ଷର *zName = pCrash->zName;
+  ଅଚଳ ଅକ୍ଷର *zCrashFile = g.zCrashFile;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nName = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)strlen(zName);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCrashFile = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)strlen(zCrashFile);
 
-  if( nCrashFile>0 && zCrashFile[nCrashFile-1]=='*' ){
+  ଯଦି( nCrashFile>0 && zCrashFile[nCrashFile-1]=='*' ){
     nCrashFile--;
-    if( nName>nCrashFile ) nName = nCrashFile;
+    ଯଦି( nName>nCrashFile ) nName = nCrashFile;
   }
 
 #ifdef TRACE_CRASHTEST
@@ -485,49 +485,49 @@ static int cfSync(sqlite3_file *pFile, int flags){
          nName, nCrashFile, zName, zCrashFile);
 #endif
 
-  if( nName==nCrashFile && 0==memcmp(zName, zCrashFile, nName) ){
+  ଯଦି( nName==nCrashFile && 0==memcmp(zName, zCrashFile, nName) ){
 #ifdef TRACE_CRASHTEST
     printf("cfSync(): name matched, g.iCrash = %d\n", g.iCrash);
 #endif
-    if( (--g.iCrash)==0 ) isCrash = 1;
+    ଯଦି( (--g.iCrash)==0 ) isCrash = 1;
   }
 
-  return writeListSync(pCrash, isCrash);
+  ଫେରନ୍ତୁ writeListSync(pCrash, isCrash);
 }
 
 /*
 ** Return the current file-size of the crash-file.
 */
-static int cfFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
   CrashFile *pCrash = (CrashFile *)pFile;
   *pSize = (i64)pCrash->iSize;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Calls related to file-locks are passed on to the real file handle.
 */
-static int cfLock(sqlite3_file *pFile, int eLock){
-  return sqlite3OsLock(((CrashFile *)pFile)->pRealFile, eLock);
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfLock(sqlite3_file *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା eLock){
+  ଫେରନ୍ତୁ sqlite3OsLock(((CrashFile *)pFile)->pRealFile, eLock);
 }
-static int cfUnlock(sqlite3_file *pFile, int eLock){
-  return sqlite3OsUnlock(((CrashFile *)pFile)->pRealFile, eLock);
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfUnlock(sqlite3_file *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା eLock){
+  ଫେରନ୍ତୁ sqlite3OsUnlock(((CrashFile *)pFile)->pRealFile, eLock);
 }
-static int cfCheckReservedLock(sqlite3_file *pFile, int *pResOut){
-  return sqlite3OsCheckReservedLock(((CrashFile *)pFile)->pRealFile, pResOut);
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfCheckReservedLock(sqlite3_file *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା *pResOut){
+  ଫେରନ୍ତୁ sqlite3OsCheckReservedLock(((CrashFile *)pFile)->pRealFile, pResOut);
 }
-static int cfFileControl(sqlite3_file *pFile, int op, void *pArg){
-  if( op==SQLITE_FCNTL_SIZE_HINT ){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfFileControl(sqlite3_file *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା op, ଶୂନ୍ୟ *pArg){
+  ଯଦି( op==SQLITE_FCNTL_SIZE_HINT ){
     CrashFile *pCrash = (CrashFile *)pFile;
     i64 nByte = *(i64 *)pArg;
-    if( nByte>pCrash->iSize ){
-      if( SQLITE_OK==writeListAppend(pFile, nByte, 0, 0) ){
-        pCrash->iSize = (int)nByte;
+    ଯଦି( nByte>pCrash->iSize ){
+      ଯଦି( SQLITE_OK==writeListAppend(pFile, nByte, 0, 0) ){
+        pCrash->iSize = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)nByte;
       }
     }
-    return SQLITE_OK;
+    ଫେରନ୍ତୁ SQLITE_OK;
   }
-  return sqlite3OsFileControl(((CrashFile *)pFile)->pRealFile, op, pArg);
+  ଫେରନ୍ତୁ sqlite3OsFileControl(((CrashFile *)pFile)->pRealFile, op, pArg);
 }
 
 /*
@@ -535,40 +535,40 @@ static int cfFileControl(sqlite3_file *pFile, int op, void *pArg){
 ** the global values configured by the [sqlite_crashparams] tcl
 *  interface.
 */
-static int cfSectorSize(sqlite3_file *pFile){
-  return g.iSectorSize;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfSectorSize(sqlite3_file *pFile){
+  ଫେରନ୍ତୁ g.iSectorSize;
 }
-static int cfDeviceCharacteristics(sqlite3_file *pFile){
-  return g.iDeviceCharacteristics;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfDeviceCharacteristics(sqlite3_file *pFile){
+  ଫେରନ୍ତୁ g.iDeviceCharacteristics;
 }
 
 /*
 ** Pass-throughs for WAL support.
 */
-static int cfShmLock(sqlite3_file *pFile, int ofst, int n, int flags){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfShmLock(sqlite3_file *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା ofst, ପୂର୍ଣ୍ଣସଂଖ୍ୟା n, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){
   sqlite3_file *pReal = ((CrashFile*)pFile)->pRealFile;
-  return pReal->pMethods->xShmLock(pReal, ofst, n, flags);
+  ଫେରନ୍ତୁ pReal->pMethods->xShmLock(pReal, ofst, n, flags);
 }
-static void cfShmBarrier(sqlite3_file *pFile){
+ସ୍ଥିର ଶୂନ୍ୟ cfShmBarrier(sqlite3_file *pFile){
   sqlite3_file *pReal = ((CrashFile*)pFile)->pRealFile;
   pReal->pMethods->xShmBarrier(pReal);
 }
-static int cfShmUnmap(sqlite3_file *pFile, int delFlag){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfShmUnmap(sqlite3_file *pFile, ପୂର୍ଣ୍ଣସଂଖ୍ୟା delFlag){
   sqlite3_file *pReal = ((CrashFile*)pFile)->pRealFile;
-  return pReal->pMethods->xShmUnmap(pReal, delFlag);
+  ଫେରନ୍ତୁ pReal->pMethods->xShmUnmap(pReal, delFlag);
 }
-static int cfShmMap(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfShmMap(
   sqlite3_file *pFile,            /* Handle open on database file */
-  int iRegion,                    /* Region to retrieve */
-  int sz,                         /* Size of regions */
-  int w,                          /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Mapped memory */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iRegion,                    /* Region to retrieve */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା sz,                         /* Size of regions */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା w,                          /* True to extend file if necessary */
+  ଶୂନ୍ୟ ଅସ୍ଥିର **pp              /* OUT: Mapped memory */
 ){
   sqlite3_file *pReal = ((CrashFile*)pFile)->pRealFile;
-  return pReal->pMethods->xShmMap(pReal, iRegion, sz, w, pp);
+  ଫେରନ୍ତୁ pReal->pMethods->xShmMap(pReal, iRegion, sz, w, pp);
 }
 
-static const sqlite3_io_methods CrashFileVtab = {
+ସ୍ଥିର ଅଚଳ sqlite3_io_methods CrashFileVtab = {
   2,                            /* iVersion */
   cfClose,                      /* xClose */
   cfRead,                       /* xRead */
@@ -591,7 +591,7 @@ static const sqlite3_io_methods CrashFileVtab = {
 /*
 ** Application data for the crash VFS
 */
-struct crashAppData {
+ସଂରଚନା crashAppData {
   sqlite3_vfs *pOrig;                   /* Wrapped vfs structure */
 };
 
@@ -604,34 +604,34 @@ struct crashAppData {
 ** sqlite3_malloc(). The assumption here is (pVfs->szOsFile) is
 ** equal or greater than sizeof(CrashFile).
 */
-static int cfOpen(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfOpen(
   sqlite3_vfs *pCfVfs,
-  const char *zName,
+  ଅଚଳ ଅକ୍ଷର *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *pOutFlags
 ){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
   CrashFile *pWrapper = (CrashFile *)pFile;
   sqlite3_file *pReal = (sqlite3_file*)&pWrapper[1];
 
-  memset(pWrapper, 0, sizeof(CrashFile));
+  memset(pWrapper, 0, ଆକାର(CrashFile));
   rc = sqlite3OsOpen(pVfs, zName, pReal, flags, pOutFlags);
 
-  if( rc==SQLITE_OK ){
+  ଯଦି( rc==SQLITE_OK ){
     i64 iSize;
     pWrapper->pMethod = &CrashFileVtab;
-    pWrapper->zName = (char *)zName;
+    pWrapper->zName = (ଅକ୍ଷର *)zName;
     pWrapper->pRealFile = pReal;
     rc = sqlite3OsFileSize(pReal, &iSize);
-    pWrapper->iSize = (int)iSize;
+    pWrapper->iSize = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)iSize;
     pWrapper->flags = flags;
   }
-  if( rc==SQLITE_OK ){
-    pWrapper->nData = (int)(4096 + pWrapper->iSize);
+  ଯଦି( rc==SQLITE_OK ){
+    pWrapper->nData = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)(4096 + pWrapper->iSize);
     pWrapper->zData = crash_malloc(pWrapper->nData);
-    if( pWrapper->zData ){
+    ଯଦି( pWrapper->zData ){
       /* os_unix.c contains an assert() that fails if the caller attempts
       ** to read data from the 512-byte locking region of a file opened
       ** with the SQLITE_OPEN_MAIN_DB flag. This region of a database file
@@ -643,86 +643,86 @@ static int cfOpen(
       i64 iOff;
 
       memset(pWrapper->zData, 0, pWrapper->nData);
-      for(iOff=0; iOff<pWrapper->iSize; iOff += 512){
-        int nRead = (int)(pWrapper->iSize - iOff);
-        if( nRead>512 ) nRead = 512;
+      ପାଇଁ(iOff=0; iOff<pWrapper->iSize; iOff += 512){
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା nRead = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)(pWrapper->iSize - iOff);
+        ଯଦି( nRead>512 ) nRead = 512;
         rc = sqlite3OsRead(pReal, &pWrapper->zData[iOff], nRead, iOff);
       }
-    }else{
+    }ଅନ୍ୟଥା{
       rc = SQLITE_NOMEM;
     }
   }
-  if( rc!=SQLITE_OK && pWrapper->pMethod ){
+  ଯଦି( rc!=SQLITE_OK && pWrapper->pMethod ){
     sqlite3OsClose(pFile);
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
-static int cfDelete(sqlite3_vfs *pCfVfs, const char *zPath, int dirSync){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfDelete(sqlite3_vfs *pCfVfs, ଅଚଳ ଅକ୍ଷର *zPath, ପୂର୍ଣ୍ଣସଂଖ୍ୟା dirSync){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xDelete(pVfs, zPath, dirSync);
+  ଫେରନ୍ତୁ pVfs->xDelete(pVfs, zPath, dirSync);
 }
-static int cfAccess(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfAccess(
   sqlite3_vfs *pCfVfs,
-  const char *zPath,
-  int flags,
-  int *pResOut
+  ଅଚଳ ଅକ୍ଷର *zPath,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *pResOut
 ){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xAccess(pVfs, zPath, flags, pResOut);
+  ଫେରନ୍ତୁ pVfs->xAccess(pVfs, zPath, flags, pResOut);
 }
-static int cfFullPathname(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfFullPathname(
   sqlite3_vfs *pCfVfs,
-  const char *zPath,
-  int nPathOut,
-  char *zPathOut
+  ଅଚଳ ଅକ୍ଷର *zPath,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nPathOut,
+  ଅକ୍ଷର *zPathOut
 ){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xFullPathname(pVfs, zPath, nPathOut, zPathOut);
+  ଫେରନ୍ତୁ pVfs->xFullPathname(pVfs, zPath, nPathOut, zPathOut);
 }
-static void *cfDlOpen(sqlite3_vfs *pCfVfs, const char *zPath){
+ସ୍ଥିର ଶୂନ୍ୟ *cfDlOpen(sqlite3_vfs *pCfVfs, ଅଚଳ ଅକ୍ଷର *zPath){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xDlOpen(pVfs, zPath);
+  ଫେରନ୍ତୁ pVfs->xDlOpen(pVfs, zPath);
 }
-static void cfDlError(sqlite3_vfs *pCfVfs, int nByte, char *zErrMsg){
+ସ୍ଥିର ଶୂନ୍ୟ cfDlError(sqlite3_vfs *pCfVfs, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nByte, ଅକ୍ଷର *z_Err_ସନ୍ଦେଶ){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  pVfs->xDlError(pVfs, nByte, zErrMsg);
+  pVfs->xDlError(pVfs, nByte, z_Err_ସନ୍ଦେଶ);
 }
-static void (*cfDlSym(sqlite3_vfs *pCfVfs, void *pH, const char *zSym))(void){
+ସ୍ଥିର ଶୂନ୍ୟ (*cfDlSym(sqlite3_vfs *pCfVfs, ଶୂନ୍ୟ *pH, ଅଚଳ ଅକ୍ଷର *zSym))(ଶୂନ୍ୟ){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xDlSym(pVfs, pH, zSym);
+  ଫେରନ୍ତୁ pVfs->xDlSym(pVfs, pH, zSym);
 }
-static void cfDlClose(sqlite3_vfs *pCfVfs, void *pHandle){
+ସ୍ଥିର ଶୂନ୍ୟ cfDlClose(sqlite3_vfs *pCfVfs, ଶୂନ୍ୟ *pHandle){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
   pVfs->xDlClose(pVfs, pHandle);
 }
-static int cfRandomness(sqlite3_vfs *pCfVfs, int nByte, char *zBufOut){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfRandomness(sqlite3_vfs *pCfVfs, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nByte, ଅକ୍ଷର *zBufOut){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xRandomness(pVfs, nByte, zBufOut);
+  ଫେରନ୍ତୁ pVfs->xRandomness(pVfs, nByte, zBufOut);
 }
-static int cfSleep(sqlite3_vfs *pCfVfs, int nMicro){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfSleep(sqlite3_vfs *pCfVfs, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nMicro){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xSleep(pVfs, nMicro);
+  ଫେରନ୍ତୁ pVfs->xSleep(pVfs, nMicro);
 }
-static int cfCurrentTime(sqlite3_vfs *pCfVfs, double *pTimeOut){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfCurrentTime(sqlite3_vfs *pCfVfs, ଦ୍ୱିଗୁଣ *pTimeOut){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xCurrentTime(pVfs, pTimeOut);
+  ଫେରନ୍ତୁ pVfs->xCurrentTime(pVfs, pTimeOut);
 }
-static int cfGetLastError(sqlite3_vfs *pCfVfs, int n, char *z){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା cfGetLastError(sqlite3_vfs *pCfVfs, ପୂର୍ଣ୍ଣସଂଖ୍ୟା n, ଅକ୍ଷର *z){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  return pVfs->xGetLastError(pVfs, n, z);
+  ଫେରନ୍ତୁ pVfs->xGetLastError(pVfs, n, z);
 }
 
-static int processDevSymArgs(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା processDevSymArgs(
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[],
-  int *piDeviceChar,
-  int *piSectorSize
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *piDeviceChar,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *piSectorSize
 ){
-  struct DeviceFlag {
-    char *zName;
-    int iValue;
+  ସଂରଚନା DeviceFlag {
+    ଅକ୍ଷର *zName;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i_ମୂଲ୍ୟ;
   } aFlag[] = {
     { "atomic",              SQLITE_IOCAP_ATOMIC                },
     { "atomic512",           SQLITE_IOCAP_ATOMIC512             },
@@ -740,71 +740,71 @@ static int processDevSymArgs(
     { 0, 0 }
   };
 
-  int i;
-  int iDc = 0;
-  int iSectorSize = 0;
-  int setSectorsize = 0;
-  int setDeviceChar = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDc = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iSectorSize = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା setSectorsize = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା setDeviceChar = 0;
 
-  for(i=0; i<objc; i+=2){
+  ପାଇଁ(i=0; i<objc; i+=2){
     Tcl_Size nOpt;
-    char *zOpt = Tcl_GetStringFromObj(objv[i], &nOpt);
+    ଅକ୍ଷର *zOpt = Tcl_GetStringFromObj(objv[i], &nOpt);
 
-    if( (nOpt>11 || nOpt<2 || strncmp("-sectorsize", zOpt, nOpt))
+    ଯଦି( (nOpt>11 || nOpt<2 || strncmp("-sectorsize", zOpt, nOpt))
      && (nOpt>16 || nOpt<2 || strncmp("-characteristics", zOpt, nOpt))
     ){
       Tcl_AppendResult(interp,
         "Bad option: \"", zOpt,
-        "\" - must be \"-characteristics\" or \"-sectorsize\"", NULL
+        "\" - must be \"-characteristics\" or \"-sectorsize\"", ଖାଲି
       );
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( i==objc-1 ){
-      Tcl_AppendResult(interp, "Option requires an argument: \"", zOpt, "\"", NULL);
-      return TCL_ERROR;
+    ଯଦି( i==objc-1 ){
+      Tcl_AppendResult(interp, "Option requires an argument: \"", zOpt, "\"", ଖାଲି);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
 
-    if( zOpt[1]=='s' ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &iSectorSize) ){
-        return TCL_ERROR;
+    ଯଦି( zOpt[1]=='s' ){
+      ଯଦି( Tcl_GetIntFromObj(interp, objv[i+1], &iSectorSize) ){
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
       setSectorsize = 1;
-    }else{
-      int j;
+    }ଅନ୍ୟଥା{
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା j;
       Tcl_Obj **apObj;
       Tcl_Size nObj;
-      if( Tcl_ListObjGetElements(interp, objv[i+1], &nObj, &apObj) ){
-        return TCL_ERROR;
+      ଯଦି( Tcl_ListObjGetElements(interp, objv[i+1], &nObj, &apObj) ){
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
-      for(j=0; j<(int)nObj; j++){
-        int rc;
-        int iChoice;
+      ପାଇଁ(j=0; j<(ପୂର୍ଣ୍ଣସଂଖ୍ୟା)nObj; j++){
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା iChoice;
         Tcl_Obj *pFlag = Tcl_DuplicateObj(apObj[j]);
-        Tcl_IncrRefCount(pFlag);
+        Tcl_Incr_Ref_ଗଣନା(pFlag);
         Tcl_UtfToLower(Tcl_GetString(pFlag));
 
         rc = Tcl_GetIndexFromObjStruct(
-            interp, pFlag, aFlag, sizeof(aFlag[0]), "no such flag", 0, &iChoice
+            interp, pFlag, aFlag, ଆକାର(aFlag[0]), "no such flag", 0, &iChoice
         );
-        Tcl_DecrRefCount(pFlag);
-        if( rc ){
-          return TCL_ERROR;
+        Tcl_Decr_Ref_ଗଣନା(pFlag);
+        ଯଦି( rc ){
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
 
-        iDc |= aFlag[iChoice].iValue;
+        iDc |= aFlag[iChoice].i_ମୂଲ୍ୟ;
       }
       setDeviceChar = 1;
     }
   }
 
-  if( setDeviceChar ){
+  ଯଦି( setDeviceChar ){
     *piDeviceChar = iDc;
   }
-  if( setSectorsize ){
+  ଯଦି( setSectorsize ){
     *piSectorSize = iSectorSize;
   }
 
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
@@ -813,19 +813,19 @@ static int processDevSymArgs(
 ** Simulate a crash immediately. This function does not return
 ** (writeListSync() calls exit(-1)).
 */
-static int SQLITE_TCLAPI crashNowCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI crashNowCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  ଯଦି( objc!=1 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
   writeListSync(0, 1);
-  assert( 0 );
-  return TCL_OK;
+  ପ୍ରତିଜ୍ଞା( 0 );
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
@@ -834,15 +834,15 @@ static int SQLITE_TCLAPI crashNowCmd(
 ** Parameter ENABLE must be a boolean value. If true, then the "crash"
 ** vfs is added to the system. If false, it is removed.
 */
-static int SQLITE_TCLAPI crashEnableCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI crashEnableCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  int isEnable;
-  int isDefault = 0;
-  static sqlite3_vfs crashVfs = {
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା isEnable;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା isDefault = 0;
+  ସ୍ଥିର sqlite3_vfs crashVfs = {
     2,                  /* iVersion */
     0,                  /* szOsFile */
     0,                  /* mxPathname */
@@ -865,34 +865,34 @@ static int SQLITE_TCLAPI crashEnableCmd(
     0,                    /* xCurrentTimeInt64 */
   };
 
-  if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "ENABLE ?DEFAULT?");
-    return TCL_ERROR;
+  ଯଦି( objc!=2 && objc!=3 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "ENABLE ?DEFAULT?");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
-  if( Tcl_GetBooleanFromObj(interp, objv[1], &isEnable) ){
-    return TCL_ERROR;
+  ଯଦି( Tcl_GetBooleanFromObj(interp, objv[1], &isEnable) ){
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  if( objc==3 && Tcl_GetBooleanFromObj(interp, objv[2], &isDefault) ){
-    return TCL_ERROR;
-  }
-
-  if( (isEnable && crashVfs.pAppData) || (!isEnable && !crashVfs.pAppData) ){
-    return TCL_OK;
+  ଯଦି( objc==3 && Tcl_GetBooleanFromObj(interp, objv[2], &isDefault) ){
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
-  if( crashVfs.pAppData==0 ){
+  ଯଦି( (isEnable && crashVfs.pAppData) || (!isEnable && !crashVfs.pAppData) ){
+    ଫେରନ୍ତୁ TCL_OK;
+  }
+
+  ଯଦି( crashVfs.pAppData==0 ){
     sqlite3_vfs *pOriginalVfs = sqlite3_vfs_find(0);
     crashVfs.mxPathname = pOriginalVfs->mxPathname;
-    crashVfs.pAppData = (void *)pOriginalVfs;
-    crashVfs.szOsFile = sizeof(CrashFile) + pOriginalVfs->szOsFile;
+    crashVfs.pAppData = (ଶୂନ୍ୟ *)pOriginalVfs;
+    crashVfs.szOsFile = ଆକାର(CrashFile) + pOriginalVfs->szOsFile;
     sqlite3_vfs_register(&crashVfs, isDefault);
-  }else{
+  }ଅନ୍ୟଥା{
     crashVfs.pAppData = 0;
     sqlite3_vfs_unregister(&crashVfs);
   }
 
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
@@ -913,173 +913,173 @@ static int SQLITE_TCLAPI crashEnableCmd(
 **   sqlite_crashparams -sect 1024 -char {atomic sequential} ./test.db 1
 **
 */
-static int SQLITE_TCLAPI crashParamsObjCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI crashParamsObjCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  int iDelay;
-  const char *zCrashFile;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDelay;
+  ଅଚଳ ଅକ୍ଷର *zCrashFile;
   Tcl_Size nCrashFile;
-  int iDc, iSectorSize;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDc, iSectorSize;
 
   iDc = -1;
   iSectorSize = -1;
 
-  if( objc<3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?OPTIONS? DELAY CRASHFILE");
-    goto error;
+  ଯଦି( objc<3 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "?OPTIONS? DELAY CRASHFILE");
+    ଯାଅ error;
   }
 
   zCrashFile = Tcl_GetStringFromObj(objv[objc-1], &nCrashFile);
-  if( nCrashFile>=sizeof(g.zCrashFile) ){
-    Tcl_AppendResult(interp, "Filename is too long: \"", zCrashFile, "\"", NULL);
-    goto error;
+  ଯଦି( nCrashFile>=ଆକାର(g.zCrashFile) ){
+    Tcl_AppendResult(interp, "Filename is too long: \"", zCrashFile, "\"", ଖାଲି);
+    ଯାଅ error;
   }
-  if( Tcl_GetIntFromObj(interp, objv[objc-2], &iDelay) ){
-    goto error;
-  }
-
-  if( processDevSymArgs(interp, objc-3, &objv[1], &iDc, &iSectorSize) ){
-    return TCL_ERROR;
+  ଯଦି( Tcl_GetIntFromObj(interp, objv[objc-2], &iDelay) ){
+    ଯାଅ error;
   }
 
-  if( iDc>=0 ){
+  ଯଦି( processDevSymArgs(interp, objc-3, &objv[1], &iDc, &iSectorSize) ){
+    ଫେରନ୍ତୁ TCL_ERROR;
+  }
+
+  ଯଦି( iDc>=0 ){
     g.iDeviceCharacteristics = iDc;
   }
-  if( iSectorSize>=0 ){
+  ଯଦି( iSectorSize>=0 ){
     g.iSectorSize = iSectorSize;
   }
 
   g.iCrash = iDelay;
   memcpy(g.zCrashFile, zCrashFile, nCrashFile+1);
   sqlite3CrashTestEnable = 1;
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 
 error:
-  return TCL_ERROR;
+  ଫେରନ୍ତୁ TCL_ERROR;
 }
 
-static int SQLITE_TCLAPI devSymObjCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI devSymObjCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  void devsym_register(int iDeviceChar, int iSectorSize);
+  ଶୂନ୍ୟ devsym_register(ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDeviceChar, ପୂର୍ଣ୍ଣସଂଖ୍ୟା iSectorSize);
 
-  int iDc = -1;
-  int iSectorSize = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDc = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iSectorSize = -1;
 
-  if( processDevSymArgs(interp, objc-1, &objv[1], &iDc, &iSectorSize) ){
-    return TCL_ERROR;
+  ଯଦି( processDevSymArgs(interp, objc-1, &objv[1], &iDc, &iSectorSize) ){
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
   devsym_register(iDc, iSectorSize);
 
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
 ** tclcmd: sqlite3_crash_on_write N
 */
-static int SQLITE_TCLAPI writeCrashObjCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI writeCrashObjCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  void devsym_crash_on_write(int);
-  int nWrite = 0;
+  ଶୂନ୍ୟ devsym_crash_on_write(ପୂର୍ଣ୍ଣସଂଖ୍ୟା);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nWrite = 0;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NWRITE");
-    return TCL_ERROR;
+  ଯଦି( objc!=2 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "NWRITE");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &nWrite) ){
-    return TCL_ERROR;
+  ଯଦି( Tcl_GetIntFromObj(interp, objv[1], &nWrite) ){
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
   devsym_crash_on_write(nWrite);
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
 ** tclcmd: unregister_devsim
 */
-static int SQLITE_TCLAPI dsUnregisterObjCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI dsUnregisterObjCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  void devsym_unregister(void);
+  ଶୂନ୍ୟ devsym_unregister(ଶୂନ୍ୟ);
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  ଯଦି( objc!=1 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
   devsym_unregister();
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
 ** tclcmd: register_jt_vfs ?-default? PARENT-VFS
 */
-static int SQLITE_TCLAPI jtObjCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI jtObjCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  int jt_register(char *, int);
-  char *zParent = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା jt_register(ଅକ୍ଷର *, ପୂର୍ଣ୍ଣସଂଖ୍ୟା);
+  ଅକ୍ଷର *zParent = 0;
 
-  if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?-default? PARENT-VFS");
-    return TCL_ERROR;
+  ଯଦି( objc!=2 && objc!=3 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "?-default? PARENT-VFS");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
   zParent = Tcl_GetString(objv[1]);
-  if( objc==3 ){
-    if( strcmp(zParent, "-default") ){
+  ଯଦି( objc==3 ){
+    ଯଦି( strcmp(zParent, "-default") ){
       Tcl_AppendResult(interp,
-          "bad option \"", zParent, "\": must be -default", NULL
+          "bad option \"", zParent, "\": must be -default", ଖାଲି
       );
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     zParent = Tcl_GetString(objv[2]);
   }
 
-  if( !(*zParent) ){
+  ଯଦି( !(*zParent) ){
     zParent = 0;
   }
-  if( jt_register(zParent, objc==3) ){
-    Tcl_AppendResult(interp, "Error in jt_register", NULL);
-    return TCL_ERROR;
+  ଯଦି( jt_register(zParent, objc==3) ){
+    Tcl_AppendResult(interp, "Error in jt_register", ଖାଲି);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
 ** tclcmd: unregister_jt_vfs
 */
-static int SQLITE_TCLAPI jtUnregisterObjCmd(
-  void * clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI jtUnregisterObjCmd(
+  ଶୂନ୍ୟ * clientData,
   Tcl_Interp *interp,
-  int objc,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
   Tcl_Obj *CONST objv[]
 ){
-  void jt_unregister(void);
+  ଶୂନ୍ୟ jt_unregister(ଶୂନ୍ୟ);
 
-  if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+  ଯଦି( objc!=1 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
   jt_unregister();
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 #endif /* SQLITE_OMIT_DISKIO */
@@ -1087,7 +1087,7 @@ static int SQLITE_TCLAPI jtUnregisterObjCmd(
 /*
 ** This procedure registers the TCL procedures defined in this file.
 */
-int Sqlitetest6_Init(Tcl_Interp *interp){
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlitetest6_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_DISKIO
   Tcl_CreateObjCommand(interp, "sqlite3_crash_enable", crashEnableCmd, 0, 0);
   Tcl_CreateObjCommand(interp, "sqlite3_crashparams", crashParamsObjCmd, 0, 0);
@@ -1098,7 +1098,7 @@ int Sqlitetest6_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "register_jt_vfs", jtObjCmd, 0, 0);
   Tcl_CreateObjCommand(interp, "unregister_jt_vfs", jtUnregisterObjCmd, 0, 0);
 #endif
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 #endif /* SQLITE_TEST */

@@ -37,31 +37,31 @@
 #ifdef SQLITE_TEST
 #  include "sqliteInt.h"
 #  include "tclsqlite.h"
-#else
+#ଅନ୍ୟଥା
 #  include "sqlite3ext.h"
   SQLITE_EXTENSION_INIT1
 #endif
 
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#ଅନ୍ତର୍ଭାଵ <stdlib.h>
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
 
-typedef struct schema_vtab schema_vtab;
-typedef struct schema_cursor schema_cursor;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା schema_vtab schema_vtab;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା schema_cursor schema_cursor;
 
 /* A schema table object */
-struct schema_vtab {
+ସଂରଚନା schema_vtab {
   sqlite3_vtab base;
   sqlite3 *db;
 };
 
 /* A schema table cursor object */
-struct schema_cursor {
+ସଂରଚନା schema_cursor {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pDbList;
   sqlite3_stmt *pTableList;
   sqlite3_stmt *pColumnList;
-  int rowid;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rowid;
 };
 
 /*
@@ -72,119 +72,119 @@ struct schema_cursor {
 /*
 ** Table destructor for the schema module.
 */
-static int schemaDestroy(sqlite3_vtab *pVtab){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaDestroy(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 /*
 ** Table constructor for the schema module.
 */
-static int schemaCreate(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaCreate(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ଶୂନ୍ୟ *pAux,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅଚଳ ଅକ୍ଷର *ଅଚଳ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ଅକ୍ଷର **pzErr
 ){
-  int rc = SQLITE_NOMEM;
-  schema_vtab *pVtab = sqlite3_malloc(sizeof(schema_vtab));
-  if( pVtab ){
-    memset(pVtab, 0, sizeof(schema_vtab));
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_NOMEM;
+  schema_vtab *pVtab = sqlite3_malloc(ଆକାର(schema_vtab));
+  ଯଦି( pVtab ){
+    memset(pVtab, 0, ଆକାର(schema_vtab));
     pVtab->db = db;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
     rc = sqlite3_declare_vtab(db, SCHEMA);
 #endif
   }
   *ppVtab = (sqlite3_vtab *)pVtab;
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Open a new cursor on the schema table.
 */
-static int schemaOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
-  int rc = SQLITE_NOMEM;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_NOMEM;
   schema_cursor *pCur;
-  pCur = sqlite3_malloc(sizeof(schema_cursor));
-  if( pCur ){
-    memset(pCur, 0, sizeof(schema_cursor));
+  pCur = sqlite3_malloc(ଆକାର(schema_cursor));
+  ଯଦି( pCur ){
+    memset(pCur, 0, ଆକାର(schema_cursor));
     *ppCursor = (sqlite3_vtab_cursor *)pCur;
     rc = SQLITE_OK;
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Close a schema table cursor.
 */
-static int schemaClose(sqlite3_vtab_cursor *cur){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaClose(sqlite3_vtab_cursor *cur){
   schema_cursor *pCur = (schema_cursor *)cur;
   sqlite3_finalize(pCur->pDbList);
   sqlite3_finalize(pCur->pTableList);
   sqlite3_finalize(pCur->pColumnList);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Retrieve a column of data.
 */
-static int schemaColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, ପୂର୍ଣ୍ଣସଂଖ୍ୟା i){
   schema_cursor *pCur = (schema_cursor *)cur;
-  switch( i ){
-    case 0:
-      sqlite3_result_value(ctx, sqlite3_column_value(pCur->pDbList, 1));
-      break;
-    case 1:
-      sqlite3_result_value(ctx, sqlite3_column_value(pCur->pTableList, 0));
-      break;
-    default:
-      sqlite3_result_value(ctx, sqlite3_column_value(pCur->pColumnList, i-2));
-      break;
+  ବାଛ( i ){
+    ସ୍ଥିତି 0:
+      sqlite3_result_ମୂଲ୍ୟ(ctx, sqlite3_column_ମୂଲ୍ୟ(pCur->pDbList, 1));
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 1:
+      sqlite3_result_ମୂଲ୍ୟ(ctx, sqlite3_column_ମୂଲ୍ୟ(pCur->pTableList, 0));
+      ଭାଙ୍ଗ;
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
+      sqlite3_result_ମୂଲ୍ୟ(ctx, sqlite3_column_ମୂଲ୍ୟ(pCur->pColumnList, i-2));
+      ଭାଙ୍ଗ;
   }
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Retrieve the current rowid.
 */
-static int schemaRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   schema_cursor *pCur = (schema_cursor *)cur;
   *pRowid = pCur->rowid;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
-static int finalize(sqlite3_stmt **ppStmt){
-  int rc = sqlite3_finalize(*ppStmt);
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା finalize(sqlite3_stmt **ppStmt){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = sqlite3_finalize(*ppStmt);
   *ppStmt = 0;
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
-static int schemaEof(sqlite3_vtab_cursor *cur){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaEof(sqlite3_vtab_cursor *cur){
   schema_cursor *pCur = (schema_cursor *)cur;
-  return (pCur->pDbList ? 0 : 1);
+  ଫେରନ୍ତୁ (pCur->pDbList ? 0 : 1);
 }
 
 /*
 ** Advance the cursor to the next row.
 */
-static int schemaNext(sqlite3_vtab_cursor *cur){
-  int rc = SQLITE_OK;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaNext(sqlite3_vtab_cursor *cur){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;
   schema_cursor *pCur = (schema_cursor *)cur;
   schema_vtab *pVtab = (schema_vtab *)(cur->pVtab);
-  char *zSql = 0;
+  ଅକ୍ଷର *zSql = 0;
 
-  while( !pCur->pColumnList || SQLITE_ROW!=sqlite3_step(pCur->pColumnList) ){
-    if( SQLITE_OK!=(rc = finalize(&pCur->pColumnList)) ) goto next_exit;
+  ଯେତେବେଳେ( !pCur->pColumnList || SQLITE_ROW!=sqlite3_step(pCur->pColumnList) ){
+    ଯଦି( SQLITE_OK!=(rc = finalize(&pCur->pColumnList)) ) ଯାଅ next_exit;
 
-    while( !pCur->pTableList || SQLITE_ROW!=sqlite3_step(pCur->pTableList) ){
-      if( SQLITE_OK!=(rc = finalize(&pCur->pTableList)) ) goto next_exit;
+    ଯେତେବେଳେ( !pCur->pTableList || SQLITE_ROW!=sqlite3_step(pCur->pTableList) ){
+      ଯଦି( SQLITE_OK!=(rc = finalize(&pCur->pTableList)) ) ଯାଅ next_exit;
 
-      assert(pCur->pDbList);
-      while( SQLITE_ROW!=sqlite3_step(pCur->pDbList) ){
+      ପ୍ରତିଜ୍ଞା(pCur->pDbList);
+      ଯେତେବେଳେ( SQLITE_ROW!=sqlite3_step(pCur->pDbList) ){
         rc = finalize(&pCur->pDbList);
-        goto next_exit;
+        ଯାଅ next_exit;
       }
 
       /* Set zSql to the SQL to pull the list of tables from the 
@@ -192,25 +192,25 @@ static int schemaNext(sqlite3_vtab_cursor *cur){
       ** identified by the row pointed to by the SQL statement pCur->pDbList
       ** (iterating through a "PRAGMA database_list;" statement).
       */
-      if( sqlite3_column_int(pCur->pDbList, 0)==1 ){
+      ଯଦି( sqlite3_column_int(pCur->pDbList, 0)==1 ){
         zSql = sqlite3_mprintf(
             "SELECT name FROM sqlite_temp_schema WHERE type='table'"
         );
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_stmt *pDbList = pCur->pDbList;
         zSql = sqlite3_mprintf(
             "SELECT name FROM %Q.sqlite_schema WHERE type='table'",
              sqlite3_column_text(pDbList, 1)
         );
       }
-      if( !zSql ){
+      ଯଦି( !zSql ){
         rc = SQLITE_NOMEM;
-        goto next_exit;
+        ଯାଅ next_exit;
       }
 
       rc = sqlite3_prepare(pVtab->db, zSql, -1, &pCur->pTableList, 0);
       sqlite3_free(zSql);
-      if( rc!=SQLITE_OK ) goto next_exit;
+      ଯଦି( rc!=SQLITE_OK ) ଯାଅ next_exit;
     }
 
     /* Set zSql to the SQL to the table_info pragma for the table currently
@@ -222,30 +222,30 @@ static int schemaNext(sqlite3_vtab_cursor *cur){
         sqlite3_column_text(pCur->pTableList, 0)
     );
 
-    if( !zSql ){
+    ଯଦି( !zSql ){
       rc = SQLITE_NOMEM;
-      goto next_exit;
+      ଯାଅ next_exit;
     }
     rc = sqlite3_prepare(pVtab->db, zSql, -1, &pCur->pColumnList, 0);
     sqlite3_free(zSql);
-    if( rc!=SQLITE_OK ) goto next_exit;
+    ଯଦି( rc!=SQLITE_OK ) ଯାଅ next_exit;
   }
   pCur->rowid++;
 
 next_exit:
   /* TODO: Handle rc */
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Reset a schema table cursor.
 */
-static int schemaFilter(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା idx_ଅଙ୍କ, ଅଚଳ ଅକ୍ଷର *idxStr,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, sqlite3_ମୂଲ୍ୟ **argv
 ){
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
   schema_vtab *pVtab = (schema_vtab *)(pVtabCursor->pVtab);
   schema_cursor *pCur = (schema_cursor *)pVtabCursor;
   pCur->rowid = 0;
@@ -253,21 +253,21 @@ static int schemaFilter(
   finalize(&pCur->pColumnList);
   finalize(&pCur->pDbList);
   rc = sqlite3_prepare(pVtab->db,"PRAGMA database_list", -1, &pCur->pDbList, 0);
-  return (rc==SQLITE_OK ? schemaNext(pVtabCursor) : rc);
+  ଫେରନ୍ତୁ (rc==SQLITE_OK ? schemaNext(pVtabCursor) : rc);
 }
 
 /*
 ** Analyse the WHERE condition.
 */
-static int schemaBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  return SQLITE_OK;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା schemaBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** A virtual table module that merely echos method calls into TCL
 ** variables.
 */
-static sqlite3_module schemaModule = {
+ସ୍ଥିର sqlite3_module schemaModule = {
   0,                           /* iVersion */
   schemaCreate,
   schemaCreate,
@@ -302,49 +302,49 @@ static sqlite3_module schemaModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା getDbPointer(Tcl_Interp *interp, ଅଚଳ ଅକ୍ଷର *zA, sqlite3 **ppDb);
 
 /*
 ** Register the schema virtual table module.
 */
-static int SQLITE_TCLAPI register_schema_module(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI register_schema_module(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ଯଦି( objc!=2 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "DB");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ଯଦି( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ଫେରନ୍ତୁ TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_create_module(db, "schema", &schemaModule, 0);
 #endif
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetestschema_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlitetestschema_Init(Tcl_Interp *interp){
+  ସ୍ଥିର ସଂରଚନା {
+     ଅକ୍ଷର *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     ଶୂନ୍ୟ *clientData;
   } aObjCmd[] = {
      { "register_schema_module", register_schema_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପାଇଁ(i=0; i<ଆକାର(aObjCmd)/ଆକାର(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
-#else
+#ଅନ୍ୟଥା
 
 /*
 ** Extension load function.
@@ -352,16 +352,16 @@ int Sqlitetestschema_Init(Tcl_Interp *interp){
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-int sqlite3_schema_init(
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3_schema_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
-  const sqlite3_api_routines *pApi
+  ଅକ୍ଷର **pz_Err_ସନ୍ଦେଶ, 
+  ଅଚଳ sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_create_module(db, "schema", &schemaModule, 0);
 #endif
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 #endif

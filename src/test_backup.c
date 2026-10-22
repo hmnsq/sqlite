@@ -13,30 +13,30 @@
 **
 */
 
-#include "tclsqlite.h"
-#include "sqlite3.h"
-#include <assert.h>
+#ଅନ୍ତର୍ଭାଵ "tclsqlite.h"
+#ଅନ୍ତର୍ଭାଵ "sqlite3.h"
+#ଅନ୍ତର୍ଭାଵ <assert.h>
 
 /* These functions are implemented in main.c. */
-extern const char *sqlite3ErrName(int);
+ବାହ୍ୟ ଅଚଳ ଅକ୍ଷର *sqlite3ErrName(ପୂର୍ଣ୍ଣସଂଖ୍ୟା);
 
 /* These functions are implemented in test1.c. */
-extern int getDbPointer(Tcl_Interp *, const char *, sqlite3 **);
+ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା getDbPointer(Tcl_Interp *, ଅଚଳ ଅକ୍ଷର *, sqlite3 **);
 
-static int SQLITE_TCLAPI backupTestCmd(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI backupTestCmd(
   ClientData clientData, 
   Tcl_Interp *interp, 
-  int objc,
-  Tcl_Obj *const*objv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
+  Tcl_Obj *ଅଚଳ*objv
 ){
-  enum BackupSubCommandEnum {
+  ଗଣନା BackupSubCommandEnum {
     BACKUP_STEP, BACKUP_FINISH, BACKUP_REMAINING, BACKUP_PAGECOUNT
   };
-  struct BackupSubCommand {
-    const char *zCmd;
-    enum BackupSubCommandEnum eCmd;
-    int nArg;
-    const char *zArg;
+  ସଂରଚନା BackupSubCommand {
+    ଅଚଳ ଅକ୍ଷର *zCmd;
+    ଗଣନା BackupSubCommandEnum eCmd;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg;
+    ଅଚଳ ଅକ୍ଷର *zArg;
   } aSub[] = {
     {"step",      BACKUP_STEP      , 1, "npage" },
     {"finish",    BACKUP_FINISH    , 0, ""      },
@@ -46,24 +46,24 @@ static int SQLITE_TCLAPI backupTestCmd(
   };
 
   sqlite3_backup *p = (sqlite3_backup *)clientData;
-  int iCmd;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iCmd;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
 
   rc = Tcl_GetIndexFromObjStruct(
-      interp, objv[1], aSub, sizeof(aSub[0]), "option", 0, &iCmd
+      interp, objv[1], aSub, ଆକାର(aSub[0]), "option", 0, &iCmd
   );
-  if( rc!=TCL_OK ){
-    return rc;
+  ଯଦି( rc!=TCL_OK ){
+    ଫେରନ୍ତୁ rc;
   }
-  if( objc!=(2 + aSub[iCmd].nArg) ){
-    Tcl_WrongNumArgs(interp, 2, objv, aSub[iCmd].zArg);
-    return TCL_ERROR;
+  ଯଦି( objc!=(2 + aSub[iCmd].nArg) ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, aSub[iCmd].zArg);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
-  switch( aSub[iCmd].eCmd ){
+  ବାଛ( aSub[iCmd].eCmd ){
 
-    case BACKUP_FINISH: {
-      const char *zCmdName;
+    ସ୍ଥିତି BACKUP_FINISH: {
+      ଅଚଳ ଅକ୍ଷର *zCmdName;
       Tcl_CmdInfo cmdInfo;
       zCmdName = Tcl_GetString(objv[0]);
       Tcl_GetCommandInfo(interp, zCmdName, &cmdInfo);
@@ -72,33 +72,33 @@ static int SQLITE_TCLAPI backupTestCmd(
       Tcl_DeleteCommand(interp, zCmdName);
 
       rc = sqlite3_backup_finish(p);
-      Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-      break;
+      Tcl_SetResult(interp, (ଅକ୍ଷର *)sqlite3ErrName(rc), TCL_STATIC);
+      ଭାଙ୍ଗ;
     }
 
-    case BACKUP_STEP: {
-      int nPage;
-      if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &nPage) ){
-        return TCL_ERROR;
+    ସ୍ଥିତି BACKUP_STEP: {
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା nPage;
+      ଯଦି( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &nPage) ){
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
       rc = sqlite3_backup_step(p, nPage);
-      Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_STATIC);
-      break;
+      Tcl_SetResult(interp, (ଅକ୍ଷର *)sqlite3ErrName(rc), TCL_STATIC);
+      ଭାଙ୍ଗ;
     }
 
-    case BACKUP_REMAINING:
+    ସ୍ଥିତି BACKUP_REMAINING:
       Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_backup_remaining(p)));
-      break;
+      ଭାଙ୍ଗ;
 
-    case BACKUP_PAGECOUNT:
+    ସ୍ଥିତି BACKUP_PAGECOUNT:
       Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_backup_pagecount(p)));
-      break;
+      ଭାଙ୍ଗ;
   }
 
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
-static void SQLITE_TCLAPI backupTestFinish(ClientData clientData){
+ସ୍ଥିର ଶୂନ୍ୟ SQLITE_TCLAPI backupTestFinish(ClientData clientData){
   sqlite3_backup *pBackup = (sqlite3_backup *)clientData;
   sqlite3_backup_finish(pBackup);
 }
@@ -107,24 +107,24 @@ static void SQLITE_TCLAPI backupTestFinish(ClientData clientData){
 **     sqlite3_backup CMDNAME DESTHANDLE DESTNAME SRCHANDLE SRCNAME
 **
 */
-static int SQLITE_TCLAPI backupTestInit(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI backupTestInit(
   ClientData clientData, 
   Tcl_Interp *interp, 
-  int objc,
-  Tcl_Obj *const*objv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
+  Tcl_Obj *ଅଚଳ*objv
 ){
   sqlite3_backup *pBackup;
   sqlite3 *pDestDb;
   sqlite3 *pSrcDb;
-  const char *zDestName;
-  const char *zSrcName;
-  const char *zCmd;
+  ଅଚଳ ଅକ୍ଷର *zDestName;
+  ଅଚଳ ଅକ୍ଷର *zSrcName;
+  ଅଚଳ ଅକ୍ଷର *zCmd;
 
-  if( objc!=6 ){
-    Tcl_WrongNumArgs(
+  ଯଦି( objc!=6 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(
       interp, 1, objv, "CMDNAME DESTHANDLE DESTNAME SRCHANDLE SRCNAME"
     );
-    return TCL_ERROR;
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
   zCmd = Tcl_GetString(objv[1]);
@@ -134,17 +134,17 @@ static int SQLITE_TCLAPI backupTestInit(
   zSrcName = Tcl_GetString(objv[5]);
 
   pBackup = sqlite3_backup_init(pDestDb, zDestName, pSrcDb, zSrcName);
-  if( !pBackup ){
-    Tcl_AppendResult(interp, "sqlite3_backup_init() failed", NULL);
-    return TCL_ERROR;
+  ଯଦି( !pBackup ){
+    Tcl_AppendResult(interp, "sqlite3_backup_init() failed", ଖାଲି);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
   Tcl_CreateObjCommand(interp, zCmd, backupTestCmd, pBackup, backupTestFinish);
   Tcl_SetObjResult(interp, objv[1]);
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
-int Sqlitetestbackup_Init(Tcl_Interp *interp){
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlitetestbackup_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "sqlite3_backup", backupTestInit, 0, 0);
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }

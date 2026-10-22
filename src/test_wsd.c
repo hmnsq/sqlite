@@ -15,62 +15,62 @@
 ** SQLITE_OMIT_WSD symbol is defined at build time.
 */
 
-#if defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
+#ଯଦି defined(SQLITE_OMIT_WSD) && defined(SQLITE_TEST)
 
-#include "sqliteInt.h"
+#ଅନ୍ତର୍ଭାଵ "sqliteInt.h"
 
 #define PLS_HASHSIZE 43
 
-typedef struct ProcessLocalStorage ProcessLocalStorage;
-typedef struct ProcessLocalVar ProcessLocalVar;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା ProcessLocalStorage ProcessLocalStorage;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା ProcessLocalVar ProcessLocalVar;
 
-struct ProcessLocalStorage {
+ସଂରଚନା ProcessLocalStorage {
   ProcessLocalVar *aData[PLS_HASHSIZE];
-  int nFree;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nFree;
   u8 *pFree;
 };
 
-struct ProcessLocalVar {
-  void *pKey;
+ସଂରଚନା ProcessLocalVar {
+  ଶୂନ୍ୟ *p_ଚାବି;
   ProcessLocalVar *pNext;
 };
 
-static ProcessLocalStorage *pGlobal = 0;
+ସ୍ଥିର ProcessLocalStorage *pGlobal = 0;
 
-int sqlite3_wsd_init(int N, int J){
-  if( !pGlobal ){
-    int nMalloc = N + sizeof(ProcessLocalStorage) + J*sizeof(ProcessLocalVar);
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3_wsd_init(ପୂର୍ଣ୍ଣସଂଖ୍ୟା N, ପୂର୍ଣ୍ଣସଂଖ୍ୟା J){
+  ଯଦି( !pGlobal ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nMalloc = N + ଆକାର(ProcessLocalStorage) + J*ଆକାର(ProcessLocalVar);
     pGlobal = (ProcessLocalStorage *)malloc(nMalloc);
-    if( pGlobal ){
-      memset(pGlobal, 0, sizeof(ProcessLocalStorage));
-      pGlobal->nFree = nMalloc - sizeof(ProcessLocalStorage);
+    ଯଦି( pGlobal ){
+      memset(pGlobal, 0, ଆକାର(ProcessLocalStorage));
+      pGlobal->nFree = nMalloc - ଆକାର(ProcessLocalStorage);
       pGlobal->pFree = (u8 *)&pGlobal[1];
     }
   }
 
-  return pGlobal ? SQLITE_OK : SQLITE_NOMEM;
+  ଫେରନ୍ତୁ pGlobal ? SQLITE_OK : SQLITE_NOMEM;
 }
 
-void *sqlite3_wsd_find(void *K, int L){
-  int i;
-  int iHash = 0;
+ଶୂନ୍ୟ *sqlite3_wsd_find(ଶୂନ୍ୟ *K, ପୂର୍ଣ୍ଣସଂଖ୍ୟା L){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iHash = 0;
   ProcessLocalVar *pVar;
 
   /* Calculate a hash of K */
-  for(i=0; i<sizeof(void*); i++){
-    iHash = (iHash<<3) + ((unsigned char *)&K)[i];
+  ପାଇଁ(i=0; i<ଆକାର(ଶୂନ୍ୟ*); i++){
+    iHash = (iHash<<3) + ((unsigned ଅକ୍ଷର *)&K)[i];
   }
   iHash = iHash%PLS_HASHSIZE;
 
   /* Search the hash table for K. */
-  for(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
+  ପାଇଁ(pVar=pGlobal->aData[iHash]; pVar && pVar->p_ଚାବି!=K; pVar=pVar->pNext);
 
   /* If no entry for K was found, create and populate a new one. */
-  if( !pVar ){
-    int nByte = ROUND8(sizeof(ProcessLocalVar) + L);
-    assert( pGlobal->nFree>=nByte );
+  ଯଦି( !pVar ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nByte = ROUND8(ଆକାର(ProcessLocalVar) + L);
+    ପ୍ରତିଜ୍ଞା( pGlobal->nFree>=nByte );
     pVar = (ProcessLocalVar *)pGlobal->pFree;
-    pVar->pKey = K;
+    pVar->p_ଚାବି = K;
     pVar->pNext = pGlobal->aData[iHash];
     pGlobal->aData[iHash] = pVar;
     pGlobal->nFree -= nByte;
@@ -78,7 +78,7 @@ void *sqlite3_wsd_find(void *K, int L){
     memcpy(&pVar[1], K, L);
   }
 
-  return (void *)&pVar[1];
+  ଫେରନ୍ତୁ (ଶୂନ୍ୟ *)&pVar[1];
 }
 
 #endif

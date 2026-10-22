@@ -18,9 +18,9 @@
 ** not recommended for use in production.  For a similar virtual table that
 ** is production-ready, see the "carray" virtual table over in ext/misc.
 */
-#include "test_intarray.h"
-#include <string.h>
-#include <assert.h>
+#ଅନ୍ତର୍ଭାଵ "test_intarray.h"
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
 
 
 /*
@@ -31,26 +31,26 @@
 ** the implementation of intarray only.  This object is opaque
 ** to users.
 */
-struct sqlite3_intarray {
-  int n;                    /* Number of elements in the array */
+ସଂରଚନା sqlite3_intarray {
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା n;                    /* Number of elements in the array */
   sqlite3_int64 *a;         /* Contents of the array */
-  void (*xFree)(void*);     /* Function used to free a[] */
+  ଶୂନ୍ୟ (*xFree)(ଶୂନ୍ୟ*);     /* Function used to free a[] */
 };
 
 /* Objects used internally by the virtual table implementation */
-typedef struct intarray_vtab intarray_vtab;
-typedef struct intarray_cursor intarray_cursor;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା intarray_vtab intarray_vtab;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା intarray_cursor intarray_cursor;
 
 /* An intarray table object */
-struct intarray_vtab {
+ସଂରଚନା intarray_vtab {
   sqlite3_vtab base;            /* Base class */
   sqlite3_intarray *pContent;   /* Content of the integer array */
 };
 
 /* An intarray cursor object */
-struct intarray_cursor {
+ସଂରଚନା intarray_cursor {
   sqlite3_vtab_cursor base;    /* Base class */
-  int i;                       /* Current cursor position */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;                       /* Current cursor position */
 };
 
 /*
@@ -61,9 +61,9 @@ struct intarray_cursor {
 /*
 ** Free an sqlite3_intarray object.
 */
-static void intarrayFree(void *pX){
+ସ୍ଥିର ଶୂନ୍ୟ intarrayFree(ଶୂନ୍ୟ *pX){
   sqlite3_intarray *p = (sqlite3_intarray*)pX;
-  if( p->xFree ){
+  ଯଦି( p->xFree ){
     p->xFree(p->a);
   }
   sqlite3_free(p);
@@ -72,120 +72,120 @@ static void intarrayFree(void *pX){
 /*
 ** Table destructor for the intarray module.
 */
-static int intarrayDestroy(sqlite3_vtab *p){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayDestroy(sqlite3_vtab *p){
   intarray_vtab *pVtab = (intarray_vtab*)p;
   sqlite3_free(pVtab);
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
 /*
 ** Table constructor for the intarray module.
 */
-static int intarrayCreate(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayCreate(
   sqlite3 *db,              /* Database where module is created */
-  void *pAux,               /* clientdata for the module */
-  int argc,                 /* Number of arguments */
-  const char *const*argv,   /* Value for all arguments */
+  ଶୂନ୍ୟ *pAux,               /* clientdata for the module */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc,                 /* Number of arguments */
+  ଅଚଳ ଅକ୍ଷର *ଅଚଳ*argv,   /* Value for all arguments */
   sqlite3_vtab **ppVtab,    /* Write the new virtual table object here */
-  char **pzErr              /* Put error message text here */
+  ଅକ୍ଷର **pzErr              /* Put error message text here */
 ){
-  int rc = SQLITE_NOMEM;
-  intarray_vtab *pVtab = sqlite3_malloc64(sizeof(intarray_vtab));
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_NOMEM;
+  intarray_vtab *pVtab = sqlite3_malloc64(ଆକାର(intarray_vtab));
 
-  if( pVtab ){
-    memset(pVtab, 0, sizeof(intarray_vtab));
+  ଯଦି( pVtab ){
+    memset(pVtab, 0, ଆକାର(intarray_vtab));
     pVtab->pContent = (sqlite3_intarray*)pAux;
     rc = sqlite3_declare_vtab(db, "CREATE TABLE x(value INTEGER PRIMARY KEY)");
   }
   *ppVtab = (sqlite3_vtab *)pVtab;
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Open a new cursor on the intarray table.
 */
-static int intarrayOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
-  int rc = SQLITE_NOMEM;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_NOMEM;
   intarray_cursor *pCur;
-  pCur = sqlite3_malloc64(sizeof(intarray_cursor));
-  if( pCur ){
-    memset(pCur, 0, sizeof(intarray_cursor));
+  pCur = sqlite3_malloc64(ଆକାର(intarray_cursor));
+  ଯଦି( pCur ){
+    memset(pCur, 0, ଆକାର(intarray_cursor));
     *ppCursor = (sqlite3_vtab_cursor *)pCur;
     rc = SQLITE_OK;
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Close a intarray table cursor.
 */
-static int intarrayClose(sqlite3_vtab_cursor *cur){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayClose(sqlite3_vtab_cursor *cur){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Retrieve a column of data.
 */
-static int intarrayColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, ପୂର୍ଣ୍ଣସଂଖ୍ୟା i){
   intarray_cursor *pCur = (intarray_cursor*)cur;
   intarray_vtab *pVtab = (intarray_vtab*)cur->pVtab;
-  if( pCur->i>=0 && pCur->i<pVtab->pContent->n ){
+  ଯଦି( pCur->i>=0 && pCur->i<pVtab->pContent->n ){
     sqlite3_result_int64(ctx, pVtab->pContent->a[pCur->i]);
   }
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Retrieve the current rowid.
 */
-static int intarrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   *pRowid = pCur->i;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
-static int intarrayEof(sqlite3_vtab_cursor *cur){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayEof(sqlite3_vtab_cursor *cur){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   intarray_vtab *pVtab = (intarray_vtab *)cur->pVtab;
-  return pCur->i>=pVtab->pContent->n;
+  ଫେରନ୍ତୁ pCur->i>=pVtab->pContent->n;
 }
 
 /*
 ** Advance the cursor to the next row.
 */
-static int intarrayNext(sqlite3_vtab_cursor *cur){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayNext(sqlite3_vtab_cursor *cur){
   intarray_cursor *pCur = (intarray_cursor *)cur;
   pCur->i++;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Reset a intarray table cursor.
 */
-static int intarrayFilter(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା idx_ଅଙ୍କ, ଅଚଳ ଅକ୍ଷର *idxStr,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, sqlite3_ମୂଲ୍ୟ **argv
 ){
   intarray_cursor *pCur = (intarray_cursor *)pVtabCursor;
   pCur->i = 0;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Analyse the WHERE condition.
 */
-static int intarrayBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  return SQLITE_OK;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା intarrayBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** A virtual table module that merely echos method calls into TCL
 ** variables.
 */
-static sqlite3_module intarrayModule = {
+ସ୍ଥିର sqlite3_module intarrayModule = {
   0,                           /* iVersion */
   intarrayCreate,              /* xCreate - create a new virtual table */
   intarrayCreate,              /* xConnect - connect to an existing vtab */
@@ -226,31 +226,31 @@ static sqlite3_module intarrayModule = {
 ** explicitly by the application, the virtual table will be dropped implicitly
 ** by the system when the database connection is closed.
 */
-SQLITE_API int sqlite3_intarray_create(
+SQLITE_API ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3_intarray_create(
   sqlite3 *db,
-  const char *zName,
+  ଅଚଳ ଅକ୍ଷର *zName,
   sqlite3_intarray **ppReturn
 ){
-  int rc = SQLITE_OK;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   sqlite3_intarray *p;
 
-  *ppReturn = p = sqlite3_malloc64( sizeof(*p) );
-  if( p==0 ){
-    return SQLITE_NOMEM;
+  *ppReturn = p = sqlite3_malloc64( ଆକାର(*p) );
+  ଯଦି( p==0 ){
+    ଫେରନ୍ତୁ SQLITE_NOMEM;
   }
-  memset(p, 0, sizeof(*p));
+  memset(p, 0, ଆକାର(*p));
   rc = sqlite3_create_module_v2(db, zName, &intarrayModule, p,
-                                (void(*)(void*))intarrayFree);
-  if( rc==SQLITE_OK ){
-    char *zSql;
+                                (ଶୂନ୍ୟ(*)(ଶୂନ୍ୟ*))intarrayFree);
+  ଯଦି( rc==SQLITE_OK ){
+    ଅକ୍ଷର *zSql;
     zSql = sqlite3_mprintf("CREATE VIRTUAL TABLE temp.%Q USING %Q",
                            zName, zName);
     rc = sqlite3_exec(db, zSql, 0, 0, 0);
     sqlite3_free(zSql);
   }
 #endif
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
@@ -260,19 +260,19 @@ SQLITE_API int sqlite3_intarray_create(
 ** any query against the corresponding virtual table.  If the integer
 ** array does change or is deallocated undefined behavior will result.
 */
-SQLITE_API int sqlite3_intarray_bind(
+SQLITE_API ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3_intarray_bind(
   sqlite3_intarray *pIntArray,   /* The intarray object to bind to */
-  int nElements,                 /* Number of elements in the intarray */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nElements,                 /* Number of elements in the intarray */
   sqlite3_int64 *aElements,      /* Content of the intarray */
-  void (*xFree)(void*)           /* How to dispose of the intarray when done */
+  ଶୂନ୍ୟ (*xFree)(ଶୂନ୍ୟ*)           /* How to dispose of the intarray when done */
 ){
-  if( pIntArray->xFree ){
+  ଯଦି( pIntArray->xFree ){
     pIntArray->xFree(pIntArray->a);
   }
   pIntArray->n = nElements;
   pIntArray->a = aElements;
   pIntArray->xFree = xFree;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 
@@ -280,15 +280,15 @@ SQLITE_API int sqlite3_intarray_bind(
 ** Everything below is interface for testing this module.
 */
 #ifdef SQLITE_TEST
-#include "tclsqlite.h"
+#ଅନ୍ତର୍ଭାଵ "tclsqlite.h"
 
 /*
 ** Routines to encode and decode pointers
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern void *sqlite3TestTextToPtr(const char*);
-extern int sqlite3TestMakePointerStr(Tcl_Interp*, char *zPtr, void*);
-extern const char *sqlite3ErrName(int);
+ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା getDbPointer(Tcl_Interp *interp, ଅଚଳ ଅକ୍ଷର *zA, sqlite3 **ppDb);
+ବାହ୍ୟ ଶୂନ୍ୟ *sqlite3TestTextToPtr(ଅଚଳ ଅକ୍ଷର*);
+ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3TestMakePointerStr(Tcl_Interp*, ଅକ୍ଷର *zPtr, ଶୂନ୍ୟ*);
+ବାହ୍ୟ ଅଚଳ ଅକ୍ଷର *sqlite3ErrName(ପୂର୍ଣ୍ଣସଂଖ୍ୟା);
 
 /*
 **    sqlite3_intarray_create  DB  NAME
@@ -296,34 +296,34 @@ extern const char *sqlite3ErrName(int);
 ** Invoke the sqlite3_intarray_create interface.  A string that becomes
 ** the first parameter to sqlite3_intarray_bind.
 */
-static int SQLITE_TCLAPI test_intarray_create(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI test_intarray_create(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  const char *zName;
+  ଅଚଳ ଅକ୍ଷର *zName;
   sqlite3_intarray *pArray;
-  int rc = SQLITE_OK;
-  char zPtr[100];
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;
+  ଅକ୍ଷର zPtr[100];
 
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  ଯଦି( objc!=3 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "DB");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ଯଦି( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ଫେରନ୍ତୁ TCL_ERROR;
   zName = Tcl_GetString(objv[2]);
 #ifndef SQLITE_OMIT_VIRTUALTABLE
   rc = sqlite3_intarray_create(db, zName, &pArray);
 #endif
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), (char*)0);
-    return TCL_ERROR;
+  ଯଦି( rc!=SQLITE_OK ){
+    Tcl_AppendResult(interp, sqlite3ErrName(rc), (ଅକ୍ଷର*)0);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
   sqlite3TestMakePointerStr(interp, zPtr, pArray);
-  Tcl_AppendResult(interp, zPtr, (char*)0);
-  return TCL_OK;
+  Tcl_AppendResult(interp, zPtr, (ଅକ୍ଷର*)0);
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
@@ -331,61 +331,61 @@ static int SQLITE_TCLAPI test_intarray_create(
 **
 ** Invoke the sqlite3_intarray_bind interface on the given array of integers.
 */
-static int SQLITE_TCLAPI test_intarray_bind(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI test_intarray_bind(
   ClientData clientData, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_intarray *pArray;
-  int rc = SQLITE_OK;
-  int i, n;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i, n;
   sqlite3_int64 *a;
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTARRAY");
-    return TCL_ERROR;
+  ଯଦି( objc<2 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "INTARRAY");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
   pArray = (sqlite3_intarray*)sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
   n = objc - 2;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  a = sqlite3_malloc64( sizeof(a[0])*n );
-  if( a==0 ){
-    Tcl_AppendResult(interp, "SQLITE_NOMEM", (char*)0);
-    return TCL_ERROR;
+  a = sqlite3_malloc64( ଆକାର(a[0])*n );
+  ଯଦି( a==0 ){
+    Tcl_AppendResult(interp, "SQLITE_NOMEM", (ଅକ୍ଷର*)0);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  for(i=0; i<n; i++){
+  ପାଇଁ(i=0; i<n; i++){
     Tcl_WideInt x = 0;
     Tcl_GetWideIntFromObj(0, objv[i+2], &x);
     a[i] = x;
   }
   rc = sqlite3_intarray_bind(pArray, n, a, sqlite3_free);
-  if( rc!=SQLITE_OK ){
-    Tcl_AppendResult(interp, sqlite3ErrName(rc), (char*)0);
-    return TCL_ERROR;
+  ଯଦି( rc!=SQLITE_OK ){
+    Tcl_AppendResult(interp, sqlite3ErrName(rc), (ଅକ୍ଷର*)0);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 #endif
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetestintarray_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlitetestintarray_Init(Tcl_Interp *interp){
+  ସ୍ଥିର ସଂରଚନା {
+     ଅକ୍ଷର *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     ଶୂନ୍ୟ *clientData;
   } aObjCmd[] = {
      { "sqlite3_intarray_create", test_intarray_create, 0 },
      { "sqlite3_intarray_bind", test_intarray_bind, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପାଇଁ(i=0; i<ଆକାର(aObjCmd)/ଆକାର(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 #endif /* SQLITE_TEST */

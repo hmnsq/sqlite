@@ -31,32 +31,32 @@
 /*
 ** If requested, include the SQLite compiler options file for MSVC.
 */
-#if defined(INCLUDE_MSVC_H)
+#ଯଦି defined(INCLUDE_MSVC_H)
 # include "msvc.h"
 #endif
 
 /****** Copy of tclsqlite.h ******/
-#if defined(INCLUDE_SQLITE_TCL_H)
+#ଯଦି defined(INCLUDE_SQLITE_TCL_H)
 # include "sqlite_tcl.h"   /* Special case for Windows using STDCALL */
-#else
+#ଅନ୍ୟଥା
 # include <tcl.h>          /* All normal cases */
 # ifndef SQLITE_TCLAPI
 #   define SQLITE_TCLAPI
 # endif
 #endif
 /* Compatability between Tcl8.6 and Tcl9.0 */
-#if TCL_MAJOR_VERSION==9
-# define CONST const
-#elif !defined(Tcl_Size)
-  typedef int Tcl_Size;
-# ifndef Tcl_BounceRefCount
-#  define Tcl_BounceRefCount(X) Tcl_IncrRefCount(X); Tcl_DecrRefCount(X)
+#ଯଦି TCL_MAJOR_VERSION==9
+# define CONST ଅଚଳ
+#ନଚେତଯଦି !defined(Tcl_Size)
+  ପ୍ରକାରବ୍ୟାଖ୍ୟା ପୂର୍ଣ୍ଣସଂଖ୍ୟା Tcl_Size;
+# ifndef Tcl_Bounce_Ref_ଗଣନା
+#  define Tcl_Bounce_Ref_ଗଣନା(X) Tcl_Incr_Ref_ଗଣନା(X); Tcl_Decr_Ref_ଗଣନା(X)
    /* https://www.tcl-lang.org/man/tcl9.0/TclLib/Object.html */
 # endif
 #endif
 /**** End copy of tclsqlite.h ****/
 
-#include <errno.h>
+#ଅନ୍ତର୍ଭାଵ <errno.h>
 
 /*
 ** Some additional include files are needed if this file is not
@@ -67,37 +67,37 @@
 # include <stdlib.h>
 # include <string.h>
 # include <assert.h>
-  typedef unsigned char u8;
+  ପ୍ରକାରବ୍ୟାଖ୍ୟା unsigned ଅକ୍ଷର u8;
 # ifndef SQLITE_PTRSIZE
-#   if defined(__SIZEOF_POINTER__)
+#   ଯଦି defined(__SIZEOF_POINTER__)
 #     define SQLITE_PTRSIZE __SIZEOF_POINTER__
 #   elif defined(i386)     || defined(__i386__)   || defined(_M_IX86) ||    \
          defined(_M_ARM)   || defined(__arm__)    || defined(__x86)   ||    \
         (defined(__APPLE__) && defined(__POWERPC__)) ||                     \
         (defined(__TOS_AIX__) && !defined(__64BIT__))
 #     define SQLITE_PTRSIZE 4
-#   else
+#   ଅନ୍ୟଥା
 #     define SQLITE_PTRSIZE 8
 #   endif
 # endif /* SQLITE_PTRSIZE */
-# if defined(HAVE_STDINT_H) || (defined(__STDC_VERSION__) &&  \
+# ଯଦି defined(HAVE_STDINT_H) || (defined(__STDC_VERSION__) &&  \
                                 (__STDC_VERSION__ >= 199901L))
 #   include <stdint.h>
-    typedef uintptr_t uptr;
+    ପ୍ରକାରବ୍ୟାଖ୍ୟା uintptr_t uptr;
 # elif SQLITE_PTRSIZE==4
-    typedef unsigned int uptr;
-# else
-    typedef sqlite3_uint64 uptr;
+    ପ୍ରକାରବ୍ୟାଖ୍ୟା unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା uptr;
+# ଅନ୍ୟଥା
+    ପ୍ରକାରବ୍ୟାଖ୍ୟା sqlite3_uint64 uptr;
 # endif
 #endif
-#include <ctype.h>
+#ଅନ୍ତର୍ଭାଵ <ctype.h>
 
 /* Used to get the current process ID */
-#if !defined(_WIN32)
+#ଯଦି !defined(_WIN32)
 # include <signal.h>
 # include <unistd.h>
 # define GETPID getpid
-#elif !defined(_WIN32_WCE)
+#ନଚେତଯଦି !defined(_WIN32_WCE)
 # ifndef SQLITE_AMALGAMATION
 #  ifndef WIN32_LEAN_AND_MEAN
 #   define WIN32_LEAN_AND_MEAN
@@ -106,7 +106,7 @@
 # endif
 # include <io.h>
 # define isatty(h) _isatty(h)
-# define GETPID (int)GetCurrentProcessId
+# define GETPID (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)GetCurrentProcessId
 #endif
 
 /*
@@ -118,19 +118,19 @@
 #define TCL_STORAGE_CLASS DLLEXPORT
 #endif /* BUILD_sqlite */
 
-#define NUM_PREPARED_STMTS 10
+#define ଅଙ୍କ_PREPARED_STMTS 10
 #define MAX_PREPARED_STMTS 100
 
 /* Forward declaration */
-typedef struct SqliteDb SqliteDb;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା SqliteDb SqliteDb;
 
 /* Add -DSQLITE_ENABLE_QRF_IN_TCL to add the Query Result Formatter (QRF)
 ** into the build of the TCL extension, when building using separate
 ** source files.  The QRF is included automatically when building from
 ** the tclsqlite3.c amalgamation.
 */
-#if defined(SQLITE_ENABLE_QRF_IN_TCL)
-#include "qrf.h"
+#ଯଦି defined(SQLITE_ENABLE_QRF_IN_TCL)
+#ଅନ୍ତର୍ଭାଵ "qrf.h"
 #endif
 
 /*
@@ -145,14 +145,14 @@ typedef struct SqliteDb SqliteDb;
 ** or SQLITE_FLOAT, then an attempt is made to return an integer or float
 ** value, falling back to float and then text if this is not possible.
 */
-typedef struct SqlFunc SqlFunc;
-struct SqlFunc {
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା SqlFunc SqlFunc;
+ସଂରଚନା SqlFunc {
   Tcl_Interp *interp;   /* The TCL interpret to execute the function */
   Tcl_Obj *pScript;     /* The Tcl_Obj representation of the script */
   SqliteDb *pDb;        /* Database connection that owns this function */
-  int useEvalObjv;      /* True if it is safe to use Tcl_EvalObjv */
-  int eType;            /* Type of value to return */
-  char *zName;          /* Name of this function */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା useEvalObjv;      /* True if it is safe to use Tcl_EvalObjv */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା eType;            /* Type of value to return */
+  ଅକ୍ଷର *zName;          /* Name of this function */
   SqlFunc *pNext;       /* Next function on the list of them all */
 };
 
@@ -160,10 +160,10 @@ struct SqlFunc {
 ** New collation sequences function can be created as TCL scripts.  Each such
 ** function is described by an instance of the following structure.
 */
-typedef struct SqlCollate SqlCollate;
-struct SqlCollate {
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା SqlCollate SqlCollate;
+ସଂରଚନା SqlCollate {
   Tcl_Interp *interp;   /* The TCL interpret to execute the function */
-  char *zScript;        /* The script to be run */
+  ଅକ୍ଷର *zScript;        /* The script to be run */
   SqlCollate *pNext;    /* Next function on the list of them all */
 };
 
@@ -171,18 +171,18 @@ struct SqlCollate {
 ** Prepared statements are cached for faster execution.  Each prepared
 ** statement is described by an instance of the following structure.
 */
-typedef struct SqlPreparedStmt SqlPreparedStmt;
-struct SqlPreparedStmt {
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା SqlPreparedStmt SqlPreparedStmt;
+ସଂରଚନା SqlPreparedStmt {
   SqlPreparedStmt *pNext;  /* Next in linked list */
   SqlPreparedStmt *pPrev;  /* Previous on the list */
   sqlite3_stmt *pStmt;     /* The prepared statement */
-  int nSql;                /* chars in zSql[] */
-  const char *zSql;        /* Text of the SQL statement */
-  int nParm;               /* Size of apParm array */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nSql;                /* chars in zSql[] */
+  ଅଚଳ ଅକ୍ଷର *zSql;        /* Text of the SQL statement */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nParm;               /* Size of apParm array */
   Tcl_Obj **apParm;        /* Array of referenced object pointers */
 };
 
-typedef struct IncrblobChannel IncrblobChannel;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା IncrblobChannel IncrblobChannel;
 
 /*
 ** There is one instance of this structure for each SQLite database
@@ -193,19 +193,19 @@ typedef struct IncrblobChannel IncrblobChannel;
 ** sqlite3_prepare_v2() or sqlite3_prepare() to prepare SQL statements.
 ** If SqliteDb.bLegacyPrepare is true, sqlite3_prepare() is used.
 */
-struct SqliteDb {
+ସଂରଚନା SqliteDb {
   sqlite3 *db;               /* The "real" database structure. MUST BE FIRST */
   Tcl_Interp *interp;        /* The interpreter used for this database */
-  char *zBusy;               /* The busy callback routine */
-  char *zCommit;             /* The commit hook callback routine */
-  char *zTrace;              /* The trace callback routine */
-  char *zTraceV2;            /* The trace_v2 callback routine */
-  char *zProfile;            /* The profile callback routine */
-  char *zProgress;           /* The progress callback routine */
-  char *zBindFallback;       /* Callback to invoke on a binding miss */
-  char *zAuth;               /* The authorization callback routine */
-  int disableAuth;           /* Disable the authorizer if it exists */
-  char *zNull;               /* Text to substitute for an SQL NULL value */
+  ଅକ୍ଷର *zBusy;               /* The busy callback routine */
+  ଅକ୍ଷର *zCommit;             /* The commit hook callback routine */
+  ଅକ୍ଷର *zTrace;              /* The trace callback routine */
+  ଅକ୍ଷର *zTraceV2;            /* The trace_v2 callback routine */
+  ଅକ୍ଷର *zProfile;            /* The profile callback routine */
+  ଅକ୍ଷର *zProgress;           /* The progress callback routine */
+  ଅକ୍ଷର *zBindFallback;       /* Callback to invoke on a binding miss */
+  ଅକ୍ଷର *zAuth;               /* The authorization callback routine */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା disableAuth;           /* Disable the authorizer if it exists */
+  ଅକ୍ଷର *zNull;               /* Text to substitute for an SQL NULL value */
   SqlFunc *pFunc;            /* List of SQL functions */
   Tcl_Obj *pUpdateHook;      /* Update hook script (if any) */
   Tcl_Obj *pPreUpdateHook;   /* Pre-update hook script (if any) */
@@ -213,28 +213,28 @@ struct SqliteDb {
   Tcl_Obj *pWalHook;         /* WAL hook script (if any) */
   Tcl_Obj *pUnlockNotify;    /* Unlock notify script (if any) */
   SqlCollate *pCollate;      /* List of SQL collation functions */
-  int rc;                    /* Return code of most recent sqlite3_exec() */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;                    /* Return code of most recent sqlite3_exec() */
   Tcl_Obj *pCollateNeeded;   /* Collation needed script */
   SqlPreparedStmt *stmtList; /* List of prepared statements*/
   SqlPreparedStmt *stmtLast; /* Last statement in the list */
-  int maxStmt;               /* The next maximum number of stmtList */
-  int nStmt;                 /* Number of statements in stmtList */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା maxStmt;               /* The next maximum number of stmtList */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nStmt;                 /* Number of statements in stmtList */
   IncrblobChannel *pIncrblob;/* Linked list of open incrblob channels */
-  int nStep, nSort, nIndex;  /* Statistics for most recent operation */
-  int nVMStep;               /* Another statistic for most recent operation */
-  int nTransaction;          /* Number of nested [transaction] methods */
-  int openFlags;             /* Flags used to open.  (SQLITE_OPEN_URI) */
-  int nRef;                  /* Delete object when this reaches 0 */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nStep, nSort, nIndex;  /* Statistics for most recent operation */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nVMStep;               /* Another statistic for most recent operation */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nTransaction;          /* Number of nested [transaction] methods */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା openFlags;             /* Flags used to open.  (SQLITE_OPEN_URI) */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nRef;                  /* Delete object when this reaches 0 */
 #ifdef SQLITE_TEST
-  int bLegacyPrepare;        /* True to use sqlite3_prepare() */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା bLegacyPrepare;        /* True to use sqlite3_prepare() */
 #endif
 };
 
-struct IncrblobChannel {
+ସଂରଚନା IncrblobChannel {
   sqlite3_blob *pBlob;      /* sqlite3 blob handle */
   SqliteDb *pDb;            /* Associated database connection */
   sqlite3_int64 iSeek;      /* Current seek offset */
-  unsigned int isClosed;    /* TCL_CLOSE_READ or TCL_CLOSE_WRITE */
+  unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା isClosed;    /* TCL_CLOSE_READ or TCL_CLOSE_WRITE */
   Tcl_Channel channel;      /* Channel identifier */
   IncrblobChannel *pNext;   /* Linked list of all open incrblob channels */
   IncrblobChannel *pPrev;   /* Linked list of all open incrblob channels */
@@ -244,10 +244,10 @@ struct IncrblobChannel {
 ** Compute a string length that is limited to what can be stored in
 ** lower 30 bits of a 32-bit signed integer.
 */
-static int strlen30(const char *z){
-  const char *z2 = z;
-  while( *z2 ){ z2++; }
-  return 0x3fffffff & (int)(z2 - z);
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା strlen30(ଅଚଳ ଅକ୍ଷର *z){
+  ଅଚଳ ଅକ୍ଷର *z2 = z;
+  ଯେତେବେଳେ( *z2 ){ z2++; }
+  ଫେରନ୍ତୁ 0x3fffffff & (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)(z2 - z);
 }
 
 
@@ -256,11 +256,11 @@ static int strlen30(const char *z){
 ** Close all incrblob channels opened using database connection pDb.
 ** This is called when shutting down the database connection.
 */
-static void closeIncrblobChannels(SqliteDb *pDb){
+ସ୍ଥିର ଶୂନ୍ୟ closeIncrblobChannels(SqliteDb *pDb){
   IncrblobChannel *p;
   IncrblobChannel *pNext;
 
-  for(p=pDb->pIncrblob; p; p=pNext){
+  ପାଇଁ(p=pDb->pIncrblob; p; p=pNext){
     pNext = p->pNext;
 
     /* Note: Calling unregister here call Tcl_Close on the incrblob channel,
@@ -274,179 +274,179 @@ static void closeIncrblobChannels(SqliteDb *pDb){
 /*
 ** Close an incremental blob channel.
 */
-static int SQLITE_TCLAPI incrblobClose2(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI incrblobClose2(
   ClientData instanceData,
   Tcl_Interp *interp,
-  int flags
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags
 ){
   IncrblobChannel *p = (IncrblobChannel *)instanceData;
-  int  rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା  rc;
   sqlite3 *db = p->pDb->db;
 
-  if( flags ){
+  ଯଦି( flags ){
     p->isClosed |= flags;
-    return TCL_OK;
+    ଫେରନ୍ତୁ TCL_OK;
   }
 
   /* If we reach this point, then we really do need to close the channel */
   rc = sqlite3_blob_close(p->pBlob);
 
   /* Remove the channel from the SqliteDb.pIncrblob list. */
-  if( p->pNext ){
+  ଯଦି( p->pNext ){
     p->pNext->pPrev = p->pPrev;
   }
-  if( p->pPrev ){
+  ଯଦି( p->pPrev ){
     p->pPrev->pNext = p->pNext;
   }
-  if( p->pDb->pIncrblob==p ){
+  ଯଦି( p->pDb->pIncrblob==p ){
     p->pDb->pIncrblob = p->pNext;
   }
 
   /* Free the IncrblobChannel structure */
-  Tcl_Free((char *)p);
+  Tcl_Free((ଅକ୍ଷର *)p);
 
-  if( rc!=SQLITE_OK ){
-    Tcl_SetResult(interp, (char *)sqlite3_errmsg(db), TCL_VOLATILE);
-    return TCL_ERROR;
+  ଯଦି( rc!=SQLITE_OK ){
+    Tcl_SetResult(interp, (ଅକ୍ଷର *)sqlite3_errmsg(db), TCL_VOLATILE);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
-static int SQLITE_TCLAPI incrblobClose(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI incrblobClose(
   ClientData instanceData,
   Tcl_Interp *interp
 ){
-  return incrblobClose2(instanceData, interp, 0);
+  ଫେରନ୍ତୁ incrblobClose2(instanceData, interp, 0);
 }
 
 
 /*
 ** Read data from an incremental blob channel.
 */
-static int SQLITE_TCLAPI incrblobInput(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI incrblob_ନିବେଶ(
   ClientData instanceData,
-  char *buf,
-  int bufSize,
-  int *errorCodePtr
+  ଅକ୍ଷର *buf,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା bufSize,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *errorCodePtr
 ){
   IncrblobChannel *p = (IncrblobChannel *)instanceData;
   sqlite3_int64 nRead = bufSize;   /* Number of bytes to read */
   sqlite3_int64 nBlob;             /* Total size of the blob */
-  int rc;                          /* sqlite error code */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;                          /* sqlite error code */
 
   nBlob = sqlite3_blob_bytes(p->pBlob);
-  if( (p->iSeek+nRead)>nBlob ){
+  ଯଦି( (p->iSeek+nRead)>nBlob ){
     nRead = nBlob-p->iSeek;
   }
-  if( nRead<=0 ){
-    return 0;
+  ଯଦି( nRead<=0 ){
+    ଫେରନ୍ତୁ 0;
   }
 
-  rc = sqlite3_blob_read(p->pBlob, (void *)buf, (int)nRead, (int)p->iSeek);
-  if( rc!=SQLITE_OK ){
+  rc = sqlite3_blob_read(p->pBlob, (ଶୂନ୍ୟ *)buf, (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)nRead, (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)p->iSeek);
+  ଯଦି( rc!=SQLITE_OK ){
     *errorCodePtr = rc;
-    return -1;
+    ଫେରନ୍ତୁ -1;
   }
 
   p->iSeek += nRead;
-  return nRead;
+  ଫେରନ୍ତୁ nRead;
 }
 
 /*
 ** Write data to an incremental blob channel.
 */
-static int SQLITE_TCLAPI incrblobOutput(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI incrblobOutput(
   ClientData instanceData,
-  const char *buf,
-  int toWrite,
-  int *errorCodePtr
+  ଅଚଳ ଅକ୍ଷର *buf,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା toWrite,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *errorCodePtr
 ){
   IncrblobChannel *p = (IncrblobChannel *)instanceData;
   sqlite3_int64 nWrite = toWrite;   /* Number of bytes to write */
   sqlite3_int64 nBlob;              /* Total size of the blob */
-  int rc;                           /* sqlite error code */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;                           /* sqlite error code */
 
   nBlob = sqlite3_blob_bytes(p->pBlob);
-  if( (p->iSeek+nWrite)>nBlob ){
+  ଯଦି( (p->iSeek+nWrite)>nBlob ){
     *errorCodePtr = EINVAL;
-    return -1;
+    ଫେରନ୍ତୁ -1;
   }
-  if( nWrite<=0 ){
-    return 0;
+  ଯଦି( nWrite<=0 ){
+    ଫେରନ୍ତୁ 0;
   }
 
-  rc = sqlite3_blob_write(p->pBlob, (void*)buf,(int)nWrite, (int)p->iSeek);
-  if( rc!=SQLITE_OK ){
+  rc = sqlite3_blob_write(p->pBlob, (ଶୂନ୍ୟ*)buf,(ପୂର୍ଣ୍ଣସଂଖ୍ୟା)nWrite, (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)p->iSeek);
+  ଯଦି( rc!=SQLITE_OK ){
     *errorCodePtr = EIO;
-    return -1;
+    ଫେରନ୍ତୁ -1;
   }
 
   p->iSeek += nWrite;
-  return nWrite;
+  ଫେରନ୍ତୁ nWrite;
 }
 
 /* The datatype of Tcl_DriverWideSeekProc changes between tcl8.6 and tcl9.0 */
-#if TCL_MAJOR_VERSION==9
+#ଯଦି TCL_MAJOR_VERSION==9
 # define WideSeekProcType long long
-#else
+#ଅନ୍ୟଥା
 # define WideSeekProcType Tcl_WideInt
 #endif
 
 /*
 ** Seek an incremental blob channel.
 */
-static WideSeekProcType SQLITE_TCLAPI incrblobWideSeek(
+ସ୍ଥିର WideSeekProcType SQLITE_TCLAPI incrblobWideSeek(
   ClientData instanceData,
   WideSeekProcType offset,
-  int seekMode,
-  int *errorCodePtr
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା seekMode,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *errorCodePtr
 ){
   IncrblobChannel *p = (IncrblobChannel *)instanceData;
 
-  switch( seekMode ){
-    case SEEK_SET:
+  ବାଛ( seekMode ){
+    ସ୍ଥିତି SEEK_SET:
       p->iSeek = offset;
-      break;
-    case SEEK_CUR:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି SEEK_CUR:
       p->iSeek += offset;
-      break;
-    case SEEK_END:
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି SEEK_END:
       p->iSeek = sqlite3_blob_bytes(p->pBlob) + offset;
-      break;
+      ଭାଙ୍ଗ;
 
-    default: assert(!"Bad seekMode");
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ: ପ୍ରତିଜ୍ଞା(!"Bad seekMode");
   }
 
-  return p->iSeek;
+  ଫେରନ୍ତୁ p->iSeek;
 }
-static int SQLITE_TCLAPI incrblobSeek(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI incrblobSeek(
   ClientData instanceData,
   long offset,
-  int seekMode,
-  int *errorCodePtr
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା seekMode,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *errorCodePtr
 ){
-  return incrblobWideSeek(instanceData,offset,seekMode,errorCodePtr);
+  ଫେରନ୍ତୁ incrblobWideSeek(instanceData,offset,seekMode,errorCodePtr);
 }
 
 
-static void SQLITE_TCLAPI incrblobWatch(
+ସ୍ଥିର ଶୂନ୍ୟ SQLITE_TCLAPI incrblobWatch(
   ClientData instanceData,
-  int mode
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା mode
 ){
   /* NO-OP */
 }
-static int SQLITE_TCLAPI incrblobHandle(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI incrblobHandle(
   ClientData instanceData,
-  int dir,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା dir,
   ClientData *hPtr
 ){
-  return TCL_ERROR;
+  ଫେରନ୍ତୁ TCL_ERROR;
 }
 
-static Tcl_ChannelType IncrblobChannelType = {
+ସ୍ଥିର Tcl_ChannelType IncrblobChannelType = {
   "incrblob",                        /* typeName                             */
   TCL_CHANNEL_VERSION_5,             /* version                              */
   incrblobClose,                     /* closeProc                            */
-  incrblobInput,                     /* inputProc                            */
+  incrblob_ନିବେଶ,                     /* inputProc                            */
   incrblobOutput,                    /* outputProc                           */
   incrblobSeek,                      /* seekProc                             */
   0,                                 /* setOptionProc                        */
@@ -463,53 +463,53 @@ static Tcl_ChannelType IncrblobChannelType = {
 /*
 ** Create a new incrblob channel.
 */
-static int createIncrblobChannel(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା createIncrblobChannel(
   Tcl_Interp *interp,
   SqliteDb *pDb,
-  const char *zDb,
-  const char *zTable,
-  const char *zColumn,
+  ଅଚଳ ଅକ୍ଷର *zDb,
+  ଅଚଳ ଅକ୍ଷର *zTable,
+  ଅଚଳ ଅକ୍ଷର *zColumn,
   sqlite_int64 iRow,
-  int isReadonly
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା isReadonly
 ){
   IncrblobChannel *p;
   sqlite3 *db = pDb->db;
   sqlite3_blob *pBlob;
-  int rc;
-  int flags = TCL_READABLE|(isReadonly ? 0 : TCL_WRITABLE);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags = TCL_READABLE|(isReadonly ? 0 : TCL_WRITABLE);
 
   /* This variable is used to name the channels: "incrblob_[incr count]" */
-  static int count = 0;
-  char zChannel[64];
+  ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଗଣନା_2 = 0;
+  ଅକ୍ଷର zChannel[64];
 
   rc = sqlite3_blob_open(db, zDb, zTable, zColumn, iRow, !isReadonly, &pBlob);
-  if( rc!=SQLITE_OK ){
-    Tcl_SetResult(interp, (char *)sqlite3_errmsg(pDb->db), TCL_VOLATILE);
-    return TCL_ERROR;
+  ଯଦି( rc!=SQLITE_OK ){
+    Tcl_SetResult(interp, (ଅକ୍ଷର *)sqlite3_errmsg(pDb->db), TCL_VOLATILE);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
-  p = (IncrblobChannel *)Tcl_Alloc(sizeof(IncrblobChannel));
-  memset(p, 0, sizeof(*p));
+  p = (IncrblobChannel *)Tcl_Alloc(ଆକାର(IncrblobChannel));
+  memset(p, 0, ଆକାର(*p));
   p->pBlob = pBlob;
-  if( (flags & TCL_WRITABLE)==0 ) p->isClosed |= TCL_CLOSE_WRITE;
+  ଯଦି( (flags & TCL_WRITABLE)==0 ) p->isClosed |= TCL_CLOSE_WRITE;
 
-  sqlite3_snprintf(sizeof(zChannel), zChannel, "incrblob_%d", ++count);
+  sqlite3_snprintf(ଆକାର(zChannel), zChannel, "incrblob_%d", ++ଗଣନା_2);
   p->channel = Tcl_CreateChannel(&IncrblobChannelType, zChannel, p, flags);
   Tcl_RegisterChannel(interp, p->channel);
 
   /* Link the new channel into the SqliteDb.pIncrblob list. */
   p->pNext = pDb->pIncrblob;
   p->pPrev = 0;
-  if( p->pNext ){
+  ଯଦି( p->pNext ){
     p->pNext->pPrev = p;
   }
   pDb->pIncrblob = p;
   p->pDb = pDb;
 
-  Tcl_SetResult(interp, (char *)Tcl_GetChannelName(p->channel), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (ଅକ୍ଷର *)Tcl_GetChannelName(p->channel), TCL_VOLATILE);
+  ଫେରନ୍ତୁ TCL_OK;
 }
-#else  /* else clause for "#ifndef SQLITE_OMIT_INCRBLOB" */
+#ଅନ୍ୟଥା  /* else clause for "#ifndef SQLITE_OMIT_INCRBLOB" */
   #define closeIncrblobChannels(pDb)
 #endif
 
@@ -525,19 +525,19 @@ static int createIncrblobChannel(
 ** or {...} or ; to be seen anywhere.  Most callback scripts consist
 ** of just a single procedure name and they meet this requirement.
 */
-static int safeToUseEvalObjv(Tcl_Obj *pCmd){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା safeToUseEvalObjv(Tcl_Obj *pCmd){
   /* We could try to do something with Tcl_Parse().  But we will instead
   ** just do a search for forbidden characters.  If any of the forbidden
   ** characters appear in pCmd, we will report the string as unsafe.
   */
-  const char *z;
+  ଅଚଳ ଅକ୍ଷର *z;
   Tcl_Size n;
   z = Tcl_GetStringFromObj(pCmd, &n);
-  while( n-- > 0 ){
-    int c = *(z++);
-    if( c=='$' || c=='[' || c==';' ) return 0;
+  ଯେତେବେଳେ( n-- > 0 ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା c = *(z++);
+    ଯଦି( c=='$' || c=='[' || c==';' ) ଫେରନ୍ତୁ 0;
   }
-  return 1;
+  ଫେରନ୍ତୁ 1;
 }
 
 /*
@@ -545,16 +545,16 @@ static int safeToUseEvalObjv(Tcl_Obj *pCmd){
 ** one if an existing one cannot be found.  Return a pointer to the
 ** structure.
 */
-static SqlFunc *findSqlFunc(SqliteDb *pDb, const char *zName){
+ସ୍ଥିର SqlFunc *findSqlFunc(SqliteDb *pDb, ଅଚଳ ଅକ୍ଷର *zName){
   SqlFunc *p, *pNew;
-  int nName = strlen30(zName);
-  pNew = (SqlFunc*)Tcl_Alloc( sizeof(*pNew) + nName + 1 );
-  pNew->zName = (char*)&pNew[1];
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nName = strlen30(zName);
+  pNew = (SqlFunc*)Tcl_Alloc( ଆକାର(*pNew) + nName + 1 );
+  pNew->zName = (ଅକ୍ଷର*)&pNew[1];
   memcpy(pNew->zName, zName, nName+1);
-  for(p=pDb->pFunc; p; p=p->pNext){
-    if( sqlite3_stricmp(p->zName, pNew->zName)==0 ){
-      Tcl_Free((char*)pNew);
-      return p;
+  ପାଇଁ(p=pDb->pFunc; p; p=p->pNext){
+    ଯଦି( sqlite3_stricmp(p->zName, pNew->zName)==0 ){
+      Tcl_Free((ଅକ୍ଷର*)pNew);
+      ଫେରନ୍ତୁ p;
     }
   }
   pNew->interp = pDb->interp;
@@ -562,30 +562,30 @@ static SqlFunc *findSqlFunc(SqliteDb *pDb, const char *zName){
   pNew->pScript = 0;
   pNew->pNext = pDb->pFunc;
   pDb->pFunc = pNew;
-  return pNew;
+  ଫେରନ୍ତୁ pNew;
 }
 
 /*
 ** Free a single SqlPreparedStmt object.
 */
-static void dbFreeStmt(SqlPreparedStmt *pStmt){
+ସ୍ଥିର ଶୂନ୍ୟ dbFreeStmt(SqlPreparedStmt *pStmt){
 #ifdef SQLITE_TEST
-  if( sqlite3_sql(pStmt->pStmt)==0 ){
-    Tcl_Free((char *)pStmt->zSql);
+  ଯଦି( sqlite3_sql(pStmt->pStmt)==0 ){
+    Tcl_Free((ଅକ୍ଷର *)pStmt->zSql);
   }
 #endif
   sqlite3_finalize(pStmt->pStmt);
-  Tcl_Free((char *)pStmt);
+  Tcl_Free((ଅକ୍ଷର *)pStmt);
 }
 
 /*
 ** Finalize and free a list of prepared statements
 */
-static void flushStmtCache(SqliteDb *pDb){
+ସ୍ଥିର ଶୂନ୍ୟ flushStmtCache(SqliteDb *pDb){
   SqlPreparedStmt *pPreStmt;
   SqlPreparedStmt *pNext;
 
-  for(pPreStmt = pDb->stmtList; pPreStmt; pPreStmt=pNext){
+  ପାଇଁ(pPreStmt = pDb->stmtList; pPreStmt; pPreStmt=pNext){
     pNext = pPreStmt->pNext;
     dbFreeStmt(pPreStmt);
   }
@@ -598,7 +598,7 @@ static void flushStmtCache(SqliteDb *pDb){
 ** Increment the reference counter on the SqliteDb object. The reference
 ** should be released by calling delDatabaseRef().
 */
-static void addDatabaseRef(SqliteDb *pDb){
+ସ୍ଥିର ଶୂନ୍ୟ addDatabaseRef(SqliteDb *pDb){
   pDb->nRef++;
 }
 
@@ -606,62 +606,62 @@ static void addDatabaseRef(SqliteDb *pDb){
 ** Decrement the reference counter associated with the SqliteDb object.
 ** If it reaches zero, delete the object.
 */
-static void delDatabaseRef(SqliteDb *pDb){
-  assert( pDb->nRef>0 );
+ସ୍ଥିର ଶୂନ୍ୟ delDatabaseRef(SqliteDb *pDb){
+  ପ୍ରତିଜ୍ଞା( pDb->nRef>0 );
   pDb->nRef--;
-  if( pDb->nRef==0 ){
+  ଯଦି( pDb->nRef==0 ){
     flushStmtCache(pDb);
     closeIncrblobChannels(pDb);
     sqlite3_close(pDb->db);
-    while( pDb->pFunc ){
+    ଯେତେବେଳେ( pDb->pFunc ){
       SqlFunc *pFunc = pDb->pFunc;
       pDb->pFunc = pFunc->pNext;
-      assert( pFunc->pDb==pDb );
-      Tcl_DecrRefCount(pFunc->pScript);
-      Tcl_Free((char*)pFunc);
+      ପ୍ରତିଜ୍ଞା( pFunc->pDb==pDb );
+      Tcl_Decr_Ref_ଗଣନା(pFunc->pScript);
+      Tcl_Free((ଅକ୍ଷର*)pFunc);
     }
-    while( pDb->pCollate ){
+    ଯେତେବେଳେ( pDb->pCollate ){
       SqlCollate *pCollate = pDb->pCollate;
       pDb->pCollate = pCollate->pNext;
-      Tcl_Free((char*)pCollate);
+      Tcl_Free((ଅକ୍ଷର*)pCollate);
     }
-    if( pDb->zBusy ){
+    ଯଦି( pDb->zBusy ){
       Tcl_Free(pDb->zBusy);
     }
-    if( pDb->zTrace ){
+    ଯଦି( pDb->zTrace ){
       Tcl_Free(pDb->zTrace);
     }
-    if( pDb->zTraceV2 ){
+    ଯଦି( pDb->zTraceV2 ){
       Tcl_Free(pDb->zTraceV2);
     }
-    if( pDb->zProfile ){
+    ଯଦି( pDb->zProfile ){
       Tcl_Free(pDb->zProfile);
     }
-    if( pDb->zBindFallback ){
+    ଯଦି( pDb->zBindFallback ){
       Tcl_Free(pDb->zBindFallback);
     }
-    if( pDb->zAuth ){
+    ଯଦି( pDb->zAuth ){
       Tcl_Free(pDb->zAuth);
     }
-    if( pDb->zNull ){
+    ଯଦି( pDb->zNull ){
       Tcl_Free(pDb->zNull);
     }
-    if( pDb->pUpdateHook ){
-      Tcl_DecrRefCount(pDb->pUpdateHook);
+    ଯଦି( pDb->pUpdateHook ){
+      Tcl_Decr_Ref_ଗଣନା(pDb->pUpdateHook);
     }
-    if( pDb->pPreUpdateHook ){
-      Tcl_DecrRefCount(pDb->pPreUpdateHook);
+    ଯଦି( pDb->pPreUpdateHook ){
+      Tcl_Decr_Ref_ଗଣନା(pDb->pPreUpdateHook);
     }
-    if( pDb->pRollbackHook ){
-      Tcl_DecrRefCount(pDb->pRollbackHook);
+    ଯଦି( pDb->pRollbackHook ){
+      Tcl_Decr_Ref_ଗଣନା(pDb->pRollbackHook);
     }
-    if( pDb->pWalHook ){
-      Tcl_DecrRefCount(pDb->pWalHook);
+    ଯଦି( pDb->pWalHook ){
+      Tcl_Decr_Ref_ଗଣନା(pDb->pWalHook);
     }
-    if( pDb->pCollateNeeded ){
-      Tcl_DecrRefCount(pDb->pCollateNeeded);
+    ଯଦି( pDb->pCollateNeeded ){
+      Tcl_Decr_Ref_ଗଣନା(pDb->pCollateNeeded);
     }
-    Tcl_Free((char*)pDb);
+    Tcl_Free((ଅକ୍ଷର*)pDb);
   }
 }
 
@@ -669,7 +669,7 @@ static void delDatabaseRef(SqliteDb *pDb){
 ** TCL calls this procedure when an sqlite3 database command is
 ** deleted.
 */
-static void SQLITE_TCLAPI DbDeleteCmd(void *db){
+ସ୍ଥିର ଶୂନ୍ୟ SQLITE_TCLAPI DbDeleteCmd(ଶୂନ୍ୟ *db){
   SqliteDb *pDb = (SqliteDb*)db;
   delDatabaseRef(pDb);
 }
@@ -678,50 +678,50 @@ static void SQLITE_TCLAPI DbDeleteCmd(void *db){
 ** This routine is called when a database file is locked while trying
 ** to execute SQL.
 */
-static int DbBusyHandler(void *cd, int nTries){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା DbBusyHandler(ଶୂନ୍ୟ *cd, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nTries){
   SqliteDb *pDb = (SqliteDb*)cd;
-  int rc;
-  char zVal[30];
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
+  ଅକ୍ଷର zVal[30];
 
-  sqlite3_snprintf(sizeof(zVal), zVal, "%d", nTries);
-  rc = Tcl_VarEval(pDb->interp, pDb->zBusy, " ", zVal, (char*)0);
-  if( rc!=TCL_OK || atoi(Tcl_GetStringResult(pDb->interp)) ){
-    return 0;
+  sqlite3_snprintf(ଆକାର(zVal), zVal, "%d", nTries);
+  rc = Tcl_VarEval(pDb->interp, pDb->zBusy, " ", zVal, (ଅକ୍ଷର*)0);
+  ଯଦି( rc!=TCL_OK || atoi(Tcl_GetStringResult(pDb->interp)) ){
+    ଫେରନ୍ତୁ 0;
   }
-  return 1;
+  ଫେରନ୍ତୁ 1;
 }
 
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
 /*
 ** This routine is invoked as the 'progress callback' for the database.
 */
-static int DbProgressHandler(void *cd){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା DbProgressHandler(ଶୂନ୍ୟ *cd){
   SqliteDb *pDb = (SqliteDb*)cd;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
 
-  assert( pDb->zProgress );
+  ପ୍ରତିଜ୍ଞା( pDb->zProgress );
   rc = Tcl_Eval(pDb->interp, pDb->zProgress);
-  if( rc!=TCL_OK || atoi(Tcl_GetStringResult(pDb->interp)) ){
-    return 1;
+  ଯଦି( rc!=TCL_OK || atoi(Tcl_GetStringResult(pDb->interp)) ){
+    ଫେରନ୍ତୁ 1;
   }
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 #endif
 
-#if !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
+#ଯଦି !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
     !defined(SQLITE_OMIT_DEPRECATED)
 /*
 ** This routine is called by the SQLite trace handler whenever a new
 ** block of SQL is executed.  The TCL script in pDb->zTrace is executed.
 */
-static void DbTraceHandler(void *cd, const char *zSql){
+ସ୍ଥିର ଶୂନ୍ୟ DbTraceHandler(ଶୂନ୍ୟ *cd, ଅଚଳ ଅକ୍ଷର *zSql){
   SqliteDb *pDb = (SqliteDb*)cd;
   Tcl_DString str;
 
   Tcl_DStringInit(&str);
   Tcl_DStringAppend(&str, pDb->zTrace, -1);
   Tcl_DStringAppendElement(&str, zSql);
-  Tcl_Eval(pDb->interp, Tcl_DStringValue(&str));
+  Tcl_Eval(pDb->interp, Tcl_DString_ମୂଲ୍ୟ(&str));
   Tcl_DStringFree(&str);
   Tcl_ResetResult(pDb->interp);
 }
@@ -734,92 +734,92 @@ static void DbTraceHandler(void *cd, const char *zSql){
 ** The TCL script in pDb->zTraceV2 is executed, with the arguments for
 ** the event appended to it (as list elements).
 */
-static int DbTraceV2Handler(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା DbTraceV2Handler(
   unsigned type, /* One of the SQLITE_TRACE_* event types. */
-  void *cd,      /* The original context data pointer. */
-  void *pd,      /* Primary event data, depends on event type. */
-  void *xd       /* Extra event data, depends on event type. */
+  ଶୂନ୍ୟ *cd,      /* The original context data pointer. */
+  ଶୂନ୍ୟ *pd,      /* Primary event data, depends on event type. */
+  ଶୂନ୍ୟ *xd       /* Extra event data, depends on event type. */
 ){
   SqliteDb *pDb = (SqliteDb*)cd;
   Tcl_Obj *pCmd;
 
-  switch( type ){
-    case SQLITE_TRACE_STMT: {
+  ବାଛ( type ){
+    ସ୍ଥିତି SQLITE_TRACE_STMT: {
       sqlite3_stmt *pStmt = (sqlite3_stmt *)pd;
-      char *zSql = (char *)xd;
+      ଅକ୍ଷର *zSql = (ଅକ୍ଷର *)xd;
 
       pCmd = Tcl_NewStringObj(pDb->zTraceV2, -1);
-      Tcl_IncrRefCount(pCmd);
+      Tcl_Incr_Ref_ଗଣନା(pCmd);
       Tcl_ListObjAppendElement(pDb->interp, pCmd,
                                Tcl_NewWideIntObj((Tcl_WideInt)(uptr)pStmt));
       Tcl_ListObjAppendElement(pDb->interp, pCmd,
                                Tcl_NewStringObj(zSql, -1));
       Tcl_EvalObjEx(pDb->interp, pCmd, TCL_EVAL_DIRECT);
-      Tcl_DecrRefCount(pCmd);
+      Tcl_Decr_Ref_ଗଣନା(pCmd);
       Tcl_ResetResult(pDb->interp);
-      break;
+      ଭାଙ୍ଗ;
     }
-    case SQLITE_TRACE_PROFILE: {
+    ସ୍ଥିତି SQLITE_TRACE_PROFILE: {
       sqlite3_stmt *pStmt = (sqlite3_stmt *)pd;
       sqlite3_int64 ns = *(sqlite3_int64*)xd;
 
       pCmd = Tcl_NewStringObj(pDb->zTraceV2, -1);
-      Tcl_IncrRefCount(pCmd);
+      Tcl_Incr_Ref_ଗଣନା(pCmd);
       Tcl_ListObjAppendElement(pDb->interp, pCmd,
                                Tcl_NewWideIntObj((Tcl_WideInt)(uptr)pStmt));
       Tcl_ListObjAppendElement(pDb->interp, pCmd,
                                Tcl_NewWideIntObj((Tcl_WideInt)ns));
       Tcl_EvalObjEx(pDb->interp, pCmd, TCL_EVAL_DIRECT);
-      Tcl_DecrRefCount(pCmd);
+      Tcl_Decr_Ref_ଗଣନା(pCmd);
       Tcl_ResetResult(pDb->interp);
-      break;
+      ଭାଙ୍ଗ;
     }
-    case SQLITE_TRACE_ROW: {
+    ସ୍ଥିତି SQLITE_TRACE_ROW: {
       sqlite3_stmt *pStmt = (sqlite3_stmt *)pd;
 
       pCmd = Tcl_NewStringObj(pDb->zTraceV2, -1);
-      Tcl_IncrRefCount(pCmd);
+      Tcl_Incr_Ref_ଗଣନା(pCmd);
       Tcl_ListObjAppendElement(pDb->interp, pCmd,
                                Tcl_NewWideIntObj((Tcl_WideInt)(uptr)pStmt));
       Tcl_EvalObjEx(pDb->interp, pCmd, TCL_EVAL_DIRECT);
-      Tcl_DecrRefCount(pCmd);
+      Tcl_Decr_Ref_ଗଣନା(pCmd);
       Tcl_ResetResult(pDb->interp);
-      break;
+      ଭାଙ୍ଗ;
     }
-    case SQLITE_TRACE_CLOSE: {
+    ସ୍ଥିତି SQLITE_TRACE_CLOSE: {
       sqlite3 *db = (sqlite3 *)pd;
 
       pCmd = Tcl_NewStringObj(pDb->zTraceV2, -1);
-      Tcl_IncrRefCount(pCmd);
+      Tcl_Incr_Ref_ଗଣନା(pCmd);
       Tcl_ListObjAppendElement(pDb->interp, pCmd,
                                Tcl_NewWideIntObj((Tcl_WideInt)(uptr)db));
       Tcl_EvalObjEx(pDb->interp, pCmd, TCL_EVAL_DIRECT);
-      Tcl_DecrRefCount(pCmd);
+      Tcl_Decr_Ref_ଗଣନା(pCmd);
       Tcl_ResetResult(pDb->interp);
-      break;
+      ଭାଙ୍ଗ;
     }
   }
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 #endif
 
-#if !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
+#ଯଦି !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
     !defined(SQLITE_OMIT_DEPRECATED)
 /*
 ** This routine is called by the SQLite profile handler after a statement
 ** SQL has executed.  The TCL script in pDb->zProfile is evaluated.
 */
-static void DbProfileHandler(void *cd, const char *zSql, sqlite_uint64 tm){
+ସ୍ଥିର ଶୂନ୍ୟ DbProfileHandler(ଶୂନ୍ୟ *cd, ଅଚଳ ଅକ୍ଷର *zSql, sqlite_uint64 tm){
   SqliteDb *pDb = (SqliteDb*)cd;
   Tcl_DString str;
-  char zTm[100];
+  ଅକ୍ଷର zTm[100];
 
-  sqlite3_snprintf(sizeof(zTm)-1, zTm, "%lld", tm);
+  sqlite3_snprintf(ଆକାର(zTm)-1, zTm, "%lld", tm);
   Tcl_DStringInit(&str);
   Tcl_DStringAppend(&str, pDb->zProfile, -1);
   Tcl_DStringAppendElement(&str, zSql);
   Tcl_DStringAppendElement(&str, zTm);
-  Tcl_Eval(pDb->interp, Tcl_DStringValue(&str));
+  Tcl_Eval(pDb->interp, Tcl_DString_ମୂଲ୍ୟ(&str));
   Tcl_DStringFree(&str);
   Tcl_ResetResult(pDb->interp);
 }
@@ -831,21 +831,21 @@ static void DbProfileHandler(void *cd, const char *zSql, sqlite_uint64 tm){
 ** if it throws an exception, the transaction is rolled back instead
 ** of being committed.
 */
-static int DbCommitHandler(void *cd){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା DbCommitHandler(ଶୂନ୍ୟ *cd){
   SqliteDb *pDb = (SqliteDb*)cd;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
 
   rc = Tcl_Eval(pDb->interp, pDb->zCommit);
-  if( rc!=TCL_OK || atoi(Tcl_GetStringResult(pDb->interp)) ){
-    return 1;
+  ଯଦି( rc!=TCL_OK || atoi(Tcl_GetStringResult(pDb->interp)) ){
+    ଫେରନ୍ତୁ 1;
   }
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 
-static void DbRollbackHandler(void *clientData){
+ସ୍ଥିର ଶୂନ୍ୟ DbRollbackHandler(ଶୂନ୍ୟ *clientData){
   SqliteDb *pDb = (SqliteDb*)clientData;
-  assert(pDb->pRollbackHook);
-  if( TCL_OK!=Tcl_EvalObjEx(pDb->interp, pDb->pRollbackHook, 0) ){
+  ପ୍ରତିଜ୍ଞା(pDb->pRollbackHook);
+  ଯଦି( TCL_OK!=Tcl_EvalObjEx(pDb->interp, pDb->pRollbackHook, 0) ){
     Tcl_BackgroundError(pDb->interp);
   }
 }
@@ -853,55 +853,55 @@ static void DbRollbackHandler(void *clientData){
 /*
 ** This procedure handles wal_hook callbacks.
 */
-static int DbWalHandler(
-  void *clientData,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା DbWalHandler(
+  ଶୂନ୍ୟ *clientData,
   sqlite3 *db,
-  const char *zDb,
-  int nEntry
+  ଅଚଳ ଅକ୍ଷର *zDb,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nEntry
 ){
-  int ret = SQLITE_OK;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା ret = SQLITE_OK;
   Tcl_Obj *p;
   SqliteDb *pDb = (SqliteDb*)clientData;
   Tcl_Interp *interp = pDb->interp;
-  assert(pDb->pWalHook);
+  ପ୍ରତିଜ୍ଞା(pDb->pWalHook);
 
-  assert( db==pDb->db );
+  ପ୍ରତିଜ୍ଞା( db==pDb->db );
   p = Tcl_DuplicateObj(pDb->pWalHook);
-  Tcl_IncrRefCount(p);
+  Tcl_Incr_Ref_ଗଣନା(p);
   Tcl_ListObjAppendElement(interp, p, Tcl_NewStringObj(zDb, -1));
   Tcl_ListObjAppendElement(interp, p, Tcl_NewIntObj(nEntry));
-  if( TCL_OK!=Tcl_EvalObjEx(interp, p, 0)
+  ଯଦି( TCL_OK!=Tcl_EvalObjEx(interp, p, 0)
    || TCL_OK!=Tcl_GetIntFromObj(interp, Tcl_GetObjResult(interp), &ret)
   ){
     Tcl_BackgroundError(interp);
   }
-  Tcl_DecrRefCount(p);
+  Tcl_Decr_Ref_ଗଣନା(p);
 
-  return ret;
+  ଫେରନ୍ତୁ ret;
 }
 
-#if defined(SQLITE_TEST) && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
-static void setTestUnlockNotifyVars(Tcl_Interp *interp, int iArg, int nArg){
-  char zBuf[64];
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", iArg);
+#ଯଦି defined(SQLITE_TEST) && defined(SQLITE_ENABLE_UNLOCK_NOTIFY)
+ସ୍ଥିର ଶୂନ୍ୟ setTestUnlockNotifyVars(Tcl_Interp *interp, ପୂର୍ଣ୍ଣସଂଖ୍ୟା iArg, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg){
+  ଅକ୍ଷର zBuf[64];
+  sqlite3_snprintf(ଆକାର(zBuf), zBuf, "%d", iArg);
   Tcl_SetVar(interp, "sqlite_unlock_notify_arg", zBuf, TCL_GLOBAL_ONLY);
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", nArg);
+  sqlite3_snprintf(ଆକାର(zBuf), zBuf, "%d", nArg);
   Tcl_SetVar(interp, "sqlite_unlock_notify_argcount", zBuf, TCL_GLOBAL_ONLY);
 }
-#else
+#ଅନ୍ୟଥା
 # define setTestUnlockNotifyVars(x,y,z)
 #endif
 
 #ifdef SQLITE_ENABLE_UNLOCK_NOTIFY
-static void DbUnlockNotify(void **apArg, int nArg){
-  int i;
-  for(i=0; i<nArg; i++){
-    const int flags = (TCL_EVAL_GLOBAL|TCL_EVAL_DIRECT);
+ସ୍ଥିର ଶୂନ୍ୟ DbUnlockNotify(ଶୂନ୍ୟ **apArg, ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପାଇଁ(i=0; i<nArg; i++){
+    ଅଚଳ ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags = (TCL_EVAL_GLOBAL|TCL_EVAL_DIRECT);
     SqliteDb *pDb = (SqliteDb *)apArg[i];
     setTestUnlockNotifyVars(pDb->interp, i, nArg);
-    assert( pDb->pUnlockNotify);
+    ପ୍ରତିଜ୍ଞା( pDb->pUnlockNotify);
     Tcl_EvalObjEx(pDb->interp, pDb->pUnlockNotify, flags);
-    Tcl_DecrRefCount(pDb->pUnlockNotify);
+    Tcl_Decr_Ref_ଗଣନା(pDb->pUnlockNotify);
     pDb->pUnlockNotify = 0;
   }
 }
@@ -911,123 +911,123 @@ static void DbUnlockNotify(void **apArg, int nArg){
 /*
 ** Pre-update hook callback.
 */
-static void DbPreUpdateHandler(
-  void *p,
+ସ୍ଥିର ଶୂନ୍ୟ DbPreUpdateHandler(
+  ଶୂନ୍ୟ *p,
   sqlite3 *db,
-  int op,
-  const char *zDb,
-  const char *zTbl,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା op,
+  ଅଚଳ ଅକ୍ଷର *zDb,
+  ଅଚଳ ଅକ୍ଷର *zTbl,
   sqlite_int64 iKey1,
   sqlite_int64 iKey2
 ){
   SqliteDb *pDb = (SqliteDb *)p;
   Tcl_Obj *pCmd;
-  static const char *azStr[] = {"DELETE", "INSERT", "UPDATE"};
+  ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azStr[] = {"DELETE", "INSERT", "UPDATE"};
 
-  assert( (SQLITE_DELETE-1)/9 == 0 );
-  assert( (SQLITE_INSERT-1)/9 == 1 );
-  assert( (SQLITE_UPDATE-1)/9 == 2 );
-  assert( pDb->pPreUpdateHook );
-  assert( db==pDb->db );
-  assert( op==SQLITE_INSERT || op==SQLITE_UPDATE || op==SQLITE_DELETE );
+  ପ୍ରତିଜ୍ଞା( (SQLITE_DELETE-1)/9 == 0 );
+  ପ୍ରତିଜ୍ଞା( (SQLITE_ଭର୍ତ୍ତି-1)/9 == 1 );
+  ପ୍ରତିଜ୍ଞା( (SQLITE_UPDATE-1)/9 == 2 );
+  ପ୍ରତିଜ୍ଞା( pDb->pPreUpdateHook );
+  ପ୍ରତିଜ୍ଞା( db==pDb->db );
+  ପ୍ରତିଜ୍ଞା( op==SQLITE_ଭର୍ତ୍ତି || op==SQLITE_UPDATE || op==SQLITE_DELETE );
 
   pCmd = Tcl_DuplicateObj(pDb->pPreUpdateHook);
-  Tcl_IncrRefCount(pCmd);
+  Tcl_Incr_Ref_ଗଣନା(pCmd);
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewStringObj(azStr[(op-1)/9], -1));
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewStringObj(zDb, -1));
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewStringObj(zTbl, -1));
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewWideIntObj(iKey1));
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewWideIntObj(iKey2));
   Tcl_EvalObjEx(pDb->interp, pCmd, TCL_EVAL_DIRECT);
-  Tcl_DecrRefCount(pCmd);
+  Tcl_Decr_Ref_ଗଣନା(pCmd);
 }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
 
-static void DbUpdateHandler(
-  void *p,
-  int op,
-  const char *zDb,
-  const char *zTbl,
+ସ୍ଥିର ଶୂନ୍ୟ DbUpdateHandler(
+  ଶୂନ୍ୟ *p,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା op,
+  ଅଚଳ ଅକ୍ଷର *zDb,
+  ଅଚଳ ଅକ୍ଷର *zTbl,
   sqlite_int64 rowid
 ){
   SqliteDb *pDb = (SqliteDb *)p;
   Tcl_Obj *pCmd;
-  static const char *azStr[] = {"DELETE", "INSERT", "UPDATE"};
+  ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azStr[] = {"DELETE", "INSERT", "UPDATE"};
 
-  assert( (SQLITE_DELETE-1)/9 == 0 );
-  assert( (SQLITE_INSERT-1)/9 == 1 );
-  assert( (SQLITE_UPDATE-1)/9 == 2 );
+  ପ୍ରତିଜ୍ଞା( (SQLITE_DELETE-1)/9 == 0 );
+  ପ୍ରତିଜ୍ଞା( (SQLITE_ଭର୍ତ୍ତି-1)/9 == 1 );
+  ପ୍ରତିଜ୍ଞା( (SQLITE_UPDATE-1)/9 == 2 );
 
-  assert( pDb->pUpdateHook );
-  assert( op==SQLITE_INSERT || op==SQLITE_UPDATE || op==SQLITE_DELETE );
+  ପ୍ରତିଜ୍ଞା( pDb->pUpdateHook );
+  ପ୍ରତିଜ୍ଞା( op==SQLITE_ଭର୍ତ୍ତି || op==SQLITE_UPDATE || op==SQLITE_DELETE );
 
   pCmd = Tcl_DuplicateObj(pDb->pUpdateHook);
-  Tcl_IncrRefCount(pCmd);
+  Tcl_Incr_Ref_ଗଣନା(pCmd);
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewStringObj(azStr[(op-1)/9], -1));
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewStringObj(zDb, -1));
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewStringObj(zTbl, -1));
   Tcl_ListObjAppendElement(0, pCmd, Tcl_NewWideIntObj(rowid));
   Tcl_EvalObjEx(pDb->interp, pCmd, TCL_EVAL_DIRECT);
-  Tcl_DecrRefCount(pCmd);
+  Tcl_Decr_Ref_ଗଣନା(pCmd);
 }
 
-static void tclCollateNeeded(
-  void *pCtx,
+ସ୍ଥିର ଶୂନ୍ୟ tclCollateNeeded(
+  ଶୂନ୍ୟ *pCtx,
   sqlite3 *db,
-  int enc,
-  const char *zName
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା enc,
+  ଅଚଳ ଅକ୍ଷର *zName
 ){
   SqliteDb *pDb = (SqliteDb *)pCtx;
   Tcl_Obj *pScript = Tcl_DuplicateObj(pDb->pCollateNeeded);
-  Tcl_IncrRefCount(pScript);
+  Tcl_Incr_Ref_ଗଣନା(pScript);
   Tcl_ListObjAppendElement(0, pScript, Tcl_NewStringObj(zName, -1));
   Tcl_EvalObjEx(pDb->interp, pScript, 0);
-  Tcl_DecrRefCount(pScript);
+  Tcl_Decr_Ref_ଗଣନା(pScript);
 }
 
 /*
 ** This routine is called to evaluate an SQL collation function implemented
 ** using TCL script.
 */
-static int tclSqlCollate(
-  void *pCtx,
-  int nA,
-  const void *zA,
-  int nB,
-  const void *zB
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା tclSqlCollate(
+  ଶୂନ୍ୟ *pCtx,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nA,
+  ଅଚଳ ଶୂନ୍ୟ *zA,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nB,
+  ଅଚଳ ଶୂନ୍ୟ *zB
 ){
   SqlCollate *p = (SqlCollate *)pCtx;
   Tcl_Obj *pCmd;
 
   pCmd = Tcl_NewStringObj(p->zScript, -1);
-  Tcl_IncrRefCount(pCmd);
+  Tcl_Incr_Ref_ଗଣନା(pCmd);
   Tcl_ListObjAppendElement(p->interp, pCmd, Tcl_NewStringObj(zA, nA));
   Tcl_ListObjAppendElement(p->interp, pCmd, Tcl_NewStringObj(zB, nB));
   Tcl_EvalObjEx(p->interp, pCmd, TCL_EVAL_DIRECT);
-  Tcl_DecrRefCount(pCmd);
-  return (atoi(Tcl_GetStringResult(p->interp)));
+  Tcl_Decr_Ref_ଗଣନା(pCmd);
+  ଫେରନ୍ତୁ (atoi(Tcl_GetStringResult(p->interp)));
 }
 
 /*
 ** This routine is called to evaluate an SQL function implemented
 ** using TCL script.
 */
-static void tclSqlFunc(sqlite3_context *context, int argc, sqlite3_value**argv){
+ସ୍ଥିର ଶୂନ୍ୟ tclSqlFunc(sqlite3_context *context, ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, sqlite3_ମୂଲ୍ୟ**argv){
   SqlFunc *p = sqlite3_user_data(context);
   Tcl_Obj *pCmd;
-  int i;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
 
-  if( argc==0 ){
+  ଯଦି( argc==0 ){
     /* If there are no arguments to the function, call Tcl_EvalObjEx on the
     ** script object directly.  This allows the TCL compiler to generate
     ** bytecode for the command on the first invocation and thus make
     ** subsequent invocations much faster. */
     pCmd = p->pScript;
-    Tcl_IncrRefCount(pCmd);
+    Tcl_Incr_Ref_ଗଣନା(pCmd);
     rc = Tcl_EvalObjEx(p->interp, pCmd, 0);
-    Tcl_DecrRefCount(pCmd);
-  }else{
+    Tcl_Decr_Ref_ଗଣନା(pCmd);
+  }ଅନ୍ୟଥା{
     /* If there are arguments to the function, make a shallow copy of the
     ** script object, lappend the arguments, then evaluate the copy.
     **
@@ -1039,121 +1039,121 @@ static void tclSqlFunc(sqlite3_context *context, int argc, sqlite3_value**argv){
     */
     Tcl_Obj **aArg;
     Tcl_Size nArg;
-    if( Tcl_ListObjGetElements(p->interp, p->pScript, &nArg, &aArg) ){
+    ଯଦି( Tcl_ListObjGetElements(p->interp, p->pScript, &nArg, &aArg) ){
       sqlite3_result_error(context, Tcl_GetStringResult(p->interp), -1);
-      return;
+      ଫେରନ୍ତୁ;
     }
     pCmd = Tcl_NewListObj(nArg, aArg);
-    Tcl_IncrRefCount(pCmd);
-    for(i=0; i<argc; i++){
-      sqlite3_value *pIn = argv[i];
+    Tcl_Incr_Ref_ଗଣନା(pCmd);
+    ପାଇଁ(i=0; i<argc; i++){
+      sqlite3_ମୂଲ୍ୟ *pIn = argv[i];
       Tcl_Obj *pVal;
 
       /* Set pVal to contain the i'th column of this row. */
-      switch( sqlite3_value_type(pIn) ){
-        case SQLITE_BLOB: {
-          int bytes = sqlite3_value_bytes(pIn);
-          pVal = Tcl_NewByteArrayObj(sqlite3_value_blob(pIn), bytes);
-          break;
+      ବାଛ( sqlite3_ମୂଲ୍ୟ_type(pIn) ){
+        ସ୍ଥିତି SQLITE_BLOB: {
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା bytes = sqlite3_ମୂଲ୍ୟ_bytes(pIn);
+          pVal = Tcl_NewByteArrayObj(sqlite3_ମୂଲ୍ୟ_blob(pIn), bytes);
+          ଭାଙ୍ଗ;
         }
-        case SQLITE_INTEGER: {
-          sqlite_int64 v = sqlite3_value_int64(pIn);
-          if( v>=-2147483647 && v<=2147483647 ){
-            pVal = Tcl_NewIntObj((int)v);
-          }else{
+        ସ୍ଥିତି SQLITE_INTEGER: {
+          sqlite_int64 v = sqlite3_ମୂଲ୍ୟ_int64(pIn);
+          ଯଦି( v>=-2147483647 && v<=2147483647 ){
+            pVal = Tcl_NewIntObj((ପୂର୍ଣ୍ଣସଂଖ୍ୟା)v);
+          }ଅନ୍ୟଥା{
             pVal = Tcl_NewWideIntObj(v);
           }
-          break;
+          ଭାଙ୍ଗ;
         }
-        case SQLITE_FLOAT: {
-          double r = sqlite3_value_double(pIn);
+        ସ୍ଥିତି SQLITE_FLOAT: {
+          ଦ୍ୱିଗୁଣ r = sqlite3_ମୂଲ୍ୟ_double(pIn);
           pVal = Tcl_NewDoubleObj(r);
-          break;
+          ଭାଙ୍ଗ;
         }
-        case SQLITE_NULL: {
+        ସ୍ଥିତି SQLITE_NULL: {
           pVal = Tcl_NewStringObj(p->pDb->zNull, -1);
-          break;
+          ଭାଙ୍ଗ;
         }
-        default: {
-          int bytes = sqlite3_value_bytes(pIn);
-          pVal = Tcl_NewStringObj((char *)sqlite3_value_text(pIn), bytes);
-          break;
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ: {
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା bytes = sqlite3_ମୂଲ୍ୟ_bytes(pIn);
+          pVal = Tcl_NewStringObj((ଅକ୍ଷର *)sqlite3_ମୂଲ୍ୟ_text(pIn), bytes);
+          ଭାଙ୍ଗ;
         }
       }
       rc = Tcl_ListObjAppendElement(p->interp, pCmd, pVal);
-      if( rc ){
-        Tcl_DecrRefCount(pCmd);
+      ଯଦି( rc ){
+        Tcl_Decr_Ref_ଗଣନା(pCmd);
         sqlite3_result_error(context, Tcl_GetStringResult(p->interp), -1);
-        return;
+        ଫେରନ୍ତୁ;
       }
     }
-    if( !p->useEvalObjv ){
+    ଯଦି( !p->useEvalObjv ){
       /* Tcl_EvalObjEx() will automatically call Tcl_EvalObjv() if pCmd
       ** is a list without a string representation.  To prevent this from
       ** happening, make sure pCmd has a valid string representation */
       Tcl_GetString(pCmd);
     }
     rc = Tcl_EvalObjEx(p->interp, pCmd, TCL_EVAL_DIRECT);
-    Tcl_DecrRefCount(pCmd);
+    Tcl_Decr_Ref_ଗଣନା(pCmd);
   }
 
-  if( TCL_BREAK==rc ){
+  ଯଦି( TCL_BREAK==rc ){
     sqlite3_result_null(context);
-  }else if( rc && rc!=TCL_RETURN ){
+  }ଅନ୍ୟଥା ଯଦି( rc && rc!=TCL_RETURN ){
     sqlite3_result_error(context, Tcl_GetStringResult(p->interp), -1);
-  }else{
+  }ଅନ୍ୟଥା{
     Tcl_Obj *pVar = Tcl_GetObjResult(p->interp);
     Tcl_Size n;
     u8 *data;
-    const char *zType = (pVar->typePtr ? pVar->typePtr->name : "");
-    char c = zType[0];
-    int eType = p->eType;
+    ଅଚଳ ଅକ୍ଷର *zType = (pVar->typePtr ? pVar->typePtr->name : "");
+    ଅକ୍ଷର c = zType[0];
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା eType = p->eType;
 
-    if( eType==SQLITE_NULL ){
-      if( c=='b' && strcmp(zType,"bytearray")==0 && pVar->bytes==0 ){
+    ଯଦି( eType==SQLITE_NULL ){
+      ଯଦି( c=='b' && strcmp(zType,"bytearray")==0 && pVar->bytes==0 ){
         /* Only return a BLOB type if the Tcl variable is a bytearray and
         ** has no string representation. */
         eType = SQLITE_BLOB;
-      }else if( (c=='b' && pVar->bytes==0 && strcmp(zType,"boolean")==0 )
+      }ଅନ୍ୟଥା ଯଦି( (c=='b' && pVar->bytes==0 && strcmp(zType,"boolean")==0 )
              || (c=='b' && pVar->bytes==0 && strcmp(zType,"booleanString")==0 )
              || (c=='w' && strcmp(zType,"wideInt")==0)
              || (c=='i' && strcmp(zType,"int")==0)
       ){
         eType = SQLITE_INTEGER;
-      }else if( c=='d' && strcmp(zType,"double")==0 ){
+      }ଅନ୍ୟଥା ଯଦି( c=='d' && strcmp(zType,"double")==0 ){
         eType = SQLITE_FLOAT;
-      }else{
+      }ଅନ୍ୟଥା{
         eType = SQLITE_TEXT;
       }
     }
 
-    switch( eType ){
-      case SQLITE_BLOB: {
+    ବାଛ( eType ){
+      ସ୍ଥିତି SQLITE_BLOB: {
         data = Tcl_GetByteArrayFromObj(pVar, &n);
         sqlite3_result_blob64(context, data, n, SQLITE_TRANSIENT);
-        break;
+        ଭାଙ୍ଗ;
       }
-      case SQLITE_INTEGER: {
+      ସ୍ଥିତି SQLITE_INTEGER: {
         Tcl_WideInt v;
-        if( TCL_OK==Tcl_GetWideIntFromObj(0, pVar, &v) ){
+        ଯଦି( TCL_OK==Tcl_GetWideIntFromObj(0, pVar, &v) ){
           sqlite3_result_int64(context, v);
-          break;
+          ଭାଙ୍ଗ;
         }
         /* fall-through */
       }
-      case SQLITE_FLOAT: {
-        double r;
-        if( TCL_OK==Tcl_GetDoubleFromObj(0, pVar, &r) ){
+      ସ୍ଥିତି SQLITE_FLOAT: {
+        ଦ୍ୱିଗୁଣ r;
+        ଯଦି( TCL_OK==Tcl_GetDoubleFromObj(0, pVar, &r) ){
           sqlite3_result_double(context, r);
-          break;
+          ଭାଙ୍ଗ;
         }
         /* fall-through */
       }
-      default: {
-        data = (unsigned char *)Tcl_GetStringFromObj(pVar, &n);
-        sqlite3_result_text64(context, (char *)data, n, SQLITE_TRANSIENT,
+      ପୂର୍ବନିର୍ଦ୍ଧାରିତ: {
+        data = (unsigned ଅକ୍ଷର *)Tcl_GetStringFromObj(pVar, &n);
+        sqlite3_result_text64(context, (ଅକ୍ଷର *)data, n, SQLITE_TRANSIENT,
                               SQLITE_UTF8);
-        break;
+        ଭାଙ୍ଗ;
       }
     }
 
@@ -1167,64 +1167,64 @@ static void tclSqlFunc(sqlite3_context *context, int argc, sqlite3_value**argv){
 ** on the interpreter.  The reply is examined to determine if the
 ** authentication fails or succeeds.
 */
-static int auth_callback(
-  void *pArg,
-  int code,
-  const char *zArg1,
-  const char *zArg2,
-  const char *zArg3,
-  const char *zArg4
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା auth_callback(
+  ଶୂନ୍ୟ *pArg,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା code,
+  ଅଚଳ ଅକ୍ଷର *zArg1,
+  ଅଚଳ ଅକ୍ଷର *zArg2,
+  ଅଚଳ ଅକ୍ଷର *zArg3,
+  ଅଚଳ ଅକ୍ଷର *zArg4
 ){
-  const char *zCode;
+  ଅଚଳ ଅକ୍ଷର *zCode;
   Tcl_DString str;
-  int rc;
-  const char *zReply;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
+  ଅଚଳ ଅକ୍ଷର *zReply;
   /* EVIDENCE-OF: R-38590-62769 The first parameter to the authorizer
   ** callback is a copy of the third parameter to the
   ** sqlite3_set_authorizer() interface.
   */
   SqliteDb *pDb = (SqliteDb*)pArg;
-  if( pDb->disableAuth ) return SQLITE_OK;
+  ଯଦି( pDb->disableAuth ) ଫେରନ୍ତୁ SQLITE_OK;
 
   /* EVIDENCE-OF: R-56518-44310 The second parameter to the callback is an
   ** integer action code that specifies the particular action to be
   ** authorized. */
-  switch( code ){
-    case SQLITE_COPY              : zCode="SQLITE_COPY"; break;
-    case SQLITE_CREATE_INDEX      : zCode="SQLITE_CREATE_INDEX"; break;
-    case SQLITE_CREATE_TABLE      : zCode="SQLITE_CREATE_TABLE"; break;
-    case SQLITE_CREATE_TEMP_INDEX : zCode="SQLITE_CREATE_TEMP_INDEX"; break;
-    case SQLITE_CREATE_TEMP_TABLE : zCode="SQLITE_CREATE_TEMP_TABLE"; break;
-    case SQLITE_CREATE_TEMP_TRIGGER: zCode="SQLITE_CREATE_TEMP_TRIGGER"; break;
-    case SQLITE_CREATE_TEMP_VIEW  : zCode="SQLITE_CREATE_TEMP_VIEW"; break;
-    case SQLITE_CREATE_TRIGGER    : zCode="SQLITE_CREATE_TRIGGER"; break;
-    case SQLITE_CREATE_VIEW       : zCode="SQLITE_CREATE_VIEW"; break;
-    case SQLITE_DELETE            : zCode="SQLITE_DELETE"; break;
-    case SQLITE_DROP_INDEX        : zCode="SQLITE_DROP_INDEX"; break;
-    case SQLITE_DROP_TABLE        : zCode="SQLITE_DROP_TABLE"; break;
-    case SQLITE_DROP_TEMP_INDEX   : zCode="SQLITE_DROP_TEMP_INDEX"; break;
-    case SQLITE_DROP_TEMP_TABLE   : zCode="SQLITE_DROP_TEMP_TABLE"; break;
-    case SQLITE_DROP_TEMP_TRIGGER : zCode="SQLITE_DROP_TEMP_TRIGGER"; break;
-    case SQLITE_DROP_TEMP_VIEW    : zCode="SQLITE_DROP_TEMP_VIEW"; break;
-    case SQLITE_DROP_TRIGGER      : zCode="SQLITE_DROP_TRIGGER"; break;
-    case SQLITE_DROP_VIEW         : zCode="SQLITE_DROP_VIEW"; break;
-    case SQLITE_INSERT            : zCode="SQLITE_INSERT"; break;
-    case SQLITE_PRAGMA            : zCode="SQLITE_PRAGMA"; break;
-    case SQLITE_READ              : zCode="SQLITE_READ"; break;
-    case SQLITE_SELECT            : zCode="SQLITE_SELECT"; break;
-    case SQLITE_TRANSACTION       : zCode="SQLITE_TRANSACTION"; break;
-    case SQLITE_UPDATE            : zCode="SQLITE_UPDATE"; break;
-    case SQLITE_ATTACH            : zCode="SQLITE_ATTACH"; break;
-    case SQLITE_DETACH            : zCode="SQLITE_DETACH"; break;
-    case SQLITE_ALTER_TABLE       : zCode="SQLITE_ALTER_TABLE"; break;
-    case SQLITE_REINDEX           : zCode="SQLITE_REINDEX"; break;
-    case SQLITE_ANALYZE           : zCode="SQLITE_ANALYZE"; break;
-    case SQLITE_CREATE_VTABLE     : zCode="SQLITE_CREATE_VTABLE"; break;
-    case SQLITE_DROP_VTABLE       : zCode="SQLITE_DROP_VTABLE"; break;
-    case SQLITE_FUNCTION          : zCode="SQLITE_FUNCTION"; break;
-    case SQLITE_SAVEPOINT         : zCode="SQLITE_SAVEPOINT"; break;
-    case SQLITE_RECURSIVE         : zCode="SQLITE_RECURSIVE"; break;
-    default                       : zCode="????"; break;
+  ବାଛ( code ){
+    ସ୍ଥିତି SQLITE_COPY              : zCode="SQLITE_COPY"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_INDEX      : zCode="SQLITE_CREATE_INDEX"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_TABLE      : zCode="SQLITE_CREATE_TABLE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_TEMP_INDEX : zCode="SQLITE_CREATE_TEMP_INDEX"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_TEMP_TABLE : zCode="SQLITE_CREATE_TEMP_TABLE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_TEMP_TRIGGER: zCode="SQLITE_CREATE_TEMP_TRIGGER"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_TEMP_VIEW  : zCode="SQLITE_CREATE_TEMP_VIEW"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_TRIGGER    : zCode="SQLITE_CREATE_TRIGGER"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_VIEW       : zCode="SQLITE_CREATE_VIEW"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DELETE            : zCode="SQLITE_DELETE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_INDEX        : zCode="SQLITE_DROP_INDEX"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_TABLE        : zCode="SQLITE_DROP_TABLE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_TEMP_INDEX   : zCode="SQLITE_DROP_TEMP_INDEX"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_TEMP_TABLE   : zCode="SQLITE_DROP_TEMP_TABLE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_TEMP_TRIGGER : zCode="SQLITE_DROP_TEMP_TRIGGER"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_TEMP_VIEW    : zCode="SQLITE_DROP_TEMP_VIEW"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_TRIGGER      : zCode="SQLITE_DROP_TRIGGER"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_VIEW         : zCode="SQLITE_DROP_VIEW"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_ଭର୍ତ୍ତି            : zCode="SQLITE_INSERT"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_PRAGMA            : zCode="SQLITE_PRAGMA"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_READ              : zCode="SQLITE_READ"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_SELECT            : zCode="SQLITE_SELECT"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_TRANSACTION       : zCode="SQLITE_TRANSACTION"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_UPDATE            : zCode="SQLITE_UPDATE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_ATTACH            : zCode="SQLITE_ATTACH"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DETACH            : zCode="SQLITE_DETACH"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_ALTER_TABLE       : zCode="SQLITE_ALTER_TABLE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_REINDEX           : zCode="SQLITE_REINDEX"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_ANALYZE           : zCode="SQLITE_ANALYZE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_CREATE_VTABLE     : zCode="SQLITE_CREATE_VTABLE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_DROP_VTABLE       : zCode="SQLITE_DROP_VTABLE"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_FUNCTION          : zCode="SQLITE_FUNCTION"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_SAVEPOINT         : zCode="SQLITE_SAVEPOINT"; ଭାଙ୍ଗ;
+    ସ୍ଥିତି SQLITE_RECURSIVE         : zCode="SQLITE_RECURSIVE"; ଭାଙ୍ଗ;
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ                       : zCode="????"; ଭାଙ୍ଗ;
   }
   Tcl_DStringInit(&str);
   Tcl_DStringAppend(&str, pDb->zAuth, -1);
@@ -1233,23 +1233,23 @@ static int auth_callback(
   Tcl_DStringAppendElement(&str, zArg2 ? zArg2 : "");
   Tcl_DStringAppendElement(&str, zArg3 ? zArg3 : "");
   Tcl_DStringAppendElement(&str, zArg4 ? zArg4 : "");
-  rc = Tcl_GlobalEval(pDb->interp, Tcl_DStringValue(&str));
+  rc = Tcl_GlobalEval(pDb->interp, Tcl_DString_ମୂଲ୍ୟ(&str));
   Tcl_DStringFree(&str);
   zReply = rc==TCL_OK ? Tcl_GetStringResult(pDb->interp) : "SQLITE_DENY";
-  if( strcmp(zReply,"SQLITE_OK")==0 ){
+  ଯଦି( strcmp(zReply,"SQLITE_OK")==0 ){
     rc = SQLITE_OK;
-  }else if( strcmp(zReply,"SQLITE_DENY")==0 ){
+  }ଅନ୍ୟଥା ଯଦି( strcmp(zReply,"SQLITE_DENY")==0 ){
     rc = SQLITE_DENY;
-  }else if( strcmp(zReply,"SQLITE_IGNORE")==0 ){
+  }ଅନ୍ୟଥା ଯଦି( strcmp(zReply,"SQLITE_IGNORE")==0 ){
     rc = SQLITE_IGNORE;
-  }else{
+  }ଅନ୍ୟଥା{
     rc = 999;
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 #endif /* SQLITE_OMIT_AUTHORIZATION */
 
-#if 0
+#ଯଦି 0
 /*
 ** This routine reads a line of text from FILE in, stores
 ** the text in memory obtained from malloc() and returns a pointer
@@ -1261,38 +1261,38 @@ static int auth_callback(
 **
 ** copied from shell.c from '.import' command
 */
-static char *local_getline(char *zPrompt, FILE *in){
-  char *zLine;
-  int nLine;
-  int n;
+ସ୍ଥିର ଅକ୍ଷର *local_getline(ଅକ୍ଷର *zPrompt, FILE *in){
+  ଅକ୍ଷର *z_ଧାଡ଼ି;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା n_ଧାଡ଼ି;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା n;
 
-  nLine = 100;
-  zLine = malloc( nLine );
-  if( zLine==0 ) return 0;
+  n_ଧାଡ଼ି = 100;
+  z_ଧାଡ଼ି = malloc( n_ଧାଡ଼ି );
+  ଯଦି( z_ଧାଡ଼ି==0 ) ଫେରନ୍ତୁ 0;
   n = 0;
-  while( 1 ){
-    if( n+100>nLine ){
-      nLine = nLine*2 + 100;
-      zLine = realloc(zLine, nLine);
-      if( zLine==0 ) return 0;
+  ଯେତେବେଳେ( 1 ){
+    ଯଦି( n+100>n_ଧାଡ଼ି ){
+      n_ଧାଡ଼ି = n_ଧାଡ଼ି*2 + 100;
+      z_ଧାଡ଼ି = realloc(z_ଧାଡ଼ି, n_ଧାଡ଼ି);
+      ଯଦି( z_ଧାଡ଼ି==0 ) ଫେରନ୍ତୁ 0;
     }
-    if( fgets(&zLine[n], nLine - n, in)==0 ){
-      if( n==0 ){
-        free(zLine);
-        return 0;
+    ଯଦି( fgets(&z_ଧାଡ଼ି[n], n_ଧାଡ଼ି - n, in)==0 ){
+      ଯଦି( n==0 ){
+        ମୁକ୍ତ(z_ଧାଡ଼ି);
+        ଫେରନ୍ତୁ 0;
       }
-      zLine[n] = 0;
-      break;
+      z_ଧାଡ଼ି[n] = 0;
+      ଭାଙ୍ଗ;
     }
-    while( zLine[n] ){ n++; }
-    if( n>0 && zLine[n-1]=='\n' ){
+    ଯେତେବେଳେ( z_ଧାଡ଼ି[n] ){ n++; }
+    ଯଦି( n>0 && z_ଧାଡ଼ି[n-1]=='\n' ){
       n--;
-      zLine[n] = 0;
-      break;
+      z_ଧାଡ଼ି[n] = 0;
+      ଭାଙ୍ଗ;
     }
   }
-  zLine = realloc( zLine, n+1 );
-  return zLine;
+  z_ଧାଡ଼ି = realloc( z_ଧାଡ଼ି, n+1 );
+  ଫେରନ୍ତୁ z_ଧାଡ଼ି;
 }
 #endif
 
@@ -1305,26 +1305,26 @@ static char *local_getline(char *zPrompt, FILE *in){
 ** It is invoked after evaluating the script SCRIPT to commit or rollback
 ** the transaction or savepoint opened by the [transaction] command.
 */
-static int SQLITE_TCLAPI DbTransPostCmd(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI DbTransPostCmd(
   ClientData data[],                   /* data[0] is the Sqlite3Db* for $db */
   Tcl_Interp *interp,                  /* Tcl interpreter */
-  int result                           /* Result of evaluating SCRIPT */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା result                           /* Result of evaluating SCRIPT */
 ){
-  static const char *const azEnd[] = {
+  ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *ଅଚଳ azEnd[] = {
     "RELEASE _tcl_transaction",        /* rc==TCL_ERROR, nTransaction!=0 */
     "COMMIT",                          /* rc!=TCL_ERROR, nTransaction==0 */
     "ROLLBACK TO _tcl_transaction ; RELEASE _tcl_transaction",
     "ROLLBACK"                         /* rc==TCL_ERROR, nTransaction==0 */
   };
   SqliteDb *pDb = (SqliteDb*)data[0];
-  int rc = result;
-  const char *zEnd;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = result;
+  ଅଚଳ ଅକ୍ଷର *zEnd;
 
   pDb->nTransaction--;
   zEnd = azEnd[(rc==TCL_ERROR)*2 + (pDb->nTransaction==0)];
 
   pDb->disableAuth++;
-  if( sqlite3_exec(pDb->db, zEnd, 0, 0, 0) ){
+  ଯଦି( sqlite3_exec(pDb->db, zEnd, 0, 0, 0) ){
       /* This is a tricky scenario to handle. The most likely cause of an
       ** error is that the exec() above was an attempt to commit the
       ** top-level transaction that returned SQLITE_BUSY. Or, less likely,
@@ -1335,8 +1335,8 @@ static int SQLITE_TCLAPI DbTransPostCmd(
       ** COMMIT, SAVEPOINT, RELEASE or ROLLBACK commands that are confusing
       ** this method's logic. Not clear how this would be best handled.
       */
-    if( rc!=TCL_ERROR ){
-      Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (char*)0);
+    ଯଦି( rc!=TCL_ERROR ){
+      Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
     }
     sqlite3_exec(pDb->db, "ROLLBACK", 0, 0, 0);
@@ -1344,7 +1344,7 @@ static int SQLITE_TCLAPI DbTransPostCmd(
   pDb->disableAuth--;
 
   delDatabaseRef(pDb);
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
@@ -1354,24 +1354,24 @@ static int SQLITE_TCLAPI DbTransPostCmd(
 ** on whether or not the [db_use_legacy_prepare] command has been used to
 ** configure the connection.
 */
-static int dbPrepare(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା dbPrepare(
   SqliteDb *pDb,                  /* Database object */
-  const char *zSql,               /* SQL to compile */
+  ଅଚଳ ଅକ୍ଷର *zSql,               /* SQL to compile */
   sqlite3_stmt **ppStmt,          /* OUT: Prepared statement */
-  const char **pzOut              /* OUT: Pointer to next SQL statement */
+  ଅଚଳ ଅକ୍ଷର **pzOut              /* OUT: Pointer to next SQL statement */
 ){
-  unsigned int prepFlags = 0;
+  unsigned ପୂର୍ଣ୍ଣସଂଖ୍ୟା prepFlags = 0;
 #ifdef SQLITE_TEST
-  if( pDb->bLegacyPrepare ){
-    return sqlite3_prepare(pDb->db, zSql, -1, ppStmt, pzOut);
+  ଯଦି( pDb->bLegacyPrepare ){
+    ଫେରନ୍ତୁ sqlite3_prepare(pDb->db, zSql, -1, ppStmt, pzOut);
   }
 #endif
   /* If the statement cache is large, use the SQLITE_PREPARE_PERSISTENT
   ** flags, which uses less lookaside memory.  But if the cache is small,
   ** omit that flag to make full use of lookaside */
-  if( pDb->maxStmt>5 ) prepFlags = SQLITE_PREPARE_PERSISTENT;
+  ଯଦି( pDb->maxStmt>5 ) prepFlags = SQLITE_PREPARE_PERSISTENT;
 
-  return sqlite3_prepare_v3(pDb->db, zSql, -1, prepFlags, ppStmt, pzOut);
+  ଫେରନ୍ତୁ sqlite3_prepare_v3(pDb->db, zSql, -1, prepFlags, ppStmt, pzOut);
 }
 
 /*
@@ -1389,33 +1389,33 @@ static int dbPrepare(
 ** If successful, TCL_OK is returned. Otherwise, TCL_ERROR is returned
 ** and an error message loaded into interpreter pDb->interp.
 */
-static int dbPrepareAndBind(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା dbPrepareAndBind(
   SqliteDb *pDb,                  /* Database object */
-  char const *zIn,                /* SQL to compile */
-  char const **pzOut,             /* OUT: Pointer to next SQL statement */
+  ଅକ୍ଷର ଅଚଳ *zIn,                /* SQL to compile */
+  ଅକ୍ଷର ଅଚଳ **pzOut,             /* OUT: Pointer to next SQL statement */
   SqlPreparedStmt **ppPreStmt     /* OUT: Object used to cache statement */
 ){
-  const char *zSql = zIn;         /* Pointer to first SQL statement in zIn */
+  ଅଚଳ ଅକ୍ଷର *zSql = zIn;         /* Pointer to first SQL statement in zIn */
   sqlite3_stmt *pStmt = 0;        /* Prepared statement object */
   SqlPreparedStmt *pPreStmt;      /* Pointer to cached statement */
-  int nSql;                       /* Length of zSql in bytes */
-  int nVar = 0;                   /* Number of variables in statement */
-  int iParm = 0;                  /* Next free entry in apParm */
-  char c;
-  int i;
-  int needResultReset = 0;        /* Need to invoke Tcl_ResetResult() */
-  int rc = SQLITE_OK;             /* Value to return */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nSql;                       /* Length of zSql in bytes */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nVar = 0;                   /* Number of variables in statement */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iParm = 0;                  /* Next free entry in apParm */
+  ଅକ୍ଷର c;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା needResultReset = 0;        /* Need to invoke Tcl_ResetResult() */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;             /* Value to return */
   Tcl_Interp *interp = pDb->interp;
 
   *ppPreStmt = 0;
 
   /* Trim spaces from the start of zSql and calculate the remaining length. */
-  while( (c = zSql[0])==' ' || c=='\t' || c=='\r' || c=='\n' ){ zSql++; }
+  ଯେତେବେଳେ( (c = zSql[0])==' ' || c=='\t' || c=='\r' || c=='\n' ){ zSql++; }
   nSql = strlen30(zSql);
 
-  for(pPreStmt = pDb->stmtList; pPreStmt; pPreStmt=pPreStmt->pNext){
-    int n = pPreStmt->nSql;
-    if( nSql>=n
+  ପାଇଁ(pPreStmt = pDb->stmtList; pPreStmt; pPreStmt=pPreStmt->pNext){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା n = pPreStmt->nSql;
+    ଯଦି( nSql>=n
         && memcmp(pPreStmt->zSql, zSql, n)==0
         && (zSql[n]==0 || zSql[n-1]==';')
     ){
@@ -1426,139 +1426,139 @@ static int dbPrepareAndBind(
       ** cache list.  It will later be added back to the beginning
       ** of the cache list in order to implement LRU replacement.
       */
-      if( pPreStmt->pPrev ){
+      ଯଦି( pPreStmt->pPrev ){
         pPreStmt->pPrev->pNext = pPreStmt->pNext;
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->stmtList = pPreStmt->pNext;
       }
-      if( pPreStmt->pNext ){
+      ଯଦି( pPreStmt->pNext ){
         pPreStmt->pNext->pPrev = pPreStmt->pPrev;
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->stmtLast = pPreStmt->pPrev;
       }
       pDb->nStmt--;
-      nVar = sqlite3_bind_parameter_count(pStmt);
-      break;
+      nVar = sqlite3_bind_parameter_ଗଣନା(pStmt);
+      ଭାଙ୍ଗ;
     }
   }
 
   /* If no prepared statement was found. Compile the SQL text. Also allocate
   ** a new SqlPreparedStmt structure.  */
-  if( pPreStmt==0 ){
-    int nByte;
+  ଯଦି( pPreStmt==0 ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nByte;
 
-    if( SQLITE_OK!=dbPrepare(pDb, zSql, &pStmt, pzOut) ){
+    ଯଦି( SQLITE_OK!=dbPrepare(pDb, zSql, &pStmt, pzOut) ){
       Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3_errmsg(pDb->db), -1));
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( pStmt==0 ){
-      if( SQLITE_OK!=sqlite3_errcode(pDb->db) ){
+    ଯଦି( pStmt==0 ){
+      ଯଦି( SQLITE_OK!=sqlite3_errcode(pDb->db) ){
         /* A compile-time error in the statement. */
         Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3_errmsg(pDb->db), -1));
-        return TCL_ERROR;
-      }else{
+        ଫେରନ୍ତୁ TCL_ERROR;
+      }ଅନ୍ୟଥା{
         /* The statement was a no-op.  Continue to the next statement
         ** in the SQL string.
         */
-        return TCL_OK;
+        ଫେରନ୍ତୁ TCL_OK;
       }
     }
 
-    assert( pPreStmt==0 );
-    nVar = sqlite3_bind_parameter_count(pStmt);
-    nByte = sizeof(SqlPreparedStmt) + nVar*sizeof(Tcl_Obj *);
+    ପ୍ରତିଜ୍ଞା( pPreStmt==0 );
+    nVar = sqlite3_bind_parameter_ଗଣନା(pStmt);
+    nByte = ଆକାର(SqlPreparedStmt) + nVar*ଆକାର(Tcl_Obj *);
     pPreStmt = (SqlPreparedStmt*)Tcl_Alloc(nByte);
     memset(pPreStmt, 0, nByte);
 
     pPreStmt->pStmt = pStmt;
-    pPreStmt->nSql = (int)(*pzOut - zSql);
+    pPreStmt->nSql = (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)(*pzOut - zSql);
     pPreStmt->zSql = sqlite3_sql(pStmt);
     pPreStmt->apParm = (Tcl_Obj **)&pPreStmt[1];
 #ifdef SQLITE_TEST
-    if( pPreStmt->zSql==0 ){
-      char *zCopy = Tcl_Alloc(pPreStmt->nSql + 1);
+    ଯଦି( pPreStmt->zSql==0 ){
+      ଅକ୍ଷର *zCopy = Tcl_Alloc(pPreStmt->nSql + 1);
       memcpy(zCopy, zSql, pPreStmt->nSql);
       zCopy[pPreStmt->nSql] = '\0';
       pPreStmt->zSql = zCopy;
     }
 #endif
   }
-  assert( pPreStmt );
-  assert( strlen30(pPreStmt->zSql)==pPreStmt->nSql );
-  assert( 0==memcmp(pPreStmt->zSql, zSql, pPreStmt->nSql) );
+  ପ୍ରତିଜ୍ଞା( pPreStmt );
+  ପ୍ରତିଜ୍ଞା( strlen30(pPreStmt->zSql)==pPreStmt->nSql );
+  ପ୍ରତିଜ୍ଞା( 0==memcmp(pPreStmt->zSql, zSql, pPreStmt->nSql) );
 
   /* Bind values to parameters that begin with $ or : */
-  for(i=1; i<=nVar; i++){
-    const char *zVar = sqlite3_bind_parameter_name(pStmt, i);
-    if( zVar!=0 && (zVar[0]=='$' || zVar[0]==':' || zVar[0]=='@') ){
+  ପାଇଁ(i=1; i<=nVar; i++){
+    ଅଚଳ ଅକ୍ଷର *zVar = sqlite3_bind_parameter_name(pStmt, i);
+    ଯଦି( zVar!=0 && (zVar[0]=='$' || zVar[0]==':' || zVar[0]=='@') ){
       Tcl_Obj *pVar = Tcl_GetVar2Ex(interp, &zVar[1], 0, 0);
-      if( pVar==0 && pDb->zBindFallback!=0 ){
+      ଯଦି( pVar==0 && pDb->zBindFallback!=0 ){
         Tcl_Obj *pCmd;
-        int rx;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା rx;
         pCmd = Tcl_NewStringObj(pDb->zBindFallback, -1);
-        Tcl_IncrRefCount(pCmd);
+        Tcl_Incr_Ref_ଗଣନା(pCmd);
         Tcl_ListObjAppendElement(interp, pCmd, Tcl_NewStringObj(zVar,-1));
-        if( needResultReset ) Tcl_ResetResult(interp);
+        ଯଦି( needResultReset ) Tcl_ResetResult(interp);
         needResultReset = 1;
         rx = Tcl_EvalObjEx(interp, pCmd, TCL_EVAL_DIRECT);
-        Tcl_DecrRefCount(pCmd);
-        if( rx==TCL_OK ){
+        Tcl_Decr_Ref_ଗଣନା(pCmd);
+        ଯଦି( rx==TCL_OK ){
           pVar = Tcl_GetObjResult(interp);
-        }else if( rx==TCL_ERROR ){
+        }ଅନ୍ୟଥା ଯଦି( rx==TCL_ERROR ){
           rc = TCL_ERROR;
-          break;
-        }else{
+          ଭାଙ୍ଗ;
+        }ଅନ୍ୟଥା{
           pVar = 0;
         }
       }
-      if( pVar ){
+      ଯଦି( pVar ){
         Tcl_Size n;
         u8 *data;
-        const char *zType = (pVar->typePtr ? pVar->typePtr->name : "");
+        ଅଚଳ ଅକ୍ଷର *zType = (pVar->typePtr ? pVar->typePtr->name : "");
         c = zType[0];
-        if( zVar[0]=='@' ||
+        ଯଦି( zVar[0]=='@' ||
            (c=='b' && strcmp(zType,"bytearray")==0 && pVar->bytes==0) ){
           /* Load a BLOB type if the Tcl variable is a bytearray and
           ** it has no string representation or the host
           ** parameter name begins with "@". */
           data = Tcl_GetByteArrayFromObj(pVar, &n);
           sqlite3_bind_blob64(pStmt, i, data, n, SQLITE_STATIC);
-          Tcl_IncrRefCount(pVar);
+          Tcl_Incr_Ref_ଗଣନା(pVar);
           pPreStmt->apParm[iParm++] = pVar;
-        }else if( c=='b' && pVar->bytes==0 
+        }ଅନ୍ୟଥା ଯଦି( c=='b' && pVar->bytes==0 
                && (strcmp(zType,"booleanString")==0
                    || strcmp(zType,"boolean")==0)
         ){
-          int nn;
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା nn;
           Tcl_GetBooleanFromObj(interp, pVar, &nn);
           sqlite3_bind_int(pStmt, i, nn);
-        }else if( c=='d' && strcmp(zType,"double")==0 ){
-          double r;
+        }ଅନ୍ୟଥା ଯଦି( c=='d' && strcmp(zType,"double")==0 ){
+          ଦ୍ୱିଗୁଣ r;
           Tcl_GetDoubleFromObj(interp, pVar, &r);
           sqlite3_bind_double(pStmt, i, r);
-        }else if( (c=='w' && strcmp(zType,"wideInt")==0) ||
+        }ଅନ୍ୟଥା ଯଦି( (c=='w' && strcmp(zType,"wideInt")==0) ||
               (c=='i' && strcmp(zType,"int")==0) ){
           Tcl_WideInt v;
           Tcl_GetWideIntFromObj(interp, pVar, &v);
           sqlite3_bind_int64(pStmt, i, v);
-        }else{
-          data = (unsigned char *)Tcl_GetStringFromObj(pVar, &n);
-          sqlite3_bind_text64(pStmt, i, (char *)data, n, SQLITE_STATIC,
+        }ଅନ୍ୟଥା{
+          data = (unsigned ଅକ୍ଷର *)Tcl_GetStringFromObj(pVar, &n);
+          sqlite3_bind_text64(pStmt, i, (ଅକ୍ଷର *)data, n, SQLITE_STATIC,
                               SQLITE_UTF8);
-          Tcl_IncrRefCount(pVar);
+          Tcl_Incr_Ref_ଗଣନା(pVar);
           pPreStmt->apParm[iParm++] = pVar;
         }
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_bind_null(pStmt, i);
       }
-      if( needResultReset ) Tcl_ResetResult(pDb->interp);
+      ଯଦି( needResultReset ) Tcl_ResetResult(pDb->interp);
     }
   }
   pPreStmt->nParm = iParm;
   *ppPreStmt = pPreStmt;
-  if( needResultReset && rc==TCL_OK ) Tcl_ResetResult(pDb->interp);
+  ଯଦି( needResultReset && rc==TCL_OK ) Tcl_ResetResult(pDb->interp);
 
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
@@ -1570,41 +1570,41 @@ static int dbPrepareAndBind(
 ** immediately. Otherwise it is added to the LRU list and may be returned
 ** by a subsequent call to dbPrepareAndBind().
 */
-static void dbReleaseStmt(
+ସ୍ଥିର ଶୂନ୍ୟ dbReleaseStmt(
   SqliteDb *pDb,                  /* Database handle */
   SqlPreparedStmt *pPreStmt,      /* Prepared statement handle to release */
-  int discard                     /* True to delete (not cache) the pPreStmt */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା discard                     /* True to delete (not cache) the pPreStmt */
 ){
-  int i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
 
   /* Free the bound string and blob parameters */
-  for(i=0; i<pPreStmt->nParm; i++){
-    Tcl_DecrRefCount(pPreStmt->apParm[i]);
+  ପାଇଁ(i=0; i<pPreStmt->nParm; i++){
+    Tcl_Decr_Ref_ଗଣନା(pPreStmt->apParm[i]);
   }
   pPreStmt->nParm = 0;
 
-  if( pDb->maxStmt<=0 || discard ){
+  ଯଦି( pDb->maxStmt<=0 || discard ){
     /* If the cache is turned off, deallocated the statement */
     dbFreeStmt(pPreStmt);
-  }else{
+  }ଅନ୍ୟଥା{
     /* Add the prepared statement to the beginning of the cache list. */
     pPreStmt->pNext = pDb->stmtList;
     pPreStmt->pPrev = 0;
-    if( pDb->stmtList ){
+    ଯଦି( pDb->stmtList ){
      pDb->stmtList->pPrev = pPreStmt;
     }
     pDb->stmtList = pPreStmt;
-    if( pDb->stmtLast==0 ){
-      assert( pDb->nStmt==0 );
+    ଯଦି( pDb->stmtLast==0 ){
+      ପ୍ରତିଜ୍ଞା( pDb->nStmt==0 );
       pDb->stmtLast = pPreStmt;
-    }else{
-      assert( pDb->nStmt>0 );
+    }ଅନ୍ୟଥା{
+      ପ୍ରତିଜ୍ଞା( pDb->nStmt>0 );
     }
     pDb->nStmt++;
 
     /* If we have too many statement in cache, remove the surplus from
     ** the end of the cache list.  */
-    while( pDb->nStmt>pDb->maxStmt ){
+    ଯେତେବେଳେ( pDb->nStmt>pDb->maxStmt ){
       SqlPreparedStmt *pLast = pDb->stmtLast;
       pDb->stmtLast = pLast->pPrev;
       pDb->stmtLast->pNext = 0;
@@ -1623,14 +1623,14 @@ static void dbReleaseStmt(
 **   dbEvalRowInfo()
 **   dbEvalColumnValue()
 */
-typedef struct DbEvalContext DbEvalContext;
-struct DbEvalContext {
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା DbEvalContext DbEvalContext;
+ସଂରଚନା DbEvalContext {
   SqliteDb *pDb;                  /* Database handle */
   Tcl_Obj *pSql;                  /* Object holding string zSql */
-  const char *zSql;               /* Remaining SQL to execute */
+  ଅଚଳ ଅକ୍ଷର *zSql;               /* Remaining SQL to execute */
   SqlPreparedStmt *pPreStmt;      /* Current statement */
-  int nCol;                       /* Number of columns returned by pStmt */
-  int evalFlags;                  /* Flags used */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCol;                       /* Number of columns returned by pStmt */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା evalFlags;                  /* Flags used */
   Tcl_Obj *pVarName;              /* Name of target array/dict variable */
   Tcl_Obj **apColName;            /* Array of column names */
 };
@@ -1642,13 +1642,13 @@ struct DbEvalContext {
 ** Release any cache of column names currently held as part of
 ** the DbEvalContext structure passed as the first argument.
 */
-static void dbReleaseColumnNames(DbEvalContext *p){
-  if( p->apColName ){
-    int i;
-    for(i=0; i<p->nCol; i++){
-      Tcl_DecrRefCount(p->apColName[i]);
+ସ୍ଥିର ଶୂନ୍ୟ dbReleaseColumnNames(DbEvalContext *p){
+  ଯଦି( p->apColName ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+    ପାଇଁ(i=0; i<p->nCol; i++){
+      Tcl_Decr_Ref_ଗଣନା(p->apColName[i]);
     }
-    Tcl_Free((char *)p->apColName);
+    Tcl_Free((ଅକ୍ଷର *)p->apColName);
     p->apColName = 0;
   }
   p->nCol = 0;
@@ -1666,21 +1666,21 @@ static void dbReleaseColumnNames(DbEvalContext *p){
 **
 **     set ${pVarName}(*) {a b c}
 */
-static void dbEvalInit(
+ସ୍ଥିର ଶୂନ୍ୟ dbEvalInit(
   DbEvalContext *p,               /* Pointer to structure to initialize */
   SqliteDb *pDb,                  /* Database handle */
   Tcl_Obj *pSql,                  /* Object containing SQL script */
   Tcl_Obj *pVarName,              /* Name of Tcl array to set (*) element of */
-  int evalFlags                   /* Flags controlling evaluation */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା evalFlags                   /* Flags controlling evaluation */
 ){
-  memset(p, 0, sizeof(DbEvalContext));
+  memset(p, 0, ଆକାର(DbEvalContext));
   p->pDb = pDb;
   p->zSql = Tcl_GetString(pSql);
   p->pSql = pSql;
-  Tcl_IncrRefCount(pSql);
-  if( pVarName ){
+  Tcl_Incr_Ref_ଗଣନା(pSql);
+  ଯଦି( pVarName ){
     p->pVarName = pVarName;
-    Tcl_IncrRefCount(pVarName);
+    Tcl_Incr_Ref_ଗଣନା(pVarName);
   }
   p->evalFlags = evalFlags;
   addDatabaseRef(p->pDb);
@@ -1690,24 +1690,24 @@ static void dbEvalInit(
 ** Obtain information about the row that the DbEvalContext passed as the
 ** first argument currently points to.
 */
-static void dbEvalRowInfo(
+ସ୍ଥିର ଶୂନ୍ୟ dbEvalRowInfo(
   DbEvalContext *p,               /* Evaluation context */
-  int *pnCol,                     /* OUT: Number of column names */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା *pnCol,                     /* OUT: Number of column names */
   Tcl_Obj ***papColName           /* OUT: Array of column names */
 ){
   /* Compute column names */
-  if( 0==p->apColName ){
+  ଯଦି( 0==p->apColName ){
     sqlite3_stmt *pStmt = p->pPreStmt->pStmt;
-    int i;                        /* Iterator variable */
-    int nCol;                     /* Number of columns returned by pStmt */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;                        /* Iterator variable */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCol;                     /* Number of columns returned by pStmt */
     Tcl_Obj **apColName = 0;      /* Array of column names */
 
-    p->nCol = nCol = sqlite3_column_count(pStmt);
-    if( nCol>0 && (papColName || p->pVarName) ){
-      apColName = (Tcl_Obj**)Tcl_Alloc( sizeof(Tcl_Obj*)*nCol );
-      for(i=0; i<nCol; i++){
+    p->nCol = nCol = sqlite3_column_ଗଣନା(pStmt);
+    ଯଦି( nCol>0 && (papColName || p->pVarName) ){
+      apColName = (Tcl_Obj**)Tcl_Alloc( ଆକାର(Tcl_Obj*)*nCol );
+      ପାଇଁ(i=0; i<nCol; i++){
         apColName[i] = Tcl_NewStringObj(sqlite3_column_name(pStmt,i), -1);
-        Tcl_IncrRefCount(apColName[i]);
+        Tcl_Incr_Ref_ଗଣନା(apColName[i]);
       }
       p->apColName = apColName;
     }
@@ -1715,39 +1715,39 @@ static void dbEvalRowInfo(
     /* If results are being stored in a variable then create the
     ** array(*) or dict(*) entry for that variable.
     */
-    if( p->pVarName ){
+    ଯଦି( p->pVarName ){
       Tcl_Interp *interp = p->pDb->interp;
       Tcl_Obj *pColList = Tcl_NewObj();
       Tcl_Obj *pStar = Tcl_NewStringObj("*", -1);
 
-      Tcl_IncrRefCount(pColList);
-      Tcl_IncrRefCount(pStar);
-      for(i=0; i<nCol; i++){
+      Tcl_Incr_Ref_ଗଣନା(pColList);
+      Tcl_Incr_Ref_ଗଣନା(pStar);
+      ପାଇଁ(i=0; i<nCol; i++){
         Tcl_ListObjAppendElement(interp, pColList, apColName[i]);
       }
-      if( 0==(SQLITE_EVAL_ASDICT & p->evalFlags) ){
+      ଯଦି( 0==(SQLITE_EVAL_ASDICT & p->evalFlags) ){
         Tcl_ObjSetVar2(interp, p->pVarName, pStar, pColList, 0);
-      }else{
-        Tcl_Obj * pDict = Tcl_ObjGetVar2(interp, p->pVarName, NULL, 0);
-        if( !pDict ){
+      }ଅନ୍ୟଥା{
+        Tcl_Obj * pDict = Tcl_ObjGetVar2(interp, p->pVarName, ଖାଲି, 0);
+        ଯଦି( !pDict ){
           pDict = Tcl_NewDictObj();
-        }else if( Tcl_IsShared(pDict) ){
+        }ଅନ୍ୟଥା ଯଦି( Tcl_IsShared(pDict) ){
           pDict = Tcl_DuplicateObj(pDict);
         }
-        if( Tcl_DictObjPut(interp, pDict, pStar, pColList)==TCL_OK ){
-          Tcl_ObjSetVar2(interp, p->pVarName, NULL, pDict, 0);
+        ଯଦି( Tcl_DictObjPut(interp, pDict, pStar, pColList)==TCL_OK ){
+          Tcl_ObjSetVar2(interp, p->pVarName, ଖାଲି, pDict, 0);
         }
-        Tcl_BounceRefCount(pDict);
+        Tcl_Bounce_Ref_ଗଣନା(pDict);
       }
-      Tcl_DecrRefCount(pStar);
-      Tcl_DecrRefCount(pColList);
+      Tcl_Decr_Ref_ଗଣନା(pStar);
+      Tcl_Decr_Ref_ଗଣନା(pColList);
     }
   }
 
-  if( papColName ){
+  ଯଦି( papColName ){
     *papColName = p->apColName;
   }
-  if( pnCol ){
+  ଯଦି( pnCol ){
     *pnCol = p->nCol;
   }
 }
@@ -1763,26 +1763,26 @@ static void dbEvalRowInfo(
 ** is returned, then the SQL script has finished executing and there are
 ** no further rows available. This is similar to SQLITE_DONE.
 */
-static int dbEvalStep(DbEvalContext *p){
-  const char *zPrevSql = 0;       /* Previous value of p->zSql */
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା dbEvalStep(DbEvalContext *p){
+  ଅଚଳ ଅକ୍ଷର *zPrevSql = 0;       /* Previous value of p->zSql */
 
-  while( p->zSql[0] || p->pPreStmt ){
-    int rc;
-    if( p->pPreStmt==0 ){
+  ଯେତେବେଳେ( p->zSql[0] || p->pPreStmt ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
+    ଯଦି( p->pPreStmt==0 ){
       zPrevSql = (p->zSql==zPrevSql ? 0 : p->zSql);
       rc = dbPrepareAndBind(p->pDb, p->zSql, &p->zSql, &p->pPreStmt);
-      if( rc!=TCL_OK ) return rc;
-    }else{
-      int rcs;
+      ଯଦି( rc!=TCL_OK ) ଫେରନ୍ତୁ rc;
+    }ଅନ୍ୟଥା{
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା rcs;
       SqliteDb *pDb = p->pDb;
       SqlPreparedStmt *pPreStmt = p->pPreStmt;
       sqlite3_stmt *pStmt = pPreStmt->pStmt;
 
       rcs = sqlite3_step(pStmt);
-      if( rcs==SQLITE_ROW ){
-        return TCL_OK;
+      ଯଦି( rcs==SQLITE_ROW ){
+        ଫେରନ୍ତୁ TCL_OK;
       }
-      if( p->pVarName ){
+      ଯଦି( p->pVarName ){
         dbEvalRowInfo(p, 0, 0);
       }
       rcs = sqlite3_reset(pStmt);
@@ -1794,32 +1794,32 @@ static int dbEvalStep(DbEvalContext *p){
       dbReleaseColumnNames(p);
       p->pPreStmt = 0;
 
-      if( rcs!=SQLITE_OK ){
+      ଯଦି( rcs!=SQLITE_OK ){
         /* If a run-time error occurs, report the error and stop reading
         ** the SQL.  */
         dbReleaseStmt(pDb, pPreStmt, 1);
-#if SQLITE_TEST
-        if( p->pDb->bLegacyPrepare && rcs==SQLITE_SCHEMA && zPrevSql ){
+#ଯଦି SQLITE_TEST
+        ଯଦି( p->pDb->bLegacyPrepare && rcs==SQLITE_SCHEMA && zPrevSql ){
           /* If the runtime error was an SQLITE_SCHEMA, and the database
           ** handle is configured to use the legacy sqlite3_prepare()
           ** interface, retry prepare()/step() on the same SQL statement.
           ** This only happens once. If there is a second SQLITE_SCHEMA
           ** error, the error will be returned to the caller. */
           p->zSql = zPrevSql;
-          continue;
+          ଜାରି;
         }
 #endif
         Tcl_SetObjResult(pDb->interp,
                          Tcl_NewStringObj(sqlite3_errmsg(pDb->db), -1));
-        return TCL_ERROR;
-      }else{
+        ଫେରନ୍ତୁ TCL_ERROR;
+      }ଅନ୍ୟଥା{
         dbReleaseStmt(pDb, pPreStmt, 0);
       }
     }
   }
 
   /* Finished */
-  return TCL_BREAK;
+  ଫେରନ୍ତୁ TCL_BREAK;
 }
 
 /*
@@ -1827,17 +1827,17 @@ static int dbEvalStep(DbEvalContext *p){
 ** as the first argument. There should be exactly one call to this function
 ** for each call to dbEvalInit().
 */
-static void dbEvalFinalize(DbEvalContext *p){
-  if( p->pPreStmt ){
+ସ୍ଥିର ଶୂନ୍ୟ dbEvalFinalize(DbEvalContext *p){
+  ଯଦି( p->pPreStmt ){
     sqlite3_reset(p->pPreStmt->pStmt);
     dbReleaseStmt(p->pDb, p->pPreStmt, 0);
     p->pPreStmt = 0;
   }
-  if( p->pVarName ){
-    Tcl_DecrRefCount(p->pVarName);
+  ଯଦି( p->pVarName ){
+    Tcl_Decr_Ref_ଗଣନା(p->pVarName);
     p->pVarName = 0;
   }
-  Tcl_DecrRefCount(p->pSql);
+  Tcl_Decr_Ref_ଗଣନା(p->pSql);
   dbReleaseColumnNames(p);
   delDatabaseRef(p->pDb);
 }
@@ -1847,32 +1847,32 @@ static void dbEvalFinalize(DbEvalContext *p){
 ** the value for the iCol'th column of the row currently pointed to by
 ** the DbEvalContext structure passed as the first argument.
 */
-static Tcl_Obj *dbEvalColumnValue(DbEvalContext *p, int iCol){
+ସ୍ଥିର Tcl_Obj *db_Eval_Column_ମୂଲ୍ୟ(DbEvalContext *p, ପୂର୍ଣ୍ଣସଂଖ୍ୟା iCol){
   sqlite3_stmt *pStmt = p->pPreStmt->pStmt;
-  switch( sqlite3_column_type(pStmt, iCol) ){
-    case SQLITE_BLOB: {
-      int bytes = sqlite3_column_bytes(pStmt, iCol);
-      const char *zBlob = sqlite3_column_blob(pStmt, iCol);
-      if( !zBlob ) bytes = 0;
-      return Tcl_NewByteArrayObj((u8*)zBlob, bytes);
+  ବାଛ( sqlite3_column_type(pStmt, iCol) ){
+    ସ୍ଥିତି SQLITE_BLOB: {
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା bytes = sqlite3_column_bytes(pStmt, iCol);
+      ଅଚଳ ଅକ୍ଷର *zBlob = sqlite3_column_blob(pStmt, iCol);
+      ଯଦି( !zBlob ) bytes = 0;
+      ଫେରନ୍ତୁ Tcl_NewByteArrayObj((u8*)zBlob, bytes);
     }
-    case SQLITE_INTEGER: {
+    ସ୍ଥିତି SQLITE_INTEGER: {
       sqlite_int64 v = sqlite3_column_int64(pStmt, iCol);
-      if( v>=-2147483647 && v<=2147483647 ){
-        return Tcl_NewIntObj((int)v);
-      }else{
-        return Tcl_NewWideIntObj(v);
+      ଯଦି( v>=-2147483647 && v<=2147483647 ){
+        ଫେରନ୍ତୁ Tcl_NewIntObj((ପୂର୍ଣ୍ଣସଂଖ୍ୟା)v);
+      }ଅନ୍ୟଥା{
+        ଫେରନ୍ତୁ Tcl_NewWideIntObj(v);
       }
     }
-    case SQLITE_FLOAT: {
-      return Tcl_NewDoubleObj(sqlite3_column_double(pStmt, iCol));
+    ସ୍ଥିତି SQLITE_FLOAT: {
+      ଫେରନ୍ତୁ Tcl_NewDoubleObj(sqlite3_column_double(pStmt, iCol));
     }
-    case SQLITE_NULL: {
-      return Tcl_NewStringObj(p->pDb->zNull, -1);
+    ସ୍ଥିତି SQLITE_NULL: {
+      ଫେରନ୍ତୁ Tcl_NewStringObj(p->pDb->zNull, -1);
     }
   }
 
-  return Tcl_NewStringObj((char*)sqlite3_column_text(pStmt, iCol), -1);
+  ଫେରନ୍ତୁ Tcl_NewStringObj((ଅକ୍ଷର*)sqlite3_column_text(pStmt, iCol), -1);
 }
 
 /*
@@ -1882,15 +1882,15 @@ static Tcl_Obj *dbEvalColumnValue(DbEvalContext *p, int iCol){
 ** are 8.6 or newer, the code still tests the Tcl version at runtime.
 ** This allows stubs-enabled builds to be used with older Tcl libraries.
 */
-#if TCL_MAJOR_VERSION>8 || !defined(TCL_MINOR_VERSION) \
+#ଯଦି TCL_MAJOR_VERSION>8 || !defined(TCL_MINOR_VERSION) \
                         || TCL_MINOR_VERSION>=6
 # define SQLITE_TCL_NRE 1
-static int DbUseNre(void){
-  int major, minor;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା DbUseNre(ଶୂନ୍ୟ){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା major, minor;
   Tcl_GetVersion(&major, &minor, 0, 0);
-  return( (major==8 && minor>=6) || major>8 );
+  ଫେରନ୍ତୁ( (major==8 && minor>=6) || major>8 );
 }
-#else
+#ଅନ୍ୟଥା
 /*
 ** Compiling using headers earlier than 8.6. In this case NR cannot be
 ** used, so DbUseNre() to always return zero. Add #defines for the other
@@ -1902,9 +1902,9 @@ static int DbUseNre(void){
 */
 # define SQLITE_TCL_NRE 0
 # define DbUseNre() 0
-# define Tcl_NRAddCallback(a,b,c,d,e,f) (void)0
+# define Tcl_NRAddCallback(a,b,c,d,e,f) (ଶୂନ୍ୟ)0
 # define Tcl_NREvalObj(a,b,c) 0
-# define Tcl_NRCreateCommand(a,b,c,d,e,f) (void)0
+# define Tcl_NRCreateCommand(a,b,c,d,e,f) (ଶୂନ୍ୟ)0
 #endif
 
 /*
@@ -1912,67 +1912,67 @@ static int DbUseNre(void){
 **
 **   $db eval SQL ?TGT-NAME? SCRIPT
 */
-static int SQLITE_TCLAPI DbEvalNextCmd(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI DbEvalNextCmd(
   ClientData data[],                   /* data[0] is the (DbEvalContext*) */
   Tcl_Interp *interp,                  /* Tcl interpreter */
-  int result                           /* Result so far */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା result                           /* Result so far */
 ){
-  int rc = result;                     /* Return code */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = result;                     /* Return code */
 
   /* The first element of the data[] array is a pointer to a DbEvalContext
   ** structure allocated using Tcl_Alloc(). The second element of data[]
   ** is a pointer to a Tcl_Obj containing the script to run for each row
   ** returned by the queries encapsulated in data[0]. */
   DbEvalContext *p = (DbEvalContext *)data[0];
-  Tcl_Obj * const pScript = (Tcl_Obj *)data[1];
-  Tcl_Obj * const pVarName = p->pVarName;
+  Tcl_Obj * ଅଚଳ pScript = (Tcl_Obj *)data[1];
+  Tcl_Obj * ଅଚଳ pVarName = p->pVarName;
 
-  while( (rc==TCL_OK || rc==TCL_CONTINUE) && TCL_OK==(rc = dbEvalStep(p)) ){
-    int i;
-    int nCol;
+  ଯେତେବେଳେ( (rc==TCL_OK || rc==TCL_CONTINUE) && TCL_OK==(rc = dbEvalStep(p)) ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCol;
     Tcl_Obj **apColName;
     dbEvalRowInfo(p, &nCol, &apColName);
-    for(i=0; i<nCol; i++){
-      if( pVarName==0 ){
-        Tcl_ObjSetVar2(interp, apColName[i], 0, dbEvalColumnValue(p,i), 0);
-      }else if( (p->evalFlags & SQLITE_EVAL_WITHOUTNULLS)!=0
+    ପାଇଁ(i=0; i<nCol; i++){
+      ଯଦି( pVarName==0 ){
+        Tcl_ObjSetVar2(interp, apColName[i], 0, db_Eval_Column_ମୂଲ୍ୟ(p,i), 0);
+      }ଅନ୍ୟଥା ଯଦି( (p->evalFlags & SQLITE_EVAL_WITHOUTNULLS)!=0
              && sqlite3_column_type(p->pPreStmt->pStmt, i)==SQLITE_NULL
       ){
         /* Remove NULL-containing column from the target container... */
-        if( 0==(SQLITE_EVAL_ASDICT & p->evalFlags) ){
+        ଯଦି( 0==(SQLITE_EVAL_ASDICT & p->evalFlags) ){
           /* Target is an array */
           Tcl_UnsetVar2(interp, Tcl_GetString(pVarName),
                         Tcl_GetString(apColName[i]), 0);
-        }else{
+        }ଅନ୍ୟଥା{
           /* Target is a dict */
-          Tcl_Obj *pDict = Tcl_ObjGetVar2(interp, pVarName, NULL, 0);
-          if( pDict ){
-            if( Tcl_IsShared(pDict) ){
+          Tcl_Obj *pDict = Tcl_ObjGetVar2(interp, pVarName, ଖାଲି, 0);
+          ଯଦି( pDict ){
+            ଯଦି( Tcl_IsShared(pDict) ){
               pDict = Tcl_DuplicateObj(pDict);
             }
-            if( Tcl_DictObjRemove(interp, pDict, apColName[i])==TCL_OK ){
-              Tcl_ObjSetVar2(interp, pVarName, NULL, pDict, 0);
+            ଯଦି( Tcl_DictObjRemove(interp, pDict, apColName[i])==TCL_OK ){
+              Tcl_ObjSetVar2(interp, pVarName, ଖାଲି, pDict, 0);
             }
-            Tcl_BounceRefCount(pDict);
+            Tcl_Bounce_Ref_ଗଣନା(pDict);
           }
         }
-      }else if( 0==(SQLITE_EVAL_ASDICT & p->evalFlags) ){
+      }ଅନ୍ୟଥା ଯଦି( 0==(SQLITE_EVAL_ASDICT & p->evalFlags) ){
         /* Target is an array: set target(colName) = colValue */
         Tcl_ObjSetVar2(interp, pVarName, apColName[i],
-                       dbEvalColumnValue(p,i), 0);
-      }else{
+                       db_Eval_Column_ମୂଲ୍ୟ(p,i), 0);
+      }ଅନ୍ୟଥା{
         /* Target is a dict: set target(colName) = colValue */
-        Tcl_Obj *pDict = Tcl_ObjGetVar2(interp, pVarName, NULL, 0);
-        if( !pDict ){
+        Tcl_Obj *pDict = Tcl_ObjGetVar2(interp, pVarName, ଖାଲି, 0);
+        ଯଦି( !pDict ){
           pDict = Tcl_NewDictObj();
-        }else if( Tcl_IsShared(pDict) ){
+        }ଅନ୍ୟଥା ଯଦି( Tcl_IsShared(pDict) ){
           pDict = Tcl_DuplicateObj(pDict);
         }
-        if( Tcl_DictObjPut(interp, pDict, apColName[i],
-                           dbEvalColumnValue(p,i))==TCL_OK ){
-          Tcl_ObjSetVar2(interp, pVarName, NULL, pDict, 0);
+        ଯଦି( Tcl_DictObjPut(interp, pDict, apColName[i],
+                           db_Eval_Column_ମୂଲ୍ୟ(p,i))==TCL_OK ){
+          Tcl_ObjSetVar2(interp, pVarName, ଖାଲି, pDict, 0);
         }
-        Tcl_BounceRefCount(pDict);
+        Tcl_Bounce_Ref_ଗଣନା(pDict);
       }
     }
 
@@ -1985,23 +1985,23 @@ static int SQLITE_TCLAPI DbEvalNextCmd(
     **
     ** If not using NRE, evaluate pScript directly and continue with the
     ** next iteration of this while(...) loop.  */
-    if( DbUseNre() ){
-      Tcl_NRAddCallback(interp, DbEvalNextCmd, (void*)p, (void*)pScript, 0, 0);
-      return Tcl_NREvalObj(interp, pScript, 0);
-    }else{
+    ଯଦି( DbUseNre() ){
+      Tcl_NRAddCallback(interp, DbEvalNextCmd, (ଶୂନ୍ୟ*)p, (ଶୂନ୍ୟ*)pScript, 0, 0);
+      ଫେରନ୍ତୁ Tcl_NREvalObj(interp, pScript, 0);
+    }ଅନ୍ୟଥା{
       rc = Tcl_EvalObjEx(interp, pScript, 0);
     }
   }
 
-  Tcl_DecrRefCount(pScript);
+  Tcl_Decr_Ref_ଗଣନା(pScript);
   dbEvalFinalize(p);
-  Tcl_Free((char *)p);
+  Tcl_Free((ଅକ୍ଷର *)p);
 
-  if( rc==TCL_OK || rc==TCL_BREAK ){
+  ଯଦି( rc==TCL_OK || rc==TCL_BREAK ){
     Tcl_ResetResult(interp);
     rc = TCL_OK;
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
@@ -2013,7 +2013,7 @@ static int SQLITE_TCLAPI DbEvalNextCmd(
 **   $db commit_hook ?SCRIPT?
 **   $db preupdate hook ?SCRIPT?
 */
-static void DbHookCmd(
+ସ୍ଥିର ଶୂନ୍ୟ DbHookCmd(
   Tcl_Interp *interp,             /* Tcl interpreter */
   SqliteDb *pDb,                  /* Database handle */
   Tcl_Obj *pArg,                  /* SCRIPT argument (or NULL) */
@@ -2021,18 +2021,18 @@ static void DbHookCmd(
 ){
   sqlite3 *db = pDb->db;
 
-  if( *ppHook ){
+  ଯଦି( *ppHook ){
     Tcl_SetObjResult(interp, *ppHook);
-    if( pArg ){
-      Tcl_DecrRefCount(*ppHook);
+    ଯଦି( pArg ){
+      Tcl_Decr_Ref_ଗଣନା(*ppHook);
       *ppHook = 0;
     }
   }
-  if( pArg ){
-    assert( !(*ppHook) );
-    if( Tcl_GetString(pArg)[0] ){
+  ଯଦି( pArg ){
+    ପ୍ରତିଜ୍ଞା( !(*ppHook) );
+    ଯଦି( Tcl_GetString(pArg)[0] ){
       *ppHook = pArg;
-      Tcl_IncrRefCount(*ppHook);
+      Tcl_Incr_Ref_ଗଣନା(*ppHook);
     }
   }
 
@@ -2134,17 +2134,17 @@ static void DbHookCmd(
 ** the CLI .mode --title option sets bTitles to QRF_Always, whereas this TCL
 ** interface set it to QRF_On.
 */
-static int dbQrf(SqliteDb *pDb, int objc, Tcl_Obj *const*objv){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା dbQrf(SqliteDb *pDb, ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc, Tcl_Obj *ଅଚଳ*objv){
 #ifndef SQLITE_QRF_H
   Tcl_SetResult(pDb->interp, "QRF not available in this build", TCL_VOLATILE);
-  return TCL_ERROR;
-#else
-  char *zResult = 0;             /* Result to be returned */
-  const char *zSql = 0;          /* SQL to run */
-  int i;                         /* Loop counter */
-  int rc;                        /* Result code */
+  ଫେରନ୍ତୁ TCL_ERROR;
+#ଅନ୍ୟଥା
+  ଅକ୍ଷର *zResult = 0;             /* Result to be returned */
+  ଅଚଳ ଅକ୍ଷର *zSql = 0;          /* SQL to run */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;                         /* Loop counter */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;                        /* Result code */
   sqlite3_qrf_spec qrf;          /* Formatting spec */
-  static const char *azAlign[] = {
+  ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azAlign[] = {
     "auto",           "bottom",          "c",
     "center",         "e",               "left",
     "middle",         "n",               "ne",
@@ -2152,35 +2152,35 @@ static int dbQrf(SqliteDb *pDb, int objc, Tcl_Obj *const*objv){
     "se",             "sw",              "top",
     "w",              0
   };
-  static const unsigned char aAlignMap[] = {
+  ସ୍ଥିର ଅଚଳ unsigned ଅକ୍ଷର aAlignMap[] = {
     QRF_ALIGN_Auto,   QRF_ALIGN_Bottom,  QRF_ALIGN_C,
-    QRF_ALIGN_Center, QRF_ALIGN_E,       QRF_ALIGN_Left,
-    QRF_ALIGN_Middle, QRF_ALIGN_N,       QRF_ALIGN_NE,
-    QRF_ALIGN_NW,     QRF_ALIGN_Right,   QRF_ALIGN_S,
-    QRF_ALIGN_SE,     QRF_ALIGN_SW,      QRF_ALIGN_Top,
+    QRF_ALIGN_Center, QRF_ALIGN_E,       QRF_ALIGN_ବାମ,
+    QRF_ALIGN_ମଧ୍ୟ, QRF_ALIGN_N,       QRF_ALIGN_NE,
+    QRF_ALIGN_NW,     QRF_ALIGN_ଡାହାଣ,   QRF_ALIGN_S,
+    QRF_ALIGN_SE,     QRF_ALIGN_SW,      QRF_ALIGN_ଶୀର୍ଷ,
     QRF_ALIGN_W
   };
 
-  memset(&qrf, 0, sizeof(qrf));
+  memset(&qrf, 0, ଆକାର(qrf));
   qrf.iVersion = 2;
   qrf.pzOutput = &zResult;
-  for(i=2; i<objc; i++){
-    const char *zArg = Tcl_GetString(objv[i]);
-    const char *azBool[] = { "auto", "yes", "no", "on", "off", 0 };
-    const unsigned char aBoolMap[] = { 0, 2, 1, 2, 1 };
-    if( zArg[0]!='-' ){
-      if( zSql ){
-        Tcl_AppendResult(pDb->interp, "unknown argument: ", zArg, (char*)0);
+  ପାଇଁ(i=2; i<objc; i++){
+    ଅଚଳ ଅକ୍ଷର *zArg = Tcl_GetString(objv[i]);
+    ଅଚଳ ଅକ୍ଷର *azBool[] = { "auto", "yes", "no", "on", "off", 0 };
+    ଅଚଳ unsigned ଅକ୍ଷର aBoolMap[] = { 0, 2, 1, 2, 1 };
+    ଯଦି( zArg[0]!='-' ){
+      ଯଦି( zSql ){
+        Tcl_AppendResult(pDb->interp, "unknown argument: ", zArg, (ଅକ୍ଷର*)0);
         rc = TCL_ERROR;
-        goto format_failed;
+        ଯାଅ format_failed;
       }
       zSql  = zArg;
-    }else if( i==objc-1 ){
-      Tcl_AppendResult(pDb->interp, "option has no argument: ", zArg,(char*)0);
+    }ଅନ୍ୟଥା ଯଦି( i==objc-1 ){
+      Tcl_AppendResult(pDb->interp, "option has no argument: ", zArg,(ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
-      goto format_failed;
-    }else if( strcmp(zArg,"-style")==0 ){
-      static const char *azStyles[] = {
+      ଯାଅ format_failed;
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-style")==0 ){
+      ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azStyles[] = {
         "auto",             "box",              "column",
         "count",            "csv",              "eqp",
         "explain",          "html",             "insert",
@@ -2189,271 +2189,271 @@ static int dbQrf(SqliteDb *pDb, int objc, Tcl_Obj *const*objv){
         "stats",            "stats-est",        "stats-vm",
         "table",            0
       };
-      static unsigned char aStyleMap[] = {
+      ସ୍ଥିର unsigned ଅକ୍ଷର aStyleMap[] = {
         QRF_STYLE_Auto,     QRF_STYLE_Box,      QRF_STYLE_Column,
-        QRF_STYLE_Count,    QRF_STYLE_Csv,      QRF_STYLE_Eqp,
-        QRF_STYLE_Explain,  QRF_STYLE_Html,     QRF_STYLE_Insert,
-        QRF_STYLE_JObject,  QRF_STYLE_Json,     QRF_STYLE_Line,
+        QRF_STYLE_ଗଣନା,    QRF_STYLE_Csv,      QRF_STYLE_Eqp,
+        QRF_STYLE_Explain,  QRF_STYLE_Html,     QRF_STYLE_ଭର୍ତ୍ତି,
+        QRF_STYLE_JObject,  QRF_STYLE_Json,     QRF_STYLE_ଧାଡ଼ି,
         QRF_STYLE_List,     QRF_STYLE_Markdown, QRF_STYLE_Quote,
         QRF_STYLE_Stats,    QRF_STYLE_StatsEst, QRF_STYLE_StatsVm,
         QRF_STYLE_Table
       };
-      int style;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା style;
       rc = Tcl_GetIndexFromObj(pDb->interp, objv[i+1], azStyles,
                               "format style (-style)", 0, &style);
-      if( rc ) goto format_failed;
+      ଯଦି( rc ) ଯାଅ format_failed;
       qrf.eStyle = aStyleMap[style];
       i++;
-    }else if( strcmp(zArg,"-esc")==0 ){
-      static const char *azEsc[] = {
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-esc")==0 ){
+      ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azEsc[] = {
         "ascii",        "auto",         "off",      "symbol",   0
       };
-      static unsigned char aEscMap[] = {
-        QRF_ESC_Ascii,  QRF_ESC_Auto,   QRF_ESC_Off, QRF_ESC_Symbol
+      ସ୍ଥିର unsigned ଅକ୍ଷର aEscMap[] = {
+        QRF_ESC_Ascii,  QRF_ESC_Auto,   QRF_ESC_Off, QRF_ESC_ପ୍ରତୀକ
       };
-      int esc;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା esc;
       rc = Tcl_GetIndexFromObj(pDb->interp, objv[i+1], azEsc,
                               "control character escape (-esc)", 0, &esc);
-      if( rc ) goto format_failed;
+      ଯଦି( rc ) ଯାଅ format_failed;
       qrf.eEsc = aEscMap[esc];
       i++;
-    }else if( strcmp(zArg,"-text")==0 || strcmp(zArg, "-title")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-text")==0 || strcmp(zArg, "-title")==0 ){
       /* NB: --title can be "off" or "on but --text may not be.  Thus we put
       ** the "off" and "on" choices first and start the search on the
       ** thrid element of the array when processing --text */
-      static const char *azText[] = {           "off",   "on",  "always",
+      ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azText[] = {           "off",   "on",  "always",
         "auto",             "csv",              "html",
         "json",             "plain",            "relaxed",
         "sql",              "tcl",              0
       };
-      static unsigned char aTextMap[] = {
+      ସ୍ଥିର unsigned ଅକ୍ଷର aTextMap[] = {
         QRF_TEXT_Auto,      QRF_TEXT_Csv,       QRF_TEXT_Html,
         QRF_TEXT_Json,      QRF_TEXT_Plain,     QRF_TEXT_Relaxed,
         QRF_TEXT_Sql,       QRF_TEXT_Tcl
       };
-      int txt;
-      int k = zArg[2]=='e';
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା txt;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା k = zArg[2]=='e';
       rc = Tcl_GetIndexFromObj(pDb->interp, objv[i+1], &azText[k*3], zArg,
                                0, &txt);
-      if( rc ) goto format_failed;
-      if( k ){
+      ଯଦି( rc ) ଯାଅ format_failed;
+      ଯଦି( k ){
         qrf.eText = aTextMap[txt];
-      }else if( txt<=2 ){
-        assert( QRF_No==1 );
-        assert( QRF_Yes==2 );
-        assert( QRF_Always==3 );
+      }ଅନ୍ୟଥା ଯଦି( txt<=2 ){
+        ପ୍ରତିଜ୍ଞା( QRF_No==1 );
+        ପ୍ରତିଜ୍ଞା( QRF_Yes==2 );
+        ପ୍ରତିଜ୍ଞା( QRF_Always==3 );
         qrf.bTitles = txt+QRF_No;
         qrf.eTitle = QRF_TEXT_Auto;
-      }else{
+      }ଅନ୍ୟଥା{
         qrf.bTitles = QRF_Yes;
         qrf.eTitle = aTextMap[txt-3];
       }
       i++;
-    }else if( strcmp(zArg,"-blob")==0 ){
-      static const char *azBlob[] = {
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-blob")==0 ){
+      ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azBlob[] = {
         "auto",             "hex",              "json",
         "tcl",              "text",             "sql",
         "size",             0
       };
-      static unsigned char aBlobMap[] = {
+      ସ୍ଥିର unsigned ଅକ୍ଷର aBlobMap[] = {
         QRF_BLOB_Auto,      QRF_BLOB_Hex,       QRF_BLOB_Json,
         QRF_BLOB_Tcl,       QRF_BLOB_Text,      QRF_BLOB_Sql,
         QRF_BLOB_Size
       };
-      int blob;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା blob;
       rc = Tcl_GetIndexFromObj(pDb->interp, objv[i+1], azBlob,
                               "BLOB encoding (-blob)", 0, &blob);
-      if( rc ) goto format_failed;
+      ଯଦି( rc ) ଯାଅ format_failed;
       qrf.eBlob = aBlobMap[blob];
       i++;
-    }else if( strcmp(zArg,"-wordwrap")==0 ){
-      int v = 0;
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-wordwrap")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା v = 0;
       rc = Tcl_GetIndexFromObj(pDb->interp, objv[i+1], azBool,
                               "-wordwrap", 0, &v);
-      if( rc ) goto format_failed;
+      ଯଦି( rc ) ଯାଅ format_failed;
       qrf.bWordWrap = aBoolMap[v];
       i++;
-    }else if( strcmp(zArg,"-textjsonb")==0
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-textjsonb")==0
            || strcmp(zArg,"-splitcolumn")==0
            || strcmp(zArg,"-border")==0
            || strcmp(zArg,"-rowcount")==0
     ){
-      int v = 0;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା v = 0;
       rc = Tcl_GetIndexFromObj(pDb->interp, objv[i+1], azBool,
                               zArg, 0, &v);
-      if( rc ) goto format_failed;
-      if( zArg[1]=='t' ){
+      ଯଦି( rc ) ଯାଅ format_failed;
+      ଯଦି( zArg[1]=='t' ){
         qrf.bTextJsonb = aBoolMap[v];
-      }else if( zArg[1]=='b' ){
+      }ଅନ୍ୟଥା ଯଦି( zArg[1]=='b' ){
         qrf.bBorder = aBoolMap[v];
-      }else if( zArg[1]=='r' ){
-        qrf.bRowCount = aBoolMap[v];
-      }else{
+      }ଅନ୍ୟଥା ଯଦି( zArg[1]=='r' ){
+        qrf.b_Row_ଗଣନା = aBoolMap[v];
+      }ଅନ୍ୟଥା{
         qrf.bSplitColumn = aBoolMap[v];
       }
       i++;
-    }else if( strcmp(zArg,"-defaultalign")==0
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-defaultalign")==0
            || strcmp(zArg,"-titlealign")==0){
-      int ax = 0;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା ax = 0;
       rc = Tcl_GetIndexFromObj(pDb->interp, objv[i+1], azAlign,
                     zArg[1]=='d' ?  "default alignment (-defaultalign)" :
                                     "title alignment (-titlealign)",
                     0, &ax);
-      if( rc ) goto format_failed;
-      if( zArg[1]=='d' ){
+      ଯଦି( rc ) ଯାଅ format_failed;
+      ଯଦି( zArg[1]=='d' ){
         qrf.eDfltAlign = aAlignMap[ax];
-      }else{
+      }ଅନ୍ୟଥା{
         qrf.eTitleAlign = aAlignMap[ax];
       }
       i++;
-    }else if( strcmp(zArg,"-wrap")==0
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-wrap")==0
            || strcmp(zArg,"-screenwidth")==0 
            || strcmp(zArg,"-linelimit")==0 
            || strcmp(zArg,"-titlelimit")==0 
     ){
-      int v = 0;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା v = 0;
       rc = Tcl_GetIntFromObj(pDb->interp, objv[i+1], &v);
-      if( rc ) goto format_failed;
-      if( v<QRF_MIN_WIDTH ){
+      ଯଦି( rc ) ଯାଅ format_failed;
+      ଯଦି( v<QRF_MIN_WIDTH ){
         v = QRF_MIN_WIDTH;
-      }else if( v>QRF_MAX_WIDTH ){
+      }ଅନ୍ୟଥା ଯଦି( v>QRF_MAX_WIDTH ){
         v = QRF_MAX_WIDTH;
       }
-      if( zArg[1]=='w' ){
+      ଯଦି( zArg[1]=='w' ){
         qrf.nWrap = v;
-      }else if( zArg[1]=='s' ){
+      }ଅନ୍ୟଥା ଯଦି( zArg[1]=='s' ){
         qrf.nScreenWidth = v;
-      }else if( zArg[1]=='t' ){
+      }ଅନ୍ୟଥା ଯଦି( zArg[1]=='t' ){
         qrf.nTitleLimit = v;
-      }else{
-        qrf.nLineLimit = v;
+      }ଅନ୍ୟଥା{
+        qrf.n_ଧାଡ଼ି_Limit = v;
       }
       i++;
-    }else if( strcmp(zArg,"-charlimit")==0 ){
-      int v = 0;
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-charlimit")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା v = 0;
       rc = Tcl_GetIntFromObj(pDb->interp, objv[i+1], &v);
-      if( rc ) goto format_failed;
-      if( v<0 ) v = 0;
+      ଯଦି( rc ) ଯାଅ format_failed;
+      ଯଦି( v<0 ) v = 0;
       qrf.nCharLimit = v;
       i++;
-    }else if( strcmp(zArg,"-multiinsert")==0 ){
-      int v = 0;
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-multiinsert")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା v = 0;
       rc = Tcl_GetIntFromObj(pDb->interp, objv[i+1], &v);
-      if( rc ) goto format_failed;
-      if( v<0 ) v = 0;
-      qrf.nMultiInsert = v;
+      ଯଦି( rc ) ଯାଅ format_failed;
+      ଯଦି( v<0 ) v = 0;
+      qrf.n_Multi_ଭର୍ତ୍ତି = v;
       i++;
-    }else if( strcmp(zArg,"-align")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-align")==0 ){
       Tcl_Size n = 0;
-      int jj;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା jj;
       rc = Tcl_ListObjLength(pDb->interp, objv[i+1], &n);
-      if( rc ) goto format_failed;
+      ଯଦି( rc ) ଯାଅ format_failed;
       sqlite3_free(qrf.aAlign);
-      qrf.aAlign = sqlite3_malloc64( (n+1)*sizeof(qrf.aAlign[0]) );
-      if( qrf.aAlign==0 ){
-        Tcl_AppendResult(pDb->interp, "out of memory", (char*)0);
+      qrf.aAlign = sqlite3_malloc64( (n+1)*ଆକାର(qrf.aAlign[0]) );
+      ଯଦି( qrf.aAlign==0 ){
+        Tcl_AppendResult(pDb->interp, "out of memory", (ଅକ୍ଷର*)0);
         rc = TCL_ERROR;
-        goto format_failed;
+        ଯାଅ format_failed;
       }
-      memset(qrf.aAlign, 0, (n+1)*sizeof(qrf.aAlign[0]));
+      memset(qrf.aAlign, 0, (n+1)*ଆକାର(qrf.aAlign[0]));
       qrf.nAlign = n;
-      for(jj=0; jj<n; jj++){
-        int x;
+      ପାଇଁ(jj=0; jj<n; jj++){
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା x;
         Tcl_Obj *pTerm;
         rc = Tcl_ListObjIndex(pDb->interp, objv[i+1], jj, &pTerm);
-        if( rc ) goto format_failed;
+        ଯଦି( rc ) ଯାଅ format_failed;
         rc = Tcl_GetIndexFromObj(pDb->interp, pTerm, azAlign,
                           "column alignment (-align)", 0, &x);
-        if( rc ) goto format_failed;
+        ଯଦି( rc ) ଯାଅ format_failed;
         qrf.aAlign[jj] = aAlignMap[x];
       }
       i++;
-    }else if( strcmp(zArg,"-widths")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-widths")==0 ){
       Tcl_Size n = 0;
-      int jj;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା jj;
       rc = Tcl_ListObjLength(pDb->interp, objv[i+1], &n);
-      if( rc ) goto format_failed;
+      ଯଦି( rc ) ଯାଅ format_failed;
       sqlite3_free(qrf.aWidth);
-      qrf.aWidth = sqlite3_malloc64( (n+1)*sizeof(qrf.aWidth[0]) );
-      if( qrf.aWidth==0 ){
-        Tcl_AppendResult(pDb->interp, "out of memory", (char*)0);
+      qrf.aWidth = sqlite3_malloc64( (n+1)*ଆକାର(qrf.aWidth[0]) );
+      ଯଦି( qrf.aWidth==0 ){
+        Tcl_AppendResult(pDb->interp, "out of memory", (ଅକ୍ଷର*)0);
         rc = TCL_ERROR;
-        goto format_failed;
+        ଯାଅ format_failed;
       }
-      memset(qrf.aWidth, 0, (n+1)*sizeof(qrf.aWidth[0]));
+      memset(qrf.aWidth, 0, (n+1)*ଆକାର(qrf.aWidth[0]));
       qrf.nWidth = n;
-      for(jj=0; jj<n; jj++){
+      ପାଇଁ(jj=0; jj<n; jj++){
         Tcl_Obj *pTerm;
-        int v;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା v;
         rc = Tcl_ListObjIndex(pDb->interp, objv[i+1], jj, &pTerm);
-        if( rc ) goto format_failed;
+        ଯଦି( rc ) ଯାଅ format_failed;
         rc = Tcl_GetIntFromObj(pDb->interp, pTerm, &v);
-        if( v<(-QRF_MAX_WIDTH) ){
+        ଯଦି( v<(-QRF_MAX_WIDTH) ){
           v = -QRF_MAX_WIDTH;
-        }else if( v>QRF_MAX_WIDTH ){
+        }ଅନ୍ୟଥା ଯଦି( v>QRF_MAX_WIDTH ){
           v = QRF_MAX_WIDTH;
         }
-        qrf.aWidth[jj] = (short int)v;
+        qrf.aWidth[jj] = (short ପୂର୍ଣ୍ଣସଂଖ୍ୟା)v;
       }
       i++;
-    }else if( strcmp(zArg,"-columnsep")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-columnsep")==0 ){
       qrf.zColumnSep = Tcl_GetString(objv[i+1]);
       i++;
-    }else if( strcmp(zArg,"-rowsep")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-rowsep")==0 ){
       qrf.zRowSep = Tcl_GetString(objv[i+1]);
       i++;
-    }else if( strcmp(zArg,"-tablename")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-tablename")==0 ){
       qrf.zTableName = Tcl_GetString(objv[i+1]);
       i++;
-    }else if( strcmp(zArg,"-null")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-null")==0 ){
       qrf.zNull = Tcl_GetString(objv[i+1]);
       i++;
-    }else if( strcmp(zArg,"-ifmt")==0 ){
-      char *zFmt = Tcl_GetString(objv[i+1]);
-      if( zFmt[0]==0 || strcmp(zFmt,"auto")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-ifmt")==0 ){
+      ଅକ୍ଷର *zFmt = Tcl_GetString(objv[i+1]);
+      ଯଦି( zFmt[0]==0 || strcmp(zFmt,"auto")==0 ){
         zFmt = 0;
-      }else if( sqlite3_qrf_ckformat(zFmt)!=1 ){
-        Tcl_AppendResult(pDb->interp, "bad format for -ifmt", (char*)0);
+      }ଅନ୍ୟଥା ଯଦି( sqlite3_qrf_ckformat(zFmt)!=1 ){
+        Tcl_AppendResult(pDb->interp, "bad format for -ifmt", (ଅକ୍ଷର*)0);
         rc = TCL_ERROR;
-        goto format_failed;
+        ଯାଅ format_failed;
       }
       qrf.zIFmt = zFmt;
       i++;
-    }else if( strcmp(zArg,"-fpfmt")==0 ){
-      char *zFmt = Tcl_GetString(objv[i+1]);
-      if( zFmt[0]==0 || strcmp(zFmt,"auto")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-fpfmt")==0 ){
+      ଅକ୍ଷର *zFmt = Tcl_GetString(objv[i+1]);
+      ଯଦି( zFmt[0]==0 || strcmp(zFmt,"auto")==0 ){
         zFmt = 0;
-      }else if( sqlite3_qrf_ckformat(zFmt)!=2 ){
-        Tcl_AppendResult(pDb->interp, "bad format for -fpfmt", (char*)0);
+      }ଅନ୍ୟଥା ଯଦି( sqlite3_qrf_ckformat(zFmt)!=2 ){
+        Tcl_AppendResult(pDb->interp, "bad format for -fpfmt", (ଅକ୍ଷର*)0);
         rc = TCL_ERROR;
-        goto format_failed;
+        ଯାଅ format_failed;
       }
       qrf.zFpFmt = zFmt;
       i++;
-    }else if( strcmp(zArg,"-version")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg,"-version")==0 ){
       /* Undocumented. Testing use only */
       qrf.iVersion = atoi(Tcl_GetString(objv[i+1]));
       i++;
-    }else{
-      Tcl_AppendResult(pDb->interp, "unknown option: ", zArg, (char*)0);
+    }ଅନ୍ୟଥା{
+      Tcl_AppendResult(pDb->interp, "unknown option: ", zArg, (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
-      goto format_failed;
+      ଯାଅ format_failed;
     }
   }
-  while( zSql && zSql[0] ){
+  ଯେତେବେଳେ( zSql && zSql[0] ){
     SqlPreparedStmt *pStmt = 0;        /* Next statement to run */
-    char *zErr = 0;                    /* Error message from QRF */
+    ଅକ୍ଷର *zErr = 0;                    /* Error message from QRF */
 
     rc = dbPrepareAndBind(pDb, zSql, &zSql, &pStmt);
-    if( rc ) goto format_failed;
-    if( pStmt==0 ) continue;
+    ଯଦି( rc ) ଯାଅ format_failed;
+    ଯଦି( pStmt==0 ) ଜାରି;
     rc = sqlite3_format_query_result(pStmt->pStmt, &qrf, &zErr);
     dbReleaseStmt(pDb, pStmt, 0);
-    if( rc ){
+    ଯଦି( rc ){
       Tcl_SetResult(pDb->interp, zErr, TCL_VOLATILE);
       sqlite3_free(zErr);
       rc = TCL_ERROR;
-      goto format_failed;
+      ଯାଅ format_failed;
     }
   }
   Tcl_SetResult(pDb->interp, zResult, TCL_VOLATILE);
@@ -2464,7 +2464,7 @@ format_failed:
   sqlite3_free(qrf.aWidth);
   sqlite3_free(qrf.aAlign);
   sqlite3_free(zResult);
-  return rc;
+  ଫେରନ୍ତୁ rc;
 
 #endif
 }
@@ -2482,16 +2482,16 @@ format_failed:
 ** and calls that connection "db1".  The second command causes this
 ** subroutine to be invoked.
 */
-static int SQLITE_TCLAPI DbObjCmd(
-  void *cd,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI DbObjCmd(
+  ଶୂନ୍ୟ *cd,
   Tcl_Interp *interp,
-  int objc,
-  Tcl_Obj *const*objv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
+  Tcl_Obj *ଅଚଳ*objv
 ){
   SqliteDb *pDb = (SqliteDb*)cd;
-  int choice;
-  int rc = TCL_OK;
-  static const char *DB_strs[] = {
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା choice;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = TCL_OK;
+  ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *DB_strs[] = {
     "authorizer",             "backup",                "bind_fallback",
     "busy",                   "cache",                 "changes",
     "close",                  "collate",               "collation_needed",
@@ -2508,7 +2508,7 @@ static int SQLITE_TCLAPI DbObjCmd(
     "unlock_notify",          "update_hook",           "version",
     "wal_hook",               0                        
   };
-  enum DB_enum {
+  ଗଣନା DB_enum {
     DB_AUTHORIZER,            DB_BACKUP,               DB_BIND_FALLBACK,
     DB_BUSY,                  DB_CACHE,                DB_CHANGES,
     DB_CLOSE,                 DB_COLLATE,              DB_COLLATION_NEEDED,
@@ -2516,7 +2516,7 @@ static int SQLITE_TCLAPI DbObjCmd(
     DB_COPY,                  DB_DESERIALIZE,          DB_ENABLE_LOAD_EXTENSION,
     DB_ERRORCODE,             DB_ERROROFFSET,          DB_EVAL,
     DB_EXISTS,                DB_FORMAT,               DB_FUNCTION,
-    DB_INCRBLOB,              DB_INTERRUPT,            DB_LAST_INSERT_ROWID,
+    DB_INCRBLOB,              DB_INTERRUPT,            DB_LAST_ଭର୍ତ୍ତି_ROWID,
     DB_NULLVALUE,             DB_ONECOLUMN,            DB_PREUPDATE,
     DB_PROFILE,               DB_PROGRESS,             DB_REKEY,
     DB_RESTORE,               DB_ROLLBACK_HOOK,        DB_SERIALIZE,
@@ -2527,15 +2527,15 @@ static int SQLITE_TCLAPI DbObjCmd(
   };
   /* don't leave trailing commas on DB_enum, it confuses the AIX xlc compiler */
 
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUBCOMMAND ...");
-    return TCL_ERROR;
+  ଯଦି( objc<2 ){
+    Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "SUBCOMMAND ...");
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  if( Tcl_GetIndexFromObj(interp, objv[1], DB_strs, "option", 0, &choice) ){
-    return TCL_ERROR;
+  ଯଦି( Tcl_GetIndexFromObj(interp, objv[1], DB_strs, "option", 0, &choice) ){
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
 
-  switch( (enum DB_enum)choice ){
+  ବାଛ( (ଗଣନା DB_enum)choice ){
 
   /*    $db authorizer ?CALLBACK?
   **
@@ -2555,44 +2555,44 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** If this method is invoked with no arguments, the current authorization
   ** callback string is returned.
   */
-  case DB_AUTHORIZER: {
+  ସ୍ଥିତି DB_AUTHORIZER: {
 #ifdef SQLITE_OMIT_AUTHORIZATION
     Tcl_AppendResult(interp, "authorization not available in this build",
-                     (char*)0);
-    return TCL_ERROR;
-#else
-    if( objc>3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?CALLBACK?");
-      return TCL_ERROR;
-    }else if( objc==2 ){
-      if( pDb->zAuth ){
-        Tcl_AppendResult(interp, pDb->zAuth, (char*)0);
+                     (ଅକ୍ଷର*)0);
+    ଫେରନ୍ତୁ TCL_ERROR;
+#ଅନ୍ୟଥା
+    ଯଦି( objc>3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?CALLBACK?");
+      ଫେରନ୍ତୁ TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( objc==2 ){
+      ଯଦି( pDb->zAuth ){
+        Tcl_AppendResult(interp, pDb->zAuth, (ଅକ୍ଷର*)0);
       }
-    }else{
-      char *zAuth;
+    }ଅନ୍ୟଥା{
+      ଅକ୍ଷର *zAuth;
       Tcl_Size len;
-      if( pDb->zAuth ){
+      ଯଦି( pDb->zAuth ){
         Tcl_Free(pDb->zAuth);
       }
       zAuth = Tcl_GetStringFromObj(objv[2], &len);
-      if( zAuth && len>0 ){
+      ଯଦି( zAuth && len>0 ){
         pDb->zAuth = Tcl_Alloc( len + 1 );
         memcpy(pDb->zAuth, zAuth, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zAuth = 0;
       }
-      if( pDb->zAuth ){
-        typedef int (*sqlite3_auth_cb)(
-           void*,int,const char*,const char*,
-           const char*,const char*);
+      ଯଦି( pDb->zAuth ){
+        ପ୍ରକାରବ୍ୟାଖ୍ୟା ପୂର୍ଣ୍ଣସଂଖ୍ୟା (*sqlite3_auth_cb)(
+           ଶୂନ୍ୟ*,ପୂର୍ଣ୍ଣସଂଖ୍ୟା,ଅଚଳ ଅକ୍ଷର*,ଅଚଳ ଅକ୍ଷର*,
+           ଅଚଳ ଅକ୍ଷର*,ଅଚଳ ଅକ୍ଷର*);
         pDb->interp = interp;
         sqlite3_set_authorizer(pDb->db,(sqlite3_auth_cb)auth_callback,pDb);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_set_authorizer(pDb->db, 0, 0);
       }
     }
 #endif
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db backup ?DATABASE? FILENAME
@@ -2601,48 +2601,48 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** content of local database DATABASE (default: "main") into the
   ** FILENAME database.
   */
-  case DB_BACKUP: {
-    const char *zDestFile;
-    const char *zSrcDb;
+  ସ୍ଥିତି DB_BACKUP: {
+    ଅଚଳ ଅକ୍ଷର *zDestFile;
+    ଅଚଳ ଅକ୍ଷର *zSrcDb;
     sqlite3 *pDest;
     sqlite3_backup *pBackup;
 
-    if( objc==3 ){
+    ଯଦି( objc==3 ){
       zSrcDb = "main";
       zDestFile = Tcl_GetString(objv[2]);
-    }else if( objc==4 ){
+    }ଅନ୍ୟଥା ଯଦି( objc==4 ){
       zSrcDb = Tcl_GetString(objv[2]);
       zDestFile = Tcl_GetString(objv[3]);
-    }else{
-      Tcl_WrongNumArgs(interp, 2, objv, "?DATABASE? FILENAME");
-      return TCL_ERROR;
+    }ଅନ୍ୟଥା{
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?DATABASE? FILENAME");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     rc = sqlite3_open_v2(zDestFile, &pDest,
                SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE| pDb->openFlags, 0);
-    if( rc!=SQLITE_OK ){
+    ଯଦି( rc!=SQLITE_OK ){
       Tcl_AppendResult(interp, "cannot open target database: ",
-           sqlite3_errmsg(pDest), (char*)0);
+           sqlite3_errmsg(pDest), (ଅକ୍ଷର*)0);
       sqlite3_close(pDest);
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     pBackup = sqlite3_backup_init(pDest, "main", pDb->db, zSrcDb);
-    if( pBackup==0 ){
+    ଯଦି( pBackup==0 ){
       Tcl_AppendResult(interp, "backup failed: ",
-           sqlite3_errmsg(pDest), (char*)0);
+           sqlite3_errmsg(pDest), (ଅକ୍ଷର*)0);
       sqlite3_close(pDest);
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    while(  (rc = sqlite3_backup_step(pBackup,100))==SQLITE_OK ){}
+    ଯେତେବେଳେ(  (rc = sqlite3_backup_step(pBackup,100))==SQLITE_OK ){}
     sqlite3_backup_finish(pBackup);
-    if( rc==SQLITE_DONE ){
+    ଯଦି( rc==SQLITE_DONE ){
       rc = TCL_OK;
-    }else{
+    }ଅନ୍ୟଥା{
       Tcl_AppendResult(interp, "backup failed: ",
-           sqlite3_errmsg(pDest), (char*)0);
+           sqlite3_errmsg(pDest), (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
     }
     sqlite3_close(pDest);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db bind_fallback ?CALLBACK?
@@ -2663,29 +2663,29 @@ static int SQLITE_TCLAPI DbObjCmd(
   **     proc bind_error {name} {error "no such variable: $name"}
   **     db bind_fallback bind_error
   */
-  case DB_BIND_FALLBACK: {
-    if( objc>3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?CALLBACK?");
-      return TCL_ERROR;
-    }else if( objc==2 ){
-      if( pDb->zBindFallback ){
-        Tcl_AppendResult(interp, pDb->zBindFallback, (char*)0);
+  ସ୍ଥିତି DB_BIND_FALLBACK: {
+    ଯଦି( objc>3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?CALLBACK?");
+      ଫେରନ୍ତୁ TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( objc==2 ){
+      ଯଦି( pDb->zBindFallback ){
+        Tcl_AppendResult(interp, pDb->zBindFallback, (ଅକ୍ଷର*)0);
       }
-    }else{
-      char *zCallback;
+    }ଅନ୍ୟଥା{
+      ଅକ୍ଷର *zCallback;
       Tcl_Size len;
-      if( pDb->zBindFallback ){
+      ଯଦି( pDb->zBindFallback ){
         Tcl_Free(pDb->zBindFallback);
       }
       zCallback = Tcl_GetStringFromObj(objv[2], &len);
-      if( zCallback && len>0 ){
+      ଯଦି( zCallback && len>0 ){
         pDb->zBindFallback = Tcl_Alloc( len + 1 );
         memcpy(pDb->zBindFallback, zCallback, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zBindFallback = 0;
       }
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db busy ?CALLBACK?
@@ -2693,35 +2693,35 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** Invoke the given callback if an SQL statement attempts to open
   ** a locked database file.
   */
-  case DB_BUSY: {
-    if( objc>3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "CALLBACK");
-      return TCL_ERROR;
-    }else if( objc==2 ){
-      if( pDb->zBusy ){
-        Tcl_AppendResult(interp, pDb->zBusy, (char*)0);
+  ସ୍ଥିତି DB_BUSY: {
+    ଯଦି( objc>3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "CALLBACK");
+      ଫେରନ୍ତୁ TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( objc==2 ){
+      ଯଦି( pDb->zBusy ){
+        Tcl_AppendResult(interp, pDb->zBusy, (ଅକ୍ଷର*)0);
       }
-    }else{
-      char *zBusy;
+    }ଅନ୍ୟଥା{
+      ଅକ୍ଷର *zBusy;
       Tcl_Size len;
-      if( pDb->zBusy ){
+      ଯଦି( pDb->zBusy ){
         Tcl_Free(pDb->zBusy);
       }
       zBusy = Tcl_GetStringFromObj(objv[2], &len);
-      if( zBusy && len>0 ){
+      ଯଦି( zBusy && len>0 ){
         pDb->zBusy = Tcl_Alloc( len + 1 );
         memcpy(pDb->zBusy, zBusy, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zBusy = 0;
       }
-      if( pDb->zBusy ){
+      ଯଦି( pDb->zBusy ){
         pDb->interp = interp;
         sqlite3_busy_handler(pDb->db, DbBusyHandler, pDb);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_busy_handler(pDb->db, 0, 0);
       }
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*     $db cache flush
@@ -2730,48 +2730,48 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** Flush the prepared statement cache, or set the maximum number of
   ** cached statements.
   */
-  case DB_CACHE: {
-    char *subCmd;
-    int n;
+  ସ୍ଥିତି DB_CACHE: {
+    ଅକ୍ଷର *subCmd;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା n;
 
-    if( objc<=2 ){
-      Tcl_WrongNumArgs(interp, 1, objv, "cache option ?arg?");
-      return TCL_ERROR;
+    ଯଦି( objc<=2 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv, "cache option ?arg?");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     subCmd = Tcl_GetStringFromObj( objv[2], 0 );
-    if( *subCmd=='f' && strcmp(subCmd,"flush")==0 ){
-      if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "flush");
-        return TCL_ERROR;
-      }else{
+    ଯଦି( *subCmd=='f' && strcmp(subCmd,"flush")==0 ){
+      ଯଦି( objc!=3 ){
+        Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "flush");
+        ଫେରନ୍ତୁ TCL_ERROR;
+      }ଅନ୍ୟଥା{
         flushStmtCache( pDb );
       }
-    }else if( *subCmd=='s' && strcmp(subCmd,"size")==0 ){
-      if( objc!=4 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "size n");
-        return TCL_ERROR;
-      }else{
-        if( TCL_ERROR==Tcl_GetIntFromObj(interp, objv[3], &n) ){
+    }ଅନ୍ୟଥା ଯଦି( *subCmd=='s' && strcmp(subCmd,"size")==0 ){
+      ଯଦି( objc!=4 ){
+        Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "size n");
+        ଫେରନ୍ତୁ TCL_ERROR;
+      }ଅନ୍ୟଥା{
+        ଯଦି( TCL_ERROR==Tcl_GetIntFromObj(interp, objv[3], &n) ){
           Tcl_AppendResult( interp, "cannot convert \"",
-               Tcl_GetStringFromObj(objv[3],0), "\" to integer", (char*)0);
-          return TCL_ERROR;
-        }else{
-          if( n<0 ){
+               Tcl_GetStringFromObj(objv[3],0), "\" to integer", (ଅକ୍ଷର*)0);
+          ଫେରନ୍ତୁ TCL_ERROR;
+        }ଅନ୍ୟଥା{
+          ଯଦି( n<0 ){
             flushStmtCache( pDb );
             n = 0;
-          }else if( n>MAX_PREPARED_STMTS ){
+          }ଅନ୍ୟଥା ଯଦି( n>MAX_PREPARED_STMTS ){
             n = MAX_PREPARED_STMTS;
           }
           pDb->maxStmt = n;
         }
       }
-    }else{
+    }ଅନ୍ୟଥା{
       Tcl_AppendResult( interp, "bad option \"",
           Tcl_GetStringFromObj(objv[2],0), "\": must be flush or size",
-          (char*)0);
-      return TCL_ERROR;
+          (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*     $db changes
@@ -2780,24 +2780,24 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** the most recent INSERT, UPDATE or DELETE statement, not including
   ** any changes made by trigger programs.
   */
-  case DB_CHANGES: {
+  ସ୍ଥିତି DB_CHANGES: {
     Tcl_Obj *pResult;
-    if( objc!=2 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "");
-      return TCL_ERROR;
+    ଯଦି( objc!=2 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     pResult = Tcl_GetObjResult(interp);
     Tcl_SetWideIntObj(pResult, sqlite3_changes64(pDb->db));
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db close
   **
   ** Shutdown the database
   */
-  case DB_CLOSE: {
+  ସ୍ଥିତି DB_CLOSE: {
     Tcl_DeleteCommand(interp, Tcl_GetStringFromObj(objv[0], 0));
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -2806,30 +2806,30 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** Create a new SQL collation function called NAME.  Whenever
   ** that function is called, invoke SCRIPT to evaluate the function.
   */
-  case DB_COLLATE: {
+  ସ୍ଥିତି DB_COLLATE: {
     SqlCollate *pCollate;
-    char *zName;
-    char *zScript;
+    ଅକ୍ଷର *zName;
+    ଅକ୍ଷର *zScript;
     Tcl_Size nScript;
-    if( objc!=4 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "NAME SCRIPT");
-      return TCL_ERROR;
+    ଯଦି( objc!=4 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "NAME SCRIPT");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     zName = Tcl_GetStringFromObj(objv[2], 0);
     zScript = Tcl_GetStringFromObj(objv[3], &nScript);
-    pCollate = (SqlCollate*)Tcl_Alloc( sizeof(*pCollate) + nScript + 1 );
-    if( pCollate==0 ) return TCL_ERROR;
+    pCollate = (SqlCollate*)Tcl_Alloc( ଆକାର(*pCollate) + nScript + 1 );
+    ଯଦି( pCollate==0 ) ଫେରନ୍ତୁ TCL_ERROR;
     pCollate->interp = interp;
     pCollate->pNext = pDb->pCollate;
-    pCollate->zScript = (char*)&pCollate[1];
+    pCollate->zScript = (ଅକ୍ଷର*)&pCollate[1];
     pDb->pCollate = pCollate;
     memcpy(pCollate->zScript, zScript, nScript+1);
-    if( sqlite3_create_collation(pDb->db, zName, SQLITE_UTF8,
+    ଯଦି( sqlite3_create_collation(pDb->db, zName, SQLITE_UTF8,
         pCollate, tclSqlCollate) ){
-      Tcl_SetResult(interp, (char *)sqlite3_errmsg(pDb->db), TCL_VOLATILE);
-      return TCL_ERROR;
+      Tcl_SetResult(interp, (ଅକ୍ଷର *)sqlite3_errmsg(pDb->db), TCL_VOLATILE);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -2838,18 +2838,18 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** Create a new SQL collation function called NAME.  Whenever
   ** that function is called, invoke SCRIPT to evaluate the function.
   */
-  case DB_COLLATION_NEEDED: {
-    if( objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "SCRIPT");
-      return TCL_ERROR;
+  ସ୍ଥିତି DB_COLLATION_NEEDED: {
+    ଯଦି( objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "SCRIPT");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( pDb->pCollateNeeded ){
-      Tcl_DecrRefCount(pDb->pCollateNeeded);
+    ଯଦି( pDb->pCollateNeeded ){
+      Tcl_Decr_Ref_ଗଣନା(pDb->pCollateNeeded);
     }
     pDb->pCollateNeeded = Tcl_DuplicateObj(objv[2]);
-    Tcl_IncrRefCount(pDb->pCollateNeeded);
+    Tcl_Incr_Ref_ଗଣନା(pDb->pCollateNeeded);
     sqlite3_collation_needed(pDb->db, pDb, tclCollateNeeded);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db commit_hook ?CALLBACK?
@@ -2859,35 +2859,35 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** transaction is aborted.  If CALLBACK is an empty string, the callback
   ** is disabled.
   */
-  case DB_COMMIT_HOOK: {
-    if( objc>3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?CALLBACK?");
-      return TCL_ERROR;
-    }else if( objc==2 ){
-      if( pDb->zCommit ){
-        Tcl_AppendResult(interp, pDb->zCommit, (char*)0);
+  ସ୍ଥିତି DB_COMMIT_HOOK: {
+    ଯଦି( objc>3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?CALLBACK?");
+      ଫେରନ୍ତୁ TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( objc==2 ){
+      ଯଦି( pDb->zCommit ){
+        Tcl_AppendResult(interp, pDb->zCommit, (ଅକ୍ଷର*)0);
       }
-    }else{
-      const char *zCommit;
+    }ଅନ୍ୟଥା{
+      ଅଚଳ ଅକ୍ଷର *zCommit;
       Tcl_Size len;
-      if( pDb->zCommit ){
+      ଯଦି( pDb->zCommit ){
         Tcl_Free(pDb->zCommit);
       }
       zCommit = Tcl_GetStringFromObj(objv[2], &len);
-      if( zCommit && len>0 ){
+      ଯଦି( zCommit && len>0 ){
         pDb->zCommit = Tcl_Alloc( len + 1 );
         memcpy(pDb->zCommit, zCommit, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zCommit = 0;
       }
-      if( pDb->zCommit ){
+      ଯଦି( pDb->zCommit ){
         pDb->interp = interp;
         sqlite3_commit_hook(pDb->db, DbCommitHandler, pDb);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_commit_hook(pDb->db, 0, 0);
       }
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db complete SQL
@@ -2896,19 +2896,19 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** additional lines of input are needed.  This is similar to the
   ** built-in "info complete" command of Tcl.
   */
-  case DB_COMPLETE: {
+  ସ୍ଥିତି DB_COMPLETE: {
 #ifndef SQLITE_OMIT_COMPLETE
     Tcl_Obj *pResult;
-    int isComplete;
-    if( objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "SQL");
-      return TCL_ERROR;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା isComplete;
+    ଯଦି( objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "SQL");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     isComplete = sqlite3_complete( Tcl_GetStringFromObj(objv[2], 0) );
     pResult = Tcl_GetObjResult(interp);
     Tcl_SetBooleanObj(pResult, isComplete);
 #endif
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db config ?OPTION? ?BOOLEAN?
@@ -2916,10 +2916,10 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** Configure the database connection using the sqlite3_db_config()
   ** interface.
   */
-  case DB_CONFIG: {
-    static const struct DbConfigChoices {
-      const char *zName;
-      int op;
+  ସ୍ଥିତି DB_CONFIG: {
+    ସ୍ଥିର ଅଚଳ ସଂରଚନା DbConfigChoices {
+      ଅଚଳ ଅକ୍ଷର *zName;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା op;
     } aDbConfig[] = {
         { "defensive",          SQLITE_DBCONFIG_DEFENSIVE             },
         { "dqs_ddl",            SQLITE_DBCONFIG_DQS_DDL               },
@@ -2939,46 +2939,46 @@ static int SQLITE_TCLAPI DbObjCmd(
         { "writable_schema",    SQLITE_DBCONFIG_WRITABLE_SCHEMA       },
     };
     Tcl_Obj *pResult;
-    int ii;
-    if( objc>4 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?OPTION? ?BOOLEAN?");
-      return TCL_ERROR;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା ii;
+    ଯଦି( objc>4 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?OPTION? ?BOOLEAN?");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( objc==2 ){
+    ଯଦି( objc==2 ){
       /* With no arguments, list all configuration options and with the
       ** current value */
       pResult = Tcl_NewListObj(0,0);
-      for(ii=0; ii<sizeof(aDbConfig)/sizeof(aDbConfig[0]); ii++){
-        int v = 0;
+      ପାଇଁ(ii=0; ii<ଆକାର(aDbConfig)/ଆକାର(aDbConfig[0]); ii++){
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା v = 0;
         sqlite3_db_config(pDb->db, aDbConfig[ii].op, -1, &v);
         Tcl_ListObjAppendElement(interp, pResult,
            Tcl_NewStringObj(aDbConfig[ii].zName,-1));
         Tcl_ListObjAppendElement(interp, pResult,
            Tcl_NewIntObj(v));
       }
-    }else{
-      const char *zOpt = Tcl_GetString(objv[2]);
-      int onoff = -1;
-      int v = 0;
-      if( zOpt[0]=='-' ) zOpt++;
-      for(ii=0; ii<sizeof(aDbConfig)/sizeof(aDbConfig[0]); ii++){
-        if( strcmp(aDbConfig[ii].zName, zOpt)==0 ) break;
+    }ଅନ୍ୟଥା{
+      ଅଚଳ ଅକ୍ଷର *zOpt = Tcl_GetString(objv[2]);
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା onoff = -1;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା v = 0;
+      ଯଦି( zOpt[0]=='-' ) zOpt++;
+      ପାଇଁ(ii=0; ii<ଆକାର(aDbConfig)/ଆକାର(aDbConfig[0]); ii++){
+        ଯଦି( strcmp(aDbConfig[ii].zName, zOpt)==0 ) ଭାଙ୍ଗ;
       }
-      if( ii>=sizeof(aDbConfig)/sizeof(aDbConfig[0]) ){
+      ଯଦି( ii>=ଆକାର(aDbConfig)/ଆକାର(aDbConfig[0]) ){
         Tcl_AppendResult(interp, "unknown config option: \"", zOpt,
-                                "\"", (void*)0);
-        return TCL_ERROR;
+                                "\"", (ଶୂନ୍ୟ*)0);
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
-      if( objc==4 ){
-        if( Tcl_GetBooleanFromObj(interp, objv[3], &onoff) ){
-          return TCL_ERROR;
+      ଯଦି( objc==4 ){
+        ଯଦି( Tcl_GetBooleanFromObj(interp, objv[3], &onoff) ){
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
       }
       sqlite3_db_config(pDb->db, aDbConfig[ii].op, onoff, &v);
       pResult = Tcl_NewIntObj(v);
     }
     Tcl_SetObjResult(interp, pResult);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db copy conflict-algorithm table filename ?SEPARATOR? ?NULLINDICATOR?
@@ -2998,41 +2998,41 @@ static int SQLITE_TCLAPI DbObjCmd(
   ** which imports file data into a table using the PostgreSQL COPY file format:
   **   $db copy $conflict_algorithm $table_name $filename \t \\N
   */
-  case DB_COPY: {
-    char *zTable;               /* Insert data into this table */
-    char *zFile;                /* The file from which to extract data */
-    char *zConflict;            /* The conflict algorithm to use */
+  ସ୍ଥିତି DB_COPY: {
+    ଅକ୍ଷର *zTable;               /* Insert data into this table */
+    ଅକ୍ଷର *zFile;                /* The file from which to extract data */
+    ଅକ୍ଷର *zConflict;            /* The conflict algorithm to use */
     sqlite3_stmt *pStmt;        /* A statement */
-    int nCol;                   /* Number of columns in the table */
-    int nByte;                  /* Number of bytes in an SQL string */
-    int i, j;                   /* Loop counters */
-    int nSep;                   /* Number of bytes in zSep[] */
-    int nNull;                  /* Number of bytes in zNull[] */
-    char *zSql;                 /* An SQL statement */
-    char *zLine;                /* A single line of input from the file */
-    char **azCol;               /* zLine[] broken up into columns */
-    const char *zCommit;        /* How to commit changes */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCol;                   /* Number of columns in the table */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nByte;                  /* Number of bytes in an SQL string */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i, j;                   /* Loop counters */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nSep;                   /* Number of bytes in zSep[] */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nNull;                  /* Number of bytes in zNull[] */
+    ଅକ୍ଷର *zSql;                 /* An SQL statement */
+    ଅକ୍ଷର *z_ଧାଡ଼ି;                /* A single line of input from the file */
+    ଅକ୍ଷର **azCol;               /* zLine[] broken up into columns */
+    ଅଚଳ ଅକ୍ଷର *zCommit;        /* How to commit changes */
     Tcl_Channel in;             /* The input file */
-    int lineno = 0;             /* Line number of input file */
-    char zLineNum[80];          /* Line number print buffer */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା lineno = 0;             /* Line number of input file */
+    ଅକ୍ଷର z_ଧାଡ଼ି_ଅଙ୍କ[80];          /* Line number print buffer */
     Tcl_Obj *str;
     Tcl_Obj *pResult;           /* interp result */
 
-    const char *zSep;
-    const char *zNull;
-    if( objc<5 || objc>7 ){
-      Tcl_WrongNumArgs(interp, 2, objv,
+    ଅଚଳ ଅକ୍ଷର *zSep;
+    ଅଚଳ ଅକ୍ଷର *zNull;
+    ଯଦି( objc<5 || objc>7 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv,
          "CONFLICT-ALGORITHM TABLE FILENAME ?SEPARATOR? ?NULLINDICATOR?");
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( objc>=6 ){
+    ଯଦି( objc>=6 ){
       zSep = Tcl_GetStringFromObj(objv[5], 0);
-    }else{
+    }ଅନ୍ୟଥା{
       zSep = "\t";
     }
-    if( objc>=7 ){
+    ଯଦି( objc>=7 ){
       zNull = Tcl_GetStringFromObj(objv[6], 0);
-    }else{
+    }ଅନ୍ୟଥା{
       zNull = "";
     }
     zConflict = Tcl_GetStringFromObj(objv[2], 0);
@@ -3040,147 +3040,147 @@ static int SQLITE_TCLAPI DbObjCmd(
     zFile = Tcl_GetStringFromObj(objv[4], 0);
     nSep = strlen30(zSep);
     nNull = strlen30(zNull);
-    if( nSep==0 ){
+    ଯଦି( nSep==0 ){
       Tcl_AppendResult(interp,"Error: non-null separator required for copy",
-                       (char*)0);
-      return TCL_ERROR;
+                       (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if(strcmp(zConflict, "rollback") != 0 &&
+    ଯଦି(strcmp(zConflict, "rollback") != 0 &&
        strcmp(zConflict, "abort"   ) != 0 &&
        strcmp(zConflict, "fail"    ) != 0 &&
        strcmp(zConflict, "ignore"  ) != 0 &&
        strcmp(zConflict, "replace" ) != 0 ) {
       Tcl_AppendResult(interp, "Error: \"", zConflict,
             "\", conflict-algorithm must be one of: rollback, "
-            "abort, fail, ignore, or replace", (char*)0);
-      return TCL_ERROR;
+            "abort, fail, ignore, or replace", (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     zSql = sqlite3_mprintf("SELECT * FROM '%q'", zTable);
-    if( zSql==0 ){
-      Tcl_AppendResult(interp, "Error: no such table: ", zTable, (char*)0);
-      return TCL_ERROR;
+    ଯଦି( zSql==0 ){
+      Tcl_AppendResult(interp, "Error: no such table: ", zTable, (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     nByte = strlen30(zSql);
     rc = sqlite3_prepare(pDb->db, zSql, -1, &pStmt, 0);
     sqlite3_free(zSql);
-    if( rc ){
-      Tcl_AppendResult(interp, "Error: ", sqlite3_errmsg(pDb->db), (char*)0);
+    ଯଦି( rc ){
+      Tcl_AppendResult(interp, "Error: ", sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
       nCol = 0;
-    }else{
-      nCol = sqlite3_column_count(pStmt);
+    }ଅନ୍ୟଥା{
+      nCol = sqlite3_column_ଗଣନା(pStmt);
     }
     sqlite3_finalize(pStmt);
-    if( nCol==0 ) {
-      return TCL_ERROR;
+    ଯଦି( nCol==0 ) {
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     zSql = malloc( nByte + 50 + nCol*2 );
-    if( zSql==0 ) {
-      Tcl_AppendResult(interp, "Error: can't malloc()", (char*)0);
-      return TCL_ERROR;
+    ଯଦି( zSql==0 ) {
+      Tcl_AppendResult(interp, "Error: can't malloc()", (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     sqlite3_snprintf(nByte+50, zSql, "INSERT OR %q INTO '%q' VALUES(?",
          zConflict, zTable);
     j = strlen30(zSql);
-    for(i=1; i<nCol; i++){
+    ପାଇଁ(i=1; i<nCol; i++){
       zSql[j++] = ',';
       zSql[j++] = '?';
     }
     zSql[j++] = ')';
     zSql[j] = 0;
     rc = sqlite3_prepare(pDb->db, zSql, -1, &pStmt, 0);
-    free(zSql);
-    if( rc ){
-      Tcl_AppendResult(interp, "Error: ", sqlite3_errmsg(pDb->db), (char*)0);
+    ମୁକ୍ତ(zSql);
+    ଯଦି( rc ){
+      Tcl_AppendResult(interp, "Error: ", sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
       sqlite3_finalize(pStmt);
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     in = Tcl_OpenFileChannel(interp, zFile, "rb", 0666);
-    if( in==0 ){
+    ଯଦି( in==0 ){
       sqlite3_finalize(pStmt);
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    Tcl_SetChannelOption(NULL, in, "-translation", "auto");
-    azCol = malloc( sizeof(azCol[0])*(nCol+1) );
-    if( azCol==0 ) {
-      Tcl_AppendResult(interp, "Error: can't malloc()", (char*)0);
+    Tcl_SetChannelOption(ଖାଲି, in, "-translation", "auto");
+    azCol = malloc( ଆକାର(azCol[0])*(nCol+1) );
+    ଯଦି( azCol==0 ) {
+      Tcl_AppendResult(interp, "Error: can't malloc()", (ଅକ୍ଷର*)0);
       Tcl_Close(interp, in);
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     str = Tcl_NewObj();
-    Tcl_IncrRefCount(str);
-    (void)sqlite3_exec(pDb->db, "BEGIN", 0, 0, 0);
+    Tcl_Incr_Ref_ଗଣନା(str);
+    (ଶୂନ୍ୟ)sqlite3_exec(pDb->db, "BEGIN", 0, 0, 0);
     zCommit = "COMMIT";
-    while( Tcl_GetsObj(in, str)>=0 ) {
-      char *z;
+    ଯେତେବେଳେ( Tcl_GetsObj(in, str)>=0 ) {
+      ଅକ୍ଷର *z;
       Tcl_Size byteLen;
       lineno++;
-      zLine = (char *)Tcl_GetByteArrayFromObj(str, &byteLen);
-      azCol[0] = zLine;
-      for(i=0, z=zLine; *z; z++){
-        if( *z==zSep[0] && strncmp(z, zSep, nSep)==0 ){
+      z_ଧାଡ଼ି = (ଅକ୍ଷର *)Tcl_GetByteArrayFromObj(str, &byteLen);
+      azCol[0] = z_ଧାଡ଼ି;
+      ପାଇଁ(i=0, z=z_ଧାଡ଼ି; *z; z++){
+        ଯଦି( *z==zSep[0] && strncmp(z, zSep, nSep)==0 ){
           *z = 0;
           i++;
-          if( i<nCol ){
+          ଯଦି( i<nCol ){
             azCol[i] = &z[nSep];
             z += nSep-1;
           }
         }
       }
-      if( i+1!=nCol ){
-        char *zErr;
-        int nErr = strlen30(zFile) + 200;
+      ଯଦି( i+1!=nCol ){
+        ଅକ୍ଷର *zErr;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା nErr = strlen30(zFile) + 200;
         zErr = malloc(nErr);
-        if( zErr ){
+        ଯଦି( zErr ){
           sqlite3_snprintf(nErr, zErr,
              "Error: %s line %d: expected %d columns of data but found %d",
              zFile, lineno, nCol, i+1);
-          Tcl_AppendResult(interp, zErr, (char*)0);
-          free(zErr);
+          Tcl_AppendResult(interp, zErr, (ଅକ୍ଷର*)0);
+          ମୁକ୍ତ(zErr);
         }
         zCommit = "ROLLBACK";
-        break;
+        ଭାଙ୍ଗ;
       }
-      for(i=0; i<nCol; i++){
+      ପାଇଁ(i=0; i<nCol; i++){
         /* check for null data, if so, bind as null */
-        if( (nNull>0 && strcmp(azCol[i], zNull)==0)
+        ଯଦି( (nNull>0 && strcmp(azCol[i], zNull)==0)
           || strlen30(azCol[i])==0
         ){
           sqlite3_bind_null(pStmt, i+1);
-        }else{
+        }ଅନ୍ୟଥା{
           sqlite3_bind_text(pStmt, i+1, azCol[i], -1, SQLITE_STATIC);
         }
       }
       sqlite3_step(pStmt);
       rc = sqlite3_reset(pStmt);
       Tcl_SetObjLength(str, 0);
-      if( rc!=SQLITE_OK ){
-        Tcl_AppendResult(interp,"Error: ", sqlite3_errmsg(pDb->db), (char*)0);
+      ଯଦି( rc!=SQLITE_OK ){
+        Tcl_AppendResult(interp,"Error: ", sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
         zCommit = "ROLLBACK";
-        break;
+        ଭାଙ୍ଗ;
       }
     }
-    Tcl_DecrRefCount(str);
-    free(azCol);
+    Tcl_Decr_Ref_ଗଣନା(str);
+    ମୁକ୍ତ(azCol);
     Tcl_Close(interp, in);
     sqlite3_finalize(pStmt);
-    (void)sqlite3_exec(pDb->db, zCommit, 0, 0, 0);
+    (ଶୂନ୍ୟ)sqlite3_exec(pDb->db, zCommit, 0, 0, 0);
 
-    if( zCommit[0] == 'C' ){
+    ଯଦି( zCommit[0] == 'C' ){
       /* success, set result as number of lines processed */
       pResult = Tcl_GetObjResult(interp);
-      if( Tcl_IsShared(pResult) ){
+      ଯଦି( Tcl_IsShared(pResult) ){
         pResult = Tcl_DuplicateObj(pResult);
       }
       Tcl_SetIntObj(pResult, lineno);
       rc = TCL_OK;
-    }else{
+    }ଅନ୍ୟଥା{
       /* failure, append lineno where failed */
-      sqlite3_snprintf(sizeof(zLineNum), zLineNum,"%d",lineno);
-      Tcl_AppendResult(interp,", failed while processing line: ",zLineNum,
-                       (char*)0);
+      sqlite3_snprintf(ଆକାର(z_ଧାଡ଼ି_ଅଙ୍କ), z_ଧାଡ଼ି_ଅଙ୍କ,"%d",lineno);
+      Tcl_AppendResult(interp,", failed while processing line: ",z_ଧାଡ଼ି_ଅଙ୍କ,
+                       (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3188,76 +3188,76 @@ static int SQLITE_TCLAPI DbObjCmd(
   **
   ** Reopen DATABASE (default "main") using the content in $VALUE
   */
-  case DB_DESERIALIZE: {
+  ସ୍ଥିତି DB_DESERIALIZE: {
 #ifdef SQLITE_OMIT_DESERIALIZE
     Tcl_AppendResult(interp, "MEMDB not available in this build",
-                     (char*)0);
+                     (ଅକ୍ଷର*)0);
     rc = TCL_ERROR;
-#else
-    const char *zSchema = 0;
-    Tcl_Obj *pValue = 0;
-    unsigned char *pBA;
-    unsigned char *pData;
+#ଅନ୍ୟଥା
+    ଅଚଳ ଅକ୍ଷର *zSchema = 0;
+    Tcl_Obj *p_ମୂଲ୍ୟ = 0;
+    unsigned ଅକ୍ଷର *pBA;
+    unsigned ଅକ୍ଷର *pData;
     Tcl_Size len;
-    int xrc;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା xrc;
     sqlite3_int64 mxSize = 0;
-    int i;
-    int isReadonly = 0;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା isReadonly = 0;
 
 
-    if( objc<3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?DATABASE? VALUE");
+    ଯଦି( objc<3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?DATABASE? VALUE");
       rc = TCL_ERROR;
-      break;
+      ଭାଙ୍ଗ;
     }
-    for(i=2; i<objc-1; i++){
-      const char *z = Tcl_GetString(objv[i]);
-      if( strcmp(z,"-maxsize")==0 && i<objc-2 ){
+    ପାଇଁ(i=2; i<objc-1; i++){
+      ଅଚଳ ଅକ୍ଷର *z = Tcl_GetString(objv[i]);
+      ଯଦି( strcmp(z,"-maxsize")==0 && i<objc-2 ){
         Tcl_WideInt x;
         rc = Tcl_GetWideIntFromObj(interp, objv[++i], &x);
-        if( rc ) goto deserialize_error;
+        ଯଦି( rc ) ଯାଅ deserialize_error;
         mxSize = x;
-        continue;
+        ଜାରି;
       }
-      if( strcmp(z,"-readonly")==0 && i<objc-2 ){
+      ଯଦି( strcmp(z,"-readonly")==0 && i<objc-2 ){
         rc = Tcl_GetBooleanFromObj(interp, objv[++i], &isReadonly);
-        if( rc ) goto deserialize_error;
-        continue;
+        ଯଦି( rc ) ଯାଅ deserialize_error;
+        ଜାରି;
       }
-      if( zSchema==0 && i==objc-2 && z[0]!='-' ){
+      ଯଦି( zSchema==0 && i==objc-2 && z[0]!='-' ){
         zSchema = z;
-        continue;
+        ଜାରି;
       }
-      Tcl_AppendResult(interp, "unknown option: ", z, (char*)0);
+      Tcl_AppendResult(interp, "unknown option: ", z, (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
-      goto deserialize_error;
+      ଯାଅ deserialize_error;
     }
-    pValue = objv[objc-1];
-    pBA = Tcl_GetByteArrayFromObj(pValue, &len);
+    p_ମୂଲ୍ୟ = objv[objc-1];
+    pBA = Tcl_GetByteArrayFromObj(p_ମୂଲ୍ୟ, &len);
     pData = sqlite3_malloc64( len );
-    if( pData==0 && len>0 ){
-      Tcl_AppendResult(interp, "out of memory", (char*)0);
+    ଯଦି( pData==0 && len>0 ){
+      Tcl_AppendResult(interp, "out of memory", (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
-    }else{
-      int flags;
-      if( len>0 ) memcpy(pData, pBA, len);
-      if( isReadonly ){
+    }ଅନ୍ୟଥା{
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags;
+      ଯଦି( len>0 ) memcpy(pData, pBA, len);
+      ଯଦି( isReadonly ){
         flags = SQLITE_DESERIALIZE_FREEONCLOSE | SQLITE_DESERIALIZE_READONLY;
-      }else{
+      }ଅନ୍ୟଥା{
         flags = SQLITE_DESERIALIZE_FREEONCLOSE | SQLITE_DESERIALIZE_RESIZEABLE;
       }
       xrc = sqlite3_deserialize(pDb->db, zSchema, pData, len, len, flags);
-      if( xrc ){
-        Tcl_AppendResult(interp, "unable to set MEMDB content", (char*)0);
+      ଯଦି( xrc ){
+        Tcl_AppendResult(interp, "unable to set MEMDB content", (ଅକ୍ଷର*)0);
         rc = TCL_ERROR;
       }
-      if( mxSize>0 ){
+      ଯଦି( mxSize>0 ){
         sqlite3_file_control(pDb->db, zSchema,SQLITE_FCNTL_SIZE_LIMIT,&mxSize);
       }
     }
 deserialize_error:
 #endif
-    break; 
+    ଭାଙ୍ଗ; 
   }
 
   /*
@@ -3266,22 +3266,22 @@ deserialize_error:
   ** Turn the extension loading feature on or off.  It if off by
   ** default.
   */
-  case DB_ENABLE_LOAD_EXTENSION: {
+  ସ୍ଥିତି DB_ENABLE_LOAD_EXTENSION: {
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
-    int onoff;
-    if( objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "BOOLEAN");
-      return TCL_ERROR;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା onoff;
+    ଯଦି( objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "BOOLEAN");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( Tcl_GetBooleanFromObj(interp, objv[2], &onoff) ){
-      return TCL_ERROR;
+    ଯଦି( Tcl_GetBooleanFromObj(interp, objv[2], &onoff) ){
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     sqlite3_enable_load_extension(pDb->db, onoff);
-    break;
-#else
+    ଭାଙ୍ଗ;
+#ଅନ୍ୟଥା
     Tcl_AppendResult(interp, "extension loading is turned off at compile-time",
-                     (char*)0);
-    return TCL_ERROR;
+                     (ଅକ୍ଷର*)0);
+    ଫେରନ୍ତୁ TCL_ERROR;
 #endif
   }
 
@@ -3291,9 +3291,9 @@ deserialize_error:
   ** Return the numeric error code that was returned by the most recent
   ** call to sqlite3_exec().
   */
-  case DB_ERRORCODE: {
+  ସ୍ଥିତି DB_ERRORCODE: {
     Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_errcode(pDb->db)));
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3302,9 +3302,9 @@ deserialize_error:
   ** Return the numeric error code that was returned by the most recent
   ** call to sqlite3_exec().
   */
-  case DB_ERROROFFSET: {
+  ସ୍ଥିତି DB_ERROROFFSET: {
     Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_error_offset(pDb->db)));
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3314,33 +3314,33 @@ deserialize_error:
   ** The onecolumn method is the equivalent of:
   **     lindex [$db eval $sql] 0
   */
-  case DB_EXISTS:
-  case DB_ONECOLUMN: {
+  ସ୍ଥିତି DB_EXISTS:
+  ସ୍ଥିତି DB_ONECOLUMN: {
     Tcl_Obj *pResult = 0;
     DbEvalContext sEval;
-    if( objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "SQL");
-      return TCL_ERROR;
+    ଯଦି( objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "SQL");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
 
     dbEvalInit(&sEval, pDb, objv[2], 0, 0);
     rc = dbEvalStep(&sEval);
-    if( choice==DB_ONECOLUMN ){
-      if( rc==TCL_OK ){
-        pResult = dbEvalColumnValue(&sEval, 0);
-      }else if( rc==TCL_BREAK ){
+    ଯଦି( choice==DB_ONECOLUMN ){
+      ଯଦି( rc==TCL_OK ){
+        pResult = db_Eval_Column_ମୂଲ୍ୟ(&sEval, 0);
+      }ଅନ୍ୟଥା ଯଦି( rc==TCL_BREAK ){
         Tcl_ResetResult(interp);
       }
-    }else if( rc==TCL_BREAK || rc==TCL_OK ){
+    }ଅନ୍ୟଥା ଯଦି( rc==TCL_BREAK || rc==TCL_OK ){
       pResult = Tcl_NewBooleanObj(rc==TCL_OK);
     }
     dbEvalFinalize(&sEval);
-    if( pResult ) Tcl_SetObjResult(interp, pResult);
+    ଯଦି( pResult ) Tcl_SetObjResult(interp, pResult);
 
-    if( rc==TCL_BREAK ){
+    ଯଦି( rc==TCL_BREAK ){
       rc = TCL_OK;
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3354,66 +3354,66 @@ deserialize_error:
   ** as the fields extracted by the query, and those variables are
   ** accessible during the eval of $code.
   */
-  case DB_EVAL: {
-    int evalFlags = 0;
-    const char *zOpt;
-    while( objc>3 && (zOpt = Tcl_GetString(objv[2]))!=0 && zOpt[0]=='-' ){
-      if( strcmp(zOpt, "-withoutnulls")==0 ){
+  ସ୍ଥିତି DB_EVAL: {
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା evalFlags = 0;
+    ଅଚଳ ଅକ୍ଷର *zOpt;
+    ଯେତେବେଳେ( objc>3 && (zOpt = Tcl_GetString(objv[2]))!=0 && zOpt[0]=='-' ){
+      ଯଦି( strcmp(zOpt, "-withoutnulls")==0 ){
         evalFlags |= SQLITE_EVAL_WITHOUTNULLS;
-      }else if( strcmp(zOpt, "-asdict")==0 ){
+      }ଅନ୍ୟଥା ଯଦି( strcmp(zOpt, "-asdict")==0 ){
         evalFlags |= SQLITE_EVAL_ASDICT;
-      }else{
-        Tcl_AppendResult(interp, "unknown option: \"", zOpt, "\"", (void*)0);
-        return TCL_ERROR;
+      }ଅନ୍ୟଥା{
+        Tcl_AppendResult(interp, "unknown option: \"", zOpt, "\"", (ଶୂନ୍ୟ*)0);
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
       objc--;
       objv++;
     }
-    if( objc<3 || objc>5 ){
-      Tcl_WrongNumArgs(interp, 2, objv,
+    ଯଦି( objc<3 || objc>5 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv,
           "?OPTIONS? SQL ?VAR-NAME? ?SCRIPT?");
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
 
-    if( objc==3 ){
+    ଯଦି( objc==3 ){
       DbEvalContext sEval;
       Tcl_Obj *pRet = Tcl_NewObj();
-      Tcl_IncrRefCount(pRet);
+      Tcl_Incr_Ref_ଗଣନା(pRet);
       dbEvalInit(&sEval, pDb, objv[2], 0, 0);
-      while( TCL_OK==(rc = dbEvalStep(&sEval)) ){
-        int i;
-        int nCol;
+      ଯେତେବେଳେ( TCL_OK==(rc = dbEvalStep(&sEval)) ){
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCol;
         dbEvalRowInfo(&sEval, &nCol, 0);
-        for(i=0; i<nCol; i++){
-          Tcl_ListObjAppendElement(interp, pRet, dbEvalColumnValue(&sEval, i));
+        ପାଇଁ(i=0; i<nCol; i++){
+          Tcl_ListObjAppendElement(interp, pRet, db_Eval_Column_ମୂଲ୍ୟ(&sEval, i));
         }
       }
       dbEvalFinalize(&sEval);
-      if( rc==TCL_BREAK ){
+      ଯଦି( rc==TCL_BREAK ){
         Tcl_SetObjResult(interp, pRet);
         rc = TCL_OK;
       }
-      Tcl_DecrRefCount(pRet);
-    }else{
+      Tcl_Decr_Ref_ଗଣନା(pRet);
+    }ଅନ୍ୟଥା{
       ClientData cd2[2];
       DbEvalContext *p;
       Tcl_Obj *pVarName = 0;
       Tcl_Obj *pScript;
 
-      if( objc>=5 && *(char *)Tcl_GetString(objv[3]) ){
+      ଯଦି( objc>=5 && *(ଅକ୍ଷର *)Tcl_GetString(objv[3]) ){
         pVarName = objv[3];
       }
       pScript = objv[objc-1];
-      Tcl_IncrRefCount(pScript);
+      Tcl_Incr_Ref_ଗଣନା(pScript);
 
-      p = (DbEvalContext *)Tcl_Alloc(sizeof(DbEvalContext));
+      p = (DbEvalContext *)Tcl_Alloc(ଆକାର(DbEvalContext));
       dbEvalInit(p, pDb, objv[2], pVarName, evalFlags);
 
-      cd2[0] = (void *)p;
-      cd2[1] = (void *)pScript;
+      cd2[0] = (ଶୂନ୍ୟ *)p;
+      cd2[1] = (ଶୂନ୍ୟ *)pScript;
       rc = DbEvalNextCmd(cd2, interp, TCL_OK);
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3423,9 +3423,9 @@ deserialize_error:
   ** Query Result Formatter extension of SQLite to format the output as
   ** text and return that text.
   */
-  case DB_FORMAT: {
+  ସ୍ଥିତି DB_FORMAT: {
     rc = dbQrf(pDb, objc, objv);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3441,123 +3441,123 @@ deserialize_error:
   **         --innocuous            Has no side effects or information leaks
   **         --returntype TYPE      Specify the return type of the function
   */
-  case DB_FUNCTION: {
-    int flags = SQLITE_UTF8;
+  ସ୍ଥିତି DB_FUNCTION: {
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags = SQLITE_UTF8;
     SqlFunc *pFunc;
     Tcl_Obj *pScript;
-    char *zName;
-    int nArg = -1;
-    int i;
-    int eType = SQLITE_NULL;
-    if( objc<4 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "NAME ?SWITCHES? SCRIPT");
-      return TCL_ERROR;
+    ଅକ୍ଷର *zName;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nArg = -1;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା eType = SQLITE_NULL;
+    ଯଦି( objc<4 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "NAME ?SWITCHES? SCRIPT");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    for(i=3; i<(objc-1); i++){
-      const char *z = Tcl_GetString(objv[i]);
-      int n = strlen30(z);
-      if( n>1 && strncmp(z, "-argcount",n)==0 ){
-        if( i==(objc-2) ){
-          Tcl_AppendResult(interp, "option requires an argument: ", z,(char*)0);
-          return TCL_ERROR;
+    ପାଇଁ(i=3; i<(objc-1); i++){
+      ଅଚଳ ଅକ୍ଷର *z = Tcl_GetString(objv[i]);
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା n = strlen30(z);
+      ଯଦି( n>1 && strncmp(z, "-argcount",n)==0 ){
+        ଯଦି( i==(objc-2) ){
+          Tcl_AppendResult(interp, "option requires an argument: ", z,(ଅକ୍ଷର*)0);
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
-        if( Tcl_GetIntFromObj(interp, objv[i+1], &nArg) ) return TCL_ERROR;
-        if( nArg<0 ){
+        ଯଦି( Tcl_GetIntFromObj(interp, objv[i+1], &nArg) ) ଫେରନ୍ତୁ TCL_ERROR;
+        ଯଦି( nArg<0 ){
           Tcl_AppendResult(interp, "number of arguments must be non-negative",
-                           (char*)0);
-          return TCL_ERROR;
+                           (ଅକ୍ଷର*)0);
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
         i++;
-      }else
-      if( n>1 && strncmp(z, "-deterministic",n)==0 ){
+      }ଅନ୍ୟଥା
+      ଯଦି( n>1 && strncmp(z, "-deterministic",n)==0 ){
         flags |= SQLITE_DETERMINISTIC;
-      }else
-      if( n>1 && strncmp(z, "-directonly",n)==0 ){
+      }ଅନ୍ୟଥା
+      ଯଦି( n>1 && strncmp(z, "-directonly",n)==0 ){
         flags |= SQLITE_DIRECTONLY;
-      }else
-      if( n>1 && strncmp(z, "-innocuous",n)==0 ){
+      }ଅନ୍ୟଥା
+      ଯଦି( n>1 && strncmp(z, "-innocuous",n)==0 ){
         flags |= SQLITE_INNOCUOUS;
-      }else
-      if( n>1 && strncmp(z, "-returntype", n)==0 ){
-        const char *azType[] = {"integer", "real", "text", "blob", "any", 0};
-        assert( SQLITE_INTEGER==1 && SQLITE_FLOAT==2 && SQLITE_TEXT==3 );
-        assert( SQLITE_BLOB==4 && SQLITE_NULL==5 );
-        if( i==(objc-2) ){
-          Tcl_AppendResult(interp, "option requires an argument: ", z,(char*)0);
-          return TCL_ERROR;
+      }ଅନ୍ୟଥା
+      ଯଦି( n>1 && strncmp(z, "-returntype", n)==0 ){
+        ଅଚଳ ଅକ୍ଷର *azType[] = {"integer", "real", "text", "blob", "any", 0};
+        ପ୍ରତିଜ୍ଞା( SQLITE_INTEGER==1 && SQLITE_FLOAT==2 && SQLITE_TEXT==3 );
+        ପ୍ରତିଜ୍ଞା( SQLITE_BLOB==4 && SQLITE_NULL==5 );
+        ଯଦି( i==(objc-2) ){
+          Tcl_AppendResult(interp, "option requires an argument: ", z,(ଅକ୍ଷର*)0);
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
         i++;
-        if( Tcl_GetIndexFromObj(interp, objv[i], azType, "type", 0, &eType) ){
-          return TCL_ERROR;
+        ଯଦି( Tcl_GetIndexFromObj(interp, objv[i], azType, "type", 0, &eType) ){
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
         eType++;
-      }else{
+      }ଅନ୍ୟଥା{
         Tcl_AppendResult(interp, "bad option \"", z,
             "\": must be -argcount, -deterministic, -directonly,"
-            " -innocuous, or -returntype", (char*)0
+            " -innocuous, or -returntype", (ଅକ୍ଷର*)0
         );
-        return TCL_ERROR;
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
     }
 
     pScript = objv[objc-1];
     zName = Tcl_GetStringFromObj(objv[2], 0);
     pFunc = findSqlFunc(pDb, zName);
-    if( pFunc==0 ) return TCL_ERROR;
-    if( pFunc->pScript ){
-      Tcl_DecrRefCount(pFunc->pScript);
+    ଯଦି( pFunc==0 ) ଫେରନ୍ତୁ TCL_ERROR;
+    ଯଦି( pFunc->pScript ){
+      Tcl_Decr_Ref_ଗଣନା(pFunc->pScript);
     }
     pFunc->pScript = pScript;
-    Tcl_IncrRefCount(pScript);
+    Tcl_Incr_Ref_ଗଣନା(pScript);
     pFunc->useEvalObjv = safeToUseEvalObjv(pScript);
     pFunc->eType = eType;
     rc = sqlite3_create_function(pDb->db, zName, nArg, flags,
         pFunc, tclSqlFunc, 0, 0);
-    if( rc!=SQLITE_OK ){
+    ଯଦି( rc!=SQLITE_OK ){
       rc = TCL_ERROR;
-      Tcl_SetResult(interp, (char *)sqlite3_errmsg(pDb->db), TCL_VOLATILE);
+      Tcl_SetResult(interp, (ଅକ୍ଷର *)sqlite3_errmsg(pDb->db), TCL_VOLATILE);
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
   **     $db incrblob ?-readonly? ?DB? TABLE COLUMN ROWID
   */
-  case DB_INCRBLOB: {
+  ସ୍ଥିତି DB_INCRBLOB: {
 #ifdef SQLITE_OMIT_INCRBLOB
-    Tcl_AppendResult(interp, "incrblob not available in this build", (char*)0);
-    return TCL_ERROR;
-#else
-    int isReadonly = 0;
-    const char *zDb = "main";
-    const char *zTable;
-    const char *zColumn;
+    Tcl_AppendResult(interp, "incrblob not available in this build", (ଅକ୍ଷର*)0);
+    ଫେରନ୍ତୁ TCL_ERROR;
+#ଅନ୍ୟଥା
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା isReadonly = 0;
+    ଅଚଳ ଅକ୍ଷର *zDb = "main";
+    ଅଚଳ ଅକ୍ଷର *zTable;
+    ଅଚଳ ଅକ୍ଷର *zColumn;
     Tcl_WideInt iRow;
 
     /* Check for the -readonly option */
-    if( objc>3 && strcmp(Tcl_GetString(objv[2]), "-readonly")==0 ){
+    ଯଦି( objc>3 && strcmp(Tcl_GetString(objv[2]), "-readonly")==0 ){
       isReadonly = 1;
     }
 
-    if( objc!=(5+isReadonly) && objc!=(6+isReadonly) ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?-readonly? ?DB? TABLE COLUMN ROWID");
-      return TCL_ERROR;
+    ଯଦି( objc!=(5+isReadonly) && objc!=(6+isReadonly) ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?-readonly? ?DB? TABLE COLUMN ROWID");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
 
-    if( objc==(6+isReadonly) ){
+    ଯଦି( objc==(6+isReadonly) ){
       zDb = Tcl_GetString(objv[2+isReadonly]);
     }
     zTable = Tcl_GetString(objv[objc-3]);
     zColumn = Tcl_GetString(objv[objc-2]);
     rc = Tcl_GetWideIntFromObj(interp, objv[objc-1], &iRow);
 
-    if( rc==TCL_OK ){
+    ଯଦି( rc==TCL_OK ){
       rc = createIncrblobChannel(
           interp, pDb, zDb, zTable, zColumn, (sqlite3_int64)iRow, isReadonly
       );
     }
 #endif
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3566,9 +3566,9 @@ deserialize_error:
   ** Interrupt the execution of the inner-most SQL interpreter.  This
   ** causes the SQL statement to return an error of SQLITE_INTERRUPT.
   */
-  case DB_INTERRUPT: {
+  ସ୍ଥିତି DB_INTERRUPT: {
     sqlite3_interrupt(pDb->db);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3579,27 +3579,27 @@ deserialize_error:
   ** If STRING is present, then STRING is returned.
   **
   */
-  case DB_NULLVALUE: {
-    if( objc!=2 && objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "NULLVALUE");
-      return TCL_ERROR;
+  ସ୍ଥିତି DB_NULLVALUE: {
+    ଯଦି( objc!=2 && objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "NULLVALUE");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( objc==3 ){
+    ଯଦି( objc==3 ){
       Tcl_Size len;
-      char *zNull = Tcl_GetStringFromObj(objv[2], &len);
-      if( pDb->zNull ){
+      ଅକ୍ଷର *zNull = Tcl_GetStringFromObj(objv[2], &len);
+      ଯଦି( pDb->zNull ){
         Tcl_Free(pDb->zNull);
       }
-      if( zNull && len>0 ){
+      ଯଦି( zNull && len>0 ){
         pDb->zNull = Tcl_Alloc( len + 1 );
         memcpy(pDb->zNull, zNull, len);
         pDb->zNull[len] = '\0';
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zNull = 0;
       }
     }
     Tcl_SetObjResult(interp, Tcl_NewStringObj(pDb->zNull, -1));
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3607,17 +3607,17 @@ deserialize_error:
   **
   ** Return an integer which is the ROWID for the most recent insert.
   */
-  case DB_LAST_INSERT_ROWID: {
+  ସ୍ଥିତି DB_LAST_ଭର୍ତ୍ତି_ROWID: {
     Tcl_Obj *pResult;
     Tcl_WideInt rowid;
-    if( objc!=2 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "");
-      return TCL_ERROR;
+    ଯଦି( objc!=2 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    rowid = sqlite3_last_insert_rowid(pDb->db);
+    rowid = sqlite3_last_ଭର୍ତ୍ତି_rowid(pDb->db);
     pResult = Tcl_GetObjResult(interp);
     Tcl_SetWideIntObj(pResult, rowid);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3629,44 +3629,44 @@ deserialize_error:
   ** Invoke the given callback every N virtual machine opcodes while executing
   ** queries.
   */
-  case DB_PROGRESS: {
-    if( objc==2 ){
-      if( pDb->zProgress ){
-        Tcl_AppendResult(interp, pDb->zProgress, (char*)0);
+  ସ୍ଥିତି DB_PROGRESS: {
+    ଯଦି( objc==2 ){
+      ଯଦି( pDb->zProgress ){
+        Tcl_AppendResult(interp, pDb->zProgress, (ଅକ୍ଷର*)0);
       }
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
       sqlite3_progress_handler(pDb->db, 0, 0, 0);
 #endif
-    }else if( objc==4 ){
-      char *zProgress;
+    }ଅନ୍ୟଥା ଯଦି( objc==4 ){
+      ଅକ୍ଷର *zProgress;
       Tcl_Size len;
-      int N;
-      if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &N) ){
-        return TCL_ERROR;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା N;
+      ଯଦି( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &N) ){
+        ଫେରନ୍ତୁ TCL_ERROR;
       };
-      if( pDb->zProgress ){
+      ଯଦି( pDb->zProgress ){
         Tcl_Free(pDb->zProgress);
       }
       zProgress = Tcl_GetStringFromObj(objv[3], &len);
-      if( zProgress && len>0 ){
+      ଯଦି( zProgress && len>0 ){
         pDb->zProgress = Tcl_Alloc( len + 1 );
         memcpy(pDb->zProgress, zProgress, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zProgress = 0;
       }
 #ifndef SQLITE_OMIT_PROGRESS_CALLBACK
-      if( pDb->zProgress ){
+      ଯଦି( pDb->zProgress ){
         pDb->interp = interp;
         sqlite3_progress_handler(pDb->db, N, DbProgressHandler, pDb);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_progress_handler(pDb->db, 0, 0, 0);
       }
 #endif
-    }else{
-      Tcl_WrongNumArgs(interp, 2, objv, "N CALLBACK");
-      return TCL_ERROR;
+    }ଅନ୍ୟଥା{
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "N CALLBACK");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db profile ?CALLBACK?
@@ -3675,38 +3675,38 @@ deserialize_error:
   ** that has run.  The text of the SQL and the amount of elapse time are
   ** appended to CALLBACK before the script is run.
   */
-  case DB_PROFILE: {
-    if( objc>3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?CALLBACK?");
-      return TCL_ERROR;
-    }else if( objc==2 ){
-      if( pDb->zProfile ){
-        Tcl_AppendResult(interp, pDb->zProfile, (char*)0);
+  ସ୍ଥିତି DB_PROFILE: {
+    ଯଦି( objc>3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?CALLBACK?");
+      ଫେରନ୍ତୁ TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( objc==2 ){
+      ଯଦି( pDb->zProfile ){
+        Tcl_AppendResult(interp, pDb->zProfile, (ଅକ୍ଷର*)0);
       }
-    }else{
-      char *zProfile;
+    }ଅନ୍ୟଥା{
+      ଅକ୍ଷର *zProfile;
       Tcl_Size len;
-      if( pDb->zProfile ){
+      ଯଦି( pDb->zProfile ){
         Tcl_Free(pDb->zProfile);
       }
       zProfile = Tcl_GetStringFromObj(objv[2], &len);
-      if( zProfile && len>0 ){
+      ଯଦି( zProfile && len>0 ){
         pDb->zProfile = Tcl_Alloc( len + 1 );
         memcpy(pDb->zProfile, zProfile, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zProfile = 0;
       }
-#if !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
+#ଯଦି !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
     !defined(SQLITE_OMIT_DEPRECATED)
-      if( pDb->zProfile ){
+      ଯଦି( pDb->zProfile ){
         pDb->interp = interp;
         sqlite3_profile(pDb->db, DbProfileHandler, pDb);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_profile(pDb->db, 0, 0);
       }
 #endif
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3714,12 +3714,12 @@ deserialize_error:
   **
   ** Change the encryption key on the currently open database.
   */
-  case DB_REKEY: {
-    if( objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "KEY");
-      return TCL_ERROR;
+  ସ୍ଥିତି DB_REKEY: {
+    ଯଦି( objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "KEY");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db restore ?DATABASE? FILENAME
@@ -3727,59 +3727,59 @@ deserialize_error:
   ** Open a database file named FILENAME.  Transfer the content
   ** of FILENAME into the local database DATABASE (default: "main").
   */
-  case DB_RESTORE: {
-    const char *zSrcFile;
-    const char *zDestDb;
+  ସ୍ଥିତି DB_RESTORE: {
+    ଅଚଳ ଅକ୍ଷର *zSrcFile;
+    ଅଚଳ ଅକ୍ଷର *zDestDb;
     sqlite3 *pSrc;
     sqlite3_backup *pBackup;
-    int nTimeout = 0;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nTimeout = 0;
 
-    if( objc==3 ){
+    ଯଦି( objc==3 ){
       zDestDb = "main";
       zSrcFile = Tcl_GetString(objv[2]);
-    }else if( objc==4 ){
+    }ଅନ୍ୟଥା ଯଦି( objc==4 ){
       zDestDb = Tcl_GetString(objv[2]);
       zSrcFile = Tcl_GetString(objv[3]);
-    }else{
-      Tcl_WrongNumArgs(interp, 2, objv, "?DATABASE? FILENAME");
-      return TCL_ERROR;
+    }ଅନ୍ୟଥା{
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?DATABASE? FILENAME");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     rc = sqlite3_open_v2(zSrcFile, &pSrc,
                          SQLITE_OPEN_READONLY | pDb->openFlags, 0);
-    if( rc!=SQLITE_OK ){
+    ଯଦି( rc!=SQLITE_OK ){
       Tcl_AppendResult(interp, "cannot open source database: ",
-           sqlite3_errmsg(pSrc), (char*)0);
+           sqlite3_errmsg(pSrc), (ଅକ୍ଷର*)0);
       sqlite3_close(pSrc);
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     pBackup = sqlite3_backup_init(pDb->db, zDestDb, pSrc, "main");
-    if( pBackup==0 ){
+    ଯଦି( pBackup==0 ){
       Tcl_AppendResult(interp, "restore failed: ",
-           sqlite3_errmsg(pDb->db), (char*)0);
+           sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
       sqlite3_close(pSrc);
-      return TCL_ERROR;
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    while( (rc = sqlite3_backup_step(pBackup,100))==SQLITE_OK
+    ଯେତେବେଳେ( (rc = sqlite3_backup_step(pBackup,100))==SQLITE_OK
               || rc==SQLITE_BUSY ){
-      if( rc==SQLITE_BUSY ){
-        if( nTimeout++ >= 3 ) break;
+      ଯଦି( rc==SQLITE_BUSY ){
+        ଯଦି( nTimeout++ >= 3 ) ଭାଙ୍ଗ;
         sqlite3_sleep(100);
       }
     }
     sqlite3_backup_finish(pBackup);
-    if( rc==SQLITE_DONE ){
+    ଯଦି( rc==SQLITE_DONE ){
       rc = TCL_OK;
-    }else if( rc==SQLITE_BUSY || rc==SQLITE_LOCKED ){
+    }ଅନ୍ୟଥା ଯଦି( rc==SQLITE_BUSY || rc==SQLITE_LOCKED ){
       Tcl_AppendResult(interp, "restore failed: source database busy",
-                       (char*)0);
+                       (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
-    }else{
+    }ଅନ୍ୟଥା{
       Tcl_AppendResult(interp, "restore failed: ",
-           sqlite3_errmsg(pDb->db), (char*)0);
+           sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
       rc = TCL_ERROR;
     }
     sqlite3_close(pSrc);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3787,32 +3787,32 @@ deserialize_error:
   **
   ** Return a serialization of a database.  
   */
-  case DB_SERIALIZE: {
+  ସ୍ଥିତି DB_SERIALIZE: {
 #ifdef SQLITE_OMIT_DESERIALIZE
     Tcl_AppendResult(interp, "MEMDB not available in this build",
-                     (char*)0);
+                     (ଅକ୍ଷର*)0);
     rc = TCL_ERROR;
-#else
-    const char *zSchema = objc>=3 ? Tcl_GetString(objv[2]) : "main";
+#ଅନ୍ୟଥା
+    ଅଚଳ ଅକ୍ଷର *zSchema = objc>=3 ? Tcl_GetString(objv[2]) : "main";
     sqlite3_int64 sz = 0;
-    unsigned char *pData;
-    if( objc!=2 && objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?DATABASE?");
+    unsigned ଅକ୍ଷର *pData;
+    ଯଦି( objc!=2 && objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?DATABASE?");
       rc = TCL_ERROR;
-    }else{
-      int needFree;
+    }ଅନ୍ୟଥା{
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା needFree;
       pData = sqlite3_serialize(pDb->db, zSchema, &sz, SQLITE_SERIALIZE_NOCOPY);
-      if( pData ){
+      ଯଦି( pData ){
         needFree = 0;
-      }else{
+      }ଅନ୍ୟଥା{
         pData = sqlite3_serialize(pDb->db, zSchema, &sz, 0);
         needFree = 1;
       }
       Tcl_SetObjResult(interp, Tcl_NewByteArrayObj(pData,sz));
-      if( needFree ) sqlite3_free(pData);
+      ଯଦି( needFree ) sqlite3_free(pData);
     }
 #endif
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3821,30 +3821,30 @@ deserialize_error:
   ** Display SQLITE_STMTSTATUS_FULLSCAN_STEP or
   ** SQLITE_STMTSTATUS_SORT for the most recent eval.
   */
-  case DB_STATUS: {
-    int v;
-    const char *zOp;
-    if( objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "(step|sort|autoindex)");
-      return TCL_ERROR;
+  ସ୍ଥିତି DB_STATUS: {
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା v;
+    ଅଚଳ ଅକ୍ଷର *zOp;
+    ଯଦି( objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "(step|sort|autoindex)");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     zOp = Tcl_GetString(objv[2]);
-    if( strcmp(zOp, "step")==0 ){
+    ଯଦି( strcmp(zOp, "step")==0 ){
       v = pDb->nStep;
-    }else if( strcmp(zOp, "sort")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zOp, "sort")==0 ){
       v = pDb->nSort;
-    }else if( strcmp(zOp, "autoindex")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zOp, "autoindex")==0 ){
       v = pDb->nIndex;
-    }else if( strcmp(zOp, "vmstep")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zOp, "vmstep")==0 ){
       v = pDb->nVMStep;
-    }else{
+    }ଅନ୍ୟଥା{
       Tcl_AppendResult(interp,
             "bad argument: should be autoindex, step, sort or vmstep",
-            (char*)0);
-      return TCL_ERROR;
+            (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     Tcl_SetObjResult(interp, Tcl_NewIntObj(v));
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3852,15 +3852,15 @@ deserialize_error:
   **
   ** Delay for the number of milliseconds specified when a file is locked.
   */
-  case DB_TIMEOUT: {
-    int ms;
-    if( objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "MILLISECONDS");
-      return TCL_ERROR;
+  ସ୍ଥିତି DB_TIMEOUT: {
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା ms;
+    ଯଦି( objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "MILLISECONDS");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
-    if( Tcl_GetIntFromObj(interp, objv[2], &ms) ) return TCL_ERROR;
+    ଯଦି( Tcl_GetIntFromObj(interp, objv[2], &ms) ) ଫେରନ୍ତୁ TCL_ERROR;
     sqlite3_busy_timeout(pDb->db, ms);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -3869,15 +3869,15 @@ deserialize_error:
   ** Return the number of rows that were modified, inserted, or deleted
   ** since the database handle was created.
   */
-  case DB_TOTAL_CHANGES: {
+  ସ୍ଥିତି DB_TOTAL_CHANGES: {
     Tcl_Obj *pResult;
-    if( objc!=2 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "");
-      return TCL_ERROR;
+    ଯଦି( objc!=2 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     pResult = Tcl_GetObjResult(interp);
     Tcl_SetWideIntObj(pResult, sqlite3_total_changes64(pDb->db));
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db trace ?CALLBACK?
@@ -3886,38 +3886,38 @@ deserialize_error:
   ** that is executed.  The text of the SQL is appended to CALLBACK before
   ** it is executed.
   */
-  case DB_TRACE: {
-    if( objc>3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?CALLBACK?");
-      return TCL_ERROR;
-    }else if( objc==2 ){
-      if( pDb->zTrace ){
-        Tcl_AppendResult(interp, pDb->zTrace, (char*)0);
+  ସ୍ଥିତି DB_TRACE: {
+    ଯଦି( objc>3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?CALLBACK?");
+      ଫେରନ୍ତୁ TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( objc==2 ){
+      ଯଦି( pDb->zTrace ){
+        Tcl_AppendResult(interp, pDb->zTrace, (ଅକ୍ଷର*)0);
       }
-    }else{
-      char *zTrace;
+    }ଅନ୍ୟଥା{
+      ଅକ୍ଷର *zTrace;
       Tcl_Size len;
-      if( pDb->zTrace ){
+      ଯଦି( pDb->zTrace ){
         Tcl_Free(pDb->zTrace);
       }
       zTrace = Tcl_GetStringFromObj(objv[2], &len);
-      if( zTrace && len>0 ){
+      ଯଦି( zTrace && len>0 ){
         pDb->zTrace = Tcl_Alloc( len + 1 );
         memcpy(pDb->zTrace, zTrace, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zTrace = 0;
       }
-#if !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
+#ଯଦି !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT) && \
     !defined(SQLITE_OMIT_DEPRECATED)
-      if( pDb->zTrace ){
+      ଯଦି( pDb->zTrace ){
         pDb->interp = interp;
         sqlite3_trace(pDb->db, DbTraceHandler, pDb);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_trace(pDb->db, 0, 0);
       }
 #endif
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db trace_v2 ?CALLBACK? ?MASK?
@@ -3926,80 +3926,80 @@ deserialize_error:
   ** matching the mask that is generated.  The parameters are appended to
   ** CALLBACK before it is executed.
   */
-  case DB_TRACE_V2: {
-    if( objc>4 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?CALLBACK? ?MASK?");
-      return TCL_ERROR;
-    }else if( objc==2 ){
-      if( pDb->zTraceV2 ){
-        Tcl_AppendResult(interp, pDb->zTraceV2, (char*)0);
+  ସ୍ଥିତି DB_TRACE_V2: {
+    ଯଦି( objc>4 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?CALLBACK? ?MASK?");
+      ଫେରନ୍ତୁ TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( objc==2 ){
+      ଯଦି( pDb->zTraceV2 ){
+        Tcl_AppendResult(interp, pDb->zTraceV2, (ଅକ୍ଷର*)0);
       }
-    }else{
-      char *zTraceV2;
+    }ଅନ୍ୟଥା{
+      ଅକ୍ଷର *zTraceV2;
       Tcl_Size len;
       Tcl_WideInt wMask = 0;
-      if( objc==4 ){
-        static const char *TTYPE_strs[] = {
+      ଯଦି( objc==4 ){
+        ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *TTYPE_strs[] = {
           "statement", "profile", "row", "close", 0
         };
-        enum TTYPE_enum {
+        ଗଣନା TTYPE_enum {
           TTYPE_STMT, TTYPE_PROFILE, TTYPE_ROW, TTYPE_CLOSE
         };
         Tcl_Size i;
-        if( TCL_OK!=Tcl_ListObjLength(interp, objv[3], &len) ){
-          return TCL_ERROR;
+        ଯଦି( TCL_OK!=Tcl_ListObjLength(interp, objv[3], &len) ){
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
-        for(i=0; i<len; i++){
+        ପାଇଁ(i=0; i<len; i++){
           Tcl_Obj *pObj;
-          int ttype;
-          if( TCL_OK!=Tcl_ListObjIndex(interp, objv[3], i, &pObj) ){
-            return TCL_ERROR;
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା ttype;
+          ଯଦି( TCL_OK!=Tcl_ListObjIndex(interp, objv[3], i, &pObj) ){
+            ଫେରନ୍ତୁ TCL_ERROR;
           }
-          if( Tcl_GetIndexFromObj(interp, pObj, TTYPE_strs, "trace type",
+          ଯଦି( Tcl_GetIndexFromObj(interp, pObj, TTYPE_strs, "trace type",
                                   0, &ttype)!=TCL_OK ){
             Tcl_WideInt wType;
             Tcl_Obj *pError = Tcl_DuplicateObj(Tcl_GetObjResult(interp));
-            Tcl_IncrRefCount(pError);
-            if( TCL_OK==Tcl_GetWideIntFromObj(interp, pObj, &wType) ){
-              Tcl_DecrRefCount(pError);
+            Tcl_Incr_Ref_ଗଣନା(pError);
+            ଯଦି( TCL_OK==Tcl_GetWideIntFromObj(interp, pObj, &wType) ){
+              Tcl_Decr_Ref_ଗଣନା(pError);
               wMask |= wType;
-            }else{
+            }ଅନ୍ୟଥା{
               Tcl_SetObjResult(interp, pError);
-              Tcl_DecrRefCount(pError);
-              return TCL_ERROR;
+              Tcl_Decr_Ref_ଗଣନା(pError);
+              ଫେରନ୍ତୁ TCL_ERROR;
             }
-          }else{
-            switch( (enum TTYPE_enum)ttype ){
-              case TTYPE_STMT:    wMask |= SQLITE_TRACE_STMT;    break;
-              case TTYPE_PROFILE: wMask |= SQLITE_TRACE_PROFILE; break;
-              case TTYPE_ROW:     wMask |= SQLITE_TRACE_ROW;     break;
-              case TTYPE_CLOSE:   wMask |= SQLITE_TRACE_CLOSE;   break;
+          }ଅନ୍ୟଥା{
+            ବାଛ( (ଗଣନା TTYPE_enum)ttype ){
+              ସ୍ଥିତି TTYPE_STMT:    wMask |= SQLITE_TRACE_STMT;    ଭାଙ୍ଗ;
+              ସ୍ଥିତି TTYPE_PROFILE: wMask |= SQLITE_TRACE_PROFILE; ଭାଙ୍ଗ;
+              ସ୍ଥିତି TTYPE_ROW:     wMask |= SQLITE_TRACE_ROW;     ଭାଙ୍ଗ;
+              ସ୍ଥିତି TTYPE_CLOSE:   wMask |= SQLITE_TRACE_CLOSE;   ଭାଙ୍ଗ;
             }
           }
         }
-      }else{
+      }ଅନ୍ୟଥା{
         wMask = SQLITE_TRACE_STMT; /* use the "legacy" default */
       }
-      if( pDb->zTraceV2 ){
+      ଯଦି( pDb->zTraceV2 ){
         Tcl_Free(pDb->zTraceV2);
       }
       zTraceV2 = Tcl_GetStringFromObj(objv[2], &len);
-      if( zTraceV2 && len>0 ){
+      ଯଦି( zTraceV2 && len>0 ){
         pDb->zTraceV2 = Tcl_Alloc( len + 1 );
         memcpy(pDb->zTraceV2, zTraceV2, len+1);
-      }else{
+      }ଅନ୍ୟଥା{
         pDb->zTraceV2 = 0;
       }
-#if !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT)
-      if( pDb->zTraceV2 ){
+#ଯଦି !defined(SQLITE_OMIT_TRACE) && !defined(SQLITE_OMIT_FLOATING_POINT)
+      ଯଦି( pDb->zTraceV2 ){
         pDb->interp = interp;
         sqlite3_trace_v2(pDb->db, (unsigned)wMask, DbTraceV2Handler, pDb);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_trace_v2(pDb->db, 0, 0, 0);
       }
 #endif
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db transaction [-deferred|-immediate|-exclusive] SCRIPT
@@ -4013,30 +4013,30 @@ deserialize_error:
   ** This command was inspired by Dave Thomas's talk on Ruby at the
   ** 2005 O'Reilly Open Source Convention (OSCON).
   */
-  case DB_TRANSACTION: {
+  ସ୍ଥିତି DB_TRANSACTION: {
     Tcl_Obj *pScript;
-    const char *zBegin = "SAVEPOINT _tcl_transaction";
-    if( objc!=3 && objc!=4 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "[TYPE] SCRIPT");
-      return TCL_ERROR;
+    ଅଚଳ ଅକ୍ଷର *zBegin = "SAVEPOINT _tcl_transaction";
+    ଯଦି( objc!=3 && objc!=4 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "[TYPE] SCRIPT");
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
 
-    if( pDb->nTransaction==0 && objc==4 ){
-      static const char *TTYPE_strs[] = {
+    ଯଦି( pDb->nTransaction==0 && objc==4 ){
+      ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *TTYPE_strs[] = {
         "deferred",   "exclusive",  "immediate", 0
       };
-      enum TTYPE_enum {
+      ଗଣନା TTYPE_enum {
         TTYPE_DEFERRED, TTYPE_EXCLUSIVE, TTYPE_IMMEDIATE
       };
-      int ttype;
-      if( Tcl_GetIndexFromObj(interp, objv[2], TTYPE_strs, "transaction type",
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା ttype;
+      ଯଦି( Tcl_GetIndexFromObj(interp, objv[2], TTYPE_strs, "transaction type",
                               0, &ttype) ){
-        return TCL_ERROR;
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
-      switch( (enum TTYPE_enum)ttype ){
-        case TTYPE_DEFERRED:    /* no-op */;                 break;
-        case TTYPE_EXCLUSIVE:   zBegin = "BEGIN EXCLUSIVE";  break;
-        case TTYPE_IMMEDIATE:   zBegin = "BEGIN IMMEDIATE";  break;
+      ବାଛ( (ଗଣନା TTYPE_enum)ttype ){
+        ସ୍ଥିତି TTYPE_DEFERRED:    /* no-op */;                 ଭାଙ୍ଗ;
+        ସ୍ଥିତି TTYPE_EXCLUSIVE:   zBegin = "BEGIN EXCLUSIVE";  ଭାଙ୍ଗ;
+        ସ୍ଥିତି TTYPE_IMMEDIATE:   zBegin = "BEGIN IMMEDIATE";  ଭାଙ୍ଗ;
       }
     }
     pScript = objv[objc-1];
@@ -4045,9 +4045,9 @@ deserialize_error:
     pDb->disableAuth++;
     rc = sqlite3_exec(pDb->db, zBegin, 0, 0, 0);
     pDb->disableAuth--;
-    if( rc!=SQLITE_OK ){
-      Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (char*)0);
-      return TCL_ERROR;
+    ଯଦି( rc!=SQLITE_OK ){
+      Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
     pDb->nTransaction++;
 
@@ -4057,50 +4057,50 @@ deserialize_error:
     ** call function DbTransPostCmd() to commit (or rollback) the transaction
     ** or savepoint.  */
     addDatabaseRef(pDb);          /* DbTransPostCmd() calls delDatabaseRef() */
-    if( DbUseNre() ){
+    ଯଦି( DbUseNre() ){
       Tcl_NRAddCallback(interp, DbTransPostCmd, cd, 0, 0, 0);
-      (void)Tcl_NREvalObj(interp, pScript, 0);
-    }else{
+      (ଶୂନ୍ୟ)Tcl_NREvalObj(interp, pScript, 0);
+    }ଅନ୍ୟଥା{
       rc = DbTransPostCmd(&cd, interp, Tcl_EvalObjEx(interp, pScript, 0));
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
   **    $db unlock_notify ?script?
   */
-  case DB_UNLOCK_NOTIFY: {
+  ସ୍ଥିତି DB_UNLOCK_NOTIFY: {
 #ifndef SQLITE_ENABLE_UNLOCK_NOTIFY
     Tcl_AppendResult(interp, "unlock_notify not available in this build",
-                     (char*)0);
+                     (ଅକ୍ଷର*)0);
     rc = TCL_ERROR;
-#else
-    if( objc!=2 && objc!=3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "?SCRIPT?");
+#ଅନ୍ୟଥା
+    ଯଦି( objc!=2 && objc!=3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?SCRIPT?");
       rc = TCL_ERROR;
-    }else{
-      void (*xNotify)(void **, int) = 0;
-      void *pNotifyArg = 0;
+    }ଅନ୍ୟଥା{
+      ଶୂନ୍ୟ (*xNotify)(ଶୂନ୍ୟ **, ପୂର୍ଣ୍ଣସଂଖ୍ୟା) = 0;
+      ଶୂନ୍ୟ *pNotifyArg = 0;
 
-      if( pDb->pUnlockNotify ){
-        Tcl_DecrRefCount(pDb->pUnlockNotify);
+      ଯଦି( pDb->pUnlockNotify ){
+        Tcl_Decr_Ref_ଗଣନା(pDb->pUnlockNotify);
         pDb->pUnlockNotify = 0;
       }
 
-      if( objc==3 ){
+      ଯଦି( objc==3 ){
         xNotify = DbUnlockNotify;
-        pNotifyArg = (void *)pDb;
+        pNotifyArg = (ଶୂନ୍ୟ *)pDb;
         pDb->pUnlockNotify = objv[2];
-        Tcl_IncrRefCount(pDb->pUnlockNotify);
+        Tcl_Incr_Ref_ଗଣନା(pDb->pUnlockNotify);
       }
 
-      if( sqlite3_unlock_notify(pDb->db, xNotify, pNotifyArg) ){
-        Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (char*)0);
+      ଯଦି( sqlite3_unlock_notify(pDb->db, xNotify, pNotifyArg) ){
+        Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
         rc = TCL_ERROR;
       }
     }
 #endif
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -4109,83 +4109,83 @@ deserialize_error:
   **    $db preupdate_hook new INDEX
   **    $db preupdate_hook old INDEX
   */
-  case DB_PREUPDATE: {
+  ସ୍ଥିତି DB_PREUPDATE: {
 #ifndef SQLITE_ENABLE_PREUPDATE_HOOK
     Tcl_AppendResult(interp, "preupdate_hook was omitted at compile-time", 
-                     (char*)0);
+                     (ଅକ୍ଷର*)0);
     rc = TCL_ERROR;
-#else
-    static const char *azSub[] = {"count", "depth", "hook", "new", "old", 0};
-    enum DbPreupdateSubCmd {
-      PRE_COUNT, PRE_DEPTH, PRE_HOOK, PRE_NEW, PRE_OLD
+#ଅନ୍ୟଥା
+    ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *azSub[] = {"count", "depth", "hook", "new", "old", 0};
+    ଗଣନା DbPreupdateSubCmd {
+      PRE_ଗଣନା, PRE_DEPTH, PRE_HOOK, PRE_NEW, PRE_OLD
     };
-    int iSub;
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା iSub;
 
-    if( objc<3 ){
-      Tcl_WrongNumArgs(interp, 2, objv, "SUB-COMMAND ?ARGS?");
+    ଯଦି( objc<3 ){
+      Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "SUB-COMMAND ?ARGS?");
     }
-    if( Tcl_GetIndexFromObj(interp, objv[2], azSub, "sub-command", 0, &iSub) ){
-      return TCL_ERROR;
+    ଯଦି( Tcl_GetIndexFromObj(interp, objv[2], azSub, "sub-command", 0, &iSub) ){
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
 
-    switch( (enum DbPreupdateSubCmd)iSub ){
-      case PRE_COUNT: {
-        int nCol = sqlite3_preupdate_count(pDb->db);
+    ବାଛ( (ଗଣନା DbPreupdateSubCmd)iSub ){
+      ସ୍ଥିତି PRE_ଗଣନା: {
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCol = sqlite3_preupdate_ଗଣନା(pDb->db);
         Tcl_SetObjResult(interp, Tcl_NewIntObj(nCol));
-        break;
+        ଭାଙ୍ଗ;
       }
 
-      case PRE_HOOK: {
-        if( objc>4 ){
-          Tcl_WrongNumArgs(interp, 2, objv, "hook ?SCRIPT?");
-          return TCL_ERROR;
+      ସ୍ଥିତି PRE_HOOK: {
+        ଯଦି( objc>4 ){
+          Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "hook ?SCRIPT?");
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
         DbHookCmd(interp, pDb, (objc==4 ? objv[3] : 0), &pDb->pPreUpdateHook);
-        break;
+        ଭାଙ୍ଗ;
       }
 
-      case PRE_DEPTH: {
+      ସ୍ଥିତି PRE_DEPTH: {
         Tcl_Obj *pRet;
-        if( objc!=3 ){
-          Tcl_WrongNumArgs(interp, 3, objv, "");
-          return TCL_ERROR;
+        ଯଦି( objc!=3 ){
+          Tcl_Wrong_ଅଙ୍କ_Args(interp, 3, objv, "");
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
         pRet = Tcl_NewIntObj(sqlite3_preupdate_depth(pDb->db));
         Tcl_SetObjResult(interp, pRet);
-        break;
+        ଭାଙ୍ଗ;
       }
 
-      case PRE_NEW:
-      case PRE_OLD: {
-        int iIdx;
-        sqlite3_value *pValue;
-        if( objc!=4 ){
-          Tcl_WrongNumArgs(interp, 3, objv, "INDEX");
-          return TCL_ERROR;
+      ସ୍ଥିତି PRE_NEW:
+      ସ୍ଥିତି PRE_OLD: {
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା iIdx;
+        sqlite3_ମୂଲ୍ୟ *p_ମୂଲ୍ୟ;
+        ଯଦି( objc!=4 ){
+          Tcl_Wrong_ଅଙ୍କ_Args(interp, 3, objv, "INDEX");
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
-        if( Tcl_GetIntFromObj(interp, objv[3], &iIdx) ){
-          return TCL_ERROR;
-        }
-
-        if( iSub==PRE_OLD ){
-          rc = sqlite3_preupdate_old(pDb->db, iIdx, &pValue);
-        }else{
-          assert( iSub==PRE_NEW );
-          rc = sqlite3_preupdate_new(pDb->db, iIdx, &pValue);
+        ଯଦି( Tcl_GetIntFromObj(interp, objv[3], &iIdx) ){
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
 
-        if( rc==SQLITE_OK ){
+        ଯଦି( iSub==PRE_OLD ){
+          rc = sqlite3_preupdate_old(pDb->db, iIdx, &p_ମୂଲ୍ୟ);
+        }ଅନ୍ୟଥା{
+          ପ୍ରତିଜ୍ଞା( iSub==PRE_NEW );
+          rc = sqlite3_preupdate_new(pDb->db, iIdx, &p_ମୂଲ୍ୟ);
+        }
+
+        ଯଦି( rc==SQLITE_OK ){
           Tcl_Obj *pObj;
-          pObj = Tcl_NewStringObj((char*)sqlite3_value_text(pValue), -1);
+          pObj = Tcl_NewStringObj((ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(p_ମୂଲ୍ୟ), -1);
           Tcl_SetObjResult(interp, pObj);
-        }else{
-          Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (char*)0);
-          return TCL_ERROR;
+        }ଅନ୍ୟଥା{
+          Tcl_AppendResult(interp, sqlite3_errmsg(pDb->db), (ଅକ୍ଷର*)0);
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
       }
     }
 #endif /* SQLITE_ENABLE_PREUPDATE_HOOK */
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*
@@ -4193,85 +4193,85 @@ deserialize_error:
   **    $db update_hook ?script?
   **    $db rollback_hook ?script?
   */
-  case DB_WAL_HOOK:
-  case DB_UPDATE_HOOK:
-  case DB_ROLLBACK_HOOK: {
+  ସ୍ଥିତି DB_WAL_HOOK:
+  ସ୍ଥିତି DB_UPDATE_HOOK:
+  ସ୍ଥିତି DB_ROLLBACK_HOOK: {
     /* set ppHook to point at pUpdateHook or pRollbackHook, depending on
     ** whether [$db update_hook] or [$db rollback_hook] was invoked.
     */
     Tcl_Obj **ppHook = 0;
-    if( choice==DB_WAL_HOOK ) ppHook = &pDb->pWalHook;
-    if( choice==DB_UPDATE_HOOK ) ppHook = &pDb->pUpdateHook;
-    if( choice==DB_ROLLBACK_HOOK ) ppHook = &pDb->pRollbackHook;
-    if( objc>3 ){
-       Tcl_WrongNumArgs(interp, 2, objv, "?SCRIPT?");
-       return TCL_ERROR;
+    ଯଦି( choice==DB_WAL_HOOK ) ppHook = &pDb->pWalHook;
+    ଯଦି( choice==DB_UPDATE_HOOK ) ppHook = &pDb->pUpdateHook;
+    ଯଦି( choice==DB_ROLLBACK_HOOK ) ppHook = &pDb->pRollbackHook;
+    ଯଦି( objc>3 ){
+       Tcl_Wrong_ଅଙ୍କ_Args(interp, 2, objv, "?SCRIPT?");
+       ଫେରନ୍ତୁ TCL_ERROR;
     }
 
     DbHookCmd(interp, pDb, (objc==3 ? objv[2] : 0), ppHook);
-    break;
+    ଭାଙ୍ଗ;
   }
 
   /*    $db version
   **
   ** Return the version string for this database.
   */
-  case DB_VERSION: {
-    int i;
-    for(i=2; i<objc; i++){
-      const char *zArg = Tcl_GetString(objv[i]);
+  ସ୍ଥିତି DB_VERSION: {
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+    ପାଇଁ(i=2; i<objc; i++){
+      ଅଚଳ ଅକ୍ଷର *zArg = Tcl_GetString(objv[i]);
       /* Optional arguments to $db version are used for testing purpose */
 #ifdef SQLITE_TEST
       /* $db version -use-legacy-prepare BOOLEAN
       **
       ** Turn the use of legacy sqlite3_prepare() on or off.
       */
-      if( strcmp(zArg, "-use-legacy-prepare")==0 && i+1<objc ){
+      ଯଦି( strcmp(zArg, "-use-legacy-prepare")==0 && i+1<objc ){
         i++;
-        if( Tcl_GetBooleanFromObj(interp, objv[i], &pDb->bLegacyPrepare) ){
-          return TCL_ERROR;
+        ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &pDb->bLegacyPrepare) ){
+          ଫେରନ୍ତୁ TCL_ERROR;
         }
-      }else
+      }ଅନ୍ୟଥା
 
       /* $db version -last-stmt-ptr
       **
       ** Return a string which is a hex encoding of the pointer to the
       ** most recent sqlite3_stmt in the statement cache.
       */
-      if( strcmp(zArg, "-last-stmt-ptr")==0 ){
-        extern const char *sqlite3TestPtrToText(void*);
-        void *ptr = (void*)(pDb->stmtList ? pDb->stmtList->pStmt: 0);
-        Tcl_SetResult(interp, (char*)sqlite3TestPtrToText(ptr), TCL_VOLATILE);
-      }else
+      ଯଦି( strcmp(zArg, "-last-stmt-ptr")==0 ){
+        ବାହ୍ୟ ଅଚଳ ଅକ୍ଷର *sqlite3TestPtrToText(ଶୂନ୍ୟ*);
+        ଶୂନ୍ୟ *ptr = (ଶୂନ୍ୟ*)(pDb->stmtList ? pDb->stmtList->pStmt: 0);
+        Tcl_SetResult(interp, (ଅକ୍ଷର*)sqlite3TestPtrToText(ptr), TCL_VOLATILE);
+      }ଅନ୍ୟଥା
 #endif /* SQLITE_TEST */
       {
-        Tcl_AppendResult(interp, "unknown argument: ", zArg, (char*)0);
-        return TCL_ERROR;
+        Tcl_AppendResult(interp, "unknown argument: ", zArg, (ଅକ୍ଷର*)0);
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
     }
-    if( i==2 ){   
-      Tcl_SetResult(interp, (char *)sqlite3_libversion(), TCL_STATIC);
+    ଯଦି( i==2 ){   
+      Tcl_SetResult(interp, (ଅକ୍ଷର *)sqlite3_libversion(), TCL_STATIC);
     }
-    break;
+    ଭାଙ୍ଗ;
   }
 
 
   } /* End of the SWITCH statement */
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
-#if SQLITE_TCL_NRE
+#ଯଦି SQLITE_TCL_NRE
 /*
 ** Adaptor that provides an objCmd interface to the NRE-enabled
 ** interface implementation.
 */
-static int SQLITE_TCLAPI DbObjCmdAdaptor(
-  void *cd,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI DbObjCmdAdaptor(
+  ଶୂନ୍ୟ *cd,
   Tcl_Interp *interp,
-  int objc,
-  Tcl_Obj *const*objv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
+  Tcl_Obj *ଅଚଳ*objv
 ){
-  return Tcl_NRCallObjProc(interp, DbObjCmd, cd, objc, objv);
+  ଫେରନ୍ତୁ Tcl_NRCallObjProc(interp, DbObjCmd, cd, objc, objv);
 }
 #endif /* SQLITE_TCL_NRE */
 
@@ -4279,16 +4279,16 @@ static int SQLITE_TCLAPI DbObjCmdAdaptor(
 ** Issue the usage message when the "sqlite3" command arguments are
 ** incorrect.
 */
-static int sqliteCmdUsage(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqliteCmdUsage(
   Tcl_Interp *interp,
-  Tcl_Obj *const*objv
+  Tcl_Obj *ଅଚଳ*objv
 ){
-  Tcl_WrongNumArgs(interp, 1, objv,
+  Tcl_Wrong_ଅଙ୍କ_Args(interp, 1, objv,
     "HANDLE ?FILENAME? ?-vfs VFSNAME? ?-readonly BOOLEAN? ?-create BOOLEAN?"
     " ?-nofollow BOOLEAN?"
     " ?-nomutex BOOLEAN? ?-fullmutex BOOLEAN? ?-uri BOOLEAN?"
   );
-  return TCL_ERROR;
+  ଫେରନ୍ତୁ TCL_ERROR;
 }
 
 /*
@@ -4307,22 +4307,22 @@ static int sqliteCmdUsage(
 ** The second argument is the name of the database file.
 **
 */
-static int SQLITE_TCLAPI DbMain(
-  void *cd,
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_TCLAPI DbMain(
+  ଶୂନ୍ୟ *cd,
   Tcl_Interp *interp,
-  int objc,
-  Tcl_Obj *const*objv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା objc,
+  Tcl_Obj *ଅଚଳ*objv
 ){
   SqliteDb *p;
-  const char *zArg;
-  char *zErrMsg;
-  int i;
-  const char *zFile = 0;
-  const char *zVfs = 0;
-  int flags;
-  int bTranslateFileName = 1;
+  ଅଚଳ ଅକ୍ଷର *zArg;
+  ଅକ୍ଷର *z_Err_ସନ୍ଦେଶ;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ଅଚଳ ଅକ୍ଷର *zFile = 0;
+  ଅଚଳ ଅକ୍ଷର *zVfs = 0;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା bTranslateFileName = 1;
   Tcl_DString translatedFilename;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
 
   /* In normal use, each TCL interpreter runs in a single thread.  So
   ** by default, we can turn off mutexing on SQLite database connections.
@@ -4332,139 +4332,139 @@ static int SQLITE_TCLAPI DbMain(
   */
 #ifdef SQLITE_TCL_DEFAULT_FULLMUTEX
   flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX;
-#else
+#ଅନ୍ୟଥା
   flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX;
 #endif
 
-  if( objc==1 ) return sqliteCmdUsage(interp, objv);
-  if( objc==2 ){
+  ଯଦି( objc==1 ) ଫେରନ୍ତୁ sqliteCmdUsage(interp, objv);
+  ଯଦି( objc==2 ){
     zArg = Tcl_GetStringFromObj(objv[1], 0);
-    if( strcmp(zArg,"-version")==0 ){
-      Tcl_AppendResult(interp,sqlite3_libversion(), (char*)0);
-      return TCL_OK;
+    ଯଦି( strcmp(zArg,"-version")==0 ){
+      Tcl_AppendResult(interp,sqlite3_libversion(), (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_OK;
     }
-    if( strcmp(zArg,"-sourceid")==0 ){
-      Tcl_AppendResult(interp,sqlite3_sourceid(), (char*)0);
-      return TCL_OK;
+    ଯଦି( strcmp(zArg,"-sourceid")==0 ){
+      Tcl_AppendResult(interp,sqlite3_sourceid(), (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_OK;
     }
-    if( strcmp(zArg,"-has-codec")==0 ){
-      Tcl_AppendResult(interp,"0",(char*)0);
-      return TCL_OK;
+    ଯଦି( strcmp(zArg,"-has-codec")==0 ){
+      Tcl_AppendResult(interp,"0",(ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_OK;
     }
-    if( zArg[0]=='-' ) return sqliteCmdUsage(interp, objv);
+    ଯଦି( zArg[0]=='-' ) ଫେରନ୍ତୁ sqliteCmdUsage(interp, objv);
   }
-  for(i=2; i<objc; i++){
+  ପାଇଁ(i=2; i<objc; i++){
     zArg = Tcl_GetString(objv[i]);
-    if( zArg[0]!='-' ){
-      if( zFile!=0 ) return sqliteCmdUsage(interp, objv);
+    ଯଦି( zArg[0]!='-' ){
+      ଯଦି( zFile!=0 ) ଫେରନ୍ତୁ sqliteCmdUsage(interp, objv);
       zFile = zArg;
-      continue;
+      ଜାରି;
     }
-    if( i==objc-1 ) return sqliteCmdUsage(interp, objv);
+    ଯଦି( i==objc-1 ) ଫେରନ୍ତୁ sqliteCmdUsage(interp, objv);
     i++;
-    if( strcmp(zArg,"-key")==0 ){
+    ଯଦି( strcmp(zArg,"-key")==0 ){
       /* no-op */
-    }else if( strcmp(zArg, "-vfs")==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-vfs")==0 ){
       zVfs = Tcl_GetString(objv[i]);
-    }else if( strcmp(zArg, "-readonly")==0 ){
-      int b;
-      if( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) return TCL_ERROR;
-      if( b ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-readonly")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା b;
+      ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) ଫେରନ୍ତୁ TCL_ERROR;
+      ଯଦି( b ){
         flags &= ~(SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE);
         flags |= SQLITE_OPEN_READONLY;
-      }else{
+      }ଅନ୍ୟଥା{
         flags &= ~SQLITE_OPEN_READONLY;
         flags |= SQLITE_OPEN_READWRITE;
       }
-    }else if( strcmp(zArg, "-create")==0 ){
-      int b;
-      if( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) return TCL_ERROR;
-      if( b && (flags & SQLITE_OPEN_READONLY)==0 ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-create")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା b;
+      ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) ଫେରନ୍ତୁ TCL_ERROR;
+      ଯଦି( b && (flags & SQLITE_OPEN_READONLY)==0 ){
         flags |= SQLITE_OPEN_CREATE;
-      }else{
+      }ଅନ୍ୟଥା{
         flags &= ~SQLITE_OPEN_CREATE;
       }
-    }else if( strcmp(zArg, "-nofollow")==0 ){
-      int b;
-      if( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) return TCL_ERROR;
-      if( b ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-nofollow")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା b;
+      ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) ଫେରନ୍ତୁ TCL_ERROR;
+      ଯଦି( b ){
         flags |= SQLITE_OPEN_NOFOLLOW;
-      }else{
+      }ଅନ୍ୟଥା{
         flags &= ~SQLITE_OPEN_NOFOLLOW;
       }
-    }else if( strcmp(zArg, "-nomutex")==0 ){
-      int b;
-      if( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) return TCL_ERROR;
-      if( b ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-nomutex")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା b;
+      ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) ଫେରନ୍ତୁ TCL_ERROR;
+      ଯଦି( b ){
         flags |= SQLITE_OPEN_NOMUTEX;
         flags &= ~SQLITE_OPEN_FULLMUTEX;
-      }else{
+      }ଅନ୍ୟଥା{
         flags &= ~SQLITE_OPEN_NOMUTEX;
       }
-    }else if( strcmp(zArg, "-fullmutex")==0 ){
-      int b;
-      if( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) return TCL_ERROR;
-      if( b ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-fullmutex")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା b;
+      ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) ଫେରନ୍ତୁ TCL_ERROR;
+      ଯଦି( b ){
         flags |= SQLITE_OPEN_FULLMUTEX;
         flags &= ~SQLITE_OPEN_NOMUTEX;
-      }else{
+      }ଅନ୍ୟଥା{
         flags &= ~SQLITE_OPEN_FULLMUTEX;
       }
-    }else if( strcmp(zArg, "-uri")==0 ){
-      int b;
-      if( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) return TCL_ERROR;
-      if( b ){
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-uri")==0 ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା b;
+      ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &b) ) ଫେରନ୍ତୁ TCL_ERROR;
+      ଯଦି( b ){
         flags |= SQLITE_OPEN_URI;
-      }else{
+      }ଅନ୍ୟଥା{
         flags &= ~SQLITE_OPEN_URI;
       }
-    }else if( strcmp(zArg, "-translatefilename")==0 ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i], &bTranslateFileName) ){
-        return TCL_ERROR;
+    }ଅନ୍ୟଥା ଯଦି( strcmp(zArg, "-translatefilename")==0 ){
+      ଯଦି( Tcl_GetBooleanFromObj(interp, objv[i], &bTranslateFileName) ){
+        ଫେରନ୍ତୁ TCL_ERROR;
       }
-    }else{
-      Tcl_AppendResult(interp, "unknown option: ", zArg, (char*)0);
-      return TCL_ERROR;
+    }ଅନ୍ୟଥା{
+      Tcl_AppendResult(interp, "unknown option: ", zArg, (ଅକ୍ଷର*)0);
+      ଫେରନ୍ତୁ TCL_ERROR;
     }
   }
-  zErrMsg = 0;
-  p = (SqliteDb*)Tcl_Alloc( sizeof(*p) );
-  memset(p, 0, sizeof(*p));
-  if( zFile==0 ) zFile = "";
-  if( bTranslateFileName ){
+  z_Err_ସନ୍ଦେଶ = 0;
+  p = (SqliteDb*)Tcl_Alloc( ଆକାର(*p) );
+  memset(p, 0, ଆକାର(*p));
+  ଯଦି( zFile==0 ) zFile = "";
+  ଯଦି( bTranslateFileName ){
     zFile = Tcl_TranslateFileName(interp, zFile, &translatedFilename);
   }
   rc = sqlite3_open_v2(zFile, &p->db, flags, zVfs);
-  if( bTranslateFileName ){
+  ଯଦି( bTranslateFileName ){
     Tcl_DStringFree(&translatedFilename);
   }
-  if( p->db ){
-    if( SQLITE_OK!=sqlite3_errcode(p->db) ){
-      zErrMsg = sqlite3_mprintf("%s", sqlite3_errmsg(p->db));
+  ଯଦି( p->db ){
+    ଯଦି( SQLITE_OK!=sqlite3_errcode(p->db) ){
+      z_Err_ସନ୍ଦେଶ = sqlite3_mprintf("%s", sqlite3_errmsg(p->db));
       sqlite3_close(p->db);
       p->db = 0;
     }
-  }else{
-    zErrMsg = sqlite3_mprintf("%s", sqlite3_errstr(rc));
+  }ଅନ୍ୟଥା{
+    z_Err_ସନ୍ଦେଶ = sqlite3_mprintf("%s", sqlite3_errstr(rc));
   }
-  if( p->db==0 ){
-    Tcl_SetResult(interp, zErrMsg, TCL_VOLATILE);
-    Tcl_Free((char*)p);
-    sqlite3_free(zErrMsg);
-    return TCL_ERROR;
+  ଯଦି( p->db==0 ){
+    Tcl_SetResult(interp, z_Err_ସନ୍ଦେଶ, TCL_VOLATILE);
+    Tcl_Free((ଅକ୍ଷର*)p);
+    sqlite3_free(z_Err_ସନ୍ଦେଶ);
+    ଫେରନ୍ତୁ TCL_ERROR;
   }
-  p->maxStmt = NUM_PREPARED_STMTS;
+  p->maxStmt = ଅଙ୍କ_PREPARED_STMTS;
   p->openFlags = flags & SQLITE_OPEN_URI;
   p->interp = interp;
   zArg = Tcl_GetStringFromObj(objv[1], 0);
-  if( DbUseNre() ){
+  ଯଦି( DbUseNre() ){
     Tcl_NRCreateCommand(interp, zArg, DbObjCmdAdaptor, DbObjCmd,
-                        (char*)p, DbDeleteCmd);
-  }else{
-    Tcl_CreateObjCommand(interp, zArg, DbObjCmd, (char*)p, DbDeleteCmd);
+                        (ଅକ୍ଷର*)p, DbDeleteCmd);
+  }ଅନ୍ୟଥା{
+    Tcl_CreateObjCommand(interp, zArg, DbObjCmd, (ଅକ୍ଷର*)p, DbDeleteCmd);
   }
   p->nRef = 1;
-  return TCL_OK;
+  ଫେରନ୍ତୁ TCL_OK;
 }
 
 /*
@@ -4496,9 +4496,9 @@ static int SQLITE_TCLAPI DbMain(
 **
 ** The EXTERN macros are required by TCL in order to work on windows.
 */
-EXTERN int Sqlite3_Init(Tcl_Interp *interp){
-  int rc = Tcl_InitStubs(interp, "8.5-", 0) ? TCL_OK : TCL_ERROR;
-  if( rc==TCL_OK ){
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite3_Init(Tcl_Interp *interp){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = Tcl_InitStubs(interp, "8.5-", 0) ? TCL_OK : TCL_ERROR;
+  ଯଦି( rc==TCL_OK ){
     Tcl_CreateObjCommand(interp, "sqlite3", (Tcl_ObjCmdProc*)DbMain, 0, 0);
 #ifndef SQLITE_3_SUFFIX_ONLY
     /* The "sqlite" alias is undocumented.  It is here only to support
@@ -4508,18 +4508,18 @@ EXTERN int Sqlite3_Init(Tcl_Interp *interp){
 #endif
     rc = Tcl_PkgProvide(interp, "sqlite3", PACKAGE_VERSION);
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
-EXTERN int Tclsqlite3_Init(Tcl_Interp *interp){ return Sqlite3_Init(interp); }
-EXTERN int Sqlite3_Unload(Tcl_Interp *interp, int flags){ return TCL_OK; }
-EXTERN int Tclsqlite3_Unload(Tcl_Interp *interp, int flags){ return TCL_OK; }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Tclsqlite3_Init(Tcl_Interp *interp){ ଫେରନ୍ତୁ Sqlite3_Init(interp); }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite3_Unload(Tcl_Interp *interp, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){ ଫେରନ୍ତୁ TCL_OK; }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Tclsqlite3_Unload(Tcl_Interp *interp, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){ ଫେରନ୍ତୁ TCL_OK; }
 
 /* Because it accesses the file-system and uses persistent state, SQLite
 ** is not considered appropriate for safe interpreters.  Hence, we cause
 ** the _SafeInit() interfaces return TCL_ERROR.
 */
-EXTERN int Sqlite3_SafeInit(Tcl_Interp *interp){ return TCL_ERROR; }
-EXTERN int Sqlite3_SafeUnload(Tcl_Interp *interp, int flags){return TCL_ERROR;}
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite3_SafeInit(Tcl_Interp *interp){ ଫେରନ୍ତୁ TCL_ERROR; }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite3_SafeUnload(Tcl_Interp *interp, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){ଫେରନ୍ତୁ TCL_ERROR;}
 
 /*
 ** Versions of all of the above entry points that omit the "3" at the end
@@ -4529,31 +4529,31 @@ EXTERN int Sqlite3_SafeUnload(Tcl_Interp *interp, int flags){return TCL_ERROR;}
 **
 ** Omitting the "3" helps TCL find the entry point.
 */
-EXTERN int Sqlite_Init(Tcl_Interp *interp){ return Sqlite3_Init(interp);}
-EXTERN int Tclsqlite_Init(Tcl_Interp *interp){ return Sqlite3_Init(interp); }
-EXTERN int Sqlite_Unload(Tcl_Interp *interp, int flags){ return TCL_OK; }
-EXTERN int Tclsqlite_Unload(Tcl_Interp *interp, int flags){ return TCL_OK; }
-EXTERN int Sqlite_SafeInit(Tcl_Interp *interp){ return TCL_ERROR; }
-EXTERN int Sqlite_SafeUnload(Tcl_Interp *interp, int flags){return TCL_ERROR;}
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite_Init(Tcl_Interp *interp){ ଫେରନ୍ତୁ Sqlite3_Init(interp);}
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Tclsqlite_Init(Tcl_Interp *interp){ ଫେରନ୍ତୁ Sqlite3_Init(interp); }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite_Unload(Tcl_Interp *interp, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){ ଫେରନ୍ତୁ TCL_OK; }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Tclsqlite_Unload(Tcl_Interp *interp, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){ ଫେରନ୍ତୁ TCL_OK; }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite_SafeInit(Tcl_Interp *interp){ ଫେରନ୍ତୁ TCL_ERROR; }
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା Sqlite_SafeUnload(Tcl_Interp *interp, ପୂର୍ଣ୍ଣସଂଖ୍ୟା flags){ଫେରନ୍ତୁ TCL_ERROR;}
 
 /* Also variants with a lowercase "s".  I'm told that these are
 ** deprecated in Tcl9, but they continue to be included for backwards
 ** compatibility. */
-EXTERN int sqlite3_Init(Tcl_Interp *interp){ return Sqlite3_Init(interp);}
-EXTERN int sqlite_Init(Tcl_Interp *interp){ return Sqlite3_Init(interp);}
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3_Init(Tcl_Interp *interp){ ଫେରନ୍ତୁ Sqlite3_Init(interp);}
+EXTERN ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite_Init(Tcl_Interp *interp){ ଫେରନ୍ତୁ Sqlite3_Init(interp);}
 
 
 /*
 ** If the TCLSH macro is defined, add code to make a stand-alone program.
 */
-#if defined(TCLSH)
+#ଯଦି defined(TCLSH)
 
 /* This is the main routine for an ordinary TCL shell.  If there are
 ** arguments, run the first argument as a script.  Otherwise, read TCL
 ** commands from standard input
 */
-static const char *tclsh_main_loop(void){
-  static const char zMainloop[] =
+ସ୍ଥିର ଅଚଳ ଅକ୍ଷର *tclsh_main_loop(ଶୂନ୍ୟ){
+  ସ୍ଥିର ଅଚଳ ଅକ୍ଷର zMainloop[] =
     "if {[llength $argv]>=1} {\n"
 #ifdef WIN32
       "set new [list]\n"
@@ -4598,33 +4598,33 @@ static const char *tclsh_main_loop(void){
       "}\n"
     "}\n"
   ;
-  return zMainloop;
+  ଫେରନ୍ତୁ zMainloop;
 }
 
 #ifndef TCLSH_MAIN
-# define TCLSH_MAIN main
+# define TCLSH_MAIN ମୁଖ୍ୟ
 #endif
-int SQLITE_CDECL TCLSH_MAIN(int argc, char **argv){
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା SQLITE_CDECL TCLSH_MAIN(ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅକ୍ଷର **argv){
   Tcl_Interp *interp;
-  int i;
-  const char *zScript = 0;
-  char zArgc[32];
-#if defined(TCLSH_INIT_PROC)
-  extern const char *TCLSH_INIT_PROC(Tcl_Interp*);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ଅଚଳ ଅକ୍ଷର *zScript = 0;
+  ଅକ୍ଷର zArgc[32];
+#ଯଦି defined(TCLSH_INIT_PROC)
+  ବାହ୍ୟ ଅଚଳ ଅକ୍ଷର *TCLSH_INIT_PROC(Tcl_Interp*);
 #endif
 
-#if !defined(_WIN32_WCE)
-  if( getenv("SQLITE_DEBUG_BREAK") ){
-    if( isatty(0) && isatty(2) ){
+#ଯଦି !defined(_WIN32_WCE)
+  ଯଦି( getenv("SQLITE_DEBUG_BREAK") ){
+    ଯଦି( isatty(0) && isatty(2) ){
       fprintf(stderr,
           "attach debugger to process %d and press any key to continue.\n",
           GETPID());
       fgetc(stdin);
-    }else{
-#if defined(_WIN32) || defined(WIN32)
+    }ଅନ୍ୟଥା{
+#ଯଦି defined(_WIN32) || defined(WIN32)
       DebugBreak();
-#elif defined(SIGTRAP)
-      raise(SIGTRAP);
+#ନଚେତଯଦି defined(SIGTRAP)
+      ଉଠାଅ(SIGTRAP);
 #endif
     }
   }
@@ -4636,30 +4636,30 @@ int SQLITE_CDECL TCLSH_MAIN(int argc, char **argv){
   sqlite3_shutdown();
 
   Tcl_FindExecutable(argv[0]);
-  Tcl_SetSystemEncoding(NULL, "utf-8");
+  Tcl_SetSystemEncoding(ଖାଲି, "utf-8");
   interp = Tcl_CreateInterp();
   Sqlite3_Init(interp);
 
-  sqlite3_snprintf(sizeof(zArgc), zArgc, "%d", argc-1);
+  sqlite3_snprintf(ଆକାର(zArgc), zArgc, "%d", argc-1);
   Tcl_SetVar(interp,"argc", zArgc, TCL_GLOBAL_ONLY);
   Tcl_SetVar(interp,"argv0",argv[0],TCL_GLOBAL_ONLY);
   Tcl_SetVar(interp,"argv", "", TCL_GLOBAL_ONLY);
-  for(i=1; i<argc; i++){
+  ପାଇଁ(i=1; i<argc; i++){
     Tcl_SetVar(interp, "argv", argv[i],
-        TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT | TCL_APPEND_VALUE);
+        TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT | TCL_APPEND_ମୂଲ୍ୟ);
   }
-#if defined(TCLSH_INIT_PROC)
+#ଯଦି defined(TCLSH_INIT_PROC)
   zScript = TCLSH_INIT_PROC(interp);
 #endif
-  if( zScript==0 ){
+  ଯଦି( zScript==0 ){
     zScript = tclsh_main_loop();
   }
-  if( Tcl_GlobalEval(interp, zScript)!=TCL_OK ){
-    const char *zInfo = Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY);
-    if( zInfo==0 ) zInfo = Tcl_GetStringResult(interp);
+  ଯଦି( Tcl_GlobalEval(interp, zScript)!=TCL_OK ){
+    ଅଚଳ ଅକ୍ଷର *zInfo = Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY);
+    ଯଦି( zInfo==0 ) zInfo = Tcl_GetStringResult(interp);
     fprintf(stderr,"%s: %s\n", *argv, zInfo);
-    return 1;
+    ଫେରନ୍ତୁ 1;
   }
-  return 0;
+  ଫେରନ୍ତୁ 0;
 }
 #endif /* TCLSH */

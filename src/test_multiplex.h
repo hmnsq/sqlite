@@ -47,7 +47,7 @@
 #define MULTIPLEX_CTRL_SET_MAX_CHUNKS  214016
 
 #ifdef __cplusplus
-extern "C" {
+ବାହ୍ୟ "C" {
 #endif
 
 /*
@@ -79,7 +79,7 @@ extern "C" {
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once
 ** during start-up.
 */
-extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefault);
+ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3_multiplex_initialize(ଅଚଳ ଅକ୍ଷର *zOrigVfsName, ପୂର୍ଣ୍ଣସଂଖ୍ୟା makeDefault);
 
 /*
 ** CAPI: Shutdown the multiplex system - sqlite3_multiplex_shutdown()
@@ -90,7 +90,7 @@ extern int sqlite3_multiplex_initialize(const char *zOrigVfsName, int makeDefaul
 ** THIS ROUTINE IS NOT THREADSAFE.  Call this routine exactly once while
 ** shutting down in order to free all remaining multiplex groups.
 */
-extern int sqlite3_multiplex_shutdown(int eForce);
+ବାହ୍ୟ ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3_multiplex_shutdown(ପୂର୍ଣ୍ଣସଂଖ୍ୟା eForce);
 
 #ifdef __cplusplus
 }  /* End of the 'extern "C"' block */

@@ -21,8 +21,8 @@
 ** official SQLite documentation.
 */
 
-#include "sqliteInt.h"   /* Requires access to internal data structures */
-#if (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
+#ଅନ୍ତର୍ଭାଵ "sqliteInt.h"   /* Requires access to internal data structures */
+#ଯଦି (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
     && !defined(SQLITE_OMIT_VIRTUALTABLE)
 
 /*
@@ -65,7 +65,7 @@
 **
 **      '/1c2/000/'               // Left-most child of 451st child of root
 */
-static const char zDbstatSchema[] = 
+ସ୍ଥିର ଅଚଳ ଅକ୍ଷର zDbstatSchema[] = 
   "CREATE TABLE x("
   " name       TEXT,"          /*  0 Name of table or index */
   " path       TEXT,"          /*  1 Path to page from root (NULL for agg) */
@@ -83,56 +83,56 @@ static const char zDbstatSchema[] =
 ;
 
 /* Forward reference to data structured used in this module */
-typedef struct StatTable StatTable;
-typedef struct StatCursor StatCursor;
-typedef struct StatPage StatPage;
-typedef struct StatCell StatCell;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା StatTable StatTable;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା StatCursor StatCursor;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା StatPage StatPage;
+ପ୍ରକାରବ୍ୟାଖ୍ୟା ସଂରଚନା StatCell StatCell;
 
 /* Size information for a single cell within a btree page */
-struct StatCell {
-  int nLocal;                     /* Bytes of local payload */
+ସଂରଚନା StatCell {
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nLocal;                     /* Bytes of local payload */
   u32 iChildPg;                   /* Child node (or 0 if this is a leaf) */
-  int nOvfl;                      /* Entries in aOvfl[] */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nOvfl;                      /* Entries in aOvfl[] */
   u32 *aOvfl;                     /* Array of overflow page numbers */
-  int nLastOvfl;                  /* Bytes of payload on final overflow page */
-  int iOvfl;                      /* Iterates through aOvfl[] */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nLastOvfl;                  /* Bytes of payload on final overflow page */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iOvfl;                      /* Iterates through aOvfl[] */
 };
 
 /* Size information for a single btree page */
-struct StatPage {
+ସଂରଚନା StatPage {
   u32 iPgno;                      /* Page number */
   u8 *aPg;                        /* Page buffer from sqlite3_malloc() */
-  int iCell;                      /* Current cell */
-  char *zPath;                    /* Path to this page */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iCell;                      /* Current cell */
+  ଅକ୍ଷର *zPath;                    /* Path to this page */
 
   /* Variables populated by statDecodePage(): */
   u8 flags;                       /* Copy of flags byte */
-  int nCell;                      /* Number of cells on page */
-  int nUnused;                    /* Number of unused bytes on page */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCell;                      /* Number of cells on page */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nUnused;                    /* Number of unused bytes on page */
   StatCell *aCell;                /* Array of parsed cells */
-  u32 iRightChildPg;              /* Right-child page number (or 0) */
-  int nMxPayload;                 /* Largest payload of any cell on the page */
+  u32 i_ଡାହାଣ_Child_Pg;              /* Right-child page number (or 0) */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nMxPayload;                 /* Largest payload of any cell on the page */
 };
 
 /* The cursor for scanning the dbstat virtual table */
-struct StatCursor {
+ସଂରଚନା StatCursor {
   sqlite3_vtab_cursor base;       /* base class.  MUST BE FIRST! */
   sqlite3_stmt *pStmt;            /* Iterates through set of root pages */
   u8 isEof;                       /* After pStmt has returned SQLITE_DONE */
   u8 isAgg;                       /* Aggregate results for each table */
-  int iDb;                        /* Schema used for this query */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDb;                        /* Schema used for this query */
 
   StatPage aPage[32];             /* Pages in path to current page */
-  int iPage;                      /* Current entry in aPage[] */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iPage;                      /* Current entry in aPage[] */
 
   /* Values to return. */
   u32 iPageno;                    /* Value of 'pageno' column */
-  char *zName;                    /* Value of 'name' column */
-  char *zPath;                    /* Value of 'path' column */
-  char *zPagetype;                /* Value of 'pagetype' column */
-  int nPage;                      /* Number of pages in current btree */
-  int nCell;                      /* Value of 'ncell' column */
-  int nMxPayload;                 /* Value of 'mx_payload' column */
+  ଅକ୍ଷର *zName;                    /* Value of 'name' column */
+  ଅକ୍ଷର *zPath;                    /* Value of 'path' column */
+  ଅକ୍ଷର *zPagetype;                /* Value of 'pagetype' column */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nPage;                      /* Number of pages in current btree */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nCell;                      /* Value of 'ncell' column */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nMxPayload;                 /* Value of 'mx_payload' column */
   i64 nUnused;                    /* Value of 'unused' column */
   i64 nPayload;                   /* Value of 'payload' column */
   i64 iOffset;                    /* Value of 'pgOffset' column */
@@ -140,10 +140,10 @@ struct StatCursor {
 };
 
 /* An instance of the DBSTAT virtual table */
-struct StatTable {
+ସଂରଚନା StatTable {
   sqlite3_vtab base;              /* base class.  MUST BE FIRST! */
   sqlite3 *db;                    /* Database connection that owns this vtab */
-  int iDb;                        /* Index of database to analyze */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDb;                        /* Index of database to analyze */
 };
 
 #ifndef get2byte
@@ -153,53 +153,53 @@ struct StatTable {
 /*
 ** Connect to or create a new DBSTAT virtual table.
 */
-static int statConnect(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  ଶୂନ୍ୟ *pAux,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, ଅଚଳ ଅକ୍ଷର *ଅଚଳ*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  ଅକ୍ଷର **pzErr
 ){
   StatTable *pTab = 0;
-  int rc = SQLITE_OK;
-  int iDb;
-  (void)pAux;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDb;
+  (ଶୂନ୍ୟ)pAux;
 
-  if( argc>=4 ){
+  ଯଦି( argc>=4 ){
     Token nm;
-    sqlite3TokenInit(&nm, (char*)argv[3]);
+    sqlite3TokenInit(&nm, (ଅକ୍ଷର*)argv[3]);
     iDb = sqlite3FindDb(db, &nm);
-    if( iDb<0 ){
+    ଯଦି( iDb<0 ){
       *pzErr = sqlite3_mprintf("no such database: %s", argv[3]);
-      return SQLITE_ERROR;
+      ଫେରନ୍ତୁ SQLITE_ERROR;
     }
-  }else{
+  }ଅନ୍ୟଥା{
     iDb = 0;
   }
   sqlite3_vtab_config(db, SQLITE_VTAB_DIRECTONLY);
   rc = sqlite3_declare_vtab(db, zDbstatSchema);
-  if( rc==SQLITE_OK ){
-    pTab = (StatTable *)sqlite3_malloc64(sizeof(StatTable));
-    if( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
+  ଯଦି( rc==SQLITE_OK ){
+    pTab = (StatTable *)sqlite3_malloc64(ଆକାର(StatTable));
+    ଯଦି( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
   }
 
-  assert( rc==SQLITE_OK || pTab==0 );
-  if( rc==SQLITE_OK ){
-    memset(pTab, 0, sizeof(StatTable));
+  ପ୍ରତିଜ୍ଞା( rc==SQLITE_OK || pTab==0 );
+  ଯଦି( rc==SQLITE_OK ){
+    memset(pTab, 0, ଆକାର(StatTable));
     pTab->db = db;
     pTab->iDb = iDb;
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
 ** Disconnect from or destroy the DBSTAT virtual table.
 */
-static int statDisconnect(sqlite3_vtab *pVtab){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
@@ -212,52 +212,52 @@ static int statDisconnect(sqlite3_vtab *pVtab){
 **      0x04           There is an aggregate=? term in the WHERE clause
 **      0x08           Output should be ordered by name and path
 */
-static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int i;
-  int iSchema = -1;
-  int iName = -1;
-  int iAgg = -1;
-  (void)tab;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iSchema = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iName = -1;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iAgg = -1;
+  (ଶୂନ୍ୟ)tab;
 
   /* Look for a valid schema=? constraint.  If found, change the idxNum to
   ** 1 and request the value of that constraint be sent to xFilter.  And
   ** lower the cost estimate to encourage the constrained version to be
   ** used.
   */
-  for(i=0; i<pIdxInfo->nConstraint; i++){
-    if( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pIdxInfo->aConstraint[i].usable==0 ){
+  ପାଇଁ(i=0; i<pIdxInfo->nConstraint; i++){
+    ଯଦି( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) ଜାରି;
+    ଯଦି( pIdxInfo->aConstraint[i].usable==0 ){
       /* Force DBSTAT table should always be the right-most table in a join */
-      return SQLITE_CONSTRAINT;
+      ଫେରନ୍ତୁ SQLITE_CONSTRAINT;
     }
-    switch( pIdxInfo->aConstraint[i].iColumn ){
-      case 0: {    /* name */
+    ବାଛ( pIdxInfo->aConstraint[i].iColumn ){
+      ସ୍ଥିତି 0: {    /* name */
         iName = i;
-        break;
+        ଭାଙ୍ଗ;
       }
-      case 10: {   /* schema */
+      ସ୍ଥିତି 10: {   /* schema */
         iSchema = i;
-        break;
+        ଭାଙ୍ଗ;
       }
-      case 11: {   /* aggregate */
+      ସ୍ଥିତି 11: {   /* aggregate */
         iAgg = i;
-        break;
+        ଭାଙ୍ଗ;
       }
     }
   }
   i = 0;
-  if( iSchema>=0 ){
+  ଯଦି( iSchema>=0 ){
     pIdxInfo->aConstraintUsage[iSchema].argvIndex = ++i;
     pIdxInfo->aConstraintUsage[iSchema].omit = 1;
-    pIdxInfo->idxNum |= 0x01;
+    pIdxInfo->idx_ଅଙ୍କ |= 0x01;
   }
-  if( iName>=0 ){
+  ଯଦି( iName>=0 ){
     pIdxInfo->aConstraintUsage[iName].argvIndex = ++i;
-    pIdxInfo->idxNum |= 0x02;
+    pIdxInfo->idx_ଅଙ୍କ |= 0x02;
   }
-  if( iAgg>=0 ){
+  ଯଦି( iAgg>=0 ){
     pIdxInfo->aConstraintUsage[iAgg].argvIndex = ++i;
-    pIdxInfo->idxNum |= 0x04;
+    pIdxInfo->idx_ଅଙ୍କ |= 0x04;
   }
   pIdxInfo->estimatedCost = 1.0;
 
@@ -265,7 +265,7 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** If this will satisfy the client, set the orderByConsumed flag so that 
   ** SQLite does not do an external sort.
   */
-  if( ( pIdxInfo->nOrderBy==1
+  ଯଦି( ( pIdxInfo->nOrderBy==1
      && pIdxInfo->aOrderBy[0].iColumn==0
      && pIdxInfo->aOrderBy[0].desc==0
      ) ||
@@ -277,37 +277,37 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
      )
   ){
     pIdxInfo->orderByConsumed = 1;
-    pIdxInfo->idxNum |= 0x08;
+    pIdxInfo->idx_ଅଙ୍କ |= 0x08;
   }
   pIdxInfo->idxFlags |= SQLITE_INDEX_SCAN_HEX;
 
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Open a new DBSTAT cursor.
 */
-static int statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   StatTable *pTab = (StatTable *)pVTab;
   StatCursor *pCsr;
 
-  pCsr = (StatCursor *)sqlite3_malloc64(sizeof(StatCursor));
-  if( pCsr==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
-    memset(pCsr, 0, sizeof(StatCursor));
+  pCsr = (StatCursor *)sqlite3_malloc64(ଆକାର(StatCursor));
+  ଯଦି( pCsr==0 ){
+    ଫେରନ୍ତୁ SQLITE_NOMEM_BKPT;
+  }ଅନ୍ୟଥା{
+    memset(pCsr, 0, ଆକାର(StatCursor));
     pCsr->base.pVtab = pVTab;
     pCsr->iDb = pTab->iDb;
   }
 
   *ppCursor = (sqlite3_vtab_cursor *)pCsr;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
-static void statClearCells(StatPage *p){
-  int i;
-  if( p->aCell ){
-    for(i=0; i<p->nCell; i++){
+ସ୍ଥିର ଶୂନ୍ୟ statClearCells(StatPage *p){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
+  ଯଦି( p->aCell ){
+    ପାଇଁ(i=0; i<p->nCell; i++){
       sqlite3_free(p->aCell[i].aOvfl);
     }
     sqlite3_free(p->aCell);
@@ -316,21 +316,21 @@ static void statClearCells(StatPage *p){
   p->aCell = 0;
 }
 
-static void statClearPage(StatPage *p){
+ସ୍ଥିର ଶୂନ୍ୟ statClearPage(StatPage *p){
   u8 *aPg = p->aPg;
   statClearCells(p);
   sqlite3_free(p->zPath);
-  memset(p, 0, sizeof(StatPage));
+  memset(p, 0, ଆକାର(StatPage));
   p->aPg = aPg;
 }
 
-static void statResetCsr(StatCursor *pCsr){
-  int i;
+ସ୍ଥିର ଶୂନ୍ୟ statResetCsr(StatCursor *pCsr){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
   /* In some circumstances, specifically if an OOM has occurred, the call
   ** to sqlite3_reset() may cause the pager to be reset (emptied). It is
   ** important that statClearPage() is called to free any page refs before
   ** this happens. dbsqlfuzz 9ed3e4e3816219d3509d711636c38542bf3f40b1. */
-  for(i=0; i<ArraySize(pCsr->aPage); i++){
+  ପାଇଁ(i=0; i<ArraySize(pCsr->aPage); i++){
     statClearPage(&pCsr->aPage[i]);
     sqlite3_free(pCsr->aPage[i].aPg);
     pCsr->aPage[i].aPg = 0;
@@ -343,7 +343,7 @@ static void statResetCsr(StatCursor *pCsr){
 }
 
 /* Resize the space-used counters inside of the cursor */
-static void statResetCounts(StatCursor *pCsr){
+ସ୍ଥିର ଶୂନ୍ୟ statResetCounts(StatCursor *pCsr){
   pCsr->nCell = 0;
   pCsr->nMxPayload = 0;
   pCsr->nUnused = 0;
@@ -355,12 +355,12 @@ static void statResetCounts(StatCursor *pCsr){
 /*
 ** Close a DBSTAT cursor.
 */
-static int statClose(sqlite3_vtab_cursor *pCursor){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statClose(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
@@ -368,125 +368,125 @@ static int statClose(sqlite3_vtab_cursor *pCursor){
 ** content (payload) stored on that page.  That is to say, compute the
 ** number of bytes of content not found on overflow pages.
 */
-static int getLocalPayload(
-  int nUsable,                    /* Usable bytes per page */
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା getLocalPayload(
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nUsable,                    /* Usable bytes per page */
   u8 flags,                       /* Page flags */
-  int nTotal                      /* Total record (payload) size */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nTotal                      /* Total record (payload) size */
 ){
-  int nLocal;
-  int nMinLocal;
-  int nMaxLocal;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nLocal;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nMinLocal;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nMaxLocal;
  
-  if( flags==0x0D ){              /* Table leaf node */
+  ଯଦି( flags==0x0D ){              /* Table leaf node */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = nUsable - 35;
-  }else{                          /* Index interior and leaf nodes */
+  }ଅନ୍ୟଥା{                          /* Index interior and leaf nodes */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = (nUsable - 12) * 64 / 255 - 23;
   }
 
   nLocal = nMinLocal + (nTotal - nMinLocal) % (nUsable - 4);
-  if( nLocal>nMaxLocal ) nLocal = nMinLocal;
-  return nLocal;
+  ଯଦି( nLocal>nMaxLocal ) nLocal = nMinLocal;
+  ଫେରନ୍ତୁ nLocal;
 }
 
 /* Populate the StatPage object with information about the all
 ** cells found on the page currently under analysis.
 */
-static int statDecodePage(Btree *pBt, StatPage *p){
-  int nUnused;
-  int iOff;
-  int nHdr;
-  int isLeaf;
-  int szPage;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statDecodePage(Btree *pBt, StatPage *p){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nUnused;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iOff;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nHdr;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା isLeaf;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା szPage;
 
   u8 *aData = p->aPg;
   u8 *aHdr = &aData[p->iPgno==1 ? 100 : 0];
 
   p->flags = aHdr[0];
-  if( p->flags==0x0A || p->flags==0x0D ){
+  ଯଦି( p->flags==0x0A || p->flags==0x0D ){
     isLeaf = 1;
     nHdr = 8;
-  }else if( p->flags==0x05 || p->flags==0x02 ){
+  }ଅନ୍ୟଥା ଯଦି( p->flags==0x05 || p->flags==0x02 ){
     isLeaf = 0;
     nHdr = 12;
-  }else{
-    goto statPageIsCorrupt;
+  }ଅନ୍ୟଥା{
+    ଯାଅ statPageIsCorrupt;
   }
-  if( p->iPgno==1 ) nHdr += 100;
+  ଯଦି( p->iPgno==1 ) nHdr += 100;
   p->nCell = get2byte(&aHdr[3]);
   p->nMxPayload = 0;
   szPage = sqlite3BtreeGetPageSize(pBt);
 
   nUnused = get2byte(&aHdr[5]) - nHdr - 2*p->nCell;
-  nUnused += (int)aHdr[7];
+  nUnused += (ପୂର୍ଣ୍ଣସଂଖ୍ୟା)aHdr[7];
   iOff = get2byte(&aHdr[1]);
-  while( iOff ){
-    int iNext;
-    if( iOff>=szPage ) goto statPageIsCorrupt;
+  ଯେତେବେଳେ( iOff ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା iNext;
+    ଯଦି( iOff>=szPage ) ଯାଅ statPageIsCorrupt;
     nUnused += get2byte(&aData[iOff+2]);
     iNext = get2byte(&aData[iOff]);
-    if( iNext<iOff+4 && iNext>0 ) goto statPageIsCorrupt;
+    ଯଦି( iNext<iOff+4 && iNext>0 ) ଯାଅ statPageIsCorrupt;
     iOff = iNext;
   }
   p->nUnused = nUnused;
-  p->iRightChildPg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
+  p->i_ଡାହାଣ_Child_Pg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
 
-  if( p->nCell ){
-    int i;                        /* Used to iterate through cells */
-    int nUsable;                  /* Usable bytes per page */
+  ଯଦି( p->nCell ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;                        /* Used to iterate through cells */
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା nUsable;                  /* Usable bytes per page */
 
     sqlite3BtreeEnter(pBt);
     nUsable = szPage - sqlite3BtreeGetReserveNoMutex(pBt);
     sqlite3BtreeLeave(pBt);
-    p->aCell = sqlite3_malloc64((p->nCell+1) * sizeof(StatCell));
-    if( p->aCell==0 ) return SQLITE_NOMEM_BKPT;
-    memset(p->aCell, 0, (p->nCell+1) * sizeof(StatCell));
+    p->aCell = sqlite3_malloc64((p->nCell+1) * ଆକାର(StatCell));
+    ଯଦି( p->aCell==0 ) ଫେରନ୍ତୁ SQLITE_NOMEM_BKPT;
+    memset(p->aCell, 0, (p->nCell+1) * ଆକାର(StatCell));
 
-    for(i=0; i<p->nCell; i++){
+    ପାଇଁ(i=0; i<p->nCell; i++){
       StatCell *pCell = &p->aCell[i];
 
       iOff = get2byte(&aData[nHdr+i*2]);
-      if( iOff<nHdr || iOff>=szPage ) goto statPageIsCorrupt;
-      if( !isLeaf ){
+      ଯଦି( iOff<nHdr || iOff>=szPage ) ଯାଅ statPageIsCorrupt;
+      ଯଦି( !isLeaf ){
         pCell->iChildPg = sqlite3Get4byte(&aData[iOff]);
         iOff += 4;
       }
-      if( p->flags==0x05 ){
+      ଯଦି( p->flags==0x05 ){
         /* A table interior node. nPayload==0. */
-      }else{
+      }ଅନ୍ୟଥା{
         u32 nPayload;             /* Bytes of payload total (local+overflow) */
-        int nLocal;               /* Bytes of payload stored locally */
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା nLocal;               /* Bytes of payload stored locally */
         iOff += getVarint32(&aData[iOff], nPayload);
-        if( p->flags==0x0D ){
+        ଯଦି( p->flags==0x0D ){
           u64 dummy;
           iOff += sqlite3GetVarint(&aData[iOff], &dummy);
         }
-        if( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
+        ଯଦି( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
         nLocal = getLocalPayload(nUsable, p->flags, nPayload);
-        if( nLocal<0 ) goto statPageIsCorrupt;
+        ଯଦି( nLocal<0 ) ଯାଅ statPageIsCorrupt;
         pCell->nLocal = nLocal;
-        assert( nPayload>=(u32)nLocal );
-        assert( nLocal<=(nUsable-35) );
-        if( nPayload>(u32)nLocal ){
-          int j;
-          int nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
-          if( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
-            goto statPageIsCorrupt;
+        ପ୍ରତିଜ୍ଞା( nPayload>=(u32)nLocal );
+        ପ୍ରତିଜ୍ଞା( nLocal<=(nUsable-35) );
+        ଯଦି( nPayload>(u32)nLocal ){
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା j;
+          ପୂର୍ଣ୍ଣସଂଖ୍ୟା nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
+          ଯଦି( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
+            ଯାଅ statPageIsCorrupt;
           }
           pCell->nLastOvfl = (nPayload-nLocal) - (nOvfl-1) * (nUsable-4);
           pCell->nOvfl = nOvfl;
-          pCell->aOvfl = sqlite3_malloc64(sizeof(u32)*nOvfl);
-          if( pCell->aOvfl==0 ) return SQLITE_NOMEM_BKPT;
+          pCell->aOvfl = sqlite3_malloc64(ଆକାର(u32)*nOvfl);
+          ଯଦି( pCell->aOvfl==0 ) ଫେରନ୍ତୁ SQLITE_NOMEM_BKPT;
           pCell->aOvfl[0] = sqlite3Get4byte(&aData[iOff+nLocal]);
-          for(j=1; j<nOvfl; j++){
-            int rc;
+          ପାଇଁ(j=1; j<nOvfl; j++){
+            ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
             u32 iPrev = pCell->aOvfl[j-1];
             DbPage *pPg = 0;
             rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPrev, &pPg, 0);
-            if( rc!=SQLITE_OK ){
-              assert( pPg==0 );
-              return rc;
+            ଯଦି( rc!=SQLITE_OK ){
+              ପ୍ରତିଜ୍ଞା( pPg==0 );
+              ଫେରନ୍ତୁ rc;
             } 
             pCell->aOvfl[j] = sqlite3Get4byte(sqlite3PagerGetData(pPg));
             sqlite3PagerUnref(pPg);
@@ -496,19 +496,19 @@ static int statDecodePage(Btree *pBt, StatPage *p){
     }
   }
 
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 
 statPageIsCorrupt:
   p->flags = 0;
   statClearCells(p);
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Populate the pCsr->iOffset and pCsr->szPage member variables. Based on
 ** the current value of pCsr->iPageno.
 */
-static void statSizeAndOffset(StatCursor *pCsr){
+ସ୍ଥିର ଶୂନ୍ୟ statSizeAndOffset(StatCursor *pCsr){
   StatTable *pTab = (StatTable *)((sqlite3_vtab_cursor *)pCsr)->pVtab;
   Btree *pBt = pTab->db->aDb[pTab->iDb].pBt;
   Pager *pPager = sqlite3BtreePager(pBt);
@@ -520,10 +520,10 @@ static void statSizeAndOffset(StatCursor *pCsr){
   */
   fd = sqlite3PagerFile(pPager);
   x[0] = pCsr->iPageno;
-  if( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
+  ଯଦି( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
     pCsr->iOffset = x[0];
     pCsr->szPage += x[1];
-  }else{
+  }ଅନ୍ୟଥା{
     /* Not ZIPVFS: The default page size and offset */
     pCsr->szPage += sqlite3BtreeGetPageSize(pBt);
     pCsr->iOffset = (i64)pCsr->szPage * (pCsr->iPageno - 1);
@@ -535,31 +535,31 @@ static void statSizeAndOffset(StatCursor *pCsr){
 ** to page object pPg. Allocate the buffer if necessary. Return SQLITE_OK
 ** if successful, or an SQLite error code otherwise.
 */
-static int statGetPage(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statGetPage(
   Btree *pBt,                     /* Load page from this b-tree */
   u32 iPg,                        /* Page number to load */
   StatPage *pPg                   /* Load page into this object */
 ){
-  int pgsz = sqlite3BtreeGetPageSize(pBt);
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା pgsz = sqlite3BtreeGetPageSize(pBt);
   DbPage *pDbPage = 0;
-  int rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
 
-  if( pPg->aPg==0 ){
+  ଯଦି( pPg->aPg==0 ){
     pPg->aPg = (u8*)sqlite3_malloc(pgsz + DBSTAT_PAGE_PADDING_BYTES);
-    if( pPg->aPg==0 ){
-      return SQLITE_NOMEM_BKPT;
+    ଯଦି( pPg->aPg==0 ){
+      ଫେରନ୍ତୁ SQLITE_NOMEM_BKPT;
     }
     memset(&pPg->aPg[pgsz], 0, DBSTAT_PAGE_PADDING_BYTES);
   }
 
   rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPg, &pDbPage, 0);
-  if( rc==SQLITE_OK ){
-    const u8 *a = sqlite3PagerGetData(pDbPage);
+  ଯଦି( rc==SQLITE_OK ){
+    ଅଚଳ u8 *a = sqlite3PagerGetData(pDbPage);
     memcpy(pPg->aPg, a, pgsz);
     sqlite3PagerUnref(pDbPage);
   }
 
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
 /*
@@ -567,10 +567,10 @@ static int statGetPage(
 ** entry will be the next page, but in aggregated mode (pCsr->isAgg!=0),
 ** the next entry is the next btree.
 */
-static int statNext(sqlite3_vtab_cursor *pCursor){
-  int rc;
-  int nPayload;
-  char *z;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statNext(sqlite3_vtab_cursor *pCursor){
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା nPayload;
+  ଅକ୍ଷର *z;
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable *)pCursor->pVtab;
   Btree *pBt = pTab->db->aDb[pCsr->iDb].pBt;
@@ -580,40 +580,40 @@ static int statNext(sqlite3_vtab_cursor *pCursor){
   pCsr->zPath = 0;
 
 statNextRestart:
-  if( pCsr->iPage<0 ){
+  ଯଦି( pCsr->iPage<0 ){
     /* Start measuring space on the next btree */
     statResetCounts(pCsr);
     rc = sqlite3_step(pCsr->pStmt);
-    if( rc==SQLITE_ROW ){
-      int nPage;
-      u32 iRoot = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
+    ଯଦି( rc==SQLITE_ROW ){
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା nPage;
+      u32 i_ମୂଳ = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
       sqlite3PagerPagecount(pPager, &nPage);
-      if( nPage==0 ){
+      ଯଦି( nPage==0 ){
         pCsr->isEof = 1;
-        return sqlite3_reset(pCsr->pStmt);
+        ଫେରନ୍ତୁ sqlite3_reset(pCsr->pStmt);
       }
-      rc = statGetPage(pBt, iRoot, &pCsr->aPage[0]);
-      pCsr->aPage[0].iPgno = iRoot;
+      rc = statGetPage(pBt, i_ମୂଳ, &pCsr->aPage[0]);
+      pCsr->aPage[0].iPgno = i_ମୂଳ;
       pCsr->aPage[0].iCell = 0;
-      if( !pCsr->isAgg ){
+      ଯଦି( !pCsr->isAgg ){
         pCsr->aPage[0].zPath = z = sqlite3_mprintf("/");
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        ଯଦି( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       pCsr->iPage = 0;
       pCsr->nPage = 1;
-    }else{
+    }ଅନ୍ୟଥା{
       pCsr->isEof = 1;
-      return sqlite3_reset(pCsr->pStmt);
+      ଫେରନ୍ତୁ sqlite3_reset(pCsr->pStmt);
     }
-  }else{
+  }ଅନ୍ୟଥା{
     /* Continue analyzing the btree previously started */
     StatPage *p = &pCsr->aPage[pCsr->iPage];
-    if( !pCsr->isAgg ) statResetCounts(pCsr);
-    while( p->iCell<p->nCell ){
+    ଯଦି( !pCsr->isAgg ) statResetCounts(pCsr);
+    ଯେତେବେଳେ( p->iCell<p->nCell ){
       StatCell *pCell = &p->aCell[p->iCell];
-      while( pCell->iOvfl<pCell->nOvfl ){
-        int nUsable;
-        int iOvfl = pCell->iOvfl;
+      ଯେତେବେଳେ( pCell->iOvfl<pCell->nOvfl ){
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା nUsable;
+        ପୂର୍ଣ୍ଣସଂଖ୍ୟା iOvfl = pCell->iOvfl;
         sqlite3BtreeEnter(pBt);
         nUsable = sqlite3BtreeGetPageSize(pBt) - 
                         sqlite3BtreeGetReserveNoMutex(pBt);
@@ -621,54 +621,54 @@ statNextRestart:
         pCsr->nPage++;
         pCsr->iPageno = pCell->aOvfl[iOvfl];
         statSizeAndOffset(pCsr);
-        if( pCell->iOvfl<pCell->nOvfl-1 ){
+        ଯଦି( pCell->iOvfl<pCell->nOvfl-1 ){
           pCsr->nPayload += nUsable - 4;
-        }else{
+        }ଅନ୍ୟଥା{
           pCsr->nPayload += pCell->nLastOvfl;
           pCsr->nUnused += nUsable - 4 - pCell->nLastOvfl;
         }
         pCell->iOvfl++;
-        if( !pCsr->isAgg ){
-          pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
+        ଯଦି( !pCsr->isAgg ){
+          pCsr->zName = (ଅକ୍ଷର *)sqlite3_column_text(pCsr->pStmt, 0);
           pCsr->zPagetype = "overflow";
           pCsr->zPath = z = sqlite3_mprintf(
               "%s%.3x+%.6x", p->zPath, p->iCell, iOvfl
           );
-          return z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
+          ଫେରନ୍ତୁ z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
         }
       }
-      if( p->iRightChildPg ) break;
+      ଯଦି( p->i_ଡାହାଣ_Child_Pg ) ଭାଙ୍ଗ;
       p->iCell++;
     }
 
-    if( !p->iRightChildPg || p->iCell>p->nCell ){
+    ଯଦି( !p->i_ଡାହାଣ_Child_Pg || p->iCell>p->nCell ){
       statClearPage(p);
       pCsr->iPage--;
-      if( pCsr->isAgg && pCsr->iPage<0 ){
+      ଯଦି( pCsr->isAgg && pCsr->iPage<0 ){
         /* label-statNext-done:  When computing aggregate space usage over
         ** an entire btree, this is the exit point from this function */
-        return SQLITE_OK;
+        ଫେରନ୍ତୁ SQLITE_OK;
       }
-      goto statNextRestart; /* Tail recursion */
+      ଯାଅ statNextRestart; /* Tail recursion */
     }
     pCsr->iPage++;
-    if( pCsr->iPage>=ArraySize(pCsr->aPage) ){
+    ଯଦି( pCsr->iPage>=ArraySize(pCsr->aPage) ){
       statResetCsr(pCsr);
-      return SQLITE_CORRUPT_BKPT;
+      ଫେରନ୍ତୁ SQLITE_CORRUPT_BKPT;
     }
-    assert( p==&pCsr->aPage[pCsr->iPage-1] );
+    ପ୍ରତିଜ୍ଞା( p==&pCsr->aPage[pCsr->iPage-1] );
 
-    if( p->iCell==p->nCell ){
-      p[1].iPgno = p->iRightChildPg;
-    }else{
+    ଯଦି( p->iCell==p->nCell ){
+      p[1].iPgno = p->i_ଡାହାଣ_Child_Pg;
+    }ଅନ୍ୟଥା{
       p[1].iPgno = p->aCell[p->iCell].iChildPg;
     }
     rc = statGetPage(pBt, p[1].iPgno, &p[1]);
     pCsr->nPage++;
     p[1].iCell = 0;
-    if( !pCsr->isAgg ){
+    ଯଦି( !pCsr->isAgg ){
       p[1].zPath = z = sqlite3_mprintf("%s%.3x/", p->zPath, p->iCell);
-      if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+      ଯଦି( z==0 ) rc = SQLITE_NOMEM_BKPT;
     }
     p->iCell++;
   }
@@ -677,38 +677,38 @@ statNextRestart:
   /* Populate the StatCursor fields with the values to be returned
   ** by the xColumn() and xRowid() methods.
   */
-  if( rc==SQLITE_OK ){
-    int i;
+  ଯଦି( rc==SQLITE_OK ){
+    ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
     StatPage *p = &pCsr->aPage[pCsr->iPage];
-    pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
+    pCsr->zName = (ଅକ୍ଷର *)sqlite3_column_text(pCsr->pStmt, 0);
     pCsr->iPageno = p->iPgno;
 
     rc = statDecodePage(pBt, p);
-    if( rc==SQLITE_OK ){
+    ଯଦି( rc==SQLITE_OK ){
       statSizeAndOffset(pCsr);
 
-      switch( p->flags ){
-        case 0x05:             /* table internal */
-        case 0x02:             /* index internal */
+      ବାଛ( p->flags ){
+        ସ୍ଥିତି 0x05:             /* table internal */
+        ସ୍ଥିତି 0x02:             /* index internal */
           pCsr->zPagetype = "internal";
-          break;
-        case 0x0D:             /* table leaf */
-        case 0x0A:             /* index leaf */
+          ଭାଙ୍ଗ;
+        ସ୍ଥିତି 0x0D:             /* table leaf */
+        ସ୍ଥିତି 0x0A:             /* index leaf */
           pCsr->zPagetype = "leaf";
-          break;
-        default:
+          ଭାଙ୍ଗ;
+        ପୂର୍ବନିର୍ଦ୍ଧାରିତ:
           pCsr->zPagetype = "corrupted";
-          break;
+          ଭାଙ୍ଗ;
       }
       pCsr->nCell += p->nCell;
       pCsr->nUnused += p->nUnused;
-      if( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
-      if( !pCsr->isAgg ){
+      ଯଦି( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
+      ଯଦି( !pCsr->isAgg ){
         pCsr->zPath = z = sqlite3_mprintf("%s", p->zPath);
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        ଯଦି( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       nPayload = 0;
-      for(i=0; i<p->nCell; i++){
+      ପାଇଁ(i=0; i<p->nCell; i++){
         nPayload += p->aCell[i].nLocal;
       }
       pCsr->nPayload += nPayload;
@@ -716,60 +716,60 @@ statNextRestart:
       /* If computing aggregate space usage by btree, continue with the
       ** next page.  The loop will exit via the return at label-statNext-done
       */
-      if( pCsr->isAgg ) goto statNextRestart;
+      ଯଦି( pCsr->isAgg ) ଯାଅ statNextRestart;
     }
   }
 
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
-static int statEof(sqlite3_vtab_cursor *pCursor){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statEof(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
-  return pCsr->isEof;
+  ଫେରନ୍ତୁ pCsr->isEof;
 }
 
 /* Initialize a cursor according to the query plan idxNum using the
 ** arguments in argv[0].  See statBestIndex() for a description of the
 ** meaning of the bits in idxNum.
 */
-static int statFilter(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statFilter(
   sqlite3_vtab_cursor *pCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା idx_ଅଙ୍କ, ଅଚଳ ଅକ୍ଷର *idxStr,
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା argc, sqlite3_ମୂଲ୍ୟ **argv
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable*)(pCursor->pVtab);
   sqlite3_str *pSql;      /* Query of btrees to analyze */
-  char *zSql;             /* String value of pSql */
-  int iArg = 0;           /* Count of argv[] parameters used so far */
-  int rc = SQLITE_OK;     /* Result of this operation */
-  const char *zName = 0;  /* Only provide analysis of this table */
-  (void)argc;
-  (void)idxStr;
+  ଅକ୍ଷର *zSql;             /* String value of pSql */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା iArg = 0;           /* Count of argv[] parameters used so far */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା rc = SQLITE_OK;     /* Result of this operation */
+  ଅଚଳ ଅକ୍ଷର *zName = 0;  /* Only provide analysis of this table */
+  (ଶୂନ୍ୟ)argc;
+  (ଶୂନ୍ୟ)idxStr;
 
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
-  if( idxNum & 0x01 ){
+  ଯଦି( idx_ଅଙ୍କ & 0x01 ){
     /* schema=? constraint is present.  Get its value */
-    const char *zDbase = (const char*)sqlite3_value_text(argv[iArg++]);
+    ଅଚଳ ଅକ୍ଷର *zDbase = (ଅଚଳ ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[iArg++]);
     pCsr->iDb = sqlite3FindDbName(pTab->db, zDbase);
-    if( pCsr->iDb<0 ){
+    ଯଦି( pCsr->iDb<0 ){
       pCsr->iDb = 0;
       pCsr->isEof = 1;
-      return SQLITE_OK;
+      ଫେରନ୍ତୁ SQLITE_OK;
     }
-  }else{
+  }ଅନ୍ୟଥା{
     pCsr->iDb = pTab->iDb;
   }
-  if( idxNum & 0x02 ){
+  ଯଦି( idx_ଅଙ୍କ & 0x02 ){
     /* name=? constraint is present */
-    zName = (const char*)sqlite3_value_text(argv[iArg++]);
+    zName = (ଅଚଳ ଅକ୍ଷର*)sqlite3_ମୂଲ୍ୟ_text(argv[iArg++]);
   }
-  if( idxNum & 0x04 ){
+  ଯଦି( idx_ଅଙ୍କ & 0x04 ){
     /* aggregate=? constraint is present */
-    pCsr->isAgg = sqlite3_value_double(argv[iArg++])!=0.0;
-  }else{
+    pCsr->isAgg = sqlite3_ମୂଲ୍ୟ_double(argv[iArg++])!=0.0;
+  }ଅନ୍ୟଥା{
     pCsr->isAgg = 0;
   }
   pSql = sqlite3_str_new(pTab->db);
@@ -780,99 +780,99 @@ static int statFilter(
         "SELECT name,rootpage,type"
         " FROM \"%w\".sqlite_schema WHERE rootpage!=0)",
       pTab->db->aDb[pCsr->iDb].zDbSName);
-  if( zName ){
+  ଯଦି( zName ){
     sqlite3_str_appendf(pSql, "WHERE name=%Q", zName);
   }
-  if( idxNum & 0x08 ){
+  ଯଦି( idx_ଅଙ୍କ & 0x08 ){
     sqlite3_str_appendf(pSql, " ORDER BY name");
   }
   zSql = sqlite3_str_finish(pSql);
-  if( zSql==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
+  ଯଦି( zSql==0 ){
+    ଫେରନ୍ତୁ SQLITE_NOMEM_BKPT;
+  }ଅନ୍ୟଥା{
     rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
     sqlite3_free(zSql);
   }
 
-  if( rc==SQLITE_OK ){
+  ଯଦି( rc==SQLITE_OK ){
     pCsr->iPage = -1;
     rc = statNext(pCursor);
   }
-  return rc;
+  ଫେରନ୍ତୁ rc;
 }
 
-static int statColumn(
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statColumn(
   sqlite3_vtab_cursor *pCursor, 
   sqlite3_context *ctx, 
-  int i
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
-  switch( i ){
-    case 0:            /* name */
+  ବାଛ( i ){
+    ସ୍ଥିତି 0:            /* name */
       sqlite3_result_text(ctx, pCsr->zName, -1, SQLITE_TRANSIENT);
-      break;
-    case 1:            /* path */
-      if( !pCsr->isAgg ){
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 1:            /* path */
+      ଯଦି( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPath, -1, SQLITE_TRANSIENT);
       }
-      break;
-    case 2:            /* pageno */
-      if( pCsr->isAgg ){
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 2:            /* pageno */
+      ଯଦି( pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->nPage);
-      }else{
+      }ଅନ୍ୟଥା{
         sqlite3_result_int64(ctx, pCsr->iPageno);
       }
-      break;
-    case 3:            /* pagetype */
-      if( !pCsr->isAgg ){
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 3:            /* pagetype */
+      ଯଦି( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPagetype, -1, SQLITE_STATIC);
       }
-      break;
-    case 4:            /* ncell */
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 4:            /* ncell */
       sqlite3_result_int64(ctx, pCsr->nCell);
-      break;
-    case 5:            /* payload */
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 5:            /* payload */
       sqlite3_result_int64(ctx, pCsr->nPayload);
-      break;
-    case 6:            /* unused */
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 6:            /* unused */
       sqlite3_result_int64(ctx, pCsr->nUnused);
-      break;
-    case 7:            /* mx_payload */
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 7:            /* mx_payload */
       sqlite3_result_int64(ctx, pCsr->nMxPayload);
-      break;
-    case 8:            /* pgoffset */
-      if( !pCsr->isAgg ){
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 8:            /* pgoffset */
+      ଯଦି( !pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->iOffset);
       }
-      break;
-    case 9:            /* pgsize */
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 9:            /* pgsize */
       sqlite3_result_int64(ctx, pCsr->szPage);
-      break;
-    case 10: {         /* schema */
+      ଭାଙ୍ଗ;
+    ସ୍ଥିତି 10: {         /* schema */
       sqlite3 *db = sqlite3_context_db_handle(ctx);
-      int iDb = pCsr->iDb;
+      ପୂର୍ଣ୍ଣସଂଖ୍ୟା iDb = pCsr->iDb;
       sqlite3_result_text(ctx, db->aDb[iDb].zDbSName, -1, SQLITE_STATIC);
-      break;
+      ଭାଙ୍ଗ;
     }
-    default: {         /* aggregate */
+    ପୂର୍ବନିର୍ଦ୍ଧାରିତ: {         /* aggregate */
       sqlite3_result_int(ctx, pCsr->isAgg);
-      break;
+      ଭାଙ୍ଗ;
     }
   }
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
-static int statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   StatCursor *pCsr = (StatCursor *)pCursor;
   *pRowid = pCsr->iPageno;
-  return SQLITE_OK;
+  ଫେରନ୍ତୁ SQLITE_OK;
 }
 
 /*
 ** Invoke this routine to register the "dbstat" virtual table module
 */
-int sqlite3DbstatRegister(sqlite3 *db){
-  static sqlite3_module dbstat_module = {
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3DbstatRegister(sqlite3 *db){
+  ସ୍ଥିର sqlite3_module dbstat_module = {
     0,                            /* iVersion */
     statConnect,                  /* xCreate */
     statConnect,                  /* xConnect */
@@ -899,8 +899,8 @@ int sqlite3DbstatRegister(sqlite3 *db){
     0,                            /* xShadowName */
     0                             /* xIntegrity */
   };
-  return sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
+  ଫେରନ୍ତୁ sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
 }
-#elif defined(SQLITE_ENABLE_DBSTAT_VTAB)
-int sqlite3DbstatRegister(sqlite3 *db){ return SQLITE_OK; }
+#ନଚେତଯଦି defined(SQLITE_ENABLE_DBSTAT_VTAB)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା sqlite3DbstatRegister(sqlite3 *db){ ଫେରନ୍ତୁ SQLITE_OK; }
 #endif /* SQLITE_ENABLE_DBSTAT_VTAB */
