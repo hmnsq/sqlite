@@ -35,12 +35,12 @@
 */
 #ifdef SQLITE_PERFORMANCE_TRACE
 
-static sqlite_uint64 g_start;
-static sqlite_uint64 g_elapsed;
+ساكن sqlite_uint64 g_start;
+ساكن sqlite_uint64 g_elapsed;
 #define TIMER_START       g_start=sqlite3Hwtime()
 #define TIMER_END         g_elapsed=sqlite3Hwtime()-g_start
 #define TIMER_ELAPSED     g_elapsed
-#else
+#وإلا
 #define TIMER_START
 #define TIMER_END
 #define TIMER_ELAPSED     ((sqlite_uint64)0)
@@ -51,36 +51,36 @@ static sqlite_uint64 g_elapsed;
 ** of code will give us the ability to simulate a disk I/O error.  This
 ** is used for testing the I/O recovery logic.
 */
-#if defined(SQLITE_TEST)
-extern int sqlite3_io_error_hit;
-extern int sqlite3_io_error_hardhit;
-extern int sqlite3_io_error_pending;
-extern int sqlite3_io_error_persist;
-extern int sqlite3_io_error_benign;
-extern int sqlite3_diskfull_pending;
-extern int sqlite3_diskfull;
+#إذا defined(SQLITE_TEST)
+خارجي صحيح sqlite3_io_error_hit;
+خارجي صحيح sqlite3_io_error_hardhit;
+خارجي صحيح sqlite3_io_error_pending;
+خارجي صحيح sqlite3_io_error_persist;
+خارجي صحيح sqlite3_io_error_benign;
+خارجي صحيح sqlite3_diskfull_pending;
+خارجي صحيح sqlite3_diskfull;
 #define SimulateIOErrorBenign(X) sqlite3_io_error_benign=(X)
 #define SimulateIOError(CODE)  \
-  if( (sqlite3_io_error_persist && sqlite3_io_error_hit) \
+  إذا( (sqlite3_io_error_persist && sqlite3_io_error_hit) \
        || sqlite3_io_error_pending-- == 1 )  \
               { local_ioerr(); CODE; }
-static void local_ioerr(){
+ساكن فراغ local_ioerr(){
   IOTRACE(("IOERR\n"));
   sqlite3_io_error_hit++;
-  if( !sqlite3_io_error_benign ) sqlite3_io_error_hardhit++;
+  إذا( !sqlite3_io_error_benign ) sqlite3_io_error_hardhit++;
 }
 #define SimulateDiskfullError(CODE) \
-   if( sqlite3_diskfull_pending ){ \
-     if( sqlite3_diskfull_pending == 1 ){ \
+   إذا( sqlite3_diskfull_pending ){ \
+     إذا( sqlite3_diskfull_pending == 1 ){ \
        local_ioerr(); \
        sqlite3_diskfull = 1; \
        sqlite3_io_error_hit = 1; \
        CODE; \
-     }else{ \
+     }وإلا{ \
        sqlite3_diskfull_pending--; \
      } \
    }
-#else
+#وإلا
 #define SimulateIOErrorBenign(X)
 #define SimulateIOError(A)
 #define SimulateDiskfullError(A)
@@ -89,10 +89,10 @@ static void local_ioerr(){
 /*
 ** When testing, keep a count of the number of open files.
 */
-#if defined(SQLITE_TEST)
-extern int sqlite3_open_file_count;
-#define OpenCounter(X)  sqlite3_open_file_count+=(X)
-#else
+#إذا defined(SQLITE_TEST)
+خارجي صحيح sqlite3_open_file_گنتی;
+#define OpenCounter(X)  sqlite3_open_file_گنتی+=(X)
+#وإلا
 #define OpenCounter(X)
 #endif /* defined(SQLITE_TEST) */
 
