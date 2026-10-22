@@ -19,12 +19,12 @@
 ** how to process the DISTINCT keyword, to simplify passing that information
 ** into the selectInnerLoop() routine.
 */
-typedef struct DistinctCtx DistinctCtx;
-struct DistinctCtx {
+typedef sa_nracanaa DistinctCtx DistinctCtx;
+sa_nracanaa DistinctCtx {
   u8 isTnct;      /* 0: Not distinct. 1: DISTINCT  2: DISTINCT and ORDER BY */
   u8 eTnctType;   /* One of the WHERE_DISTINCT_* operators */
-  int tabTnct;    /* Ephemeral table used for DISTINCT processing */
-  int addrTnct;   /* Address of OP_OpenEphemeral opcode for tabTnct */
+  puur_naa_nka tabTnct;    /* Ephemeral table used for DISTINCT processing */
+  puur_naa_nka addrTnct;   /* Address of OP_OpenEphemeral opcode for tabTnct */
 };
 
 /*
@@ -45,29 +45,29 @@ struct DistinctCtx {
 ** aDefer[] array for each database table that may be read as values are
 ** extracted from the sorter.
 */
-typedef struct SortCtx SortCtx;
-struct SortCtx {
+typedef sa_nracanaa SortCtx SortCtx;
+sa_nracanaa SortCtx {
   ExprList *pOrderBy;   /* The ORDER BY (or GROUP BY clause) */
-  int nOBSat;           /* Number of ORDER BY terms satisfied by indices */
-  int iECursor;         /* Cursor number for the sorter */
-  int regReturn;        /* Register holding block-output return address */
-  int labelBkOut;       /* Start label for the block-output subroutine */
-  int addrSortIndex;    /* Address of the OP_SorterOpen or OP_OpenEphemeral */
-  int labelDone;        /* Jump here when done, ex: LIMIT reached */
-  int labelOBLopt;      /* Jump here when sorter is full */
+  puur_naa_nka nOBSat;           /* Number of ORDER BY terms satisfied by indices */
+  puur_naa_nka iECursor;         /* Cursor number for the sorter */
+  puur_naa_nka regReturn;        /* Register holding block-output return address */
+  puur_naa_nka labelBkOut;       /* Start label for the block-output subroutine */
+  puur_naa_nka addrSortIndex;    /* Address of the OP_SorterOpen or OP_OpenEphemeral */
+  puur_naa_nka labelDone;        /* Jump here when done, ex: LIMIT reached */
+  puur_naa_nka labelOBLopt;      /* Jump here when sorter is full */
   u8 sortFlags;         /* Zero or more SORTFLAG_* bits */
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
   u8 nDefer;            /* Number of valid entries in aDefer[] */
-  struct DeferredCsr {
+  sa_nracanaa DeferredCsr {
     Table *pTab;        /* Table definition */
-    int iCsr;           /* Cursor number for table */
-    int nKey;           /* Number of PK columns for table pTab (>=1) */
+    puur_naa_nka iCsr;           /* Cursor number for table */
+    puur_naa_nka nKey;           /* Number of PK columns for table pTab (>=1) */
   } aDefer[4];
 #endif
-  struct RowLoadInfo *pDeferredRowLoad;  /* Deferred row loading info or NULL */
+  sa_nracanaa RowLoadInfo *pDeferredRowLoad;  /* Deferred row loading info or NULL */
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrPush;         /* First instruction to push data into sorter */
-  int addrPushEnd;      /* Last instruction that pushes data into sorter */
+  puur_naa_nka addrPush;         /* First instruction to push data into sorter */
+  puur_naa_nka addrPushEnd;      /* Last instruction that pushes data into sorter */
 #endif
 };
 #define SORTFLAG_UseSorter  0x01   /* Use SorterOpen instead of OpenEphemeral */
@@ -79,9 +79,9 @@ struct SortCtx {
 ** If bFree==1, call sqlite3DbFree() on the p object.
 ** If bFree==0, Leave the first Select object unfreed
 */
-static void clearSelect(sqlite3 *db, Select *p, int bFree){
+static void clearSelect(sqlite3 *db, Select *p, puur_naa_nka bFree){
   assert( db!=0 );
-  while( p ){
+  ᰀᰬ( p ){
     Select *pPrior = p->pPrior;
     sqlite3ExprListDelete(db, p->pEList);
     sqlite3SrcListDelete(db, p->pSrc);
@@ -90,17 +90,17 @@ static void clearSelect(sqlite3 *db, Select *p, int bFree){
     sqlite3ExprDelete(db, p->pHaving);
     sqlite3ExprListDelete(db, p->pOrderBy);
     sqlite3ExprDelete(db, p->pLimit);
-    if( OK_IF_ALWAYS_TRUE(p->pWith) ) sqlite3WithDelete(db, p->pWith);
+    ᰀᰧ( OK_IF_ALWAYS_TRUE(p->pWith) ) sqlite3WithDelete(db, p->pWith);
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( OK_IF_ALWAYS_TRUE(p->pWinDefn) ){
+    ᰀᰧ( OK_IF_ALWAYS_TRUE(p->pWinDefn) ){
       sqlite3WindowListDelete(db, p->pWinDefn);
     }
-    while( p->pWin ){
+    ᰀᰬ( p->pWin ){
       assert( p->pWin->ppThis==&p->pWin );
       sqlite3WindowUnlinkFromSelect(p->pWin);
     }
 #endif
-    if( bFree ) sqlite3DbNNFreeNN(db, p);
+    ᰀᰧ( bFree ) sqlite3DbNNFreeNN(db, p);
     p = pPrior;
     bFree = 1;
   }
@@ -109,7 +109,7 @@ static void clearSelect(sqlite3 *db, Select *p, int bFree){
 /*
 ** Initialize a SelectDest structure.
 */
-void sqlite3SelectDestInit(SelectDest *pDest, int eDest, int iParm){
+void sqlite3SelectDestInit(SelectDest *pDest, puur_naa_nka eDest, puur_naa_nka iParm){
   pDest->eDest = (u8)eDest;
   pDest->iSDParm = iParm;
   pDest->iSDParm2 = 0;
@@ -136,12 +136,12 @@ Select *sqlite3SelectNew(
 ){
   Select *pNew, *pAllocated;
   Select standin;
-  pAllocated = pNew = sqlite3DbMallocRawNN(pParse->db, sizeof(*pNew) );
-  if( pNew==0 ){
+  pAllocated = pNew = sqlite3DbMallocRawNN(pParse->db, parimaa_na(*pNew) );
+  ᰀᰧ( pNew==0 ){
     assert( pParse->db->mallocFailed );
     pNew = &standin;
   }
-  if( pEList==0 ){
+  ᰀᰧ( pEList==0 ){
     pEList = sqlite3ExprListAppend(pParse, 0,
                                    sqlite3Expr(pParse->db,TK_ASTERISK,0));
   }
@@ -152,7 +152,7 @@ Select *sqlite3SelectNew(
   pNew->iOffset = 0;
   pNew->selId = ++pParse->nSelect;
   pNew->nSelectRow = 0;
-  if( pSrc==0 ) pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
+  ᰀᰧ( pSrc==0 ) pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
   pNew->pSrc = pSrc;
   pNew->pWhere = pWhere;
   pNew->pGroupBy = pGroupBy;
@@ -166,13 +166,13 @@ Select *sqlite3SelectNew(
   pNew->pWin = 0;
   pNew->pWinDefn = 0;
 #endif
-  if( pParse->db->mallocFailed ) {
+  ᰀᰧ( pParse->db->mallocFailed ) {
     clearSelect(pParse->db, pNew, pNew!=&standin);
     pAllocated = 0;
-  }else{
+  }ᰀᰧᰀ{
     assert( pNew->pSrc!=0 || pParse->nErr>0 );
   }
-  return pAllocated;
+  ᰀᰧᰌ pAllocated;
 }
 
 
@@ -180,18 +180,18 @@ Select *sqlite3SelectNew(
 ** Delete the given Select structure and all of its substructures.
 */
 void sqlite3SelectDelete(sqlite3 *db, Select *p){
-  if( OK_IF_ALWAYS_TRUE(p) ) clearSelect(db, p, 1);
+  ᰀᰧ( OK_IF_ALWAYS_TRUE(p) ) clearSelect(db, p, 1);
 }
 void sqlite3SelectDeleteGeneric(sqlite3 *db, void *p){
-  if( ALWAYS(p) ) clearSelect(db, (Select*)p, 1);
+  ᰀᰧ( ALWAYS(p) ) clearSelect(db, (Select*)p, 1);
 }
 
 /*
 ** Return a pointer to the right-most SELECT statement in a compound.
 */
 static Select *findRightmost(Select *p){
-  while( p->pNext ) p = p->pNext;
-  return p;
+  ᰀᰬ( p->pNext ) p = p->pNext;
+  ᰀᰧᰌ p;
 }
 
 /*
@@ -257,13 +257,13 @@ static Select *findRightmost(Select *p){
 **    *   If "OUTER" is present then there must also be one of
 **        "LEFT", "RIGHT", or "FULL"
 */
-int sqlite3JoinType(Parse *pParse, Token *pA, Token *pB, Token *pC){
-  int jointype = 0;
+puur_naa_nka sqlite3JoinType(Parse *pParse, Token *pA, Token *pB, Token *pC){
+  puur_naa_nka jointype = 0;
   Token *apAll[3];
   Token *p;
                              /*   0123456789 123456789 123456789 123 */
-  static const char zKeyText[] = "naturaleftouterightfullinnercross";
-  static const struct {
+  static const var_na zKeyText[] = "naturaleftouterightfullinnercross";
+  static const sa_nracanaa {
     u8 i;        /* Beginning of keyword text in zKeyText[] */
     u8 nChar;    /* Length of the keyword in characters */
     u8 code;     /* Join type mask */
@@ -276,85 +276,85 @@ int sqlite3JoinType(Parse *pParse, Token *pA, Token *pB, Token *pC){
     /* (5) inner   */ { 23, 5, JT_INNER                  },
     /* (6) cross   */ { 28, 5, JT_INNER|JT_CROSS         },
   };
-  int i, j;
+  puur_naa_nka i, j;
   apAll[0] = pA;
   apAll[1] = pB;
   apAll[2] = pC;
   for(i=0; i<3 && apAll[i]; i++){
     p = apAll[i];
     for(j=0; j<ArraySize(aKeyword); j++){
-      if( p->n==aKeyword[j].nChar
-          && sqlite3StrNICmp((char*)p->z, &zKeyText[aKeyword[j].i], p->n)==0 ){
+      ᰀᰧ( p->n==aKeyword[j].nChar
+          && sqlite3StrNICmp((var_na*)p->z, &zKeyText[aKeyword[j].i], p->n)==0 ){
         jointype |= aKeyword[j].code;
-        break;
+        bha_nga;
       }
     }
     testcase( j==0 || j==1 || j==2 || j==3 || j==4 || j==5 || j==6 );
-    if( j>=ArraySize(aKeyword) ){
+    ᰀᰧ( j>=ArraySize(aKeyword) ){
       jointype |= JT_ERROR;
-      break;
+      bha_nga;
     }
   }
-  if(
+  ᰀᰧ(
      (jointype & (JT_INNER|JT_OUTER))==(JT_INNER|JT_OUTER) ||
      (jointype & JT_ERROR)!=0 ||
      (jointype & (JT_OUTER|JT_LEFT|JT_RIGHT))==JT_OUTER
   ){
-    const char *zSp1 = " ";
-    const char *zSp2 = " ";
-    if( pB==0 ){ zSp1++; }
-    if( pC==0 ){ zSp2++; }
+    const var_na *zSp1 = " ";
+    const var_na *zSp2 = " ";
+    ᰀᰧ( pB==0 ){ zSp1++; }
+    ᰀᰧ( pC==0 ){ zSp2++; }
     sqlite3ErrorMsg(pParse, "unknown join type: "
        "%T%s%T%s%T", pA, zSp1, pB, zSp2, pC);
     jointype = JT_INNER;
   }
-  return jointype;
+  ᰀᰧᰌ jointype;
 }
 
 /*
 ** Return the index of a column in a table.  Return -1 if the column
 ** is not contained in the table.
 */
-int sqlite3ColumnIndex(Table *pTab, const char *zCol){
-  int i;
+puur_naa_nka sqlite3ColumnIndex(Table *pTab, const var_na *zCol){
+  puur_naa_nka i;
   u8 h;
   const Column *aCol;
-  int nCol;
+  puur_naa_nka nCol;
 
   h = sqlite3StrIHash(zCol);
   aCol = pTab->aCol;
   nCol = pTab->nCol;
 
   /* See if the aHx gives us a lucky match */
-  i = pTab->aHx[h % sizeof(pTab->aHx)];
+  i = pTab->aHx[h % parimaa_na(pTab->aHx)];
   assert( i<nCol );
-  if( aCol[i].hName==h
+  ᰀᰧ( aCol[i].hName==h
    && sqlite3StrICmp(aCol[i].zCnName, zCol)==0
   ){
-    return i;
+    ᰀᰧᰌ i;
   }
 
   /* No lucky match from the hash table.  Do a full search. */
   i = 0;
-  while( 1 /*exit-by-break*/ ){
-    if( aCol[i].hName==h
+  ᰀᰬ( 1 /*exit-by-break*/ ){
+    ᰀᰧ( aCol[i].hName==h
      && sqlite3StrICmp(aCol[i].zCnName, zCol)==0
     ){
-      return i;
+      ᰀᰧᰌ i;
     }
     i++;
-    if( i>=nCol ) break;
+    ᰀᰧ( i>=nCol ) bha_nga;
   }
-  return -1;
+  ᰀᰧᰌ -1;
 }
 
 /*
 ** Mark a subquery result column as having been used.
 */
-void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol){
+void sqlite3SrcItemColumnUsed(SrcItem *pItem, puur_naa_nka iCol){
   assert( pItem!=0 );
-  assert( (int)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
-  if( pItem->fg.isNestedFrom ){
+  assert( (puur_naa_nka)pItem->fg.isNestedFrom == IsNestedFrom(pItem) );
+  ᰀᰧ( pItem->fg.isNestedFrom ){
     ExprList *pResults;
     assert( pItem->fg.isSubquery );
     assert( pItem->u4.pSubq!=0 );
@@ -376,17 +376,17 @@ void sqlite3SrcItemColumnUsed(SrcItem *pItem, int iCol){
 **
 ** If not found, return FALSE.
 */
-static int tableAndColumnIndex(
+static puur_naa_nka tableAndColumnIndex(
   SrcList *pSrc,       /* Array of tables to search */
-  int iStart,          /* First member of pSrc->a[] to check */
-  int iEnd,            /* Last member of pSrc->a[] to check */
-  const char *zCol,    /* Name of the column we are looking for */
-  int *piTab,          /* Write index of pSrc->a[] here */
-  int *piCol,          /* Write index of pSrc->a[*piTab].pSTab->aCol[] here */
-  int bIgnoreHidden    /* Ignore hidden columns */
+  puur_naa_nka iStart,          /* First member of pSrc->a[] to check */
+  puur_naa_nka iEnd,            /* Last member of pSrc->a[] to check */
+  const var_na *zCol,    /* Name of the column we are looking for */
+  puur_naa_nka *piTab,          /* Write index of pSrc->a[] here */
+  puur_naa_nka *piCol,          /* Write index of pSrc->a[*piTab].pSTab->aCol[] here */
+  puur_naa_nka bIgnoreHidden    /* Ignore hidden columns */
 ){
-  int i;               /* For looping over tables in pSrc */
-  int iCol;            /* Index of column matching zCol */
+  puur_naa_nka i;               /* For looping over tables in pSrc */
+  puur_naa_nka iCol;            /* Index of column matching zCol */
 
   assert( iEnd<pSrc->nSrc );
   assert( iStart>=0 );
@@ -394,18 +394,18 @@ static int tableAndColumnIndex(
 
   for(i=iStart; i<=iEnd; i++){
     iCol = sqlite3ColumnIndex(pSrc->a[i].pSTab, zCol);
-    if( iCol>=0
+    ᰀᰧ( iCol>=0
      && (bIgnoreHidden==0 || IsHiddenColumn(&pSrc->a[i].pSTab->aCol[iCol])==0)
     ){
-      if( piTab ){
+      ᰀᰧ( piTab ){
         sqlite3SrcItemColumnUsed(&pSrc->a[i], iCol);
         *piTab = i;
         *piCol = iCol;
       }
-      return 1;
+      ᰀᰧᰌ 1;
     }
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 /*
@@ -434,16 +434,16 @@ static int tableAndColumnIndex(
 ** after the t1 loop and rows with t1.x!=5 will never appear in
 ** the output, which is incorrect.
 */
-void sqlite3SetJoinExpr(Expr *p, int iTable, u32 joinFlag){
+void sqlite3SetJoinExpr(Expr *p, puur_naa_nka iTable, u32 joinFlag){
   assert( joinFlag==EP_OuterON || joinFlag==EP_InnerON );
-  while( p ){
+  ᰀᰬ( p ){
     ExprSetProperty(p, joinFlag);
     assert( !ExprHasProperty(p, EP_TokenOnly|EP_Reduced) );
     ExprSetVVAProperty(p, EP_NoReduce);
     p->w.iJoin = iTable;
-    if( ExprUseXList(p) ){
-      if( p->x.pList ){
-        int i;
+    ᰀᰧ( ExprUseXList(p) ){
+      ᰀᰧ( p->x.pList ){
+        puur_naa_nka i;
         for(i=0; i<p->x.pList->nExpr; i++){
           sqlite3SetJoinExpr(p->x.pList->a[i].pExpr, iTable, joinFlag);
         }
@@ -468,20 +468,20 @@ void sqlite3SetJoinExpr(Expr *p, int iTable, u32 joinFlag){
 ** If nullable is true, then take care to not remove the EP_CanBeNull bit.
 ** See forum thread https://sqlite.org/forum/forumpost/b40696f50145d21c
 */
-static void unsetJoinExpr(Expr *p, int iTable, int nullable){
-  while( p ){
-    if( iTable<0 || (ExprHasProperty(p, EP_OuterON) && p->w.iJoin==iTable) ){
+static void unsetJoinExpr(Expr *p, puur_naa_nka iTable, puur_naa_nka nullable){
+  ᰀᰬ( p ){
+    ᰀᰧ( iTable<0 || (ExprHasProperty(p, EP_OuterON) && p->w.iJoin==iTable) ){
       ExprClearProperty(p, EP_OuterON|EP_InnerON);
-      if( iTable>=0 ) ExprSetProperty(p, EP_InnerON);
+      ᰀᰧ( iTable>=0 ) ExprSetProperty(p, EP_InnerON);
     }
-    if( p->op==TK_COLUMN && p->iTable==iTable && !nullable ){
+    ᰀᰧ( p->op==TK_COLUMN && p->iTable==iTable && !nullable ){
       ExprClearProperty(p, EP_CanBeNull);
     }
-    if( p->op==TK_FUNCTION ){
+    ᰀᰧ( p->op==TK_FUNCTION ){
       assert( ExprUseXList(p) );
       assert( p->pLeft==0 );
-      if( p->x.pList ){
-        int i;
+      ᰀᰧ( p->x.pList ){
+        puur_naa_nka i;
         for(i=0; i<p->x.pList->nExpr; i++){
           unsetJoinExpr(p->x.pList->a[i].pExpr, iTable, nullable);
         }
@@ -513,12 +513,12 @@ static void unsetJoinExpr(Expr *p, int iTable, int nullable){
 **
 ** This routine returns the number of errors encountered.
 */
-static int sqlite3ProcessJoin(Parse *pParse, Select *p){
+static puur_naa_nka sqlite3ProcessJoin(Parse *pParse, Select *p){
   SrcList *pSrc;                  /* All tables in the FROM clause */
-  int i, j;                       /* Loop counters */
+  puur_naa_nka i, j;                       /* Loop counters */
   SrcItem *pLeft;                 /* Left table being joined */
   SrcItem *pRight;                /* Right table being joined */
-  int bSeenTFunc = 0;             /* True if have seen table-valued function */
+  puur_naa_nka bSeenTFunc = 0;             /* True if have seen table-valued function */
 
   pSrc = p->pSrc;
   pLeft = &pSrc->a[0];
@@ -527,39 +527,39 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     Table *pRightTab = pRight->pSTab;
     u32 joinType;
 
-    if( NEVER(pLeft->pSTab==0 || pRightTab==0) ) continue;
+    ᰀᰧ( NEVER(pLeft->pSTab==0 || pRightTab==0) ) continue;
     joinType = (pRight->fg.jointype & JT_OUTER)!=0 ? EP_OuterON : EP_InnerON;
 
     /* If this is a NATURAL join, synthesize an appropriate USING clause
     ** to specify which columns should be joined.
     */
-    if( pRight->fg.jointype & JT_NATURAL ){
+    ᰀᰧ( pRight->fg.jointype & JT_NATURAL ){
       IdList *pUsing = 0;
-      if( pRight->fg.isUsing || pRight->u3.pOn ){
+      ᰀᰧ( pRight->fg.isUsing || pRight->u3.pOn ){
         sqlite3ErrorMsg(pParse, "a NATURAL join may not have "
            "an ON or USING clause", 0);
-        return 1;
+        ᰀᰧᰌ 1;
       }
       for(j=0; j<pRightTab->nCol; j++){
-        char *zName;   /* Name of column in the right table */
+        var_na *zName;   /* Name of column in the right table */
 
-        if( IsHiddenColumn(&pRightTab->aCol[j]) ) continue;
+        ᰀᰧ( IsHiddenColumn(&pRightTab->aCol[j]) ) continue;
         zName = pRightTab->aCol[j].zCnName;
-        if( tableAndColumnIndex(pSrc, 0, i, zName, 0, 0, 1) ){
+        ᰀᰧ( tableAndColumnIndex(pSrc, 0, i, zName, 0, 0, 1) ){
           pUsing = sqlite3IdListAppend(pParse, pUsing, 0);
-          if( pUsing ){
+          ᰀᰧ( pUsing ){
             assert( pUsing->nId>0 );
             assert( pUsing->a[pUsing->nId-1].zName==0 );
             pUsing->a[pUsing->nId-1].zName = sqlite3DbStrDup(pParse->db, zName);
           }
         }
       }
-      if( pUsing ){
+      ᰀᰧ( pUsing ){
         pRight->fg.isUsing = 1;
         pRight->fg.isSynthUsing = 1;
         pRight->u3.pUsing = pUsing;
       }
-      if( pParse->nErr ) return 1;
+      ᰀᰧ( pParse->nErr ) ᰀᰧᰌ 1;
     }
 
     /* Create extra terms on the WHERE clause for each column named
@@ -569,32 +569,32 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     ** Report an error if any column mentioned in the USING clause is
     ** not contained in both tables to be joined.
     */
-    if( pRight->fg.isUsing ){
+    ᰀᰧ( pRight->fg.isUsing ){
       IdList *pList = pRight->u3.pUsing;
       sqlite3 *db = pParse->db;
       assert( pList!=0 );
       for(j=0; j<pList->nId; j++){
-        char *zName;     /* Name of the term in the USING clause */
-        int iLeft;       /* Table on the left with matching column name */
-        int iLeftCol;    /* Column number of matching column on the left */
-        int iRightCol;   /* Column number of matching column on the right */
+        var_na *zName;     /* Name of the term in the USING clause */
+        puur_naa_nka iLeft;       /* Table on the left with matching column name */
+        puur_naa_nka iLeftCol;    /* Column number of matching column on the left */
+        puur_naa_nka iRightCol;   /* Column number of matching column on the right */
         Expr *pE1;       /* Reference to the column on the LEFT of the join */
         Expr *pE2;       /* Reference to the column on the RIGHT of the join */
         Expr *pEq;       /* Equality constraint.  pE1 == pE2 */
 
         zName = pList->a[j].zName;
         iRightCol = sqlite3ColumnIndex(pRightTab, zName);
-        if( iRightCol<0
+        ᰀᰧ( iRightCol<0
          || tableAndColumnIndex(pSrc, 0, i, zName, &iLeft, &iLeftCol,
                                 pRight->fg.isSynthUsing)==0
         ){
           sqlite3ErrorMsg(pParse, "cannot join using column %s - column "
             "not present in both tables", zName);
-          return 1;
+          ᰀᰧᰌ 1;
         }
         pE1 = sqlite3CreateColumnExpr(db, pSrc, iLeft, iLeftCol);
         sqlite3SrcItemColumnUsed(&pSrc->a[iLeft], iLeftCol);
-        if( (pSrc->a[0].fg.jointype & JT_LTORJ)!=0 && pParse->nErr==0 ){
+        ᰀᰧ( (pSrc->a[0].fg.jointype & JT_LTORJ)!=0 && pParse->nErr==0 ){
           /* This branch runs if the query contains one or more RIGHT or FULL
           ** JOINs.  If only a single table on the left side of this join
           ** contains the zName column, then this branch is a no-op.
@@ -612,27 +612,27 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
           static const Token tkCoalesce = { "coalesce", 8 };
           assert( pE1!=0 );
           ExprSetProperty(pE1, EP_CanBeNull);
-          while( tableAndColumnIndex(pSrc, iLeft+1, i, zName, &iLeft, &iLeftCol,
+          ᰀᰬ( tableAndColumnIndex(pSrc, iLeft+1, i, zName, &iLeft, &iLeftCol,
                                      pRight->fg.isSynthUsing)!=0 ){
-            if( pSrc->a[iLeft].fg.isUsing==0
+            ᰀᰧ( pSrc->a[iLeft].fg.isUsing==0
              || sqlite3IdListIndex(pSrc->a[iLeft].u3.pUsing, zName)<0
             ){
               sqlite3ErrorMsg(pParse, "ambiguous reference to %s in USING()",
                               zName);
-              break;
+              bha_nga;
             }
             pFuncArgs = sqlite3ExprListAppend(pParse, pFuncArgs, pE1);
             pE1 = sqlite3CreateColumnExpr(db, pSrc, iLeft, iLeftCol);
             sqlite3SrcItemColumnUsed(&pSrc->a[iLeft], iLeftCol);
           }
-          if( pFuncArgs ){
+          ᰀᰧ( pFuncArgs ){
             pFuncArgs = sqlite3ExprListAppend(pParse, pFuncArgs, pE1);
             pE1 = sqlite3ExprFunction(pParse, pFuncArgs, &tkCoalesce, 0);
-            if( pE1 ){
+            ᰀᰧ( pE1 ){
               pE1->affExpr = SQLITE_AFF_DEFER;
             }
           }
-        }else if( (pSrc->a[i+1].fg.jointype & JT_LEFT)!=0 && pParse->nErr==0 ){
+        }ᰀᰧᰀ ᰀᰧ( (pSrc->a[i+1].fg.jointype & JT_LEFT)!=0 && pParse->nErr==0 ){
           assert( pE1!=0 );
           ExprSetProperty(pE1, EP_CanBeNull);
         }
@@ -640,7 +640,7 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
         sqlite3SrcItemColumnUsed(pRight, iRightCol);
         pEq = sqlite3PExpr(pParse, TK_EQ, pE1, pE2);
         assert( pE2!=0 || pEq==0 );
-        if( pEq ){
+        ᰀᰧ( pEq ){
           ExprSetProperty(pEq, joinType);
           assert( !ExprHasProperty(pEq, EP_TokenOnly|EP_Reduced) );
           ExprSetVVAProperty(pEq, EP_NoReduce);
@@ -653,7 +653,7 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     /* Add the ON clause to the end of the WHERE clause, connected by
     ** an AND operator.
     */
-    else if( pRight->u3.pOn ){
+    ᰀᰧᰀ ᰀᰧ( pRight->u3.pOn ){
       sqlite3SetJoinExpr(pRight->u3.pOn, pRight->iCursor, joinType);
       p->pWhere = sqlite3ExprAnd(pParse, p->pWhere, pRight->u3.pOn);
       pRight->u3.pOn = 0;
@@ -661,7 +661,7 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
       p->selFlags |= SF_OnToWhere;
     }
 
-    if( bSeenTFunc==0 ){
+    ᰀᰧ( bSeenTFunc==0 ){
       bSeenTFunc = (pLeft->fg.isTabFunc && pLeft->u1.pFuncArg);
     }
 
@@ -670,26 +670,26 @@ static int sqlite3ProcessJoin(Parse *pParse, Select *p){
     ** their right. This test is required if either (a) there is a RIGHT JOIN
     ** in the SrcList, or (b) there is a LEFT JOIN to the right of a 
     ** table-valued function.  */
-    if( (pRight->fg.isTabFunc && joinType==EP_OuterON && pRight->u1.pFuncArg)
+    ᰀᰧ( (pRight->fg.isTabFunc && joinType==EP_OuterON && pRight->u1.pFuncArg)
      || (bSeenTFunc && joinType==EP_OuterON)
     ){
       p->selFlags |= SF_OnToWhere;
     }
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 /*
 ** An instance of this object holds information (beyond pParse and pSelect)
 ** needed to load the next result row that is to be added to the sorter.
 */
-typedef struct RowLoadInfo RowLoadInfo;
-struct RowLoadInfo {
-  int regResult;               /* Store results in array of registers here */
+typedef sa_nracanaa RowLoadInfo RowLoadInfo;
+sa_nracanaa RowLoadInfo {
+  puur_naa_nka regResult;               /* Store results in array of registers here */
   u8 ecelFlags;                /* Flag argument to ExprCodeExprList() */
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
   ExprList *pExtra;            /* Extra columns needed by sorter refs */
-  int regExtraResult;          /* Where to load the extra columns */
+  puur_naa_nka regExtraResult;          /* Where to load the extra columns */
 #endif
 };
 
@@ -705,7 +705,7 @@ static void innerLoopLoadRow(
   sqlite3ExprCodeExprList(pParse, pSelect->pEList, pInfo->regResult,
                           0, pInfo->ecelFlags);
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  if( pInfo->pExtra ){
+  ᰀᰧ( pInfo->pExtra ){
     sqlite3ExprCodeExprList(pParse, pInfo->pExtra, pInfo->regExtraResult, 0, 0);
     sqlite3ExprListDelete(pParse->db, pInfo->pExtra);
   }
@@ -718,21 +718,21 @@ static void innerLoopLoadRow(
 **
 ** Return the register in which the result is stored.
 */
-static int makeSorterRecord(
+static puur_naa_nka makeSorterRecord(
   Parse *pParse,
   SortCtx *pSort,
   Select *pSelect,
-  int regBase,
-  int nBase
+  puur_naa_nka regBase,
+  puur_naa_nka nBase
 ){
-  int nOBSat = pSort->nOBSat;
+  puur_naa_nka nOBSat = pSort->nOBSat;
   Vdbe *v = pParse->pVdbe;
-  int regOut = ++pParse->nMem;
-  if( pSort->pDeferredRowLoad ){
+  puur_naa_nka regOut = ++pParse->nMem;
+  ᰀᰧ( pSort->pDeferredRowLoad ){
     innerLoopLoadRow(pParse, pSelect, pSort->pDeferredRowLoad);
   }
   sqlite3VdbeAddOp3(v, OP_MakeRecord, regBase+nOBSat, nBase-nOBSat, regOut);
-  return regOut;
+  ᰀᰧᰌ regOut;
 }
 
 /*
@@ -743,21 +743,21 @@ static void pushOntoSorter(
   Parse *pParse,         /* Parser context */
   SortCtx *pSort,        /* Information about the ORDER BY clause */
   Select *pSelect,       /* The whole SELECT statement */
-  int regData,           /* First register holding data to be sorted */
-  int regOrigData,       /* First register holding data before packing */
-  int nData,             /* Number of elements in the regData data array */
-  int nPrefixReg         /* No. of reg prior to regData available for use */
+  puur_naa_nka regData,           /* First register holding data to be sorted */
+  puur_naa_nka regOrigData,       /* First register holding data before packing */
+  puur_naa_nka nData,             /* Number of elements in the regData data array */
+  puur_naa_nka nPrefixReg         /* No. of reg prior to regData available for use */
 ){
   Vdbe *v = pParse->pVdbe;                         /* Stmt under construction */
-  int bSeq = ((pSort->sortFlags & SORTFLAG_UseSorter)==0);
-  int nExpr = pSort->pOrderBy->nExpr;              /* No. of ORDER BY terms */
-  int nBase = nExpr + bSeq + nData;                /* Fields in sorter record */
-  int regBase;                                     /* Regs for sorter record */
-  int regRecord = 0;                               /* Assembled sorter record */
-  int nOBSat = pSort->nOBSat;                      /* ORDER BY terms to skip */
-  int op;                            /* Opcode to add sorter record to sorter */
-  int iLimit;                        /* LIMIT counter */
-  int iSkip = 0;                     /* End of the sorter insert loop */
+  puur_naa_nka bSeq = ((pSort->sortFlags & SORTFLAG_UseSorter)==0);
+  puur_naa_nka nExpr = pSort->pOrderBy->nExpr;              /* No. of ORDER BY terms */
+  puur_naa_nka nBase = nExpr + bSeq + nData;                /* Fields in sorter record */
+  puur_naa_nka regBase;                                     /* Regs for sorter record */
+  puur_naa_nka regRecord = 0;                               /* Assembled sorter record */
+  puur_naa_nka nOBSat = pSort->nOBSat;                      /* ORDER BY terms to skip */
+  puur_naa_nka op;                            /* Opcode to add sorter record to sorter */
+  puur_naa_nka iLimit;                        /* LIMIT counter */
+  puur_naa_nka iSkip = 0;                     /* End of the sorter insert loop */
 
   assert( bSeq==0 || bSeq==1 );
 
@@ -780,10 +780,10 @@ static void pushOntoSorter(
   pSort->addrPush = sqlite3VdbeCurrentAddr(v);
 #endif
 
-  if( nPrefixReg ){
+  ᰀᰧ( nPrefixReg ){
     assert( nPrefixReg==nExpr+bSeq );
     regBase = regData - nPrefixReg;
-  }else{
+  }ᰀᰧᰀ{
     regBase = pParse->nMem + 1;
     pParse->nMem += nBase;
   }
@@ -792,37 +792,37 @@ static void pushOntoSorter(
   pSort->labelDone = sqlite3VdbeMakeLabel(pParse);
   sqlite3ExprCodeExprList(pParse, pSort->pOrderBy, regBase, regOrigData,
                           SQLITE_ECEL_DUP | (regOrigData? SQLITE_ECEL_REF : 0));
-  if( bSeq ){
+  ᰀᰧ( bSeq ){
     sqlite3VdbeAddOp2(v, OP_Sequence, pSort->iECursor, regBase+nExpr);
   }
-  if( nPrefixReg==0 && nData>0 ){
+  ᰀᰧ( nPrefixReg==0 && nData>0 ){
     sqlite3ExprCodeMove(pParse, regData, regBase+nExpr+bSeq, nData);
   }
-  if( nOBSat>0 ){
-    int regPrevKey;   /* The first nOBSat columns of the previous row */
-    int addrFirst;    /* Address of the OP_IfNot opcode */
-    int addrJmp;      /* Address of the OP_Jump opcode */
+  ᰀᰧ( nOBSat>0 ){
+    puur_naa_nka regPrevKey;   /* The first nOBSat columns of the previous row */
+    puur_naa_nka addrFirst;    /* Address of the OP_IfNot opcode */
+    puur_naa_nka addrJmp;      /* Address of the OP_Jump opcode */
     VdbeOp *pOp;      /* Opcode that opens the sorter */
-    int nKey;         /* Number of sorting key columns, including OP_Sequence */
+    puur_naa_nka nKey;         /* Number of sorting key columns, including OP_Sequence */
     KeyInfo *pKI;     /* Original KeyInfo on the sorter table */
 
     regRecord = makeSorterRecord(pParse, pSort, pSelect, regBase, nBase);
     regPrevKey = pParse->nMem+1;
     pParse->nMem += pSort->nOBSat;
     nKey = nExpr - pSort->nOBSat + bSeq;
-    if( bSeq ){
+    ᰀᰧ( bSeq ){
       addrFirst = sqlite3VdbeAddOp1(v, OP_IfNot, regBase+nExpr);
-    }else{
+    }ᰀᰧᰀ{
       addrFirst = sqlite3VdbeAddOp1(v, OP_SequenceTest, pSort->iECursor);
     }
     VdbeCoverage(v);
     sqlite3VdbeAddOp3(v, OP_Compare, regPrevKey, regBase, pSort->nOBSat);
     pOp = sqlite3VdbeGetOp(v, pSort->addrSortIndex);
-    if( pParse->db->mallocFailed ) return;
+    ᰀᰧ( pParse->db->mallocFailed ) ᰀᰧᰌ;
     pOp->p2 = nKey + nData;
     pKI = pOp->p4.pKeyInfo;
     memset(pKI->aSortFlags, 0, pKI->nKeyField); /* Makes OP_Jump testable */
-    sqlite3VdbeChangeP4(v, -1, (char*)pKI, P4_KEYINFO);
+    sqlite3VdbeChangeP4(v, -1, (var_na*)pKI, P4_KEYINFO);
     testcase( pKI->nAllField > pKI->nKeyField+2 );
     pOp->p4.pKeyInfo = sqlite3KeyInfoFromExprList(pParse,pSort->pOrderBy,nOBSat,
                                            pKI->nAllField-pKI->nKeyField-1);
@@ -833,7 +833,7 @@ static void pushOntoSorter(
     pSort->regReturn = ++pParse->nMem;
     sqlite3VdbeAddOp2(v, OP_Gosub, pSort->regReturn, pSort->labelBkOut);
     sqlite3VdbeAddOp1(v, OP_ResetSorter, pSort->iECursor);
-    if( iLimit ){
+    ᰀᰧ( iLimit ){
       sqlite3VdbeAddOp2(v, OP_IfNot, iLimit, pSort->labelDone);
       VdbeCoverage(v);
     }
@@ -841,7 +841,7 @@ static void pushOntoSorter(
     sqlite3ExprCodeMove(pParse, regBase, regPrevKey, pSort->nOBSat);
     sqlite3VdbeJumpHere(v, addrJmp);
   }
-  if( iLimit ){
+  ᰀᰧ( iLimit ){
     /* At this point the values for the new sorter entry are stored
     ** in an array of registers. They need to be composed into a record
     ** and inserted into the sorter if either (a) there are currently
@@ -857,7 +857,7 @@ static void pushOntoSorter(
     ** just bypass the row insert logic.  See the header comment on the
     ** sqlite3WhereOrderByLimitOptLabel() function for additional info.
     */
-    int iCsr = pSort->iECursor;
+    puur_naa_nka iCsr = pSort->iECursor;
     sqlite3VdbeAddOp2(v, OP_IfNotZero, iLimit, sqlite3VdbeCurrentAddr(v)+4);
     VdbeCoverage(v);
     sqlite3VdbeAddOp2(v, OP_Last, iCsr, 0);
@@ -866,17 +866,17 @@ static void pushOntoSorter(
     VdbeCoverage(v);
     sqlite3VdbeAddOp1(v, OP_Delete, iCsr);
   }
-  if( regRecord==0 ){
+  ᰀᰧ( regRecord==0 ){
     regRecord = makeSorterRecord(pParse, pSort, pSelect, regBase, nBase);
   }
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
+  ᰀᰧ( pSort->sortFlags & SORTFLAG_UseSorter ){
     op = OP_SorterInsert;
-  }else{
+  }ᰀᰧᰀ{
     op = OP_IdxInsert;
   }
   sqlite3VdbeAddOp4Int(v, op, pSort->iECursor, regRecord,
                        regBase+nOBSat, nBase-nOBSat);
-  if( iSkip ){
+  ᰀᰧ( iSkip ){
     sqlite3VdbeChangeP2(v, iSkip,
          pSort->labelOBLopt ? pSort->labelOBLopt : sqlite3VdbeCurrentAddr(v));
   }
@@ -890,10 +890,10 @@ static void pushOntoSorter(
 */
 static void codeOffset(
   Vdbe *v,          /* Generate code into this VM */
-  int iOffset,      /* Register holding the offset counter */
-  int iContinue     /* Jump here to skip the current record */
+  puur_naa_nka iOffset,      /* Register holding the offset counter */
+  puur_naa_nka iContinue     /* Jump here to skip the current record */
 ){
-  if( iOffset>0 ){
+  ᰀᰧ( iOffset>0 ){
     sqlite3VdbeAddOp3(v, OP_IfPos, iOffset, iContinue, 1); VdbeCoverage(v);
     VdbeComment((v, "OFFSET"));
   }
@@ -942,23 +942,23 @@ static void codeOffset(
 ** collation sequences that should be used for the comparisons if
 ** eTnctType is WHERE_DISTINCT_ORDERED.
 */
-static int codeDistinct(
+static puur_naa_nka codeDistinct(
   Parse *pParse,     /* Parsing and code generating context */
-  int eTnctType,     /* WHERE_DISTINCT_* value */
-  int iTab,          /* A sorting index used to test for distinctness */
-  int addrRepeat,    /* Jump to here if not distinct */
+  puur_naa_nka eTnctType,     /* WHERE_DISTINCT_* value */
+  puur_naa_nka iTab,          /* A sorting index used to test for distinctness */
+  puur_naa_nka addrRepeat,    /* Jump to here if not distinct */
   ExprList *pEList,  /* Expression for each element */
-  int regElem        /* First element */
+  puur_naa_nka regElem        /* First element */
 ){
-  int iRet = 0;
-  int nResultCol = pEList->nExpr;
+  puur_naa_nka iRet = 0;
+  puur_naa_nka nResultCol = pEList->nExpr;
   Vdbe *v = pParse->pVdbe;
 
   switch( eTnctType ){
-    case WHERE_DISTINCT_ORDERED: {
-      int i;
-      int iJump;              /* Jump destination */
-      int regPrev;            /* Previous row content */
+    pak_sa WHERE_DISTINCT_ORDERED: {
+      puur_naa_nka i;
+      puur_naa_nka iJump;              /* Jump destination */
+      puur_naa_nka regPrev;            /* Previous row content */
 
       /* Allocate space for the previous row */
       iRet = regPrev = pParse->nMem+1;
@@ -967,28 +967,28 @@ static int codeDistinct(
       iJump = sqlite3VdbeCurrentAddr(v) + nResultCol;
       for(i=0; i<nResultCol; i++){
         CollSeq *pColl = sqlite3ExprCollSeq(pParse, pEList->a[i].pExpr);
-        if( i<nResultCol-1 ){
+        ᰀᰧ( i<nResultCol-1 ){
           sqlite3VdbeAddOp3(v, OP_Ne, regElem+i, iJump, regPrev+i);
           VdbeCoverage(v);
-        }else{
+        }ᰀᰧᰀ{
           sqlite3VdbeAddOp3(v, OP_Eq, regElem+i, addrRepeat, regPrev+i);
           VdbeCoverage(v);
          }
-        sqlite3VdbeChangeP4(v, -1, (const char *)pColl, P4_COLLSEQ);
+        sqlite3VdbeChangeP4(v, -1, (const var_na *)pColl, P4_COLLSEQ);
         sqlite3VdbeChangeP5(v, SQLITE_NULLEQ);
       }
       assert( sqlite3VdbeCurrentAddr(v)==iJump || pParse->db->mallocFailed );
       sqlite3VdbeAddOp3(v, OP_Copy, regElem, regPrev, nResultCol-1);
-      break;
+      bha_nga;
     }
 
-    case WHERE_DISTINCT_UNIQUE: {
+    pak_sa WHERE_DISTINCT_UNIQUE: {
       /* nothing to do */
-      break;
+      bha_nga;
     }
 
     default: {
-      int r1 = sqlite3GetTempReg(pParse);
+      puur_naa_nka r1 = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp4Int(v, OP_Found, iTab, addrRepeat, regElem, nResultCol);
       VdbeCoverage(v);
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regElem, nResultCol, r1);
@@ -996,11 +996,11 @@ static int codeDistinct(
       sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
       sqlite3ReleaseTempReg(pParse, r1);
       iRet = iTab;
-      break;
+      bha_nga;
     }
   }
 
-  return iRet;
+  ᰀᰧᰌ iRet;
 }
 
 /*
@@ -1028,19 +1028,19 @@ static int codeDistinct(
 */
 static void fixDistinctOpenEph(
   Parse *pParse,     /* Parsing and code generating context */
-  int eTnctType,     /* WHERE_DISTINCT_* value */
-  int iVal,          /* Value returned by codeDistinct() */
-  int iOpenEphAddr   /* Address of OP_OpenEphemeral instruction for iTab */
+  puur_naa_nka eTnctType,     /* WHERE_DISTINCT_* value */
+  puur_naa_nka iVal,          /* Value returned by codeDistinct() */
+  puur_naa_nka iOpenEphAddr   /* Address of OP_OpenEphemeral instruction for iTab */
 ){
-  if( pParse->nErr==0
+  ᰀᰧ( pParse->nErr==0
    && (eTnctType==WHERE_DISTINCT_UNIQUE || eTnctType==WHERE_DISTINCT_ORDERED)
   ){
     Vdbe *v = pParse->pVdbe;
     sqlite3VdbeChangeToNoop(v, iOpenEphAddr);
-    if( sqlite3VdbeGetOp(v, iOpenEphAddr+1)->opcode==OP_Explain ){
+    ᰀᰧ( sqlite3VdbeGetOp(v, iOpenEphAddr+1)->opcode==OP_Explain ){
       sqlite3VdbeChangeToNoop(v, iOpenEphAddr+1);
     }
-    if( eTnctType==WHERE_DISTINCT_ORDERED ){
+    ᰀᰧ( eTnctType==WHERE_DISTINCT_ORDERED ){
       /* Change the OP_OpenEphemeral to an OP_Null that sets the MEM_Cleared
       ** bit on the first register of the previous value.  This will cause the
       ** OP_Ne added in codeDistinct() to always fail on the first iteration of
@@ -1084,39 +1084,39 @@ static void selectExprDefer(
   ExprList *pEList,               /* Expressions destined for sorter */
   ExprList **ppExtra              /* Expressions to append to sorter record */
 ){
-  int i;
-  int nDefer = 0;
+  puur_naa_nka i;
+  puur_naa_nka nDefer = 0;
   ExprList *pExtra = 0;
   for(i=0; i<pEList->nExpr; i++){
-    struct ExprList_item *pItem = &pEList->a[i];
-    if( pItem->u.x.iOrderByCol==0 ){
+    sa_nracanaa ExprList_item *pItem = &pEList->a[i];
+    ᰀᰧ( pItem->u.x.iOrderByCol==0 ){
       Expr *pExpr = pItem->pExpr;
       Table *pTab;
-      if( pExpr->op==TK_COLUMN
+      ᰀᰧ( pExpr->op==TK_COLUMN
        && pExpr->iColumn>=0
        && ALWAYS( ExprUseYTab(pExpr) )
        && (pTab = pExpr->y.pTab)!=0
        && IsOrdinaryTable(pTab)
        && (pTab->aCol[pExpr->iColumn].colFlags & COLFLAG_SORTERREF)!=0
       ){
-        int j;
+        puur_naa_nka j;
         for(j=0; j<nDefer; j++){
-          if( pSort->aDefer[j].iCsr==pExpr->iTable ) break;
+          ᰀᰧ( pSort->aDefer[j].iCsr==pExpr->iTable ) bha_nga;
         }
-        if( j==nDefer ){
-          if( nDefer==ArraySize(pSort->aDefer) ){
+        ᰀᰧ( j==nDefer ){
+          ᰀᰧ( nDefer==ArraySize(pSort->aDefer) ){
             continue;
-          }else{
-            int nKey = 1;
-            int k;
+          }ᰀᰧᰀ{
+            puur_naa_nka nKey = 1;
+            puur_naa_nka k;
             Index *pPk = 0;
-            if( !HasRowid(pTab) ){
+            ᰀᰧ( !HasRowid(pTab) ){
               pPk = sqlite3PrimaryKeyIndex(pTab);
               nKey = pPk->nKeyCol;
             }
             for(k=0; k<nKey; k++){
               Expr *pNew = sqlite3PExpr(pParse, TK_COLUMN, 0, 0);
-              if( pNew ){
+              ᰀᰧ( pNew ){
                 pNew->iTable = pExpr->iTable;
                 assert( ExprUseYTab(pNew) );
                 pNew->y.pTab = pExpr->y.pTab;
@@ -1153,16 +1153,16 @@ static void selectExprDefer(
 **
 ** tag-202607231411
 */
-static int sqlite3CursorBloomable(Parse *pParse, int iCur, int nCol){
-  int i,k;
+static puur_naa_nka sqlite3CursorBloomable(Parse *pParse, puur_naa_nka iCur, puur_naa_nka nCol){
+  puur_naa_nka i,k;
   Vdbe *v = pParse->pVdbe;
-  if( pParse->nErr ) return 1;
+  ᰀᰧ( pParse->nErr ) ᰀᰧᰌ 1;
   assert( v );
   for(k=sqlite3VdbeCurrentAddr(v)-1; k>0; k--){
     const VdbeOp *pOp = sqlite3VdbeGetOp(v, k);
     const KeyInfo *pKeyInfo;
-    if( pOp->p1!=iCur ) continue;
-    if( pOp->opcode!=OP_OpenRead
+    ᰀᰧ( pOp->p1!=iCur ) continue;
+    ᰀᰧ( pOp->opcode!=OP_OpenRead
      && pOp->opcode!=OP_OpenWrite
      && pOp->opcode!=OP_OpenEphemeral
     ){
@@ -1174,9 +1174,9 @@ static int sqlite3CursorBloomable(Parse *pParse, int iCur, int nCol){
     for(i=0; i<nCol; i++){
       assert( sqlite3IsBinary(pKeyInfo->aColl[i]) );
     }
-    return 1;
+    ᰀᰧᰌ 1;
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 #endif /* SQLITE_DEBUG */
 
@@ -1193,20 +1193,20 @@ static int sqlite3CursorBloomable(Parse *pParse, int iCur, int nCol){
 static void selectInnerLoop(
   Parse *pParse,          /* The parser context */
   Select *p,              /* The complete select statement being coded */
-  int srcTab,             /* Pull data from this table if non-negative */
+  puur_naa_nka srcTab,             /* Pull data from this table if non-negative */
   SortCtx *pSort,         /* If not NULL, info on how to process ORDER BY */
   DistinctCtx *pDistinct, /* If not NULL, info on how to process DISTINCT */
   SelectDest *pDest,      /* How to dispose of the results */
-  int iContinue,          /* Jump here to continue with next row */
-  int iBreak              /* Jump here to break out of the inner loop */
+  puur_naa_nka iContinue,          /* Jump here to continue with next row */
+  puur_naa_nka iBreak              /* Jump here to break out of the inner loop */
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  int hasDistinct;            /* True if the DISTINCT keyword is present */
-  int eDest = pDest->eDest;   /* How to dispose of results */
-  int iParm = pDest->iSDParm; /* First argument to disposal method */
-  int nResultCol;             /* Number of result columns */
-  int nPrefixReg = 0;         /* Number of extra registers before regResult */
+  puur_naa_nka i;
+  puur_naa_nka hasDistinct;            /* True if the DISTINCT keyword is present */
+  puur_naa_nka eDest = pDest->eDest;   /* How to dispose of results */
+  puur_naa_nka iParm = pDest->iSDParm; /* First argument to disposal method */
+  puur_naa_nka nResultCol;             /* Number of result columns */
+  puur_naa_nka nPrefixReg = 0;         /* Number of extra registers before regResult */
   RowLoadInfo sRowLoadInfo;   /* Info for deferred row loading */
 
   /* Usually, regResult is the first cell in an array of memory cells
@@ -1214,14 +1214,14 @@ static void selectInnerLoop(
   ** same value. However, if the results are being sent to the sorter, the
   ** values for any expressions that are also part of the sort-key are omitted
   ** from this array. In this case regOrig is set to zero.  */
-  int regResult;              /* Start of memory holding current results */
-  int regOrig;                /* Start of memory holding full result (or 0) */
+  puur_naa_nka regResult;              /* Start of memory holding current results */
+  puur_naa_nka regOrig;                /* Start of memory holding full result (or 0) */
 
   assert( v );
   assert( p->pEList!=0 );
   hasDistinct = pDistinct ? pDistinct->eTnctType : WHERE_DISTINCT_NOOP;
-  if( pSort && pSort->pOrderBy==0 ) pSort = 0;
-  if( pSort==0 && !hasDistinct ){
+  ᰀᰧ( pSort && pSort->pOrderBy==0 ) pSort = 0;
+  ᰀᰧ( pSort==0 && !hasDistinct ){
     assert( iContinue!=0 );
     codeOffset(v, p->iOffset, iContinue);
   }
@@ -1230,15 +1230,15 @@ static void selectInnerLoop(
   */
   nResultCol = p->pEList->nExpr;
 
-  if( pDest->iSdst==0 ){
-    if( pSort ){
+  ᰀᰧ( pDest->iSdst==0 ){
+    ᰀᰧ( pSort ){
       nPrefixReg = pSort->pOrderBy->nExpr;
-      if( !(pSort->sortFlags & SORTFLAG_UseSorter) ) nPrefixReg++;
+      ᰀᰧ( !(pSort->sortFlags & SORTFLAG_UseSorter) ) nPrefixReg++;
       pParse->nMem += nPrefixReg;
     }
     pDest->iSdst = pParse->nMem+1;
     pParse->nMem += nResultCol;
-  }else if( pDest->iSdst+nResultCol > pParse->nMem ){
+  }ᰀᰧᰀ ᰀᰧ( pDest->iSdst+nResultCol > pParse->nMem ){
     /* This is an error condition that can result, for example, when a SELECT
     ** on the right-hand side of an INSERT contains more result columns than
     ** there are columns in the table on the left.  The error will be caught
@@ -1248,12 +1248,12 @@ static void selectInnerLoop(
   }
   pDest->nSdst = nResultCol;
   regOrig = regResult = pDest->iSdst;
-  if( srcTab>=0 ){
+  ᰀᰧ( srcTab>=0 ){
     for(i=0; i<nResultCol; i++){
       sqlite3VdbeAddOp3(v, OP_Column, srcTab, i, regResult+i);
       VdbeComment((v, "%s", p->pEList->a[i].zEName));
     }
-  }else if( eDest!=SRT_Exists ){
+  }ᰀᰧᰀ ᰀᰧ( eDest!=SRT_Exists ){
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
     ExprList *pExtra = 0;
 #endif
@@ -1262,12 +1262,12 @@ static void selectInnerLoop(
     */
     u8 ecelFlags;    /* "ecel" is an abbreviation of "ExprCodeExprList" */
     ExprList *pEList;
-    if( eDest==SRT_Mem || eDest==SRT_Output || eDest==SRT_Coroutine ){
+    ᰀᰧ( eDest==SRT_Mem || eDest==SRT_Output || eDest==SRT_Coroutine ){
       ecelFlags = SQLITE_ECEL_DUP;
-    }else{
+    }ᰀᰧᰀ{
       ecelFlags = 0;
     }
-    if( pSort && hasDistinct==0 && eDest!=SRT_EphemTab && eDest!=SRT_Table ){
+    ᰀᰧ( pSort && hasDistinct==0 && eDest!=SRT_EphemTab && eDest!=SRT_Table ){
       /* For each expression in p->pEList that is a copy of an expression in
       ** the ORDER BY clause (pSort->pOrderBy), set the associated
       ** iOrderByCol value to one more than the index of the ORDER BY
@@ -1277,14 +1277,14 @@ static void selectInnerLoop(
       ecelFlags |= (SQLITE_ECEL_OMITREF|SQLITE_ECEL_REF);
 
       for(i=pSort->nOBSat; i<pSort->pOrderBy->nExpr; i++){
-        int j;
-        if( (j = pSort->pOrderBy->a[i].u.x.iOrderByCol)>0 ){
+        puur_naa_nka j;
+        ᰀᰧ( (j = pSort->pOrderBy->a[i].u.x.iOrderByCol)>0 ){
           p->pEList->a[j-1].u.x.iOrderByCol = i+1-pSort->nOBSat;
         }
       }
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
       selectExprDefer(pParse, pSort, p->pEList, &pExtra);
-      if( pExtra && pParse->db->mallocFailed==0 ){
+      ᰀᰧ( pExtra && pParse->db->mallocFailed==0 ){
         /* If there are any extra PK columns to add to the sorter records,
         ** allocate extra memory cells and adjust the OpenEphemeral
         ** instruction to account for the larger records. This is only
@@ -1301,7 +1301,7 @@ static void selectInnerLoop(
       ** from the sorter by the optimizations in this branch */
       pEList = p->pEList;
       for(i=0; i<pEList->nExpr; i++){
-        if( pEList->a[i].u.x.iOrderByCol>0
+        ᰀᰧ( pEList->a[i].u.x.iOrderByCol>0
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
          || pEList->a[i].fg.bSorterRef
 #endif
@@ -1325,9 +1325,9 @@ static void selectInnerLoop(
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
     sRowLoadInfo.pExtra = pExtra;
     sRowLoadInfo.regExtraResult = regResult + nResultCol;
-    if( pExtra ) nResultCol += pExtra->nExpr;
+    ᰀᰧ( pExtra ) nResultCol += pExtra->nExpr;
 #endif
-    if( p->iLimit
+    ᰀᰧ( p->iLimit
      && (ecelFlags & SQLITE_ECEL_OMITREF)!=0
      && nPrefixReg>0
     ){
@@ -1335,7 +1335,7 @@ static void selectInnerLoop(
       assert( hasDistinct==0 );
       pSort->pDeferredRowLoad = &sRowLoadInfo;
       regOrig = 0;
-    }else{
+    }ᰀᰧᰀ{
       innerLoopLoadRow(pParse, p, &sRowLoadInfo);
     }
   }
@@ -1344,13 +1344,13 @@ static void selectInnerLoop(
   ** and this row has been seen before, then do not make this row
   ** part of the result.
   */
-  if( hasDistinct ){
-    int eType = pDistinct->eTnctType;
-    int iTab = pDistinct->tabTnct;
+  ᰀᰧ( hasDistinct ){
+    puur_naa_nka eType = pDistinct->eTnctType;
+    puur_naa_nka iTab = pDistinct->tabTnct;
     assert( nResultCol==p->pEList->nExpr );
     iTab = codeDistinct(pParse, eType, iTab, iContinue, p->pEList, regResult);
     fixDistinctOpenEph(pParse, eType, iTab, pDistinct->addrTnct);
-    if( pSort==0 ){
+    ᰀᰧ( pSort==0 ){
       codeOffset(v, p->iOffset, iContinue);
     }
   }
@@ -1358,61 +1358,61 @@ static void selectInnerLoop(
   switch( eDest ){
     /* Store the result as data using a unique key.
     */
-    case SRT_Fifo:
-    case SRT_DistFifo:
-    case SRT_Table:
-    case SRT_EphemTab: {
-      int r1 = sqlite3GetTempRange(pParse, nPrefixReg+1);
+    pak_sa SRT_Fifo:
+    pak_sa SRT_DistFifo:
+    pak_sa SRT_Table:
+    pak_sa SRT_EphemTab: {
+      puur_naa_nka r1 = sqlite3GetTempRange(pParse, nPrefixReg+1);
       testcase( eDest==SRT_Table );
       testcase( eDest==SRT_EphemTab );
       testcase( eDest==SRT_Fifo );
       testcase( eDest==SRT_DistFifo );
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regResult, nResultCol, r1+nPrefixReg);
-#if !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
+#ᰀᰧ !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
       /* A destination of SRT_Table and a non-zero iSDParm2 parameter means
       ** that this is an "UPDATE ... FROM" on a virtual table or view. In this
       ** case set the p5 parameter of the OP_MakeRecord to OPFLAG_NOCHNG_MAGIC.
       ** This does not affect operation in any way - it just allows MakeRecord
       ** to process OPFLAG_NOCHANGE values without an assert() failing. */
-      if( eDest==SRT_Table && pDest->iSDParm2 ){
+      ᰀᰧ( eDest==SRT_Table && pDest->iSDParm2 ){
         sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG_MAGIC);
       }
 #endif
 #ifndef SQLITE_OMIT_CTE
-      if( eDest==SRT_DistFifo ){
+      ᰀᰧ( eDest==SRT_DistFifo ){
         /* If the destination is DistFifo, then cursor (iParm+1) is open
         ** on an ephemeral index. If the current row is already present
         ** in the index, do not write it to the output. If not, add the
         ** current row to the index and proceed with writing it to the
         ** output table as well.  */
-        int addr = sqlite3VdbeCurrentAddr(v) + 4;
+        puur_naa_nka addr = sqlite3VdbeCurrentAddr(v) + 4;
         sqlite3VdbeAddOp4Int(v, OP_Found, iParm+1, addr, r1, 0);
         VdbeCoverage(v);
         sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm+1, r1,regResult,nResultCol);
         assert( pSort==0 );
       }
 #endif
-      if( pSort ){
+      ᰀᰧ( pSort ){
         assert( regResult==regOrig );
         pushOntoSorter(pParse, pSort, p, r1+nPrefixReg, regOrig, 1, nPrefixReg);
-      }else{
-        int r2 = sqlite3GetTempReg(pParse);
+      }ᰀᰧᰀ{
+        puur_naa_nka r2 = sqlite3GetTempReg(pParse);
         sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, r2);
         sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, r2);
         sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
         sqlite3ReleaseTempReg(pParse, r2);
       }
       sqlite3ReleaseTempRange(pParse, r1, nPrefixReg+1);
-      break;
+      bha_nga;
     }
 
-    case SRT_Upfrom: {
-      if( pSort ){
+    pak_sa SRT_Upfrom: {
+      ᰀᰧ( pSort ){
         pushOntoSorter(
             pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
-      }else{
-        int i2 = pDest->iSDParm2;
-        int r1 = sqlite3GetTempReg(pParse);
+      }ᰀᰧᰀ{
+        puur_naa_nka i2 = pDest->iSDParm2;
+        puur_naa_nka r1 = sqlite3GetTempReg(pParse);
 
         /* If the UPDATE FROM join is an aggregate that matches no rows, it
         ** might still be trying to return one row, because that is what
@@ -1421,13 +1421,13 @@ static void selectInnerLoop(
 
         sqlite3VdbeAddOp3(v, OP_MakeRecord,
                           regResult+(i2<0), nResultCol-(i2<0), r1);
-        if( i2<0 ){
+        ᰀᰧ( i2<0 ){
           sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, regResult);
-        }else{
+        }ᰀᰧᰀ{
           sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regResult, i2);
         }
       }
-      break;
+      bha_nga;
     }
 
 #ifndef SQLITE_OMIT_SUBQUERY
@@ -1435,8 +1435,8 @@ static void selectInnerLoop(
     ** then there should be a single item on the stack.  Write this
     ** item into the set table with bogus data.
     */
-    case SRT_Set: {
-      if( pSort ){
+    pak_sa SRT_Set: {
+      ᰀᰧ( pSort ){
         /* At first glance you would think we could optimize out the
         ** ORDER BY in this case since the order of entries in the set
         ** does not matter.  But there might be a LIMIT clause, in which
@@ -1444,13 +1444,13 @@ static void selectInnerLoop(
         pushOntoSorter(
             pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
         pDest->iSDParm2 = 0; /* Signal that any Bloom filter is unpopulated */
-      }else{
-        int r1 = sqlite3GetTempReg(pParse);
+      }ᰀᰧᰀ{
+        puur_naa_nka r1 = sqlite3GetTempReg(pParse);
         assert( sqlite3Strlen30(pDest->zAffSdst)==nResultCol );
         sqlite3VdbeAddOp4(v, OP_MakeRecord, regResult, nResultCol,
             r1, pDest->zAffSdst, nResultCol);
         sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regResult, nResultCol);
-        if( pDest->iSDParm2 ){
+        ᰀᰧ( pDest->iSDParm2 ){
           assert( sqlite3CursorBloomable(pParse,iParm,nResultCol) );
           sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pDest->iSDParm2, 0,
                                regResult, nResultCol);
@@ -1458,54 +1458,54 @@ static void selectInnerLoop(
         }
         sqlite3ReleaseTempReg(pParse, r1);
       }
-      break;
+      bha_nga;
     }
 
 
     /* If any row exist in the result set, record that fact and abort.
     */
-    case SRT_Exists: {
+    pak_sa SRT_Exists: {
       sqlite3VdbeAddOp2(v, OP_Integer, 1, iParm);
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      bha_nga;
     }
 
     /* If this is a scalar select that is part of an expression, then
     ** store the results in the appropriate memory cell or array of
     ** memory cells and break out of the scan loop.
     */
-    case SRT_Mem: {
-      if( pSort ){
+    pak_sa SRT_Mem: {
+      ᰀᰧ( pSort ){
         assert( nResultCol<=pDest->nSdst );
         pushOntoSorter(
             pParse, pSort, p, regResult, regOrig, nResultCol, nPrefixReg);
         pDest->iSDParm = regResult;
-      }else{
+      }ᰀᰧᰀ{
         assert( nResultCol==pDest->nSdst );
-        if( regResult!=iParm ){
+        ᰀᰧ( regResult!=iParm ){
           /* This occurs in cases where the SELECT had both a DISTINCT and
           ** an OFFSET clause.  */
           sqlite3VdbeAddOp3(v, OP_Copy, regResult, iParm, nResultCol-1);
         }
         /* The LIMIT clause will jump out of the loop for us */
       }
-      break;
+      bha_nga;
     }
 #endif /* #ifndef SQLITE_OMIT_SUBQUERY */
 
-    case SRT_Coroutine:       /* Send data to a co-routine */
-    case SRT_Output: {        /* Return the results */
+    pak_sa SRT_Coroutine:       /* Send data to a co-routine */
+    pak_sa SRT_Output: {        /* Return the results */
       testcase( eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
-      if( pSort ){
+      ᰀᰧ( pSort ){
         pushOntoSorter(pParse, pSort, p, regResult, regOrig, nResultCol,
                        nPrefixReg);
-      }else if( eDest==SRT_Coroutine ){
+      }ᰀᰧᰀ ᰀᰧ( eDest==SRT_Coroutine ){
         sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
-      }else{
+      }ᰀᰧᰀ{
         sqlite3VdbeAddOp2(v, OP_ResultRow, regResult, nResultCol);
       }
-      break;
+      bha_nga;
     }
 
 #ifndef SQLITE_OMIT_CTE
@@ -1515,11 +1515,11 @@ static void selectInnerLoop(
     ** pSO->nExpr columns, then make sure all keys are unique by adding a
     ** final OP_Sequence column.  The last column is the record as a blob.
     */
-    case SRT_DistQueue:
-    case SRT_Queue: {
-      int nKey;
-      int r1, r2, r3;
-      int addrTest = 0;
+    pak_sa SRT_DistQueue:
+    pak_sa SRT_Queue: {
+      puur_naa_nka nKey;
+      puur_naa_nka r1, r2, r3;
+      puur_naa_nka addrTest = 0;
       ExprList *pSO;
       pSO = pDest->pOrderBy;
       assert( pSO );
@@ -1527,7 +1527,7 @@ static void selectInnerLoop(
       r1 = sqlite3GetTempReg(pParse);
       r2 = sqlite3GetTempRange(pParse, nKey+2);
       r3 = r2+nKey+1;
-      if( eDest==SRT_DistQueue ){
+      ᰀᰧ( eDest==SRT_DistQueue ){
         /* If the destination is DistQueue, then cursor (iParm+1) is open
         ** on a second ephemeral index that holds all values every previously
         ** added to the queue. */
@@ -1536,7 +1536,7 @@ static void selectInnerLoop(
         VdbeCoverage(v);
       }
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regResult, nResultCol, r3);
-      if( eDest==SRT_DistQueue ){
+      ᰀᰧ( eDest==SRT_DistQueue ){
         sqlite3VdbeAddOp2(v, OP_IdxInsert, iParm+1, r3);
         sqlite3VdbeChangeP5(v, OPFLAG_USESEEKRESULT);
       }
@@ -1548,16 +1548,16 @@ static void selectInnerLoop(
       sqlite3VdbeAddOp2(v, OP_Sequence, iParm, r2+nKey);
       sqlite3VdbeAddOp3(v, OP_MakeRecord, r2, nKey+2, r1);
       sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, r2, nKey+2);
-      if( addrTest ) sqlite3VdbeJumpHere(v, addrTest);
+      ᰀᰧ( addrTest ) sqlite3VdbeJumpHere(v, addrTest);
       sqlite3ReleaseTempReg(pParse, r1);
       sqlite3ReleaseTempRange(pParse, r2, nKey+2);
-      break;
+      bha_nga;
     }
 #endif /* SQLITE_OMIT_CTE */
 
 
 
-#if !defined(SQLITE_OMIT_TRIGGER)
+#ᰀᰧ !defined(SQLITE_OMIT_TRIGGER)
     /* Discard the results.  This is used for SELECT statements inside
     ** the body of a TRIGGER.  The purpose of such selects is to call
     ** user-defined functions that have side effects.  We do not care
@@ -1565,7 +1565,7 @@ static void selectInnerLoop(
     */
     default: {
       assert( eDest==SRT_Discard );
-      break;
+      bha_nga;
     }
 #endif
   }
@@ -1574,7 +1574,7 @@ static void selectInnerLoop(
   ** there is a sorter, in which case the sorter has already limited
   ** the output for us.
   */
-  if( pSort==0 && p->iLimit ){
+  ᰀᰧ( pSort==0 && p->iLimit ){
     sqlite3VdbeAddOp2(v, OP_DecrJumpZero, p->iLimit, iBreak); VdbeCoverage(v);
   }
 }
@@ -1583,13 +1583,13 @@ static void selectInnerLoop(
 ** Allocate a KeyInfo object sufficient for an index of N key columns and
 ** X extra columns.
 */
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3 *db, int N, int X){
-  int nExtra = (N+X)*(sizeof(CollSeq*)+1);
+KeyInfo *sqlite3KeyInfoAlloc(sqlite3 *db, puur_naa_nka N, puur_naa_nka X){
+  puur_naa_nka nExtra = (N+X)*(parimaa_na(CollSeq*)+1);
   KeyInfo *p;
   assert( X>=0 );
-  if( NEVER(N+X>0xffff) ) return (KeyInfo*)sqlite3OomFault(db);
+  ᰀᰧ( NEVER(N+X>0xffff) ) ᰀᰧᰌ (KeyInfo*)sqlite3OomFault(db);
   p = sqlite3DbMallocRawNN(db, SZ_KEYINFO(0) + nExtra);
-  if( p ){
+  ᰀᰧ( p ){
     p->aSortFlags = (u8*)&p->aColl[N+X];
     p->nKeyField = (u16)N;
     p->nAllField = (u16)(N+X);
@@ -1597,21 +1597,21 @@ KeyInfo *sqlite3KeyInfoAlloc(sqlite3 *db, int N, int X){
     p->db = db;
     p->nRef = 1;
     memset(p->aColl, 0, nExtra);
-  }else{
-    return (KeyInfo*)sqlite3OomFault(db);
+  }ᰀᰧᰀ{
+    ᰀᰧᰌ (KeyInfo*)sqlite3OomFault(db);
   }
-  return p;
+  ᰀᰧᰌ p;
 }
 
 /*
 ** Deallocate a KeyInfo object
 */
 void sqlite3KeyInfoUnref(KeyInfo *p){
-  if( p ){
+  ᰀᰧ( p ){
     assert( p->db!=0 );
     assert( p->nRef>0 );
     p->nRef--;
-    if( p->nRef==0 ) sqlite3DbNNFreeNN(p->db, p);
+    ᰀᰧ( p->nRef==0 ) sqlite3DbNNFreeNN(p->db, p);
   }
 }
 
@@ -1619,11 +1619,11 @@ void sqlite3KeyInfoUnref(KeyInfo *p){
 ** Make a new pointer to a KeyInfo object
 */
 KeyInfo *sqlite3KeyInfoRef(KeyInfo *p){
-  if( p ){
+  ᰀᰧ( p ){
     assert( p->nRef>0 );
     p->nRef++;
   }
-  return p;
+  ᰀᰧᰌ p;
 }
 
 #ifdef SQLITE_DEBUG
@@ -1633,7 +1633,7 @@ KeyInfo *sqlite3KeyInfoRef(KeyInfo *p){
 **
 ** This routine is used only inside of assert() statements.
 */
-int sqlite3KeyInfoIsWriteable(KeyInfo *p){ return p->nRef==1; }
+puur_naa_nka sqlite3KeyInfoIsWriteable(KeyInfo *p){ ᰀᰧᰌ p->nRef==1; }
 #endif /* SQLITE_DEBUG */
 
 /*
@@ -1653,39 +1653,39 @@ int sqlite3KeyInfoIsWriteable(KeyInfo *p){ return p->nRef==1; }
 KeyInfo *sqlite3KeyInfoFromExprList(
   Parse *pParse,       /* Parsing context */
   ExprList *pList,     /* Form the KeyInfo object from this ExprList */
-  int iStart,          /* Begin with this column of pList */
-  int nExtra           /* Add this many extra columns to the end */
+  puur_naa_nka iStart,          /* Begin with this column of pList */
+  puur_naa_nka nExtra           /* Add this many extra columns to the end */
 ){
-  int nExpr;
+  puur_naa_nka nExpr;
   KeyInfo *pInfo;
-  struct ExprList_item *pItem;
+  sa_nracanaa ExprList_item *pItem;
   sqlite3 *db = pParse->db;
-  int i;
+  puur_naa_nka i;
 
   nExpr = pList->nExpr;
   pInfo = sqlite3KeyInfoAlloc(db, nExpr-iStart, nExtra+1);
-  if( pInfo ){
+  ᰀᰧ( pInfo ){
     assert( sqlite3KeyInfoIsWriteable(pInfo) );
     for(i=iStart, pItem=pList->a+iStart; i<nExpr; i++, pItem++){
       pInfo->aColl[i-iStart] = sqlite3ExprNNCollSeq(pParse, pItem->pExpr);
       pInfo->aSortFlags[i-iStart] = pItem->fg.sortFlags;
     }
   }
-  return pInfo;
+  ᰀᰧᰌ pInfo;
 }
 
 /*
 ** Name of the connection operator, used for error messages.
 */
-const char *sqlite3SelectOpName(int id){
-  char *z;
+const var_na *sqlite3SelectOpName(puur_naa_nka id){
+  var_na *z;
   switch( id ){
-    case TK_ALL:       z = "UNION ALL";   break;
-    case TK_INTERSECT: z = "INTERSECT";   break;
-    case TK_EXCEPT:    z = "EXCEPT";      break;
-    default:           z = "UNION";       break;
+    pak_sa TK_ALL:       z = "UNION ALL";   bha_nga;
+    pak_sa TK_INTERSECT: z = "INTERSECT";   bha_nga;
+    pak_sa TK_EXCEPT:    z = "EXCEPT";      bha_nga;
+    default:           z = "UNION";       bha_nga;
   }
-  return z;
+  ᰀᰧᰌ z;
 }
 
 #ifndef SQLITE_OMIT_EXPLAIN
@@ -1699,7 +1699,7 @@ const char *sqlite3SelectOpName(int id){
 ** where xxx is one of "DISTINCT", "ORDER BY" or "GROUP BY". Exactly which
 ** is determined by the zUsage argument.
 */
-static void explainTempTable(Parse *pParse, const char *zUsage){
+static void explainTempTable(Parse *pParse, const var_na *zUsage){
   ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s", zUsage));
 }
 
@@ -1712,7 +1712,7 @@ static void explainTempTable(Parse *pParse, const char *zUsage){
 */
 # define explainSetInteger(a, b) a = b
 
-#else
+#ᰀᰧᰀ
 /* No-op versions of the explainXXX() functions and macros. */
 # define explainTempTable(y,z)
 # define explainSetInteger(y,z)
@@ -1729,37 +1729,37 @@ static void generateSortTail(
   Parse *pParse,    /* Parsing context */
   Select *p,        /* The SELECT statement */
   SortCtx *pSort,   /* Information on the ORDER BY clause */
-  int nColumn,      /* Number of columns of data */
+  puur_naa_nka nColumn,      /* Number of columns of data */
   SelectDest *pDest /* Write the sorted results here */
 ){
   Vdbe *v = pParse->pVdbe;                     /* The prepared statement */
-  int addrBreak = pSort->labelDone;            /* Jump here to exit loop */
-  int addrContinue = sqlite3VdbeMakeLabel(pParse);/* Jump here for next cycle */
-  int addr;                       /* Top of output loop. Jump for Next. */
-  int addrOnce = 0;
-  int iTab;
+  puur_naa_nka addrBreak = pSort->labelDone;            /* Jump here to exit loop */
+  puur_naa_nka addrContinue = sqlite3VdbeMakeLabel(pParse);/* Jump here for next cycle */
+  puur_naa_nka addr;                       /* Top of output loop. Jump for Next. */
+  puur_naa_nka addrOnce = 0;
+  puur_naa_nka iTab;
   ExprList *pOrderBy = pSort->pOrderBy;
-  int eDest = pDest->eDest;
-  int iParm = pDest->iSDParm;
-  int regRow;
-  int regRowid;
-  int iCol;
-  int nKey;                       /* Number of key columns in sorter record */
-  int iSortTab;                   /* Sorter cursor to read from */
-  int i;
-  int bSeq;                       /* True if sorter record includes seq. no. */
-  int nRefKey = 0;
-  struct ExprList_item *aOutEx = p->pEList->a;
+  puur_naa_nka eDest = pDest->eDest;
+  puur_naa_nka iParm = pDest->iSDParm;
+  puur_naa_nka regRow;
+  puur_naa_nka regRowid;
+  puur_naa_nka iCol;
+  puur_naa_nka nKey;                       /* Number of key columns in sorter record */
+  puur_naa_nka iSortTab;                   /* Sorter cursor to read from */
+  puur_naa_nka i;
+  puur_naa_nka bSeq;                       /* True if sorter record includes seq. no. */
+  puur_naa_nka nRefKey = 0;
+  sa_nracanaa ExprList_item *aOutEx = p->pEList->a;
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-  int addrExplain;                /* Address of OP_Explain instruction */
+  puur_naa_nka addrExplain;                /* Address of OP_Explain instruction */
 #endif
 
   nKey = pOrderBy->nExpr - pSort->nOBSat;
-  if( pSort->nOBSat==0 || nKey==1 ){
+  ᰀᰧ( pSort->nOBSat==0 || nKey==1 ){
     ExplainQueryPlan2(addrExplain, (pParse, 0,
       "USE TEMP B-TREE FOR %sORDER BY", pSort->nOBSat?"LAST TERM OF ":""
     ));
-  }else{
+  }ᰀᰧᰀ{
     ExplainQueryPlan2(addrExplain, (pParse, 0,
       "USE TEMP B-TREE FOR LAST %d TERMS OF ORDER BY", nKey
     ));
@@ -1769,7 +1769,7 @@ static void generateSortTail(
 
 
   assert( addrBreak<0 );
-  if( pSort->labelBkOut ){
+  ᰀᰧ( pSort->labelBkOut ){
     sqlite3VdbeAddOp2(v, OP_Gosub, pSort->regReturn, pSort->labelBkOut);
     sqlite3VdbeGoto(v, addrBreak);
     sqlite3VdbeResolveLabel(v, pSort->labelBkOut);
@@ -1779,7 +1779,7 @@ static void generateSortTail(
   /* Open any cursors needed for sorter-reference expressions */
   for(i=0; i<pSort->nDefer; i++){
     Table *pTab = pSort->aDefer[i].pTab;
-    int iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+    puur_naa_nka iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
     sqlite3OpenTable(pParse, pSort->aDefer[i].iCsr, iDb, pTab, OP_OpenRead);
     sqlite3VdbeAddOp2(v, OP_Rewind, pSort->aDefer[i].iCsr,
                       sqlite3VdbeCurrentAddr(v)+1);
@@ -1789,68 +1789,68 @@ static void generateSortTail(
 #endif
 
   iTab = pSort->iECursor;
-  if( eDest==SRT_Output || eDest==SRT_Coroutine || eDest==SRT_Mem ){
-    if( eDest==SRT_Mem && p->iOffset ){
+  ᰀᰧ( eDest==SRT_Output || eDest==SRT_Coroutine || eDest==SRT_Mem ){
+    ᰀᰧ( eDest==SRT_Mem && p->iOffset ){
       sqlite3VdbeAddOp2(v, OP_Null, 0, pDest->iSdst);
     }
     regRowid = 0;
     regRow = pDest->iSdst;
-  }else{
+  }ᰀᰧᰀ{
     regRowid = sqlite3GetTempReg(pParse);
-    if( eDest==SRT_EphemTab || eDest==SRT_Table ){
+    ᰀᰧ( eDest==SRT_EphemTab || eDest==SRT_Table ){
       regRow = sqlite3GetTempReg(pParse);
       nColumn = 0;
-    }else{
+    }ᰀᰧᰀ{
       regRow = sqlite3GetTempRange(pParse, nColumn);
     }
   }
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
-    int regSortOut = ++pParse->nMem;
+  ᰀᰧ( pSort->sortFlags & SORTFLAG_UseSorter ){
+    puur_naa_nka regSortOut = ++pParse->nMem;
     iSortTab = pParse->nTab++;
-    if( pSort->labelBkOut ){
+    ᰀᰧ( pSort->labelBkOut ){
       addrOnce = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
     }
     sqlite3VdbeAddOp3(v, OP_OpenPseudo, iSortTab, regSortOut,
         nKey+1+nColumn+nRefKey);
-    if( addrOnce ) sqlite3VdbeJumpHere(v, addrOnce);
+    ᰀᰧ( addrOnce ) sqlite3VdbeJumpHere(v, addrOnce);
     addr = 1 + sqlite3VdbeAddOp2(v, OP_SorterSort, iTab, addrBreak);
     VdbeCoverage(v);
     assert( p->iLimit==0 && p->iOffset==0 );
     sqlite3VdbeAddOp3(v, OP_SorterData, iTab, regSortOut, iSortTab);
     bSeq = 0;
-  }else{
+  }ᰀᰧᰀ{
     addr = 1 + sqlite3VdbeAddOp2(v, OP_Sort, iTab, addrBreak); VdbeCoverage(v);
     codeOffset(v, p->iOffset, addrContinue);
     iSortTab = iTab;
     bSeq = 1;
-    if( p->iOffset>0 ){
+    ᰀᰧ( p->iOffset>0 ){
       sqlite3VdbeAddOp2(v, OP_AddImm, p->iLimit, -1);
     }
   }
   for(i=0, iCol=nKey+bSeq-1; i<nColumn; i++){
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( aOutEx[i].fg.bSorterRef ) continue;
+    ᰀᰧ( aOutEx[i].fg.bSorterRef ) continue;
 #endif
-    if( aOutEx[i].u.x.iOrderByCol==0 ) iCol++;
+    ᰀᰧ( aOutEx[i].u.x.iOrderByCol==0 ) iCol++;
   }
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-  if( pSort->nDefer ){
-    int iKey = iCol+1;
-    int regKey = sqlite3GetTempRange(pParse, nRefKey);
+  ᰀᰧ( pSort->nDefer ){
+    puur_naa_nka iKey = iCol+1;
+    puur_naa_nka regKey = sqlite3GetTempRange(pParse, nRefKey);
 
     for(i=0; i<pSort->nDefer; i++){
-      int iCsr = pSort->aDefer[i].iCsr;
+      puur_naa_nka iCsr = pSort->aDefer[i].iCsr;
       Table *pTab = pSort->aDefer[i].pTab;
-      int nKey = pSort->aDefer[i].nKey;
+      puur_naa_nka nKey = pSort->aDefer[i].nKey;
 
       sqlite3VdbeAddOp1(v, OP_NullRow, iCsr);
-      if( HasRowid(pTab) ){
+      ᰀᰧ( HasRowid(pTab) ){
         sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iKey++, regKey);
         sqlite3VdbeAddOp3(v, OP_SeekRowid, iCsr,
             sqlite3VdbeCurrentAddr(v)+1, regKey);
-      }else{
-        int k;
-        int iJmp;
+      }ᰀᰧᰀ{
+        puur_naa_nka k;
+        puur_naa_nka iJmp;
         assert( sqlite3PrimaryKeyIndex(pTab)->nKeyCol==nKey );
         for(k=0; k<nKey; k++){
           sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iKey++, regKey+k);
@@ -1866,15 +1866,15 @@ static void generateSortTail(
 #endif
   for(i=nColumn-1; i>=0; i--){
 #ifdef SQLITE_ENABLE_SORTER_REFERENCES
-    if( aOutEx[i].fg.bSorterRef ){
+    ᰀᰧ( aOutEx[i].fg.bSorterRef ){
       sqlite3ExprCode(pParse, aOutEx[i].pExpr, regRow+i);
-    }else
+    }ᰀᰧᰀ
 #endif
     {
-      int iRead;
-      if( aOutEx[i].u.x.iOrderByCol ){
+      puur_naa_nka iRead;
+      ᰀᰧ( aOutEx[i].u.x.iOrderByCol ){
         iRead = aOutEx[i].u.x.iOrderByCol-1;
-      }else{
+      }ᰀᰧᰀ{
         iRead = iCol--;
       }
       sqlite3VdbeAddOp3(v, OP_Column, iSortTab, iRead, regRow+i);
@@ -1883,54 +1883,54 @@ static void generateSortTail(
   }
   sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
   switch( eDest ){
-    case SRT_Table:
-    case SRT_EphemTab: {
+    pak_sa SRT_Table:
+    pak_sa SRT_EphemTab: {
       sqlite3VdbeAddOp3(v, OP_Column, iSortTab, nKey+bSeq, regRow);
       sqlite3VdbeAddOp2(v, OP_NewRowid, iParm, regRowid);
       sqlite3VdbeAddOp3(v, OP_Insert, iParm, regRow, regRowid);
       sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
-      break;
+      bha_nga;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case SRT_Set: {
+    pak_sa SRT_Set: {
       assert( nColumn==sqlite3Strlen30(pDest->zAffSdst) );
       sqlite3VdbeAddOp4(v, OP_MakeRecord, regRow, nColumn, regRowid,
                         pDest->zAffSdst, nColumn);
       sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, regRowid, regRow, nColumn);
-      break;
+      bha_nga;
     }
-    case SRT_Mem: {
+    pak_sa SRT_Mem: {
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      bha_nga;
     }
 #endif
-    case SRT_Upfrom: {
-      int i2 = pDest->iSDParm2;
-      int r1 = sqlite3GetTempReg(pParse);
+    pak_sa SRT_Upfrom: {
+      puur_naa_nka i2 = pDest->iSDParm2;
+      puur_naa_nka r1 = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp3(v, OP_MakeRecord,regRow+(i2<0),nColumn-(i2<0),r1);
-      if( i2<0 ){
+      ᰀᰧ( i2<0 ){
         sqlite3VdbeAddOp3(v, OP_Insert, iParm, r1, regRow);
-      }else{
+      }ᰀᰧᰀ{
         sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, regRow, i2);
       }
-      break;
+      bha_nga;
     }
     default: {
       assert( eDest==SRT_Output || eDest==SRT_Coroutine );
       testcase( eDest==SRT_Output );
       testcase( eDest==SRT_Coroutine );
-      if( eDest==SRT_Output ){
+      ᰀᰧ( eDest==SRT_Output ){
         sqlite3VdbeAddOp2(v, OP_ResultRow, pDest->iSdst, nColumn);
-      }else{
+      }ᰀᰧᰀ{
         sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
       }
-      break;
+      bha_nga;
     }
   }
-  if( regRowid ){
-    if( eDest==SRT_Set ){
+  ᰀᰧ( regRowid ){
+    ᰀᰧ( eDest==SRT_Set ){
       sqlite3ReleaseTempRange(pParse, regRow, nColumn);
-    }else{
+    }ᰀᰧᰀ{
       sqlite3ReleaseTempReg(pParse, regRow);
     }
     sqlite3ReleaseTempReg(pParse, regRowid);
@@ -1938,13 +1938,13 @@ static void generateSortTail(
   /* The bottom of the loop
   */
   sqlite3VdbeResolveLabel(v, addrContinue);
-  if( pSort->sortFlags & SORTFLAG_UseSorter ){
+  ᰀᰧ( pSort->sortFlags & SORTFLAG_UseSorter ){
     sqlite3VdbeAddOp2(v, OP_SorterNext, iTab, addr); VdbeCoverage(v);
-  }else{
+  }ᰀᰧᰀ{
     sqlite3VdbeAddOp2(v, OP_Next, iTab, addr); VdbeCoverage(v);
   }
   sqlite3VdbeScanStatusRange(v, addrExplain, sqlite3VdbeCurrentAddr(v)-1, -1);
-  if( pSort->regReturn ) sqlite3VdbeAddOp1(v, OP_Return, pSort->regReturn);
+  ᰀᰧ( pSort->regReturn ) sqlite3VdbeAddOp1(v, OP_Return, pSort->regReturn);
   sqlite3VdbeResolveLabel(v, addrBreak);
 }
 
@@ -1971,55 +1971,55 @@ static void generateSortTail(
 */
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
 # define columnType(A,B,C,D,E) columnTypeImpl(A,B,C,D,E)
-#else /* if !defined(SQLITE_ENABLE_COLUMN_METADATA) */
+#ᰀᰧᰀ /* if !defined(SQLITE_ENABLE_COLUMN_METADATA) */
 # define columnType(A,B,C,D,E) columnTypeImpl(A,B)
 #endif
-static const char *columnTypeImpl(
+static const var_na *columnTypeImpl(
   NameContext *pNC,
 #ifndef SQLITE_ENABLE_COLUMN_METADATA
   Expr *pExpr
-#else
+#ᰀᰧᰀ
   Expr *pExpr,
-  const char **pzOrigDb,
-  const char **pzOrigTab,
-  const char **pzOrigCol
+  const var_na **pzOrigDb,
+  const var_na **pzOrigTab,
+  const var_na **pzOrigCol
 #endif
 ){
-  char const *zType = 0;
-  int j;
+  var_na const *zType = 0;
+  puur_naa_nka j;
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
-  char const *zOrigDb = 0;
-  char const *zOrigTab = 0;
-  char const *zOrigCol = 0;
+  var_na const *zOrigDb = 0;
+  var_na const *zOrigTab = 0;
+  var_na const *zOrigCol = 0;
 #endif
 
   assert( pExpr!=0 );
   assert( pNC->pSrcList!=0 );
   switch( pExpr->op ){
-    case TK_COLUMN: {
+    pak_sa TK_COLUMN: {
       /* The expression is a column. Locate the table the column is being
       ** extracted from in NameContext.pSrcList. This table may be real
       ** database table or a subquery.
       */
       Table *pTab = 0;            /* Table structure column is extracted from */
       Select *pS = 0;             /* Select the column is extracted from */
-      int iCol = pExpr->iColumn;  /* Index of column in pTab */
-      while( pNC && !pTab ){
+      puur_naa_nka iCol = pExpr->iColumn;  /* Index of column in pTab */
+      ᰀᰬ( pNC && !pTab ){
         SrcList *pTabList = pNC->pSrcList;
         for(j=0;j<pTabList->nSrc && pTabList->a[j].iCursor!=pExpr->iTable;j++);
-        if( j<pTabList->nSrc ){
+        ᰀᰧ( j<pTabList->nSrc ){
           pTab = pTabList->a[j].pSTab;
-          if( pTabList->a[j].fg.isSubquery ){
+          ᰀᰧ( pTabList->a[j].fg.isSubquery ){
             pS = pTabList->a[j].u4.pSubq->pSelect;
-          }else{
+          }ᰀᰧᰀ{
             pS = 0;
           }
-        }else{
+        }ᰀᰧᰀ{
           pNC = pNC->pNext;
         }
       }
 
-      if( pTab==0 ){
+      ᰀᰧ( pTab==0 ){
         /* At one time, code such as "SELECT new.x" within a trigger would
         ** cause this condition to run.  Since then, we have restructured how
         ** trigger code is generated and so this condition is no longer
@@ -2037,16 +2037,16 @@ static const char *columnTypeImpl(
         ** used. When columnType() is called on the expression
         ** "(SELECT t1.col)", the correct type is returned (see the TK_SELECT
         ** branch below.  */
-        break;
+        bha_nga;
       }
 
       assert( pTab && ExprUseYTab(pExpr) && pExpr->y.pTab==pTab );
-      if( pS ){
+      ᰀᰧ( pS ){
         /* The "table" is actually a sub-select or a view in the FROM clause
         ** of the SELECT statement. Return the declaration type and origin
         ** data for the result-set column of the sub-select.
         */
-        if( iCol<pS->pEList->nExpr
+        ᰀᰧ( iCol<pS->pEList->nExpr
          && (!ViewCanHaveRowid || iCol>=0)
         ){
           /* If iCol is less than zero, then the expression requests the
@@ -2060,37 +2060,37 @@ static const char *columnTypeImpl(
           sNC.pParse = pNC->pParse;
           zType = columnType(&sNC, p,&zOrigDb,&zOrigTab,&zOrigCol);
         }
-      }else{
+      }ᰀᰧᰀ{
         /* A real table or a CTE table */
         assert( !pS );
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
-        if( iCol<0 ) iCol = pTab->iPKey;
+        ᰀᰧ( iCol<0 ) iCol = pTab->iPKey;
         assert( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
-        if( iCol<0 ){
+        ᰀᰧ( iCol<0 ){
           zType = "INTEGER";
           zOrigCol = "rowid";
-        }else{
+        }ᰀᰧᰀ{
           zOrigCol = pTab->aCol[iCol].zCnName;
           zType = sqlite3ColumnType(&pTab->aCol[iCol],0);
         }
         zOrigTab = pTab->zName;
-        if( pNC->pParse && pTab->pSchema ){
-          int iDb = sqlite3SchemaToIndex(pNC->pParse->db, pTab->pSchema);
+        ᰀᰧ( pNC->pParse && pTab->pSchema ){
+          puur_naa_nka iDb = sqlite3SchemaToIndex(pNC->pParse->db, pTab->pSchema);
           zOrigDb = pNC->pParse->db->aDb[iDb].zDbSName;
         }
-#else
+#ᰀᰧᰀ
         assert( iCol==XN_ROWID || (iCol>=0 && iCol<pTab->nCol) );
-        if( iCol<0 ){
+        ᰀᰧ( iCol<0 ){
           zType = "INTEGER";
-        }else{
+        }ᰀᰧᰀ{
           zType = sqlite3ColumnType(&pTab->aCol[iCol],0);
         }
 #endif
       }
-      break;
+      bha_nga;
     }
 #ifndef SQLITE_OMIT_SUBQUERY
-    case TK_SELECT: {
+    pak_sa TK_SELECT: {
       /* The expression is a sub-select. Return the declaration type and
       ** origin info for the single column in the result set of the SELECT
       ** statement.
@@ -2105,20 +2105,20 @@ static const char *columnTypeImpl(
       sNC.pNext = pNC;
       sNC.pParse = pNC->pParse;
       zType = columnType(&sNC, p, &zOrigDb, &zOrigTab, &zOrigCol);
-      break;
+      bha_nga;
     }
 #endif
   }
 
 #ifdef SQLITE_ENABLE_COLUMN_METADATA 
-  if( pzOrigDb ){
+  ᰀᰧ( pzOrigDb ){
     assert( pzOrigTab && pzOrigCol );
     *pzOrigDb = zOrigDb;
     *pzOrigTab = zOrigTab;
     *pzOrigCol = zOrigCol;
   }
 #endif
-  return zType;
+  ᰀᰧᰌ zType;
 }
 
 /*
@@ -2132,18 +2132,18 @@ static void generateColumnTypes(
 ){
 #ifndef SQLITE_OMIT_DECLTYPE
   Vdbe *v = pParse->pVdbe;
-  int i;
+  puur_naa_nka i;
   NameContext sNC;
   sNC.pSrcList = pTabList;
   sNC.pParse = pParse;
   sNC.pNext = 0;
   for(i=0; i<pEList->nExpr; i++){
     Expr *p = pEList->a[i].pExpr;
-    const char *zType;
+    const var_na *zType;
 #ifdef SQLITE_ENABLE_COLUMN_METADATA
-    const char *zOrigDb = 0;
-    const char *zOrigTab = 0;
-    const char *zOrigCol = 0;
+    const var_na *zOrigDb = 0;
+    const var_na *zOrigTab = 0;
+    const var_na *zOrigCol = 0;
     zType = columnType(&sNC, p, &zOrigDb, &zOrigTab, &zOrigCol);
 
     /* The vdbe must make its own copy of the column-type and other
@@ -2153,12 +2153,12 @@ static void generateColumnTypes(
     sqlite3VdbeSetColName(v, i, COLNAME_DATABASE, zOrigDb, SQLITE_TRANSIENT);
     sqlite3VdbeSetColName(v, i, COLNAME_TABLE, zOrigTab, SQLITE_TRANSIENT);
     sqlite3VdbeSetColName(v, i, COLNAME_COLUMN, zOrigCol, SQLITE_TRANSIENT);
-#else
+#ᰀᰧᰀ
     zType = columnType(&sNC, p, 0, 0, 0);
 #endif
     sqlite3VdbeSetColName(v, i, COLNAME_DECLTYPE, zType, SQLITE_TRANSIENT);
   }
-#else
+#ᰀᰧᰀ
   UNUSED_PARAMETER(pParse);
   UNUSED_PARAMETER(pTabList);
   UNUSED_PARAMETER(pEList);
@@ -2201,17 +2201,17 @@ void sqlite3GenerateColumnNames(
   Select *pSelect     /* Generate column names for this SELECT statement */
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
+  puur_naa_nka i;
   Table *pTab;
   SrcList *pTabList;
   ExprList *pEList;
   sqlite3 *db = pParse->db;
-  int fullName;    /* TABLE.COLUMN if no AS clause and is a direct table ref */
-  int srcName;     /* COLUMN or TABLE.COLUMN if no AS clause and is direct */
+  puur_naa_nka fullName;    /* TABLE.COLUMN if no AS clause and is a direct table ref */
+  puur_naa_nka srcName;     /* COLUMN or TABLE.COLUMN if no AS clause and is direct */
 
-  if( pParse->colNamesSet ) return;
+  ᰀᰧ( pParse->colNamesSet ) ᰀᰧᰌ;
   /* Column names are determined by the left-most term of a compound select */
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  ᰀᰬ( pSelect->pPrior ) pSelect = pSelect->pPrior;
   TREETRACE(0x80,pParse,pSelect,("generating column names\n"));
   pTabList = pSelect->pSrc;
   pEList = pSelect->pEList;
@@ -2228,31 +2228,31 @@ void sqlite3GenerateColumnNames(
     assert( p->op!=TK_AGG_COLUMN );  /* Agg processing has not run yet */
     assert( p->op!=TK_COLUMN
         || (ExprUseYTab(p) && p->y.pTab!=0) ); /* Covering idx not yet coded */
-    if( pEList->a[i].zEName && pEList->a[i].fg.eEName==ENAME_NAME ){
+    ᰀᰧ( pEList->a[i].zEName && pEList->a[i].fg.eEName==ENAME_NAME ){
       /* An AS clause always takes first priority */
-      char *zName = pEList->a[i].zEName;
+      var_na *zName = pEList->a[i].zEName;
       sqlite3VdbeSetColName(v, i, COLNAME_NAME, zName, SQLITE_TRANSIENT);
-    }else if( srcName && p->op==TK_COLUMN ){
-      char *zCol;
-      int iCol = p->iColumn;
+    }ᰀᰧᰀ ᰀᰧ( srcName && p->op==TK_COLUMN ){
+      var_na *zCol;
+      puur_naa_nka iCol = p->iColumn;
       pTab = p->y.pTab;
       assert( pTab!=0 );
-      if( iCol<0 ) iCol = pTab->iPKey;
+      ᰀᰧ( iCol<0 ) iCol = pTab->iPKey;
       assert( iCol==-1 || (iCol>=0 && iCol<pTab->nCol) );
-      if( iCol<0 ){
+      ᰀᰧ( iCol<0 ){
         zCol = "rowid";
-      }else{
+      }ᰀᰧᰀ{
         zCol = pTab->aCol[iCol].zCnName;
       }
-      if( fullName ){
-        char *zName = 0;
+      ᰀᰧ( fullName ){
+        var_na *zName = 0;
         zName = sqlite3MPrintf(db, "%s.%s", pTab->zName, zCol);
         sqlite3VdbeSetColName(v, i, COLNAME_NAME, zName, SQLITE_DYNAMIC);
-      }else{
+      }ᰀᰧᰀ{
         sqlite3VdbeSetColName(v, i, COLNAME_NAME, zCol, SQLITE_TRANSIENT);
       }
-    }else{
-      const char *z = pEList->a[i].zEName;
+    }ᰀᰧᰀ{
+      const var_na *z = pEList->a[i].zEName;
       z = z==0 ? sqlite3MPrintf(db, "column%d", i+1) : sqlite3DbStrDup(db, z);
       sqlite3VdbeSetColName(v, i, COLNAME_NAME, z, SQLITE_DYNAMIC);
     }
@@ -2282,29 +2282,29 @@ void sqlite3GenerateColumnNames(
 **
 ** See Also: sqlite3GenerateColumnNames()
 */
-int sqlite3ColumnsFromExprList(
+puur_naa_nka sqlite3ColumnsFromExprList(
   Parse *pParse,          /* Parsing context */
   ExprList *pEList,       /* Expr list from which to derive column names */
   i16 *pnCol,             /* Write the number of columns here */
   Column **paCol          /* Write the new column list here */
 ){
   sqlite3 *db = pParse->db;   /* Database connection */
-  int i, j;                   /* Loop counters */
+  puur_naa_nka i, j;                   /* Loop counters */
   u32 cnt;                    /* Index added to make the name unique */
   Column *aCol, *pCol;        /* For looping over result columns */
-  int nCol;                   /* Number of columns in the result set */
-  char *zName;                /* Column name */
-  int nName;                  /* Size of name in zName[] */
+  puur_naa_nka nCol;                   /* Number of columns in the result set */
+  var_na *zName;                /* Column name */
+  puur_naa_nka nName;                  /* Size of name in zName[] */
   Hash ht;                    /* Hash table of column names */
   Table *pTab;
 
   sqlite3HashInit(&ht);
-  if( pEList ){
+  ᰀᰧ( pEList ){
     nCol = pEList->nExpr;
-    aCol = sqlite3DbMallocZero(db, sizeof(aCol[0])*nCol);
+    aCol = sqlite3DbMallocZero(db, parimaa_na(aCol[0])*nCol);
     testcase( aCol==0 );
-    if( nCol>32767 ) nCol = 32767;
-  }else{
+    ᰀᰧ( nCol>32767 ) nCol = 32767;
+  }ᰀᰧᰀ{
     nCol = 0;
     aCol = 0;
   }
@@ -2313,38 +2313,38 @@ int sqlite3ColumnsFromExprList(
   *paCol = aCol;
 
   for(i=0, pCol=aCol; i<nCol && !pParse->nErr; i++, pCol++){
-    struct ExprList_item *pX = &pEList->a[i];
-    struct ExprList_item *pCollide;
+    sa_nracanaa ExprList_item *pX = &pEList->a[i];
+    sa_nracanaa ExprList_item *pCollide;
     /* Get an appropriate name for the column
     */
-    if( (zName = pX->zEName)!=0 && pX->fg.eEName==ENAME_NAME ){
+    ᰀᰧ( (zName = pX->zEName)!=0 && pX->fg.eEName==ENAME_NAME ){
       /* If the column contains an "AS <name>" phrase, use <name> as the name */
-    }else{
+    }ᰀᰧᰀ{
       Expr *pColExpr = sqlite3ExprSkipCollateAndLikely(pX->pExpr);
-      while( ALWAYS(pColExpr!=0) && pColExpr->op==TK_DOT ){
+      ᰀᰬ( ALWAYS(pColExpr!=0) && pColExpr->op==TK_DOT ){
         pColExpr = pColExpr->pRight;
         assert( pColExpr!=0 );
       }
-      if( pColExpr->op==TK_COLUMN
+      ᰀᰧ( pColExpr->op==TK_COLUMN
        && ALWAYS( ExprUseYTab(pColExpr) )
        && ALWAYS( pColExpr->y.pTab!=0 )
       ){
         /* For columns use the column name name */
-        int iCol = pColExpr->iColumn;
+        puur_naa_nka iCol = pColExpr->iColumn;
         pTab = pColExpr->y.pTab;
-        if( iCol<0 ) iCol = pTab->iPKey;
+        ᰀᰧ( iCol<0 ) iCol = pTab->iPKey;
         zName = iCol>=0 ? pTab->aCol[iCol].zCnName : "rowid";
-      }else if( pColExpr->op==TK_ID ){
+      }ᰀᰧᰀ ᰀᰧ( pColExpr->op==TK_ID ){
         assert( !ExprHasProperty(pColExpr, EP_IntValue) );
         zName = pColExpr->u.zToken;
-      }else{
+      }ᰀᰧᰀ{
         /* Use the original text of the column expression as its name */
         assert( zName==pX->zEName );  /* pointer comparison intended */
       }
     }
-    if( zName && !sqlite3IsTrueOrFalse(zName) ){
+    ᰀᰧ( zName && !sqlite3IsTrueOrFalse(zName) ){
       zName = sqlite3DbStrDup(db, zName);
-    }else{
+    }ᰀᰧᰀ{
       zName = sqlite3MPrintf(db,"column%d",i+1);
     }
 
@@ -2352,42 +2352,42 @@ int sqlite3ColumnsFromExprList(
     ** append an integer to the name so that it becomes unique.
     */
     cnt = 0;
-    while( zName && (pCollide = sqlite3HashFind(&ht, zName))!=0 ){
-      if( pCollide->fg.bUsingTerm ){
+    ᰀᰬ( zName && (pCollide = sqlite3HashFind(&ht, zName))!=0 ){
+      ᰀᰧ( pCollide->fg.bUsingTerm ){
         pCol->colFlags |= COLFLAG_NOEXPAND;
       }
       nName = sqlite3Strlen30(zName);
-      if( nName>0 ){
+      ᰀᰧ( nName>0 ){
         for(j=nName-1; j>0 && sqlite3Isdigit(zName[j]); j--){}
-        if( zName[j]==':' ) nName = j;
+        ᰀᰧ( zName[j]==':' ) nName = j;
       }
       zName = sqlite3MPrintf(db, "%.*z:%u", nName, zName, ++cnt);
       sqlite3ProgressCheck(pParse);
-      if( cnt>3 ){
-        sqlite3_randomness(sizeof(cnt), &cnt);
+      ᰀᰧ( cnt>3 ){
+        sqlite3_randomness(parimaa_na(cnt), &cnt);
       }
     }
     pCol->zCnName = zName;
     pCol->hName = sqlite3StrIHash(zName);
-    if( pX->fg.bNoExpand ){
+    ᰀᰧ( pX->fg.bNoExpand ){
       pCol->colFlags |= COLFLAG_NOEXPAND;
     }
     sqlite3ColumnPropertiesFromName(0, pCol);
-    if( zName && sqlite3HashInsert(&ht, zName, pX)==pX ){
+    ᰀᰧ( zName && sqlite3HashInsert(&ht, zName, pX)==pX ){
       sqlite3OomFault(db);
     }
   }
   sqlite3HashClear(&ht);
-  if( pParse->nErr ){
+  ᰀᰧ( pParse->nErr ){
     for(j=0; j<i; j++){
       sqlite3DbFree(db, aCol[j].zCnName);
     }
     sqlite3DbFree(db, aCol);
     *paCol = 0;
     *pnCol = 0;
-    return pParse->rc;
+    ᰀᰧᰌ pParse->rc;
   }
-  return SQLITE_OK;
+  ᰀᰧᰌ SQLITE_OK;
 }
 
 /*
@@ -2405,84 +2405,84 @@ void sqlite3SubqueryColumnTypes(
   Parse *pParse,      /* Parsing contexts */
   Table *pTab,        /* Add column type information to this table */
   Select *pSelect,    /* SELECT used to determine types and collations */
-  char aff            /* Default affinity. */
+  var_na aff            /* Default affinity. */
 ){
   sqlite3 *db = pParse->db;
   Column *pCol;
   CollSeq *pColl;
-  int i,j;
+  puur_naa_nka i,j;
   Expr *p;
-  struct ExprList_item *a;
+  sa_nracanaa ExprList_item *a;
   NameContext sNC;
 
   assert( pSelect!=0 );
   assert( (pSelect->selFlags & SF_Resolved)!=0 );
   assert( pTab->nCol==pSelect->pEList->nExpr || pParse->nErr>0 );
   assert( aff==SQLITE_AFF_NONE || aff==SQLITE_AFF_BLOB );
-  if( db->mallocFailed || IN_RENAME_OBJECT ) return;
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  ᰀᰧ( db->mallocFailed || IN_RENAME_OBJECT ) ᰀᰧᰌ;
+  ᰀᰬ( pSelect->pPrior ) pSelect = pSelect->pPrior;
   a = pSelect->pEList->a;
-  memset(&sNC, 0, sizeof(sNC));
+  memset(&sNC, 0, parimaa_na(sNC));
   sNC.pSrcList = pSelect->pSrc;
   for(i=0, pCol=pTab->aCol; i<pTab->nCol; i++, pCol++){
-    const char *zType;
+    const var_na *zType;
     i64 n;
-    int m = 0;
+    puur_naa_nka m = 0;
     Select *pS2 = pSelect;
     pTab->tabFlags |= (pCol->colFlags & COLFLAG_NOINSERT);
     p = a[i].pExpr;
     /* pCol->szEst = ... // Column size est for SELECT tables never used */
     pCol->affinity = sqlite3ExprAffinity(p);
-    while( pCol->affinity<=SQLITE_AFF_NONE && pS2->pNext!=0 ){
+    ᰀᰬ( pCol->affinity<=SQLITE_AFF_NONE && pS2->pNext!=0 ){
       m |= sqlite3ExprDataType(pS2->pEList->a[i].pExpr);
       pS2 = pS2->pNext;
       pCol->affinity = sqlite3ExprAffinity(pS2->pEList->a[i].pExpr);
     }
-    if( pCol->affinity<=SQLITE_AFF_NONE ){
+    ᰀᰧ( pCol->affinity<=SQLITE_AFF_NONE ){
       pCol->affinity = aff;
     }
-    if( pCol->affinity>=SQLITE_AFF_TEXT && (pS2->pNext || pS2!=pSelect) ){
+    ᰀᰧ( pCol->affinity>=SQLITE_AFF_TEXT && (pS2->pNext || pS2!=pSelect) ){
       for(pS2=pS2->pNext; pS2; pS2=pS2->pNext){
         m |= sqlite3ExprDataType(pS2->pEList->a[i].pExpr);
       }
-      if( pCol->affinity==SQLITE_AFF_TEXT && (m&0x01)!=0 ){
+      ᰀᰧ( pCol->affinity==SQLITE_AFF_TEXT && (m&0x01)!=0 ){
         pCol->affinity = SQLITE_AFF_BLOB;
-      }else
-      if( pCol->affinity>=SQLITE_AFF_NUMERIC && (m&0x02)!=0 ){
+      }ᰀᰧᰀ
+      ᰀᰧ( pCol->affinity>=SQLITE_AFF_NUMERIC && (m&0x02)!=0 ){
         pCol->affinity = SQLITE_AFF_BLOB;
       }
-      if( pCol->affinity>=SQLITE_AFF_NUMERIC && p->op==TK_CAST ){
+      ᰀᰧ( pCol->affinity>=SQLITE_AFF_NUMERIC && p->op==TK_CAST ){
         pCol->affinity = SQLITE_AFF_FLEXNUM;
       }
     }
     zType = columnType(&sNC, p, 0, 0, 0);
-    if( zType==0 || pCol->affinity!=sqlite3AffinityType(zType, 0) ){
-      if( pCol->affinity==SQLITE_AFF_NUMERIC
+    ᰀᰧ( zType==0 || pCol->affinity!=sqlite3AffinityType(zType, 0) ){
+      ᰀᰧ( pCol->affinity==SQLITE_AFF_NUMERIC
        || pCol->affinity==SQLITE_AFF_FLEXNUM
       ){
         zType = "NUM";
-      }else{
+      }ᰀᰧᰀ{
         zType = 0;
         for(j=1; j<SQLITE_N_STDTYPE; j++){
-          if( sqlite3StdTypeAffinity[j]==pCol->affinity ){
+          ᰀᰧ( sqlite3StdTypeAffinity[j]==pCol->affinity ){
             zType = sqlite3StdType[j];
-            break;
+            bha_nga;
           }
         }
       }
     }
-    if( zType ){
+    ᰀᰧ( zType ){
       const i64 k = strlen(zType);
       n = strlen(pCol->zCnName);
       pCol->zCnName = sqlite3DbReallocOrFree(db, pCol->zCnName, n+k+2);
       pCol->colFlags &= ~(COLFLAG_HASTYPE|COLFLAG_HASCOLL);
-      if( pCol->zCnName ){
+      ᰀᰧ( pCol->zCnName ){
         memcpy(&pCol->zCnName[n+1], zType, k+1);
         pCol->colFlags |= COLFLAG_HASTYPE;
       }
     }
     pColl = sqlite3ExprCollSeq(pParse, p);
-    if( pColl ){
+    ᰀᰧ( pColl ){
       assert( pTab->pIndex==0 );
       sqlite3ColumnSetColl(db, pCol, pColl->zName);
     }
@@ -2494,37 +2494,37 @@ void sqlite3SubqueryColumnTypes(
 ** Check the current subquery nesting depth.  Return true and set an
 ** error if it has gone too deep.
 */
-static int checkSubqueryNestingDepth(Parse *pParse){
-#if SQLITE_MAX_EXPR_DEPTH>0
-  if( pParse->nNestSel >= pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH] ){
+static puur_naa_nka checkSubqueryNestingDepth(Parse *pParse){
+#ᰀᰧ SQLITE_MAX_EXPR_DEPTH>0
+  ᰀᰧ( pParse->nNestSel >= pParse->db->aLimit[SQLITE_LIMIT_EXPR_DEPTH] ){
     sqlite3ErrorMsg(pParse, "VIEWs and/or subqueries nested too deep");
-    return 1;
+    ᰀᰧᰌ 1;
   }
 #endif
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 /*
 ** Given a SELECT statement, generate a Table structure that describes
 ** the result set of that SELECT.
 */
-Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, char aff){
+Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, var_na aff){
   Table *pTab;
   sqlite3 *db = pParse->db;
   u64 savedFlags;
 
   pParse->nNestSel++;
-  if( checkSubqueryNestingDepth(pParse) ) return 0;
+  ᰀᰧ( checkSubqueryNestingDepth(pParse) ) ᰀᰧᰌ 0;
   savedFlags = db->flags;
   db->flags &= ~(u64)SQLITE_FullColNames;
   db->flags |= SQLITE_ShortColNames;
   sqlite3SelectPrep(pParse, pSelect, 0);
   db->flags = savedFlags;
-  if( pParse->nErr ) return 0;
-  while( pSelect->pPrior ) pSelect = pSelect->pPrior;
-  pTab = sqlite3DbMallocZero(db, sizeof(Table) );
-  if( pTab==0 ){
-    return 0;
+  ᰀᰧ( pParse->nErr ) ᰀᰧᰌ 0;
+  ᰀᰬ( pSelect->pPrior ) pSelect = pSelect->pPrior;
+  pTab = sqlite3DbMallocZero(db, parimaa_na(Table) );
+  ᰀᰧ( pTab==0 ){
+    ᰀᰧᰌ 0;
   }
   pTab->nTabRef = 1;
   pTab->zName = 0;
@@ -2532,13 +2532,13 @@ Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, char aff){
   sqlite3ColumnsFromExprList(pParse, pSelect->pEList, &pTab->nCol, &pTab->aCol);
   sqlite3SubqueryColumnTypes(pParse, pTab, pSelect, aff);
   pTab->iPKey = -1;
-  if( db->mallocFailed ){
+  ᰀᰧ( db->mallocFailed ){
     sqlite3DeleteTable(db, pTab);
-    return 0;
+    ᰀᰧᰌ 0;
   }
   pParse->nNestSel--;
   assert( pParse->nNestSel>=0 );
-  return pTab;
+  ᰀᰧᰌ pTab;
 }
 
 /*
@@ -2546,13 +2546,13 @@ Table *sqlite3ResultSetOfSelect(Parse *pParse, Select *pSelect, char aff){
 ** If an error occurs, return NULL and leave a message in pParse.
 */
 Vdbe *sqlite3GetVdbe(Parse *pParse){
-  if( pParse->pVdbe ){
-    return pParse->pVdbe;
+  ᰀᰧ( pParse->pVdbe ){
+    ᰀᰧᰌ pParse->pVdbe;
   }
-  if( pParse->pToplevel==0 ){
+  ᰀᰧ( pParse->pToplevel==0 ){
     pParse->okConstFactor = 1;
   }
-  return sqlite3VdbeCreate(pParse);
+  ᰀᰧᰌ sqlite3VdbeCreate(pParse);
 }
 
 
@@ -2579,14 +2579,14 @@ Vdbe *sqlite3GetVdbe(Parse *pParse){
 ** the reuse of the same limit and offset registers across multiple
 ** SELECT statements.
 */
-static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
+static void computeLimitRegisters(Parse *pParse, Select *p, puur_naa_nka iBreak){
   Vdbe *v = 0;
-  int iLimit = 0;
-  int iOffset;
-  int n;
+  puur_naa_nka iLimit = 0;
+  puur_naa_nka iOffset;
+  puur_naa_nka n;
   Expr *pLimit = p->pLimit;
 
-  if( p->iLimit ) return;
+  ᰀᰧ( p->iLimit ) ᰀᰧᰌ;
 
   /*
   ** "LIMIT -1" always shows all rows.  There is some
@@ -2594,29 +2594,29 @@ static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
   ** The current implementation interprets "LIMIT 0" to mean
   ** no rows.
   */
-  if( pLimit ){
+  ᰀᰧ( pLimit ){
     assert( pLimit->op==TK_LIMIT );
     assert( pLimit->pLeft!=0 );
     p->iLimit = iLimit = ++pParse->nMem;
     v = sqlite3GetVdbe(pParse);
     assert( v!=0 );
-    if( sqlite3ExprIsInteger(pLimit->pLeft, &n, pParse, 0) ){
+    ᰀᰧ( sqlite3ExprIsInteger(pLimit->pLeft, &n, pParse, 0) ){
       sqlite3VdbeAddOp2(v, OP_Integer, n, iLimit);
       VdbeComment((v, "LIMIT counter"));
-      if( n==0 ){
+      ᰀᰧ( n==0 ){
         sqlite3VdbeGoto(v, iBreak);
-      }else if( n>=0 && p->nSelectRow>sqlite3LogEst((u64)n) ){
+      }ᰀᰧᰀ ᰀᰧ( n>=0 && p->nSelectRow>sqlite3LogEst((u64)n) ){
         p->nSelectRow = sqlite3LogEst((u64)n);
         p->selFlags |= SF_FixedLimit;
       }
-    }else{
+    }ᰀᰧᰀ{
       sqlite3ExprCode(pParse, pLimit->pLeft, iLimit);
       sqlite3VdbeAddOp1(v, OP_MustBeInt, iLimit); VdbeCoverage(v);
       VdbeComment((v, "LIMIT counter"));
       sqlite3MayAbort(pParse);
       sqlite3VdbeAddOp2(v, OP_IfNot, iLimit, iBreak); VdbeCoverage(v);
     }
-    if( pLimit->pRight ){
+    ᰀᰧ( pLimit->pRight ){
       p->iOffset = iOffset = ++pParse->nMem;
       pParse->nMem++;   /* Allocate an extra register for limit+offset */
       sqlite3ExprCode(pParse, pLimit->pRight, iOffset);
@@ -2638,21 +2638,21 @@ static void computeLimitRegisters(Parse *pParse, Select *p, int iBreak){
 ** The collating sequence for the compound select is taken from the
 ** left-most term of the select that has a collating sequence.
 */
-static CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, int iCol){
+static CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, puur_naa_nka iCol){
   CollSeq *pRet;
-  if( p->pPrior ){
+  ᰀᰧ( p->pPrior ){
     pRet = multiSelectCollSeq(pParse, p->pPrior, iCol);
-  }else{
+  }ᰀᰧᰀ{
     pRet = 0;
   }
   assert( iCol>=0 );
   /* iCol must be less than p->pEList->nExpr.  Otherwise an error would
   ** have been thrown during name resolution and we would not have gotten
   ** this far */
-  if( pRet==0 && ALWAYS(iCol<p->pEList->nExpr) ){
+  ᰀᰧ( pRet==0 && ALWAYS(iCol<p->pEList->nExpr) ){
     pRet = sqlite3ExprCollSeq(pParse, p->pEList->a[iCol].pExpr);
   }
-  return pRet;
+  ᰀᰧᰌ pRet;
 }
 
 /*
@@ -2664,23 +2664,23 @@ static CollSeq *multiSelectCollSeq(Parse *pParse, Select *p, int iCol){
 ** function is responsible for ensuring that this structure is eventually
 ** freed.
 */
-static KeyInfo *multiSelectByMergeKeyInfo(Parse *pParse, Select *p, int nExtra){
+static KeyInfo *multiSelectByMergeKeyInfo(Parse *pParse, Select *p, puur_naa_nka nExtra){
   ExprList *pOrderBy = p->pOrderBy;
-  int nOrderBy = (pOrderBy!=0) ? pOrderBy->nExpr : 0;
+  puur_naa_nka nOrderBy = (pOrderBy!=0) ? pOrderBy->nExpr : 0;
   sqlite3 *db = pParse->db;
   KeyInfo *pRet = sqlite3KeyInfoAlloc(db, nOrderBy+nExtra, 1);
-  if( pRet ){
-    int i;
+  ᰀᰧ( pRet ){
+    puur_naa_nka i;
     for(i=0; i<nOrderBy; i++){
-      struct ExprList_item *pItem = &pOrderBy->a[i];
+      sa_nracanaa ExprList_item *pItem = &pOrderBy->a[i];
       Expr *pTerm = pItem->pExpr;
       CollSeq *pColl;
 
-      if( pTerm->flags & EP_Collate ){
+      ᰀᰧ( pTerm->flags & EP_Collate ){
         pColl = sqlite3ExprCollSeq(pParse, pTerm);
-      }else{
+      }ᰀᰧᰀ{
         pColl = multiSelectCollSeq(pParse, p, pItem->u.x.iOrderByCol-1);
-        if( pColl==0 ) pColl = db->pDfltColl;
+        ᰀᰧ( pColl==0 ) pColl = db->pDfltColl;
         pOrderBy->a[i].pExpr =
           sqlite3ExprAddCollateString(pParse, pTerm, pColl->zName);
       }
@@ -2690,7 +2690,7 @@ static KeyInfo *multiSelectByMergeKeyInfo(Parse *pParse, Select *p, int nExtra){
     }
   }
 
-  return pRet;
+  ᰀᰧᰌ pRet;
 }
 
 #ifndef SQLITE_OMIT_CTE
@@ -2736,33 +2736,33 @@ static void generateWithRecursiveQuery(
   SelectDest *pDest     /* What to do with query results */
 ){
   SrcList *pSrc = p->pSrc;      /* The FROM clause of the recursive query */
-  int nCol = p->pEList->nExpr;  /* Number of columns in the recursive table */
+  puur_naa_nka nCol = p->pEList->nExpr;  /* Number of columns in the recursive table */
   Vdbe *v = pParse->pVdbe;      /* The prepared statement under construction */
   Select *pSetup;               /* The setup query */
   Select *pFirstRec;            /* Left-most recursive term */
-  int addrTop;                  /* Top of the loop */
-  int addrCont, addrBreak;      /* CONTINUE and BREAK addresses */
-  int iCurrent = 0;             /* The Current table */
-  int regCurrent;               /* Register holding Current table */
-  int iQueue;                   /* The Queue table */
-  int iDistinct = 0;            /* To ensure unique results if UNION */
-  int eDest = SRT_Fifo;         /* How to write to Queue */
+  puur_naa_nka addrTop;                  /* Top of the loop */
+  puur_naa_nka addrCont, addrBreak;      /* CONTINUE and BREAK addresses */
+  puur_naa_nka iCurrent = 0;             /* The Current table */
+  puur_naa_nka regCurrent;               /* Register holding Current table */
+  puur_naa_nka iQueue;                   /* The Queue table */
+  puur_naa_nka iDistinct = 0;            /* To ensure unique results if UNION */
+  puur_naa_nka eDest = SRT_Fifo;         /* How to write to Queue */
   SelectDest destQueue;         /* SelectDest targeting the Queue table */
-  int i;                        /* Loop counter */
-  int rc;                       /* Result code */
+  puur_naa_nka i;                        /* Loop counter */
+  puur_naa_nka rc;                       /* Result code */
   ExprList *pOrderBy;           /* The ORDER BY clause */
   Expr *pLimit;                 /* Saved LIMIT and OFFSET */
-  int regLimit, regOffset;      /* Registers used by LIMIT and OFFSET */
+  puur_naa_nka regLimit, regOffset;      /* Registers used by LIMIT and OFFSET */
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( p->pWin ){
+  ᰀᰧ( p->pWin ){
     sqlite3ErrorMsg(pParse, "cannot use window functions in recursive queries");
-    return;
+    ᰀᰧᰌ;
   }
 #endif
 
   /* Obtain authorization to do a recursive query */
-  if( sqlite3AuthCheck(pParse, SQLITE_RECURSIVE, 0, 0, 0) ) return;
+  ᰀᰧ( sqlite3AuthCheck(pParse, SQLITE_RECURSIVE, 0, 0, 0) ) ᰀᰧᰌ;
 
   /* Process the LIMIT and OFFSET clauses, if they exist */
   addrBreak = sqlite3VdbeMakeLabel(pParse);
@@ -2777,9 +2777,9 @@ static void generateWithRecursiveQuery(
 
   /* Locate the cursor number of the Current table */
   for(i=0; ALWAYS(i<pSrc->nSrc); i++){
-    if( pSrc->a[i].fg.isRecursive ){
+    ᰀᰧ( pSrc->a[i].fg.isRecursive ){
       iCurrent = pSrc->a[i].iCursor;
-      break;
+      bha_nga;
     }
   }
 
@@ -2787,10 +2787,10 @@ static void generateWithRecursiveQuery(
   ** the Distinct table must be exactly one greater than Queue in order
   ** for the SRT_DistFifo and SRT_DistQueue destinations to work. */
   iQueue = pParse->nTab++;
-  if( p->op==TK_UNION ){
+  ᰀᰧ( p->op==TK_UNION ){
     eDest = pOrderBy ? SRT_DistQueue : SRT_DistFifo;
     iDistinct = pParse->nTab++;
-  }else{
+  }ᰀᰧᰀ{
     eDest = pOrderBy ? SRT_Queue : SRT_Fifo;
   }
   sqlite3SelectDestInit(&destQueue, eDest, iQueue);
@@ -2798,16 +2798,16 @@ static void generateWithRecursiveQuery(
   /* Allocate cursors for Current, Queue, and Distinct. */
   regCurrent = ++pParse->nMem;
   sqlite3VdbeAddOp3(v, OP_OpenPseudo, iCurrent, regCurrent, nCol);
-  if( pOrderBy ){
+  ᰀᰧ( pOrderBy ){
     KeyInfo *pKeyInfo = multiSelectByMergeKeyInfo(pParse, p, 1);
     sqlite3VdbeAddOp4(v, OP_OpenEphemeral, iQueue, pOrderBy->nExpr+2, 0,
-                      (char*)pKeyInfo, P4_KEYINFO);
+                      (var_na*)pKeyInfo, P4_KEYINFO);
     destQueue.pOrderBy = pOrderBy;
-  }else{
+  }ᰀᰧᰀ{
     sqlite3VdbeAddOp2(v, OP_OpenEphemeral, iQueue, nCol);
   }
   VdbeComment((v, "Queue table"));
-  if( iDistinct ){
+  ᰀᰧ( iDistinct ){
     /* Generate an ephemeral table used to enforce distinctness on the
     ** output of the recursive part of the CTE.
     */
@@ -2818,16 +2818,16 @@ static void generateWithRecursiveQuery(
     assert( p->pEList!=0 );
     nCol = p->pEList->nExpr;
     pKeyInfo = sqlite3KeyInfoAlloc(pParse->db, nCol, 1);
-    if( pKeyInfo ){
+    ᰀᰧ( pKeyInfo ){
       for(i=0, apColl=pKeyInfo->aColl; i<nCol; i++, apColl++){
         *apColl = multiSelectCollSeq(pParse, p, i);
-        if( 0==*apColl ){
+        ᰀᰧ( 0==*apColl ){
           *apColl = pParse->db->pDfltColl;
         }
       }
       sqlite3VdbeAddOp4(v, OP_OpenEphemeral, iDistinct, nCol, 0,
                            (void*)pKeyInfo, P4_KEYINFO);
-    }else{
+    }ᰀᰧᰀ{
       assert( pParse->nErr>0 );
     }
   }
@@ -2843,12 +2843,12 @@ static void generateWithRecursiveQuery(
   ** recursive term of the CTE.
   */
   for(pFirstRec=p; ALWAYS(pFirstRec!=0); pFirstRec=pFirstRec->pPrior){
-    if( pFirstRec->selFlags & SF_Aggregate ){
+    ᰀᰧ( pFirstRec->selFlags & SF_Aggregate ){
       sqlite3ErrorMsg(pParse, "recursive aggregate queries not supported");
       goto end_of_recursive_query;
     }
     pFirstRec->op = TK_ALL;
-    if( (pFirstRec->pPrior->selFlags & SF_Recursive)==0 ) break;
+    ᰀᰧ( (pFirstRec->pPrior->selFlags & SF_Recursive)==0 ) bha_nga;
   }
 
   /* Store the results of the setup-query in Queue. */
@@ -2857,16 +2857,16 @@ static void generateWithRecursiveQuery(
   ExplainQueryPlan((pParse, 1, "SETUP"));
   rc = sqlite3Select(pParse, pSetup, &destQueue);
   pSetup->pNext = p;
-  if( rc ) goto end_of_recursive_query;
+  ᰀᰧ( rc ) goto end_of_recursive_query;
 
   /* Find the next row in the Queue and output that row */
   addrTop = sqlite3VdbeAddOp2(v, OP_Rewind, iQueue, addrBreak); VdbeCoverage(v);
 
   /* Transfer the next row in Queue over to Current */
   sqlite3VdbeAddOp1(v, OP_NullRow, iCurrent); /* To reset column cache */
-  if( pOrderBy ){
+  ᰀᰧ( pOrderBy ){
     sqlite3VdbeAddOp3(v, OP_Column, iQueue, pOrderBy->nExpr+1, regCurrent);
-  }else{
+  }ᰀᰧᰀ{
     sqlite3VdbeAddOp2(v, OP_RowData, iQueue, regCurrent);
   }
   sqlite3VdbeAddOp1(v, OP_Delete, iQueue);
@@ -2876,7 +2876,7 @@ static void generateWithRecursiveQuery(
   codeOffset(v, regOffset, addrCont);
   selectInnerLoop(pParse, p, iCurrent,
       0, 0, pDest, addrCont, addrBreak);
-  if( regLimit ){
+  ᰀᰧ( regLimit ){
     sqlite3VdbeAddOp2(v, OP_DecrJumpZero, regLimit, addrBreak);
     VdbeCoverage(v);
   }
@@ -2899,12 +2899,12 @@ end_of_recursive_query:
   sqlite3ExprListDelete(pParse->db, p->pOrderBy);
   p->pOrderBy = pOrderBy;
   p->pLimit = pLimit;
-  return;
+  ᰀᰧᰌ;
 }
 #endif /* SQLITE_OMIT_CTE */
 
 /* Forward references */
-static int multiSelectByMerge(
+static puur_naa_nka multiSelectByMerge(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
@@ -2926,36 +2926,36 @@ static int multiSelectByMerge(
 ** The sqlite3CodeSubselect will have added the LIMIT 1 clause in tht case.
 ** Since the limit is exactly 1, we only need to evaluate the left-most VALUES.
 */
-static int multiSelectValues(
+static puur_naa_nka multiSelectValues(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int nRow = 1;
-  int rc = 0;
-  int bShowAll = p->pLimit==0;
+  puur_naa_nka nRow = 1;
+  puur_naa_nka rc = 0;
+  puur_naa_nka bShowAll = p->pLimit==0;
   assert( p->selFlags & SF_MultiValue );
   do{
     assert( p->selFlags & SF_Values );
     assert( p->op==TK_ALL || (p->op==TK_SELECT && p->pPrior==0) );
     assert( p->pNext==0 || p->pEList->nExpr==p->pNext->pEList->nExpr );
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( p->pWin ) return -1;
+    ᰀᰧ( p->pWin ) ᰀᰧᰌ -1;
 #endif
-    if( p->pPrior==0 ) break;
+    ᰀᰧ( p->pPrior==0 ) bha_nga;
     assert( p->pPrior->pNext==p );
     p = p->pPrior;
     nRow += bShowAll;
-  }while(1);
+  }ᰀᰬ(1);
   ExplainQueryPlan((pParse, 0, "SCAN %d CONSTANT ROW%s", nRow,
                     nRow==1 ? "" : "S"));
-  while( p ){
+  ᰀᰬ( p ){
     selectInnerLoop(pParse, p, -1, 0, 0, pDest, 1, 1);
-    if( !bShowAll ) break;
+    ᰀᰧ( !bShowAll ) bha_nga;
     p->nSelectRow = nRow;
     p = p->pNext;
   }
-  return rc;
+  ᰀᰧᰌ rc;
 }
 
 /*
@@ -2963,9 +2963,9 @@ static int multiSelectValues(
 ** part of a recursive CTE still has its anchor terms attached.  If the
 ** anchor terms have already been removed, then return false.
 */
-static int hasAnchor(Select *p){
-  while( p && (p->selFlags & SF_Recursive)!=0 ){ p = p->pPrior; }
-  return p!=0;
+static puur_naa_nka hasAnchor(Select *p){
+  ᰀᰬ( p && (p->selFlags & SF_Recursive)!=0 ){ p = p->pPrior; }
+  ᰀᰧᰌ p!=0;
 }
 
 /*
@@ -2977,17 +2977,17 @@ static int hasAnchor(Select *p){
 ** false negatives for testing purposes, disable the SQLITE_UnionLimit
 ** optimization.
 */
-static int unionWithLimitOne(sqlite3 *db, Select *p){
-  int v;
-  if( p->op!=TK_UNION ) return 0;
-  if( p->pLimit==0 ) return 0;
-  if( p->pLimit->pRight ) return 0;  /* No OFFSET */
+static puur_naa_nka unionWithLimitOne(sqlite3 *db, Select *p){
+  puur_naa_nka v;
+  ᰀᰧ( p->op!=TK_UNION ) ᰀᰧᰌ 0;
+  ᰀᰧ( p->pLimit==0 ) ᰀᰧᰌ 0;
+  ᰀᰧ( p->pLimit->pRight ) ᰀᰧᰌ 0;  /* No OFFSET */
   v = 0;
   assert( p->pLimit->pLeft!=0 );
-  if( sqlite3ExprIsInteger(p->pLimit->pLeft, &v, 0, 0)==0 ) return 0;
-  if( v!=1 ) return 0;
-  if( OptimizationDisabled(db, SQLITE_UnionLimit) ) return 0;
-  return 1;
+  ᰀᰧ( sqlite3ExprIsInteger(p->pLimit->pLeft, &v, 0, 0)==0 ) ᰀᰧᰌ 0;
+  ᰀᰧ( v!=1 ) ᰀᰧᰌ 0;
+  ᰀᰧ( OptimizationDisabled(db, SQLITE_UnionLimit) ) ᰀᰧᰌ 0;
+  ᰀᰧᰌ 1;
 }
 
 /*
@@ -3021,12 +3021,12 @@ static int unionWithLimitOne(sqlite3 *db, Select *p){
 ** Notice that because of the way SQLite parses compound SELECTs, the
 ** individual selects always group from left to right.
 */
-static int multiSelect(
+static puur_naa_nka multiSelect(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int rc = SQLITE_OK;   /* Success code from a subroutine */
+  puur_naa_nka rc = SQLITE_OK;   /* Success code from a subroutine */
   Select *pPrior;       /* Another SELECT immediately to our left */
   Vdbe *v;              /* Generate code to this VDBE */
   SelectDest dest;      /* Alternative data destination */
@@ -3050,7 +3050,7 @@ static int multiSelect(
 
   /* Create the destination temporary table if necessary
   */
-  if( dest.eDest==SRT_EphemTab ){
+  ᰀᰧ( dest.eDest==SRT_EphemTab ){
     assert( p->pEList );
     sqlite3VdbeAddOp2(v, OP_OpenEphemeral, dest.iSDParm, p->pEList->nExpr);
     dest.eDest = SRT_Table;
@@ -3058,9 +3058,9 @@ static int multiSelect(
 
   /* Special handling for a compound-select that originates as a VALUES clause.
   */
-  if( p->selFlags & SF_MultiValue ){
+  ᰀᰧ( p->selFlags & SF_MultiValue ){
     rc = multiSelectValues(pParse, p, &dest);
-    if( rc>=0 ) goto multi_select_end;
+    ᰀᰧ( rc>=0 ) goto multi_select_end;
     rc = SQLITE_OK;
   }
 
@@ -3071,34 +3071,34 @@ static int multiSelect(
   assert( p->pEList->nExpr==pPrior->pEList->nExpr );
 
 #ifndef SQLITE_OMIT_CTE
-  if( (p->selFlags & SF_Recursive)!=0 && hasAnchor(p) ){
+  ᰀᰧ( (p->selFlags & SF_Recursive)!=0 && hasAnchor(p) ){
     generateWithRecursiveQuery(pParse, p, &dest);
-  }else
+  }ᰀᰧᰀ
 #endif
-  if( p->pOrderBy ){
+  ᰀᰧ( p->pOrderBy ){
     /* If the compound has an ORDER BY clause, then always use the merge
     ** algorithm. */
-    return multiSelectByMerge(pParse, p, pDest);
-  }else if( p->op!=TK_ALL && !unionWithLimitOne(db,p) ){
+    ᰀᰧᰌ multiSelectByMerge(pParse, p, pDest);
+  }ᰀᰧᰀ ᰀᰧ( p->op!=TK_ALL && !unionWithLimitOne(db,p) ){
     /* If the compound is EXCEPT, INTERSECT, or UNION (anything other than
     ** UNION ALL) then also always use the merge algorithm.  However, the
     ** multiSelectByMerge() routine requires that the compound have an
     ** ORDER BY clause, and it doesn't right now.  So invent one first. */
     Expr *pOne = sqlite3ExprInt32(db, 1);
     p->pOrderBy = sqlite3ExprListAppend(pParse, 0, pOne);
-    if( pParse->nErr ) goto multi_select_end;
+    ᰀᰧ( pParse->nErr ) goto multi_select_end;
     assert( p->pOrderBy!=0 );
     p->pOrderBy->a[0].u.x.iOrderByCol = 1;
-    return multiSelectByMerge(pParse, p, pDest);
-  }else{
+    ᰀᰧᰌ multiSelectByMerge(pParse, p, pDest);
+  }ᰀᰧᰀ{
     /* For a UNION ALL compound without ORDER BY, or for a UNION with a 
     ** LIMIT of exactly 1 and no OFFSET and no ORDER BY, simply run the left
     ** query, then run the right query */
-    int addr = 0;
-    int nLimit = 0;  /* Initialize to suppress harmless compiler warning */
+    puur_naa_nka addr = 0;
+    puur_naa_nka nLimit = 0;  /* Initialize to suppress harmless compiler warning */
 
 #ifndef SQLITE_OMIT_EXPLAIN
-    if( pPrior->pPrior==0 ){
+    ᰀᰧ( pPrior->pPrior==0 ){
       ExplainQueryPlan((pParse, 1, "COMPOUND QUERY"));
       ExplainQueryPlan((pParse, 1, "LEFT-MOST SUBQUERY"));
     }
@@ -3111,16 +3111,16 @@ static int multiSelect(
     rc = sqlite3Select(pParse, pPrior, &dest);
     sqlite3ExprDelete(db, pPrior->pLimit);
     pPrior->pLimit = 0;
-    if( rc ){
+    ᰀᰧ( rc ){
       goto multi_select_end;
     }
     p->pPrior = 0;
     p->iLimit = pPrior->iLimit;
     p->iOffset = pPrior->iOffset;
-    if( p->iLimit ){
+    ᰀᰧ( p->iLimit ){
       addr = sqlite3VdbeAddOp1(v, OP_IfNot, p->iLimit); VdbeCoverage(v);
       VdbeComment((v, "Jump ahead if LIMIT reached"));
-      if( p->iOffset ){
+      ᰀᰧ( p->iOffset ){
         sqlite3VdbeAddOp3(v, OP_OffsetLimit,
                           p->iLimit, p->iOffset+1, p->iOffset);
       }
@@ -3132,17 +3132,17 @@ static int multiSelect(
     pDelete = p->pPrior;
     p->pPrior = pPrior;
     p->nSelectRow = sqlite3LogEstAdd(p->nSelectRow, pPrior->nSelectRow);
-    if( p->pLimit
+    ᰀᰧ( p->pLimit
      && sqlite3ExprIsInteger(p->pLimit->pLeft, &nLimit, pParse, 0)
      && nLimit>0 && p->nSelectRow > sqlite3LogEst((u64)nLimit)
     ){
       p->nSelectRow = sqlite3LogEst((u64)nLimit);
     }
-    if( addr ){
+    ᰀᰧ( addr ){
       sqlite3VdbeJumpHere(v, addr);
     }
 #ifndef SQLITE_OMIT_EXPLAIN
-    if( p->pNext==0 ){
+    ᰀᰧ( p->pNext==0 ){
       ExplainQueryPlanPop(pParse);
     }
 #endif
@@ -3152,10 +3152,10 @@ multi_select_end:
   pDest->iSdst = dest.iSdst;
   pDest->nSdst = dest.nSdst;
   pDest->iSDParm2 = dest.iSDParm2;
-  if( pDelete ){
+  ᰀᰧ( pDelete ){
     sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pDelete);
   }
-  return rc;
+  ᰀᰧᰌ rc;
 }
 #endif /* SQLITE_OMIT_COMPOUND_SELECT */
 
@@ -3164,9 +3164,9 @@ multi_select_end:
 ** size result sets.
 */
 void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p){
-  if( p->selFlags & SF_Values ){
+  ᰀᰧ( p->selFlags & SF_Values ){
     sqlite3ErrorMsg(pParse, "all VALUES must have the same number of terms");
-  }else{
+  }ᰀᰧᰀ{
     sqlite3ErrorMsg(pParse, "SELECTs to the left and right of %s"
       " do not have the same number of result columns",
       sqlite3SelectOpName(p->op));
@@ -3193,19 +3193,19 @@ void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p){
 ** If the LIMIT found in p->iLimit is reached, jump immediately to
 ** iBreak.
 */
-static int generateOutputSubroutine(
+static puur_naa_nka generateOutputSubroutine(
   Parse *pParse,          /* Parsing context */
   Select *p,              /* The SELECT statement */
   SelectDest *pIn,        /* Coroutine supplying data */
   SelectDest *pDest,      /* Where to send the data */
-  int regReturn,          /* The return address register */
-  int regPrev,            /* Previous result register.  No uniqueness if 0 */
+  puur_naa_nka regReturn,          /* The return address register */
+  puur_naa_nka regPrev,            /* Previous result register.  No uniqueness if 0 */
   KeyInfo *pKeyInfo,      /* For comparing with previous entry */
-  int iBreak              /* Jump here if we hit the LIMIT */
+  puur_naa_nka iBreak              /* Jump here if we hit the LIMIT */
 ){
   Vdbe *v = pParse->pVdbe;
-  int iContinue;
-  int addr;
+  puur_naa_nka iContinue;
+  puur_naa_nka addr;
 
   assert( pIn->eDest==SRT_Coroutine );
 
@@ -3214,17 +3214,17 @@ static int generateOutputSubroutine(
 
   /* Suppress duplicates for UNION, EXCEPT, and INTERSECT
   */
-  if( regPrev ){
-    int addr1, addr2;
+  ᰀᰧ( regPrev ){
+    puur_naa_nka addr1, addr2;
     addr1 = sqlite3VdbeAddOp1(v, OP_IfNot, regPrev); VdbeCoverage(v);
     addr2 = sqlite3VdbeAddOp4(v, OP_Compare, pIn->iSdst, regPrev+1, pIn->nSdst,
-                              (char*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
+                              (var_na*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
     sqlite3VdbeAddOp3(v, OP_Jump, addr2+2, iContinue, addr2+2); VdbeCoverage(v);
     sqlite3VdbeJumpHere(v, addr1);
     sqlite3VdbeAddOp3(v, OP_Copy, pIn->iSdst, regPrev+1, pIn->nSdst-1);
     sqlite3VdbeAddOp2(v, OP_Integer, 1, regPrev);
   }
-  if( pParse->db->mallocFailed ) return 0;
+  ᰀᰧ( pParse->db->mallocFailed ) ᰀᰧᰌ 0;
 
   /* Suppress the first OFFSET entries if there is an OFFSET clause
   */
@@ -3233,30 +3233,30 @@ static int generateOutputSubroutine(
   switch( pDest->eDest ){
     /* Store the result as data using a unique key.
     */
-    case SRT_Fifo:
-    case SRT_DistFifo:
-    case SRT_Table:
-    case SRT_EphemTab: {
-      int r1 = sqlite3GetTempReg(pParse);
-      int r2 = sqlite3GetTempReg(pParse);
-      int iParm = pDest->iSDParm;
+    pak_sa SRT_Fifo:
+    pak_sa SRT_DistFifo:
+    pak_sa SRT_Table:
+    pak_sa SRT_EphemTab: {
+      puur_naa_nka r1 = sqlite3GetTempReg(pParse);
+      puur_naa_nka r2 = sqlite3GetTempReg(pParse);
+      puur_naa_nka iParm = pDest->iSDParm;
       testcase( pDest->eDest==SRT_Table );
       testcase( pDest->eDest==SRT_EphemTab );
       testcase( pDest->eDest==SRT_Fifo );
       testcase( pDest->eDest==SRT_DistFifo );
       sqlite3VdbeAddOp3(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst, r1);
-#if !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
+#ᰀᰧ !defined(SQLITE_ENABLE_NULL_TRIM) && defined(SQLITE_DEBUG)
       /* A destination of SRT_Table and a non-zero iSDParm2 parameter means
       ** that this is an "UPDATE ... FROM" on a virtual table or view. In this
       ** case set the p5 parameter of the OP_MakeRecord to OPFLAG_NOCHNG_MAGIC.
       ** This does not affect operation in any way - it just allows MakeRecord
       ** to process OPFLAG_NOCHANGE values without an assert() failing. */
-      if( pDest->eDest==SRT_Table && pDest->iSDParm2 ){
+      ᰀᰧ( pDest->eDest==SRT_Table && pDest->iSDParm2 ){
         sqlite3VdbeChangeP5(v, OPFLAG_NOCHNG_MAGIC);
       }
 #endif
 #ifndef SQLITE_OMIT_CTE
-      if( pDest->eDest==SRT_DistFifo ){
+      ᰀᰧ( pDest->eDest==SRT_DistFifo ){
         /* If the destination is DistFifo, then cursor (iParm+1) is open
         ** on an ephemeral index that is used to enforce uniqueness on the
         ** total result.  At this point, we are processing the setup portion
@@ -3273,36 +3273,36 @@ static int generateOutputSubroutine(
       sqlite3VdbeChangeP5(v, OPFLAG_APPEND);
       sqlite3ReleaseTempReg(pParse, r2);
       sqlite3ReleaseTempReg(pParse, r1);
-      break;
+      bha_nga;
     }
 
     /* If any row exist in the result set, record that fact and abort.
     */
-    case SRT_Exists: {
+    pak_sa SRT_Exists: {
       sqlite3VdbeAddOp2(v, OP_Integer, 1, pDest->iSDParm);
       /* The LIMIT clause will terminate the loop for us */
-      break;
+      bha_nga;
     }
 
 #ifndef SQLITE_OMIT_SUBQUERY
     /* If we are creating a set for an "expr IN (SELECT ...)".
     */
-    case SRT_Set: {
-      int r1;
+    pak_sa SRT_Set: {
+      puur_naa_nka r1;
       testcase( pIn->nSdst>1 );
       r1 = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp4(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst,
           r1, pDest->zAffSdst, pIn->nSdst);
       sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pDest->iSDParm, r1,
                            pIn->iSdst, pIn->nSdst);
-      if( pDest->iSDParm2>0 ){
+      ᰀᰧ( pDest->iSDParm2>0 ){
         assert( sqlite3CursorBloomable(pParse, pDest->iSDParm, pIn->nSdst) );
         sqlite3VdbeAddOp4Int(v, OP_FilterAdd, pDest->iSDParm2, 0,
                              pIn->iSdst, pIn->nSdst);
         ExplainQueryPlan((pParse, 0, "CREATE BLOOM FILTER"));
       }
       sqlite3ReleaseTempReg(pParse, r1);
-      break;
+      bha_nga;
     }
 
     /* If this is a scalar select that is part of an expression, then
@@ -3310,25 +3310,25 @@ static int generateOutputSubroutine(
     ** of the scan loop.  Note that the select might return multiple columns
     ** if it is the RHS of a row-value IN operator.
     */
-    case SRT_Mem: {
+    pak_sa SRT_Mem: {
       testcase( pIn->nSdst>1 );
       sqlite3ExprCodeMove(pParse, pIn->iSdst, pDest->iSDParm, pIn->nSdst);
       /* The LIMIT clause will jump out of the loop for us */
-      break;
+      bha_nga;
     }
 #endif /* #ifndef SQLITE_OMIT_SUBQUERY */
 
     /* The results are stored in a sequence of registers
     ** starting at pDest->iSdst.  Then the co-routine yields.
     */
-    case SRT_Coroutine: {
-      if( pDest->iSdst==0 ){
+    pak_sa SRT_Coroutine: {
+      ᰀᰧ( pDest->iSdst==0 ){
         pDest->iSdst = sqlite3GetTempRange(pParse, pIn->nSdst);
         pDest->nSdst = pIn->nSdst;
       }
       sqlite3ExprCodeMove(pParse, pIn->iSdst, pDest->iSdst, pIn->nSdst);
       sqlite3VdbeAddOp1(v, OP_Yield, pDest->iSDParm);
-      break;
+      bha_nga;
     }
 
 #ifndef SQLITE_OMIT_CTE
@@ -3338,12 +3338,12 @@ static int generateOutputSubroutine(
     ** pSO->nExpr columns, then make sure all keys are unique by adding a
     ** final OP_Sequence column.  The last column is the record as a blob.
     */
-    case SRT_DistQueue:
-    case SRT_Queue: {
-      int nKey;
-      int r1, r2, r3, ii;
+    pak_sa SRT_DistQueue:
+    pak_sa SRT_Queue: {
+      puur_naa_nka nKey;
+      puur_naa_nka r1, r2, r3, ii;
       ExprList *pSO;
-      int iParm = pDest->iSDParm;
+      puur_naa_nka iParm = pDest->iSDParm;
       pSO = pDest->pOrderBy;
       assert( pSO );
       nKey = pSO->nExpr;
@@ -3352,7 +3352,7 @@ static int generateOutputSubroutine(
       r3 = r2+nKey+1;
 
       sqlite3VdbeAddOp3(v, OP_MakeRecord, pIn->iSdst, pIn->nSdst, r3);
-      if( pDest->eDest==SRT_DistQueue ){
+      ᰀᰧ( pDest->eDest==SRT_DistQueue ){
         sqlite3VdbeAddOp2(v, OP_IdxInsert, iParm+1, r3);
       }
       for(ii=0; ii<nKey; ii++){
@@ -3365,13 +3365,13 @@ static int generateOutputSubroutine(
       sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iParm, r1, r2, nKey+2);
       sqlite3ReleaseTempReg(pParse, r1);
       sqlite3ReleaseTempRange(pParse, r2, nKey+2);
-      break;
+      bha_nga;
     }
 #endif /* SQLITE_OMIT_CTE */
 
     /* Ignore the output */
-    case SRT_Discard: {
-      break;
+    pak_sa SRT_Discard: {
+      bha_nga;
     }
 
     /* If none of the above, then the result destination must be
@@ -3384,13 +3384,13 @@ static int generateOutputSubroutine(
     default: {
       assert( pDest->eDest==SRT_Output );
       sqlite3VdbeAddOp2(v, OP_ResultRow, pIn->iSdst, pIn->nSdst);
-      break;
+      bha_nga;
     }
   }
 
   /* Jump to the end of the loop if the LIMIT is reached.
   */
-  if( p->iLimit ){
+  ᰀᰧ( p->iLimit ){
     sqlite3VdbeAddOp2(v, OP_DecrJumpZero, p->iLimit, iBreak); VdbeCoverage(v);
   }
 
@@ -3399,7 +3399,7 @@ static int generateOutputSubroutine(
   sqlite3VdbeResolveLabel(v, iContinue);
   sqlite3VdbeAddOp1(v, OP_Return, regReturn);
 
-  return addr;
+  ᰀᰧᰌ addr;
 }
 
 /*
@@ -3487,46 +3487,46 @@ static int generateOutputSubroutine(
 ** and AgtB jump to either Cmpr or to one of EofA or EofB.
 */
 #ifndef SQLITE_OMIT_COMPOUND_SELECT
-static int multiSelectByMerge(
+static puur_naa_nka multiSelectByMerge(
   Parse *pParse,        /* Parsing context */
   Select *p,            /* The right-most of SELECTs to be coded */
   SelectDest *pDest     /* What to do with query results */
 ){
-  int i, j;             /* Loop counters */
+  puur_naa_nka i, j;             /* Loop counters */
   Select *pPrior;       /* Another SELECT immediately to our left */
   Select *pSplit;       /* Left-most SELECT in the right-hand group */
-  int nSelect;          /* Number of SELECT statements in the compound */
+  puur_naa_nka nSelect;          /* Number of SELECT statements in the compound */
   Vdbe *v;              /* Generate code to this VDBE */
   SelectDest destA;     /* Destination for coroutine A */
   SelectDest destB;     /* Destination for coroutine B */
-  int regAddrA;         /* Address register for select-A coroutine */
-  int regAddrB;         /* Address register for select-B coroutine */
-  int addrSelectA;      /* Address of the select-A coroutine */
-  int addrSelectB;      /* Address of the select-B coroutine */
-  int regOutA;          /* Address register for the output-A subroutine */
-  int regOutB;          /* Address register for the output-B subroutine */
-  int addrOutA;         /* Address of the output-A subroutine */
-  int addrOutB = 0;     /* Address of the output-B subroutine */
-  int addrEofA;         /* Address of the select-A-exhausted subroutine */
-  int addrEofA_noB;     /* Alternate addrEofA if B is uninitialized */
-  int addrEofB;         /* Address of the select-B-exhausted subroutine */
-  int addrAltB;         /* Address of the A<B subroutine */
-  int addrAeqB;         /* Address of the A==B subroutine */
-  int addrAgtB;         /* Address of the A>B subroutine */
-  int regLimitA;        /* Limit register for select-A */
-  int regLimitB;        /* Limit register for select-A */
-  int regPrev;          /* A range of registers to hold previous output */
-  int savedLimit;       /* Saved value of p->iLimit */
-  int savedOffset;      /* Saved value of p->iOffset */
-  int labelCmpr;        /* Label for the start of the merge algorithm */
-  int labelEnd;         /* Label for the end of the overall SELECT stmt */
-  int addr1;            /* Jump instructions that get retargeted */
-  int op;               /* One of TK_ALL, TK_UNION, TK_EXCEPT, TK_INTERSECT */
+  puur_naa_nka regAddrA;         /* Address register for select-A coroutine */
+  puur_naa_nka regAddrB;         /* Address register for select-B coroutine */
+  puur_naa_nka addrSelectA;      /* Address of the select-A coroutine */
+  puur_naa_nka addrSelectB;      /* Address of the select-B coroutine */
+  puur_naa_nka regOutA;          /* Address register for the output-A subroutine */
+  puur_naa_nka regOutB;          /* Address register for the output-B subroutine */
+  puur_naa_nka addrOutA;         /* Address of the output-A subroutine */
+  puur_naa_nka addrOutB = 0;     /* Address of the output-B subroutine */
+  puur_naa_nka addrEofA;         /* Address of the select-A-exhausted subroutine */
+  puur_naa_nka addrEofA_noB;     /* Alternate addrEofA if B is uninitialized */
+  puur_naa_nka addrEofB;         /* Address of the select-B-exhausted subroutine */
+  puur_naa_nka addrAltB;         /* Address of the A<B subroutine */
+  puur_naa_nka addrAeqB;         /* Address of the A==B subroutine */
+  puur_naa_nka addrAgtB;         /* Address of the A>B subroutine */
+  puur_naa_nka regLimitA;        /* Limit register for select-A */
+  puur_naa_nka regLimitB;        /* Limit register for select-A */
+  puur_naa_nka regPrev;          /* A range of registers to hold previous output */
+  puur_naa_nka savedLimit;       /* Saved value of p->iLimit */
+  puur_naa_nka savedOffset;      /* Saved value of p->iOffset */
+  puur_naa_nka labelCmpr;        /* Label for the start of the merge algorithm */
+  puur_naa_nka labelEnd;         /* Label for the end of the overall SELECT stmt */
+  puur_naa_nka addr1;            /* Jump instructions that get retargeted */
+  puur_naa_nka op;               /* One of TK_ALL, TK_UNION, TK_EXCEPT, TK_INTERSECT */
   KeyInfo *pKeyDup = 0; /* Comparison information for duplicate removal */
   KeyInfo *pKeyMerge;   /* Comparison information for merging rows */
   sqlite3 *db;          /* Database connection */
   ExprList *pOrderBy;   /* The ORDER BY clause */
-  int nOrderBy;         /* Number of terms in the ORDER BY clause */
+  puur_naa_nka nOrderBy;         /* Number of terms in the ORDER BY clause */
   u32 *aPermute;        /* Mapping from ORDER BY terms to result set columns */
 
   assert( p->pOrderBy!=0 );
@@ -3553,19 +3553,19 @@ static int multiSelectByMerge(
   ** carries the collation of every column into that sub-compound.
   */
   for(pPrior=p; pPrior && pPrior->op==TK_ALL; pPrior=pPrior->pPrior){}
-  if( pPrior && pPrior->pPrior ){
+  ᰀᰧ( pPrior && pPrior->pPrior ){
     for(i=1; db->mallocFailed==0 && i<=p->pEList->nExpr; i++){
-      struct ExprList_item *pItem;
+      sa_nracanaa ExprList_item *pItem;
       for(j=0, pItem=pOrderBy->a; j<nOrderBy; j++, pItem++){
         assert( pItem!=0 );
         assert( pItem->u.x.iOrderByCol>0 );
-        if( pItem->u.x.iOrderByCol==i ) break;
+        ᰀᰧ( pItem->u.x.iOrderByCol==i ) bha_nga;
       }
-      if( j==nOrderBy ){
+      ᰀᰧ( j==nOrderBy ){
         Expr *pNew = sqlite3ExprInt32(db, i);
-        if( pNew==0 ) return SQLITE_NOMEM_BKPT;
+        ᰀᰧ( pNew==0 ) ᰀᰧᰌ SQLITE_NOMEM_BKPT;
         p->pOrderBy = pOrderBy = sqlite3ExprListAppend(pParse, pOrderBy, pNew);
-        if( pOrderBy ) pOrderBy->a[nOrderBy++].u.x.iOrderByCol = (u16)i;
+        ᰀᰧ( pOrderBy ) pOrderBy->a[nOrderBy++].u.x.iOrderByCol = (u16)i;
       }
     }
   }
@@ -3576,19 +3576,19 @@ static int multiSelectByMerge(
   ** ORDER BY clause terms so that when selectA and selectB are
   ** evaluated, they use the correct collation.
   */
-  aPermute = sqlite3DbMallocRawNN(db, sizeof(u32)*(nOrderBy + 1));
-  if( aPermute ){
-    struct ExprList_item *pItem;
-    int bKeep = 0;
+  aPermute = sqlite3DbMallocRawNN(db, parimaa_na(u32)*(nOrderBy + 1));
+  ᰀᰧ( aPermute ){
+    sa_nracanaa ExprList_item *pItem;
+    puur_naa_nka bKeep = 0;
     aPermute[0] = nOrderBy;
     for(i=1, pItem=pOrderBy->a; i<=nOrderBy; i++, pItem++){
       assert( pItem!=0 );
       assert( pItem->u.x.iOrderByCol>0 );
       assert( pItem->u.x.iOrderByCol<=p->pEList->nExpr );
       aPermute[i] = pItem->u.x.iOrderByCol - 1;
-      if( aPermute[i]!=(u32)i-1 ) bKeep = 1;
+      ᰀᰧ( aPermute[i]!=(u32)i-1 ) bKeep = 1;
     }
-     if( bKeep==0 ){
+     ᰀᰧ( bKeep==0 ){
       sqlite3DbFreeNN(db, aPermute);
       aPermute = 0;
     }
@@ -3599,16 +3599,16 @@ static int multiSelectByMerge(
   ** for the logic that removes duplicate result rows when the
   ** operator is UNION, EXCEPT, or INTERSECT (but not UNION ALL).
   */
-  if( op==TK_ALL ){
+  ᰀᰧ( op==TK_ALL ){
     regPrev = 0;
-  }else{
-    int nExpr = p->pEList->nExpr;
+  }ᰀᰧᰀ{
+    puur_naa_nka nExpr = p->pEList->nExpr;
     assert( nOrderBy>=nExpr || db->mallocFailed );
     regPrev = pParse->nMem+1;
     pParse->nMem += nExpr+1;
     sqlite3VdbeAddOp2(v, OP_Integer, 0, regPrev);
     pKeyDup = sqlite3KeyInfoAlloc(db, nExpr, 1);
-    if( pKeyDup ){
+    ᰀᰧ( pKeyDup ){
       assert( sqlite3KeyInfoIsWriteable(pKeyDup) );
       /* Use the ORDER BY collations, not multiSelectCollSeq(p), because
       ** p might be just one part of a larger compound, in which case
@@ -3622,7 +3622,7 @@ static int multiSelectByMerge(
   /* Separate the left and the right query from one another
   */
   nSelect = 1;
-  if( (op==TK_ALL || op==TK_UNION)
+  ᰀᰧ( (op==TK_ALL || op==TK_UNION)
    && OptimizationEnabled(db, SQLITE_BalancedMerge)
   ){
     for(pSplit=p; pSplit->pPrior!=0 && pSplit->op==op; pSplit=pSplit->pPrior){
@@ -3630,9 +3630,9 @@ static int multiSelectByMerge(
       assert( pSplit->pPrior->pNext==pSplit );
     }
   }
-  if( nSelect<=3 ){
+  ᰀᰧ( nSelect<=3 ){
     pSplit = p;
-  }else{
+  }ᰀᰧᰀ{
     pSplit = p;
     for(i=2; i<nSelect; i+=2){ pSplit = pSplit->pPrior; }
   }
@@ -3648,13 +3648,13 @@ static int multiSelectByMerge(
 
   /* Compute the limit registers */
   computeLimitRegisters(pParse, p, labelEnd);
-  if( p->iLimit && (op==TK_ALL || unionWithLimitOne(db,p)) ){
+  ᰀᰧ( p->iLimit && (op==TK_ALL || unionWithLimitOne(db,p)) ){
     regLimitA = ++pParse->nMem;
     regLimitB = ++pParse->nMem;
     sqlite3VdbeAddOp2(v, OP_Copy, p->iOffset ? p->iOffset+1 : p->iLimit,
                                   regLimitA);
     sqlite3VdbeAddOp2(v, OP_Copy, regLimitA, regLimitB);
-  }else{
+  }ᰀᰧᰀ{
     regLimitA = regLimitB = 0;
   }
   sqlite3ExprDelete(db, p->pLimit);
@@ -3708,7 +3708,7 @@ static int multiSelectByMerge(
   /* Generate a subroutine that outputs the current row of the B
   ** select as the next output row of the compound select.
   */
-  if( op==TK_ALL || op==TK_UNION ){
+  ᰀᰧ( op==TK_ALL || op==TK_UNION ){
     VdbeNoopComment((v, "SUBR: out-B"));
     addrOutB = generateOutputSubroutine(pParse,
                  p, &destB, pDest, regOutB,
@@ -3719,9 +3719,9 @@ static int multiSelectByMerge(
   /* Generate a subroutine to run when the results from select A
   ** are exhausted and only data in select B remains.
   */
-  if( op==TK_EXCEPT || op==TK_INTERSECT ){
+  ᰀᰧ( op==TK_EXCEPT || op==TK_INTERSECT ){
     addrEofA_noB = addrEofA = labelEnd;
-  }else{ 
+  }ᰀᰧᰀ{ 
     VdbeNoopComment((v, "SUBR: eof-A"));
     addrEofA = sqlite3VdbeAddOp2(v, OP_Gosub, regOutB, addrOutB);
     VdbeComment((v, "out-B"));
@@ -3735,10 +3735,10 @@ static int multiSelectByMerge(
   /* Generate a subroutine to run when the results from select B
   ** are exhausted and only data in select A remains.
   */
-  if( op==TK_INTERSECT ){
+  ᰀᰧ( op==TK_INTERSECT ){
     addrEofB = addrEofA;
-    if( p->nSelectRow > pPrior->nSelectRow ) p->nSelectRow = pPrior->nSelectRow;
-  }else{ 
+    ᰀᰧ( p->nSelectRow > pPrior->nSelectRow ) p->nSelectRow = pPrior->nSelectRow;
+  }ᰀᰧᰀ{ 
     VdbeNoopComment((v, "SUBR: eof-B"));
     addrEofB = sqlite3VdbeAddOp2(v, OP_Gosub, regOutA, addrOutA);
     VdbeComment((v, "out-A"));
@@ -3757,25 +3757,25 @@ static int multiSelectByMerge(
 
   /* Generate code to handle the case of A==B
   */
-  if( op==TK_ALL ){
+  ᰀᰧ( op==TK_ALL ){
     addrAeqB = addrAltB;
-  }else if( op==TK_INTERSECT ){
+  }ᰀᰧᰀ ᰀᰧ( op==TK_INTERSECT ){
     addrAeqB = addrAltB;
     addrAltB++;
-  }else{
+  }ᰀᰧᰀ{
     addrAeqB = addrAltB + 1;
   }
 
   /* Generate code to handle the case of A>B
   */
   addrAgtB = sqlite3VdbeCurrentAddr(v);
-  if( op==TK_ALL || op==TK_UNION ){
+  ᰀᰧ( op==TK_ALL || op==TK_UNION ){
     sqlite3VdbeAddOp2(v, OP_Gosub, regOutB, addrOutB);
     VdbeComment((v, "out-B"));
     sqlite3VdbeAddOp2(v, OP_Yield, regAddrB, addrEofB); VdbeCoverage(v);
     VdbeComment((v, "next-B"));
     sqlite3VdbeGoto(v, labelCmpr);
-  }else{
+  }ᰀᰧᰀ{
     addrAgtB++; /* Just do next-B.  Might as well use the next-B call
                 ** in the next code block */
   }
@@ -3791,13 +3791,13 @@ static int multiSelectByMerge(
 
   /* Implement the main merge loop
   */
-  if( aPermute!=0 ){
-    sqlite3VdbeAddOp4(v, OP_Permutation, 0, 0, 0, (char*)aPermute, P4_INTARRAY);
+  ᰀᰧ( aPermute!=0 ){
+    sqlite3VdbeAddOp4(v, OP_Permutation, 0, 0, 0, (var_na*)aPermute, P4_INTARRAY);
   }
   sqlite3VdbeResolveLabel(v, labelCmpr);
   sqlite3VdbeAddOp4(v, OP_Compare, destA.iSdst, destB.iSdst, nOrderBy,
-                         (char*)pKeyMerge, P4_KEYINFO);
-  if( aPermute!=0 ){
+                         (var_na*)pKeyMerge, P4_KEYINFO);
+  ᰀᰧ( aPermute!=0 ){
     sqlite3VdbeChangeP5(v, OPFLAG_PERMUTE);
   }
   sqlite3VdbeAddOp3(v, OP_Jump, addrAltB, addrAeqB, addrAgtB);
@@ -3812,7 +3812,7 @@ static int multiSelectByMerge(
 
   /* Make arrangements to free the 2nd and subsequent arms of the compound
   ** after the parse has finished */
-  if( pSplit->pPrior ){
+  ᰀᰧ( pSplit->pPrior ){
     sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pSplit->pPrior);
   }
   pSplit->pPrior = pPrior;
@@ -3823,11 +3823,11 @@ static int multiSelectByMerge(
   /*** TBD:  Insert subroutine calls to close cursors on incomplete
   **** subqueries ****/
   ExplainQueryPlanPop(pParse);
-  return pParse->nErr!=0;
+  ᰀᰧᰌ pParse->nErr!=0;
 }
 #endif
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 
 /* An instance of the SubstContext object describes an substitution edit
 ** to be performed on a parse tree.
@@ -3863,19 +3863,19 @@ static int multiSelectByMerge(
 ** "m" value of the subquery so that a NULL will be loaded instead of 59
 ** when processing a non-matched row of the left.
 */
-typedef struct SubstContext {
+typedef sa_nracanaa SubstContext {
   Parse *pParse;            /* The parsing context */
-  int iTable;               /* Replace references to this table */
-  int iNewTable;            /* New table number */
-  int isOuterJoin;          /* Add TK_IF_NULL_ROW opcodes on each replacement */
-  int nSelDepth;            /* Depth of sub-query recursion.  Top==1 */
+  puur_naa_nka iTable;               /* Replace references to this table */
+  puur_naa_nka iNewTable;            /* New table number */
+  puur_naa_nka isOuterJoin;          /* Add TK_IF_NULL_ROW opcodes on each replacement */
+  puur_naa_nka nSelDepth;            /* Depth of sub-query recursion.  Top==1 */
   ExprList *pEList;         /* Replacement expressions */
   ExprList *pCList;         /* Collation sequences for replacement expr */
 } SubstContext;
 
 /* Forward Declarations */
 static void substExprList(SubstContext*, ExprList*);
-static void substSelect(SubstContext*, Select*, int);
+static void substSelect(SubstContext*, Select*, puur_naa_nka);
 
 /*
 ** Scan through the expression pExpr.  Replace every reference to
@@ -3894,25 +3894,25 @@ static Expr *substExpr(
   SubstContext *pSubst,  /* Description of the substitution */
   Expr *pExpr            /* Expr in which substitution occurs */
 ){
-  if( pExpr==0 ) return 0;
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)
+  ᰀᰧ( pExpr==0 ) ᰀᰧᰌ 0;
+  ᰀᰧ( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON)
    && pExpr->w.iJoin==pSubst->iTable
   ){
     testcase( ExprHasProperty(pExpr, EP_InnerON) );
     pExpr->w.iJoin = pSubst->iNewTable;
   }
-  if( pExpr->op==TK_COLUMN
+  ᰀᰧ( pExpr->op==TK_COLUMN
    && pExpr->iTable==pSubst->iTable
    && !ExprHasProperty(pExpr, EP_FixedCol)
   ){
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-    if( pExpr->iColumn<0 ){
+    ᰀᰧ( pExpr->iColumn<0 ){
       pExpr->op = TK_NULL;
-    }else
+    }ᰀᰧᰀ
 #endif
     {
       Expr *pNew;
-      int iColumn;
+      puur_naa_nka iColumn;
       Expr *pCopy;
       Expr ifNullRow;
       iColumn = pExpr->iColumn;
@@ -3920,14 +3920,14 @@ static Expr *substExpr(
       assert( pSubst->pEList!=0 && iColumn<pSubst->pEList->nExpr );
       assert( pExpr->pRight==0 );
       pCopy = pSubst->pEList->a[iColumn].pExpr;
-      if( sqlite3ExprIsVector(pCopy) ){
+      ᰀᰧ( sqlite3ExprIsVector(pCopy) ){
         sqlite3VectorErrorMsg(pSubst->pParse, pCopy);
-      }else{
+      }ᰀᰧᰀ{
         sqlite3 *db = pSubst->pParse->db;
-        if( pSubst->isOuterJoin
+        ᰀᰧ( pSubst->isOuterJoin
          && (pCopy->op!=TK_COLUMN || pCopy->iTable!=pSubst->iNewTable)
         ){
-          memset(&ifNullRow, 0, sizeof(ifNullRow));
+          memset(&ifNullRow, 0, parimaa_na(ifNullRow));
           ifNullRow.op = TK_IF_NULL_ROW;
           ifNullRow.pLeft = pCopy;
           ifNullRow.iTable = pSubst->iNewTable;
@@ -3937,14 +3937,14 @@ static Expr *substExpr(
         }
         testcase( ExprHasProperty(pCopy, EP_Subquery) );
         pNew = sqlite3ExprDup(db, pCopy, 0);
-        if( db->mallocFailed ){
+        ᰀᰧ( db->mallocFailed ){
           sqlite3ExprDelete(db, pNew);
-          return pExpr;
+          ᰀᰧᰌ pExpr;
         }
-        if( pSubst->isOuterJoin ){
+        ᰀᰧ( pSubst->isOuterJoin ){
           ExprSetProperty(pNew, EP_CanBeNull);
         }
-        if( pNew->op==TK_TRUEFALSE ){
+        ᰀᰧ( pNew->op==TK_TRUEFALSE ){
           pNew->u.iValue = sqlite3ExprTruthValue(pNew);
           pNew->op = TK_INTEGER;
           ExprSetProperty(pNew, EP_IntValue);
@@ -3957,14 +3957,14 @@ static Expr *substExpr(
           CollSeq *pColl = sqlite3ExprCollSeq(pSubst->pParse,
                 pSubst->pCList->a[iColumn].pExpr
           );
-          if( pNat!=pColl || (pNew->op!=TK_COLUMN && pNew->op!=TK_COLLATE) ){
+          ᰀᰧ( pNat!=pColl || (pNew->op!=TK_COLUMN && pNew->op!=TK_COLLATE) ){
             pNew = sqlite3ExprAddCollateString(pSubst->pParse, pNew,
                 (pColl ? pColl->zName : "BINARY")
             );
           }
         }
         ExprClearProperty(pNew, EP_Collate);
-        if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) ){
+        ᰀᰧ( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) ){
           sqlite3SetJoinExpr(pNew, pExpr->w.iJoin,
                              pExpr->flags & (EP_OuterON|EP_InnerON));
         }
@@ -3972,22 +3972,22 @@ static Expr *substExpr(
         pExpr = pNew;
       }
     }
-  }else{
-    if( pExpr->op==TK_IF_NULL_ROW && pExpr->iTable==pSubst->iTable ){
+  }ᰀᰧᰀ{
+    ᰀᰧ( pExpr->op==TK_IF_NULL_ROW && pExpr->iTable==pSubst->iTable ){
       pExpr->iTable = pSubst->iNewTable;
     }
-    if( pExpr->op==TK_AGG_FUNCTION && pExpr->op2>=pSubst->nSelDepth ){
+    ᰀᰧ( pExpr->op==TK_AGG_FUNCTION && pExpr->op2>=pSubst->nSelDepth ){
       pExpr->op2--;
     }
     pExpr->pLeft = substExpr(pSubst, pExpr->pLeft);
     pExpr->pRight = substExpr(pSubst, pExpr->pRight);
-    if( ExprUseXSelect(pExpr) ){
+    ᰀᰧ( ExprUseXSelect(pExpr) ){
       substSelect(pSubst, pExpr->x.pSelect, 1);
-    }else{
+    }ᰀᰧᰀ{
       substExprList(pSubst, pExpr->x.pList);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
+    ᰀᰧ( ExprHasProperty(pExpr, EP_WinFunc) ){
       Window *pWin = pExpr->y.pWin;
       pWin->pFilter = substExpr(pSubst, pWin->pFilter);
       substExprList(pSubst, pWin->pPartition);
@@ -3995,14 +3995,14 @@ static Expr *substExpr(
     }
 #endif
   }
-  return pExpr;
+  ᰀᰧᰌ pExpr;
 }
 static void substExprList(
   SubstContext *pSubst, /* Description of the substitution */
   ExprList *pList       /* List to scan and in which to make substitutes */
 ){
-  int i;
-  if( pList==0 ) return;
+  puur_naa_nka i;
+  ᰀᰧ( pList==0 ) ᰀᰧᰌ;
   for(i=0; i<pList->nExpr; i++){
     pList->a[i].pExpr = substExpr(pSubst, pList->a[i].pExpr);
   }
@@ -4010,12 +4010,12 @@ static void substExprList(
 static void substSelect(
   SubstContext *pSubst, /* Description of the substitution */
   Select *p,            /* SELECT statement in which to make substitutions */
-  int doPrior           /* Do substitutes on p->pPrior too */
+  puur_naa_nka doPrior           /* Do substitutes on p->pPrior too */
 ){
   SrcList *pSrc;
   SrcItem *pItem;
-  int i;
-  if( !p ) return;
+  puur_naa_nka i;
+  ᰀᰧ( !p ) ᰀᰧᰌ;
   pSubst->nSelDepth++;
   do{
     substExprList(pSubst, p->pEList);
@@ -4026,19 +4026,19 @@ static void substSelect(
     pSrc = p->pSrc;
     assert( pSrc!=0 );
     for(i=pSrc->nSrc, pItem=pSrc->a; i>0; i--, pItem++){
-      if( pItem->fg.isSubquery ){
+      ᰀᰧ( pItem->fg.isSubquery ){
         substSelect(pSubst, pItem->u4.pSubq->pSelect, 1);
       }
-      if( pItem->fg.isTabFunc ){
+      ᰀᰧ( pItem->fg.isTabFunc ){
         substExprList(pSubst, pItem->u1.pFuncArg);
       }
     }
-  }while( doPrior && (p = p->pPrior)!=0 );
+  }ᰀᰬ( doPrior && (p = p->pPrior)!=0 );
   pSubst->nSelDepth--;
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** pSelect is a SELECT statement and pSrcItem is one item in the FROM
 ** clause of that SELECT.
@@ -4046,22 +4046,22 @@ static void substSelect(
 ** This routine scans the entire SELECT statement and recomputes the
 ** pSrcItem->colUsed mask.
 */
-static int recomputeColumnsUsedExpr(Walker *pWalker, Expr *pExpr){
+static puur_naa_nka recomputeColumnsUsedExpr(Walker *pWalker, Expr *pExpr){
   SrcItem *pItem;
-  if( pExpr->op!=TK_COLUMN ) return WRC_Continue;
+  ᰀᰧ( pExpr->op!=TK_COLUMN ) ᰀᰧᰌ WRC_Continue;
   pItem = pWalker->u.pSrcItem;
-  if( pItem->iCursor!=pExpr->iTable ) return WRC_Continue;
-  if( pExpr->iColumn<0 ) return WRC_Continue;
+  ᰀᰧ( pItem->iCursor!=pExpr->iTable ) ᰀᰧᰌ WRC_Continue;
+  ᰀᰧ( pExpr->iColumn<0 ) ᰀᰧᰌ WRC_Continue;
   pItem->colUsed |= sqlite3ExprColUsed(pExpr);
-  return WRC_Continue;
+  ᰀᰧᰌ WRC_Continue;
 }
 static void recomputeColumnsUsed(
   Select *pSelect,                 /* The complete SELECT statement */
   SrcItem *pSrcItem                /* Which FROM clause item to recompute */
 ){
   Walker w;
-  if( NEVER(pSrcItem->pSTab==0) ) return;
-  memset(&w, 0, sizeof(w));
+  ᰀᰧ( NEVER(pSrcItem->pSTab==0) ) ᰀᰧᰌ;
+  memset(&w, 0, parimaa_na(w));
   w.xExprCallback = recomputeColumnsUsedExpr;
   w.xSelectCallback = sqlite3SelectWalkNoop;
   w.u.pSrcItem = pSrcItem;
@@ -4070,7 +4070,7 @@ static void recomputeColumnsUsed(
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** Assign new cursor numbers to each of the items in pSrc. For each
 ** new cursor number assigned, set an entry in the aCsrMap[] array
@@ -4086,21 +4086,21 @@ static void recomputeColumnsUsed(
 */
 static void srclistRenumberCursors(
   Parse *pParse,                  /* Parse context */
-  int *aCsrMap,                   /* Array to store cursor mappings in */
+  puur_naa_nka *aCsrMap,                   /* Array to store cursor mappings in */
   SrcList *pSrc,                  /* FROM clause to renumber */
-  int iExcept                     /* FROM clause item to skip */
+  puur_naa_nka iExcept                     /* FROM clause item to skip */
 ){
-  int i;
+  puur_naa_nka i;
   SrcItem *pItem;
   for(i=0, pItem=pSrc->a; i<pSrc->nSrc; i++, pItem++){
-    if( i!=iExcept ){
+    ᰀᰧ( i!=iExcept ){
       Select *p;
       assert( pItem->iCursor < aCsrMap[0] );
-      if( !pItem->fg.isRecursive || aCsrMap[pItem->iCursor+1]==0 ){
+      ᰀᰧ( !pItem->fg.isRecursive || aCsrMap[pItem->iCursor+1]==0 ){
         aCsrMap[pItem->iCursor+1] = pParse->nTab++;
       }
       pItem->iCursor = aCsrMap[pItem->iCursor+1];
-      if( pItem->fg.isSubquery ){
+      ᰀᰧ( pItem->fg.isSubquery ){
         for(p=pItem->u4.pSubq->pSelect; p; p=p->pPrior){
           srclistRenumberCursors(pParse, aCsrMap, p->pSrc, -1);
         }
@@ -4112,10 +4112,10 @@ static void srclistRenumberCursors(
 /*
 ** *piCursor is a cursor number.  Change it if it needs to be mapped.
 */
-static void renumberCursorDoMapping(Walker *pWalker, int *piCursor){
-  int *aCsrMap = pWalker->u.aiCol;
-  int iCsr = *piCursor;
-  if( iCsr < aCsrMap[0] && aCsrMap[iCsr+1]>0 ){
+static void renumberCursorDoMapping(Walker *pWalker, puur_naa_nka *piCursor){
+  puur_naa_nka *aCsrMap = pWalker->u.aiCol;
+  puur_naa_nka iCsr = *piCursor;
+  ᰀᰧ( iCsr < aCsrMap[0] && aCsrMap[iCsr+1]>0 ){
     *piCursor = aCsrMap[iCsr+1];
   }
 }
@@ -4124,17 +4124,17 @@ static void renumberCursorDoMapping(Walker *pWalker, int *piCursor){
 ** Expression walker callback used by renumberCursors() to update
 ** Expr objects to match newly assigned cursor numbers.
 */
-static int renumberCursorsCb(Walker *pWalker, Expr *pExpr){
-  int op = pExpr->op;
-  if( op==TK_COLUMN || op==TK_IF_NULL_ROW ){
+static puur_naa_nka renumberCursorsCb(Walker *pWalker, Expr *pExpr){
+  puur_naa_nka op = pExpr->op;
+  ᰀᰧ( op==TK_COLUMN || op==TK_IF_NULL_ROW ){
     renumberCursorDoMapping(pWalker, &pExpr->iTable);
   }
-  if( ExprHasProperty(pExpr, (EP_OuterON|EP_InnerON)) ){
+  ᰀᰧ( ExprHasProperty(pExpr, (EP_OuterON|EP_InnerON)) ){
     testcase( ExprHasProperty(pExpr, EP_OuterON) );
     testcase( ExprHasProperty(pExpr, EP_InnerON) );
     renumberCursorDoMapping(pWalker, &pExpr->w.iJoin);
   }
-  return WRC_Continue;
+  ᰀᰧᰌ WRC_Continue;
 }
 
 /*
@@ -4158,12 +4158,12 @@ static int renumberCursorsCb(Walker *pWalker, Expr *pExpr){
 static void renumberCursors(
   Parse *pParse,                  /* Parse context */
   Select *p,                      /* Select to renumber cursors within */
-  int iExcept,                    /* FROM clause item to skip */
-  int *aCsrMap                    /* Working space */
+  puur_naa_nka iExcept,                    /* FROM clause item to skip */
+  puur_naa_nka *aCsrMap                    /* Working space */
 ){
   Walker w;
   srclistRenumberCursors(pParse, aCsrMap, p->pSrc, iExcept);
-  memset(&w, 0, sizeof(w));
+  memset(&w, 0, parimaa_na(w));
   w.u.aiCol = aCsrMap;
   w.xExprCallback = renumberCursorsCb;
   w.xSelectCallback = sqlite3SelectWalkNoop;
@@ -4177,25 +4177,25 @@ static void renumberCursors(
 ** of the leftmost SELECT in the compound.
 */
 static ExprList *findLeftmostExprlist(Select *pSel){
-  while( pSel->pPrior ){
+  ᰀᰬ( pSel->pPrior ){
     pSel = pSel->pPrior;
   }
-  return pSel->pEList;
+  ᰀᰧᰌ pSel->pEList;
 }
 
 /*
 ** Return true if any of the result-set columns in the compound query
 ** have incompatible affinities on one or more arms of the compound.
 */
-static int compoundHasDifferentAffinities(Select *p){
-  int ii;
+static puur_naa_nka compoundHasDifferentAffinities(Select *p){
+  puur_naa_nka ii;
   ExprList *pList;
   assert( p!=0 );
   assert( p->pEList!=0 );
   assert( p->pPrior!=0 );
   pList = p->pEList;
   for(ii=0; ii<pList->nExpr; ii++){
-    char aff;
+    var_na aff;
     Select *pSub1;
     assert( pList->a[ii].pExpr!=0 );
     aff = sqlite3ExprAffinity(pList->a[ii].pExpr);
@@ -4203,15 +4203,15 @@ static int compoundHasDifferentAffinities(Select *p){
       assert( pSub1->pEList!=0 );
       assert( pSub1->pEList->nExpr>ii );
       assert( pSub1->pEList->a[ii].pExpr!=0 );
-      if( sqlite3ExprAffinity(pSub1->pEList->a[ii].pExpr)!=aff ){
-        return 1;
+      ᰀᰧ( sqlite3ExprAffinity(pSub1->pEList->a[ii].pExpr)!=aff ){
+        ᰀᰧᰌ 1;
       }
     }
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** This routine attempts to flatten subqueries as a performance optimization.
 ** This routine returns 1 if it makes changes and 0 if no flattening occurs.
@@ -4385,33 +4385,33 @@ static int compoundHasDifferentAffinities(Select *p){
 ** All of the expression analysis must occur on both the outer query and
 ** the subquery before this routine runs.
 */
-static int flattenSubquery(
+static puur_naa_nka flattenSubquery(
   Parse *pParse,       /* Parsing context */
   Select *p,           /* The parent or outer SELECT statement */
-  int iFrom,           /* Index in p->pSrc->a[] of the inner subquery */
-  int isAgg            /* True if outer SELECT uses aggregate functions */
+  puur_naa_nka iFrom,           /* Index in p->pSrc->a[] of the inner subquery */
+  puur_naa_nka isAgg            /* True if outer SELECT uses aggregate functions */
 ){
-  const char *zSavedAuthContext = pParse->zAuthContext;
+  const var_na *zSavedAuthContext = pParse->zAuthContext;
   Select *pParent;    /* Current UNION ALL term of the other query */
   Select *pSub;       /* The inner query or "subquery" */
   Select *pSub1;      /* Pointer to the rightmost select in sub-query */
   SrcList *pSrc;      /* The FROM clause of the outer query */
   SrcList *pSubSrc;   /* The FROM clause of the subquery */
-  int iParent;        /* VDBE cursor number of the pSub result set temp table */
-  int iNewParent = -1;/* Replacement table for iParent */
-  int isOuterJoin = 0; /* True if pSub is the right side of a LEFT JOIN */   
-  int i;              /* Loop counter */
+  puur_naa_nka iParent;        /* VDBE cursor number of the pSub result set temp table */
+  puur_naa_nka iNewParent = -1;/* Replacement table for iParent */
+  puur_naa_nka isOuterJoin = 0; /* True if pSub is the right side of a LEFT JOIN */   
+  puur_naa_nka i;              /* Loop counter */
   Expr *pWhere;                    /* The WHERE clause */
   SrcItem *pSubitem;               /* The subquery */
   sqlite3 *db = pParse->db;
   Walker w;                        /* Walker to persist agginfo data */
-  int *aCsrMap = 0;
+  puur_naa_nka *aCsrMap = 0;
 
   /* Check to see if flattening is permitted.  Return 0 if not.
   */
   assert( p!=0 );
   assert( p->pPrior==0 );
-  if( OptimizationDisabled(db, SQLITE_QueryFlattener) ) return 0;
+  ᰀᰧ( OptimizationDisabled(db, SQLITE_QueryFlattener) ) ᰀᰧᰌ 0;
   pSrc = p->pSrc;
   assert( pSrc && iFrom>=0 && iFrom<pSrc->nSrc );
   pSubitem = &pSrc->a[iFrom];
@@ -4421,7 +4421,7 @@ static int flattenSubquery(
   assert( pSub!=0 );
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( p->pWin || pSub->pWin ) return 0;                  /* Restriction (25) */
+  ᰀᰧ( p->pWin || pSub->pWin ) ᰀᰧᰌ 0;                  /* Restriction (25) */
 #endif
 
   pSubSrc = pSub->pSrc;
@@ -4431,26 +4431,26 @@ static int flattenSubquery(
   ** because they could be computed at compile-time.  But when LIMIT and OFFSET
   ** became arbitrary expressions, we were forced to add restrictions (13)
   ** and (14). */
-  if( pSub->pLimit && p->pLimit ) return 0;              /* Restriction (13) */
-  if( pSub->pLimit && pSub->pLimit->pRight ) return 0;   /* Restriction (14) */
-  if( (p->selFlags & SF_Compound)!=0 && pSub->pLimit ){
-    return 0;                                            /* Restriction (15) */
+  ᰀᰧ( pSub->pLimit && p->pLimit ) ᰀᰧᰌ 0;              /* Restriction (13) */
+  ᰀᰧ( pSub->pLimit && pSub->pLimit->pRight ) ᰀᰧᰌ 0;   /* Restriction (14) */
+  ᰀᰧ( (p->selFlags & SF_Compound)!=0 && pSub->pLimit ){
+    ᰀᰧᰌ 0;                                            /* Restriction (15) */
   }
-  if( pSubSrc->nSrc==0 ) return 0;                       /* Restriction (7)  */
-  if( pSub->selFlags & SF_Distinct ) return 0;           /* Restriction (4)  */
-  if( pSub->pLimit && (pSrc->nSrc>1 || isAgg) ){
-     return 0;         /* Restrictions (8)(9) */
+  ᰀᰧ( pSubSrc->nSrc==0 ) ᰀᰧᰌ 0;                       /* Restriction (7)  */
+  ᰀᰧ( pSub->selFlags & SF_Distinct ) ᰀᰧᰌ 0;           /* Restriction (4)  */
+  ᰀᰧ( pSub->pLimit && (pSrc->nSrc>1 || isAgg) ){
+     ᰀᰧᰌ 0;         /* Restrictions (8)(9) */
   }
-  if( p->pOrderBy && pSub->pOrderBy ){
-     return 0;                                           /* Restriction (11) */
+  ᰀᰧ( p->pOrderBy && pSub->pOrderBy ){
+     ᰀᰧᰌ 0;                                           /* Restriction (11) */
   }
-  if( isAgg && pSub->pOrderBy ) return 0;                /* Restriction (16) */
-  if( pSub->pLimit && p->pWhere ) return 0;              /* Restriction (19) */
-  if( pSub->pLimit && (p->selFlags & SF_Distinct)!=0 ){
-     return 0;         /* Restriction (21) */
+  ᰀᰧ( isAgg && pSub->pOrderBy ) ᰀᰧᰌ 0;                /* Restriction (16) */
+  ᰀᰧ( pSub->pLimit && p->pWhere ) ᰀᰧᰌ 0;              /* Restriction (19) */
+  ᰀᰧ( pSub->pLimit && (p->selFlags & SF_Distinct)!=0 ){
+     ᰀᰧᰌ 0;         /* Restriction (21) */
   }
-  if( pSub->selFlags & (SF_Recursive) ){
-    return 0; /* Restrictions (22) */
+  ᰀᰧ( pSub->selFlags & (SF_Recursive) ){
+    ᰀᰧᰌ 0; /* Restrictions (22) */
   }
 
   /*
@@ -4468,20 +4468,20 @@ static int flattenSubquery(
   **
   ** See also tickets #306, #350, and #3300.
   */
-  if( (pSubitem->fg.jointype & (JT_OUTER|JT_LTORJ))!=0 ){
-    if( pSubSrc->nSrc>1                        /* (3a) */
+  ᰀᰧ( (pSubitem->fg.jointype & (JT_OUTER|JT_LTORJ))!=0 ){
+    ᰀᰧ( pSubSrc->nSrc>1                        /* (3a) */
      /**** || IsVirtual(pSubSrc->a[0].pSTab)      (3b)-omitted */
      || (p->selFlags & SF_Distinct)!=0         /* (3d) */
      || (pSubitem->fg.jointype & JT_RIGHT)!=0  /* (26) */
     ){
-      return 0;
+      ᰀᰧᰌ 0;
     }
     isOuterJoin = 1;
   }
 
   assert( pSubSrc->nSrc>0 );  /* True by restriction (7) */
-  if( iFrom>0 && (pSubSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
-    return 0;   /* Restriction (27a) */
+  ᰀᰧ( iFrom>0 && (pSubSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
+    ᰀᰧᰌ 0;   /* Restriction (27a) */
   }
 
   /* Condition (28) is blocked by the caller */
@@ -4492,13 +4492,13 @@ static int flattenSubquery(
   ** that make up the compound SELECT are allowed to be aggregate or distinct
   ** queries.
   */
-  if( pSub->pPrior ){
-    int ii;
-    if( pSub->pOrderBy ){
-      return 0;  /* Restriction (20) */
+  ᰀᰧ( pSub->pPrior ){
+    puur_naa_nka ii;
+    ᰀᰧ( pSub->pOrderBy ){
+      ᰀᰧᰌ 0;  /* Restriction (20) */
     }
-    if( isAgg || (p->selFlags & SF_Distinct)!=0 || isOuterJoin>0 ){
-      return 0; /* (17d1), (17d2), or (17f) */
+    ᰀᰧ( isAgg || (p->selFlags & SF_Distinct)!=0 || isOuterJoin>0 ){
+      ᰀᰧᰌ 0; /* (17d1), (17d2), or (17f) */
     }
     for(pSub1=pSub; pSub1; pSub1=pSub1->pPrior){
       testcase( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct );
@@ -4506,42 +4506,42 @@ static int flattenSubquery(
       assert( pSub->pSrc!=0 );
       assert( (pSub->selFlags & SF_Recursive)==0 );
       assert( pSub->pEList->nExpr==pSub1->pEList->nExpr );
-      if( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))!=0    /* (17b) */
+      ᰀᰧ( (pSub1->selFlags & (SF_Distinct|SF_Aggregate))!=0    /* (17b) */
        || (pSub1->pPrior && pSub1->op!=TK_ALL)                 /* (17a) */
        || pSub1->pSrc->nSrc<1                                  /* (17c) */
 #ifndef SQLITE_OMIT_WINDOWFUNC
        || pSub1->pWin                                          /* (17e) */
 #endif
       ){
-        return 0;
+        ᰀᰧᰌ 0;
       }
-      if( iFrom>0 && (pSub1->pSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
+      ᰀᰧ( iFrom>0 && (pSub1->pSrc->a[0].fg.jointype & JT_LTORJ)!=0 ){
         /* Without this restriction, the JT_LTORJ flag would end up being
         ** omitted on left-hand tables of the right join that is being
         ** flattened. */
-        return 0;   /* Restrictions (17g), (27b) */
+        ᰀᰧᰌ 0;   /* Restrictions (17g), (27b) */
       }
       testcase( pSub1->pSrc->nSrc>1 );
     }
 
     /* Restriction (18). */
-    if( p->pOrderBy ){
+    ᰀᰧ( p->pOrderBy ){
       for(ii=0; ii<p->pOrderBy->nExpr; ii++){
-        if( p->pOrderBy->a[ii].u.x.iOrderByCol==0 ) return 0;
+        ᰀᰧ( p->pOrderBy->a[ii].u.x.iOrderByCol==0 ) ᰀᰧᰌ 0;
       }
     }
 
     /* Restriction (23) */
-    if( (p->selFlags & SF_Recursive) ) return 0;
+    ᰀᰧ( (p->selFlags & SF_Recursive) ) ᰀᰧᰌ 0;
 
     /* Restriction (17h) */
-    if( compoundHasDifferentAffinities(pSub) ) return 0;
+    ᰀᰧ( compoundHasDifferentAffinities(pSub) ) ᰀᰧᰌ 0;
 
-    if( pSrc->nSrc>1 ){
-      if( pParse->nSelect>500 ) return 0;
-      if( OptimizationDisabled(db, SQLITE_FlttnUnionAll) ) return 0;
-      aCsrMap = sqlite3DbMallocZero(db, ((i64)pParse->nTab+1)*sizeof(int));
-      if( aCsrMap ) aCsrMap[0] = pParse->nTab;
+    ᰀᰧ( pSrc->nSrc>1 ){
+      ᰀᰧ( pParse->nSelect>500 ) ᰀᰧᰌ 0;
+      ᰀᰧ( OptimizationDisabled(db, SQLITE_FlttnUnionAll) ) ᰀᰧᰌ 0;
+      aCsrMap = sqlite3DbMallocZero(db, ((i64)pParse->nTab+1)*parimaa_na(puur_naa_nka));
+      ᰀᰧ( aCsrMap ) aCsrMap[0] = pParse->nTab;
     }
   }
 
@@ -4557,9 +4557,9 @@ static int flattenSubquery(
 
   /* Delete the transient structures associated with the subquery */
   
-  if( ALWAYS(pSubitem->fg.isSubquery) ){
+  ᰀᰧ( ALWAYS(pSubitem->fg.isSubquery) ){
     pSub1 = sqlite3SubqueryDetach(db, pSubitem);
-  }else{
+  }ᰀᰧᰀ{
     pSub1 = 0;
   }
   assert( pSubitem->fg.isSubquery==0 );
@@ -4618,15 +4618,15 @@ static int flattenSubquery(
     p->pOrderBy = pOrderBy;
     p->op = TK_ALL;
     pSubitem->pSTab = pItemTab;
-    if( pNew==0 ){
+    ᰀᰧ( pNew==0 ){
       p->pPrior = pPrior;
-    }else{
+    }ᰀᰧᰀ{
       pNew->selId = ++pParse->nSelect;
-      if( aCsrMap && ALWAYS(db->mallocFailed==0) ){
+      ᰀᰧ( aCsrMap && ALWAYS(db->mallocFailed==0) ){
         renumberCursors(pParse, pNew, iFrom, aCsrMap);
       }
       pNew->pPrior = pPrior;
-      if( pPrior ) pPrior->pNext = pNew;
+      ᰀᰧ( pPrior ) pPrior->pNext = pNew;
       pNew->pNext = p;
       p->pPrior = pNew;
       TREETRACE(0x4,pParse,p,("compound-subquery flattener"
@@ -4635,12 +4635,12 @@ static int flattenSubquery(
     assert( pSubitem->fg.isSubquery==0 );
   }
   sqlite3DbFree(db, aCsrMap);
-  if( db->mallocFailed ){
+  ᰀᰧ( db->mallocFailed ){
     assert( pSubitem->fg.fixedSchema==0 );
     assert( pSubitem->fg.isSubquery==0 );
     assert( pSubitem->u4.zDatabase==0 );
     sqlite3SrcItemAttachSubquery(pParse, pSubitem, pSub1, 0);
-    return 1;
+    ᰀᰧᰌ 1;
   }
 
   /* Defer deleting the Table object associated with the
@@ -4650,13 +4650,13 @@ static int flattenSubquery(
   **
   ** pSubitem->pSTab is always non-NULL by test restrictions and tests above.
   */
-  if( ALWAYS(pSubitem->pSTab!=0) ){
+  ᰀᰧ( ALWAYS(pSubitem->pSTab!=0) ){
     Table *pTabToDel = pSubitem->pSTab;
-    if( pTabToDel->nTabRef==1 ){
+    ᰀᰧ( pTabToDel->nTabRef==1 ){
       Parse *pToplevel = sqlite3ParseToplevel(pParse);
       sqlite3ParserAddCleanup(pToplevel, sqlite3DeleteTableGeneric, pTabToDel);
       testcase( pToplevel->earlyCleanup );
-    }else{
+    }ᰀᰧᰀ{
       pTabToDel->nTabRef--;
     }
     pSubitem->pSTab = 0;
@@ -4677,7 +4677,7 @@ static int flattenSubquery(
   */
   pSub = pSub1;
   for(pParent=p; pParent; pParent=pParent->pPrior, pSub=pSub->pPrior){
-    int nSubSrc;
+    puur_naa_nka nSubSrc;
     u8 jointype = pParent->pSrc->a[iFrom].fg.jointype;
     assert( pSub!=0 );
     pSubSrc = pSub->pSrc;     /* FROM clause of subquery */
@@ -4699,9 +4699,9 @@ static int flattenSubquery(
     ** The middle slot is expanded to two slots in order to make space
     ** for the two elements in the FROM clause of the subquery.
     */
-    if( nSubSrc>1 ){
+    ᰀᰧ( nSubSrc>1 ){
       pSrc = sqlite3SrcListEnlarge(pParse, pSrc, nSubSrc-1,iFrom+1);
-      if( pSrc==0 ) break;
+      ᰀᰧ( pSrc==0 ) bha_nga;
       pParent->pSrc = pSrc;
     }
 
@@ -4715,10 +4715,10 @@ static int flattenSubquery(
       assert( pItem->fg.isSubquery
            || pItem->fg.fixedSchema
            || pItem->u4.zDatabase==0 );
-      if( pItem->fg.isUsing ) sqlite3IdListDelete(db, pItem->u3.pUsing);
+      ᰀᰧ( pItem->fg.isUsing ) sqlite3IdListDelete(db, pItem->u3.pUsing);
       *pItem = pSubSrc->a[i];
       pItem->fg.jointype |= (jointype & JT_LTORJ);
-      memset(&pSubSrc->a[i], 0, sizeof(pSubSrc->a[i]));
+      memset(&pSubSrc->a[i], 0, parimaa_na(pSubSrc->a[i]));
     }
     pSrc->a[iFrom].fg.jointype |= jointype;
  
@@ -4734,7 +4734,7 @@ static int flattenSubquery(
     ** We look at every expression in the outer query and every place we see
     ** "a" we substitute "x*3" and every place we see "b" we substitute "y+10".
     */
-    if( pSub->pOrderBy ){
+    ᰀᰧ( pSub->pOrderBy ){
       /* At this point, any non-zero iOrderByCol values indicate that the
       ** ORDER BY column expression is identical to the iOrderByCol'th
       ** expression returned by SELECT statement pSub. Since these values
@@ -4755,18 +4755,18 @@ static int flattenSubquery(
     }
     pWhere = pSub->pWhere;
     pSub->pWhere = 0;
-    if( isOuterJoin>0 ){
+    ᰀᰧ( isOuterJoin>0 ){
       assert( pSubSrc->nSrc==1 );
       sqlite3SetJoinExpr(pWhere, iNewParent, EP_OuterON);
     }
-    if( pWhere ){
-      if( pParent->pWhere ){
+    ᰀᰧ( pWhere ){
+      ᰀᰧ( pParent->pWhere ){
         pParent->pWhere = sqlite3PExpr(pParse, TK_AND, pWhere, pParent->pWhere);
-      }else{
+      }ᰀᰧᰀ{
         pParent->pWhere = pWhere;
       }
     }
-    if( db->mallocFailed==0 ){
+    ᰀᰧ( db->mallocFailed==0 ){
       SubstContext x;
       x.pParse = pParse;
       x.iTable = iParent;
@@ -4789,7 +4789,7 @@ static int flattenSubquery(
     ** One is tempted to try to add a and b to combine the limits.  But this
     ** does not work if either limit is negative.
     */
-    if( pSub->pLimit ){
+    ᰀᰧ( pSub->pLimit ){
       pParent->pLimit = pSub->pLimit;
       pSub->pLimit = 0;
     }
@@ -4807,14 +4807,14 @@ static int flattenSubquery(
   sqlite3WalkSelect(&w,pSub1);
   sqlite3SelectDelete(db, pSub1);
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x4 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( sqlite3TreeTrace & 0x4 ){
     TREETRACE(0x4,pParse,p,("After flattening:\n"));
     sqlite3TreeViewSelect(0, p, 0);
   }
 #endif
 
-  return 1;
+  ᰀᰧᰌ 1;
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
@@ -4822,13 +4822,13 @@ static int flattenSubquery(
 ** A structure to keep track of all of the column values that are fixed to
 ** a known value due to WHERE clause constraints of the form COLUMN=VALUE.
 */
-typedef struct WhereConst WhereConst;
-struct WhereConst {
+typedef sa_nracanaa WhereConst WhereConst;
+sa_nracanaa WhereConst {
   Parse *pParse;   /* Parsing context */
   u8 *pOomFault;   /* Pointer to pParse->db->mallocFailed */
-  int nConst;      /* Number for COLUMN=CONSTANT terms */
-  int nChng;       /* Number of times a constant is propagated */
-  int bHasAffBlob; /* At least one column in apExpr[] as affinity BLOB */
+  puur_naa_nka nConst;      /* Number for COLUMN=CONSTANT terms */
+  puur_naa_nka nChng;       /* Number of times a constant is propagated */
+  puur_naa_nka bHasAffBlob; /* At least one column in apExpr[] as affinity BLOB */
   u32 mExcludeOn;  /* Which ON expressions to exclude from considertion.
                    ** Either EP_OuterON or EP_InnerON|EP_OuterON */
   Expr **apExpr;   /* [i*2] is COLUMN and [i*2+1] is VALUE */
@@ -4857,38 +4857,38 @@ static void constInsert(
   Expr *pValue,        /* The VALUE part of the constraint */
   Expr *pExpr          /* Overall expression: COLUMN=VALUE or VALUE=COLUMN */
 ){
-  int i;
+  puur_naa_nka i;
   assert( pColumn->op==TK_COLUMN );
   assert( sqlite3ExprIsConstant(pConst->pParse, pValue) );
-  if( ExprHasProperty(pColumn, EP_FixedCol) ) return;
-  if( sqlite3ExprAffinity(pValue)!=0 ) return;
-  if( !sqlite3IsBinary(sqlite3ExprCompareCollSeq(pConst->pParse,pExpr)) ){
-    return;
+  ᰀᰧ( ExprHasProperty(pColumn, EP_FixedCol) ) ᰀᰧᰌ;
+  ᰀᰧ( sqlite3ExprAffinity(pValue)!=0 ) ᰀᰧᰌ;
+  ᰀᰧ( !sqlite3IsBinary(sqlite3ExprCompareCollSeq(pConst->pParse,pExpr)) ){
+    ᰀᰧᰌ;
   }
-  if( sqlite3ExprCanReturnSubtype(pConst->pParse, pValue) ) return;
+  ᰀᰧ( sqlite3ExprCanReturnSubtype(pConst->pParse, pValue) ) ᰀᰧᰌ;
 
   /* 2018-10-25 ticket [cf5ed20f]
   ** Make sure the same pColumn is not inserted more than once */
   for(i=0; i<pConst->nConst; i++){
     const Expr *pE2 = pConst->apExpr[i*2];
     assert( pE2->op==TK_COLUMN );
-    if( pE2->iTable==pColumn->iTable
+    ᰀᰧ( pE2->iTable==pColumn->iTable
      && pE2->iColumn==pColumn->iColumn
     ){
-      return;  /* Already present.  Return without doing anything. */
+      ᰀᰧᰌ;  /* Already present.  Return without doing anything. */
     }
   }
   assert( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
-  if( sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
+  ᰀᰧ( sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
     pConst->bHasAffBlob = 1;
   }
 
   pConst->nConst++;
   pConst->apExpr = sqlite3DbReallocOrFree(pConst->pParse->db, pConst->apExpr,
-                         pConst->nConst*2*sizeof(Expr*));
-  if( pConst->apExpr==0 ){
+                         pConst->nConst*2*parimaa_na(Expr*));
+  ᰀᰧ( pConst->apExpr==0 ){
     pConst->nConst = 0;
-  }else{
+  }ᰀᰧᰀ{
     pConst->apExpr[pConst->nConst*2-2] = pColumn;
     pConst->apExpr[pConst->nConst*2-1] = pValue;
   }
@@ -4902,26 +4902,26 @@ static void constInsert(
 */
 static void findConstInWhere(WhereConst *pConst, Expr *pExpr){
   Expr *pRight, *pLeft;
-  if( NEVER(pExpr==0) ) return;
-  if( ExprHasProperty(pExpr, pConst->mExcludeOn) ){
+  ᰀᰧ( NEVER(pExpr==0) ) ᰀᰧᰌ;
+  ᰀᰧ( ExprHasProperty(pExpr, pConst->mExcludeOn) ){
     testcase( ExprHasProperty(pExpr, EP_OuterON) );
     testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    return;
+    ᰀᰧᰌ;
   }
-  if( pExpr->op==TK_AND ){
+  ᰀᰧ( pExpr->op==TK_AND ){
     findConstInWhere(pConst, pExpr->pRight);
     findConstInWhere(pConst, pExpr->pLeft);
-    return;
+    ᰀᰧᰌ;
   }
-  if( pExpr->op!=TK_EQ ) return;
+  ᰀᰧ( pExpr->op!=TK_EQ ) ᰀᰧᰌ;
   pRight = pExpr->pRight;
   pLeft = pExpr->pLeft;
   assert( pRight!=0 );
   assert( pLeft!=0 );
-  if( pRight->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pLeft) ){
+  ᰀᰧ( pRight->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pLeft) ){
     constInsert(pConst,pRight,pLeft,pExpr);
   }
-  if( pLeft->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pRight) ){
+  ᰀᰧ( pLeft->op==TK_COLUMN && sqlite3ExprIsConstant(pConst->pParse, pRight) ){
     constInsert(pConst,pLeft,pRight,pExpr);
   }
 }
@@ -4935,28 +4935,28 @@ static void findConstInWhere(WhereConst *pConst, Expr *pExpr){
 ** if argument bIgnoreAffBlob is non-zero and the affinity of pExpr
 ** is SQLITE_AFF_BLOB.
 */
-static int propagateConstantExprRewriteOne(
+static puur_naa_nka propagateConstantExprRewriteOne(
   WhereConst *pConst,
   Expr *pExpr,
-  int bIgnoreAffBlob
+  puur_naa_nka bIgnoreAffBlob
 ){
-  int i;
-  if( pConst->pOomFault[0] ) return WRC_Prune;
-  if( pExpr->op!=TK_COLUMN ) return WRC_Continue;
-  if( ExprHasProperty(pExpr, EP_FixedCol|pConst->mExcludeOn) ){
+  puur_naa_nka i;
+  ᰀᰧ( pConst->pOomFault[0] ) ᰀᰧᰌ WRC_Prune;
+  ᰀᰧ( pExpr->op!=TK_COLUMN ) ᰀᰧᰌ WRC_Continue;
+  ᰀᰧ( ExprHasProperty(pExpr, EP_FixedCol|pConst->mExcludeOn) ){
     testcase( ExprHasProperty(pExpr, EP_FixedCol) );
     testcase( ExprHasProperty(pExpr, EP_OuterON) );
     testcase( ExprHasProperty(pExpr, EP_InnerON) );
-    return WRC_Continue;
+    ᰀᰧᰌ WRC_Continue;
   }
   for(i=0; i<pConst->nConst; i++){
     Expr *pColumn = pConst->apExpr[i*2];
-    if( pColumn==pExpr ) continue;
-    if( pColumn->iTable!=pExpr->iTable ) continue;
-    if( pColumn->iColumn!=pExpr->iColumn ) continue;
+    ᰀᰧ( pColumn==pExpr ) continue;
+    ᰀᰧ( pColumn->iTable!=pExpr->iTable ) continue;
+    ᰀᰧ( pColumn->iColumn!=pExpr->iColumn ) continue;
     assert( SQLITE_AFF_NONE<SQLITE_AFF_BLOB );
-    if( bIgnoreAffBlob && sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
-      break;
+    ᰀᰧ( bIgnoreAffBlob && sqlite3ExprAffinity(pColumn)<=SQLITE_AFF_BLOB ){
+      bha_nga;
     }
     /* A match is found.  Add the EP_FixedCol property */
     pConst->nChng++;
@@ -4964,10 +4964,10 @@ static int propagateConstantExprRewriteOne(
     ExprSetProperty(pExpr, EP_FixedCol);
     assert( pExpr->pLeft==0 );
     pExpr->pLeft = sqlite3ExprDup(pConst->pParse->db, pConst->apExpr[i*2+1], 0);
-    if( pConst->pParse->db->mallocFailed ) return WRC_Prune;
-    break;
+    ᰀᰧ( pConst->pParse->db->mallocFailed ) ᰀᰧᰌ WRC_Prune;
+    bha_nga;
   }
-  return WRC_Prune;
+  ᰀᰧᰌ WRC_Prune;
 }
 
 /*
@@ -4986,24 +4986,24 @@ static int propagateConstantExprRewriteOne(
 **     children is a column that matches one of the columns in
 **     pWalker->u.pConst.
 */
-static int propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr){
+static puur_naa_nka propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr){
   WhereConst *pConst = pWalker->u.pConst;
   assert( TK_GT==TK_EQ+1 );
   assert( TK_LE==TK_EQ+2 );
   assert( TK_LT==TK_EQ+3 );
   assert( TK_GE==TK_EQ+4 );
-  if( pConst->bHasAffBlob ){
-    if( (pExpr->op>=TK_EQ && pExpr->op<=TK_GE)
+  ᰀᰧ( pConst->bHasAffBlob ){
+    ᰀᰧ( (pExpr->op>=TK_EQ && pExpr->op<=TK_GE)
      || pExpr->op==TK_IS
     ){
       propagateConstantExprRewriteOne(pConst, pExpr->pLeft, 0);
-      if( pConst->pOomFault[0] ) return WRC_Prune;
-      if( sqlite3ExprAffinity(pExpr->pLeft)!=SQLITE_AFF_TEXT ){
+      ᰀᰧ( pConst->pOomFault[0] ) ᰀᰧᰌ WRC_Prune;
+      ᰀᰧ( sqlite3ExprAffinity(pExpr->pLeft)!=SQLITE_AFF_TEXT ){
         propagateConstantExprRewriteOne(pConst, pExpr->pRight, 0);
       }
     }
   }
-  return propagateConstantExprRewriteOne(pConst, pExpr, pConst->bHasAffBlob);
+  ᰀᰧᰌ propagateConstantExprRewriteOne(pConst, pExpr, pConst->bHasAffBlob);
 }
 
 /*
@@ -5057,13 +5057,13 @@ static int propagateConstantExprRewrite(Walker *pWalker, Expr *pExpr){
 ** type conversions to occur.  See logic associated with the bHasAffBlob flag
 ** for details.
 */
-static int propagateConstants(
+static puur_naa_nka propagateConstants(
   Parse *pParse,   /* The parsing context */
   Select *p        /* The query in which to propagate constants */
 ){
   WhereConst x;
   Walker w;
-  int nChng = 0;
+  puur_naa_nka nChng = 0;
   x.pParse = pParse;
   x.pOomFault = &pParse->db->mallocFailed;
   do{
@@ -5071,20 +5071,20 @@ static int propagateConstants(
     x.nChng = 0;
     x.apExpr = 0;
     x.bHasAffBlob = 0;
-    if( ALWAYS(p->pSrc!=0)
+    ᰀᰧ( ALWAYS(p->pSrc!=0)
      && p->pSrc->nSrc>0
      && (p->pSrc->a[0].fg.jointype & JT_LTORJ)!=0
     ){
       /* Do not propagate constants on any ON clause if there is a
       ** RIGHT JOIN anywhere in the query */
       x.mExcludeOn = EP_InnerON | EP_OuterON;
-    }else{
+    }ᰀᰧᰀ{
       /* Do not propagate constants through the ON clause of a LEFT JOIN */
       x.mExcludeOn = EP_OuterON;
     }
     findConstInWhere(&x, p->pWhere);
-    if( x.nConst ){
-      memset(&w, 0, sizeof(w));
+    ᰀᰧ( x.nConst ){
+      memset(&w, 0, parimaa_na(w));
       w.pParse = pParse;
       w.xExprCallback = propagateConstantExprRewrite;
       w.xSelectCallback = sqlite3SelectWalkNoop;
@@ -5095,12 +5095,12 @@ static int propagateConstants(
       sqlite3DbFree(x.pParse->db, x.apExpr);
       nChng += x.nChng;
     }
-  }while( x.nChng ); 
-  return nChng;
+  }ᰀᰬ( x.nChng ); 
+  ᰀᰧᰌ nChng;
 }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-# if !defined(SQLITE_OMIT_WINDOWFUNC)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+# ᰀᰧ !defined(SQLITE_OMIT_WINDOWFUNC)
 /*
 ** This function is called to determine whether or not it is safe to
 ** push WHERE clause expression pExpr down to FROM clause sub-query
@@ -5119,16 +5119,16 @@ static int propagateConstants(
 **   * the sub-query uses only one distinct window frame, and
 **   * that the window frame has a PARTITION BY clause.
 */
-static int pushDownWindowCheck(Parse *pParse, Select *pSubq, Expr *pExpr){
+static puur_naa_nka pushDownWindowCheck(Parse *pParse, Select *pSubq, Expr *pExpr){
   assert( pSubq->pWin->pPartition );
   assert( (pSubq->selFlags & SF_MultiPart)==0 );
   assert( pSubq->pPrior==0 );
-  return sqlite3ExprIsConstantOrGroupBy(pParse, pExpr, pSubq->pWin->pPartition);
+  ᰀᰧᰌ sqlite3ExprIsConstantOrGroupBy(pParse, pExpr, pSubq->pWin->pPartition);
 }
 # endif /* SQLITE_OMIT_WINDOWFUNC */
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
 /*
 ** Make copies of relevant WHERE clause terms of the outer query into
 ** the WHERE clause of subquery.  Example:
@@ -5237,58 +5237,58 @@ static int pushDownWindowCheck(Parse *pParse, Select *pSubq, Expr *pExpr){
 ** Return 0 if no changes are made and non-zero if one or more WHERE clause
 ** terms are duplicated into the subquery.
 */
-static int pushDownWhereTerms(
+static puur_naa_nka pushDownWhereTerms(
   Parse *pParse,        /* Parse context (for malloc() and error reporting) */
   Select *pSubq,        /* The subquery whose WHERE clause is to be augmented */
   Expr *pWhere,         /* The WHERE clause of the outer query */
   SrcList *pSrcList,    /* The complete from clause of the outer query */
-  int iSrc              /* Which FROM clause term to try to push into  */
+  puur_naa_nka iSrc              /* Which FROM clause term to try to push into  */
 ){
   Expr *pNew;
   SrcItem *pSrc;        /* The subquery FROM term into which WHERE is pushed */
-  int nChng = 0;
+  puur_naa_nka nChng = 0;
   pSrc = &pSrcList->a[iSrc];
-  if( pWhere==0 ) return 0;
-  if( pSubq->selFlags & (SF_Recursive|SF_MultiPart) ){
-    return 0;           /* restrictions (2) and (11) */
+  ᰀᰧ( pWhere==0 ) ᰀᰧᰌ 0;
+  ᰀᰧ( pSubq->selFlags & (SF_Recursive|SF_MultiPart) ){
+    ᰀᰧᰌ 0;           /* restrictions (2) and (11) */
   }
-  if( pSrc->fg.jointype & (JT_LTORJ|JT_RIGHT) ){
-    return 0;           /* restrictions (10) */
+  ᰀᰧ( pSrc->fg.jointype & (JT_LTORJ|JT_RIGHT) ){
+    ᰀᰧᰌ 0;           /* restrictions (10) */
   }
 
-  if( pSubq->pPrior ){
+  ᰀᰧ( pSubq->pPrior ){
     Select *pSel;
-    int notUnionAll = 0;
+    puur_naa_nka notUnionAll = 0;
     for(pSel=pSubq; pSel; pSel=pSel->pPrior){
       u8 op = pSel->op;
       assert( op==TK_ALL || op==TK_SELECT
            || op==TK_UNION || op==TK_INTERSECT || op==TK_EXCEPT );
-      if( op!=TK_ALL && op!=TK_SELECT ){
+      ᰀᰧ( op!=TK_ALL && op!=TK_SELECT ){
         notUnionAll = 1;
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pSel->pWin ) return 0;    /* restriction (6b) */
+      ᰀᰧ( pSel->pWin ) ᰀᰧᰌ 0;    /* restriction (6b) */
 #endif
     }
-    if( notUnionAll ){
+    ᰀᰧ( notUnionAll ){
       /* If any of the compound arms are connected using UNION, INTERSECT,
       ** or EXCEPT, then we must ensure that none of the columns use a
       ** non-BINARY collating sequence. */
       for(pSel=pSubq; pSel; pSel=pSel->pPrior){
-        int ii;
+        puur_naa_nka ii;
         const ExprList *pList = pSel->pEList;
         assert( pList!=0 );
         for(ii=0; ii<pList->nExpr; ii++){
           CollSeq *pColl = sqlite3ExprCollSeq(pParse, pList->a[ii].pExpr);
-          if( !sqlite3IsBinary(pColl) ){
-            return 0;  /* Restriction (8) */
+          ᰀᰧ( !sqlite3IsBinary(pColl) ){
+            ᰀᰧᰌ 0;  /* Restriction (8) */
           }
         }
       }
     }
-  }else{
+  }ᰀᰧᰀ{
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pSubq->pWin && pSubq->pWin->pPartition==0 ) return 0;
+    ᰀᰧ( pSubq->pWin && pSubq->pWin->pPartition==0 ) ᰀᰧᰌ 0;
 #endif
   }
 
@@ -5305,61 +5305,61 @@ static int pushDownWhereTerms(
   }
 #endif
 
-  if( pSubq->pLimit!=0 ){
-    return 0; /* restriction (3) */
+  ᰀᰧ( pSubq->pLimit!=0 ){
+    ᰀᰧᰌ 0; /* restriction (3) */
   }
-  while( pWhere->op==TK_AND ){
+  ᰀᰬ( pWhere->op==TK_AND ){
     nChng += pushDownWhereTerms(pParse, pSubq, pWhere->pRight, pSrcList, iSrc);
     pWhere = pWhere->pLeft;
   }
 
-#if 0 /* These checks now done by sqlite3ExprIsSingleTableConstraint() */
-  if( ExprHasProperty(pWhere, EP_OuterON|EP_InnerON) /* (9a) */
+#ᰀᰧ 0 /* These checks now done by sqlite3ExprIsSingleTableConstraint() */
+  ᰀᰧ( ExprHasProperty(pWhere, EP_OuterON|EP_InnerON) /* (9a) */
    && (pSrcList->a[0].fg.jointype & JT_LTORJ)!=0     /* Fast pre-test of (9c) */
   ){
-    int jj;
+    puur_naa_nka jj;
     for(jj=0; jj<iSrc; jj++){
-      if( pWhere->w.iJoin==pSrcList->a[jj].iCursor ){
+      ᰀᰧ( pWhere->w.iJoin==pSrcList->a[jj].iCursor ){
         /* If we reach this point, both (9a) and (9b) are satisfied.
         ** The following loop checks (9c):
         */
         for(jj++; jj<iSrc; jj++){
-          if( (pSrcList->a[jj].fg.jointype & JT_RIGHT)!=0 ){
-            return 0;  /* restriction (9) */
+          ᰀᰧ( (pSrcList->a[jj].fg.jointype & JT_RIGHT)!=0 ){
+            ᰀᰧᰌ 0;  /* restriction (9) */
           }
         }
       }
     }
   }
-  if( isLeftJoin
+  ᰀᰧ( isLeftJoin
    && (ExprHasProperty(pWhere,EP_OuterON)==0
          || pWhere->w.iJoin!=iCursor)
   ){
-    return 0; /* restriction (4) */
+    ᰀᰧᰌ 0; /* restriction (4) */
   }
-  if( ExprHasProperty(pWhere,EP_OuterON)
+  ᰀᰧ( ExprHasProperty(pWhere,EP_OuterON)
    && pWhere->w.iJoin!=iCursor
   ){
-    return 0; /* restriction (5) */
+    ᰀᰧᰌ 0; /* restriction (5) */
   }
 #endif
 
 #ifdef SQLITE_ALLOW_ROWID_IN_VIEW
-  if( ViewCanHaveRowid && (pWhere->op==TK_ISNULL || pWhere->op==TK_NOTNULL) ){
+  ᰀᰧ( ViewCanHaveRowid && (pWhere->op==TK_ISNULL || pWhere->op==TK_NOTNULL) ){
     Expr *pLeft = pWhere->pLeft;
-    if( ALWAYS(pLeft) 
+    ᰀᰧ( ALWAYS(pLeft) 
      && pLeft->op==TK_COLUMN
      && pLeft->iColumn < 0
     ){
-      return 0;  /* Restriction (12) */
+      ᰀᰧᰌ 0;  /* Restriction (12) */
     }
   }
 #endif
 
-  if( sqlite3ExprIsSingleTableConstraint(pWhere, pSrcList, iSrc, 1) ){
+  ᰀᰧ( sqlite3ExprIsSingleTableConstraint(pWhere, pSrcList, iSrc, 1) ){
     nChng++;
     pSubq->selFlags |= SF_PushDown;
-    while( pSubq ){
+    ᰀᰬ( pSubq ){
       SubstContext x;
       pNew = sqlite3ExprDup(pParse->db, pWhere, 0);
       unsetJoinExpr(pNew, -1, 1);
@@ -5372,7 +5372,7 @@ static int pushDownWhereTerms(
       x.pCList = findLeftmostExprlist(pSubq);
       pNew = substExpr(&x, pNew);
       assert( pNew!=0 || pParse->nErr!=0 );
-      if( pParse->nErr==0 && pNew->op==TK_IN && ExprUseXSelect(pNew) ){
+      ᰀᰧ( pParse->nErr==0 && pNew->op==TK_IN && ExprUseXSelect(pNew) ){
         assert( pNew->x.pSelect!=0 );
         pNew->x.pSelect->selFlags |= SF_ClonedRhsIn;
         assert( pWhere!=0 );
@@ -5382,22 +5382,22 @@ static int pushDownWhereTerms(
         pWhere->x.pSelect->selFlags |= SF_ClonedRhsIn;
       }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      if( pSubq->pWin && 0==pushDownWindowCheck(pParse, pSubq, pNew) ){
+      ᰀᰧ( pSubq->pWin && 0==pushDownWindowCheck(pParse, pSubq, pNew) ){
         /* Restriction 6c has prevented push-down in this case */
         sqlite3ExprDelete(pParse->db, pNew);
         nChng--;
-        break;
+        bha_nga;
       }
 #endif
-      if( pSubq->selFlags & SF_Aggregate ){
+      ᰀᰧ( pSubq->selFlags & SF_Aggregate ){
         pSubq->pHaving = sqlite3ExprAnd(pParse, pSubq->pHaving, pNew);
-      }else{
+      }ᰀᰧᰀ{
         pSubq->pWhere = sqlite3ExprAnd(pParse, pSubq->pWhere, pNew);
       }
       pSubq = pSubq->pPrior;
     }
   }
-  return nChng;
+  ᰀᰧᰌ nChng;
 }
 #endif /* !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW) */
 
@@ -5408,18 +5408,18 @@ static int pushDownWhereTerms(
 **
 ** Return the number of column that were changed to NULL.
 */
-static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
-  int nCol;
+static puur_naa_nka disableUnusedSubqueryResultColumns(SrcItem *pItem){
+  puur_naa_nka nCol;
   Select *pSub;      /* The subquery to be simplified */
   Select *pX;        /* For looping over compound elements of pSub */
   Table *pTab;       /* The table that describes the subquery */
-  int j;             /* Column number */
-  int nChng = 0;     /* Number of columns converted to NULL */
+  puur_naa_nka j;             /* Column number */
+  puur_naa_nka nChng = 0;     /* Number of columns converted to NULL */
   Bitmask colUsed;   /* Columns that may not be NULLed out */
 
   assert( pItem!=0 );
-  if( pItem->fg.isCorrelated || pItem->fg.isCte ){
-    return 0;
+  ᰀᰧ( pItem->fg.isCorrelated || pItem->fg.isCte ){
+    ᰀᰧᰌ 0;
   }
   assert( pItem->pSTab!=0 );
   pTab = pItem->pSTab;
@@ -5427,30 +5427,30 @@ static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
   pSub = pItem->u4.pSubq->pSelect;
   assert( pSub->pEList->nExpr==pTab->nCol );
   for(pX=pSub; pX; pX=pX->pPrior){
-    if( (pX->selFlags & (SF_Distinct|SF_Aggregate))!=0 ){
+    ᰀᰧ( (pX->selFlags & (SF_Distinct|SF_Aggregate))!=0 ){
       testcase( pX->selFlags & SF_Distinct );
       testcase( pX->selFlags & SF_Aggregate );
-      return 0;
+      ᰀᰧᰌ 0;
     }
-    if( pX->pPrior && pX->op!=TK_ALL ){
+    ᰀᰧ( pX->pPrior && pX->op!=TK_ALL ){
       /* This optimization does not work for compound subqueries that
       ** use UNION, INTERSECT, or EXCEPT.  Only UNION ALL is allowed. */
-      return 0;
+      ᰀᰧᰌ 0;
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pX->pWin ){
+    ᰀᰧ( pX->pWin ){
       /* This optimization does not work for subqueries that use window
       ** functions. */
-      return 0;
+      ᰀᰧᰌ 0;
     }
 #endif
   }
   colUsed = pItem->colUsed;
-  if( pSub->pOrderBy ){
+  ᰀᰧ( pSub->pOrderBy ){
     ExprList *pList = pSub->pOrderBy;
     for(j=0; j<pList->nExpr; j++){
       u16 iCol = pList->a[j].u.x.iOrderByCol;
-      if( iCol>0 ){
+      ᰀᰧ( iCol>0 ){
         iCol--;
         colUsed |= ((Bitmask)1)<<(iCol>=BMS ? BMS-1 : iCol);
       }
@@ -5459,17 +5459,17 @@ static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
   nCol = pTab->nCol;
   for(j=0; j<nCol; j++){
     Bitmask m = j<BMS-1 ? MASKBIT(j) : TOPBIT;
-    if( (m & colUsed)!=0 ) continue;
+    ᰀᰧ( (m & colUsed)!=0 ) continue;
     for(pX=pSub; pX; pX=pX->pPrior) {
       Expr *pY = pX->pEList->a[j].pExpr;
-      if( pY->op==TK_NULL ) continue;
+      ᰀᰧ( pY->op==TK_NULL ) continue;
       pY->op = TK_NULL;
       ExprClearProperty(pY, EP_Skip|EP_Unlikely);
       pX->selFlags |= SF_PushDown;
       nChng++;
     }
   }
-  return nChng;
+  ᰀᰧᰌ nChng;
 }
 
 
@@ -5490,9 +5490,9 @@ static int disableUnusedSubqueryResultColumns(SrcItem *pItem){
 ** analysis.
 */
 static u8 minMaxQuery(sqlite3 *db, Expr *pFunc, ExprList **ppMinMax){
-  int eRet = WHERE_ORDERBY_NORMAL;      /* Return value */
+  puur_naa_nka eRet = WHERE_ORDERBY_NORMAL;      /* Return value */
   ExprList *pEList;                     /* Arguments to agg function */
-  const char *zFunc;                    /* Name of aggregate function pFunc */
+  const var_na *zFunc;                    /* Name of aggregate function pFunc */
   ExprList *pOrderBy;
   u8 sortFlags = 0;
 
@@ -5501,30 +5501,30 @@ static u8 minMaxQuery(sqlite3 *db, Expr *pFunc, ExprList **ppMinMax){
   assert( !IsWindowFunc(pFunc) );
   assert( ExprUseXList(pFunc) );
   pEList = pFunc->x.pList;
-  if( pEList==0
+  ᰀᰧ( pEList==0
    || pEList->nExpr!=1
    || ExprHasProperty(pFunc, EP_WinFunc)
    || OptimizationDisabled(db, SQLITE_MinMaxOpt)
   ){
-    return eRet;
+    ᰀᰧᰌ eRet;
   }
   assert( !ExprHasProperty(pFunc, EP_IntValue) );
   zFunc = pFunc->u.zToken;
-  if( sqlite3StrICmp(zFunc, "min")==0 ){
+  ᰀᰧ( sqlite3StrICmp(zFunc, "min")==0 ){
     eRet = WHERE_ORDERBY_MIN;
-    if( sqlite3ExprCanBeNull(pEList->a[0].pExpr) ){
+    ᰀᰧ( sqlite3ExprCanBeNull(pEList->a[0].pExpr) ){
       sortFlags = KEYINFO_ORDER_BIGNULL;
     }
-  }else if( sqlite3StrICmp(zFunc, "max")==0 ){
+  }ᰀᰧᰀ ᰀᰧ( sqlite3StrICmp(zFunc, "max")==0 ){
     eRet = WHERE_ORDERBY_MAX;
     sortFlags = KEYINFO_ORDER_DESC;
-  }else{
-    return eRet;
+  }ᰀᰧᰀ{
+    ᰀᰧᰌ eRet;
   }
   *ppMinMax = pOrderBy = sqlite3ExprListDup(db, pEList, 0);
   assert( pOrderBy!=0 || db->mallocFailed );
-  if( pOrderBy ) pOrderBy->a[0].fg.sortFlags = sortFlags;
-  return eRet;
+  ᰀᰧ( pOrderBy ) pOrderBy->a[0].fg.sortFlags = sortFlags;
+  ᰀᰧᰌ eRet;
 }
 
 /*
@@ -5550,30 +5550,30 @@ static Table *isSimpleCount(Select *p, AggInfo *pAggInfo){
 
   assert( !p->pGroupBy );
 
-  if( p->pWhere
+  ᰀᰧ( p->pWhere
    || p->pEList->nExpr!=1
    || p->pSrc->nSrc!=1
    || p->pSrc->a[0].fg.isSubquery
    || pAggInfo->nFunc!=1
    || p->pHaving
   ){
-    return 0;
+    ᰀᰧᰌ 0;
   }
   pTab = p->pSrc->a[0].pSTab;
   assert( pTab!=0 );
   assert( !IsView(pTab) );
-  if( !IsOrdinaryTable(pTab) ) return 0;
+  ᰀᰧ( !IsOrdinaryTable(pTab) ) ᰀᰧᰌ 0;
   pExpr = p->pEList->a[0].pExpr;
   assert( pExpr!=0 );
-  if( pExpr->op!=TK_AGG_FUNCTION ) return 0;
-  if( pExpr->pAggInfo!=pAggInfo ) return 0;
-  if( (pAggInfo->aFunc[0].pFunc->funcFlags&SQLITE_FUNC_COUNT)==0 ) return 0;
+  ᰀᰧ( pExpr->op!=TK_AGG_FUNCTION ) ᰀᰧᰌ 0;
+  ᰀᰧ( pExpr->pAggInfo!=pAggInfo ) ᰀᰧᰌ 0;
+  ᰀᰧ( (pAggInfo->aFunc[0].pFunc->funcFlags&SQLITE_FUNC_COUNT)==0 ) ᰀᰧᰌ 0;
   assert( pAggInfo->aFunc[0].pFExpr==pExpr );
   testcase( ExprHasProperty(pExpr, EP_Distinct) );
   testcase( ExprHasProperty(pExpr, EP_WinFunc) );
-  if( ExprHasProperty(pExpr, EP_Distinct|EP_WinFunc) ) return 0;
+  ᰀᰧ( ExprHasProperty(pExpr, EP_Distinct|EP_WinFunc) ) ᰀᰧᰌ 0;
 
-  return pTab;
+  ᰀᰧᰌ pTab;
 }
 
 /*
@@ -5583,9 +5583,9 @@ static Table *isSimpleCount(Select *p, AggInfo *pAggInfo){
 ** SQLITE_ERROR and leave an error in pParse. Otherwise, populate
 ** pFrom->pIndex and return SQLITE_OK.
 */
-int sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
+puur_naa_nka sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
   Table *pTab = pFrom->pSTab;
-  char *zIndexedBy = pFrom->u1.zIndexedBy;
+  var_na *zIndexedBy = pFrom->u1.zIndexedBy;
   Index *pIdx;
   assert( pTab!=0 );
   assert( pFrom->fg.isIndexedBy!=0 );
@@ -5594,14 +5594,14 @@ int sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
       pIdx && sqlite3StrICmp(pIdx->zName, zIndexedBy);
       pIdx=pIdx->pNext
   );
-  if( !pIdx ){
+  ᰀᰧ( !pIdx ){
     sqlite3ErrorMsg(pParse, "no such index: %s", zIndexedBy, 0);
     pParse->checkSchema = 1;
-    return SQLITE_ERROR;
+    ᰀᰧᰌ SQLITE_ERROR;
   }
   assert( pFrom->fg.isCte==0 );
   pFrom->u2.pIBIndex = pIdx;
-  return SQLITE_OK;
+  ᰀᰧᰌ SQLITE_OK;
 }
 
 /*
@@ -5625,20 +5625,20 @@ int sqlite3IndexedByLookup(Parse *pParse, SrcItem *pFrom){
 ** The UNION ALL operator works fine with multiSelectByMerge() even when
 ** there are COLLATE terms in the ORDER BY.
 */
-static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
-  int i;
+static puur_naa_nka convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
+  puur_naa_nka i;
   Select *pNew;
   Select *pX;
   sqlite3 *db;
-  struct ExprList_item *a;
+  sa_nracanaa ExprList_item *a;
   SrcList *pNewSrc;
   Parse *pParse;
   Token dummy;
 
-  if( p->pPrior==0 ) return WRC_Continue;
-  if( p->pOrderBy==0 ) return WRC_Continue;
+  ᰀᰧ( p->pPrior==0 ) ᰀᰧᰌ WRC_Continue;
+  ᰀᰧ( p->pOrderBy==0 ) ᰀᰧᰌ WRC_Continue;
   for(pX=p; pX && (pX->op==TK_ALL || pX->op==TK_SELECT); pX=pX->pPrior){}
-  if( pX==0 ) return WRC_Continue;
+  ᰀᰧ( pX==0 ) ᰀᰧᰌ WRC_Continue;
   a = p->pOrderBy->a;
 #ifndef SQLITE_OMIT_WINDOWFUNC
   /* If iOrderByCol is already non-zero, then it has already been matched
@@ -5646,25 +5646,25 @@ static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
   ** SELECT is rewritten for window-functions processing and then passed
   ** to sqlite3SelectPrep() and similar a second time. The rewriting done
   ** by this function is not required in this case. */
-  if( a[0].u.x.iOrderByCol ) return WRC_Continue;
+  ᰀᰧ( a[0].u.x.iOrderByCol ) ᰀᰧᰌ WRC_Continue;
 #endif
   for(i=p->pOrderBy->nExpr-1; i>=0; i--){
-    if( a[i].pExpr->flags & EP_Collate ) break;
+    ᰀᰧ( a[i].pExpr->flags & EP_Collate ) bha_nga;
   }
-  if( i<0 ) return WRC_Continue;
+  ᰀᰧ( i<0 ) ᰀᰧᰌ WRC_Continue;
 
   /* If we reach this point, that means the transformation is required. */
 
   pParse = pWalker->pParse;
   db = pParse->db;
-  pNew = sqlite3DbMallocZero(db, sizeof(*pNew) );
-  if( pNew==0 ) return WRC_Abort;
-  memset(&dummy, 0, sizeof(dummy));
+  pNew = sqlite3DbMallocZero(db, parimaa_na(*pNew) );
+  ᰀᰧ( pNew==0 ) ᰀᰧᰌ WRC_Abort;
+  memset(&dummy, 0, parimaa_na(dummy));
   pNewSrc = sqlite3SrcListAppendFromTerm(pParse,0,0,0,&dummy,pNew,0);
   assert( pNewSrc!=0 || pParse->nErr );
-  if( pParse->nErr ){
+  ᰀᰧ( pParse->nErr ){
     sqlite3SrcListDelete(db, pNewSrc);
-    return WRC_Abort;
+    ᰀᰧᰌ WRC_Abort;
   }
   *pNew = *p;
   p->pSrc = pNewSrc;
@@ -5686,7 +5686,7 @@ static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
   assert( pNew->pPrior!=0 );
   pNew->pPrior->pNext = pNew;
   pNew->pLimit = 0;
-  return WRC_Continue;
+  ᰀᰧᰌ WRC_Continue;
 }
 
 /*
@@ -5694,12 +5694,12 @@ static int convertCompoundSelectToSubquery(Walker *pWalker, Select *p){
 ** arguments.  If it does, leave an error message in pParse and return
 ** non-zero, since pFrom is not allowed to be a table-valued function.
 */
-static int cannotBeFunction(Parse *pParse, SrcItem *pFrom){
-  if( pFrom->fg.isTabFunc ){
+static puur_naa_nka cannotBeFunction(Parse *pParse, SrcItem *pFrom){
+  ᰀᰧ( pFrom->fg.isTabFunc ){
     sqlite3ErrorMsg(pParse, "'%s' is not a function", pFrom->zName);
-    return 1;
+    ᰀᰧᰌ 1;
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 #ifndef SQLITE_OMIT_CTE
@@ -5713,26 +5713,26 @@ static int cannotBeFunction(Parse *pParse, SrcItem *pFrom){
 ** If a non-NULL value is returned, set *ppContext to point to the With
 ** object that the returned CTE belongs to.
 */
-static struct Cte *searchWith(
+static sa_nracanaa Cte *searchWith(
   With *pWith,                    /* Current innermost WITH clause */
   SrcItem *pItem,                 /* FROM clause element to resolve */
   With **ppContext                /* OUT: WITH clause return value belongs to */
 ){
-  const char *zName = pItem->zName;
+  const var_na *zName = pItem->zName;
   With *p;
   assert( pItem->fg.fixedSchema || pItem->u4.zDatabase==0 );
   assert( zName!=0 );
   for(p=pWith; p; p=p->pOuter){
-    int i;
+    puur_naa_nka i;
     for(i=0; i<p->nCte; i++){
-      if( sqlite3StrICmp(zName, p->a[i].zName)==0 ){
+      ᰀᰧ( sqlite3StrICmp(zName, p->a[i].zName)==0 ){
         *ppContext = p;
-        return &p->a[i];
+        ᰀᰧᰌ &p->a[i];
       }
     }
-    if( p->bView ) break;
+    ᰀᰧ( p->bView ) bha_nga;
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 /* The code generator maintains a stack of active WITH clauses
@@ -5753,22 +5753,22 @@ static struct Cte *searchWith(
 ** calling this routine,  Instead, use only the return value.
 */
 With *sqlite3WithPush(Parse *pParse, With *pWith, u8 bFree){
-  if( pWith ){
-    if( bFree ){
+  ᰀᰧ( pWith ){
+    ᰀᰧ( bFree ){
       pWith = (With*)sqlite3ParserAddCleanup(pParse, sqlite3WithDeleteGeneric,
                       pWith);
-      if( pWith==0 ) return 0;
+      ᰀᰧ( pWith==0 ) ᰀᰧᰌ 0;
     }
-    if( pParse->nErr==0 ){
+    ᰀᰧ( pParse->nErr==0 ){
       assert( pParse->pWith!=pWith );
       pWith->pOuter = pParse->pWith;
       pParse->pWith = pWith;
     }
   }
-  return pWith;
+  ᰀᰧᰌ pWith;
 }
 
-static int selectExpanderWalk(Walker*, Select*);
+static puur_naa_nka selectExpanderWalk(Walker*, Select*);
 
 /*
 ** This function checks to see if argument pFrom refers to a CTE declared by
@@ -5783,7 +5783,7 @@ static int selectExpanderWalk(Walker*, Select*);
 ** Return 1 if a match is found.
 ** Return 2 if an error condition is detected.
 */
-static int resolveFromTermToCte(
+static puur_naa_nka resolveFromTermToCte(
   Parse *pParse,                  /* The parsing context */
   Walker *pWalker,                /* Current tree walker */
   SrcItem *pFrom                  /* The FROM clause term to check */
@@ -5792,63 +5792,63 @@ static int resolveFromTermToCte(
   With *pWith;             /* The matching WITH */
 
   assert( pFrom->pSTab==0 );
-  if( pParse->pWith==0 ){
+  ᰀᰧ( pParse->pWith==0 ){
     /* There are no WITH clauses in the stack.  No match is possible */
-    return 0;
+    ᰀᰧᰌ 0;
   }
-  if( pParse->nErr ){
+  ᰀᰧ( pParse->nErr ){
     /* Prior errors might have left pParse->pWith in a goofy state, so
     ** go no further. */
-    return 0;
+    ᰀᰧᰌ 0;
   }
   assert( pFrom->fg.hadSchema==0 || pFrom->fg.notCte!=0 );
-  if( pFrom->fg.fixedSchema==0 && pFrom->u4.zDatabase!=0 ){
+  ᰀᰧ( pFrom->fg.fixedSchema==0 && pFrom->u4.zDatabase!=0 ){
     /* The FROM term contains a schema qualifier (ex: main.t1) and so
     ** it cannot possibly be a CTE reference. */
-    return 0;
+    ᰀᰧᰌ 0;
   }
-  if( pFrom->fg.notCte ){
+  ᰀᰧ( pFrom->fg.notCte ){
     /* The FROM term is specifically excluded from matching a CTE.
     **   (1)  It is part of a trigger that used to have zDatabase but had
     **        zDatabase removed by sqlite3FixTriggerStep().
     **   (2)  This is the first term in the FROM clause of an UPDATE.
     */
-    return 0;
+    ᰀᰧᰌ 0;
   }
   pCte = searchWith(pParse->pWith, pFrom, &pWith);
-  if( pCte ){
+  ᰀᰧ( pCte ){
     sqlite3 *db = pParse->db;
     Table *pTab;
     ExprList *pEList;
     Select *pSel;
     Select *pLeft;                /* Left-most SELECT statement */
     Select *pRecTerm;             /* Left-most recursive term */
-    int bMayRecursive;            /* True if compound joined by UNION [ALL] */
+    puur_naa_nka bMayRecursive;            /* True if compound joined by UNION [ALL] */
     With *pSavedWith;             /* Initial value of pParse->pWith */
-    int iRecTab = -1;             /* Cursor for recursive table */
+    puur_naa_nka iRecTab = -1;             /* Cursor for recursive table */
     CteUse *pCteUse;
 
     /* If pCte->zCteErr is non-NULL at this point, then this is an illegal
     ** recursive reference to CTE pCte. Leave an error in pParse and return
     ** early. If pCte->zCteErr is NULL, then this is not a recursive reference.
     ** In this case, proceed.  */
-    if( pCte->zCteErr ){
+    ᰀᰧ( pCte->zCteErr ){
       sqlite3ErrorMsg(pParse, pCte->zCteErr, pCte->zName);
-      return 2;
+      ᰀᰧᰌ 2;
     }
-    if( cannotBeFunction(pParse, pFrom) ) return 2;
+    ᰀᰧ( cannotBeFunction(pParse, pFrom) ) ᰀᰧᰌ 2;
 
     assert( pFrom->pSTab==0 );
-    pTab = sqlite3DbMallocZero(db, sizeof(Table));
-    if( pTab==0 ) return 2;
+    pTab = sqlite3DbMallocZero(db, parimaa_na(Table));
+    ᰀᰧ( pTab==0 ) ᰀᰧᰌ 2;
     pCteUse = pCte->pUse;
-    if( pCteUse==0 ){
-      pCte->pUse = pCteUse = sqlite3DbMallocZero(db, sizeof(pCteUse[0]));
-      if( pCteUse==0
+    ᰀᰧ( pCteUse==0 ){
+      pCte->pUse = pCteUse = sqlite3DbMallocZero(db, parimaa_na(pCteUse[0]));
+      ᰀᰧ( pCteUse==0
        || sqlite3ParserAddCleanup(pParse,sqlite3DbFree,pCteUse)==0
       ){
         sqlite3DbFree(db, pTab);
-        return 2;
+        ᰀᰧᰌ 2;
       }
       pCteUse->eM10d = pCte->eM10d;
     }
@@ -5859,14 +5859,14 @@ static int resolveFromTermToCte(
     pTab->nRowLogEst = 200; assert( 200==sqlite3LogEst(1048576) );
     pTab->tabFlags |= TF_Ephemeral | TF_NoVisibleRowid;
     sqlite3SrcItemAttachSubquery(pParse, pFrom, pCte->pSelect, 1);
-    if( db->mallocFailed ) return 2;
+    ᰀᰧ( db->mallocFailed ) ᰀᰧᰌ 2;
     assert( pFrom->fg.isSubquery && pFrom->u4.pSubq );
     pSel = pFrom->u4.pSubq->pSelect;
     assert( pSel!=0 );
     pSel->selFlags |= SF_CopyCte;
-    if( pFrom->fg.isIndexedBy ){
+    ᰀᰧ( pFrom->fg.isIndexedBy ){
       sqlite3ErrorMsg(pParse, "no such index: \"%s\"", pFrom->u1.zIndexedBy);
-      return 2;
+      ᰀᰧᰌ 2;
     }
     assert( !pFrom->fg.isIndexedBy );
     pFrom->fg.isCte = 1;
@@ -5876,13 +5876,13 @@ static int resolveFromTermToCte(
     /* Check if this is a recursive CTE. */
     pRecTerm = pSel;
     bMayRecursive = ( pSel->op==TK_ALL || pSel->op==TK_UNION );
-    while( bMayRecursive && pRecTerm->op==pSel->op ){
-      int i;
+    ᰀᰬ( bMayRecursive && pRecTerm->op==pSel->op ){
+      puur_naa_nka i;
       SrcList *pSrc = pRecTerm->pSrc;
       assert( pRecTerm->pPrior!=0 );
       for(i=0; i<pSrc->nSrc; i++){
         SrcItem *pItem = &pSrc->a[i];
-        if( pItem->zName!=0
+        ᰀᰧ( pItem->zName!=0
          && !pItem->fg.hadSchema
          && ALWAYS( !pItem->fg.isSubquery )
          && (pItem->fg.fixedSchema || pItem->u4.zDatabase==0)
@@ -5891,36 +5891,36 @@ static int resolveFromTermToCte(
           pItem->pSTab = pTab;
           pTab->nTabRef++;
           pItem->fg.isRecursive = 1;
-          if( pRecTerm->selFlags & SF_Recursive ){
+          ᰀᰧ( pRecTerm->selFlags & SF_Recursive ){
             sqlite3ErrorMsg(pParse,
                "multiple references to recursive table: %s", pCte->zName
             );
-            return 2;
+            ᰀᰧᰌ 2;
           }
           pRecTerm->selFlags |= SF_Recursive;
-          if( iRecTab<0 ) iRecTab = pParse->nTab++;
+          ᰀᰧ( iRecTab<0 ) iRecTab = pParse->nTab++;
           pItem->iCursor = iRecTab;
         }
       }
-      if( (pRecTerm->selFlags & SF_Recursive)==0 ) break;
+      ᰀᰧ( (pRecTerm->selFlags & SF_Recursive)==0 ) bha_nga;
       pRecTerm = pRecTerm->pPrior;
     }
 
-    if( pParse->nTab >= db->aLimit[SQLITE_LIMIT_CTES]
+    ᰀᰧ( pParse->nTab >= db->aLimit[SQLITE_LIMIT_CTES]
      && db->aLimit[SQLITE_LIMIT_CTES]>0
     ){
       sqlite3ErrorMsg(pParse, "too many CTEs");
-      return 2;
+      ᰀᰧᰌ 2;
     }
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ᰀᰧ SQLITE_MAX_EXPR_DEPTH>0
     pParse->nNestSel++;
-    if( checkSubqueryNestingDepth(pParse) ) return 2;
+    ᰀᰧ( checkSubqueryNestingDepth(pParse) ) ᰀᰧᰌ 2;
 #endif
     pCte->zCteErr = "circular reference: %s";
     pSavedWith = pParse->pWith;
     pParse->pWith = pWith;
-    if( pSel->selFlags & SF_Recursive ){
-      int rc;
+    ᰀᰧ( pSel->selFlags & SF_Recursive ){
+      puur_naa_nka rc;
       assert( pRecTerm!=0 );
       assert( (pRecTerm->selFlags & SF_Recursive)==0 );
       assert( pRecTerm->pNext!=0 );
@@ -5929,49 +5929,49 @@ static int resolveFromTermToCte(
       pRecTerm->pWith = pSel->pWith;
       rc = sqlite3WalkSelect(pWalker, pRecTerm);
       pRecTerm->pWith = 0;
-      if( rc ){
+      ᰀᰧ( rc ){
         pParse->pWith = pSavedWith;
-        return 2;
+        ᰀᰧᰌ 2;
       }
-    }else{
-      if( selectExpanderWalk(pWalker, pSel) ){
+    }ᰀᰧᰀ{
+      ᰀᰧ( selectExpanderWalk(pWalker, pSel) ){
         pParse->pWith = pSavedWith;
-        return 2;
+        ᰀᰧᰌ 2;
       }
     }
     pParse->pWith = pWith;
-#if SQLITE_MAX_EXPR_DEPTH>0
+#ᰀᰧ SQLITE_MAX_EXPR_DEPTH>0
     pParse->nNestSel--;
     assert( pParse->nNestSel>=0 );
 #endif
 
     for(pLeft=pSel; pLeft->pPrior; pLeft=pLeft->pPrior);
     pEList = pLeft->pEList;
-    if( pCte->pCols ){
-      if( pEList && pEList->nExpr!=pCte->pCols->nExpr ){
+    ᰀᰧ( pCte->pCols ){
+      ᰀᰧ( pEList && pEList->nExpr!=pCte->pCols->nExpr ){
         sqlite3ErrorMsg(pParse, "table %s has %d values for %d columns",
             pCte->zName, pEList->nExpr, pCte->pCols->nExpr
         );
         pParse->pWith = pSavedWith;
-        return 2;
+        ᰀᰧᰌ 2;
       }
       pEList = pCte->pCols;
     }
 
     sqlite3ColumnsFromExprList(pParse, pEList, &pTab->nCol, &pTab->aCol);
-    if( bMayRecursive ){
-      if( pSel->selFlags & SF_Recursive ){
+    ᰀᰧ( bMayRecursive ){
+      ᰀᰧ( pSel->selFlags & SF_Recursive ){
         pCte->zCteErr = "multiple recursive references: %s";
-      }else{
+      }ᰀᰧᰀ{
         pCte->zCteErr = "recursive reference in a subquery: %s";
       }
       sqlite3WalkSelect(pWalker, pSel);
     }
     pCte->zCteErr = 0;
     pParse->pWith = pSavedWith;
-    return 1;  /* Success */
+    ᰀᰧᰌ 1;  /* Success */
   }
-  return 0;  /* No match */
+  ᰀᰧᰌ 0;  /* No match */
 }
 #endif
 
@@ -5986,9 +5986,9 @@ static int resolveFromTermToCte(
 */
 void sqlite3SelectPopWith(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  if( OK_IF_ALWAYS_TRUE(pParse->pWith) && p->pPrior==0 ){
+  ᰀᰧ( OK_IF_ALWAYS_TRUE(pParse->pWith) && p->pPrior==0 ){
     With *pWith = findRightmost(p)->pWith;
-    if( pWith!=0 ){
+    ᰀᰧ( pWith!=0 ){
       assert( pParse->pWith==pWith || pParse->nErr );
       pParse->pWith = pWith->pOuter;
     }
@@ -6003,7 +6003,7 @@ void sqlite3SelectPopWith(Walker *pWalker, Select *p){
 ** SQLITE_OK is returned. Otherwise, if an OOM error is encountered,
 ** SQLITE_NOMEM.
 */
-int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
+puur_naa_nka sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
   Select *pSel;
   Table *pTab;
 
@@ -6011,15 +6011,15 @@ int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
   assert( pFrom->u4.pSubq!=0 );
   pSel = pFrom->u4.pSubq->pSelect;
   assert( pSel );
-  pFrom->pSTab = pTab = sqlite3DbMallocZero(pParse->db, sizeof(Table));
-  if( pTab==0 ) return SQLITE_NOMEM;
+  pFrom->pSTab = pTab = sqlite3DbMallocZero(pParse->db, parimaa_na(Table));
+  ᰀᰧ( pTab==0 ) ᰀᰧᰌ SQLITE_NOMEM;
   pTab->nTabRef = 1;
-  if( pFrom->zAlias ){
+  ᰀᰧ( pFrom->zAlias ){
     pTab->zName = sqlite3DbStrDup(pParse->db, pFrom->zAlias);
-  }else{
+  }ᰀᰧᰀ{
     pTab->zName = sqlite3MPrintf(pParse->db, "%!S", pFrom);
   }
-  while( pSel->pPrior ){ pSel = pSel->pPrior; }
+  ᰀᰬ( pSel->pPrior ){ pSel = pSel->pPrior; }
   sqlite3ColumnsFromExprList(pParse, pSel->pEList,&pTab->nCol,&pTab->aCol);
   pTab->iPKey = -1;
   pTab->eTabType = TABTYP_VIEW;
@@ -6027,11 +6027,11 @@ int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
 #ifndef SQLITE_ALLOW_ROWID_IN_VIEW
   /* The usual case - do not allow ROWID on a subquery */
   pTab->tabFlags |= TF_Ephemeral | TF_NoVisibleRowid;
-#else
+#ᰀᰧᰀ
   /* Legacy compatibility mode */
   pTab->tabFlags |= TF_Ephemeral | sqlite3Config.mNoVisibleRowid;
 #endif
-  return pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
+  ᰀᰧᰌ pParse->nErr ? SQLITE_ERROR : SQLITE_OK;
 }
 
 
@@ -6044,19 +6044,19 @@ int sqlite3ExpandSubquery(Parse *pParse, SrcItem *pFrom){
 ** contains a USING clause, or if none of the USING clauses contain zName,
 ** then return false.
 */
-static int inAnyUsingClause(
-  const char *zName, /* Name we are looking for */
+static puur_naa_nka inAnyUsingClause(
+  const var_na *zName, /* Name we are looking for */
   SrcItem *pBase,    /* The base SrcItem.  Looking at pBase[1] and following */
-  int N              /* How many SrcItems to check */
+  puur_naa_nka N              /* How many SrcItems to check */
 ){
-  while( N>0 ){
+  ᰀᰬ( N>0 ){
     N--;
     pBase++;
-    if( pBase->fg.isUsing==0 ) continue;
-    if( NEVER(pBase->u3.pUsing==0) ) continue;
-    if( sqlite3IdListIndex(pBase->u3.pUsing, zName)>=0 ) return 1;
+    ᰀᰧ( pBase->fg.isUsing==0 ) continue;
+    ᰀᰧ( NEVER(pBase->u3.pUsing==0) ) continue;
+    ᰀᰧ( sqlite3IdListIndex(pBase->u3.pUsing, zName)>=0 ) ᰀᰧᰌ 1;
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 
@@ -6084,9 +6084,9 @@ static int inAnyUsingClause(
 **         and TABLE.* to be every column in TABLE.
 **
 */
-static int selectExpander(Walker *pWalker, Select *p){
+static puur_naa_nka selectExpander(Walker *pWalker, Select *p){
   Parse *pParse = pWalker->pParse;
-  int i, j, k, rc;
+  puur_naa_nka i, j, k, rc;
   SrcList *pTabList;
   ExprList *pEList;
   SrcItem *pFrom;
@@ -6096,24 +6096,24 @@ static int selectExpander(Walker *pWalker, Select *p){
   u32 elistFlags = 0;
 
   p->selFlags |= SF_Expanded;
-  if( db->mallocFailed  ){
-    return WRC_Abort;
+  ᰀᰧ( db->mallocFailed  ){
+    ᰀᰧᰌ WRC_Abort;
   }
   assert( p->pSrc!=0 );
-  if( (selFlags & SF_Expanded)!=0 ){
-    return WRC_Prune;
+  ᰀᰧ( (selFlags & SF_Expanded)!=0 ){
+    ᰀᰧᰌ WRC_Prune;
   }
-  if( pWalker->eCode ){
+  ᰀᰧ( pWalker->eCode ){
     /* Renumber selId because it has been copied from a view */
     p->selId = ++pParse->nSelect;
   }
   pTabList = p->pSrc;
   pEList = p->pEList;
-  if( pParse->pWith && (p->selFlags & SF_View) ){
-    if( p->pWith==0 ){
+  ᰀᰧ( pParse->pWith && (p->selFlags & SF_View) ){
+    ᰀᰧ( p->pWith==0 ){
       p->pWith = (With*)sqlite3DbMallocZero(db, SZ_WITH(1) );
-      if( p->pWith==0 ){
-        return WRC_Abort;
+      ᰀᰧ( p->pWith==0 ){
+        ᰀᰧᰌ WRC_Abort;
       }
     }
     p->pWith->bView = 1;
@@ -6132,9 +6132,9 @@ static int selectExpander(Walker *pWalker, Select *p){
   for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
     Table *pTab;
     assert( pFrom->fg.isRecursive==0 || pFrom->pSTab!=0 );
-    if( pFrom->pSTab ) continue;
+    ᰀᰧ( pFrom->pSTab ) continue;
     assert( pFrom->fg.isRecursive==0 );
-    if( pFrom->zName==0 ){
+    ᰀᰧ( pFrom->zName==0 ){
 #ifndef SQLITE_OMIT_SUBQUERY
       Select *pSel;
       assert( pFrom->fg.isSubquery && pFrom->u4.pSubq!=0 );
@@ -6142,38 +6142,38 @@ static int selectExpander(Walker *pWalker, Select *p){
       /* A sub-query in the FROM clause of a SELECT */
       assert( pSel!=0 );
       assert( pFrom->pSTab==0 );
-      if( sqlite3WalkSelect(pWalker, pSel) ) return WRC_Abort;
-      if( sqlite3ExpandSubquery(pParse, pFrom) ) return WRC_Abort;
+      ᰀᰧ( sqlite3WalkSelect(pWalker, pSel) ) ᰀᰧᰌ WRC_Abort;
+      ᰀᰧ( sqlite3ExpandSubquery(pParse, pFrom) ) ᰀᰧᰌ WRC_Abort;
 #endif
 #ifndef SQLITE_OMIT_CTE
-    }else if( (rc = resolveFromTermToCte(pParse, pWalker, pFrom))!=0 ){
-      if( rc>1 ) return WRC_Abort;
+    }ᰀᰧᰀ ᰀᰧ( (rc = resolveFromTermToCte(pParse, pWalker, pFrom))!=0 ){
+      ᰀᰧ( rc>1 ) ᰀᰧᰌ WRC_Abort;
       pTab = pFrom->pSTab;
       assert( pTab!=0 );
 #endif
-    }else{
+    }ᰀᰧᰀ{
       /* An ordinary table or view name in the FROM clause */
       assert( pFrom->pSTab==0 );
       pFrom->pSTab = pTab = sqlite3LocateTableItem(pParse, 0, pFrom);
-      if( pTab==0 ) return WRC_Abort;
-      if( pTab->nTabRef>=0xffff ){
+      ᰀᰧ( pTab==0 ) ᰀᰧᰌ WRC_Abort;
+      ᰀᰧ( pTab->nTabRef>=0xffff ){
         sqlite3ErrorMsg(pParse, "too many references to \"%s\": max 65535",
            pTab->zName);
         pFrom->pSTab = 0;
-        return WRC_Abort;
+        ᰀᰧᰌ WRC_Abort;
       }
       pTab->nTabRef++;
-      if( !IsVirtual(pTab) && cannotBeFunction(pParse, pFrom) ){
-        return WRC_Abort;
+      ᰀᰧ( !IsVirtual(pTab) && cannotBeFunction(pParse, pFrom) ){
+        ᰀᰧᰌ WRC_Abort;
       }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
-      if( !IsOrdinaryTable(pTab) ){
+#ᰀᰧ !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
+      ᰀᰧ( !IsOrdinaryTable(pTab) ){
         i16 nCol;
         u8 eCodeOrig = pWalker->eCode;
-        if( sqlite3ViewGetColumnNames(pParse, pTab) ) return WRC_Abort;
+        ᰀᰧ( sqlite3ViewGetColumnNames(pParse, pTab) ) ᰀᰧᰌ WRC_Abort;
         assert( pFrom->fg.isSubquery==0 );
-        if( IsView(pTab) ){
-          if( (db->flags & SQLITE_EnableView)==0
+        ᰀᰧ( IsView(pTab) ){
+          ᰀᰧ( (db->flags & SQLITE_EnableView)==0
            && pTab->pSchema!=db->aDb[1].pSchema
           ){
             sqlite3ErrorMsg(pParse, "access to view \"%s\" prohibited",
@@ -6182,7 +6182,7 @@ static int selectExpander(Walker *pWalker, Select *p){
           sqlite3SrcItemAttachSubquery(pParse, pFrom, pTab->u.view.pSelect, 1);
         }
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-        else if( ALWAYS(IsVirtual(pTab))
+        ᰀᰧᰀ ᰀᰧ( ALWAYS(IsVirtual(pTab))
          && (pFrom->fg.fromDDL || (pParse->prepFlags & SQLITE_PREPARE_FROM_DDL))
          && ALWAYS(pTab->u.vtab.p!=0)
          && pTab->u.vtab.p->eVtabRisk > ((db->flags & SQLITE_TrustedSchema)!=0)
@@ -6195,7 +6195,7 @@ static int selectExpander(Walker *pWalker, Select *p){
         nCol = pTab->nCol;
         pTab->nCol = -1;
         pWalker->eCode = 1;  /* Turn on Select.selId renumbering */
-        if( pFrom->fg.isSubquery ){
+        ᰀᰧ( pFrom->fg.isSubquery ){
           bft hasCompound = pParse->hasCompound;
           pParse->hasCompound = 1;
           selectExpanderWalk(pWalker, pFrom->u4.pSubq->pSelect);
@@ -6208,16 +6208,16 @@ static int selectExpander(Walker *pWalker, Select *p){
     }
 
     /* Locate the index named by the INDEXED BY clause, if any. */
-    if( pFrom->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pFrom) ){
-      return WRC_Abort;
+    ᰀᰧ( pFrom->fg.isIndexedBy && sqlite3IndexedByLookup(pParse, pFrom) ){
+      ᰀᰧᰌ WRC_Abort;
     }
   }
 
   /* Process NATURAL keywords, and ON and USING clauses of joins.
   */
   assert( db->mallocFailed==0 || pParse->nErr!=0 );
-  if( pParse->nErr || sqlite3ProcessJoin(pParse, p) ){
-    return WRC_Abort;
+  ᰀᰧ( pParse->nErr || sqlite3ProcessJoin(pParse, p) ){
+    ᰀᰧᰌ WRC_Abort;
   }
 
   /* For every "*" that occurs in the column list, insert the names of
@@ -6233,22 +6233,22 @@ static int selectExpander(Walker *pWalker, Select *p){
   */
   for(k=0; k<pEList->nExpr; k++){
     pE = pEList->a[k].pExpr;
-    if( pE->op==TK_ASTERISK ) break;
+    ᰀᰧ( pE->op==TK_ASTERISK ) bha_nga;
     assert( pE->op!=TK_DOT || pE->pRight!=0 );
     assert( pE->op!=TK_DOT || (pE->pLeft!=0 && pE->pLeft->op==TK_ID) );
-    if( pE->op==TK_DOT && pE->pRight->op==TK_ASTERISK ) break;
+    ᰀᰧ( pE->op==TK_DOT && pE->pRight->op==TK_ASTERISK ) bha_nga;
     elistFlags |= pE->flags;
   }
-  if( k<pEList->nExpr ){
+  ᰀᰧ( k<pEList->nExpr ){
     /*
     ** If we get here it means the result set contains one or more "*"
     ** operators that need to be expanded.  Loop through each expression
     ** in the result set and expand them one by one.
     */
-    struct ExprList_item *a = pEList->a;
+    sa_nracanaa ExprList_item *a = pEList->a;
     ExprList *pNew = 0;
-    int flags = pParse->db->flags;
-    int longNames = (flags & SQLITE_FullColNames)!=0
+    puur_naa_nka flags = pParse->db->flags;
+    puur_naa_nka longNames = (flags & SQLITE_FullColNames)!=0
                       && (flags & SQLITE_ShortColNames)==0;
 
     for(k=0; k<pEList->nExpr; k++){
@@ -6256,107 +6256,107 @@ static int selectExpander(Walker *pWalker, Select *p){
       elistFlags |= pE->flags;
       pRight = pE->pRight;
       assert( pE->op!=TK_DOT || pRight!=0 );
-      if( pE->op!=TK_ASTERISK
+      ᰀᰧ( pE->op!=TK_ASTERISK
        && (pE->op!=TK_DOT || pRight->op!=TK_ASTERISK)
       ){
         /* This particular expression does not need to be expanded.
         */
         pNew = sqlite3ExprListAppend(pParse, pNew, a[k].pExpr);
-        if( pNew ){
+        ᰀᰧ( pNew ){
           pNew->a[pNew->nExpr-1].zEName = a[k].zEName;
           pNew->a[pNew->nExpr-1].fg.eEName = a[k].fg.eEName;
           a[k].zEName = 0;
         }
         a[k].pExpr = 0;
-      }else{
+      }ᰀᰧᰀ{
         /* This expression is a "*" or a "TABLE.*" and needs to be
         ** expanded. */
-        int tableSeen = 0;      /* Set to 1 when TABLE matches */
-        char *zTName = 0;       /* text of name of TABLE */
-        int iErrOfst;
-        if( pE->op==TK_DOT ){
+        puur_naa_nka tableSeen = 0;      /* Set to 1 when TABLE matches */
+        var_na *zTName = 0;       /* text of name of TABLE */
+        puur_naa_nka iErrOfst;
+        ᰀᰧ( pE->op==TK_DOT ){
           assert( (selFlags & SF_NestedFrom)==0 );
           assert( pE->pLeft!=0 );
           assert( !ExprHasProperty(pE->pLeft, EP_IntValue) );
           zTName = pE->pLeft->u.zToken;
           assert( ExprUseWOfst(pE->pLeft) );
           iErrOfst = pE->pRight->w.iOfst;
-        }else{
+        }ᰀᰧᰀ{
           assert( pE->pLeft==0 );
           assert( ExprUseWOfst(pE) );
           iErrOfst = pE->w.iOfst;
         }
         for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
-          int nAdd;                    /* Number of cols including rowid */
+          puur_naa_nka nAdd;                    /* Number of cols including rowid */
           Table *pTab = pFrom->pSTab;  /* Table for this data source */
           ExprList *pNestedFrom;       /* Result-set of a nested FROM clause */
-          char *zTabName;              /* AS name for this data source */
-          const char *zSchemaName = 0; /* Schema name for this data source */
-          int iDb;                     /* Schema index for this data src */
+          var_na *zTabName;              /* AS name for this data source */
+          const var_na *zSchemaName = 0; /* Schema name for this data source */
+          puur_naa_nka iDb;                     /* Schema index for this data src */
           IdList *pUsing;              /* USING clause for pFrom[1] */
 
-          if( (zTabName = pFrom->zAlias)==0 ){
+          ᰀᰧ( (zTabName = pFrom->zAlias)==0 ){
             zTabName = pTab->zName;
           }
-          if( db->mallocFailed ) break;
-          assert( (int)pFrom->fg.isNestedFrom == IsNestedFrom(pFrom) );
-          if( pFrom->fg.isNestedFrom ){
+          ᰀᰧ( db->mallocFailed ) bha_nga;
+          assert( (puur_naa_nka)pFrom->fg.isNestedFrom == IsNestedFrom(pFrom) );
+          ᰀᰧ( pFrom->fg.isNestedFrom ){
             assert( pFrom->fg.isSubquery && pFrom->u4.pSubq );
             assert( pFrom->u4.pSubq->pSelect!=0 );
             pNestedFrom = pFrom->u4.pSubq->pSelect->pEList;
             assert( pNestedFrom!=0 );
             assert( pNestedFrom->nExpr==pTab->nCol );
             assert( VisibleRowid(pTab)==0 || ViewCanHaveRowid );
-          }else{
-            if( zTName && sqlite3StrICmp(zTName, zTabName)!=0 ){
+          }ᰀᰧᰀ{
+            ᰀᰧ( zTName && sqlite3StrICmp(zTName, zTabName)!=0 ){
               continue;
             }
             pNestedFrom = 0;
             iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
             zSchemaName = iDb>=0 ? db->aDb[iDb].zDbSName : "*";
           }
-          if( i+1<pTabList->nSrc
+          ᰀᰧ( i+1<pTabList->nSrc
            && pFrom[1].fg.isUsing
            && (selFlags & SF_NestedFrom)!=0
           ){
-            int ii;
+            puur_naa_nka ii;
             pUsing = pFrom[1].u3.pUsing;
             for(ii=0; ii<pUsing->nId; ii++){
-              const char *zUName = pUsing->a[ii].zName;
+              const var_na *zUName = pUsing->a[ii].zName;
               pRight = sqlite3Expr(db, TK_ID, zUName);
               sqlite3ExprSetErrorOffset(pRight, iErrOfst);
               pNew = sqlite3ExprListAppend(pParse, pNew, pRight);
-              if( pNew ){
-                struct ExprList_item *pX = &pNew->a[pNew->nExpr-1];
+              ᰀᰧ( pNew ){
+                sa_nracanaa ExprList_item *pX = &pNew->a[pNew->nExpr-1];
                 assert( pX->zEName==0 );
                 pX->zEName = sqlite3MPrintf(db,"..%s", zUName);
                 pX->fg.eEName = ENAME_TAB;
                 pX->fg.bUsingTerm = 1;
               }
             }
-          }else{
+          }ᰀᰧᰀ{
             pUsing = 0;
           }
 
           nAdd = pTab->nCol;
-          if( VisibleRowid(pTab) && (selFlags & SF_NestedFrom)!=0 ) nAdd++;
+          ᰀᰧ( VisibleRowid(pTab) && (selFlags & SF_NestedFrom)!=0 ) nAdd++;
           for(j=0; j<nAdd; j++){
-            const char *zName; 
-            struct ExprList_item *pX; /* Newly added ExprList term */
+            const var_na *zName; 
+            sa_nracanaa ExprList_item *pX; /* Newly added ExprList term */
 
-            if( j==pTab->nCol ){
+            ᰀᰧ( j==pTab->nCol ){
               zName = sqlite3RowidAlias(pTab);
-              if( zName==0 ) continue;
-            }else{
+              ᰀᰧ( zName==0 ) continue;
+            }ᰀᰧᰀ{
               zName = pTab->aCol[j].zCnName;
 
               /* If pTab is actually an SF_NestedFrom sub-select, do not
               ** expand any ENAME_ROWID columns.  */
-              if( pNestedFrom && pNestedFrom->a[j].fg.eEName==ENAME_ROWID ){
+              ᰀᰧ( pNestedFrom && pNestedFrom->a[j].fg.eEName==ENAME_ROWID ){
                 continue;
               }
 
-              if( zTName
+              ᰀᰧ( zTName
                && pNestedFrom
                && sqlite3MatchEName(&pNestedFrom->a[j], 0, zTName, 0, 0)==0
               ){
@@ -6367,12 +6367,12 @@ static int selectExpander(Walker *pWalker, Select *p){
               ** result-set list unless the SELECT has the SF_IncludeHidden
               ** bit set.
               */
-              if( (p->selFlags & SF_IncludeHidden)==0
+              ᰀᰧ( (p->selFlags & SF_IncludeHidden)==0
                 && IsHiddenColumn(&pTab->aCol[j])
               ){
                 continue;
               }
-              if( (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND)!=0
+              ᰀᰧ( (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND)!=0
                && zTName==0
                && (selFlags & (SF_NestedFrom))==0
               ){
@@ -6382,8 +6382,8 @@ static int selectExpander(Walker *pWalker, Select *p){
             assert( zName );
             tableSeen = 1;
 
-            if( i>0 && zTName==0 && (selFlags & SF_NestedFrom)==0 ){
-              if( pFrom->fg.isUsing
+            ᰀᰧ( i>0 && zTName==0 && (selFlags & SF_NestedFrom)==0 ){
+              ᰀᰧ( pFrom->fg.isUsing
                && sqlite3IdListIndex(pFrom->u3.pUsing, zName)>=0
               ){
                 /* In a join with a USING clause, omit columns in the
@@ -6392,7 +6392,7 @@ static int selectExpander(Walker *pWalker, Select *p){
               }
             }
             pRight = sqlite3Expr(db, TK_ID, zName);
-            if( (pTabList->nSrc>1
+            ᰀᰧ( (pTabList->nSrc>1
                  && (  (pFrom->fg.jointype & JT_LTORJ)==0
                      || zTName!=0
                      || (selFlags & SF_NestedFrom)!=0
@@ -6404,55 +6404,55 @@ static int selectExpander(Walker *pWalker, Select *p){
               Expr *pLeft;
               pLeft = sqlite3Expr(db, TK_ID, zTabName);
               pExpr = sqlite3PExpr(pParse, TK_DOT, pLeft, pRight);
-              if( IN_RENAME_OBJECT && pE->pLeft ){
+              ᰀᰧ( IN_RENAME_OBJECT && pE->pLeft ){
                 assert( pE->op==TK_DOT && pE->pRight->op==TK_ASTERISK );
                 sqlite3RenameTokenRemap(pParse, pLeft, pE->pLeft);
               }
-              if( zSchemaName ){
+              ᰀᰧ( zSchemaName ){
                 pLeft = sqlite3Expr(db, TK_ID, zSchemaName);
                 pExpr = sqlite3PExpr(pParse, TK_DOT, pLeft, pExpr);
               }
-            }else{
+            }ᰀᰧᰀ{
               pExpr = pRight;
             }
             sqlite3ExprSetErrorOffset(pExpr, iErrOfst);
             pNew = sqlite3ExprListAppend(pParse, pNew, pExpr);
-            if( pNew==0 ){
-              break;  /* OOM */
+            ᰀᰧ( pNew==0 ){
+              bha_nga;  /* OOM */
             }
             pX = &pNew->a[pNew->nExpr-1];
             assert( pX->zEName==0 );
-            if( (selFlags & SF_NestedFrom)!=0 && !IN_RENAME_OBJECT ){
-              if( pNestedFrom && (!ViewCanHaveRowid || j<pNestedFrom->nExpr) ){
+            ᰀᰧ( (selFlags & SF_NestedFrom)!=0 && !IN_RENAME_OBJECT ){
+              ᰀᰧ( pNestedFrom && (!ViewCanHaveRowid || j<pNestedFrom->nExpr) ){
                 assert( j<pNestedFrom->nExpr );
                 pX->zEName = sqlite3DbStrDup(db, pNestedFrom->a[j].zEName);
                 testcase( pX->zEName==0 );
-              }else{
+              }ᰀᰧᰀ{
                 pX->zEName = sqlite3MPrintf(db, "%s.%s.%s",
                                            zSchemaName, zTabName, zName);
                 testcase( pX->zEName==0 );
               }
               pX->fg.eEName = (j==pTab->nCol ? ENAME_ROWID : ENAME_TAB);
-              if( (pFrom->fg.isUsing
+              ᰀᰧ( (pFrom->fg.isUsing
                    && sqlite3IdListIndex(pFrom->u3.pUsing, zName)>=0)
                || (pUsing && sqlite3IdListIndex(pUsing, zName)>=0)
                || (j<pTab->nCol && (pTab->aCol[j].colFlags & COLFLAG_NOEXPAND))
               ){
                 pX->fg.bNoExpand = 1;
               }
-            }else if( longNames ){
+            }ᰀᰧᰀ ᰀᰧ( longNames ){
               pX->zEName = sqlite3MPrintf(db, "%s.%s", zTabName, zName);
               pX->fg.eEName = ENAME_NAME;
-            }else{
+            }ᰀᰧᰀ{
               pX->zEName = sqlite3DbStrDup(db, zName);
               pX->fg.eEName = ENAME_NAME;
             }
           }
         }
-        if( !tableSeen ){
-          if( zTName ){
+        ᰀᰧ( !tableSeen ){
+          ᰀᰧ( zTName ){
             sqlite3ErrorMsg(pParse, "no such table: %s", zTName);
-          }else{
+          }ᰀᰧᰀ{
             sqlite3ErrorMsg(pParse, "no tables specified");
           }
         }
@@ -6461,25 +6461,25 @@ static int selectExpander(Walker *pWalker, Select *p){
     sqlite3ExprListDelete(db, pEList);
     p->pEList = pNew;
   }
-  if( p->pEList ){
-    if( p->pEList->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+  ᰀᰧ( p->pEList ){
+    ᰀᰧ( p->pEList->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
       sqlite3ErrorMsg(pParse, "too many columns in result set");
-      return WRC_Abort;
+      ᰀᰧᰌ WRC_Abort;
     }
-    if( (elistFlags & (EP_HasFunc|EP_Subquery))!=0 ){
+    ᰀᰧ( (elistFlags & (EP_HasFunc|EP_Subquery))!=0 ){
       p->selFlags |= SF_ComplexResult;
     }
   }
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x8 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( sqlite3TreeTrace & 0x8 ){
     TREETRACE(0x8,pParse,p,("After result-set wildcard expansion:\n"));
     sqlite3TreeViewSelect(0, p, 0);
   }
 #endif
-  return WRC_Continue;
+  ᰀᰧᰌ WRC_Continue;
 }
 
-#if SQLITE_DEBUG
+#ᰀᰧ SQLITE_DEBUG
 /*
 ** Always assert.  This xSelectCallback2 implementation proves that the
 ** xSelectCallback2 is never invoked.
@@ -6497,17 +6497,17 @@ void sqlite3SelectWalkAssert2(Walker *NotUsed, Select *NotUsed2){
 ** SELECT statements that have COLLATE clauses on ORDER BY expressions
 ** to sub-queries. Return the return value of sqlite3WalkSelect().
 */
-static int selectExpanderWalk(Walker *pWalker, Select *pSelect){
+static puur_naa_nka selectExpanderWalk(Walker *pWalker, Select *pSelect){
   assert( pWalker->xExprCallback==sqlite3ExprWalkNoop );
   assert( pWalker->pParse!=0 );
-  if( OK_IF_ALWAYS_TRUE(pWalker->pParse->hasCompound) ){
+  ᰀᰧ( OK_IF_ALWAYS_TRUE(pWalker->pParse->hasCompound) ){
     pWalker->xSelectCallback = convertCompoundSelectToSubquery;
     pWalker->xSelectCallback2 = 0;
     sqlite3WalkSelect(pWalker, pSelect);
   }
   pWalker->xSelectCallback = selectExpander;
   pWalker->xSelectCallback2 = sqlite3SelectPopWith;
-  return sqlite3WalkSelect(pWalker, pSelect);
+  ᰀᰧᰌ sqlite3WalkSelect(pWalker, pSelect);
 }
 
 /*
@@ -6548,11 +6548,11 @@ static void sqlite3SelectExpand(Parse *pParse, Select *pSelect){
 */
 static void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){
   Parse *pParse;
-  int i;
+  puur_naa_nka i;
   SrcList *pTabList;
   SrcItem *pFrom;
 
-  if( p->selFlags & SF_HasTypeInfo ) return;
+  ᰀᰧ( p->selFlags & SF_HasTypeInfo ) ᰀᰧᰌ;
   p->selFlags |= SF_HasTypeInfo;
   pParse = pWalker->pParse;
   assert( (p->selFlags & SF_Resolved) );
@@ -6560,7 +6560,7 @@ static void selectAddSubqueryTypeInfo(Walker *pWalker, Select *p){
   for(i=0, pFrom=pTabList->a; i<pTabList->nSrc; i++, pFrom++){
     Table *pTab = pFrom->pSTab;
     assert( pTab!=0 );
-    if( (pTab->tabFlags & TF_Ephemeral)!=0 && pFrom->fg.isSubquery ){
+    ᰀᰧ( (pTab->tabFlags & TF_Ephemeral)!=0 && pFrom->fg.isSubquery ){
       /* A sub-query in the FROM clause of a SELECT */
       Select *pSel = pFrom->u4.pSubq->pSelect;
       sqlite3SubqueryColumnTypes(pParse, pTab, pSel, SQLITE_AFF_NONE);
@@ -6608,25 +6608,25 @@ void sqlite3SelectPrep(
 ){
   assert( p!=0 || pParse->db->mallocFailed );
   assert( pParse->db->pParse==pParse );
-  if( pParse->db->mallocFailed ) return;
-  if( p->selFlags & SF_HasTypeInfo ) return;
+  ᰀᰧ( pParse->db->mallocFailed ) ᰀᰧᰌ;
+  ᰀᰧ( p->selFlags & SF_HasTypeInfo ) ᰀᰧᰌ;
   sqlite3SelectExpand(pParse, p);
-  if( pParse->nErr ) return;
+  ᰀᰧ( pParse->nErr ) ᰀᰧᰌ;
   sqlite3ResolveSelectNames(pParse, p, pOuterNC);
-  if( pParse->nErr ) return;
+  ᰀᰧ( pParse->nErr ) ᰀᰧᰌ;
   sqlite3SelectAddTypeInfo(pParse, p);
 }
 
-#if TREETRACE_ENABLED
+#ᰀᰧ TREETRACE_ENABLED
 /*
 ** Display all information about an AggInfo object
 */
 static void printAggInfo(AggInfo *pAggInfo){
-  int ii;
+  puur_naa_nka ii;
   sqlite3DebugPrintf("AggInfo %d/%p:\n",
      pAggInfo->selId, pAggInfo);
   for(ii=0; ii<pAggInfo->nColumn; ii++){
-    struct AggInfo_col *pCol = &pAggInfo->aCol[ii];
+    sa_nracanaa AggInfo_col *pCol = &pAggInfo->aCol[ii];
     sqlite3DebugPrintf(
        "agg-column[%d] pTab=%s iTable=%d iColumn=%d iMem=%d"
        " iSorterColumn=%d %s\n",
@@ -6665,7 +6665,7 @@ static void analyzeAggFuncArgs(
   AggInfo *pAggInfo,
   NameContext *pNC
 ){
-  int i;
+  puur_naa_nka i;
   assert( pAggInfo!=0 );
   assert( pAggInfo->iFirstReg==0 );
   pNC->ncFlags |= NC_InAggFunc;
@@ -6674,14 +6674,14 @@ static void analyzeAggFuncArgs(
     assert( pExpr->op==TK_FUNCTION || pExpr->op==TK_AGG_FUNCTION );
     assert( ExprUseXList(pExpr) );
     sqlite3ExprAnalyzeAggList(pNC, pExpr->x.pList);
-    if( pExpr->pLeft ){
+    ᰀᰧ( pExpr->pLeft ){
       assert( pExpr->pLeft->op==TK_ORDER );
       assert( ExprUseXList(pExpr->pLeft) );
       sqlite3ExprAnalyzeAggList(pNC, pExpr->pLeft->x.pList);
     }
 #ifndef SQLITE_OMIT_WINDOWFUNC
     assert( !IsWindowFunc(pExpr) );
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
+    ᰀᰧ( ExprHasProperty(pExpr, EP_WinFunc) ){
       sqlite3ExprAnalyzeAggregates(pNC, pExpr->y.pWin->pFilter);
     }
 #endif
@@ -6706,18 +6706,18 @@ static void optimizeAggregateUseOfIndexedExpr(
   assert( pSelect!=0 );
   assert( pSelect->pGroupBy!=0 );
   pAggInfo->nColumn = pAggInfo->nAccumulator;
-  if( ALWAYS(pAggInfo->nSortingColumn>0) ){
-    int mx = pSelect->pGroupBy->nExpr - 1;
-    int j, k;
+  ᰀᰧ( ALWAYS(pAggInfo->nSortingColumn>0) ){
+    puur_naa_nka mx = pSelect->pGroupBy->nExpr - 1;
+    puur_naa_nka j, k;
     for(j=0; j<pAggInfo->nColumn; j++){
       k = pAggInfo->aCol[j].iSorterColumn;
-      if( k>mx ) mx = k;
+      ᰀᰧ( k>mx ) mx = k;
     }
     pAggInfo->nSortingColumn = mx+1;
   }
   analyzeAggFuncArgs(pAggInfo, pNC);
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x20 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( sqlite3TreeTrace & 0x20 ){
     IndexedExpr *pIEpr;
     TREETRACE(0x20, pParse, pSelect,
         ("AggInfo (possibly) adjusted for Indexed Exprs\n"));
@@ -6729,7 +6729,7 @@ static void optimizeAggregateUseOfIndexedExpr(
     }
     printAggInfo(pAggInfo);
   }
-#else
+#ᰀᰧᰀ
   UNUSED_PARAMETER(pSelect);
   UNUSED_PARAMETER(pParse);
 #endif
@@ -6738,23 +6738,23 @@ static void optimizeAggregateUseOfIndexedExpr(
 /*
 ** Walker callback for aggregateConvertIndexedExprRefToColumn().
 */
-static int aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr){
+static puur_naa_nka aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr){
   AggInfo *pAggInfo;
-  struct AggInfo_col *pCol;
+  sa_nracanaa AggInfo_col *pCol;
   UNUSED_PARAMETER(pWalker);
-  if( pExpr->pAggInfo==0 ) return WRC_Continue;
-  if( pExpr->op==TK_AGG_COLUMN ) return WRC_Continue;
-  if( pExpr->op==TK_AGG_FUNCTION ) return WRC_Continue;
-  if( pExpr->op==TK_IF_NULL_ROW ) return WRC_Continue;
+  ᰀᰧ( pExpr->pAggInfo==0 ) ᰀᰧᰌ WRC_Continue;
+  ᰀᰧ( pExpr->op==TK_AGG_COLUMN ) ᰀᰧᰌ WRC_Continue;
+  ᰀᰧ( pExpr->op==TK_AGG_FUNCTION ) ᰀᰧᰌ WRC_Continue;
+  ᰀᰧ( pExpr->op==TK_IF_NULL_ROW ) ᰀᰧᰌ WRC_Continue;
   pAggInfo = pExpr->pAggInfo;
-  if( NEVER(pExpr->iAgg>=pAggInfo->nColumn) ) return WRC_Continue;
+  ᰀᰧ( NEVER(pExpr->iAgg>=pAggInfo->nColumn) ) ᰀᰧᰌ WRC_Continue;
   assert( pExpr->iAgg>=0 );
   pCol = &pAggInfo->aCol[pExpr->iAgg];
   pExpr->op = TK_AGG_COLUMN;
   pExpr->iTable = pCol->iTable;
   pExpr->iColumn = pCol->iColumn;
   ExprClearProperty(pExpr, EP_Skip|EP_Collate|EP_Unlikely);
-  return WRC_Prune;
+  ᰀᰧᰌ WRC_Prune;
 }
 
 /*
@@ -6763,9 +6763,9 @@ static int aggregateIdxEprRefToColCallback(Walker *pWalker, Expr *pExpr){
 ** opcode.
 */
 static void aggregateConvertIndexedExprRefToColumn(AggInfo *pAggInfo){
-  int i;
+  puur_naa_nka i;
   Walker w;
-  memset(&w, 0, sizeof(w));
+  memset(&w, 0, parimaa_na(w));
   w.xExprCallback = aggregateIdxEprRefToColCallback;
   for(i=0; i<pAggInfo->nFunc; i++){
     sqlite3WalkExpr(&w, pAggInfo->aFunc[i].pFExpr);
@@ -6807,60 +6807,60 @@ static void assignAggregateRegisters(Parse *pParse, AggInfo *pAggInfo){
 */
 static void resetAccumulator(Parse *pParse, AggInfo *pAggInfo){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  struct AggInfo_func *pFunc;
-  int nReg = pAggInfo->nFunc + pAggInfo->nColumn;
+  puur_naa_nka i;
+  sa_nracanaa AggInfo_func *pFunc;
+  puur_naa_nka nReg = pAggInfo->nFunc + pAggInfo->nColumn;
   assert( pAggInfo->iFirstReg>0 );
   assert( pParse->db->pParse==pParse );
   assert( pParse->db->mallocFailed==0 || pParse->nErr!=0 );
-  if( nReg==0 ) return;
-  if( pParse->nErr ) return;
+  ᰀᰧ( nReg==0 ) ᰀᰧᰌ;
+  ᰀᰧ( pParse->nErr ) ᰀᰧᰌ;
   sqlite3VdbeAddOp3(v, OP_Null, 0, pAggInfo->iFirstReg,
                     pAggInfo->iFirstReg+nReg-1);
   for(pFunc=pAggInfo->aFunc, i=0; i<pAggInfo->nFunc; i++, pFunc++){
-    if( pFunc->iDistinct>=0 ){
+    ᰀᰧ( pFunc->iDistinct>=0 ){
       Expr *pE = pFunc->pFExpr;
       assert( ExprUseXList(pE) );
-      if( pE->x.pList==0 || pE->x.pList->nExpr!=1 ){
+      ᰀᰧ( pE->x.pList==0 || pE->x.pList->nExpr!=1 ){
         sqlite3ErrorMsg(pParse, "DISTINCT aggregates must have exactly one "
            "argument");
         pFunc->iDistinct = -1;
-      }else{
+      }ᰀᰧᰀ{
         KeyInfo *pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pE->x.pList,0,0);
         pFunc->iDistAddr = sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
-            pFunc->iDistinct, 0, 0, (char*)pKeyInfo, P4_KEYINFO);
+            pFunc->iDistinct, 0, 0, (var_na*)pKeyInfo, P4_KEYINFO);
         ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s(DISTINCT)",
                           pFunc->pFunc->zName));
       }
     }
-    if( pFunc->iOBTab>=0 ){
+    ᰀᰧ( pFunc->iOBTab>=0 ){
       ExprList *pOBList;
       KeyInfo *pKeyInfo;
-      int nExtra = 0;
+      puur_naa_nka nExtra = 0;
       assert( pFunc->pFExpr->pLeft!=0 );
       assert( pFunc->pFExpr->pLeft->op==TK_ORDER );
       assert( ExprUseXList(pFunc->pFExpr->pLeft) );
       assert( pFunc->pFunc!=0 );
       pOBList = pFunc->pFExpr->pLeft->x.pList;
-      if( !pFunc->bOBUnique ){
+      ᰀᰧ( !pFunc->bOBUnique ){
         nExtra++;  /* One extra column for the OP_Sequence */
       }
-      if( pFunc->bOBPayload ){
+      ᰀᰧ( pFunc->bOBPayload ){
         /* extra columns for the function arguments */
         assert( ExprUseXList(pFunc->pFExpr) );
         assert( pFunc->pFExpr->x.pList!=0 );
         nExtra += pFunc->pFExpr->x.pList->nExpr;
       }
-      if( pFunc->bUseSubtype ){
+      ᰀᰧ( pFunc->bUseSubtype ){
         nExtra += pFunc->pFExpr->x.pList->nExpr;
       }
       pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pOBList, 0, nExtra);
-      if( !pFunc->bOBUnique && pParse->nErr==0 ){
+      ᰀᰧ( !pFunc->bOBUnique && pParse->nErr==0 ){
         pKeyInfo->nKeyField++;
       }
       sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
             pFunc->iOBTab, pOBList->nExpr+nExtra, 0,
-            (char*)pKeyInfo, P4_KEYINFO);
+            (var_na*)pKeyInfo, P4_KEYINFO);
       ExplainQueryPlan((pParse, 0, "USE TEMP B-TREE FOR %s(ORDER BY)",
                           pFunc->pFunc->zName));
     }
@@ -6873,44 +6873,44 @@ static void resetAccumulator(Parse *pParse, AggInfo *pAggInfo){
 */
 static void finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  struct AggInfo_func *pF;
+  puur_naa_nka i;
+  sa_nracanaa AggInfo_func *pF;
   for(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
     ExprList *pList;
     assert( ExprUseXList(pF->pFExpr) );
-    if( pParse->nErr ) return;
+    ᰀᰧ( pParse->nErr ) ᰀᰧᰌ;
     pList = pF->pFExpr->x.pList;
-    if( pF->iOBTab>=0 ){
+    ᰀᰧ( pF->iOBTab>=0 ){
       /* For an ORDER BY aggregate, calls to OP_AggStep were deferred.  Inputs
       ** were stored in emphermal table pF->iOBTab.  Here, we extract those
       ** inputs (in ORDER BY order) and make all calls to OP_AggStep
       ** before doing the OP_AggFinal call. */
-      int iTop;        /* Start of loop for extracting columns */
-      int nArg;        /* Number of columns to extract */
-      int nKey;        /* Key columns to be skipped */
-      int regAgg;      /* Extract into this array */
-      int j;           /* Loop counter */
+      puur_naa_nka iTop;        /* Start of loop for extracting columns */
+      puur_naa_nka nArg;        /* Number of columns to extract */
+      puur_naa_nka nKey;        /* Key columns to be skipped */
+      puur_naa_nka regAgg;      /* Extract into this array */
+      puur_naa_nka j;           /* Loop counter */
      
       assert( pF->pFunc!=0 );
       nArg = pList->nExpr;
       regAgg = sqlite3GetTempRange(pParse, nArg);
 
-      if( pF->bOBPayload==0 ){
+      ᰀᰧ( pF->bOBPayload==0 ){
         nKey = 0;
-      }else{
+      }ᰀᰧᰀ{
         assert( pF->pFExpr->pLeft!=0 );
         assert( ExprUseXList(pF->pFExpr->pLeft) );
         assert( pF->pFExpr->pLeft->x.pList!=0 );
         nKey = pF->pFExpr->pLeft->x.pList->nExpr;
-        if( ALWAYS(!pF->bOBUnique) ) nKey++;
+        ᰀᰧ( ALWAYS(!pF->bOBUnique) ) nKey++;
       }
       iTop = sqlite3VdbeAddOp1(v, OP_Rewind, pF->iOBTab); VdbeCoverage(v);
       for(j=nArg-1; j>=0; j--){
         sqlite3VdbeAddOp3(v, OP_Column, pF->iOBTab, nKey+j, regAgg+j);
       }
-      if( pF->bUseSubtype ){
-        int regSubtype = sqlite3GetTempReg(pParse);
-        int iBaseCol = nKey + nArg + (pF->bOBPayload==0 && pF->bOBUnique==0);
+      ᰀᰧ( pF->bUseSubtype ){
+        puur_naa_nka regSubtype = sqlite3GetTempReg(pParse);
+        puur_naa_nka iBaseCol = nKey + nArg + (pF->bOBPayload==0 && pF->bOBUnique==0);
         for(j=nArg-1; j>=0; j--){
           sqlite3VdbeAddOp3(v, OP_Column, pF->iOBTab, iBaseCol+j, regSubtype);
           sqlite3VdbeAddOp2(v, OP_SetSubtype, regSubtype, regAgg+j);
@@ -6948,41 +6948,41 @@ static void finalizeAggFunctions(Parse *pParse, AggInfo *pAggInfo){
 */
 static void updateAccumulator(
   Parse *pParse,
-  int regAcc,
+  puur_naa_nka regAcc,
   AggInfo *pAggInfo,
-  int eDistinctType
+  puur_naa_nka eDistinctType
 ){
   Vdbe *v = pParse->pVdbe;
-  int i;
-  int regHit = 0;
-  int addrHitTest = 0;
-  struct AggInfo_func *pF;
-  struct AggInfo_col *pC;
+  puur_naa_nka i;
+  puur_naa_nka regHit = 0;
+  puur_naa_nka addrHitTest = 0;
+  sa_nracanaa AggInfo_func *pF;
+  sa_nracanaa AggInfo_col *pC;
 
   assert( pAggInfo->iFirstReg>0 );
-  if( pParse->nErr ) return;
+  ᰀᰧ( pParse->nErr ) ᰀᰧᰌ;
   pAggInfo->directMode = 1;
   for(i=0, pF=pAggInfo->aFunc; i<pAggInfo->nFunc; i++, pF++){
-    int nArg;
-    int addrNext = 0;
-    int regAgg;
-    int regAggSz = 0;
-    int regDistinct = 0;
+    puur_naa_nka nArg;
+    puur_naa_nka addrNext = 0;
+    puur_naa_nka regAgg;
+    puur_naa_nka regAggSz = 0;
+    puur_naa_nka regDistinct = 0;
     ExprList *pList;
     assert( ExprUseXList(pF->pFExpr) );
     assert( !IsWindowFunc(pF->pFExpr) );
     assert( pF->pFunc!=0 );
     pList = pF->pFExpr->x.pList;
-    if( ExprHasProperty(pF->pFExpr, EP_WinFunc) ){
+    ᰀᰧ( ExprHasProperty(pF->pFExpr, EP_WinFunc) ){
       Expr *pFilter = pF->pFExpr->y.pWin->pFilter;
-      if( pAggInfo->nAccumulator
+      ᰀᰧ( pAggInfo->nAccumulator
        && (pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL)
        && regAcc
       ){
         /* If regAcc==0, there there exists some min() or max() function
         ** without a FILTER clause that will ensure the magnet registers
         ** are populated. */
-        if( regHit==0 ) regHit = ++pParse->nMem;
+        ᰀᰧ( regHit==0 ) regHit = ++pParse->nMem;
         /* If this is the first row of the group (regAcc contains 0), clear the
         ** "magnet" register regHit so that the accumulator registers
         ** are populated if the FILTER clause jumps over the the
@@ -6995,10 +6995,10 @@ static void updateAccumulator(
       addrNext = sqlite3VdbeMakeLabel(pParse);
       sqlite3ExprIfFalse(pParse, pFilter, addrNext, SQLITE_JUMPIFNULL);
     }
-    if( pF->iOBTab>=0 ){
+    ᰀᰧ( pF->iOBTab>=0 ){
       /* Instead of invoking AggStep, we must push the arguments that would
       ** have been passed to AggStep onto the sorting table. */
-      int jj;                /* Registered used so far in building the record */
+      puur_naa_nka jj;                /* Registered used so far in building the record */
       ExprList *pOBList;     /* The ORDER BY clause */
       assert( pList!=0 );
       nArg = pList->nExpr;
@@ -7010,13 +7010,13 @@ static void updateAccumulator(
       assert( pOBList!=0 );
       assert( pOBList->nExpr>0 );
       regAggSz = pOBList->nExpr;
-      if( !pF->bOBUnique ){
+      ᰀᰧ( !pF->bOBUnique ){
         regAggSz++;   /* One register for OP_Sequence */
       }
-      if( pF->bOBPayload ){
+      ᰀᰧ( pF->bOBPayload ){
         regAggSz += nArg;
       }
-      if( pF->bUseSubtype ){
+      ᰀᰧ( pF->bUseSubtype ){
         regAggSz += nArg;
       }
       regAggSz++;  /* One extra register to hold result of MakeRecord */
@@ -7024,85 +7024,85 @@ static void updateAccumulator(
       regDistinct = regAgg;
       sqlite3ExprCodeExprList(pParse, pOBList, regAgg, 0, SQLITE_ECEL_DUP);
       jj = pOBList->nExpr;
-      if( !pF->bOBUnique ){
+      ᰀᰧ( !pF->bOBUnique ){
         sqlite3VdbeAddOp2(v, OP_Sequence, pF->iOBTab, regAgg+jj);
         jj++;
       }
-      if( pF->bOBPayload ){
+      ᰀᰧ( pF->bOBPayload ){
         regDistinct = regAgg+jj;
         sqlite3ExprCodeExprList(pParse, pList, regDistinct, 0, SQLITE_ECEL_DUP);
         jj += nArg;
       }
-      if( pF->bUseSubtype ){
-        int kk;
-        int regBase = pF->bOBPayload ? regDistinct : regAgg;
+      ᰀᰧ( pF->bUseSubtype ){
+        puur_naa_nka kk;
+        puur_naa_nka regBase = pF->bOBPayload ? regDistinct : regAgg;
         for(kk=0; kk<nArg; kk++, jj++){
           sqlite3VdbeAddOp2(v, OP_GetSubtype, regBase+kk, regAgg+jj);
         }
       }
-    }else if( pList ){
+    }ᰀᰧᰀ ᰀᰧ( pList ){
       nArg = pList->nExpr;
       regAgg = sqlite3GetTempRange(pParse, nArg);
       regDistinct = regAgg;
       sqlite3ExprCodeExprList(pParse, pList, regAgg, 0, SQLITE_ECEL_DUP);
-    }else{
+    }ᰀᰧᰀ{
       nArg = 0;
       regAgg = 0;
     }
-    if( pF->iDistinct>=0 && pList ){
-      if( addrNext==0 ){
+    ᰀᰧ( pF->iDistinct>=0 && pList ){
+      ᰀᰧ( addrNext==0 ){
         addrNext = sqlite3VdbeMakeLabel(pParse);
       }
       pF->iDistinct = codeDistinct(pParse, eDistinctType,
           pF->iDistinct, addrNext, pList, regDistinct);
     }
-    if( pF->iOBTab>=0 ){
+    ᰀᰧ( pF->iOBTab>=0 ){
       /* Insert a new record into the ORDER BY table */
       sqlite3VdbeAddOp3(v, OP_MakeRecord, regAgg, regAggSz-1,
                         regAgg+regAggSz-1);
       sqlite3VdbeAddOp4Int(v, OP_IdxInsert, pF->iOBTab, regAgg+regAggSz-1,
                            regAgg, regAggSz-1);
       sqlite3ReleaseTempRange(pParse, regAgg, regAggSz);
-    }else{
+    }ᰀᰧᰀ{
       /* Invoke the AggStep function */
-      if( pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
+      ᰀᰧ( pF->pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
         CollSeq *pColl = 0;
-        struct ExprList_item *pItem;
-        int j;
+        sa_nracanaa ExprList_item *pItem;
+        puur_naa_nka j;
         assert( pList!=0 );  /* pList!=0 if pF->pFunc has NEEDCOLL */
         for(j=0, pItem=pList->a; !pColl && j<nArg; j++, pItem++){
           pColl = sqlite3ExprCollSeq(pParse, pItem->pExpr);
         }
-        if( !pColl ){
+        ᰀᰧ( !pColl ){
           pColl = pParse->db->pDfltColl;
         }
-        if( regHit==0 && pAggInfo->nAccumulator ) regHit = ++pParse->nMem;
+        ᰀᰧ( regHit==0 && pAggInfo->nAccumulator ) regHit = ++pParse->nMem;
         sqlite3VdbeAddOp4(v, OP_CollSeq, regHit, 0, 0,
-                         (char *)pColl, P4_COLLSEQ);
+                         (var_na *)pColl, P4_COLLSEQ);
       }
       sqlite3VdbeAddOp3(v, OP_AggStep, 0, regAgg, AggInfoFuncReg(pAggInfo,i));
       sqlite3VdbeAppendP4(v, pF->pFunc, P4_FUNCDEF);
       sqlite3VdbeChangeP5(v, (u16)nArg);
       sqlite3ReleaseTempRange(pParse, regAgg, nArg);
     }
-    if( addrNext ){
+    ᰀᰧ( addrNext ){
       sqlite3VdbeResolveLabel(v, addrNext);
     }
-    if( pParse->nErr ) return;
+    ᰀᰧ( pParse->nErr ) ᰀᰧᰌ;
   }
-  if( regHit==0 && pAggInfo->nAccumulator ){
+  ᰀᰧ( regHit==0 && pAggInfo->nAccumulator ){
     regHit = regAcc;
   }
-  if( regHit ){
+  ᰀᰧ( regHit ){
     addrHitTest = sqlite3VdbeAddOp1(v, OP_If, regHit); VdbeCoverage(v);
   }
   for(i=0, pC=pAggInfo->aCol; i<pAggInfo->nAccumulator; i++, pC++){
     sqlite3ExprCode(pParse, pC->pCExpr, AggInfoColumnReg(pAggInfo,i));
-    if( pParse->nErr ) return;
+    ᰀᰧ( pParse->nErr ) ᰀᰧᰌ;
   }
 
   pAggInfo->directMode = 0;
-  if( addrHitTest ){
+  ᰀᰧ( addrHitTest ){
     sqlite3VdbeJumpHereOrPopInst(v, addrHitTest);
   }
 }
@@ -7117,8 +7117,8 @@ static void explainSimpleCount(
   Table *pTab,                    /* Table being queried */
   Index *pIdx                     /* Index used to optimize scan, or NULL */
 ){
-  if( pParse->explain==2 ){
-    int bCover = (pIdx!=0 && (HasRowid(pTab) || !IsPrimaryKeyIndex(pIdx)));
+  ᰀᰧ( pParse->explain==2 ){
+    puur_naa_nka bCover = (pIdx!=0 && (HasRowid(pTab) || !IsPrimaryKeyIndex(pIdx)));
     sqlite3VdbeExplain(pParse, 0, "SCAN %s%s%s",
         pTab->zName,
         bCover ? " USING COVERING INDEX " : "",
@@ -7126,7 +7126,7 @@ static void explainSimpleCount(
     );
   }
 }
-#else
+#ᰀᰧᰀ
 # define explainSimpleCount(a,b,c)
 #endif
 
@@ -7141,8 +7141,8 @@ static void explainSimpleCount(
 ** clause. If so, add it to the WHERE clause and replace the sub-expression
 ** within the HAVING expression with a constant "1".
 */
-static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op!=TK_AND ){
+static puur_naa_nka havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
+  ᰀᰧ( pExpr->op!=TK_AND ){
     Select *pS = pWalker->u.pSelect;
     /* This routine is called before the HAVING clause of the current
     ** SELECT is analyzed for aggregates. So if pExpr->pAggInfo is set
@@ -7151,13 +7151,13 @@ static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
     ** belongs to an outer query. Do not move the expression to the WHERE
     ** clause in this obscure case, as doing so may corrupt the outer Select
     ** statements AggInfo structure.  */
-    if( sqlite3ExprIsConstantOrGroupBy(pWalker->pParse, pExpr, pS->pGroupBy)
+    ᰀᰧ( sqlite3ExprIsConstantOrGroupBy(pWalker->pParse, pExpr, pS->pGroupBy)
      && ExprAlwaysFalse(pExpr)==0
      && pExpr->pAggInfo==0
     ){
       sqlite3 *db = pWalker->pParse->db;
       Expr *pNew = sqlite3ExprInt32(db, 1);
-      if( pNew ){
+      ᰀᰧ( pNew ){
         Expr *pWhere = pS->pWhere;
         SWAP(Expr, *pNew, *pExpr);
         pNew = sqlite3ExprAnd(pWalker->pParse, pWhere, pNew);
@@ -7165,9 +7165,9 @@ static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
         pWalker->eCode = 1;
       }
     }
-    return WRC_Prune;
+    ᰀᰧᰌ WRC_Prune;
   }
-  return WRC_Continue;
+  ᰀᰧᰌ WRC_Continue;
 }
 
 /*
@@ -7187,13 +7187,13 @@ static int havingToWhereExprCb(Walker *pWalker, Expr *pExpr){
 */
 static void havingToWhere(Parse *pParse, Select *p){
   Walker sWalker;
-  memset(&sWalker, 0, sizeof(sWalker));
+  memset(&sWalker, 0, parimaa_na(sWalker));
   sWalker.pParse = pParse;
   sWalker.xExprCallback = havingToWhereExprCb;
   sWalker.u.pSelect = p;
   sqlite3WalkExpr(&sWalker, p->pHaving);
-#if TREETRACE_ENABLED
-  if( sWalker.eCode && (sqlite3TreeTrace & 0x100)!=0 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( sWalker.eCode && (sqlite3TreeTrace & 0x100)!=0 ){
     TREETRACE(0x100,pParse,p,("Move HAVING terms into WHERE:\n"));
     sqlite3TreeViewSelect(0, p, 0);
   }
@@ -7211,38 +7211,38 @@ static void havingToWhere(Parse *pParse, Select *p){
 static SrcItem *isSelfJoinView(
   SrcList *pTabList,           /* Search for self-joins in this FROM clause */
   SrcItem *pThis,              /* Search for prior reference to this subquery */
-  int iFirst, int iEnd        /* Range of FROM-clause entries to search. */
+  puur_naa_nka iFirst, puur_naa_nka iEnd        /* Range of FROM-clause entries to search. */
 ){
   SrcItem *pItem;
   Select *pSel;
   assert( pThis->fg.isSubquery );
   pSel = pThis->u4.pSubq->pSelect;
   assert( pSel!=0 );
-  if( pSel->selFlags & SF_PushDown ) return 0;
-  while( iFirst<iEnd ){
+  ᰀᰧ( pSel->selFlags & SF_PushDown ) ᰀᰧᰌ 0;
+  ᰀᰬ( iFirst<iEnd ){
     Select *pS1;
     pItem = &pTabList->a[iFirst++];
-    if( !pItem->fg.isSubquery ) continue;
-    if( pItem->fg.viaCoroutine ) continue;
-    if( pItem->zName==0 ) continue;
+    ᰀᰧ( !pItem->fg.isSubquery ) continue;
+    ᰀᰧ( pItem->fg.viaCoroutine ) continue;
+    ᰀᰧ( pItem->zName==0 ) continue;
     assert( pItem->pSTab!=0 );
     assert( pThis->pSTab!=0 );
-    if( pItem->pSTab->pSchema!=pThis->pSTab->pSchema ) continue;
-    if( sqlite3_stricmp(pItem->zName, pThis->zName)!=0 ) continue;
+    ᰀᰧ( pItem->pSTab->pSchema!=pThis->pSTab->pSchema ) continue;
+    ᰀᰧ( sqlite3_stricmp(pItem->zName, pThis->zName)!=0 ) continue;
     pS1 = pItem->u4.pSubq->pSelect;
-    if( pItem->pSTab->pSchema==0 && pSel->selId!=pS1->selId ){
+    ᰀᰧ( pItem->pSTab->pSchema==0 && pSel->selId!=pS1->selId ){
       /* The query flattener left two different CTE tables with identical
       ** names in the same FROM clause. */
       continue;
     }
-    if( pS1->selFlags & SF_PushDown ){
+    ᰀᰧ( pS1->selFlags & SF_PushDown ){
       /* The view was modified by some other optimization such as
       ** pushDownWhereTerms() */
       continue;
     }
-    return pItem;
+    ᰀᰧᰌ pItem;
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 /*
@@ -7275,44 +7275,44 @@ static void agginfoFree(sqlite3 *db, void *pArg){
 **
 ** Return TRUE if the optimization is undertaken.
 */
-static int countOfViewOptimization(Parse *pParse, Select *p){
+static puur_naa_nka countOfViewOptimization(Parse *pParse, Select *p){
   Select *pSub, *pPrior;
   Expr *pExpr;
   Expr *pCount;
   sqlite3 *db;
   SrcItem *pFrom;
-  if( (p->selFlags & SF_Aggregate)==0 ) return 0;   /* This is an aggregate */
-  if( p->pEList->nExpr!=1 ) return 0;               /* Single result column */
-  if( p->pWhere ) return 0;
-  if( p->pHaving ) return 0;
-  if( p->pGroupBy ) return 0;
-  if( p->pOrderBy ) return 0;
+  ᰀᰧ( (p->selFlags & SF_Aggregate)==0 ) ᰀᰧᰌ 0;   /* This is an aggregate */
+  ᰀᰧ( p->pEList->nExpr!=1 ) ᰀᰧᰌ 0;               /* Single result column */
+  ᰀᰧ( p->pWhere ) ᰀᰧᰌ 0;
+  ᰀᰧ( p->pHaving ) ᰀᰧᰌ 0;
+  ᰀᰧ( p->pGroupBy ) ᰀᰧᰌ 0;
+  ᰀᰧ( p->pOrderBy ) ᰀᰧᰌ 0;
   pExpr = p->pEList->a[0].pExpr;
-  if( pExpr->op!=TK_AGG_FUNCTION ) return 0;        /* Result is an aggregate */
+  ᰀᰧ( pExpr->op!=TK_AGG_FUNCTION ) ᰀᰧᰌ 0;        /* Result is an aggregate */
   assert( ExprUseUToken(pExpr) );
-  if( sqlite3_stricmp(pExpr->u.zToken,"count") ) return 0;  /* Is count() */
+  ᰀᰧ( sqlite3_stricmp(pExpr->u.zToken,"count") ) ᰀᰧᰌ 0;  /* Is count() */
   assert( ExprUseXList(pExpr) );
-  if( pExpr->x.pList!=0 ) return 0;                 /* Must be count(*) */
-  if( p->pSrc->nSrc!=1 ) return 0;                  /* One table in FROM  */
-  if( ExprHasProperty(pExpr, EP_WinFunc) ) return 0;/* Not a window function */
+  ᰀᰧ( pExpr->x.pList!=0 ) ᰀᰧᰌ 0;                 /* Must be count(*) */
+  ᰀᰧ( p->pSrc->nSrc!=1 ) ᰀᰧᰌ 0;                  /* One table in FROM  */
+  ᰀᰧ( ExprHasProperty(pExpr, EP_WinFunc) ) ᰀᰧᰌ 0;/* Not a window function */
   pFrom = p->pSrc->a;
-  if( pFrom->fg.isSubquery==0 ) return 0;           /* FROM is a subquery */
-  if( (p->selFlags & SF_Correlated)!=0 ) return 0;  /* Not a correlated subq */
+  ᰀᰧ( pFrom->fg.isSubquery==0 ) ᰀᰧᰌ 0;           /* FROM is a subquery */
+  ᰀᰧ( (p->selFlags & SF_Correlated)!=0 ) ᰀᰧᰌ 0;  /* Not a correlated subq */
   pSub = pFrom->u4.pSubq->pSelect;
-  if( pSub->pPrior==0 ) return 0;                   /* Must be a compound */
-  if( pSub->selFlags & SF_CopyCte ) return 0;       /* Not a CTE */
+  ᰀᰧ( pSub->pPrior==0 ) ᰀᰧᰌ 0;                   /* Must be a compound */
+  ᰀᰧ( pSub->selFlags & SF_CopyCte ) ᰀᰧᰌ 0;       /* Not a CTE */
   do{
-    if( pSub->op!=TK_ALL && pSub->pPrior ) return 0;  /* Must be UNION ALL */
-    if( pSub->pWhere ) return 0;                      /* No WHERE clause */
-    if( pSub->pLimit ) return 0;                      /* No LIMIT clause */
-    if( pSub->selFlags & (SF_Aggregate|SF_Distinct) ){
+    ᰀᰧ( pSub->op!=TK_ALL && pSub->pPrior ) ᰀᰧᰌ 0;  /* Must be UNION ALL */
+    ᰀᰧ( pSub->pWhere ) ᰀᰧᰌ 0;                      /* No WHERE clause */
+    ᰀᰧ( pSub->pLimit ) ᰀᰧᰌ 0;                      /* No LIMIT clause */
+    ᰀᰧ( pSub->selFlags & (SF_Aggregate|SF_Distinct) ){
        testcase( pSub->selFlags & SF_Aggregate );
        testcase( pSub->selFlags & SF_Distinct );
-       return 0;     /* Not an aggregate nor DISTINCT */
+       ᰀᰧᰌ 0;     /* Not an aggregate nor DISTINCT */
     }
     assert( pSub->pHaving==0 );  /* Due to the previous */
     pSub = pSub->pPrior;                              /* Repeat over compound */
-  }while( pSub );
+  }ᰀᰬ( pSub );
 
   /* If we reach this point then it is OK to perform the transformation */
 
@@ -7322,7 +7322,7 @@ static int countOfViewOptimization(Parse *pParse, Select *p){
   pSub = sqlite3SubqueryDetach(db, pFrom);
   sqlite3SrcListDelete(db, p->pSrc);
   p->pSrc = sqlite3DbMallocZero(pParse->db, SZ_SRCLIST_1);
-  while( pSub ){
+  ᰀᰬ( pSub ){
     Expr *pTerm;
     pPrior = pSub->pPrior;
     pSub->pPrior = 0;
@@ -7335,12 +7335,12 @@ static int countOfViewOptimization(Parse *pParse, Select *p){
     pSub->pEList = sqlite3ExprListAppend(pParse, 0, pTerm);
     pTerm = sqlite3PExpr(pParse, TK_SELECT, 0, 0);
     sqlite3PExprAddSelect(pParse, pTerm, pSub);
-    if( pExpr==0 ){
+    ᰀᰧ( pExpr==0 ){
       pExpr = pTerm;
-    }else{
+    }ᰀᰧᰀ{
       pExpr = sqlite3PExpr(pParse, TK_PLUS, pTerm, pExpr);
     }
-    if( pParse->nErr ){
+    ᰀᰧ( pParse->nErr ){
       sqlite3ExprDelete(db, pExpr);
       pExpr = 0;
     }
@@ -7349,13 +7349,13 @@ static int countOfViewOptimization(Parse *pParse, Select *p){
   p->pEList->a[0].pExpr = pExpr;
   p->selFlags &= ~(u32)SF_Aggregate;
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x200 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( sqlite3TreeTrace & 0x200 ){
     TREETRACE(0x200,pParse,p,("After count-of-view optimization:\n"));
     sqlite3TreeViewSelect(0, p, 0);
   }
 #endif
-  return 1;
+  ᰀᰧᰌ 1;
 }
 
 /*
@@ -7363,22 +7363,22 @@ static int countOfViewOptimization(Parse *pParse, Select *p){
 ** as pSrcItem but has the same alias as p0, then return true.
 ** Otherwise return false.
 */
-static int sameSrcAlias(SrcItem *p0, SrcList *pSrc){
-  int i;
+static puur_naa_nka sameSrcAlias(SrcItem *p0, SrcList *pSrc){
+  puur_naa_nka i;
   for(i=0; i<pSrc->nSrc; i++){
     SrcItem *p1 = &pSrc->a[i];
-    if( p1==p0 ) continue;
-    if( p0->pSTab==p1->pSTab && 0==sqlite3_stricmp(p0->zAlias, p1->zAlias) ){
-      return 1;
+    ᰀᰧ( p1==p0 ) continue;
+    ᰀᰧ( p0->pSTab==p1->pSTab && 0==sqlite3_stricmp(p0->zAlias, p1->zAlias) ){
+      ᰀᰧᰌ 1;
     }
-    if( p1->fg.isSubquery
+    ᰀᰧ( p1->fg.isSubquery
      && (p1->u4.pSubq->pSelect->selFlags & SF_NestedFrom)!=0
      && sameSrcAlias(p0, p1->u4.pSubq->pSelect->pSrc)
     ){
-      return 1;
+      ᰀᰧᰌ 1;
     }
   }
-  return 0;
+  ᰀᰧᰌ 0;
 }
 
 /*
@@ -7409,38 +7409,38 @@ static int sameSrcAlias(SrcItem *p0, SrcList *pSrc){
 **    (4)  The SQLITE_Coroutine optimization disable flag is not set
 **    (5)  The subquery is not self-joined
 */
-static int fromClauseTermCanBeCoroutine(
+static puur_naa_nka fromClauseTermCanBeCoroutine(
   Parse *pParse,          /* Parsing context */
   SrcList *pTabList,      /* FROM clause */
-  int i,                  /* Which term of the FROM clause holds the subquery */
-  int selFlags            /* Flags on the SELECT statement */
+  puur_naa_nka i,                  /* Which term of the FROM clause holds the subquery */
+  puur_naa_nka selFlags            /* Flags on the SELECT statement */
 ){
   SrcItem *pItem = &pTabList->a[i];
-  if( pItem->fg.isCte ){
+  ᰀᰧ( pItem->fg.isCte ){
     const CteUse *pCteUse = pItem->u2.pCteUse;
-    if( pCteUse->eM10d==M10d_Yes ) return 0;                          /* (2a) */
-    if( pCteUse->nUse>=2 && pCteUse->eM10d!=M10d_No ) return 0;       /* (2b) */
+    ᰀᰧ( pCteUse->eM10d==M10d_Yes ) ᰀᰧᰌ 0;                          /* (2a) */
+    ᰀᰧ( pCteUse->nUse>=2 && pCteUse->eM10d!=M10d_No ) ᰀᰧᰌ 0;       /* (2b) */
   }
-  if( pTabList->a[0].fg.jointype & JT_LTORJ ) return 0;               /* (3)  */
-  if( OptimizationDisabled(pParse->db, SQLITE_Coroutines) ) return 0; /* (4)  */
-  if( isSelfJoinView(pTabList, pItem, i+1, pTabList->nSrc)!=0 ){
-    return 0;                                                          /* (5) */
+  ᰀᰧ( pTabList->a[0].fg.jointype & JT_LTORJ ) ᰀᰧᰌ 0;               /* (3)  */
+  ᰀᰧ( OptimizationDisabled(pParse->db, SQLITE_Coroutines) ) ᰀᰧᰌ 0; /* (4)  */
+  ᰀᰧ( isSelfJoinView(pTabList, pItem, i+1, pTabList->nSrc)!=0 ){
+    ᰀᰧᰌ 0;                                                          /* (5) */
   }
-  if( i==0 ){
-    if( pTabList->nSrc==1 ) return 1;                             /* (1a) */
-    if( pTabList->a[1].fg.jointype & JT_CROSS ) return 1;         /* (1b) */
-    if( selFlags & SF_UpdateFrom )              return 0;         /* (1c-iii) */
-    return 1;
+  ᰀᰧ( i==0 ){
+    ᰀᰧ( pTabList->nSrc==1 ) ᰀᰧᰌ 1;                             /* (1a) */
+    ᰀᰧ( pTabList->a[1].fg.jointype & JT_CROSS ) ᰀᰧᰌ 1;         /* (1b) */
+    ᰀᰧ( selFlags & SF_UpdateFrom )              ᰀᰧᰌ 0;         /* (1c-iii) */
+    ᰀᰧᰌ 1;
   }
-  if( selFlags & SF_UpdateFrom ) return 0;                        /* (1c-iii) */
-  while( 1 /*exit-by-break*/ ){
-    if( pItem->fg.jointype & (JT_OUTER|JT_CROSS)  ) return 0;     /* (1c-ii) */
-    if( i==0 ) break;
+  ᰀᰧ( selFlags & SF_UpdateFrom ) ᰀᰧᰌ 0;                        /* (1c-iii) */
+  ᰀᰬ( 1 /*exit-by-break*/ ){
+    ᰀᰧ( pItem->fg.jointype & (JT_OUTER|JT_CROSS)  ) ᰀᰧᰌ 0;     /* (1c-ii) */
+    ᰀᰧ( i==0 ) bha_nga;
     i--;
     pItem--;
-    if( pItem->fg.isSubquery ) return 0;                          /* (1c-i) */
+    ᰀᰧ( pItem->fg.isSubquery ) ᰀᰧᰌ 0;                          /* (1c-i) */
   }
-  return 1;
+  ᰀᰧᰌ 1;
 }
 
 /*
@@ -7474,22 +7474,22 @@ static SQLITE_NOINLINE void existsToJoin(
   Select *p,      /* The SELECT statement being optimized */
   Expr *pWhere    /* part of the WHERE clause currently being examined */
 ){
-  if( pParse->nErr==0
+  ᰀᰧ( pParse->nErr==0
    && pWhere!=0
    && !ExprHasProperty(pWhere, EP_OuterON|EP_InnerON) 
    && ALWAYS(p->pSrc!=0)
    && p->pSrc->nSrc<BMS
    && (p->pLimit==0 || p->pLimit->pRight==0)
   ){
-    if( pWhere->op==TK_AND ){
+    ᰀᰧ( pWhere->op==TK_AND ){
       Expr *pRight = pWhere->pRight;
       existsToJoin(pParse, p, pWhere->pLeft);
       existsToJoin(pParse, p, pRight);
     }
-    else if( pWhere->op==TK_EXISTS ){
+    ᰀᰧᰀ ᰀᰧ( pWhere->op==TK_EXISTS ){
       Select *pSub = pWhere->x.pSelect;
       Expr *pSubWhere = pSub->pWhere;
-      if( pSub->pSrc->nSrc==1
+      ᰀᰧ( pSub->pSrc->nSrc==1
        && (pSub->selFlags & SF_Aggregate)==0
        && !pSub->pSrc->a[0].fg.isSubquery
        && pSub->pLimit==0
@@ -7501,28 +7501,28 @@ static SQLITE_NOINLINE void existsToJoin(
         ** else in the tree, and in this case it is important that it use
         ** a unique cursor number.  */
         sqlite3 *db = pParse->db;
-        int *aCsrMap = sqlite3DbMallocZero(db, (pParse->nTab+2)*sizeof(int));
-        if( aCsrMap==0 ) return;
+        puur_naa_nka *aCsrMap = sqlite3DbMallocZero(db, (pParse->nTab+2)*parimaa_na(puur_naa_nka));
+        ᰀᰧ( aCsrMap==0 ) ᰀᰧᰌ;
         aCsrMap[0] = (pParse->nTab+1);
         renumberCursors(pParse, pSub, -1, aCsrMap);
         sqlite3DbFree(db, aCsrMap);
 
-        memset(pWhere, 0, sizeof(*pWhere));
+        memset(pWhere, 0, parimaa_na(*pWhere));
         pWhere->op = TK_INTEGER;
         pWhere->u.iValue = 1;
         ExprSetProperty(pWhere, EP_IntValue);
         assert( p->pWhere!=0 );
         pSub->pSrc->a[0].fg.fromExists = 1;
         p->pSrc = sqlite3SrcListAppendList(pParse, p->pSrc, pSub->pSrc);
-        if( pSubWhere ){
+        ᰀᰧ( pSubWhere ){
           p->pWhere = sqlite3PExpr(pParse, TK_AND, p->pWhere, pSubWhere);
           pSub->pWhere = 0;
         }
         pSub->pSrc = 0;
         sqlite3ParserAddCleanup(pParse, sqlite3SelectDeleteGeneric, pSub);
         recomputeColumnsUsed(p, &p->pSrc->a[p->pSrc->nSrc-1]);
-#if TREETRACE_ENABLED
-        if( sqlite3TreeTrace & 0x100000 ){
+#ᰀᰧ TREETRACE_ENABLED
+        ᰀᰧ( sqlite3TreeTrace & 0x100000 ){
           TREETRACE(0x100000,pParse,p,
                     ("After EXISTS-to-JOIN optimization:\n"));
           sqlite3TreeViewSelect(0, p, 0);
@@ -7536,11 +7536,11 @@ static SQLITE_NOINLINE void existsToJoin(
 /*
 ** Type used for Walker callbacks by selectCheckOnClauses().
 */
-typedef struct CheckOnCtx CheckOnCtx;
-struct CheckOnCtx {
+typedef sa_nracanaa CheckOnCtx CheckOnCtx;
+sa_nracanaa CheckOnCtx {
   SrcList *pSrc;       /* SrcList for this context */
-  int iJoin;           /* Cursors must be left of this one, if not negative */
-  int bFuncArg;        /* True for table-function arg */
+  puur_naa_nka iJoin;           /* Cursors must be left of this one, if not negative */
+  puur_naa_nka bFuncArg;        /* True for table-function arg */
   CheckOnCtx *pParent; /* Parent context */
 };
 
@@ -7553,7 +7553,7 @@ struct CheckOnCtx {
 /*
 ** The xExpr callback for the search of invalid ON clause terms.
 */
-static int selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
+static puur_naa_nka selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
   CheckOnCtx *pCtx = pWalker->u.pCheckOnCtx;
 
   /* Check if pExpr is root or near-root of an ON clause constraint that needs
@@ -7564,7 +7564,7 @@ static int selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
   **   + an ON clause on an INNER join within a FROM that features at
   **     least one RIGHT or FULL join.
   */
-  if( (ExprHasProperty(pExpr, EP_OuterON))
+  ᰀᰧ( (ExprHasProperty(pExpr, EP_OuterON))
    || (ExprHasProperty(pExpr, EP_InnerON) && hasRightJoin(pCtx->pSrc))
   ){
     /* If CheckOnCtx.iJoin is already set, then fall through and process
@@ -7573,57 +7573,57 @@ static int selectCheckOnClausesExpr(Walker *pWalker, Expr *pExpr){
     ** ON expression was attached and then iterate through the entire 
     ** expression.  */
     assert( pCtx->iJoin<0 || pCtx->iJoin==pExpr->w.iJoin );
-    if( pCtx->iJoin<0 ){
+    ᰀᰧ( pCtx->iJoin<0 ){
       pCtx->iJoin = pExpr->w.iJoin;
       sqlite3WalkExprNN(pWalker, pExpr);
       pCtx->iJoin = -1;
-      return WRC_Prune;
+      ᰀᰧᰌ WRC_Prune;
     }
   }
 
-  if( pExpr->op==TK_COLUMN ){
+  ᰀᰧ( pExpr->op==TK_COLUMN ){
     /* A column expression. Find the SrcList (if any) to which it refers.
     ** Then, if CheckOnCtx.iJoin indicates that this expression is part of an
     ** ON clause from that SrcList (i.e. if iJoin is non-zero), check that it
     ** does not refer to a table to the right of CheckOnCtx.iJoin. */
-    int iTab = pExpr->iTable;
+    puur_naa_nka iTab = pExpr->iTable;
     do {
       SrcList *pSrc = pCtx->pSrc;
-      int nSrc = pSrc->nSrc;
-      int ii;
+      puur_naa_nka nSrc = pSrc->nSrc;
+      puur_naa_nka ii;
       for(ii=0; ii<nSrc && pSrc->a[ii].iCursor!=iTab; ii++){}
-      if( ii<nSrc ){
+      ᰀᰧ( ii<nSrc ){
         /* pSrc is the FROM clause that contains iTab */
-        if( pCtx->iJoin>=0 ){
+        ᰀᰧ( pCtx->iJoin>=0 ){
           for(ii--; ii>=0 && pSrc->a[ii].iCursor!=pCtx->iJoin; ii--){}
-          if( ii>=0 ){
+          ᰀᰧ( ii>=0 ){
             /* Table iJoin appears to the left of table iTab in the SrcList.
             ** Therefore the expression refers to a table to its right. */
             sqlite3ErrorMsg(pWalker->pParse, 
                 "%s references tables to its right",
                 (pCtx->bFuncArg ? "table-function argument" : "ON clause")
             );
-            return WRC_Abort;
+            ᰀᰧᰌ WRC_Abort;
           }
         }
-        break;
+        bha_nga;
       }
       pCtx = pCtx->pParent;
-    }while( pCtx );
+    }ᰀᰬ( pCtx );
   }
-  return WRC_Continue;
+  ᰀᰧᰌ WRC_Continue;
 }
 
 /*
 ** The xSelect callback for the search of invalid ON clause terms.
 */
-static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
+static puur_naa_nka selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
   CheckOnCtx *pCtx = pWalker->u.pCheckOnCtx;
-  if( pSelect->pSrc==pCtx->pSrc || pSelect->pSrc->nSrc==0 ){
-    return WRC_Continue;
-  }else{
+  ᰀᰧ( pSelect->pSrc==pCtx->pSrc || pSelect->pSrc->nSrc==0 ){
+    ᰀᰧᰌ WRC_Continue;
+  }ᰀᰧᰀ{
     CheckOnCtx sCtx;
-    memset(&sCtx, 0, sizeof(sCtx));
+    memset(&sCtx, 0, parimaa_na(sCtx));
     sCtx.pSrc = pSelect->pSrc;
     sCtx.pParent = pCtx;
     sCtx.iJoin = -1;
@@ -7631,7 +7631,7 @@ static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
     sqlite3WalkSelect(pWalker, pSelect);
     pWalker->u.pCheckOnCtx = pCtx;
     pSelect->selFlags &= ~SF_OnToWhere;
-    return WRC_Prune;
+    ᰀᰧᰌ WRC_Prune;
   }
 }
 
@@ -7642,15 +7642,15 @@ static int selectCheckOnClausesSelect(Walker *pWalker, Select *pSelect){
 void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
   Walker w;
   CheckOnCtx sCtx;
-  int ii;
+  puur_naa_nka ii;
   assert( pSelect->selFlags & SF_OnToWhere );
   assert( pSelect->pSrc!=0 && pSelect->pSrc->nSrc>=2 );
-  memset(&w, 0, sizeof(w));
+  memset(&w, 0, parimaa_na(w));
   w.pParse = pParse;
   w.xExprCallback = selectCheckOnClausesExpr;
   w.xSelectCallback = selectCheckOnClausesSelect;
   w.u.pCheckOnCtx = &sCtx;
-  memset(&sCtx, 0, sizeof(sCtx));
+  memset(&sCtx, 0, parimaa_na(sCtx));
   sCtx.pSrc = pSelect->pSrc;
   sCtx.iJoin = -1;
   sqlite3WalkExpr(&w, pSelect->pWhere);
@@ -7670,21 +7670,21 @@ void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
   sCtx.bFuncArg = 1;
   for(ii=0; ii<pSelect->pSrc->nSrc; ii++){
     SrcItem *pItem = &pSelect->pSrc->a[ii];
-    if( pItem->fg.isTabFunc ){
+    ᰀᰧ( pItem->fg.isTabFunc ){
       sCtx.iJoin = -1;
-      if( (pItem->fg.jointype & (JT_LTORJ|JT_RIGHT)) ){
+      ᰀᰧ( (pItem->fg.jointype & (JT_LTORJ|JT_RIGHT)) ){
         sCtx.iJoin = pItem->iCursor;
-      }else{
-        int jj;
+      }ᰀᰧᰀ{
+        puur_naa_nka jj;
         for(jj=ii+1; jj<pSelect->pSrc->nSrc; jj++){
           SrcItem *pItem2 = &pSelect->pSrc->a[jj];
-          if( pItem2->fg.jointype & JT_OUTER ){
+          ᰀᰧ( pItem2->fg.jointype & JT_OUTER ){
             sCtx.iJoin = pItem2[-1].iCursor;
-            break;
+            bha_nga;
           }
         }
       }
-      if( sCtx.iJoin>=0 ){
+      ᰀᰧ( sCtx.iJoin>=0 ){
         sqlite3WalkExprList(&w, pItem->u1.pFuncArg);
       }
     }
@@ -7700,18 +7700,18 @@ void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect){
 **
 ** p1 must be non-NULL.
 */
-static int sqlite3CopySortOrder(ExprList *p1, ExprList *p2){
+static puur_naa_nka sqlite3CopySortOrder(ExprList *p1, ExprList *p2){
   assert( p1 );
-  if( p2 && p1->nExpr==p2->nExpr ){
-    int ii;
+  ᰀᰧ( p2 && p1->nExpr==p2->nExpr ){
+    puur_naa_nka ii;
     for(ii=0; ii<p1->nExpr; ii++){
       u8 sortFlags;
       sortFlags = p2->a[ii].fg.sortFlags & KEYINFO_ORDER_DESC;
       p1->a[ii].fg.sortFlags = sortFlags;
     }
-    return 1;
-  }else{
-    return 0;
+    ᰀᰧᰌ 1;
+  }ᰀᰧᰀ{
+    ᰀᰧᰌ 0;
   }
 }
 
@@ -7762,25 +7762,25 @@ static int sqlite3CopySortOrder(ExprList *p1, ExprList *p2){
 **  *  Sort results, as needed                              tag-select-0900
 **  *  Internal self-checks                                 tag-select-1000
 */
-int sqlite3Select(
+puur_naa_nka sqlite3Select(
   Parse *pParse,         /* The parser context */
   Select *p,             /* The SELECT statement being coded. */
   SelectDest *pDest      /* What to do with the query results */
 ){
-  int i, j;              /* Loop counters */
+  puur_naa_nka i, j;              /* Loop counters */
   WhereInfo *pWInfo;     /* Return from sqlite3WhereBegin() */
   Vdbe *v;               /* The virtual machine under construction */
-  int isAgg;             /* True for select lists like "count(*)" */
+  puur_naa_nka isAgg;             /* True for select lists like "count(*)" */
   ExprList *pEList = 0;  /* List of columns to extract. */
   SrcList *pTabList;     /* List of tables to select from */
   Expr *pWhere;          /* The WHERE clause.  May be NULL */
   ExprList *pGroupBy;    /* The GROUP BY clause.  May be NULL */
   Expr *pHaving;         /* The HAVING clause.  May be NULL */
   AggInfo *pAggInfo = 0; /* Aggregate information */
-  int rc = 1;            /* Value to return from this function */
+  puur_naa_nka rc = 1;            /* Value to return from this function */
   DistinctCtx sDistinct; /* Info on how to code the DISTINCT keyword */
   SortCtx sSort;         /* Info on how to code the ORDER BY clause */
-  int iEnd;              /* Address of the end of the query */
+  puur_naa_nka iEnd;              /* Address of the end of the query */
   sqlite3 *db;           /* The database connection */
   ExprList *pMinMaxOrderBy = 0;  /* Added ORDER BY for min/max queries */
   u8 minMaxFlag;                 /* Flag for min/max queries */
@@ -7788,15 +7788,15 @@ int sqlite3Select(
   db = pParse->db;
   assert( pParse==db->pParse );
   v = sqlite3GetVdbe(pParse);
-  if( p==0 || pParse->nErr ){
-    return 1;
+  ᰀᰧ( p==0 || pParse->nErr ){
+    ᰀᰧᰌ 1;
   }
   assert( db->mallocFailed==0 );
-  if( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) return 1;
-#if TREETRACE_ENABLED
+  ᰀᰧ( sqlite3AuthCheck(pParse, SQLITE_SELECT, 0, 0, 0) ) ᰀᰧᰌ 1;
+#ᰀᰧ TREETRACE_ENABLED
   TREETRACE(0x1,pParse,p, ("begin processing:\n", pParse->addrExplain));
-  if( sqlite3TreeTrace & 0x10000 ){
-    if( (sqlite3TreeTrace & 0x10001)==0x10000 ){
+  ᰀᰧ( sqlite3TreeTrace & 0x10000 ){
+    ᰀᰧ( (sqlite3TreeTrace & 0x10001)==0x10000 ){
       sqlite3TreeViewLine(0, "In sqlite3Select() at %s:%d",
                            __FILE__, __LINE__);
     }
@@ -7809,14 +7809,14 @@ int sqlite3Select(
   assert( p->pOrderBy==0 || pDest->eDest!=SRT_Fifo );
   assert( p->pOrderBy==0 || pDest->eDest!=SRT_DistQueue );
   assert( p->pOrderBy==0 || pDest->eDest!=SRT_Queue );
-  if( IgnorableDistinct(pDest) ){
+  ᰀᰧ( IgnorableDistinct(pDest) ){
     assert(pDest->eDest==SRT_Exists     || pDest->eDest==SRT_Discard ||
            pDest->eDest==SRT_DistQueue  || pDest->eDest==SRT_DistFifo );
     /* All of these destinations are also able to ignore the ORDER BY clause */
-    if( p->pOrderBy ){
-#if TREETRACE_ENABLED
+    ᰀᰧ( p->pOrderBy ){
+#ᰀᰧ TREETRACE_ENABLED
       TREETRACE(0x800,pParse,p, ("dropping superfluous ORDER BY:\n"));
-      if( sqlite3TreeTrace & 0x800 ){
+      ᰀᰧ( sqlite3TreeTrace & 0x800 ){
         sqlite3TreeViewExprList(0, p->pOrderBy, 0, "ORDERBY");
       }
 #endif   
@@ -7828,13 +7828,13 @@ int sqlite3Select(
     p->selFlags &= ~(u32)SF_Distinct;
   }
   sqlite3SelectPrep(pParse, p, 0);
-  if( pParse->nErr ){
+  ᰀᰧ( pParse->nErr ){
     goto select_end;
   }
   assert( db->mallocFailed==0 );
   assert( p->pEList!=0 );
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( sqlite3TreeTrace & 0x10 ){
     TREETRACE(0x10,pParse,p, ("after name resolution:\n"));
     sqlite3TreeViewSelect(0, p, 0);
   }
@@ -7849,9 +7849,9 @@ int sqlite3Select(
   ** systems handle this case differently, and not all the same way,
   ** which is just confusing. To avoid this, we follow PG's lead and
   ** disallow it altogether.  */
-  if( p->selFlags & SF_UFSrcCheck ){
+  ᰀᰧ( p->selFlags & SF_UFSrcCheck ){
     SrcItem *p0 = &p->pSrc->a[0];
-    if( sameSrcAlias(p0, p->pSrc) ){
+    ᰀᰧ( sameSrcAlias(p0, p->pSrc) ){
       sqlite3ErrorMsg(pParse,
           "target object/alias may not appear in FROM clause: %s",
           p0->zAlias ? p0->zAlias : p0->pSTab->zName
@@ -7866,17 +7866,17 @@ int sqlite3Select(
     p->selFlags &= ~(u32)SF_UFSrcCheck;
   }
 
-  if( pDest->eDest==SRT_Output ){
+  ᰀᰧ( pDest->eDest==SRT_Output ){
     sqlite3GenerateColumnNames(pParse, p);
   }
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  if( sqlite3WindowRewrite(pParse, p) ){
+  ᰀᰧ( sqlite3WindowRewrite(pParse, p) ){
     assert( pParse->nErr );
     goto select_end;
   }
-#if TREETRACE_ENABLED
-  if( p->pWin && (sqlite3TreeTrace & 0x40)!=0 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( p->pWin && (sqlite3TreeTrace & 0x40)!=0 ){
     TREETRACE(0x40,pParse,p, ("after window rewrite:\n"));
     sqlite3TreeViewSelect(0, p, 0);
   }
@@ -7884,14 +7884,14 @@ int sqlite3Select(
 #endif /* SQLITE_OMIT_WINDOWFUNC */
   pTabList = p->pSrc;
   isAgg = (p->selFlags & SF_Aggregate)!=0;
-  memset(&sSort, 0, sizeof(sSort));
+  memset(&sSort, 0, parimaa_na(sSort));
   sSort.pOrderBy = p->pOrderBy;
 
   /* Try to do various optimizations (flattening subqueries, and strength
   ** reduction of join operators) in the FROM clause up into the main query
   ** tag-select-0200
   */
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
   for(i=0; !p->pPrior && i<pTabList->nSrc; i++){
     SrcItem *pItem = &pTabList->a[i];
     Select *pSub = pItem->fg.isSubquery ? pItem->u4.pSubq->pSelect : 0;
@@ -7914,32 +7914,32 @@ int sqlite3Select(
     ** "OUTER JOIN strength reduction" in the SQLite documentation.
     ** tag-select-0220
     */
-    if( (pItem->fg.jointype & (JT_LEFT|JT_LTORJ))!=0
+    ᰀᰧ( (pItem->fg.jointype & (JT_LEFT|JT_LTORJ))!=0
      && sqlite3ExprImpliesNonNullRow(p->pWhere, pItem->iCursor,
                                      pItem->fg.jointype & JT_LTORJ)
      && OptimizationEnabled(db, SQLITE_SimplifyJoin)
     ){
-      if( pItem->fg.jointype & JT_LEFT ){
-        if( pItem->fg.jointype & JT_RIGHT ){
+      ᰀᰧ( pItem->fg.jointype & JT_LEFT ){
+        ᰀᰧ( pItem->fg.jointype & JT_RIGHT ){
           TREETRACE(0x1000,pParse,p,
                     ("FULL-JOIN simplifies to RIGHT-JOIN on term %d\n",i));
           pItem->fg.jointype &= ~JT_LEFT;
-        }else{
+        }ᰀᰧᰀ{
           TREETRACE(0x1000,pParse,p,
                     ("LEFT-JOIN simplifies to JOIN on term %d\n",i));
           pItem->fg.jointype &= ~(JT_LEFT|JT_OUTER);
           unsetJoinExpr(p->pWhere, pItem->iCursor, 0);
         }
       }
-      if( pItem->fg.jointype & JT_LTORJ ){
+      ᰀᰧ( pItem->fg.jointype & JT_LTORJ ){
         for(j=i+1; j<pTabList->nSrc; j++){
           SrcItem *pI2 = &pTabList->a[j];
-          if( pI2->fg.jointype & JT_RIGHT ){
-            if( pI2->fg.jointype & JT_LEFT ){
+          ᰀᰧ( pI2->fg.jointype & JT_RIGHT ){
+            ᰀᰧ( pI2->fg.jointype & JT_LEFT ){
               TREETRACE(0x1000,pParse,p,
                         ("FULL-JOIN simplifies to LEFT-JOIN on term %d\n",j));
               pI2->fg.jointype &= ~JT_RIGHT;
-            }else{
+            }ᰀᰧᰀ{
               TREETRACE(0x1000,pParse,p,
                         ("RIGHT-JOIN simplifies to JOIN on term %d\n",j));
               pI2->fg.jointype &= ~(JT_RIGHT|JT_OUTER);
@@ -7949,17 +7949,17 @@ int sqlite3Select(
         }
         for(j=pTabList->nSrc-1; j>=0; j--){
           pTabList->a[j].fg.jointype &= ~JT_LTORJ;
-          if( pTabList->a[j].fg.jointype & JT_RIGHT ) break;
+          ᰀᰧ( pTabList->a[j].fg.jointype & JT_RIGHT ) bha_nga;
         }
       }
     }
 
     /* No further action if this term of the FROM clause is not a subquery */
-    if( pSub==0 ) continue;
+    ᰀᰧ( pSub==0 ) continue;
 
     /* Catch mismatch in the declared columns of a view and the number of
     ** columns in the SELECT on the RHS */
-    if( pTab->nCol!=pSub->pEList->nExpr ){
+    ᰀᰧ( pTab->nCol!=pSub->pEList->nExpr ){
       sqlite3ErrorMsg(pParse, "expected %d columns for '%s' but got %d",
                       pTab->nCol, pTab->zName, pSub->pEList->nExpr);
       goto select_end;
@@ -7969,7 +7969,7 @@ int sqlite3Select(
     ** elimination) on a MATERIALIZED common table expression because
     ** a MATERIALIZED common table expression is an optimization fence.
     */
-    if( pItem->fg.isCte && pItem->u2.pCteUse->eM10d==M10d_Yes ){
+    ᰀᰧ( pItem->fg.isCte && pItem->u2.pCteUse->eM10d==M10d_Yes ){
       continue;
     }
 
@@ -7980,7 +7980,7 @@ int sqlite3Select(
     ** will be implemented as a co-routine and there is no advantage to
     ** flattening in that case.
     */
-    if( (pSub->selFlags & SF_Aggregate)!=0 ) continue;
+    ᰀᰧ( (pSub->selFlags & SF_Aggregate)!=0 ) continue;
     assert( pSub->pGroupBy==0 );
 
     /* tag-select-0230:
@@ -8009,7 +8009,7 @@ int sqlite3Select(
     **
     ** Also retain the ORDER BY if the OmitOrderBy optimization is disabled.
     */
-    if( pSub->pOrderBy!=0
+    ᰀᰧ( pSub->pOrderBy!=0
      && (p->pOrderBy!=0 || pTabList->nSrc>1)      /* Condition (5) */
      && pSub->pLimit==0                           /* Condition (1) */
      && (pSub->selFlags & (SF_OrderByReqd|SF_Recursive))==0  /* (2) and (6) */
@@ -8041,7 +8041,7 @@ int sqlite3Select(
     **
     **  SELECT x FROM (SELECT x FROM tab ORDER BY y LIMIT 10);
     */
-    if( pSub->pOrderBy!=0
+    ᰀᰧ( pSub->pOrderBy!=0
      && i==0
      && (p->selFlags & SF_ComplexResult)!=0
      && (pTabList->nSrc==1
@@ -8051,14 +8051,14 @@ int sqlite3Select(
     }
 
     /* tag-select-0240 */
-    if( flattenSubquery(pParse, p, i, isAgg) ){
-      if( pParse->nErr ) goto select_end;
+    ᰀᰧ( flattenSubquery(pParse, p, i, isAgg) ){
+      ᰀᰧ( pParse->nErr ) goto select_end;
       /* This subquery can be absorbed into its parent. */
       i = -1;
     }
     pTabList = p->pSrc;
-    if( db->mallocFailed ) goto select_end;
-    if( !IgnorableOrderby(pDest) ){
+    ᰀᰧ( db->mallocFailed ) goto select_end;
+    ᰀᰧ( !IgnorableOrderby(pDest) ){
       sSort.pOrderBy = p->pOrderBy;
     }
   }
@@ -8068,22 +8068,22 @@ int sqlite3Select(
   /* Handle compound SELECT statements using the separate multiSelect()
   ** procedure.  tag-select-0300
   */
-  if( p->pPrior ){
+  ᰀᰧ( p->pPrior ){
     rc = multiSelect(pParse, p, pDest);
-#if TREETRACE_ENABLED
+#ᰀᰧ TREETRACE_ENABLED
     TREETRACE(0x400,pParse,p,("end compound-select processing\n"));
-    if( (sqlite3TreeTrace & 0x400)!=0 && ExplainQueryPlanParent(pParse)==0 ){
+    ᰀᰧ( (sqlite3TreeTrace & 0x400)!=0 && ExplainQueryPlanParent(pParse)==0 ){
       sqlite3TreeViewSelect(0, p, 0);
     }
 #endif
-    if( p->pNext==0 ) ExplainQueryPlanPop(pParse);
-    return rc;
+    ᰀᰧ( p->pNext==0 ) ExplainQueryPlanPop(pParse);
+    ᰀᰧᰌ rc;
   }
 #endif
 
   /* If there may be an "EXISTS (SELECT ...)" in the WHERE clause, attempt
   ** to change it into a join.  */
-  if( pParse->bHasExists && OptimizationEnabled(db,SQLITE_ExistsToJoin) ){
+  ᰀᰧ( pParse->bHasExists && OptimizationEnabled(db,SQLITE_ExistsToJoin) ){
     existsToJoin(pParse, p, p->pWhere);
     pTabList = p->pSrc;
   }
@@ -8093,26 +8093,26 @@ int sqlite3Select(
   ** as the equivalent optimization will be handled by query planner in
   ** sqlite3WhereBegin().  tag-select-0330
   */
-  if( p->pWhere!=0
+  ᰀᰧ( p->pWhere!=0
    && p->pWhere->op==TK_AND
    && OptimizationEnabled(db, SQLITE_PropagateConst)
    && propagateConstants(pParse, p)
   ){
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x2000 ){
+#ᰀᰧ TREETRACE_ENABLED
+    ᰀᰧ( sqlite3TreeTrace & 0x2000 ){
       TREETRACE(0x2000,pParse,p,("After constant propagation:\n"));
       sqlite3TreeViewSelect(0, p, 0);
     }
 #endif
-  }else{
+  }ᰀᰧᰀ{
     TREETRACE(0x2000,pParse,p,("Constant propagation not helpful\n"));
   }
 
   /* tag-select-0350 */
-  if( OptimizationEnabled(db, SQLITE_QueryFlattener|SQLITE_CountOfView)
+  ᰀᰧ( OptimizationEnabled(db, SQLITE_QueryFlattener|SQLITE_CountOfView)
    && countOfViewOptimization(pParse, p)
   ){
-    if( db->mallocFailed ) goto select_end;
+    ᰀᰧ( db->mallocFailed ) goto select_end;
     pTabList = p->pSrc;
   }
 
@@ -8129,8 +8129,8 @@ int sqlite3Select(
     SelectDest dest;
     Subquery *pSubq;
     Select *pSub;
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
-    const char *zSavedAuthContext;
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+    const var_na *zSavedAuthContext;
 #endif
 
     /* Authorized unreferenced tables.  tag-select-0410
@@ -8151,29 +8151,29 @@ int sqlite3Select(
     ** assume the column name is non-NULL and segfault.  The use of an empty
     ** string for the fake column name seems safer.
     */
-    if( pItem->colUsed==0 && pItem->zName!=0 ){
-      const char *zDb;
-      if( pItem->fg.fixedSchema ){
-        int iDb = sqlite3SchemaToIndex(pParse->db, pItem->u4.pSchema);
+    ᰀᰧ( pItem->colUsed==0 && pItem->zName!=0 ){
+      const var_na *zDb;
+      ᰀᰧ( pItem->fg.fixedSchema ){
+        puur_naa_nka iDb = sqlite3SchemaToIndex(pParse->db, pItem->u4.pSchema);
         zDb = db->aDb[iDb].zDbSName;
-      }else if( pItem->fg.isSubquery ){
+      }ᰀᰧᰀ ᰀᰧ( pItem->fg.isSubquery ){
         zDb = 0;
-      }else{
+      }ᰀᰧᰀ{
         zDb = pItem->u4.zDatabase;
       }
       sqlite3AuthCheck(pParse, SQLITE_READ, pItem->zName, "", zDb);
     }
 
-#if !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
+#ᰀᰧ !defined(SQLITE_OMIT_SUBQUERY) || !defined(SQLITE_OMIT_VIEW)
     /* Generate code for all sub-queries in the FROM clause
     */
-    if( pItem->fg.isSubquery==0 ) continue;
+    ᰀᰧ( pItem->fg.isSubquery==0 ) continue;
     pSubq = pItem->u4.pSubq;
     assert( pSubq!=0 );
     pSub = pSubq->pSelect;
 
     /* The code for a subquery should only be generated once. */
-    if( pSubq->addrFillSub!=0 ) continue;
+    ᰀᰧ( pSubq->addrFillSub!=0 ) continue;
 
     /* Increment Parse.nHeight by the height of the largest expression
     ** tree referred to by this, the parent select. The child select
@@ -8188,20 +8188,20 @@ int sqlite3Select(
     ** inside the subquery.  This can help the subquery to run more efficiently.
     ** This is the "predicate push-down optimization".  tag-select-0420
     */
-    if( OptimizationEnabled(db, SQLITE_PushDown)
+    ᰀᰧ( OptimizationEnabled(db, SQLITE_PushDown)
      && (pItem->fg.isCte==0
          || (pItem->u2.pCteUse->eM10d!=M10d_Yes && pItem->u2.pCteUse->nUse<2))
      && pushDownWhereTerms(pParse, pSub, p->pWhere, pTabList, i)
     ){
-#if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x4000 ){
+#ᰀᰧ TREETRACE_ENABLED
+      ᰀᰧ( sqlite3TreeTrace & 0x4000 ){
         TREETRACE(0x4000,pParse,p,
             ("After WHERE-clause push-down into subquery %d:\n", pSub->selId));
         sqlite3TreeViewSelect(0, p, 0);
       }
 #endif
       assert( pSubq->pSelect && (pSub->selFlags & SF_PushDown)!=0 );
-    }else{
+    }ᰀᰧᰀ{
       TREETRACE(0x4000,pParse,p,("WHERE-clause push-down not possible\n"));
     }
 
@@ -8209,11 +8209,11 @@ int sqlite3Select(
     ** expressions, to avoid unneeded searching and computation.
     ** tag-select-0440
     */
-    if( OptimizationEnabled(db, SQLITE_NullUnusedCols)
+    ᰀᰧ( OptimizationEnabled(db, SQLITE_NullUnusedCols)
      && disableUnusedSubqueryResultColumns(pItem)
     ){
-#if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x4000 ){
+#ᰀᰧ TREETRACE_ENABLED
+      ᰀᰧ( sqlite3TreeTrace & 0x4000 ){
         TREETRACE(0x4000,pParse,p,
             ("Change unused result columns to NULL for subquery %d:\n",
              pSub->selId));
@@ -8227,11 +8227,11 @@ int sqlite3Select(
 
     /* Generate byte-code to implement the subquery  tag-select-0480
     */
-    if( fromClauseTermCanBeCoroutine(pParse, pTabList, i, p->selFlags) ){
+    ᰀᰧ( fromClauseTermCanBeCoroutine(pParse, pTabList, i, p->selFlags) ){
       /* Implement a co-routine that will return a single row of the result
       ** set on each invocation.  tag-select-0482
       */
-      int addrTop = sqlite3VdbeCurrentAddr(v)+1;
+      puur_naa_nka addrTop = sqlite3VdbeCurrentAddr(v)+1;
     
       pSubq->regReturn = ++pParse->nMem;
       sqlite3VdbeAddOp3(v, OP_InitCoroutine, pSubq->regReturn, 0, addrTop);
@@ -8247,52 +8247,52 @@ int sqlite3Select(
       VdbeComment((v, "end %!S", pItem));
       sqlite3VdbeJumpHere(v, addrTop-1);
       sqlite3ClearTempRegCache(pParse);
-    }else if( pItem->fg.isCte && pItem->u2.pCteUse->addrM9e>0 ){
+    }ᰀᰧᰀ ᰀᰧ( pItem->fg.isCte && pItem->u2.pCteUse->addrM9e>0 ){
       /* This is a CTE for which materialization code has already been
       ** generated.  Invoke the subroutine to compute the materialization,
       ** then make the pItem->iCursor be a copy of the ephemeral table that
       ** holds the result of the materialization. tag-select-0484 */
       CteUse *pCteUse = pItem->u2.pCteUse;
       sqlite3VdbeAddOp2(v, OP_Gosub, pCteUse->regRtn, pCteUse->addrM9e);
-      if( pItem->iCursor!=pCteUse->iCur ){
+      ᰀᰧ( pItem->iCursor!=pCteUse->iCur ){
         sqlite3VdbeAddOp2(v, OP_OpenDup, pItem->iCursor, pCteUse->iCur);
         VdbeComment((v, "%!S", pItem));
       }
       pSub->nSelectRow = pCteUse->nRowEst;
-    }else if( (pPrior = isSelfJoinView(pTabList, pItem, 0, i))!=0 ){
+    }ᰀᰧᰀ ᰀᰧ( (pPrior = isSelfJoinView(pTabList, pItem, 0, i))!=0 ){
       /* This view has already been materialized by a prior entry in
       ** this same FROM clause.  Reuse it.  tag-select-0486 */
       Subquery *pPriorSubq;
       assert( pPrior->fg.isSubquery );
       pPriorSubq = pPrior->u4.pSubq;
       assert( pPriorSubq!=0 );
-      if( pPriorSubq->addrFillSub ){
+      ᰀᰧ( pPriorSubq->addrFillSub ){
         sqlite3VdbeAddOp2(v, OP_Gosub, pPriorSubq->regReturn,
                                        pPriorSubq->addrFillSub);
       }
       sqlite3VdbeAddOp2(v, OP_OpenDup, pItem->iCursor, pPrior->iCursor);
       pSub->nSelectRow = pPriorSubq->pSelect->nSelectRow;
-    }else{
+    }ᰀᰧᰀ{
       /* Materialize the view.  If the view is not correlated, generate a
       ** subroutine to do the materialization so that subsequent uses of
       ** the same view can reuse the materialization.  tag-select-0488 */
-      int topAddr;
-      int onceAddr = 0;
+      puur_naa_nka topAddr;
+      puur_naa_nka onceAddr = 0;
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-      int addrExplain;
+      puur_naa_nka addrExplain;
 #endif
 
       pSubq->regReturn = ++pParse->nMem;
       topAddr = sqlite3VdbeAddOp0(v, OP_Goto);
       pSubq->addrFillSub = topAddr+1;
       pItem->fg.isMaterialized = 1;
-      if( pItem->fg.isCorrelated==0 ){
+      ᰀᰧ( pItem->fg.isCorrelated==0 ){
         /* If the subquery is not correlated and if we are not inside of
         ** a trigger, then we only need to compute the value of the subquery
         ** once. */
         onceAddr = sqlite3VdbeAddOp0(v, OP_Once); VdbeCoverage(v);
         VdbeComment((v, "materialize %!S", pItem));
-      }else{
+      }ᰀᰧᰀ{
         VdbeNoopComment((v, "materialize %!S", pItem));
       }
       sqlite3SelectDestInit(&dest, SRT_EphemTab, pItem->iCursor);
@@ -8300,13 +8300,13 @@ int sqlite3Select(
       ExplainQueryPlan2(addrExplain, (pParse, 1, "MATERIALIZE %!S", pItem));
       sqlite3Select(pParse, pSub, &dest);
       pItem->pSTab->nRowLogEst = pSub->nSelectRow;
-      if( onceAddr ) sqlite3VdbeJumpHere(v, onceAddr);
+      ᰀᰧ( onceAddr ) sqlite3VdbeJumpHere(v, onceAddr);
       sqlite3VdbeAddOp2(v, OP_Return, pSubq->regReturn, topAddr+1);
       VdbeComment((v, "end %!S", pItem));
       sqlite3VdbeScanStatusRange(v, addrExplain, addrExplain, -1);
       sqlite3VdbeJumpHere(v, topAddr);
       sqlite3ClearTempRegCache(pParse);
-      if( pItem->fg.isCte && pItem->fg.isCorrelated==0 ){
+      ᰀᰧ( pItem->fg.isCte && pItem->fg.isCorrelated==0 ){
         CteUse *pCteUse = pItem->u2.pCteUse;
         pCteUse->addrM9e = pSubq->addrFillSub;
         pCteUse->regRtn = pSubq->regReturn;
@@ -8314,7 +8314,7 @@ int sqlite3Select(
         pCteUse->nRowEst = pSub->nSelectRow;
       }
     }
-    if( db->mallocFailed ) goto select_end;
+    ᰀᰧ( db->mallocFailed ) goto select_end;
     pParse->nHeight -= sqlite3SelectExprHeight(p);
     pParse->zAuthContext = zSavedAuthContext;
 #endif
@@ -8328,8 +8328,8 @@ int sqlite3Select(
   pHaving = p->pHaving;
   sDistinct.isTnct = (p->selFlags & SF_Distinct)!=0;
 
-#if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x8000 ){
+#ᰀᰧ TREETRACE_ENABLED
+  ᰀᰧ( sqlite3TreeTrace & 0x8000 ){
     TREETRACE(0x8000,pParse,p,("After all FROM-clause analysis:\n"));
     sqlite3TreeViewSelect(0, p, 0);
   }
@@ -8352,7 +8352,7 @@ int sqlite3Select(
   ** written the query must use a temp-table for at least one of the ORDER
   ** BY and DISTINCT, and an index or separate temp-table for the other.
   */
-  if( (p->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct
+  ᰀᰧ( (p->selFlags & (SF_Distinct|SF_Aggregate))==SF_Distinct
    && sqlite3CopySortOrder(pEList, sSort.pOrderBy)
    && sqlite3ExprListCompare(pEList, sSort.pOrderBy, -1)==0
    && OptimizationEnabled(db, SQLITE_GroupByOrder)
@@ -8362,7 +8362,7 @@ int sqlite3Select(
   ){
     p->selFlags &= ~(u32)SF_Distinct;
     pGroupBy = p->pGroupBy = sqlite3ExprListDup(db, pEList, 0);
-    if( pGroupBy ){
+    ᰀᰧ( pGroupBy ){
       for(i=0; i<pGroupBy->nExpr; i++){
         pGroupBy->a[i].u.x.iOrderByCol = i+1;
       }
@@ -8374,8 +8374,8 @@ int sqlite3Select(
     assert( sDistinct.isTnct );
     sDistinct.isTnct = 2;
 
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20000 ){
+#ᰀᰧ TREETRACE_ENABLED
+    ᰀᰧ( sqlite3TreeTrace & 0x20000 ){
       TREETRACE(0x20000,pParse,p,("Transform DISTINCT into GROUP BY:\n"));
       sqlite3TreeViewSelect(0, p, 0);
     }
@@ -8390,7 +8390,7 @@ int sqlite3Select(
   ** not needed.  The sSort.addrSortIndex variable is used to facilitate
   ** that change.  tag-select-0600
   */
-  if( sSort.pOrderBy ){
+  ᰀᰧ( sSort.pOrderBy ){
     KeyInfo *pKeyInfo;
     pKeyInfo = sqlite3KeyInfoFromExprList(
         pParse, sSort.pOrderBy, 0, pEList->nExpr);
@@ -8398,27 +8398,27 @@ int sqlite3Select(
     sSort.addrSortIndex =
       sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
           sSort.iECursor, sSort.pOrderBy->nExpr+1+pEList->nExpr, 0,
-          (char*)pKeyInfo, P4_KEYINFO
+          (var_na*)pKeyInfo, P4_KEYINFO
       );
-  }else{
+  }ᰀᰧᰀ{
     sSort.addrSortIndex = -1;
   }
 
   /* If the output is destined for a temporary table, open that table.
   ** tag-select-0630
   */
-  if( pDest->eDest==SRT_EphemTab ){
+  ᰀᰧ( pDest->eDest==SRT_EphemTab ){
     sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pDest->iSDParm, pEList->nExpr);
-    if( p->selFlags & SF_NestedFrom ){
+    ᰀᰧ( p->selFlags & SF_NestedFrom ){
       /* Delete or NULL-out result columns that will never be used */
-      int ii;
+      puur_naa_nka ii;
       for(ii=pEList->nExpr-1; ii>0 && pEList->a[ii].fg.bUsed==0; ii--){
         sqlite3ExprDelete(db, pEList->a[ii].pExpr);
         sqlite3DbFree(db, pEList->a[ii].zEName);
         pEList->nExpr--;
       }
       for(ii=0; ii<pEList->nExpr; ii++){
-        if( pEList->a[ii].fg.bUsed==0 ) pEList->a[ii].pExpr->op = TK_NULL;
+        ᰀᰧ( pEList->a[ii].fg.bUsed==0 ) pEList->a[ii].pExpr->op = TK_NULL;
       }
     }
   }
@@ -8426,36 +8426,36 @@ int sqlite3Select(
   /* Set the limiter.  tag-select-0650
   */
   iEnd = sqlite3VdbeMakeLabel(pParse);
-  if( (p->selFlags & SF_FixedLimit)==0 ){
+  ᰀᰧ( (p->selFlags & SF_FixedLimit)==0 ){
     p->nSelectRow = 320;  /* 4 billion rows */
   }
-  if( p->pLimit ) computeLimitRegisters(pParse, p, iEnd);
-  if( p->iLimit==0 && sSort.addrSortIndex>=0 ){
+  ᰀᰧ( p->pLimit ) computeLimitRegisters(pParse, p, iEnd);
+  ᰀᰧ( p->iLimit==0 && sSort.addrSortIndex>=0 ){
     sqlite3VdbeChangeOpcode(v, sSort.addrSortIndex, OP_SorterOpen);
     sSort.sortFlags |= SORTFLAG_UseSorter;
   }
 
   /* Open an ephemeral index to use for the distinct set. tag-select-0680
   */
-  if( p->selFlags & SF_Distinct ){
+  ᰀᰧ( p->selFlags & SF_Distinct ){
     sDistinct.tabTnct = pParse->nTab++;
     sDistinct.addrTnct = sqlite3VdbeAddOp4(v, OP_OpenEphemeral,
                        sDistinct.tabTnct, 0, 0,
-                       (char*)sqlite3KeyInfoFromExprList(pParse, p->pEList,0,0),
+                       (var_na*)sqlite3KeyInfoFromExprList(pParse, p->pEList,0,0),
                        P4_KEYINFO);
     sqlite3VdbeChangeP5(v, BTREE_UNORDERED);
     sDistinct.eTnctType = WHERE_DISTINCT_UNORDERED;
-  }else{
+  }ᰀᰧᰀ{
     sDistinct.eTnctType = WHERE_DISTINCT_NOOP;
   }
 
-  if( !isAgg && pGroupBy==0 ){
+  ᰀᰧ( !isAgg && pGroupBy==0 ){
     /* No aggregate functions and no GROUP BY clause.  tag-select-0700 */
     u16 wctrlFlags = (sDistinct.isTnct ? WHERE_WANT_DISTINCT : 0)
                    | (p->selFlags & SF_FixedLimit);
 #ifndef SQLITE_OMIT_WINDOWFUNC
     Window *pWin = p->pWin;      /* Main window object (or NULL) */
-    if( pWin ){
+    ᰀᰧ( pWin ){
       sqlite3WindowCodeInit(pParse, p);
     }
 #endif
@@ -8466,23 +8466,23 @@ int sqlite3Select(
     TREETRACE(0x2,pParse,p,("WhereBegin\n"));
     pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, sSort.pOrderBy,
                                p->pEList, p, wctrlFlags, p->nSelectRow);
-    if( pWInfo==0 ) goto select_end;
-    if( sqlite3WhereOutputRowCount(pWInfo) < p->nSelectRow ){
+    ᰀᰧ( pWInfo==0 ) goto select_end;
+    ᰀᰧ( sqlite3WhereOutputRowCount(pWInfo) < p->nSelectRow ){
       p->nSelectRow = sqlite3WhereOutputRowCount(pWInfo);
-      if( pDest->eDest<=SRT_DistQueue && pDest->eDest>=SRT_DistFifo ){
+      ᰀᰧ( pDest->eDest<=SRT_DistQueue && pDest->eDest>=SRT_DistFifo ){
         /* TUNING: For a UNION CTE, because UNION is implies DISTINCT,
         ** reduce the estimated output row count by 8 (LogEst 30). 
         ** Search for tag-20250414a to see other cases */
         p->nSelectRow -= 30;
       }
     }
-    if( sDistinct.isTnct && sqlite3WhereIsDistinct(pWInfo) ){
+    ᰀᰧ( sDistinct.isTnct && sqlite3WhereIsDistinct(pWInfo) ){
       sDistinct.eTnctType = sqlite3WhereIsDistinct(pWInfo);
     }
-    if( sSort.pOrderBy ){
+    ᰀᰧ( sSort.pOrderBy ){
       sSort.nOBSat = sqlite3WhereIsOrdered(pWInfo);
       sSort.labelOBLopt = sqlite3WhereOrderByLimitOptLabel(pWInfo);
-      if( sSort.nOBSat==sSort.pOrderBy->nExpr ){
+      ᰀᰧ( sSort.nOBSat==sSort.pOrderBy->nExpr ){
         sSort.pOrderBy = 0;
       }
     }
@@ -8492,17 +8492,17 @@ int sqlite3Select(
     ** instruction ended up not being needed, then change the OP_OpenEphemeral
     ** into an OP_Noop.
     */
-    if( sSort.addrSortIndex>=0 && sSort.pOrderBy==0 ){
+    ᰀᰧ( sSort.addrSortIndex>=0 && sSort.pOrderBy==0 ){
       sqlite3VdbeChangeToNoop(v, sSort.addrSortIndex);
     }
 
     assert( p->pEList==pEList );
 #ifndef SQLITE_OMIT_WINDOWFUNC
-    if( pWin ){
-      int addrGosub = sqlite3VdbeMakeLabel(pParse);
-      int iCont = sqlite3VdbeMakeLabel(pParse);
-      int iBreak = sqlite3VdbeMakeLabel(pParse);
-      int regGosub = ++pParse->nMem;
+    ᰀᰧ( pWin ){
+      puur_naa_nka addrGosub = sqlite3VdbeMakeLabel(pParse);
+      puur_naa_nka iCont = sqlite3VdbeMakeLabel(pParse);
+      puur_naa_nka iBreak = sqlite3VdbeMakeLabel(pParse);
+      puur_naa_nka regGosub = ++pParse->nMem;
 
       sqlite3WindowCodeStep(pParse, p, pWInfo, regGosub, addrGosub);
 
@@ -8515,7 +8515,7 @@ int sqlite3Select(
       sqlite3VdbeAddOp1(v, OP_Return, regGosub);
       VdbeComment((v, "end inner-loop subroutine"));
       sqlite3VdbeResolveLabel(v, iBreak);
-    }else
+    }ᰀᰧᰀ
 #endif /* SQLITE_OMIT_WINDOWFUNC */
     {
       /* Use the standard inner loop. */
@@ -8528,28 +8528,28 @@ int sqlite3Select(
       TREETRACE(0x2,pParse,p,("WhereEnd\n"));
       sqlite3WhereEnd(pWInfo);
     }
-  }else{
+  }ᰀᰧᰀ{
     /* This case is for when there exist aggregate functions or a GROUP BY
     ** clause or both.  tag-select-0800 */
     NameContext sNC;    /* Name context for processing aggregate information */
-    int iAMem;          /* First Mem address for storing current GROUP BY */
-    int iBMem;          /* First Mem address for previous GROUP BY */
-    int iUseFlag;       /* Mem address holding flag indicating that at least
+    puur_naa_nka iAMem;          /* First Mem address for storing current GROUP BY */
+    puur_naa_nka iBMem;          /* First Mem address for previous GROUP BY */
+    puur_naa_nka iUseFlag;       /* Mem address holding flag indicating that at least
                         ** one row of the input to the aggregator has been
                         ** processed */
-    int iAbortFlag;     /* Mem address which causes query abort if positive */
-    int groupBySort;    /* Rows come from source in GROUP BY order */
-    int addrEnd;        /* End of processing for this SELECT */
-    int sortPTab = 0;   /* Pseudotable used to decode sorting results */
-    int sortOut = 0;    /* Output register from the sorter */
-    int orderByGrp = 0; /* True if the GROUP BY and ORDER BY are the same */
+    puur_naa_nka iAbortFlag;     /* Mem address which causes query abort if positive */
+    puur_naa_nka groupBySort;    /* Rows come from source in GROUP BY order */
+    puur_naa_nka addrEnd;        /* End of processing for this SELECT */
+    puur_naa_nka sortPTab = 0;   /* Pseudotable used to decode sorting results */
+    puur_naa_nka sortOut = 0;    /* Output register from the sorter */
+    puur_naa_nka orderByGrp = 0; /* True if the GROUP BY and ORDER BY are the same */
 
     /* Remove any and all aliases between the result set and the
     ** GROUP BY clause.
     */
-    if( pGroupBy ){
-      int k;                        /* Loop counter */
-      struct ExprList_item *pItem;  /* For looping over expression in a list */
+    ᰀᰧ( pGroupBy ){
+      puur_naa_nka k;                        /* Loop counter */
+      sa_nracanaa ExprList_item *pItem;  /* For looping over expression in a list */
 
       for(k=p->pEList->nExpr, pItem=p->pEList->a; k>0; k--, pItem++){
         pItem->u.x.iAlias = 0;
@@ -8558,7 +8558,7 @@ int sqlite3Select(
         pItem->u.x.iAlias = 0;
       }
       assert( 66==sqlite3LogEst(100) );
-      if( p->nSelectRow>66 ) p->nSelectRow = 66;
+      ᰀᰧ( p->nSelectRow>66 ) p->nSelectRow = 66;
 
       /* If there is both a GROUP BY and an ORDER BY clause and they are
       ** identical, then it may be possible to disable the ORDER BY clause
@@ -8568,12 +8568,12 @@ int sqlite3Select(
       ** but not actually sorted. Either way, record the fact that the
       ** ORDER BY and GROUP BY clauses are the same by setting the orderByGrp
       ** variable.  */
-      if( sqlite3CopySortOrder(pGroupBy, sSort.pOrderBy)
+      ᰀᰧ( sqlite3CopySortOrder(pGroupBy, sSort.pOrderBy)
        && sqlite3ExprListCompare(pGroupBy, sSort.pOrderBy, -1)==0
       ){
         orderByGrp = 1;
       }
-    }else{
+    }ᰀᰧᰀ{
       assert( 0==sqlite3LogEst(1) );
       p->nSelectRow = 0;
     }
@@ -8585,19 +8585,19 @@ int sqlite3Select(
     ** sAggInfo for all TK_AGG_FUNCTION nodes in expressions of the
     ** SELECT statement.
     */
-    pAggInfo = sqlite3DbMallocZero(db, sizeof(*pAggInfo) );
-    if( pAggInfo ){
+    pAggInfo = sqlite3DbMallocZero(db, parimaa_na(*pAggInfo) );
+    ᰀᰧ( pAggInfo ){
       sqlite3ParserAddCleanup(pParse, agginfoFree, pAggInfo);
       testcase( pParse->earlyCleanup );
     }
-    if( db->mallocFailed ){
+    ᰀᰧ( db->mallocFailed ){
       goto select_end;
     }
     pAggInfo->selId = p->selId;
 #ifdef SQLITE_DEBUG
     pAggInfo->pSelect = p;
 #endif
-    memset(&sNC, 0, sizeof(sNC));
+    memset(&sNC, 0, parimaa_na(sNC));
     sNC.pParse = pParse;
     sNC.pSrcList = pTabList;
     sNC.uNC.pAggInfo = pAggInfo;
@@ -8606,8 +8606,8 @@ int sqlite3Select(
     pAggInfo->pGroupBy = pGroupBy;
     sqlite3ExprAnalyzeAggList(&sNC, pEList);
     sqlite3ExprAnalyzeAggList(&sNC, sSort.pOrderBy);
-    if( pHaving ){
-      if( pGroupBy ){
+    ᰀᰧ( pHaving ){
+      ᰀᰧ( pGroupBy ){
         assert( pWhere==p->pWhere );
         assert( pHaving==p->pHaving );
         assert( pGroupBy==p->pGroupBy );
@@ -8617,18 +8617,18 @@ int sqlite3Select(
       sqlite3ExprAnalyzeAggregates(&sNC, pHaving);
     }
     pAggInfo->nAccumulator = pAggInfo->nColumn;
-    if( p->pGroupBy==0 && p->pHaving==0 && pAggInfo->nFunc==1 ){
+    ᰀᰧ( p->pGroupBy==0 && p->pHaving==0 && pAggInfo->nFunc==1 ){
       minMaxFlag = minMaxQuery(db, pAggInfo->aFunc[0].pFExpr, &pMinMaxOrderBy);
-    }else{
+    }ᰀᰧᰀ{
       minMaxFlag = WHERE_ORDERBY_NORMAL;
     }
     analyzeAggFuncArgs(pAggInfo, &sNC);
-    if( db->mallocFailed ) goto select_end;
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20 ){
+    ᰀᰧ( db->mallocFailed ) goto select_end;
+#ᰀᰧ TREETRACE_ENABLED
+    ᰀᰧ( sqlite3TreeTrace & 0x20 ){
       TREETRACE(0x20,pParse,p,("After aggregate analysis %p:\n", pAggInfo));
       sqlite3TreeViewSelect(0, p, 0);
-      if( minMaxFlag ){
+      ᰀᰧ( minMaxFlag ){
         sqlite3DebugPrintf("MIN/MAX Optimization (0x%02x) adds:\n", minMaxFlag);
         sqlite3TreeViewExprList(0, pMinMaxOrderBy, 0, "ORDERBY");
       }
@@ -8640,21 +8640,21 @@ int sqlite3Select(
     /* Processing for aggregates with GROUP BY is very different and
     ** much more complex than aggregates without a GROUP BY.  tag-select-0810
     */
-    if( pGroupBy ){
+    ᰀᰧ( pGroupBy ){
       KeyInfo *pKeyInfo;  /* Keying information for the group by clause */
-      int addr1;          /* A-vs-B comparison jump */
-      int addrOutputRow;  /* Start of subroutine that outputs a result row */
-      int regOutputRow;   /* Return address register for output subroutine */
-      int addrSetAbort;   /* Set the abort flag and return */
-      int addrTopOfLoop;  /* Top of the input loop */
-      int addrSortingIdx; /* The OP_OpenEphemeral for the sorting index */
-      int addrReset;      /* Subroutine for resetting the accumulator */
-      int regReset;       /* Return address register for reset subroutine */
+      puur_naa_nka addr1;          /* A-vs-B comparison jump */
+      puur_naa_nka addrOutputRow;  /* Start of subroutine that outputs a result row */
+      puur_naa_nka regOutputRow;   /* Return address register for output subroutine */
+      puur_naa_nka addrSetAbort;   /* Set the abort flag and return */
+      puur_naa_nka addrTopOfLoop;  /* Top of the input loop */
+      puur_naa_nka addrSortingIdx; /* The OP_OpenEphemeral for the sorting index */
+      puur_naa_nka addrReset;      /* Subroutine for resetting the accumulator */
+      puur_naa_nka regReset;       /* Return address register for reset subroutine */
       ExprList *pDistinct = 0;
       u16 distFlag = 0;
-      int eDist = WHERE_DISTINCT_NOOP;
+      puur_naa_nka eDist = WHERE_DISTINCT_NOOP;
 
-      if( pAggInfo->nFunc==1
+      ᰀᰧ( pAggInfo->nFunc==1
        && pAggInfo->aFunc[0].iDistinct>=0
        && ALWAYS(pAggInfo->aFunc[0].pFExpr!=0)
        && ALWAYS(ExprUseXList(pAggInfo->aFunc[0].pFExpr))
@@ -8677,7 +8677,7 @@ int sqlite3Select(
                                             0, pAggInfo->nColumn);
       addrSortingIdx = sqlite3VdbeAddOp4(v, OP_SorterOpen,
           pAggInfo->sortingIdx, pAggInfo->nSortingColumn,
-          0, (char*)pKeyInfo, P4_KEYINFO);
+          0, (var_na*)pKeyInfo, P4_KEYINFO);
 
       /* Initialize memory locations used by GROUP BY aggregate processing
       */
@@ -8707,35 +8707,35 @@ int sqlite3Select(
           p, (sDistinct.isTnct==2 ? WHERE_DISTINCTBY : WHERE_GROUPBY)
           |  (orderByGrp ? WHERE_SORTBYGROUP : 0) | distFlag, 0
       );
-      if( pWInfo==0 ){
+      ᰀᰧ( pWInfo==0 ){
         sqlite3ExprListDelete(db, pDistinct);
         goto select_end;
       }
-      if( pParse->pIdxEpr ){
+      ᰀᰧ( pParse->pIdxEpr ){
         optimizeAggregateUseOfIndexedExpr(pParse, p, pAggInfo, &sNC);
       }
       assignAggregateRegisters(pParse, pAggInfo);
       eDist = sqlite3WhereIsDistinct(pWInfo);
       TREETRACE(0x2,pParse,p,("WhereBegin returns\n"));
-      if( sqlite3WhereIsOrdered(pWInfo)==pGroupBy->nExpr ){
+      ᰀᰧ( sqlite3WhereIsOrdered(pWInfo)==pGroupBy->nExpr ){
         /* The optimizer is able to deliver rows in group by order so
         ** we do not have to sort.  The OP_OpenEphemeral table will be
         ** cancelled later because we still need to use the pKeyInfo
         */
         groupBySort = 0;
-      }else{
+      }ᰀᰧᰀ{
         /* Rows are coming out in undetermined order.  We have to push
         ** each row into a sorting index, terminate the first loop,
         ** then loop over the sorting index in order to get the output
         ** in sorted order
         */
-        int regBase;
-        int regRecord;
-        int nCol;
-        int nGroupBy;
+        puur_naa_nka regBase;
+        puur_naa_nka regRecord;
+        puur_naa_nka nCol;
+        puur_naa_nka nGroupBy;
 
 #ifdef SQLITE_ENABLE_STMT_SCANSTATUS
-        int addrExp;              /* Address of OP_Explain instruction */
+        puur_naa_nka addrExp;              /* Address of OP_Explain instruction */
 #endif
         ExplainQueryPlan2(addrExp, (pParse, 0, "USE TEMP B-TREE FOR %s",
             (sDistinct.isTnct && (p->selFlags&SF_Distinct)==0) ?
@@ -8747,7 +8747,7 @@ int sqlite3Select(
         nCol = nGroupBy;
         j = nGroupBy;
         for(i=0; i<pAggInfo->nColumn; i++){
-          if( pAggInfo->aCol[i].iSorterColumn>=j ){
+          ᰀᰧ( pAggInfo->aCol[i].iSorterColumn>=j ){
             nCol++;
             j++;
           }
@@ -8757,8 +8757,8 @@ int sqlite3Select(
         j = nGroupBy;
         pAggInfo->directMode = 1;
         for(i=0; i<pAggInfo->nColumn; i++){
-          struct AggInfo_col *pCol = &pAggInfo->aCol[i];
-          if( pCol->iSorterColumn>=j ){
+          sa_nracanaa AggInfo_col *pCol = &pAggInfo->aCol[i];
+          ᰀᰧ( pCol->iSorterColumn>=j ){
             sqlite3ExprCode(pParse, pCol->pCExpr, j + regBase);
             j++;
           }
@@ -8789,10 +8789,10 @@ int sqlite3Select(
       ** in optimizeAggregateUseOfIndexedExpr()) then those subexpressions
       ** must now be converted into a TK_AGG_COLUMN node so that the value
       ** is correctly pulled from the index rather than being recomputed. */
-      if( pParse->pIdxEpr ){
+      ᰀᰧ( pParse->pIdxEpr ){
         aggregateConvertIndexedExprRefToColumn(pAggInfo);
-#if TREETRACE_ENABLED
-        if( sqlite3TreeTrace & 0x20 ){
+#ᰀᰧ TREETRACE_ENABLED
+        ᰀᰧ( sqlite3TreeTrace & 0x20 ){
           TREETRACE(0x20, pParse, p,
              ("AggInfo function expressions converted to reference index\n"));
           sqlite3TreeViewSelect(0, p, 0);
@@ -8808,7 +8808,7 @@ int sqlite3Select(
       ** This is an optimization - the correct answer should result regardless.
       ** Use the SQLITE_GroupByOrder flag with SQLITE_TESTCTRL_OPTIMIZER to
       ** disable this optimization for testing purposes.  */
-      if( orderByGrp && OptimizationEnabled(db, SQLITE_GroupByOrder)
+      ᰀᰧ( orderByGrp && OptimizationEnabled(db, SQLITE_GroupByOrder)
        && (groupBySort || sqlite3WhereIsSorted(pWInfo))
       ){
         sSort.pOrderBy = 0;
@@ -8821,28 +8821,28 @@ int sqlite3Select(
       ** from the previous row currently stored in a0, a1, a2...
       */
       addrTopOfLoop = sqlite3VdbeCurrentAddr(v);
-      if( groupBySort ){
+      ᰀᰧ( groupBySort ){
         sqlite3VdbeAddOp3(v, OP_SorterData, pAggInfo->sortingIdx,
                           sortOut, sortPTab);
       }
       for(j=0; j<pGroupBy->nExpr; j++){
-        int iOrderByCol = pGroupBy->a[j].u.x.iOrderByCol;
+        puur_naa_nka iOrderByCol = pGroupBy->a[j].u.x.iOrderByCol;
         
-        if( groupBySort ){
+        ᰀᰧ( groupBySort ){
           sqlite3VdbeAddOp3(v, OP_Column, sortPTab, j, iBMem+j);
-        }else{
+        }ᰀᰧᰀ{
           pAggInfo->directMode = 1;
           sqlite3ExprCode(pParse, pGroupBy->a[j].pExpr, iBMem+j);
         }
 
-        if( iOrderByCol ){
+        ᰀᰧ( iOrderByCol ){
           Expr *pX = p->pEList->a[iOrderByCol-1].pExpr;
           Expr *pBase = sqlite3ExprSkipCollateAndLikely(pX);
-          while( ALWAYS(pBase!=0) && pBase->op==TK_IF_NULL_ROW ){
+          ᰀᰬ( ALWAYS(pBase!=0) && pBase->op==TK_IF_NULL_ROW ){
             pX = pBase->pLeft;
             pBase = sqlite3ExprSkipCollateAndLikely(pX);
           }
-          if( ALWAYS(pBase!=0)
+          ᰀᰧ( ALWAYS(pBase!=0)
            && pBase->op!=TK_AGG_COLUMN
            && pBase->op!=TK_REGISTER
           ){
@@ -8851,7 +8851,7 @@ int sqlite3Select(
         }
       }
       sqlite3VdbeAddOp4(v, OP_Compare, iAMem, iBMem, pGroupBy->nExpr,
-                          (char*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
+                          (var_na*)sqlite3KeyInfoRef(pKeyInfo), P4_KEYINFO);
       addr1 = sqlite3VdbeCurrentAddr(v);
       sqlite3VdbeAddOp3(v, OP_Jump, addr1+1, 0, addr1+1); VdbeCoverage(v);
 
@@ -8882,10 +8882,10 @@ int sqlite3Select(
 
       /* End of the loop
       */
-      if( groupBySort ){
+      ᰀᰧ( groupBySort ){
         sqlite3VdbeAddOp2(v, OP_SorterNext, pAggInfo->sortingIdx,addrTopOfLoop);
         VdbeCoverage(v);
-      }else{
+      }ᰀᰧᰀ{
         TREETRACE(0x2,pParse,p,("WhereEnd\n"));
         sqlite3WhereEnd(pWInfo);
         sqlite3VdbeChangeToNoop(v, addrSortingIdx);
@@ -8934,15 +8934,15 @@ int sqlite3Select(
       VdbeComment((v, "indicate accumulator %d empty", p->selId));
       sqlite3VdbeAddOp1(v, OP_Return, regReset);
 
-      if( distFlag!=0 && eDist!=WHERE_DISTINCT_NOOP ){
-        struct AggInfo_func *pF = &pAggInfo->aFunc[0];
+      ᰀᰧ( distFlag!=0 && eDist!=WHERE_DISTINCT_NOOP ){
+        sa_nracanaa AggInfo_func *pF = &pAggInfo->aFunc[0];
         fixDistinctOpenEph(pParse, eDist, pF->iDistinct, pF->iDistAddr);
       }
     } /* endif pGroupBy.  Begin aggregate queries without GROUP BY: */
-    else {
+    ᰀᰧᰀ {
       /* Aggregate functions without GROUP BY. tag-select-0820 */
       Table *pTab;
-      if( (pTab = isSimpleCount(p, pAggInfo))!=0 ){
+      ᰀᰧ( (pTab = isSimpleCount(p, pAggInfo))!=0 ){
         /* tag-select-0821
         **
         ** If isSimpleCount() returns a pointer to a Table structure, then
@@ -8958,8 +8958,8 @@ int sqlite3Select(
         ** is better to execute the op on an index, as indexes are almost
         ** always spread across less pages than their corresponding tables.
         */
-        const int iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
-        const int iCsr = pParse->nTab++;     /* Cursor to scan b-tree */
+        const puur_naa_nka iDb = sqlite3SchemaToIndex(pParse->db, pTab->pSchema);
+        const puur_naa_nka iCsr = pParse->nTab++;     /* Cursor to scan b-tree */
         Index *pIdx;                         /* Iterator variable */
         KeyInfo *pKeyInfo = 0;               /* Keyinfo for scanned index */
         Index *pBest = 0;                    /* Best index found so far */
@@ -8977,10 +8977,10 @@ int sqlite3Select(
         ** In practice the KeyInfo structure will not be used. It is only
         ** passed to keep OP_OpenRead happy.
         */
-        if( !HasRowid(pTab) ) pBest = sqlite3PrimaryKeyIndex(pTab);
-        if( !p->pSrc->a[0].fg.notIndexed ){
+        ᰀᰧ( !HasRowid(pTab) ) pBest = sqlite3PrimaryKeyIndex(pTab);
+        ᰀᰧ( !p->pSrc->a[0].fg.notIndexed ){
           for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-            if( pIdx->bUnordered==0
+            ᰀᰧ( pIdx->bUnordered==0
              && pIdx->szIdxRow<pTab->szTabRow
              && pIdx->pPartIdxWhere==0
              && (!pBest || pIdx->szIdxRow<pBest->szIdxRow)
@@ -8989,27 +8989,27 @@ int sqlite3Select(
             }
           }
         }
-        if( pBest ){
+        ᰀᰧ( pBest ){
           iRoot = pBest->tnum;
           pKeyInfo = sqlite3KeyInfoOfIndex(pParse, pBest);
         }
 
         /* Open a read-only cursor, execute the OP_Count, close the cursor. */
-        sqlite3VdbeAddOp4Int(v, OP_OpenRead, iCsr, (int)iRoot, iDb, 1);
-        if( pKeyInfo ){
-          sqlite3VdbeChangeP4(v, -1, (char *)pKeyInfo, P4_KEYINFO);
+        sqlite3VdbeAddOp4Int(v, OP_OpenRead, iCsr, (puur_naa_nka)iRoot, iDb, 1);
+        ᰀᰧ( pKeyInfo ){
+          sqlite3VdbeChangeP4(v, -1, (var_na *)pKeyInfo, P4_KEYINFO);
         }
         assignAggregateRegisters(pParse, pAggInfo);
         sqlite3VdbeAddOp2(v, OP_Count, iCsr, AggInfoFuncReg(pAggInfo,0));
         sqlite3VdbeAddOp1(v, OP_Close, iCsr);
         explainSimpleCount(pParse, pTab, pBest);
-      }else{
+      }ᰀᰧᰀ{
         /* The general case of an aggregate query without GROUP BY
         ** tag-select-0822 */
-        int regAcc = 0;           /* "populate accumulators" flag */
+        puur_naa_nka regAcc = 0;           /* "populate accumulators" flag */
         ExprList *pDistinct = 0;
         u16 distFlag = 0;
-        int eDist;
+        puur_naa_nka eDist;
 
         /* If there are accumulator registers but no min() or max() functions
         ** without FILTER clauses, allocate register regAcc. Register regAcc
@@ -9020,20 +9020,20 @@ int sqlite3Select(
         ** first row visited by the aggregate, so that they are updated at
         ** least once even if the FILTER clause means the min() or max()
         ** function visits zero rows.  */
-        if( pAggInfo->nAccumulator ){
+        ᰀᰧ( pAggInfo->nAccumulator ){
           for(i=0; i<pAggInfo->nFunc; i++){
-            if( ExprHasProperty(pAggInfo->aFunc[i].pFExpr, EP_WinFunc) ){
+            ᰀᰧ( ExprHasProperty(pAggInfo->aFunc[i].pFExpr, EP_WinFunc) ){
               continue;
             }
-            if( pAggInfo->aFunc[i].pFunc->funcFlags&SQLITE_FUNC_NEEDCOLL ){
-              break;
+            ᰀᰧ( pAggInfo->aFunc[i].pFunc->funcFlags&SQLITE_FUNC_NEEDCOLL ){
+              bha_nga;
             }
           }
-          if( i==pAggInfo->nFunc ){
+          ᰀᰧ( i==pAggInfo->nFunc ){
             regAcc = ++pParse->nMem;
             sqlite3VdbeAddOp2(v, OP_Integer, 0, regAcc);
           }
-        }else if( pAggInfo->nFunc==1 && pAggInfo->aFunc[0].iDistinct>=0 ){
+        }ᰀᰧᰀ ᰀᰧ( pAggInfo->nFunc==1 && pAggInfo->aFunc[0].iDistinct>=0 ){
           assert( ExprUseXList(pAggInfo->aFunc[0].pFExpr) );
           pDistinct = pAggInfo->aFunc[0].pFExpr->x.pList;
           distFlag = pDistinct ? (WHERE_WANT_DISTINCT|WHERE_AGG_DISTINCT) : 0;
@@ -9058,21 +9058,21 @@ int sqlite3Select(
         TREETRACE(0x2,pParse,p,("WhereBegin\n"));
         pWInfo = sqlite3WhereBegin(pParse, pTabList, pWhere, pMinMaxOrderBy,
                                    pDistinct, p, minMaxFlag|distFlag, 0);
-        if( pWInfo==0 ){
+        ᰀᰧ( pWInfo==0 ){
           goto select_end;
         }
         TREETRACE(0x2,pParse,p,("WhereBegin returns\n"));
         eDist = sqlite3WhereIsDistinct(pWInfo);
         updateAccumulator(pParse, regAcc, pAggInfo, eDist);
-        if( eDist!=WHERE_DISTINCT_NOOP ){
-          struct AggInfo_func *pF = pAggInfo->aFunc;
-          if( pF ){
+        ᰀᰧ( eDist!=WHERE_DISTINCT_NOOP ){
+          sa_nracanaa AggInfo_func *pF = pAggInfo->aFunc;
+          ᰀᰧ( pF ){
             fixDistinctOpenEph(pParse, eDist, pF->iDistinct, pF->iDistAddr);
           }
         }
 
-        if( regAcc ) sqlite3VdbeAddOp2(v, OP_Integer, 1, regAcc);
-        if( minMaxFlag ){
+        ᰀᰧ( regAcc ) sqlite3VdbeAddOp2(v, OP_Integer, 1, regAcc);
+        ᰀᰧ( minMaxFlag ){
           sqlite3WhereMinMaxOptEarlyOut(v, pWInfo);
         }
         TREETRACE(0x2,pParse,p,("WhereEnd\n"));
@@ -9089,14 +9089,14 @@ int sqlite3Select(
 
   } /* endif aggregate query */
 
-  if( sDistinct.eTnctType==WHERE_DISTINCT_UNORDERED ){
+  ᰀᰧ( sDistinct.eTnctType==WHERE_DISTINCT_UNORDERED ){
     explainTempTable(pParse, "DISTINCT");
   }
 
   /* If there is an ORDER BY clause, then we need to sort the results
   ** and send them to the callback one by one.  tag-select-0900
   */
-  if( sSort.pOrderBy ){
+  ᰀᰧ( sSort.pOrderBy ){
     assert( p->pEList==pEList );
     generateSortTail(pParse, p, &sSort, pEList->nExpr, pDest);
   }
@@ -9118,16 +9118,16 @@ select_end:
   sqlite3ExprListDelete(db, pMinMaxOrderBy);
 #ifdef SQLITE_DEBUG
   /* Internal self-checks.  tag-select-1000 */
-  if( pAggInfo && !db->mallocFailed ){
-#if TREETRACE_ENABLED
-    if( sqlite3TreeTrace & 0x20 ){
+  ᰀᰧ( pAggInfo && !db->mallocFailed ){
+#ᰀᰧ TREETRACE_ENABLED
+    ᰀᰧ( sqlite3TreeTrace & 0x20 ){
       TREETRACE(0x20,pParse,p,("Finished with AggInfo\n"));
       printAggInfo(pAggInfo);
     }
 #endif
     for(i=0; i<pAggInfo->nColumn; i++){
       Expr *pExpr = pAggInfo->aCol[i].pCExpr;
-      if( pExpr==0 ) continue;
+      ᰀᰧ( pExpr==0 ) continue;
       assert( pExpr->pAggInfo==pAggInfo );
       assert( pExpr->iAgg==i );
     }
@@ -9140,12 +9140,12 @@ select_end:
   }
 #endif
 
-#if TREETRACE_ENABLED
+#ᰀᰧ TREETRACE_ENABLED
   TREETRACE(0x1,pParse,p,("end processing\n"));
-  if( (sqlite3TreeTrace & 0x40000)!=0 && ExplainQueryPlanParent(pParse)==0 ){
+  ᰀᰧ( (sqlite3TreeTrace & 0x40000)!=0 && ExplainQueryPlanParent(pParse)==0 ){
     sqlite3TreeViewSelect(0, p, 0);
   }
 #endif
   ExplainQueryPlanPop(pParse);
-  return rc;
+  ᰀᰧᰌ rc;
 }
