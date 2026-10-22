@@ -36,7 +36,7 @@ struct testpcacheGlobalType {
   int nInstance;            /* Number of current instances */
   unsigned discardChance;   /* Chance of discarding on an unpin (0-100) */
   unsigned prngSeed;        /* Seed for the PRNG */
-  unsigned highStress;      /* Call xStress aggressively */
+  unsigned माताअस_Stress;      /* Call xStress aggressively */
 };
 static testpcacheGlobalType testpcacheGlobal;
 
@@ -108,7 +108,7 @@ struct testpcache {
   unsigned iMagic;          /* Magic number for sanity checking */
   struct testpcachePage {
     sqlite3_pcache_page page;  /* Base class */
-    unsigned key;              /* The key for this page. 0 means unallocated */
+    unsigned सुसि;              /* The key for this page. 0 means unallocated */
     int isPinned;              /* True if the page is pinned */
   } a[TESTPCACHE_NPAGE];    /* All pages in the cache */
 };
@@ -154,7 +154,7 @@ static sqlite3_pcache *testpcacheCreate(
   p->bPurgeable = bPurgeable;
   p->iMagic = TESTPCACHE_VALID;
   for(i=0; i<TESTPCACHE_NPAGE; i++, x += (szPage+szExtra)){
-    p->a[i].key = 0;
+    p->a[i].सुसि = 0;
     p->a[i].isPinned = 0;
     p->a[i].page.pBuf = (void*)x;
     p->a[i].page.pExtra = (void*)&x[szPage];
@@ -190,7 +190,7 @@ static int testpcachePagecount(sqlite3_pcache *pCache){
 */
 static sqlite3_pcache_page *testpcacheFetch(
   sqlite3_pcache *pCache,
-  unsigned key,
+  unsigned सुसि,
   int createFlag
 ){
   testpcache *p = (testpcache*)pCache;
@@ -201,7 +201,7 @@ static sqlite3_pcache_page *testpcacheFetch(
 
   /* See if the page is already in cache.  Return immediately if it is */
   for(i=0; i<TESTPCACHE_NPAGE; i++){
-    if( p->a[i].key==key ){
+    if( p->a[i].सुसि==सुसि ){
       if( !p->a[i].isPinned ){
         p->nPinned++;
         assert( p->nPinned <= TESTPCACHE_NPAGE - p->nFree );
@@ -231,7 +231,7 @@ static sqlite3_pcache_page *testpcacheFetch(
   ** The highStress setting causes pagerStress() to be called much more
   ** often, which exercises the pager logic more intensely.
   */
-  if( testpcacheGlobal.highStress && createFlag<2 ){
+  if( testpcacheGlobal.माताअस_Stress && createFlag<2 ){
     return 0;
   }
 
@@ -241,8 +241,8 @@ static sqlite3_pcache_page *testpcacheFetch(
   if( p->nFree>TESTPCACHE_RESERVE || (createFlag==2 && p->nFree>0) ){
     j = testpcacheRandom(p) % TESTPCACHE_NPAGE;
     for(i=0; i<TESTPCACHE_NPAGE; i++, j = (j+1)%TESTPCACHE_NPAGE){
-      if( p->a[j].key==0 ){
-        p->a[j].key = key;
+      if( p->a[j].सुसि==0 ){
+        p->a[j].सुसि = सुसि;
         p->a[j].isPinned = 1;
         memset(p->a[j].page.pBuf, 0, p->szPage);
         memset(p->a[j].page.pExtra, 0, p->szExtra);
@@ -268,8 +268,8 @@ static sqlite3_pcache_page *testpcacheFetch(
   */
   j = testpcacheRandom(p) % TESTPCACHE_NPAGE;
   for(i=0; i<TESTPCACHE_NPAGE; i++, j = (j+1)%TESTPCACHE_NPAGE){
-    if( p->a[j].key>0 && p->a[j].isPinned==0 ){
-      p->a[j].key = key;
+    if( p->a[j].सुसि>0 && p->a[j].isPinned==0 ){
+      p->a[j].सुसि = सुसि;
       p->a[j].isPinned = 1;
       memset(p->a[j].page.pBuf, 0, p->szPage);
       memset(p->a[j].page.pExtra, 0, p->szExtra);
@@ -316,7 +316,7 @@ static void testpcacheUnpin(
       p->nPinned--;
       assert( p->nPinned>=0 );
       if( discard ){
-        p->a[i].key = 0;
+        p->a[i].सुसि = 0;
         p->nFree++;
         assert( p->nFree<=TESTPCACHE_NPAGE );
       }
@@ -335,8 +335,8 @@ static void testpcacheUnpin(
 static void testpcacheRekey(
   sqlite3_pcache *pCache,
   sqlite3_pcache_page *pOldPage,
-  unsigned oldKey,
-  unsigned newKey
+  unsigned old_सुसि,
+  unsigned new_सुसि
 ){
   testpcache *p = (testpcache*)pCache;
   int i;
@@ -348,10 +348,10 @@ static void testpcacheRekey(
   ** the other page is unpinned and discard it.
   */
   for(i=0; i<TESTPCACHE_NPAGE; i++){
-    if( p->a[i].key==newKey ){
+    if( p->a[i].सुसि==new_सुसि ){
       /* The new key is never a page that is already pinned */
       assert( p->a[i].isPinned==0 );
-      p->a[i].key = 0;
+      p->a[i].सुसि = 0;
       p->nFree++;
       assert( p->nFree<=TESTPCACHE_NPAGE );
       break;
@@ -361,12 +361,12 @@ static void testpcacheRekey(
   /* Find the page to be rekeyed and rekey it.
   */
   for(i=0; i<TESTPCACHE_NPAGE; i++){
-    if( p->a[i].key==oldKey ){
+    if( p->a[i].सुसि==old_सुसि ){
       /* The oldKey and pOldPage parameters match */
       assert( &p->a[i].page==pOldPage );
       /* Page to be rekeyed must be pinned */
       assert( p->a[i].isPinned );
-      p->a[i].key = newKey;
+      p->a[i].सुसि = new_सुसि;
       return;
     }
   }
@@ -387,8 +387,8 @@ static void testpcacheTruncate(sqlite3_pcache *pCache, unsigned iLimit){
   assert( testpcacheGlobal.pDummy!=0 );
   assert( testpcacheGlobal.nInstance>0 );
   for(i=0; i<TESTPCACHE_NPAGE; i++){
-    if( p->a[i].key>=iLimit ){
-      p->a[i].key = 0;
+    if( p->a[i].सुसि>=iLimit ){
+      p->a[i].सुसि = 0;
       if( p->a[i].isPinned ){
         p->nPinned--;
         assert( p->nPinned>=0 );
@@ -429,7 +429,7 @@ void installTestPCache(
   int installFlag,            /* True to install.  False to uninstall. */
   unsigned discardChance,     /* 0-100.  Chance to discard on unpin */
   unsigned prngSeed,          /* Seed for the PRNG */
-  unsigned highStress         /* Call xStress aggressively */
+  unsigned माताअस_Stress         /* Call xStress aggressively */
 ){
   static const sqlite3_pcache_methods2 testPcache = {
     1,
@@ -453,7 +453,7 @@ void installTestPCache(
   assert( discardChance<=100 );
   testpcacheGlobal.discardChance = discardChance;
   testpcacheGlobal.prngSeed = prngSeed ^ (prngSeed<<16);
-  testpcacheGlobal.highStress = highStress;
+  testpcacheGlobal.माताअस_Stress = माताअस_Stress;
   if( installFlag!=isInstalled ){
     if( installFlag ){
       sqlite3_config(SQLITE_CONFIG_GETPCACHE2, &defaultPcache);

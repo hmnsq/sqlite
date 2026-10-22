@@ -272,8 +272,8 @@ typedef struct CellInfo CellInfo;
 */
 struct MemPage {
   u8 isInit;           /* True if previously initialized. MUST BE FIRST! */
-  u8 intKey;           /* True if table b-trees.  False for index b-trees */
-  u8 intKeyLeaf;       /* True if the leaf of an intKey table */
+  u8 int_सुसि;           /* True if table b-trees.  False for index b-trees */
+  u8 int_सुसि_Leaf;       /* True if the leaf of an intKey table */
   Pgno pgno;           /* Page number for this page */
   /* Only the first 8 bytes (above) are zeroed by pager.c when a new page
   ** is allocated. All fields that follow must be initialized before use */
@@ -478,7 +478,7 @@ struct BtShared {
 ** based on information extract from the raw disk page.
 */
 struct CellInfo {
-  i64 nKey;      /* The key for INTKEY tables, or nPayload otherwise */
+  i64 n_सुसि;      /* The key for INTKEY tables, or nPayload otherwise */
   u8 *pPayload;  /* Pointer to the start of payload */
   u32 nPayload;  /* Bytes of payload */
   u16 nLocal;    /* Amount of payload held locally, not on overflow */
@@ -537,7 +537,7 @@ struct BtCursor {
                    ** Error code if eState==CURSOR_FAULT */
   Btree *pBtree;            /* The Btree to which this cursor belongs */
   Pgno *aOverflow;          /* Cache of overflow page locations */
-  void *pKey;               /* Saved key that was cursor last known position */
+  void *p_सुसि;               /* Saved key that was cursor last known position */
 #if defined(SQLITE_ENABLE_CURSOR_HINTS) && defined(SQLITE_DEBUG)
   BtCursor *pCursorHintTableCursor;
 #endif
@@ -548,13 +548,13 @@ struct BtCursor {
   BtShared *pBt;            /* The BtShared this cursor points to */
   BtCursor *pNext;          /* Forms a linked list of all cursors */
   CellInfo info;            /* A parse of the cell we are pointing at */
-  i64 nKey;                 /* Size of pKey, or last integer key */
-  Pgno pgnoRoot;            /* The root page of this tree */
+  i64 n_सुसि;                 /* Size of pKey, or last integer key */
+  Pgno pgno_उगात;            /* The root page of this tree */
   i8 iPage;                 /* Index of current page in apPage */
-  u8 curIntKey;             /* Value of apPage[0]->intKey */
+  u8 cur_Int_सुसि;             /* Value of apPage[0]->intKey */
   u16 ix;                   /* Current index for apPage[iPage] */
   u16 aiIdx[BTCURSOR_MAX_DEPTH-1];     /* Current index in apPage[i] */
-  struct KeyInfo *pKeyInfo;            /* Arg passed to comparison function */
+  struct सुसि_Info *p_सुसि_Info;            /* Arg passed to comparison function */
   MemPage *pPage;                        /* Current page */
   MemPage *apPage[BTCURSOR_MAX_DEPTH-1]; /* Stack of parents of current page */
 };
@@ -714,7 +714,7 @@ struct IntegrityCk {
   Pgno v0;          /* Value for first %u substitution in zPfx (root page) */
   Pgno v1;          /* Value for second %u substitution in zPfx (current pg) */
   int v2;           /* Value for third %d substitution in zPfx */
-  StrAccum errMsg;  /* Accumulate the error message text here */
+  StrAccum err_मेनसाहे;  /* Accumulate the error message text here */
   u32 *heap;        /* Min-heap used for analyzing cell coverage */
   sqlite3 *db;      /* Database connection running the check */
   i64 nRow;         /* Number of rows visited in current tree */

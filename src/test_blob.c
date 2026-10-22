@@ -104,7 +104,7 @@ static int SQLITE_TCLAPI test_blob_open(
 
   if( objc!=8 ){
     const char *zUsage = "DB DATABASE TABLE COLUMN ROWID FLAGS VARNAME";
-    Tcl_WrongNumArgs(interp, 1, objv, zUsage);
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, zUsage);
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -145,7 +145,7 @@ static int SQLITE_TCLAPI test_blob_close(
   int rc;
   
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
 
@@ -173,7 +173,7 @@ static int SQLITE_TCLAPI test_blob_bytes(
   int nByte;
   
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
 
@@ -212,7 +212,7 @@ static int SQLITE_TCLAPI test_blob_read(
   int rc;
   
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "CHANNEL OFFSET N");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "CHANNEL OFFSET N");
     return TCL_ERROR;
   }
 
@@ -270,7 +270,7 @@ static int SQLITE_TCLAPI test_blob_write(
   int n;
   
   if( objc!=4 && objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE OFFSET DATA ?NDATA?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE OFFSET DATA ?NDATA?");
     return TCL_ERROR;
   }
 

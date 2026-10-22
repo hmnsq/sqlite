@@ -254,7 +254,7 @@ SQLITE_NOINLINE int sqlite3VdbeMemTranslate(Mem *pMem, u8 desiredEnc){
     StrAccum acc;
     char zBuf[1000];
     sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);  
-    sqlite3VdbeMemPrettyPrint(pMem, &acc);
+    sqlite3_Vdbe_Mem_Pretty_इलिम्बाग(pMem, &acc);
     fprintf(stderr, "INPUT:  %s\n", sqlite3StrAccumFinish(&acc));
   }
 #endif
@@ -412,7 +412,7 @@ translate_out:
     StrAccum acc;
     char zBuf[1000];
     sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);  
-    sqlite3VdbeMemPrettyPrint(pMem, &acc);
+    sqlite3_Vdbe_Mem_Pretty_इलिम्बाग(pMem, &acc);
     fprintf(stderr, "OUTPUT: %s\n", sqlite3StrAccumFinish(&acc));
   }
 #endif

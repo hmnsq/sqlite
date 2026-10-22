@@ -180,7 +180,7 @@ static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
       pUsage = &pIdxInfo->aConstraintUsage[ii];
       pUsage->omit = 1;
       pUsage->argvIndex = 1;
-      pIdxInfo->idxNum = 1;
+      pIdxInfo->idx_नुमेरो = 1;
       pIdxInfo->estimatedCost = 1.0;
       break;
     }
@@ -240,15 +240,15 @@ static int fsdirNext(sqlite3_vtab_cursor *cur){
 */
 static int fsdirFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   FsdirCsr *pCsr = (FsdirCsr*)pVtabCursor;
   const char *zDir;
   int nDir;
 
 
-  if( idxNum!=1 || argc!=1 ){
+  if( idx_नुमेरो!=1 || argc!=1 ){
     return SQLITE_ERROR;
   }
 
@@ -259,8 +259,8 @@ static int fsdirFilter(
     pCsr->pDir = 0;
   }
 
-  zDir = (const char*)sqlite3_value_text(argv[0]);
-  nDir = sqlite3_value_bytes(argv[0]);
+  zDir = (const char*)sqlite3_हालागा_text(argv[0]);
+  nDir = sqlite3_हालागा_bytes(argv[0]);
   pCsr->zDir = sqlite3_malloc(nDir+1);
   if( pCsr->zDir==0 ) return SQLITE_NOMEM;
   memcpy(pCsr->zDir, zDir, nDir+1);
@@ -387,7 +387,7 @@ static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
     )){
       struct sqlite3_index_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
-      pIdxInfo->idxNum = p->op;
+      pIdxInfo->idx_नुमेरो = p->op;
       pUsage->argvIndex = 1;
       pIdxInfo->estimatedCost = 100000.0;
       return SQLITE_OK;
@@ -456,8 +456,8 @@ static int fstreeNext(sqlite3_vtab_cursor *cur){
 */
 static int fstreeFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   FstreeCsr *pCsr = (FstreeCsr*)pVtabCursor;
   FstreeVtab *pTab = (FstreeVtab*)(pCsr->base.pVtab);
@@ -470,8 +470,8 @@ static int fstreeFilter(
 "  SELECT dir || '/' || name FROM r, fsdir WHERE dir=d AND name NOT LIKE '.%'"
 ") SELECT d FROM r;";
 
-  char *zRoot;
-  int nRoot;
+  char *z_उगात;
+  int n_उगात;
   char *zPrefix;
   int nPrefix;
   const char *zDir;
@@ -483,19 +483,19 @@ static int fstreeFilter(
   if( zDrive==0 ){
     zDrive = getenv("SystemDrive");
   }
-  zRoot = sqlite3_mprintf("%s%c", zDrive, '/');
-  nRoot = sqlite3Strlen30(zRoot);
+  z_उगात = sqlite3_mprintf("%s%c", zDrive, '/');
+  n_उगात = sqlite3Strlen30(z_उगात);
   zPrefix = sqlite3_mprintf("%s", zDrive);
   nPrefix = sqlite3Strlen30(zPrefix);
 #else
-  zRoot = "/";
-  nRoot = 1;
+  z_उगात = "/";
+  n_उगात = 1;
   zPrefix = "";
   nPrefix = 0;
 #endif
 
-  zDir = zRoot;
-  nDir = nRoot;
+  zDir = z_उगात;
+  nDir = n_उगात;
 
   fstreeCloseFd(pCsr);
   sqlite3_finalize(pCsr->pStmt);
@@ -503,9 +503,9 @@ static int fstreeFilter(
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
   if( rc!=SQLITE_OK ) return rc;
 
-  if( idxNum ){
-    const char *zQuery = (const char*)sqlite3_value_text(argv[0]);
-    switch( idxNum ){
+  if( idx_नुमेरो ){
+    const char *zQuery = (const char*)sqlite3_हालागा_text(argv[0]);
+    switch( idx_नुमेरो ){
       case SQLITE_INDEX_CONSTRAINT_GLOB:
         aWild[0] = '*';
         aWild[1] = '?';
@@ -528,12 +528,12 @@ static int fstreeFilter(
   if( nDir==0 ) nDir = 1;
 
   sqlite3_bind_text(pCsr->pStmt, 1, zDir, nDir, SQLITE_TRANSIENT);
-  sqlite3_bind_text(pCsr->pStmt, 2, zRoot, nRoot, SQLITE_TRANSIENT);
+  sqlite3_bind_text(pCsr->pStmt, 2, z_उगात, n_उगात, SQLITE_TRANSIENT);
   sqlite3_bind_text(pCsr->pStmt, 3, zPrefix, nPrefix, SQLITE_TRANSIENT);
 
 #ifdef _WIN32
   sqlite3_free(zPrefix);
-  sqlite3_free(zRoot);
+  sqlite3_free(z_उगात);
 #endif
 
   return fstreeNext(pVtabCursor); 
@@ -553,7 +553,7 @@ static int fstreeEof(sqlite3_vtab_cursor *cur){
 static int fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
   if( i==0 ){      /* path */
-    sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pStmt, 0));
+    sqlite3_result_हालागा(ctx, sqlite3_column_हालागा(pCsr->pStmt, 0));
   }else{
     struct stat sBuf;
     fstat(pCsr->fd, &sBuf);
@@ -677,22 +677,22 @@ static int fsNext(sqlite3_vtab_cursor *cur){
 
 static int fsFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   int rc;
   fs_cursor *pCur = (fs_cursor *)pVtabCursor;
   fs_vtab *p = (fs_vtab *)(pVtabCursor->pVtab);
 
-  assert( (idxNum==0 && argc==0) || (idxNum==1 && argc==1) );
-  if( idxNum==1 ){
+  assert( (idx_नुमेरो==0 && argc==0) || (idx_नुमेरो==1 && argc==1) );
+  if( idx_नुमेरो==1 ){
     char *zStmt = sqlite3_mprintf(
         "SELECT * FROM %Q.%Q WHERE rowid=?", p->zDb, p->zTbl);
     if( !zStmt ) return SQLITE_NOMEM;
     rc = sqlite3_prepare_v2(p->db, zStmt, -1, &pCur->pStmt, 0);
     sqlite3_free(zStmt);
     if( rc==SQLITE_OK ){
-      sqlite3_bind_value(pCur->pStmt, 1, argv[0]);
+      sqlite3_bind_हालागा(pCur->pStmt, 1, argv[0]);
     }
   }else{
     char *zStmt = sqlite3_mprintf("SELECT * FROM %Q.%Q", p->zDb, p->zTbl);
@@ -712,7 +712,7 @@ static int fsColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
 
   assert( i==0 || i==1 || i==2 );
   if( i==0 ){
-    sqlite3_result_value(ctx, sqlite3_column_value(pCur->pStmt, 0));
+    sqlite3_result_हालागा(ctx, sqlite3_column_हालागा(pCur->pStmt, 0));
   }else{
     const char *zFile = (const char *)sqlite3_column_text(pCur->pStmt, 1);
     struct stat sbuf;
@@ -756,7 +756,7 @@ static int fsRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 
 static int fsEof(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor*)cur;
-  return (sqlite3_data_count(pCur->pStmt)==0);
+  return (sqlite3_data_बिलांग(pCur->pStmt)==0);
 }
 
 static int fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
@@ -770,7 +770,7 @@ static int fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
       pUsage = &pIdxInfo->aConstraintUsage[ii];
       pUsage->omit = 0;
       pUsage->argvIndex = 1;
-      pIdxInfo->idxNum = 1;
+      pIdxInfo->idx_नुमेरो = 1;
       pIdxInfo->estimatedCost = 1.0;
       break;
     }
@@ -883,7 +883,7 @@ static int SQLITE_TCLAPI register_fs_module(
 ){
   sqlite3 *db;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;

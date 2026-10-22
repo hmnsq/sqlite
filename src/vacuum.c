@@ -29,7 +29,7 @@
 ** The execSqlF() routine does the same thing, except it accepts
 ** a format string as its third argument
 */
-static int execSql(sqlite3 *db, char **pzErrMsg, const char *zSql){
+static int execSql(sqlite3 *db, char **pz_Err_मेनसाहे, const char *zSql){
   sqlite3_stmt *pStmt;
   int rc;
 
@@ -47,19 +47,19 @@ static int execSql(sqlite3 *db, char **pzErrMsg, const char *zSql){
     if( zSubSql
      && (strncmp(zSubSql,"CRE",3)==0 || strncmp(zSubSql,"INS",3)==0)
     ){
-      rc = execSql(db, pzErrMsg, zSubSql);
+      rc = execSql(db, pz_Err_मेनसाहे, zSubSql);
       if( rc!=SQLITE_OK ) break;
     }
   }
   assert( rc!=SQLITE_ROW );
   if( rc==SQLITE_DONE ) rc = SQLITE_OK;
   if( rc ){
-    sqlite3SetString(pzErrMsg, db, sqlite3_errmsg(db));
+    sqlite3SetString(pz_Err_मेनसाहे, db, sqlite3_errmsg(db));
   }
   (void)sqlite3_finalize(pStmt);
   return rc;
 }
-static int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...){
+static int execSqlF(sqlite3 *db, char **pz_Err_मेनसाहे, const char *zSql, ...){
   char *z;
   va_list ap;
   int rc;
@@ -67,7 +67,7 @@ static int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...){
   z = sqlite3VMPrintf(db, zSql, ap);
   va_end(ap);
   if( z==0 ) return SQLITE_NOMEM;
-  rc = execSql(db, pzErrMsg, z);
+  rc = execSql(db, pz_Err_मेनसाहे, z);
   sqlite3DbFree(db, z);
   return rc;
 }
@@ -102,7 +102,7 @@ static int execSqlF(sqlite3 *db, char **pzErrMsg, const char *zSql, ...){
 ** transient would cause the database file to appear to be deleted
 ** following reboot.
 */
-void sqlite3Vacuum(Parse *pParse, Token *pNm, Expr *pInto){
+void sqlite3Vacuum(Parse *pParse, Token *pNm, पाहायाग *pInto){
   Vdbe *v = sqlite3GetVdbe(pParse);
   int iDb = 0;
   if( v==0 ) goto build_vacuum_end;
@@ -127,13 +127,13 @@ void sqlite3Vacuum(Parse *pParse, Token *pNm, Expr *pInto){
     int iIntoReg = 0;
     if( pInto && sqlite3ResolveSelfReference(pParse,0,0,pInto,0)==0 ){
       iIntoReg = ++pParse->nMem;
-      sqlite3ExprCode(pParse, pInto, iIntoReg);
+      sqlite3_पाहायाग_Code(pParse, pInto, iIntoReg);
     }
     sqlite3VdbeAddOp2(v, OP_Vacuum, iDb, iIntoReg);
     sqlite3VdbeUsesBtree(v, iDb);
   }
 build_vacuum_end:
-  sqlite3ExprDelete(pParse->db, pInto);
+  sqlite3_पाहायाग_Delete(pParse->db, pInto);
   return;
 }
 
@@ -141,10 +141,10 @@ build_vacuum_end:
 ** This routine implements the OP_Vacuum opcode of the VDBE.
 */
 SQLITE_NOINLINE int sqlite3RunVacuum(
-  char **pzErrMsg,        /* Write error message here */
+  char **pz_Err_मेनसाहे,        /* Write error message here */
   sqlite3 *db,            /* Database connection */
   int iDb,                /* Which attached DB to vacuum */
-  sqlite3_value *pOut     /* Write results here, if not NULL. VACUUM INTO */
+  sqlite3_हालागा *pOut     /* Write results here, if not NULL. VACUUM INTO */
 ){
   int rc = SQLITE_OK;     /* Return code from service routines */
   Btree *pMain;           /* The database being vacuumed */
@@ -167,20 +167,20 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
 
 
   if( !db->autoCommit ){
-    sqlite3SetString(pzErrMsg, db, "cannot VACUUM from within a transaction");
+    sqlite3SetString(pz_Err_मेनसाहे, db, "cannot VACUUM from within a transaction");
     return SQLITE_ERROR; /* IMP: R-12218-18073 */
   }
   if( db->nVdbeActive>1 ){
-    sqlite3SetString(pzErrMsg, db,"cannot VACUUM - SQL statements in progress");
+    sqlite3SetString(pz_Err_मेनसाहे, db,"cannot VACUUM - SQL statements in progress");
     return SQLITE_ERROR; /* IMP: R-15610-35227 */
   }
   saved_openFlags = db->openFlags;
   if( pOut ){
-    if( sqlite3_value_type(pOut)!=SQLITE_TEXT ){
-      sqlite3SetString(pzErrMsg, db, "non-text filename");
+    if( sqlite3_हालागा_type(pOut)!=SQLITE_TEXT ){
+      sqlite3SetString(pz_Err_मेनसाहे, db, "non-text filename");
       return SQLITE_ERROR;
     }
-    zOut = (const char*)sqlite3_value_text(pOut);
+    zOut = (const char*)sqlite3_हालागा_text(pOut);
     db->openFlags &= ~SQLITE_OPEN_READONLY;
     db->openFlags |= SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE;
   }else{
@@ -198,8 +198,8 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   db->flags |= SQLITE_WriteSchema | SQLITE_IgnoreChecks | SQLITE_Comments
                | SQLITE_AttachCreate | SQLITE_AttachWrite;
   db->mDbFlags |= DBFLAG_PreferBuiltin | DBFLAG_Vacuum;
-  db->flags &= ~(u64)(SQLITE_ForeignKeys | SQLITE_ReverseOrder
-                   | SQLITE_Defensive | SQLITE_CountRows);
+  db->flags &= ~(u64)(SQLITE_Foreign_मगा_सुसि | SQLITE_ReverseOrder
+                   | SQLITE_Defensive | SQLITE_बिलांग_Rows);
   db->mTrace = 0;
 
   zDbMain = db->aDb[iDb].zDbSName;
@@ -223,7 +223,7 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   sqlite3_randomness(sizeof(iRandom),&iRandom);
   sqlite3_snprintf(sizeof(zDbVacuum), zDbVacuum, "vacuum_%016llx", iRandom);
   nDb = db->nDb;
-  rc = execSqlF(db, pzErrMsg, "ATTACH %Q AS %s", zOut, zDbVacuum);
+  rc = execSqlF(db, pz_Err_मेनसाहे, "ATTACH %Q AS %s", zOut, zDbVacuum);
   db->openFlags = saved_openFlags;
   if( rc!=SQLITE_OK ) goto end_of_vacuum;
   assert( (db->nDb-1)==nDb );
@@ -237,7 +237,7 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
     const char *zFilename;
     if( id->pMethods!=0 && (sqlite3OsFileSize(id, &sz)!=SQLITE_OK || sz>0) ){
       rc = SQLITE_ERROR;
-      sqlite3SetString(pzErrMsg, db, "output file already exists");
+      sqlite3SetString(pz_Err_मेनसाहे, db, "output file already exists");
       goto end_of_vacuum;
     }
     db->mDbFlags |= DBFLAG_VacuumInto;
@@ -265,7 +265,7 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   ** file. This is done before the sqlite3BtreeGetPageSize(pMain) call below,
   ** to ensure that we do not try to change the page-size on a WAL database.
   */
-  rc = execSql(db, pzErrMsg, "BEGIN");
+  rc = execSql(db, pz_Err_मेनसाहे, "BEGIN");
   if( rc!=SQLITE_OK ) goto end_of_vacuum;
   rc = sqlite3BtreeBeginTrans(pMain, pOut==0 ? 2 : 0, 0);
   if( rc!=SQLITE_OK ) goto end_of_vacuum;
@@ -295,14 +295,14 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   ** in the temporary database.
   */
   db->init.iDb = nDb; /* force new CREATE statements into vacuum_db */
-  rc = execSqlF(db, pzErrMsg,
+  rc = execSqlF(db, pz_Err_मेनसाहे,
       "SELECT sql FROM \"%w\".sqlite_schema"
       " WHERE type='table'AND name<>'sqlite_sequence'"
       " AND coalesce(rootpage,1)>0",
       zDbMain
   );
   if( rc!=SQLITE_OK ) goto end_of_vacuum;
-  rc = execSqlF(db, pzErrMsg,
+  rc = execSqlF(db, pz_Err_मेनसाहे,
       "SELECT sql FROM \"%w\".sqlite_schema"
       " WHERE type='index'",
       zDbMain
@@ -314,7 +314,7 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   ** an "INSERT INTO vacuum_db.xxx SELECT * FROM main.xxx;" to copy
   ** the contents to the temporary database.
   */
-  rc = execSqlF(db, pzErrMsg,
+  rc = execSqlF(db, pz_Err_मेनसाहे,
       "SELECT'INSERT INTO %s.'||quote(name)"
       "||' SELECT*FROM\"%w\".'||quote(name)"
       "FROM %s.sqlite_schema "
@@ -330,7 +330,7 @@ SQLITE_NOINLINE int sqlite3RunVacuum(
   ** associated storage, so all we have to do is copy their entries
   ** from the schema table.
   */
-  rc = execSqlF(db, pzErrMsg,
+  rc = execSqlF(db, pz_Err_मेनसाहे,
       "INSERT INTO %s.sqlite_schema"
       " SELECT*FROM \"%w\".sqlite_schema"
       " WHERE type IN('view','trigger')"

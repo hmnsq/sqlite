@@ -643,7 +643,7 @@ struct Pager {
   */
   u8 eState;                  /* Pager state (OPEN, READER, WRITER_LOCKED..) */
   u8 eLock;                   /* Current lock held on database file */
-  u8 changeCountDone;         /* Set after incrementing the change-counter */
+  u8 change_बिलांग_Done;         /* Set after incrementing the change-counter */
   u8 setSuper;                /* Super-jrnl name is written into jrnl */
   u8 doNotSpill;              /* Do not spill the cache when non-zero */
   u8 subjInMemory;            /* True to use in-memory sub-journals */
@@ -721,9 +721,9 @@ struct Pager {
 ** a non-testing build.  These variables are not thread-safe.
 */
 #ifdef SQLITE_TEST
-int sqlite3_pager_readdb_count = 0;    /* Number of full pages read from DB */
-int sqlite3_pager_writedb_count = 0;   /* Number of full pages written to DB */
-int sqlite3_pager_writej_count = 0;    /* Number of pages written to journal */
+int sqlite3_pager_readdb_बिलांग = 0;    /* Number of full pages read from DB */
+int sqlite3_pager_writedb_बिलांग = 0;   /* Number of full pages written to DB */
+int sqlite3_pager_writej_बिलांग = 0;    /* Number of pages written to journal */
 # define PAGER_INCR(v)  v++
 #else
 # define PAGER_INCR(v)
@@ -862,7 +862,7 @@ static int assert_pager_state(Pager *p){
   ** the change-counter field, so the changeCountDone flag is always set.
   */
   assert( p->tempFile==0 || p->eLock==EXCLUSIVE_LOCK );
-  assert( p->tempFile==0 || pPager->changeCountDone );
+  assert( p->tempFile==0 || pPager->change_बिलांग_Done );
 
   /* If the useJournal flag is clear, the journal-mode must be "OFF".
   ** And if the journal-mode is "OFF", the journal file must not be open.
@@ -891,14 +891,14 @@ static int assert_pager_state(Pager *p){
   /* If changeCountDone is set, a RESERVED lock or greater must be held
   ** on the file.
   */
-  assert( pPager->changeCountDone==0 || pPager->eLock>=RESERVED_LOCK );
+  assert( pPager->change_बिलांग_Done==0 || pPager->eLock>=RESERVED_LOCK );
   assert( p->eLock!=PENDING_LOCK );
 
   switch( p->eState ){
     case PAGER_OPEN:
       assert( !MEMDB );
       assert( pPager->errCode==SQLITE_OK );
-      assert( sqlite3PcacheRefCount(pPager->pPCache)==0 || pPager->tempFile );
+      assert( sqlite3_Pcache_Ref_बिलांग(pPager->pPCache)==0 || pPager->tempFile );
       break;
 
     case PAGER_READER:
@@ -968,7 +968,7 @@ static int assert_pager_state(Pager *p){
       ** back to OPEN state.
       */
       assert( pPager->errCode!=SQLITE_OK );
-      assert( sqlite3PcacheRefCount(pPager->pPCache)>0 || pPager->tempFile );
+      assert( sqlite3_Pcache_Ref_बिलांग(pPager->pPCache)>0 || pPager->tempFile );
       break;
   }
 
@@ -989,7 +989,7 @@ static int assert_pager_state(Pager *p){
 ** about an unused function.  It is enclosed within SQLITE_DEBUG and so does
 ** not appear in normal builds.
 */
-char *print_pager_state(Pager *p){
+char *इलिम्बाग_pager_state(Pager *p){
   static char zRet[1024];
 
   sqlite3_snprintf(1024, zRet,
@@ -1144,7 +1144,7 @@ static int pagerUnlockDb(Pager *pPager, int eLock){
     }
     IOTRACE(("UNLOCK %p %d\n", pPager, eLock))
   }
-  pPager->changeCountDone = pPager->tempFile; /* ticket fb3b3024ea238d5c */
+  pPager->change_बिलांग_Done = pPager->tempFile; /* ticket fb3b3024ea238d5c */
   return rc;
 }
 
@@ -1959,7 +1959,7 @@ static void pager_unlock(Pager *pPager){
   if( pPager->errCode ){
     if( pPager->tempFile==0 ){
       pager_reset(pPager);
-      pPager->changeCountDone = 0;
+      pPager->change_बिलांग_Done = 0;
       pPager->eState = PAGER_OPEN;
     }else{
       pPager->eState = (isOpen(pPager->jfd) ? PAGER_OPEN : PAGER_READER);
@@ -2162,7 +2162,7 @@ static int pager_end_transaction(Pager *pPager, int hasSuper, int bCommit){
 
 #ifdef SQLITE_CHECK_PAGES
   sqlite3PcacheIterateDirty(pPager->pPCache, pager_set_pagehash);
-  if( pPager->dbSize==0 && sqlite3PcacheRefCount(pPager->pPCache)>0 ){
+  if( pPager->dbSize==0 && sqlite3_Pcache_Ref_बिलांग(pPager->pPCache)>0 ){
     PgHdr *p = sqlite3PagerLookup(pPager, 1);
     if( p ){
       p->pageHash = 0;
@@ -3026,7 +3026,7 @@ end_playback:
   ** problems for other processes at some point in the future. So, just
   ** in case this has happened, clear the changeCountDone flag now.
   */
-  pPager->changeCountDone = pPager->tempFile;
+  pPager->change_बिलांग_Done = pPager->tempFile;
 
   if( rc==SQLITE_OK
    && (pPager->eState>=PAGER_WRITER_DBMOD || pPager->eState==PAGER_OPEN)
@@ -3118,7 +3118,7 @@ static int readDbPage(PgHdr *pPg){
       memcpy(&pPager->dbFileVers, dbFileVers, sizeof(pPager->dbFileVers));
     }
   }
-  PAGER_INCR(sqlite3_pager_readdb_count);
+  PAGER_INCR(sqlite3_pager_readdb_बिलांग);
   PAGER_INCR(pPager->nRead);
   IOTRACE(("PGIN %p %d\n", pPager, pPg->pgno));
   PAGERTRACE(("FETCH %d page %d hash(%08x)\n",
@@ -3147,7 +3147,7 @@ static void pager_write_changecounter(PgHdr *pPg){
   ** bytes 92..95 store the change counter for which the version number
   ** is valid. */
   put32bits(((char*)pPg->pData)+92, change_counter);
-  put32bits(((char*)pPg->pData)+96, SQLITE_VERSION_NUMBER);
+  put32bits(((char*)pPg->pData)+96, SQLITE_VERSION_नुमेरो);
 }
 
 #ifndef SQLITE_OMIT_WAL
@@ -3478,7 +3478,7 @@ static int pagerPlaybackSavepoint(Pager *pPager, PagerSavepoint *pSavepoint){
   ** being reverted was opened.
   */
   pPager->dbSize = pSavepoint ? pSavepoint->nOrig : pPager->dbOrigSize;
-  pPager->changeCountDone = pPager->tempFile;
+  pPager->change_बिलांग_Done = pPager->tempFile;
 
   if( !pSavepoint && pagerUseWal(pPager) ){
     return pagerRollbackWal(pPager);
@@ -3717,7 +3717,7 @@ void sqlite3PagerSetFlags(
 ** testing and analysis only. 
 */
 #ifdef SQLITE_TEST
-int sqlite3_opentemp_count = 0;
+int sqlite3_opentemp_बिलांग = 0;
 #endif
 
 /*
@@ -3743,7 +3743,7 @@ static int pagerOpentemp(
   int rc;               /* Return code */
 
 #ifdef SQLITE_TEST
-  sqlite3_opentemp_count++;  /* Used for testing and analysis only */
+  sqlite3_opentemp_बिलांग++;  /* Used for testing and analysis only */
 #endif
 
   vfsFlags |=  SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE |
@@ -3834,7 +3834,7 @@ int sqlite3PagerSetPagesize(Pager *pPager, u32 *pPageSize, int nReserve){
   u32 pageSize = *pPageSize;
   assert( pageSize==0 || (pageSize>=512 && pageSize<=SQLITE_MAX_PAGE_SIZE) );
   if( (pPager->memDb==0 || pPager->dbSize==0)
-   && sqlite3PcacheRefCount(pPager->pPCache)==0
+   && sqlite3_Pcache_Ref_बिलांग(pPager->pPCache)==0
    && pageSize && pageSize!=(u32)pPager->pageSize
   ){
     char *pNew = NULL;             /* New temp space */
@@ -3898,7 +3898,7 @@ void *sqlite3PagerTempSpace(Pager *pPager){
 **
 ** Regardless of mxPage, return the current maximum page count.
 */
-Pgno sqlite3PagerMaxPageCount(Pager *pPager, Pgno mxPage){
+Pgno sqlite3_Pager_Max_Page_बिलांग(Pager *pPager, Pgno mxPage){
   if( mxPage>0 ){
     pPager->mxPgno = mxPage;
   }
@@ -4552,7 +4552,7 @@ static int pager_write_pagelist(Pager *pPager, PgHdr *pList){
       PAGERTRACE(("STORE %d page %d hash(%08x)\n",
                    PAGERID(pPager), pgno, pager_pagehash(pList)));
       IOTRACE(("PGOUT %p %d\n", pPager, pgno));
-      PAGER_INCR(sqlite3_pager_writedb_count);
+      PAGER_INCR(sqlite3_pager_writedb_बिलांग);
     }else{
       PAGERTRACE(("NOSTORE %d page %d\n", PAGERID(pPager), pgno));
     }
@@ -5108,7 +5108,7 @@ act_like_temp_file:
   /* pPager->stmtSize = 0; */
   /* pPager->stmtJSize = 0; */
   /* pPager->nPage = 0; */
-  pPager->mxPgno = SQLITE_MAX_PAGE_COUNT;
+  pPager->mxPgno = SQLITE_MAX_PAGE_बिलांग;
   /* pPager->state = PAGER_UNLOCK; */
   /* pPager->errMask = 0; */
   pPager->tempFile = (u8)tempFile;
@@ -5116,7 +5116,7 @@ act_like_temp_file:
           || tempFile==PAGER_LOCKINGMODE_EXCLUSIVE );
   assert( PAGER_LOCKINGMODE_EXCLUSIVE==1 );
   pPager->exclusiveMode = (u8)tempFile;
-  pPager->changeCountDone = pPager->tempFile;
+  pPager->change_बिलांग_Done = pPager->tempFile;
   pPager->memDb = (u8)memDb;
   pPager->readOnly = (u8)readOnly;
   assert( useJournal || pPager->tempFile );
@@ -5320,7 +5320,7 @@ int sqlite3PagerSharedLock(Pager *pPager){
   ** outstanding pages. This implies that the pager state should either
   ** be OPEN or READER. READER is only possible if the pager is or was in
   ** exclusive access mode.  */
-  assert( sqlite3PcacheRefCount(pPager->pPCache)==0 );
+  assert( sqlite3_Pcache_Ref_बिलांग(pPager->pPCache)==0 );
   assert( assert_pager_state(pPager) );
   assert( pPager->eState==PAGER_OPEN || pPager->eState==PAGER_READER );
   assert( pPager->errCode==SQLITE_OK );
@@ -5531,7 +5531,7 @@ int sqlite3PagerSharedLock(Pager *pPager){
 ** nothing to rollback, so this routine is a no-op.
 */
 static void pagerUnlockIfUnused(Pager *pPager){
-  if( sqlite3PcacheRefCount(pPager->pPCache)==0 ){
+  if( sqlite3_Pcache_Ref_बिलांग(pPager->pPCache)==0 ){
     assert( pPager->nMmapOut==0 ); /* because page1 is never memory mapped */
     pagerUnlockAndRollback(pPager);
   }
@@ -5853,7 +5853,7 @@ void sqlite3PagerUnrefNotNull(DbPage *pPg){
     sqlite3PcacheRelease(pPg);
   }
   /* Do not use this routine to release the last reference to page1 */
-  assert( sqlite3PcacheRefCount(pPager->pPCache)>0 ); /* tag-20230419-2 */
+  assert( sqlite3_Pcache_Ref_बिलांग(pPager->pPCache)>0 ); /* tag-20230419-2 */
 }
 void sqlite3PagerUnref(DbPage *pPg){
   if( pPg ) sqlite3PagerUnrefNotNull(pPg);
@@ -6084,7 +6084,7 @@ static SQLITE_NOINLINE int pagerAddPageToRollbackJournal(PgHdr *pPg){
 
   IOTRACE(("JOUT %p %d %lld %d\n", pPager, pPg->pgno,
            pPager->journalOff, pPager->pageSize));
-  PAGER_INCR(sqlite3_pager_writej_count);
+  PAGER_INCR(sqlite3_pager_writej_बिलांग);
   PAGERTRACE(("JOURNAL %d page %d needSync=%d hash(%08x)\n",
        PAGERID(pPager), pPg->pgno,
        ((pPg->flags&PGHDR_NEED_SYNC)?1:0), pager_pagehash(pPg)));
@@ -6201,7 +6201,7 @@ static int pager_write(PgHdr *pPg){
 */
 static SQLITE_NOINLINE int pagerWriteLargeSector(PgHdr *pPg){
   int rc = SQLITE_OK;          /* Return code */
-  Pgno nPageCount;             /* Total number of pages in database file */
+  Pgno n_Page_बिलांग;             /* Total number of pages in database file */
   Pgno pg1;                    /* First page of the sector pPg is located on. */
   int nPage = 0;               /* Number of pages starting at pg1 to journal */
   int ii;                      /* Loop counter */
@@ -6223,11 +6223,11 @@ static SQLITE_NOINLINE int pagerWriteLargeSector(PgHdr *pPg){
   */
   pg1 = ((pPg->pgno-1) & ~(nPagePerSector-1)) + 1;
 
-  nPageCount = pPager->dbSize;
-  if( pPg->pgno>nPageCount ){
+  n_Page_बिलांग = pPager->dbSize;
+  if( pPg->pgno>n_Page_बिलांग ){
     nPage = (pPg->pgno - pg1)+1;
-  }else if( (pg1+nPagePerSector-1)>nPageCount ){
-    nPage = nPageCount+1-pg1;
+  }else if( (pg1+nPagePerSector-1)>n_Page_बिलांग ){
+    nPage = n_Page_बिलांग+1-pg1;
   }else{
     nPage = nPagePerSector;
   }
@@ -6402,7 +6402,7 @@ static int pager_incr_changecounter(Pager *pPager, int isDirectMode){
 # define DIRECT_MODE isDirectMode
 #endif
 
-  if( !pPager->changeCountDone && pPager->dbSize>0 ){
+  if( !pPager->change_बिलांग_Done && pPager->dbSize>0 ){
     PgHdr *pPgHdr;                /* Reference to page 1 */
 
     assert( !pPager->tempFile && isOpen(pPager->fd) );
@@ -6439,10 +6439,10 @@ static int pager_incr_changecounter(Pager *pPager, int isDirectMode){
           ** flushed (as the change-counter values will not match).  */
           const void *pCopy = (const void *)&((const char *)zBuf)[24];
           memcpy(&pPager->dbFileVers, pCopy, sizeof(pPager->dbFileVers));
-          pPager->changeCountDone = 1;
+          pPager->change_बिलांग_Done = 1;
         }
       }else{
-        pPager->changeCountDone = 1;
+        pPager->change_बिलांग_Done = 1;
       }
     }
 
@@ -6886,7 +6886,7 @@ u8 sqlite3PagerIsreadonly(Pager *pPager){
 ** Return the sum of the reference counts for all pages held by pPager.
 */
 int sqlite3PagerRefcount(Pager *pPager){
-  return sqlite3PcacheRefCount(pPager->pPCache);
+  return sqlite3_Pcache_Ref_बिलांग(pPager->pPCache);
 }
 #endif
 
@@ -6929,7 +6929,7 @@ int sqlite3PagerPageRefcount(DbPage *pPage){
 */
 int *sqlite3PagerStats(Pager *pPager){
   static int a[11];
-  a[0] = sqlite3PcacheRefCount(pPager->pPCache);
+  a[0] = sqlite3_Pcache_Ref_बिलांग(pPager->pPCache);
   a[1] = sqlite3PcachePagecount(pPager->pPCache);
   a[2] = sqlite3PcacheGetCachesize(pPager->pPCache);
   a[3] = pPager->eState==PAGER_OPEN ? -1 : (int) pPager->dbSize;

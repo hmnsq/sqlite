@@ -186,7 +186,7 @@ static int SQLITE_TCLAPI load_testfixture_extensions(
 
   Tcl_Interp *slave;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SLAVE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SLAVE");
     return TCL_ERROR;
   }
 

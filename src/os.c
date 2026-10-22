@@ -34,7 +34,7 @@ int sqlite3_diskfull = 0;
 ** When testing, also keep a count of the number of open files.
 */
 #if defined(SQLITE_TEST)
-int sqlite3_open_file_count = 0;
+int sqlite3_open_file_बिलांग = 0;
 #endif /* defined(SQLITE_TEST) */
 
 /*

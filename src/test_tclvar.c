@@ -47,9 +47,9 @@
 */
 #define TCLVAR_NAME_EQ      'e'
 #define TCLVAR_NAME_MATCH   'm'
-#define TCLVAR_VALUE_GLOB   'g'
-#define TCLVAR_VALUE_REGEXP 'r'
-#define TCLVAR_VALUE_LIKE   'l'
+#define TCLVAR_हालागा_GLOB   'g'
+#define TCLVAR_हालागा_REGEXP 'r'
+#define TCLVAR_हालागा_LIKE   'l'
 
 typedef struct tclvar_vtab tclvar_vtab;
 typedef struct tclvar_cursor tclvar_cursor;
@@ -85,7 +85,7 @@ static int tclvarConnect(
      "CREATE TABLE x("
      "  name TEXT,"                       /* Base name */
      "  arrayname TEXT,"                  /* Array index */
-     "  value TEXT,"                      /* Value */
+     "  value TEXT,"                      /*हालागा*/
      "  fullname TEXT PRIMARY KEY"        /* base(index) name */
      ") WITHOUT ROWID";
   pVtab = sqlite3MallocZero( sizeof(*pVtab) );
@@ -120,10 +120,10 @@ static int tclvarOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
 static int tclvarClose(sqlite3_vtab_cursor *cur){
   tclvar_cursor *pCur = (tclvar_cursor *)cur;
   if( pCur->pList1 ){
-    Tcl_DecrRefCount(pCur->pList1);
+    Tcl_Decr_Ref_बिलांग(pCur->pList1);
   }
   if( pCur->pList2 ){
-    Tcl_DecrRefCount(pCur->pList2);
+    Tcl_Decr_Ref_बिलांग(pCur->pList2);
   }
   sqlite3_free(pCur);
   return SQLITE_OK;
@@ -138,19 +138,19 @@ static int next2(Tcl_Interp *interp, tclvar_cursor *pCur, Tcl_Obj *pObj){
   if( pObj ){
     if( !pCur->pList2 ){
       p = Tcl_NewStringObj("array names", -1);
-      Tcl_IncrRefCount(p);
+      Tcl_Incr_Ref_बिलांग(p);
       Tcl_ListObjAppendElement(0, p, pObj);
       Tcl_EvalObjEx(interp, p, TCL_EVAL_GLOBAL);
-      Tcl_DecrRefCount(p);
+      Tcl_Decr_Ref_बिलांग(p);
       pCur->pList2 = Tcl_GetObjResult(interp);
-      Tcl_IncrRefCount(pCur->pList2);
+      Tcl_Incr_Ref_बिलांग(pCur->pList2);
       assert( pCur->i2==0 );
     }else{
       Tcl_Size n = 0;
       pCur->i2++;
       Tcl_ListObjLength(0, pCur->pList2, &n);
       if( pCur->i2>=n ){
-        Tcl_DecrRefCount(pCur->pList2);
+        Tcl_Decr_Ref_बिलांग(pCur->pList2);
         pCur->pList2 = 0;
         pCur->i2 = 0;
         return 0;
@@ -183,8 +183,8 @@ static int tclvarNext(sqlite3_vtab_cursor *cur){
 
 static int tclvarFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   tclvar_cursor *pCur = (tclvar_cursor *)pVtabCursor;
   Tcl_Interp *interp = ((tclvar_vtab *)(pVtabCursor->pVtab))->interp;
@@ -200,26 +200,26 @@ static int tclvarFilter(
   for(i=0; idxStr[i]; i++){
     switch( idxStr[i] ){
       case TCLVAR_NAME_EQ:
-        zEq = (const char*)sqlite3_value_text(argv[i]);
+        zEq = (const char*)sqlite3_हालागा_text(argv[i]);
         break;
       case TCLVAR_NAME_MATCH:
-        zMatch = (const char*)sqlite3_value_text(argv[i]);
+        zMatch = (const char*)sqlite3_हालागा_text(argv[i]);
         break;
-      case TCLVAR_VALUE_GLOB:
-        zGlob = (const char*)sqlite3_value_text(argv[i]);
+      case TCLVAR_हालागा_GLOB:
+        zGlob = (const char*)sqlite3_हालागा_text(argv[i]);
         break;
-      case TCLVAR_VALUE_REGEXP:
-        zRegexp = (const char*)sqlite3_value_text(argv[i]);
+      case TCLVAR_हालागा_REGEXP:
+        zRegexp = (const char*)sqlite3_हालागा_text(argv[i]);
         break;
-      case TCLVAR_VALUE_LIKE:
-        zLike = (const char*)sqlite3_value_text(argv[i]);
+      case TCLVAR_हालागा_LIKE:
+        zLike = (const char*)sqlite3_हालागा_text(argv[i]);
         break;
       default:
         assert( 0 );
     }
   }
 
-  Tcl_IncrRefCount(p);
+  Tcl_Incr_Ref_बिलांग(p);
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zEq, -1));
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zMatch, -1));
   Tcl_ListObjAppendElement(0, p, Tcl_NewStringObj(zGlob, -1));
@@ -228,18 +228,18 @@ static int tclvarFilter(
 
   Tcl_EvalObjEx(interp, p, TCL_EVAL_GLOBAL);
   if( pCur->pList1 ){
-    Tcl_DecrRefCount(pCur->pList1);
+    Tcl_Decr_Ref_बिलांग(pCur->pList1);
   }
   if( pCur->pList2 ){
-    Tcl_DecrRefCount(pCur->pList2);
+    Tcl_Decr_Ref_बिलांग(pCur->pList2);
     pCur->pList2 = 0;
   }
   pCur->i1 = 0;
   pCur->i2 = 0;
   pCur->pList1 = Tcl_GetObjResult(interp);
-  Tcl_IncrRefCount(pCur->pList1);
+  Tcl_Incr_Ref_बिलांग(pCur->pList1);
 
-  Tcl_DecrRefCount(p);
+  Tcl_Decr_Ref_बिलांग(p);
   return tclvarNext(pVtabCursor);
 }
 
@@ -377,7 +377,7 @@ static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 
       /* value GLOB ? */
       if( pCons->op==SQLITE_INDEX_CONSTRAINT_GLOB && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_GLOB) ){
+        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_हालागा_GLOB) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
@@ -385,7 +385,7 @@ static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 
       /* value REGEXP ? */
       if( pCons->op==SQLITE_INDEX_CONSTRAINT_REGEXP && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_REGEXP) ){
+        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_हालागा_REGEXP) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
@@ -393,7 +393,7 @@ static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 
       /* value LIKE ? */
       if( pCons->op==SQLITE_INDEX_CONSTRAINT_LIKE && pCons->iColumn==2 ){
-        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_VALUE_LIKE) ){
+        if( 0==tclvarAddToIdxstr(zStr, TCLVAR_हालागा_LIKE) ){
           pUsage->argvIndex = ++iStr;
           pUsage->omit = tclvarSetOmit(pTab->interp);
         }
@@ -412,49 +412,49 @@ static int tclvarBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 static int tclvarUpdate(
   sqlite3_vtab *tab,
   int argc,
-  sqlite3_value **argv,
+  sqlite3_हालागा **argv,
   sqlite_int64 *pRowid
 ){
   tclvar_vtab *pTab = (tclvar_vtab*)tab;
   if( argc==1 ){
     /* A DELETE operation.  The variable to be deleted is stored in argv[0] */
-    const char *zVar = (const char*)sqlite3_value_text(argv[0]);
+    const char *zVar = (const char*)sqlite3_हालागा_text(argv[0]);
     Tcl_UnsetVar(pTab->interp, zVar, TCL_GLOBAL_ONLY);
     return SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
+  if( sqlite3_हालागा_type(argv[0])==SQLITE_NULL ){
     /* An INSERT operation */
-    const char *zValue = (const char*)sqlite3_value_text(argv[4]);
+    const char *z_हालागा = (const char*)sqlite3_हालागा_text(argv[4]);
     const char *zName;
-    if( sqlite3_value_type(argv[5])!=SQLITE_TEXT ){
-      tab->zErrMsg = sqlite3_mprintf("the 'fullname' column must be TEXT");
+    if( sqlite3_हालागा_type(argv[5])!=SQLITE_TEXT ){
+      tab->z_Err_मेनसाहे = sqlite3_mprintf("the 'fullname' column must be TEXT");
       return SQLITE_ERROR;
     }
-    zName = (const char*)sqlite3_value_text(argv[5]);
-    if( zValue ){
-      Tcl_SetVar(pTab->interp, zName, zValue, TCL_GLOBAL_ONLY);
+    zName = (const char*)sqlite3_हालागा_text(argv[5]);
+    if( z_हालागा ){
+      Tcl_SetVar(pTab->interp, zName, z_हालागा, TCL_GLOBAL_ONLY);
     }else{
       Tcl_UnsetVar(pTab->interp, zName, TCL_GLOBAL_ONLY);
     }
     return SQLITE_OK;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_TEXT
-   && sqlite3_value_type(argv[1])==SQLITE_TEXT
+  if( sqlite3_हालागा_type(argv[0])==SQLITE_TEXT
+   && sqlite3_हालागा_type(argv[1])==SQLITE_TEXT
   ){
     /* An UPDATE operation */
-    const char *zOldName = (const char*)sqlite3_value_text(argv[0]);
-    const char *zNewName = (const char*)sqlite3_value_text(argv[1]);
-    const char *zValue = (const char*)sqlite3_value_text(argv[4]);
+    const char *zOldName = (const char*)sqlite3_हालागा_text(argv[0]);
+    const char *zNewName = (const char*)sqlite3_हालागा_text(argv[1]);
+    const char *z_हालागा = (const char*)sqlite3_हालागा_text(argv[4]);
 
-    if( strcmp(zOldName, zNewName)!=0 || zValue==0 ){
+    if( strcmp(zOldName, zNewName)!=0 || z_हालागा==0 ){
       Tcl_UnsetVar(pTab->interp, zOldName, TCL_GLOBAL_ONLY);
     }
-    if( zValue!=0 ){
-      Tcl_SetVar(pTab->interp, zNewName, zValue, TCL_GLOBAL_ONLY);
+    if( z_हालागा!=0 ){
+      Tcl_SetVar(pTab->interp, zNewName, z_हालागा, TCL_GLOBAL_ONLY);
     }
     return SQLITE_OK;
   }
-  tab->zErrMsg = sqlite3_mprintf("prohibited TCL variable change");
+  tab->z_Err_मेनसाहे = sqlite3_mprintf("prohibited TCL variable change");
   return SQLITE_ERROR;
 }
 
@@ -507,7 +507,7 @@ static int SQLITE_TCLAPI register_tclvar_module(
   int rc = TCL_OK;
   sqlite3 *db;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;

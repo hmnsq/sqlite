@@ -161,7 +161,7 @@ static int dbpageBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
       break;
     }
   }
-  pIdxInfo->idxNum = iPlan;
+  pIdxInfo->idx_नुमेरो = iPlan;
 
   if( pIdxInfo->nOrderBy>=1
    && pIdxInfo->aOrderBy[0].iColumn<=0
@@ -228,8 +228,8 @@ static int dbpageEof(sqlite3_vtab_cursor *pCursor){
 */
 static int dbpageFilter(
   sqlite3_vtab_cursor *pCursor,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   DbpageCursor *pCsr = (DbpageCursor *)pCursor;
   DbpageTable *pTab = (DbpageTable *)pCursor->pVtab;
@@ -244,10 +244,10 @@ static int dbpageFilter(
   pCsr->pgno = 1;
   pCsr->mxPgno = 0;
 
-  if( idxNum & 2 ){
+  if( idx_नुमेरो & 2 ){
     const char *zSchema;
     assert( argc>=1 );
-    zSchema = (const char*)sqlite3_value_text(argv[0]);
+    zSchema = (const char*)sqlite3_हालागा_text(argv[0]);
     pCsr->iDb = sqlite3FindDbName(db, zSchema);
     if( pCsr->iDb<0 ) return SQLITE_OK;
   }else{
@@ -258,9 +258,9 @@ static int dbpageFilter(
   pCsr->pPager = sqlite3BtreePager(pBt);
   pCsr->szPage = sqlite3BtreeGetPageSize(pBt);
   pCsr->mxPgno = sqlite3BtreeLastPage(pBt);
-  if( idxNum & 1 ){
-    i64 iPg = sqlite3_value_int64(argv[idxNum>>1]);
-    assert( argc>(idxNum>>1) );
+  if( idx_नुमेरो & 1 ){
+    i64 iPg = sqlite3_हालागा_int64(argv[idx_नुमेरो>>1]);
+    assert( argc>(idx_नुमेरो>>1) );
     if( iPg<1 || iPg>pCsr->mxPgno ){
       pCsr->pgno = 1;
       pCsr->mxPgno = 0;
@@ -340,7 +340,7 @@ static int dbpageBeginTrans(DbpageTable *pTab){
 static int dbpageUpdate(
   sqlite3_vtab *pVtab,
   int argc,
-  sqlite3_value **argv,
+  sqlite3_हालागा **argv,
   sqlite_int64 *pRowid
 ){
   DbpageTable *pTab = (DbpageTable *)pVtab;
@@ -353,7 +353,7 @@ static int dbpageUpdate(
   Btree *pBt;
   Pager *pPager;
   int szPage;
-  int isInsert;
+  int is_इसिंगित;
 
   (void)pRowid;
   if( pTab->db->flags & SQLITE_Defensive ){
@@ -364,21 +364,21 @@ static int dbpageUpdate(
     zErr = "cannot delete";
     goto update_fail;
   }
-  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
-    pgno64 = sqlite3_value_int64(argv[2]);
-    isInsert = 1;
+  if( sqlite3_हालागा_type(argv[0])==SQLITE_NULL ){
+    pgno64 = sqlite3_हालागा_int64(argv[2]);
+    is_इसिंगित = 1;
   }else{
-    pgno64 = (Pgno)sqlite3_value_int64(argv[0]);
-    if( sqlite3_value_int64(argv[1])!=pgno64 ){
+    pgno64 = (Pgno)sqlite3_हालागा_int64(argv[0]);
+    if( sqlite3_हालागा_int64(argv[1])!=pgno64 ){
       zErr = "cannot insert";
       goto update_fail;
     }
-    isInsert = 0;
+    is_इसिंगित = 0;
   }
-  if( sqlite3_value_type(argv[4])==SQLITE_NULL ){
+  if( sqlite3_हालागा_type(argv[4])==SQLITE_NULL ){
     iDb = 0;
   }else{
-    const char *zSchema = (const char*)sqlite3_value_text(argv[4]);
+    const char *zSchema = (const char*)sqlite3_हालागा_text(argv[4]);
     iDb = sqlite3FindDbName(pTab->db, zSchema);
     if( iDb<0 ){
       zErr = "no such schema";
@@ -392,10 +392,10 @@ static int dbpageUpdate(
   }
   pgno = (Pgno)pgno64;
   szPage = sqlite3BtreeGetPageSize(pBt);
-  if( sqlite3_value_type(argv[3])!=SQLITE_BLOB 
-   || sqlite3_value_bytes(argv[3])!=szPage
+  if( sqlite3_हालागा_type(argv[3])!=SQLITE_BLOB 
+   || sqlite3_हालागा_bytes(argv[3])!=szPage
   ){
-    if( sqlite3_value_type(argv[3])==SQLITE_NULL && isInsert && pgno>1 ){
+    if( sqlite3_हालागा_type(argv[3])==SQLITE_NULL && is_इसिंगित && pgno>1 ){
       /* "INSERT INTO dbpage($PGNO,NULL)" causes page number $PGNO and
       ** all subsequent pages to be deleted. */
       pTab->iDbTrunc = iDb;
@@ -415,7 +415,7 @@ static int dbpageUpdate(
   pPager = sqlite3BtreePager(pBt);
   rc = sqlite3PagerGet(pPager, pgno, (DbPage**)&pDbPage, 0);
   if( rc==SQLITE_OK ){
-    const void *pData = sqlite3_value_blob(argv[3]);
+    const void *pData = sqlite3_हालागा_blob(argv[3]);
     if( (rc = sqlite3PagerWrite(pDbPage))==SQLITE_OK && pData ){
       unsigned char *aPage = sqlite3PagerGetData(pDbPage);
       memcpy(aPage, pData, szPage);
@@ -430,8 +430,8 @@ static int dbpageUpdate(
 
 update_fail:
   pTab->pgnoTrunc = 0;
-  sqlite3_free(pVtab->zErrMsg);
-  pVtab->zErrMsg = sqlite3_mprintf("%s", zErr);
+  sqlite3_free(pVtab->z_Err_मेनसाहे);
+  pVtab->z_Err_मेनसाहे = sqlite3_mprintf("%s", zErr);
   return SQLITE_ERROR;
 }
 

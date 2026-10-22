@@ -31,7 +31,7 @@ struct ProcessLocalStorage {
 };
 
 struct ProcessLocalVar {
-  void *pKey;
+  void *p_सुसि;
   ProcessLocalVar *pNext;
 };
 
@@ -63,14 +63,14 @@ void *sqlite3_wsd_find(void *K, int L){
   iHash = iHash%PLS_HASHSIZE;
 
   /* Search the hash table for K. */
-  for(pVar=pGlobal->aData[iHash]; pVar && pVar->pKey!=K; pVar=pVar->pNext);
+  for(pVar=pGlobal->aData[iHash]; pVar && pVar->p_सुसि!=K; pVar=pVar->pNext);
 
   /* If no entry for K was found, create and populate a new one. */
   if( !pVar ){
     int nByte = ROUND8(sizeof(ProcessLocalVar) + L);
     assert( pGlobal->nFree>=nByte );
     pVar = (ProcessLocalVar *)pGlobal->pFree;
-    pVar->pKey = K;
+    pVar->p_सुसि = K;
     pVar->pNext = pGlobal->aData[iHash];
     pGlobal->aData[iHash] = pVar;
     pGlobal->nFree -= nByte;

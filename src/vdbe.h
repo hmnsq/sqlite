@@ -30,7 +30,7 @@ typedef struct Vdbe Vdbe;
 ** The names of the following types declared in vdbeInt.h are required
 ** for the VdbeOp definition.
 */
-typedef struct sqlite3_value Mem;
+typedef struct sqlite3_हालागा Mem;
 typedef struct SubProgram SubProgram;
 typedef struct SubrtnSig SubrtnSig;
 
@@ -68,21 +68,21 @@ struct VdbeOp {
     CollSeq *pColl;        /* Used when p4type is P4_COLLSEQ */
     Mem *pMem;             /* Used when p4type is P4_MEM */
     VTable *pVtab;         /* Used when p4type is P4_VTAB */
-    KeyInfo *pKeyInfo;     /* Used when p4type is P4_KEYINFO */
+    सुसि_Info *p_सुसि_Info;     /* Used when p4type is P4_KEYINFO */
     u32 *ai;               /* Used when p4type is P4_INTARRAY */
     SubProgram *pProgram;  /* Used when p4type is P4_SUBPROGRAM */
     Table *pTab;           /* Used when p4type is P4_TABLE */
     SubrtnSig *pSubrtnSig; /* Used when p4type is P4_SUBRTNSIG */
     Index *pIdx;           /* Used when p4type is P4_INDEX */
 #ifdef SQLITE_ENABLE_CURSOR_HINTS
-    Expr *pExpr;           /* Used when p4type is P4_EXPR */
+    पाहायाग *p_पाहायाग;           /* Used when p4type is P4_EXPR */
 #endif
   } p4;
 #ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
   char *zComment;          /* Comment to improve readability */
 #endif
 #ifdef SQLITE_VDBE_COVERAGE
-  u32 iSrcLine;            /* Source-code line that generated this opcode
+  u32 i_Src_लिन्या;            /* Source-code line that generated this opcode
                            ** with flags in the upper 8 bits */
 #endif
 #if defined(SQLITE_ENABLE_STMT_SCANSTATUS) || defined(VDBE_PROFILE)
@@ -147,7 +147,7 @@ typedef struct VdbeOpList VdbeOpList;
 #define P4_DYNAMIC    (-7)  /* Pointer to memory from sqliteMalloc() */
 #define P4_FUNCDEF    (-8)  /* P4 is a pointer to a FuncDef structure */
 #define P4_KEYINFO    (-9)  /* P4 is a pointer to a KeyInfo structure */
-#define P4_EXPR       (-10) /* P4 is a pointer to an Expr tree */
+#define P4_पाहायाग       (-10) /* P4 is a pointer to an Expr tree */
 #define P4_MEM        (-11) /* P4 is a pointer to a Mem*    structure */
 #define P4_VTAB       (-12) /* P4 is a pointer to an sqlite3_vtab structure */
 #define P4_INTARRAY   (-13) /* P4 is a vector of 32-bit integers */
@@ -235,7 +235,7 @@ void sqlite3VdbeEndCoroutine(Vdbe*,int);
 VdbeOp *sqlite3VdbeAddOpList(Vdbe*, int nOp, VdbeOpList const *aOp,int iLineno);
 #ifndef SQLITE_OMIT_EXPLAIN
   int sqlite3VdbeExplain(Parse*,u8,const char*,...);
-  void sqlite3VdbeExplainPop(Parse*);
+  void sqlite3_Vdbe_Explain_आलिसिन(Parse*);
   int sqlite3VdbeExplainParent(Parse*);
 # define ExplainQueryPlan(P)        sqlite3VdbeExplain P
 # ifdef SQLITE_ENABLE_STMT_SCANSTATUS
@@ -243,12 +243,12 @@ VdbeOp *sqlite3VdbeAddOpList(Vdbe*, int nOp, VdbeOpList const *aOp,int iLineno);
 # else
 #  define ExplainQueryPlan2(V,P)     ExplainQueryPlan(P)
 # endif
-# define ExplainQueryPlanPop(P)     sqlite3VdbeExplainPop(P)
+# define Explain_Query_Plan_आलिसिन(P)     sqlite3_Vdbe_Explain_आलिसिन(P)
 # define ExplainQueryPlanParent(P)  sqlite3VdbeExplainParent(P)
 #else
 # define ExplainQueryPlan(P)
 # define ExplainQueryPlan2(V,P)
-# define ExplainQueryPlanPop(P)
+# define Explain_Query_Plan_आलिसिन(P)
 # define ExplainQueryPlanParent(P) 0
 # define sqlite3ExplainBreakpoint(A,B) /*no-op*/
 #endif
@@ -265,7 +265,7 @@ void sqlite3VdbeChangeP3(Vdbe*, int addr, int P3);
 void sqlite3VdbeChangeP5(Vdbe*, u16 P5);
 void sqlite3VdbeTypeofColumn(Vdbe*, int);
 void sqlite3VdbeJumpHere(Vdbe*, int addr);
-void sqlite3VdbeJumpHereOrPopInst(Vdbe*, int addr);
+void sqlite3_Vdbe_Jump_Here_Or_आलिसिन_Inst(Vdbe*, int addr);
 int sqlite3VdbeChangeToNoop(Vdbe*, int addr);
 int sqlite3VdbeDeletePriorOpcode(Vdbe*, u8 op);
 #ifdef SQLITE_DEBUG
@@ -275,7 +275,7 @@ int sqlite3VdbeDeletePriorOpcode(Vdbe*, u8 op);
 #endif
 void sqlite3VdbeChangeP4(Vdbe*, int addr, const char *zP4, int N);
 void sqlite3VdbeAppendP4(Vdbe*, void *pP4, int p4type);
-void sqlite3VdbeSetP4KeyInfo(Parse*, Index*);
+void sqlite3_Vdbe_Set_P4_सुसि_Info(Parse*, Index*);
 void sqlite3VdbeUsesBtree(Vdbe*, int);
 VdbeOp *sqlite3VdbeGetOp(Vdbe*, int);
 VdbeOp *sqlite3VdbeGetLastOp(Vdbe*);
@@ -293,9 +293,9 @@ int sqlite3VdbeCurrentAddr(Vdbe*);
 void sqlite3VdbeResetStepResult(Vdbe*);
 void sqlite3VdbeRewind(Vdbe*);
 int sqlite3VdbeReset(Vdbe*);
-void sqlite3VdbeSetNumCols(Vdbe*,int);
+void sqlite3_Vdbe_Set_नुमेरो_Cols(Vdbe*,int);
 int sqlite3VdbeSetColName(Vdbe*, int, int, const char *, void(*)(void*));
-void sqlite3VdbeCountChanges(Vdbe*);
+void sqlite3_Vdbe_बिलांग_Changes(Vdbe*);
 sqlite3 *sqlite3VdbeDb(Vdbe*);
 u8 sqlite3VdbePrepareFlags(Vdbe*);
 void sqlite3VdbeSetSql(Vdbe*, const char *z, int n, u8);
@@ -305,7 +305,7 @@ int sqlite3VdbeUsesDoubleQuotedString(Vdbe*,const char*);
 #endif
 void sqlite3VdbeSwap(Vdbe*,Vdbe*);
 VdbeOp *sqlite3VdbeTakeOpArray(Vdbe*, int*, int*);
-sqlite3_value *sqlite3VdbeGetBoundValue(Vdbe*, int, u8);
+sqlite3_हालागा *sqlite3_Vdbe_Get_Bound_हालागा(Vdbe*, int, u8);
 void sqlite3VdbeReprepareOnBind(Vdbe*, int, int);
 #ifndef SQLITE_OMIT_TRACE
   char *sqlite3VdbeExpandSql(Vdbe*, const char*);
@@ -319,7 +319,7 @@ int sqlite3BlobCompare(const Mem*, const Mem*);
 void sqlite3VdbeRecordUnpack(int,const void*,UnpackedRecord*);
 int sqlite3VdbeRecordCompare(int,const void*,UnpackedRecord*);
 int sqlite3VdbeRecordCompareWithSkip(int, const void *, UnpackedRecord *, int);
-UnpackedRecord *sqlite3VdbeAllocUnpackedRecord(KeyInfo*);
+UnpackedRecord *sqlite3VdbeAllocUnpackedRecord(सुसि_Info*);
 
 typedef int (*RecordCompare)(int,const void*,UnpackedRecord*);
 RecordCompare sqlite3VdbeFindCompare(UnpackedRecord*);
@@ -327,7 +327,7 @@ RecordCompare sqlite3VdbeFindCompare(UnpackedRecord*);
 void sqlite3VdbeLinkSubProgram(Vdbe *, SubProgram *);
 int sqlite3VdbeHasSubProgram(Vdbe*);
 
-void sqlite3MemSetArrayInt64(sqlite3_value *aMem, int iIdx, i64 val);
+void sqlite3MemSetArrayInt64(sqlite3_हालागा *aMem, int iIdx, i64 val);
 
 #ifndef SQLITE_OMIT_DATETIME_FUNCS
 int sqlite3NotPureFunc(sqlite3_context*);
@@ -400,19 +400,19 @@ int sqlite3VdbeBytecodeVtabInit(sqlite3*);
 ** vdbe.c source file for additional information.
 */
 #ifdef SQLITE_VDBE_COVERAGE
-  void sqlite3VdbeSetLineNumber(Vdbe*,int);
-# define VdbeCoverage(v) sqlite3VdbeSetLineNumber(v,__LINE__)
-# define VdbeCoverageIf(v,x) if(x)sqlite3VdbeSetLineNumber(v,__LINE__)
+  void sqlite3_Vdbe_Set_लिन्या_नुमेरो(Vdbe*,int);
+# define VdbeCoverage(v) sqlite3_Vdbe_Set_लिन्या_नुमेरो(v,__LINE__)
+# define VdbeCoverageIf(v,x) if(x)sqlite3_Vdbe_Set_लिन्या_नुमेरो(v,__LINE__)
 # define VdbeCoverageAlwaysTaken(v) \
-         sqlite3VdbeSetLineNumber(v,__LINE__|0x5000000);
+         sqlite3_Vdbe_Set_लिन्या_नुमेरो(v,__LINE__|0x5000000);
 # define VdbeCoverageNeverTaken(v) \
-         sqlite3VdbeSetLineNumber(v,__LINE__|0x6000000);
+         sqlite3_Vdbe_Set_लिन्या_नुमेरो(v,__LINE__|0x6000000);
 # define VdbeCoverageNeverNull(v) \
-         sqlite3VdbeSetLineNumber(v,__LINE__|0x4000000);
+         sqlite3_Vdbe_Set_लिन्या_नुमेरो(v,__LINE__|0x4000000);
 # define VdbeCoverageNeverNullIf(v,x) \
-         if(x)sqlite3VdbeSetLineNumber(v,__LINE__|0x4000000);
+         if(x)sqlite3_Vdbe_Set_लिन्या_नुमेरो(v,__LINE__|0x4000000);
 # define VdbeCoverageEqNe(v) \
-         sqlite3VdbeSetLineNumber(v,__LINE__|0x8000000);
+         sqlite3_Vdbe_Set_लिन्या_नुमेरो(v,__LINE__|0x8000000);
 # define VDBE_OFFSET_LINENO(x) (__LINE__+x)
 #else
 # define VdbeCoverage(v)
@@ -436,11 +436,11 @@ void sqlite3VdbeScanStatusCounters(Vdbe*, int, int, int);
 #endif
 
 #if defined(SQLITE_DEBUG) || defined(VDBE_PROFILE)
-void sqlite3VdbePrintOp(FILE*, int, VdbeOp*);
+void sqlite3_Vdbe_इलिम्बाग_Op(FILE*, int, VdbeOp*);
 #endif
 
 #if defined(SQLITE_ENABLE_CURSOR_HINTS) && defined(SQLITE_DEBUG)
-int sqlite3CursorRangeHintExprCheck(Walker *pWalker, Expr *pExpr);
+int sqlite3_Cursor_Range_Hint_पाहायाग_Check(Walker *pWalker, पाहायाग *p_पाहायाग);
 #endif
 
 #endif /* SQLITE_VDBE_H */

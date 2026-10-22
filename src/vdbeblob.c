@@ -162,31 +162,31 @@ int sqlite3_blob_open(
     pTab = sqlite3LocateTable(&sParse, 0, zTable, zDb);
     if( pTab && IsVirtual(pTab) ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open virtual table: %s", zTable);
+      sqlite3_Error_मेनसाहे(&sParse, "cannot open virtual table: %s", zTable);
     }
     if( pTab && !HasRowid(pTab) ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open table without rowid: %s", zTable);
+      sqlite3_Error_मेनसाहे(&sParse, "cannot open table without rowid: %s", zTable);
     }
     if( pTab && (pTab->tabFlags&TF_HasGenerated)!=0 ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open table with generated columns: %s",
+      sqlite3_Error_मेनसाहे(&sParse, "cannot open table with generated columns: %s",
                       zTable);
     }
 #ifndef SQLITE_OMIT_VIEW
     if( pTab && IsView(pTab) ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open view: %s", zTable);
+      sqlite3_Error_मेनसाहे(&sParse, "cannot open view: %s", zTable);
     }
 #endif
     if( pTab==0
      || ((iDb = sqlite3SchemaToIndex(db, pTab->pSchema))==1 &&
          sqlite3OpenTempDatabase(&sParse))
     ){
-      if( sParse.zErrMsg ){
+      if( sParse.z_Err_मेनसाहे ){
         sqlite3DbFree(db, zErr);
-        zErr = sParse.zErrMsg;
-        sParse.zErrMsg = 0;
+        zErr = sParse.z_Err_मेनसाहे;
+        sParse.z_Err_मेनसाहे = 0;
       }
       rc = SQLITE_ERROR;
       sqlite3BtreeLeaveAll(db);
@@ -211,8 +211,8 @@ int sqlite3_blob_open(
     if( wrFlag ){
       const char *zFault = 0;
       Index *pIdx;
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-      if( db->flags&SQLITE_ForeignKeys ){
+#ifndef SQLITE_OMIT_FOREIGN_सुसि
+      if( db->flags&SQLITE_Foreign_मगा_सुसि ){
         /* Check that the column is not part of an FK child key definition. It
         ** is not necessary to check if it is part of a parent key, as parent
         ** key columns must be indexed. The check below will pick up this 
@@ -231,9 +231,9 @@ int sqlite3_blob_open(
 #endif
       for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
         int j;
-        for(j=0; j<pIdx->nKeyCol; j++){
+        for(j=0; j<pIdx->n_सुसि_Col; j++){
           /* FIXME: Be smarter about indexes that use expressions */
-          if( pIdx->aiColumn[j]==iCol || pIdx->aiColumn[j]==XN_EXPR ){
+          if( pIdx->aiColumn[j]==iCol || pIdx->aiColumn[j]==XN_पाहायाग ){
             zFault = "indexed";
           }
         }
@@ -345,7 +345,7 @@ blob_open_out:
     if( pBlob && pBlob->pStmt ) sqlite3VdbeFinalize((Vdbe *)pBlob->pStmt);
     sqlite3DbFree(db, pBlob);
   }
-  sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (char*)0), zErr);
+  sqlite3_Error_With_मेनसाहे(db, rc, (zErr ? "%s" : (char*)0), zErr);
   sqlite3DbFree(db, zErr);
   sqlite3ParseObjectReset(&sParse);
   rc = sqlite3ApiExit(db, rc);
@@ -435,12 +435,12 @@ static int blobReadWrite(
         assert( bDiff==0 || sqlite3BtreeCursorIsValidNN(p->pCsr)==0 );
       }
       if( sqlite3BtreeCursorIsValidNN(p->pCsr) ){
-        sqlite3_int64 iKey;
-        iKey = sqlite3BtreeIntegerKey(p->pCsr);
+        sqlite3_int64 i_सुसि;
+        i_सुसि = sqlite3_Btree_Integer_सुसि(p->pCsr);
         assert( v->apCsr[0]!=0 );
         assert( v->apCsr[0]->eCurType==CURTYPE_BTREE );
         sqlite3VdbePreUpdateHook(
-            v, v->apCsr[0], SQLITE_DELETE, p->zDb, p->pTab, iKey, -1, p->iCol
+            v, v->apCsr[0], SQLITE_DELETE, p->zDb, p->pTab, i_सुसि, -1, p->iCol
         );
       }
     }
@@ -519,7 +519,7 @@ int sqlite3_blob_reopen(sqlite3_blob *pBlob, sqlite3_int64 iRow){
     ((Vdbe*)p->pStmt)->rc = SQLITE_OK;
     rc = blobSeekToRow(p, iRow, &zErr);
     if( rc!=SQLITE_OK ){
-      sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (char*)0), zErr);
+      sqlite3_Error_With_मेनसाहे(db, rc, (zErr ? "%s" : (char*)0), zErr);
       sqlite3DbFree(db, zErr);
     }
     assert( rc!=SQLITE_SCHEMA );

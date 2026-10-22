@@ -143,15 +143,15 @@ void sqlite3StrAccumSetError(StrAccum *p, u8 eError){
 */
 static sqlite3_int64 getIntArg(PrintfArguments *p){
   if( p->nArg<=p->nUsed ) return 0;
-  return sqlite3_value_int64(p->apArg[p->nUsed++]);
+  return sqlite3_हालागा_int64(p->apArg[p->nUsed++]);
 }
 static double getDoubleArg(PrintfArguments *p){
   if( p->nArg<=p->nUsed ) return 0.0;
-  return sqlite3_value_double(p->apArg[p->nUsed++]);
+  return sqlite3_हालागा_double(p->apArg[p->nUsed++]);
 }
 static char *getTextArg(PrintfArguments *p){
   if( p->nArg<=p->nUsed ) return 0;
-  return (char*)sqlite3_value_text(p->apArg[p->nUsed++]);
+  return (char*)sqlite3_हालागा_text(p->apArg[p->nUsed++]);
 }
 
 /*
@@ -181,10 +181,10 @@ static char *printfTempBuf(sqlite3_str *pAccum, sqlite3_int64 n){
 ** On machines with a small stack size, you can redefine the
 ** SQLITE_PRINT_BUF_SIZE to be something smaller, if desired.
 */
-#ifndef SQLITE_PRINT_BUF_SIZE
-# define SQLITE_PRINT_BUF_SIZE 70
+#ifndef SQLITE_इलिम्बाग_BUF_SIZE
+# define SQLITE_इलिम्बाग_BUF_SIZE 70
 #endif
-#define etBUFSIZE SQLITE_PRINT_BUF_SIZE  /* Size of the output buffer */
+#define etBUFSIZE SQLITE_इलिम्बाग_BUF_SIZE  /* Size of the output buffer */
 
 /*
 ** Hard limit on the precision of floating-point conversions to
@@ -475,7 +475,7 @@ void sqlite3_str_vappendf(
         if( xtype==etPOINTER && sqlite3WhereTrace & 0x100000 ) longvalue = 0;
 #endif
 #if TREETRACE_ENABLED
-        if( xtype==etPOINTER && sqlite3TreeTrace & 0x100000 ) longvalue = 0;
+        if( xtype==etPOINTER && sqlite3_पुनो_Trace & 0x100000 ) longvalue = 0;
 #endif
 
         if( longvalue==0 ) flag_alternateform = 0;
@@ -943,7 +943,7 @@ void sqlite3_str_vappendf(
           sqlite3_int64 len = n;
           char *zz;
           if( flag_altform2 && n>0 ){
-            zz = sqlite3_str_value(pAccum);
+            zz = sqlite3_str_हालागा(pAccum);
             for(i=iStart; zz[i]; i++){
               if( (zz[i]&0xc0)==0x80 ) len--;
             }
@@ -956,7 +956,7 @@ void sqlite3_str_vappendf(
              && n>0
              && sqlite3_str_errcode(pAccum)==0
             ){
-              zz = sqlite3_str_value(pAccum);
+              zz = sqlite3_str_हालागा(pAccum);
               zz += iStart;
               memmove(zz+sp, zz, n);
               memset(zz, ' ', sp);
@@ -1077,10 +1077,10 @@ void sqlite3_str_vappendf(
         if( (pAccum->printfFlags & SQLITE_PRINTF_INTERNAL)==0 ) return;
         if( flag_alternateform ){
           /* %#T means an Expr pointer that uses Expr.u.zToken */
-          Expr *pExpr = va_arg(ap,Expr*);
-          if( ALWAYS(pExpr) && ALWAYS(!ExprHasProperty(pExpr,EP_IntValue)) ){
-            sqlite3_str_appendall(pAccum, (const char*)pExpr->u.zToken);
-            sqlite3RecordErrorOffsetOfExpr(pAccum->db, pExpr);
+          पाहायाग *p_पाहायाग = va_arg(ap,पाहायाग*);
+          if( ALWAYS(p_पाहायाग) && ALWAYS(!पाहायाग_Has_Property(p_पाहायाग,EP_Int_हालागा)) ){
+            sqlite3_str_appendall(pAccum, (const char*)p_पाहायाग->u.zToken);
+            sqlite3_Record_Error_Offset_Of_पाहायाग(pAccum->db, p_पाहायाग);
           }
         }else{
           /* %T means a Token pointer */
@@ -1117,7 +1117,7 @@ void sqlite3_str_vappendf(
           assert( pSel!=0 ); 
           if( pSel->selFlags & SF_NestedFrom ){
             sqlite3_str_appendf(pAccum, "(join-%u)", pSel->selId);
-          }else if( pSel->selFlags & SF_MultiValue ){
+          }else if( pSel->selFlags & SF_Multi_हालागा ){
             assert( !pItem->fg.isTabFunc && !pItem->fg.isIndexedBy );
             sqlite3_str_appendf(pAccum, "%u-ROW VALUES CLAUSE",
                                 pItem->u1.nRow);
@@ -1185,18 +1185,18 @@ void sqlite3RecordErrorByteOffset(sqlite3 *db, const char *z){
 ** If pExpr has a byte offset for the start of a token, record that as
 ** as the error offset.
 */
-void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExpr){
-  while( pExpr ){
-    if( ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) ) return;
-    if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) || pExpr->w.iOfst<=0 ){
-      pExpr = pExpr->pLeft;
+void sqlite3_Record_Error_Offset_Of_पाहायाग(sqlite3 *db, const पाहायाग *p_पाहायाग){
+  while( p_पाहायाग ){
+    if( पाहायाग_Has_Property(p_पाहायाग, EP_Reduced|EP_TokenOnly) ) return;
+    if( पाहायाग_Has_Property(p_पाहायाग,EP_OuterON|EP_InnerON) || p_पाहायाग->w.iOfst<=0 ){
+      p_पाहायाग = p_पाहायाग->p_कालिवा;
     }else{
       break;
     }
   }
-  if( pExpr==0 ) return;
-  if( ExprHasProperty(pExpr, EP_FromDDL) ) return;
-  db->errByteOffset = pExpr->w.iOfst;
+  if( p_पाहायाग==0 ) return;
+  if( पाहायाग_Has_Property(p_पाहायाग, EP_FromDDL) ) return;
+  db->errByteOffset = p_पाहायाग->w.iOfst;
 }
 
 /*
@@ -1395,7 +1395,7 @@ void sqlite3_str_truncate(sqlite3_str *p, int N){
 }
 
 /* Return the current value for p */
-char *sqlite3_str_value(sqlite3_str *p){
+char *sqlite3_str_हालागा(sqlite3_str *p){
   if( p==0 || p->nChar==0 ) return 0;
   p->zText[p->nChar] = 0;
   return p->zText;
@@ -1469,7 +1469,7 @@ sqlite3_str *sqlite3_str_new(sqlite3 *db){
 */
 char *sqlite3VMPrintf(sqlite3 *db, const char *zFormat, va_list ap){
   char *z;
-  char zBase[SQLITE_PRINT_BUF_SIZE];
+  char zBase[SQLITE_इलिम्बाग_BUF_SIZE];
   StrAccum acc;
   assert( db!=0 );
   sqlite3StrAccumInit(&acc, db, zBase, sizeof(zBase),
@@ -1502,7 +1502,7 @@ char *sqlite3MPrintf(sqlite3 *db, const char *zFormat, ...){
 */
 char *sqlite3_vmprintf(const char *zFormat, va_list ap){
   char *z;
-  char zBase[SQLITE_PRINT_BUF_SIZE];
+  char zBase[SQLITE_इलिम्बाग_BUF_SIZE];
   StrAccum acc;
 
 #ifdef SQLITE_ENABLE_API_ARMOR  
@@ -1586,10 +1586,10 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
 /* Maximum size of an sqlite3_log() message. */
 #if defined(SQLITE_MAX_LOG_MESSAGE) 
   /* Leave the definition as supplied */
-#elif SQLITE_PRINT_BUF_SIZE*10>10000
+#elif SQLITE_इलिम्बाग_BUF_SIZE*10>10000
 # define SQLITE_MAX_LOG_MESSAGE 10000
 #else
-# define SQLITE_MAX_LOG_MESSAGE (SQLITE_PRINT_BUF_SIZE*10)
+# define SQLITE_MAX_LOG_MESSAGE (SQLITE_इलिम्बाग_BUF_SIZE*10)
 #endif
 
 /*
@@ -1606,11 +1606,11 @@ char *sqlite3_snprintf(int n, char *zBuf, const char *zFormat, ...){
 ** Care must be taken that any sqlite3_log() calls that occur while the
 ** memory mutex is held do not use these mechanisms.
 */
-static void renderLogMsg(int iErrCode, const char *zFormat, va_list ap){
+static void render_Log_मेनसाहे(int iErrCode, const char *zFormat, va_list ap){
   StrAccum acc;                          /* String accumulator */
-  char zMsg[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
+  char z_मेनसाहे[SQLITE_MAX_LOG_MESSAGE];     /* Complete log message */
 
-  sqlite3StrAccumInit(&acc, 0, zMsg, sizeof(zMsg), 0);
+  sqlite3StrAccumInit(&acc, 0, z_मेनसाहे, sizeof(z_मेनसाहे), 0);
   sqlite3_str_vappendf(&acc, zFormat, ap);
   sqlite3GlobalConfig.xLog(sqlite3GlobalConfig.pLogArg, iErrCode,
                            sqlite3StrAccumFinish(&acc));
@@ -1623,7 +1623,7 @@ void sqlite3_log(int iErrCode, const char *zFormat, ...){
   va_list ap;                             /* Vararg list */
   if( sqlite3GlobalConfig.xLog ){
     va_start(ap, zFormat);
-    renderLogMsg(iErrCode, zFormat, ap);
+    render_Log_मेनसाहे(iErrCode, zFormat, ap);
     va_end(ap);
   }
 }
@@ -1637,7 +1637,7 @@ void sqlite3_log(int iErrCode, const char *zFormat, ...){
 void sqlite3DebugPrintf(const char *zFormat, ...){
   va_list ap;
   StrAccum acc;
-  char zBuf[SQLITE_PRINT_BUF_SIZE*10];
+  char zBuf[SQLITE_इलिम्बाग_BUF_SIZE*10];
   sqlite3StrAccumInit(&acc, 0, zBuf, sizeof(zBuf), 0);
   va_start(ap,zFormat);
   sqlite3_str_vappendf(&acc, zFormat, ap);

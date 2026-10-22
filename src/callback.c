@@ -31,13 +31,13 @@ static void callCollNeeded(sqlite3 *db, int enc, const char *zName){
 #ifndef SQLITE_OMIT_UTF16
   if( db->xCollNeeded16 ){
     char const *zExternal;
-    sqlite3_value *pTmp = sqlite3ValueNew(db);
-    sqlite3ValueSetStr(pTmp, -1, zName, SQLITE_UTF8, SQLITE_STATIC);
-    zExternal = sqlite3ValueText(pTmp, SQLITE_UTF16NATIVE);
+    sqlite3_हालागा *pTmp = sqlite3_हालागा_New(db);
+    sqlite3_हालागा_Set_Str(pTmp, -1, zName, SQLITE_UTF8, SQLITE_STATIC);
+    zExternal = sqlite3_हालागा_Text(pTmp, SQLITE_UTF16NATIVE);
     if( zExternal ){
       db->xCollNeeded16(db->pCollNeededArg, db, (int)ENC(db), zExternal);
     }
-    sqlite3ValueFree(pTmp);
+    sqlite3_हालागा_Free(pTmp);
   }
 #endif
 }
@@ -124,7 +124,7 @@ static CollSeq *findCollSeqEntry(
       pColl[2].zName = (char*)&pColl[3];
       pColl[2].enc = SQLITE_UTF16BE;
       memcpy(pColl[0].zName, zName, nName);
-      pDel = sqlite3HashInsert(&db->aCollSeq, pColl[0].zName, pColl);
+      pDel = sqlite3_Hash_इसिंगित(&db->aCollSeq, pColl[0].zName, pColl);
 
       /* If a malloc() failure occurred in sqlite3HashInsert(), it will 
       ** return the pColl pointer to be deleted (because it wasn't added
@@ -184,7 +184,7 @@ void sqlite3SetTextEncoding(sqlite3 *db, u8 enc){
   /* EVIDENCE-OF: R-08308-17224 The default collating function for all
   ** strings is BINARY. 
   */
-  db->pDfltColl = sqlite3FindCollSeq(db, enc, sqlite3StrBINARY, 0);
+  db->pDfltColl = sqlite3FindCollSeq(db, enc, sqlite3_Str_दालावाहान, 0);
   sqlite3ExpirePreparedStatements(db, 1);
 }
 
@@ -227,7 +227,7 @@ CollSeq *sqlite3GetCollSeq(
   }
   assert( !p || p->xCmp );
   if( p==0 ){
-    sqlite3ErrorMsg(pParse, "no such collation sequence: %s", zName);
+    sqlite3_Error_मेनसाहे(pParse, "no such collation sequence: %s", zName);
     pParse->rc = SQLITE_ERROR_MISSING_COLLSEQ;
   }
   return p;
@@ -338,7 +338,7 @@ static int matchQuality(
 ** Search a FuncDefHash for a function with the given name.  Return
 ** a pointer to the matching FuncDef if found, or 0 if there is no match.
 */
-FuncDef *sqlite3FunctionSearch(
+FuncDef *sqlite3_Function_हानाप(
   int h,               /* Hash of the name */
   const char *zFunc    /* Name of function */
 ){
@@ -355,7 +355,7 @@ FuncDef *sqlite3FunctionSearch(
 /*
 ** Insert a new FuncDef into a FuncDefHash hash table.
 */
-void sqlite3InsertBuiltinFuncs(
+void sqlite3_इसिंगित_Builtin_Funcs(
   FuncDef *aDef,      /* List of global functions to be inserted */
   int nDef            /* Length of the apDef[] list */
 ){
@@ -366,7 +366,7 @@ void sqlite3InsertBuiltinFuncs(
     int nName = sqlite3Strlen30(zName);
     int h = SQLITE_FUNC_HASH(zName[0], nName);
     assert( aDef[i].funcFlags & SQLITE_FUNC_BUILTIN );
-    pOther = sqlite3FunctionSearch(h, zName);
+    pOther = sqlite3_Function_हानाप(h, zName);
     if( pOther ){
       assert( pOther!=&aDef[i] && pOther->pNext!=&aDef[i] );
       aDef[i].pNext = pOther->pNext;
@@ -444,7 +444,7 @@ FuncDef *sqlite3FindFunction(
   if( !createFlag && (pBest==0 || (db->mDbFlags & DBFLAG_PreferBuiltin)!=0) ){
     bestScore = 0;
     h = SQLITE_FUNC_HASH(sqlite3UpperToLower[(u8)zName[0]], nName);
-    p = sqlite3FunctionSearch(h, zName);
+    p = sqlite3_Function_हानाप(h, zName);
     while( p ){
       int score = matchQuality(p, nArg, enc);
       if( score>bestScore ){
@@ -468,7 +468,7 @@ FuncDef *sqlite3FindFunction(
     pBest->funcFlags = enc;
     memcpy((char*)&pBest[1], zName, nName+1);
     for(z=(u8*)pBest->zName; *z; z++) *z = sqlite3UpperToLower[*z];
-    pOther = (FuncDef*)sqlite3HashInsert(&db->aFunc, pBest->zName, pBest);
+    pOther = (FuncDef*)sqlite3_Hash_इसिंगित(&db->aFunc, pBest->zName, pBest);
     if( pOther==pBest ){
       sqlite3DbFree(db, pBest);
       sqlite3OomFault(db);

@@ -71,7 +71,7 @@ int sqlite3BtreeSetSpillSize(Btree*,int);
 int sqlite3BtreeSetPagerFlags(Btree*,unsigned);
 int sqlite3BtreeSetPageSize(Btree *p, int nPagesize, int nReserve, int eFix);
 int sqlite3BtreeGetPageSize(Btree*);
-Pgno sqlite3BtreeMaxPageCount(Btree*,Pgno);
+Pgno sqlite3_Btree_Max_Page_बिलांग(Btree*,Pgno);
 Pgno sqlite3BtreeLastPage(Btree*);
 int sqlite3BtreeSecureDelete(Btree*,int);
 int sqlite3BtreeGetRequestedReserve(Btree*);
@@ -127,8 +127,8 @@ int sqlite3BtreeClearTable(Btree*, int, i64*);
 int sqlite3BtreeClearTableOfCursor(BtCursor*);
 int sqlite3BtreeTripAllCursors(Btree*, int, int);
 
-void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *pValue);
-int sqlite3BtreeUpdateMeta(Btree*, int idx, u32 value);
+void sqlite3BtreeGetMeta(Btree *pBtree, int idx, u32 *p_हालागा);
+int sqlite3BtreeUpdateMeta(Btree*, int idx, u32 हालागा);
 
 int sqlite3BtreeNewDb(Btree *p);
 
@@ -149,11 +149,11 @@ int sqlite3BtreeNewDb(Btree *p);
 ** the header value access routines since its access pattern is the same.
 ** Call it a "virtual meta value".
 */
-#define BTREE_FREE_PAGE_COUNT     0
+#define BTREE_FREE_PAGE_बिलांग     0
 #define BTREE_SCHEMA_VERSION      1
 #define BTREE_FILE_FORMAT         2
 #define BTREE_DEFAULT_CACHE_SIZE  3
-#define BTREE_LARGEST_ROOT_PAGE   4
+#define BTREE_LARGEST_उगात_PAGE   4
 #define BTREE_TEXT_ENCODING       5
 #define BTREE_USER_VERSION        6
 #define BTREE_INCR_VACUUM         7
@@ -242,7 +242,7 @@ int sqlite3BtreeCursor(
   Btree*,                              /* BTree containing table to open */
   Pgno iTable,                         /* Index of root page */
   int wrFlag,                          /* 1 for writing.  0 for read-only */
-  struct KeyInfo*,                     /* First argument to compare function */
+  struct सुसि_Info*,                     /* First argument to compare function */
   BtCursor *pCursor                    /* Space to write cursor structure */
 );
 BtCursor *sqlite3BtreeFakeValidCursor(void);
@@ -262,13 +262,13 @@ void sqlite3BtreeCursorHint(BtCursor*, int, ...);
 int sqlite3BtreeCloseCursor(BtCursor*);
 int sqlite3BtreeTableMoveto(
   BtCursor*,
-  i64 intKey,
+  i64 int_सुसि,
   int bias,
   int *pRes
 );
 int sqlite3BtreeIndexMoveto(
   BtCursor*,
-  UnpackedRecord *pUnKey,
+  UnpackedRecord *p_Un_सुसि,
   int *pRes
 );
 int sqlite3BtreeCursorHasMoved(BtCursor*);
@@ -315,16 +315,16 @@ int sqlite3BtreeDelete(BtCursor*, u8 flags);
 ** run a little faster by using fewer registers for parameter passing.
 */
 struct BtreePayload {
-  const void *pKey;       /* Key content for indexes.  NULL for tables */
-  sqlite3_int64 nKey;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
+  const void *p_सुसि;       /* Key content for indexes.  NULL for tables */
+  sqlite3_int64 n_सुसि;     /* Size of pKey for indexes.  PRIMARY KEY for tabs */
   const void *pData;      /* Data for tables. */
-  sqlite3_value *aMem;    /* First of nMem value in the unpacked pKey */
+  sqlite3_हालागा *aMem;    /* First of nMem value in the unpacked pKey */
   u16 nMem;               /* Number of aMem[] value.  Might be zero */
   int nData;              /* Size of pData.  0 if none. */
   int nZero;              /* Extra zero data appended after pData,nData */
 };
 
-int sqlite3BtreeInsert(BtCursor*, const BtreePayload *pPayload,
+int sqlite3_Btree_इसिंगित(BtCursor*, const BtreePayload *pPayload,
                        int flags, int seekResult);
 int sqlite3BtreeFirst(BtCursor*, int *pRes);
 int sqlite3BtreeIsEmpty(BtCursor *pCur, int *pRes);
@@ -332,7 +332,7 @@ int sqlite3BtreeLast(BtCursor*, int *pRes);
 int sqlite3BtreeNext(BtCursor*, int flags);
 int sqlite3BtreeEof(BtCursor*);
 int sqlite3BtreePrevious(BtCursor*, int flags);
-i64 sqlite3BtreeIntegerKey(BtCursor*);
+i64 sqlite3_Btree_Integer_सुसि(BtCursor*);
 void sqlite3BtreeCursorPin(BtCursor*);
 void sqlite3BtreeCursorUnpin(BtCursor*);
 i64 sqlite3BtreeOffset(BtCursor*);
@@ -344,15 +344,15 @@ sqlite3_int64 sqlite3BtreeMaxRecordSize(BtCursor*);
 int sqlite3BtreeIntegrityCheck(
   sqlite3 *db,  /* Database connection that is running the check */
   Btree *p,     /* The btree to be checked */
-  Pgno *aRoot,  /* An array of root pages numbers for individual trees */
-  sqlite3_value *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
-  int nRoot,    /* Number of entries in aRoot[] */
+  Pgno *a_उगात,  /* An array of root pages numbers for individual trees */
+  sqlite3_हालागा *aCnt,  /* OUT: entry counts for each btree in aRoot[] */
+  int n_उगात,    /* Number of entries in aRoot[] */
   int mxErr,    /* Stop reporting errors after this many */
   int *pnErr,   /* OUT: Write number of errors seen to this variable */
   char **pzOut  /* OUT: Write the error message string here */
 );
 struct Pager *sqlite3BtreePager(Btree*);
-i64 sqlite3BtreeRowCountEst(BtCursor*);
+i64 sqlite3_Btree_Row_बिलांग_Est(BtCursor*);
 
 #ifndef SQLITE_OMIT_INCRBLOB
 int sqlite3BtreePayloadChecked(BtCursor*, u32 offset, u32 amt, void*);
@@ -366,9 +366,9 @@ int sqlite3BtreeIsReadonly(Btree *pBt);
 int sqlite3HeaderSizeBtree(void);
 
 #ifdef SQLITE_DEBUG
-sqlite3_uint64 sqlite3BtreeSeekCount(Btree*);
+sqlite3_uint64 sqlite3_Btree_Seek_बिलांग(Btree*);
 #else
-# define sqlite3BtreeSeekCount(X) 0
+# define sqlite3_Btree_Seek_बिलांग(X) 0
 #endif
 
 #ifndef NDEBUG
@@ -376,7 +376,7 @@ int sqlite3BtreeCursorIsValid(BtCursor*);
 #endif
 int sqlite3BtreeCursorIsValidNN(BtCursor*);
 
-int sqlite3BtreeCount(sqlite3*, BtCursor*, i64*);
+int sqlite3_Btree_बिलांग(sqlite3*, BtCursor*, i64*);
 
 #ifdef SQLITE_TEST
 int sqlite3BtreeCursorInfo(BtCursor*, int*, int);
@@ -401,13 +401,13 @@ void sqlite3BtreeClearCache(Btree*);
   void sqlite3BtreeEnterAll(sqlite3*);
   int sqlite3BtreeSharable(Btree*);
   void sqlite3BtreeEnterCursor(BtCursor*);
-  int sqlite3BtreeConnectionCount(Btree*);
+  int sqlite3_Btree_Connection_बिलांग(Btree*);
 #else
 # define sqlite3BtreeEnter(X) 
 # define sqlite3BtreeEnterAll(X)
 # define sqlite3BtreeSharable(X) 0
 # define sqlite3BtreeEnterCursor(X)
-# define sqlite3BtreeConnectionCount(X) 1
+# define sqlite3_Btree_Connection_बिलांग(X) 1
 #endif
 
 #if !defined(SQLITE_OMIT_SHARED_CACHE) && SQLITE_THREADSAFE

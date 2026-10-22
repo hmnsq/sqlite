@@ -89,15 +89,15 @@ static int SQLITE_TCLAPI tclScriptEvent(Tcl_Event *evPtr, int flags){
 */
 static void postToParent(SqlThread *p, Tcl_Obj *pScript){
   EvalEvent *pEvent;
-  char *zMsg;
-  Tcl_Size nMsg;
+  char *z_मेनसाहे;
+  Tcl_Size n_मेनसाहे;
 
-  zMsg = Tcl_GetStringFromObj(pScript, &nMsg); 
-  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+nMsg+1);
+  z_मेनसाहे = Tcl_GetStringFromObj(pScript, &n_मेनसाहे); 
+  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+n_मेनसाहे+1);
   pEvent->base.nextPtr = 0;
   pEvent->base.proc = tclScriptEvent;
   pEvent->zScript = (char *)&pEvent[1];
-  memcpy(pEvent->zScript, zMsg, nMsg+1);
+  memcpy(pEvent->zScript, z_मेनसाहे, n_मेनसाहे+1);
   pEvent->interp = p->interp;
 
   Tcl_ThreadQueueEvent(p->parent, (Tcl_Event *)pEvent, TCL_QUEUE_TAIL);
@@ -132,14 +132,14 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   rc = Tcl_Eval(interp, p->zScript);
   pRes = Tcl_GetObjResult(interp);
   pList = Tcl_NewObj();
-  Tcl_IncrRefCount(pList);
-  Tcl_IncrRefCount(pRes);
+  Tcl_Incr_Ref_बिलांग(pList);
+  Tcl_Incr_Ref_बिलांग(pRes);
 
   if( rc!=TCL_OK ){
     Tcl_ListObjAppendElement(interp, pList, Tcl_NewStringObj("error", -1));
     Tcl_ListObjAppendElement(interp, pList, pRes);
     postToParent(p, pList);
-    Tcl_DecrRefCount(pList);
+    Tcl_Decr_Ref_बिलांग(pList);
     pList = Tcl_NewObj();
   }
 
@@ -149,8 +149,8 @@ static Tcl_ThreadCreateType tclScriptThread(ClientData pSqlThread){
   postToParent(p, pList);
 
   ckfree((void *)p);
-  Tcl_DecrRefCount(pList);
-  Tcl_DecrRefCount(pRes);
+  Tcl_Decr_Ref_बिलांग(pList);
+  Tcl_Decr_Ref_बिलांग(pRes);
   Tcl_DeleteInterp(interp);
   while( Tcl_DoOneEvent(TCL_ALL_EVENTS|TCL_DONT_WAIT) );
   Tcl_ExitThread(0);
@@ -181,7 +181,7 @@ static int SQLITE_TCLAPI sqlthread_spawn(
   Tcl_Size nScript; char *zScript;
 
   /* Parameters for thread creation */
-  const int nStack = TCL_THREAD_STACK_DEFAULT;
+  const int n_सालानसान = TCL_THREAD_सालानसान_DEFAULT;
   const int flags = TCL_THREAD_NOFLAGS;
 
   assert(objc==4);
@@ -199,7 +199,7 @@ static int SQLITE_TCLAPI sqlthread_spawn(
   pNew->parent = Tcl_GetCurrentThread();
   pNew->interp = interp;
 
-  rc = Tcl_CreateThread(&x, tclScriptThread, (void *)pNew, nStack, flags);
+  rc = Tcl_CreateThread(&x, tclScriptThread, (void *)pNew, n_सालानसान, flags);
   if( rc!=TCL_OK ){
     Tcl_AppendResult(interp, "Error in Tcl_CreateThread()", NULL);
     ckfree((char *)pNew);
@@ -227,8 +227,8 @@ static int SQLITE_TCLAPI sqlthread_parent(
   Tcl_Obj *CONST objv[]
 ){
   EvalEvent *pEvent;
-  char *zMsg;
-  Tcl_Size nMsg;
+  char *z_मेनसाहे;
+  Tcl_Size n_मेनसाहे;
   SqlThread *p = (SqlThread *)clientData;
 
   assert(objc==3);
@@ -239,12 +239,12 @@ static int SQLITE_TCLAPI sqlthread_parent(
     return TCL_ERROR;
   }
 
-  zMsg = Tcl_GetStringFromObj(objv[2], &nMsg);
-  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+nMsg+1);
+  z_मेनसाहे = Tcl_GetStringFromObj(objv[2], &n_मेनसाहे);
+  pEvent = (EvalEvent *)ckalloc(sizeof(EvalEvent)+n_मेनसाहे+1);
   pEvent->base.nextPtr = 0;
   pEvent->base.proc = tclScriptEvent;
   pEvent->zScript = (char *)&pEvent[1];
-  memcpy(pEvent->zScript, zMsg, nMsg+1);
+  memcpy(pEvent->zScript, z_मेनसाहे, n_मेनसाहे+1);
   pEvent->interp = p->interp;
   Tcl_ThreadQueueEvent(p->parent, (Tcl_Event *)pEvent, TCL_QUEUE_TAIL);
   Tcl_ThreadAlert(p->parent);
@@ -340,7 +340,7 @@ static int SQLITE_TCLAPI sqlthread_proc(
   int iIndex;
 
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SUB-COMMAND");
     return TCL_ERROR;
   }
 
@@ -351,7 +351,7 @@ static int SQLITE_TCLAPI sqlthread_proc(
   pSub = &aSub[iIndex];
 
   if( objc<(pSub->nArg+2) ){
-    Tcl_WrongNumArgs(interp, 2, objv, pSub->zUsage);
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, pSub->zUsage);
     return TCL_ERROR;
   }
 
@@ -559,7 +559,7 @@ static int SQLITE_TCLAPI blocking_step_proc(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
 

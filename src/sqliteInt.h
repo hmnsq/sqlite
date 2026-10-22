@@ -1153,14 +1153,14 @@ typedef INT16_TYPE LogEst;
 ** the Abstract Syntax Tree tracing logic is turned on.
 */
 #if !defined(SQLITE_AMALGAMATION)
-extern u32 sqlite3TreeTrace;
+extern u32 sqlite3_पुनो_Trace;
 #endif
 #if defined(SQLITE_DEBUG) \
     && (defined(SQLITE_TEST) || defined(SQLITE_ENABLE_SELECTTRACE) \
                              || defined(SQLITE_ENABLE_TREETRACE))
 # define TREETRACE_ENABLED 1
 # define TREETRACE(K,P,S,X)  \
-  if(sqlite3TreeTrace&(K))   \
+  if(sqlite3_पुनो_Trace&(K))   \
     sqlite3DebugPrintf("%u/%d/%p: ",(S)->selId,(P)->addrExplain,(S)),\
     sqlite3DebugPrintf X
 #else
@@ -1282,7 +1282,7 @@ struct BusyHandler {
 /*
 ** The root-page of the schema table.
 */
-#define SCHEMA_ROOT    1
+#define SCHEMA_उगात    1
 
 /*
 ** The name of the schema table.  The name is different for TEMP.
@@ -1371,8 +1371,8 @@ typedef struct Db Db;
 typedef struct DbClientData DbClientData;
 typedef struct DbFixer DbFixer;
 typedef struct Schema Schema;
-typedef struct Expr Expr;
-typedef struct ExprList ExprList;
+typedef struct पाहायाग पाहायाग;
+typedef struct पाहायाग_List पाहायाग_List;
 typedef struct FKey FKey;
 typedef struct FpDecode FpDecode;
 typedef struct FuncDestructor FuncDestructor;
@@ -1380,10 +1380,10 @@ typedef struct FuncDef FuncDef;
 typedef struct FuncDefHash FuncDefHash;
 typedef struct IdList IdList;
 typedef struct Index Index;
-typedef struct IndexedExpr IndexedExpr;
+typedef struct Indexed_पाहायाग Indexed_पाहायाग;
 typedef struct IndexSample IndexSample;
-typedef struct KeyClass KeyClass;
-typedef struct KeyInfo KeyInfo;
+typedef struct सुसि_Class सुसि_Class;
+typedef struct सुसि_Info सुसि_Info;
 typedef struct Lookaside Lookaside;
 typedef struct LookasideSlot LookasideSlot;
 typedef struct Module Module;
@@ -1408,7 +1408,7 @@ typedef struct sqlite3_str StrAccum; /* Internal alias for sqlite3_str */
 typedef struct Table Table;
 typedef struct TableLock TableLock;
 typedef struct Token Token;
-typedef struct TreeView TreeView;
+typedef struct पुनो_View पुनो_View;
 typedef struct Trigger Trigger;
 typedef struct TriggerPrg TriggerPrg;
 typedef struct TriggerStep TriggerStep;
@@ -1633,7 +1633,7 @@ struct Lookaside {
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
   LookasideSlot *pSmallInit; /* List of small buffers not previously used */
   LookasideSlot *pSmallFree; /* List of available small buffers */
-  void *pMiddle;          /* First byte past end of full-size buffers and
+  void *p_गित्ना;          /* First byte past end of full-size buffers and
                           ** the first byte of LOOKASIDE_SMALL buffers */
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
   void *pStart;           /* First byte of available memory space */
@@ -1783,7 +1783,7 @@ struct sqlite3 {
   void(*xCollNeeded)(void*,sqlite3*,int eTextRep,const char*);
   void(*xCollNeeded16)(void*,sqlite3*,int eTextRep,const void*);
   void *pCollNeededArg;
-  sqlite3_value *pErr;          /* Most recent error message */
+  sqlite3_हालागा *pErr;          /* Most recent error message */
   union {
     volatile int isInterrupted; /* True if sqlite3_interrupt has been called */
     double notUsed1;            /* Spacer */
@@ -1879,7 +1879,7 @@ struct sqlite3 {
 #define SQLITE_NoCkptOnClose  0x00000800  /* No checkpoint on close()/DETACH */
 #define SQLITE_ReverseOrder   0x00001000  /* Reverse unordered SELECTs */
 #define SQLITE_RecTriggers    0x00002000  /* Enable recursive triggers */
-#define SQLITE_ForeignKeys    0x00004000  /* Enforce foreign key constraints  */
+#define SQLITE_Foreign_मगा_सुसि    0x00004000  /* Enforce foreign key constraints  */
 #define SQLITE_AutoIndex      0x00008000  /* Enable automatic indexes */
 #define SQLITE_LoadExtension  0x00010000  /* Enable load_extension */
 #define SQLITE_LoadExtFunc    0x00020000  /* Enable load_extension() SQL func */
@@ -1897,7 +1897,7 @@ struct sqlite3 {
 #define SQLITE_DqsDDL         0x20000000  /* dbl-quoted strings allowed in DDL*/
 #define SQLITE_DqsDML         0x40000000  /* dbl-quoted strings allowed in DML*/
 #define SQLITE_EnableView     0x80000000  /* Enable the use of views */
-#define SQLITE_CountRows      HI(0x00001) /* Count rows changed by INSERT, */
+#define SQLITE_बिलांग_Rows      HI(0x00001) /* Count rows changed by INSERT, */
                                           /*   DELETE, or UPDATE and return */
                                           /*   the count using a callback. */
 #define SQLITE_CorruptRdOnly  HI(0x00002) /* Prohibit writes due to error */
@@ -1945,10 +1945,10 @@ struct sqlite3 {
 #define SQLITE_OrderByIdxJoin  7 /* ORDER BY of joins via index */
 #define SQLITE_Transitive      8 /* Transitive constraints */
 #define SQLITE_OmitNoopJoin    9 /* Omit unused tables in joins */
-#define SQLITE_CountOfView    10 /* The count-of-view optimization */
+#define SQLITE_बिलांग_Of_View    10 /* The count-of-view optimization */
 #define SQLITE_CursorHints    11 /* Add OP_CursorHint opcodes */
 #define SQLITE_Stat4          12 /* Use STAT4 data */
-#define SQLITE_PushDown       13 /* WHERE-clause push-down opt */
+#define SQLITE_इतुलाक_Down       13 /* WHERE-clause push-down opt */
 #define SQLITE_SimplifyJoin   14 /* Convert LEFT JOIN to JOIN */
 #define SQLITE_SkipScan       15 /* Skip-scans */
 #define SQLITE_PropagateConst 16 /* The constant propagation opt */
@@ -1960,7 +1960,7 @@ struct sqlite3 {
 #define SQLITE_BalancedMerge  22 /* Balance multi-way merges */
 #define SQLITE_ReleaseReg     23 /* Use OP_ReleaseReg for testing */
 #define SQLITE_FlttnUnionAll  24 /* Disable the UNION ALL flattener */
-#define SQLITE_IndexedExpr    25 /* Pull exprs from index when able */
+#define SQLITE_Indexed_पाहायाग    25 /* Pull exprs from index when able */
 #define SQLITE_Coroutines     26 /* Co-routines for subqueries */
 #define SQLITE_NullUnusedCols 27 /* NULL unused columns in subqueries */
 #define SQLITE_OnePass        28 /* Single-pass DELETE and UPDATE */
@@ -2007,10 +2007,10 @@ struct FuncDef {
   u32 funcFlags;       /* Some combination of SQLITE_FUNC_* */
   void *pUserData;     /* User data parameter */
   FuncDef *pNext;      /* Next function with same name */
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**); /* func or agg-step */
+  void (*xSFunc)(sqlite3_context*,int,sqlite3_हालागा**); /* func or agg-step */
   void (*xFinalize)(sqlite3_context*);                  /* Agg finalizer */
-  void (*xValue)(sqlite3_context*);                     /* Current agg value */
-  void (*xInverse)(sqlite3_context*,int,sqlite3_value**); /* inverse agg-step */
+  void (*x_हालागा)(sqlite3_context*);                     /* Current agg value */
+  void (*xInverse)(sqlite3_context*,int,sqlite3_हालागा**); /* inverse agg-step */
   const char *zName;   /* SQL name of the function. */
   union {
     FuncDef *pHash;      /* Next with a different name but the same hash */
@@ -2069,7 +2069,7 @@ struct FuncDestructor {
 #define SQLITE_FUNC_LENGTH   0x0040 /* Built-in length() function */
 #define SQLITE_FUNC_TYPEOF   0x0080 /* Built-in typeof() function */
 #define SQLITE_FUNC_BYTELEN  0x00c0 /* Built-in octet_length() function */
-#define SQLITE_FUNC_COUNT    0x0100 /* Built-in count(*) aggregate */
+#define SQLITE_FUNC_बिलांग    0x0100 /* Built-in count(*) aggregate */
 /*                           0x0200 -- available for reuse */
 #define SQLITE_FUNC_UNLIKELY 0x0400 /* Built-in unlikely() function */
 #define SQLITE_FUNC_CONSTANT 0x0800 /* Constant inputs give a constant output */
@@ -2091,8 +2091,8 @@ struct FuncDestructor {
 /* Identifier numbers for each in-line function */
 #define INLINEFUNC_coalesce             0
 #define INLINEFUNC_implies_nonnull_row  1
-#define INLINEFUNC_expr_implies_expr    2
-#define INLINEFUNC_expr_compare         3
+#define INLINEFUNC_पाहायाग_implies_पाहायाग    2
+#define INLINEFUNC_पाहायाग_compare         3
 #define INLINEFUNC_affinity             4
 #define INLINEFUNC_iif                  5
 #define INLINEFUNC_sqlite_offset        6
@@ -2209,9 +2209,9 @@ struct FuncDestructor {
 #define LIKEFUNC(zName, nArg, arg, flags) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_FUNC_CONSTANT|SQLITE_UTF8|flags, \
    (void *)arg, 0, likeFunc, 0, 0, 0, #zName, {0} }
-#define WAGGREGATE(zName, nArg, arg, nc, xStep, xFinal, xValue, xInverse, f) \
+#define WAGGREGATE(zName, nArg, arg, nc, xStep, xFinal, x_हालागा, xInverse, f) \
   {nArg, SQLITE_FUNC_BUILTIN|SQLITE_UTF8|(nc*SQLITE_FUNC_NEEDCOLL)|f, \
-   SQLITE_INT_TO_PTR(arg), 0, xStep,xFinal,xValue,xInverse,#zName, {0}}
+   SQLITE_INT_TO_PTR(arg), 0, xStep,xFinal,x_हालागा,xInverse,#zName, {0}}
 #define INTERNAL_FUNCTION(zName, nArg, xFunc) \
   {nArg, SQLITE_FUNC_BUILTIN|\
    SQLITE_FUNC_INTERNAL|SQLITE_UTF8|SQLITE_FUNC_CONSTANT, \
@@ -2451,9 +2451,9 @@ struct VTable {
 
 /* Allowed values for VTable.eVtabRisk
 */
-#define SQLITE_VTABRISK_Low          0
+#define SQLITE_VTABRISK_माबाबा          0
 #define SQLITE_VTABRISK_Normal       1
-#define SQLITE_VTABRISK_High         2
+#define SQLITE_VTABRISK_माताअस         2
 
 /*
 ** The schema for each SQL table, virtual table, and view is represented
@@ -2464,7 +2464,7 @@ struct Table {
   Column *aCol;        /* Information about each column */
   Index *pIndex;       /* List of SQL indexes on this table. */
   char *zColAff;       /* String defining the affinity of each column */
-  ExprList *pCheck;    /* All CHECK constraints */
+  पाहायाग_List *pCheck;    /* All CHECK constraints */
                        /*   ... also used as column name list in a VIEW */
   Pgno tnum;           /* Root BTree page for this table */
   u32 nTabRef;         /* Number of pointers to this Table */
@@ -2477,13 +2477,13 @@ struct Table {
 #ifdef SQLITE_ENABLE_COSTMULT
   LogEst costMult;     /* Cost multiplier for using this table */
 #endif
-  u8 keyConf;          /* What to do in case of uniqueness conflict on iPKey */
+  u8 सुसि_Conf;          /* What to do in case of uniqueness conflict on iPKey */
   u8 eTabType;         /* 0: normal, 1: virtual, 2: view */
   union {
     struct {             /* Used by ordinary tables: */
       int addColOffset;    /* Offset in CREATE TABLE stmt to add a new column */
       FKey *pFKey;         /* Linked list of all foreign keys in this table */
-      ExprList *pDfltList; /* DEFAULT clauses on various columns.
+      पाहायाग_List *pDfltList; /* DEFAULT clauses on various columns.
                            ** Or the AS clause for generated columns. */
     } tab;
     struct {             /* Used by views: */
@@ -2517,7 +2517,7 @@ struct Table {
 */
 #define TF_Readonly       0x00000001 /* Read-only system table */
 #define TF_HasHidden      0x00000002 /* Has one or more hidden columns */
-#define TF_HasPrimaryKey  0x00000004 /* Table has a primary key */
+#define TF_Has_Primary_सुसि  0x00000004 /* Table has a primary key */
 #define TF_Autoincrement  0x00000008 /* Integer primary key is autoincrement */
 #define TF_HasStat1       0x00000010 /* nRowLogEst set from sqlite_stat1 */
 #define TF_HasVirtual     0x00000020 /* Has one or more VIRTUAL columns */
@@ -2552,11 +2552,11 @@ struct Table {
 */
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 #  define IsVirtual(X)      ((X)->eTabType==TABTYP_VTAB)
-#  define ExprIsVtab(X)  \
+#  define पाहायाग_Is_Vtab(X)  \
    ((X)->op==TK_COLUMN && (X)->y.pTab->eTabType==TABTYP_VTAB)
 #else
 #  define IsVirtual(X)      0
-#  define ExprIsVtab(X)     0
+#  define पाहायाग_Is_Vtab(X)     0
 #endif
 
 /*
@@ -2699,10 +2699,10 @@ struct FKey {
 ** is NULL, then nAllField is uninitialized and no space is allocated for
 ** aColl[], so those fields may not be used.
 */
-struct KeyInfo {
+struct सुसि_Info {
   u32 nRef;           /* Number of references to this KeyInfo object */
   u8 enc;             /* Text encoding - one of the SQLITE_UTF* values */
-  u16 nKeyField;      /* Number of key columns in the index */
+  u16 n_सुसि_Field;      /* Number of key columns in the index */
   u16 nAllField;      /* Total columns, including key plus others */
   sqlite3 *db;        /* The database connection */
   u8 *aSortFlags;     /* Sort order for each column. */
@@ -2712,13 +2712,13 @@ struct KeyInfo {
 /* The size (in bytes) of a KeyInfo object with up to N fields.  This includes
 ** the main body of the KeyInfo object and the aColl[] array of N elements,
 ** but does not count the memory used to hold aSortFlags[]. */
-#define SZ_KEYINFO(N)  (offsetof(KeyInfo,aColl) + (N)*sizeof(CollSeq*))
+#define SZ_KEYINFO(N)  (offsetof(सुसि_Info,aColl) + (N)*sizeof(CollSeq*))
 
 /* The size of a bare KeyInfo with no aColl[] entries */
 #if FLEXARRAY+1 > 1
-# define SZ_KEYINFO_0   offsetof(KeyInfo,aColl)
+# define SZ_KEYINFO_0   offsetof(सुसि_Info,aColl)
 #else
-# define SZ_KEYINFO_0   sizeof(KeyInfo)
+# define SZ_KEYINFO_0   sizeof(सुसि_Info)
 #endif
 
 /*
@@ -2762,7 +2762,7 @@ struct KeyInfo {
 ** b-tree.
 */
 struct UnpackedRecord {
-  KeyInfo *pKeyInfo;  /* Comparison info for the index that is unpacked */
+  सुसि_Info *p_सुसि_Info;  /* Comparison info for the index that is unpacked */
   Mem *aMem;          /* Values for columns of the index */
   union {
     char *z;            /* Cache of aMem[0].z for vdbeRecordCompareString() */
@@ -2834,11 +2834,11 @@ struct Index {
   Schema *pSchema;         /* Schema containing this index */
   u8 *aSortOrder;          /* for each column: True==DESC, False==ASC */
   const char **azColl;     /* Array of collation sequence names for index */
-  Expr *pPartIdxWhere;     /* WHERE clause for partial indices */
-  ExprList *aColExpr;      /* Column expressions */
+  पाहायाग *pPartIdxWhere;     /* WHERE clause for partial indices */
+  पाहायाग_List *a_Col_पाहायाग;      /* Column expressions */
   Pgno tnum;               /* DB Page containing root of this index */
   LogEst szIdxRow;         /* Estimated average row size in bytes */
-  u16 nKeyCol;             /* Number of columns forming the key */
+  u16 n_सुसि_Col;             /* Number of columns forming the key */
   u16 nColumn;             /* Nr columns in btree. Can be 2*Table.nCol */
   u8 onError;              /* OE_Abort, OE_Ignore, OE_Replace, or OE_None */
   unsigned idxType:2;      /* 0:Normal 1:UNIQUE, 2:PRIMARY KEY, 3:IPK */
@@ -2849,9 +2849,9 @@ struct Index {
   unsigned noSkipScan:1;   /* Do not try to use skip-scan if true */
   unsigned hasStat1:1;     /* aiRowLogEst values come from sqlite_stat1 */
   unsigned bNoQuery:1;     /* Do not use this index to optimize queries */
-  unsigned bAscKeyBug:1;   /* True if the bba7b69f9849b5bf bug applies */
+  unsigned b_Asc_सुसि_Bug:1;   /* True if the bba7b69f9849b5bf bug applies */
   unsigned bHasVCol:1;     /* Index references one or more VIRTUAL columns */
-  unsigned bHasExpr:1;     /* Index contains an expression, either a literal
+  unsigned b_Has_पाहायाग:1;     /* Index contains an expression, either a literal
                            ** expression, or a reference to a VIRTUAL column */
 #ifdef SQLITE_ENABLE_STAT4
   int nSample;             /* Number of elements in aSample[] */
@@ -2874,7 +2874,7 @@ struct Index {
 #define SQLITE_IDXTYPE_IPK         3   /* INTEGER PRIMARY KEY index */
 
 /* Return true if index X is a PRIMARY KEY index */
-#define IsPrimaryKeyIndex(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
+#define Is_Primary_सुसि_Index(X)  ((X)->idxType==SQLITE_IDXTYPE_PRIMARYKEY)
 
 /* Return true if index X is a UNIQUE index */
 #define IsUniqueIndex(X)      ((X)->onError!=OE_None)
@@ -2883,7 +2883,7 @@ struct Index {
 ** there are some negative values that have special meaning:
 */
 #define XN_ROWID     (-1)     /* Indexed column is the rowid */
-#define XN_EXPR      (-2)     /* Indexed column is an expression */
+#define XN_पाहायाग      (-2)     /* Indexed column is an expression */
 
 /*
 ** Each sample stored in the sqlite_stat4 table is represented in memory
@@ -2941,10 +2941,10 @@ struct AggInfo {
   int sortingIdx;         /* Cursor number of the sorting index */
   int sortingIdxPTab;     /* Cursor number of pseudo-table */
   int iFirstReg;          /* First register in range for aCol[] and aFunc[] */
-  ExprList *pGroupBy;     /* The group by clause */
+  पाहायाग_List *pGroupBy;     /* The group by clause */
   struct AggInfo_col {    /* For each column used in source tables */
     Table *pTab;             /* Source table */
-    Expr *pCExpr;            /* The original expression */
+    पाहायाग *pCExpr;            /* The original expression */
     int iTable;              /* Cursor number of the source table */
     int iColumn;             /* Column number within the source table */
     int iSorterColumn;       /* Column number in the sorting index */
@@ -2954,7 +2954,7 @@ struct AggInfo {
                           ** Additional columns are used only as parameters to
                           ** aggregate functions */
   struct AggInfo_func {   /* For each aggregate function */
-    Expr *pFExpr;            /* Expression encoding the function */
+    पाहायाग *pFExpr;            /* Expression encoding the function */
     FuncDef *pFunc;          /* The aggregate function implementation */
     int iDistinct;           /* Ephemeral table used to enforce DISTINCT */
     int iDistAddr;           /* Address of OP_OpenEphemeral */
@@ -2997,7 +2997,7 @@ struct AggInfo {
 ** to have prepared statements with over 32766 variables, and for them
 ** the option is available (at compile-time).
 */
-#if SQLITE_MAX_VARIABLE_NUMBER<32767
+#if SQLITE_MAX_VARIABLE_नुमेरो<32767
 typedef i16 ynVar;
 #else
 typedef int ynVar;
@@ -3066,9 +3066,9 @@ typedef int ynVar;
 ** the subtrees in Expr.x.pList or Expr.x.pSelect are always separately
 ** allocated, regardless of whether or not EP_Reduced is set.
 */
-struct Expr {
+struct पाहायाग {
   u8 op;                 /* Operation performed by this node */
-  char affExpr;          /* affinity, or RAISE type */
+  char aff_पाहायाग;          /* affinity, or RAISE type */
   u8 op2;                /* TK_REGISTER/TK_TRUTH: original value of Expr.op
                          ** TK_COLUMN: the value of p5 for OP_Column
                          ** TK_AGG_FUNCTION: nesting depth
@@ -3079,7 +3079,7 @@ struct Expr {
   u32 flags;             /* Various flags.  EP_* See below */
   union {
     char *zToken;          /* Token value. Zero terminated and dequoted */
-    int iValue;            /* Non-negative integer value if EP_IntValue */
+    int i_हालागा;            /* Non-negative integer value if EP_IntValue */
   } u;
 
   /* If the EP_TokenOnly flag is set in the Expr.flags mask, then no
@@ -3087,10 +3087,10 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-  Expr *pLeft;           /* Left subnode */
-  Expr *pRight;          /* Right subnode */
+  पाहायाग *p_कालिवा;           /* Left subnode */
+  पाहायाग *p_कानान;          /* Right subnode */
   union {
-    ExprList *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
+    पाहायाग_List *pList;     /* op = IN, EXISTS, SELECT, CASE, FUNCTION, BETWEEN */
     Select *pSelect;     /* EP_xIsSelect and op = IN, EXISTS, SELECT */
   } x;
 
@@ -3099,7 +3099,7 @@ struct Expr {
   ** access them will result in a segfault or malfunction.
   *********************************************************************/
 
-#if SQLITE_MAX_EXPR_DEPTH>0
+#if SQLITE_MAX_पाहायाग_DEPTH>0
   int nHeight;           /* Height of the tree headed by this node */
 #endif
   int iTable;            /* TK_COLUMN: cursor number of table holding column
@@ -3147,7 +3147,7 @@ struct Expr {
 #define EP_InfixFunc  0x000100 /* True for an infix function: LIKE, GLOB, etc */
 #define EP_Collate    0x000200 /* Tree contains a TK_COLLATE operator */
 #define EP_Commuted   0x000400 /* Comparison operator has been commuted */
-#define EP_IntValue   0x000800 /* Integer value contained in u.iValue */
+#define EP_Int_हालागा   0x000800 /* Integer value contained in u.iValue */
 #define EP_xIsSelect  0x001000 /* x.pSelect is valid (otherwise x.pList is) */
 #define EP_Skip       0x002000 /* Operator does not contribute to affinity */
 #define EP_Reduced    0x004000 /* Expr struct EXPR_REDUCEDSIZE bytes only */
@@ -3177,26 +3177,26 @@ struct Expr {
 /* Macros can be used to test, set, or clear bits in the
 ** Expr.flags field.
 */
-#define ExprHasProperty(E,P)     (((E)->flags&(u32)(P))!=0)
-#define ExprHasAllProperty(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
-#define ExprSetProperty(E,P)     (E)->flags|=(u32)(P)
-#define ExprClearProperty(E,P)   (E)->flags&=~(u32)(P)
-#define ExprAlwaysTrue(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
-#define ExprAlwaysFalse(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
-#define ExprIsFullSize(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
+#define पाहायाग_Has_Property(E,P)     (((E)->flags&(u32)(P))!=0)
+#define पाहायाग_Has_All_Property(E,P)  (((E)->flags&(u32)(P))==(u32)(P))
+#define पाहायाग_Set_Property(E,P)     (E)->flags|=(u32)(P)
+#define पाहायाग_Clear_Property(E,P)   (E)->flags&=~(u32)(P)
+#define पाहायाग_Always_True(E)   (((E)->flags&(EP_OuterON|EP_IsTrue))==EP_IsTrue)
+#define पाहायाग_Always_False(E)  (((E)->flags&(EP_OuterON|EP_IsFalse))==EP_IsFalse)
+#define पाहायाग_Is_Full_Size(E)   (((E)->flags&(EP_Reduced|EP_TokenOnly))==0)
 
 /* Macros used to ensure that the correct members of unions are accessed
 ** in Expr.
 */
-#define ExprUseUToken(E)    (((E)->flags&EP_IntValue)==0)
-#define ExprUseUValue(E)    (((E)->flags&EP_IntValue)!=0)
-#define ExprUseWOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
-#define ExprUseWJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
-#define ExprUseXList(E)     (((E)->flags&EP_xIsSelect)==0)
-#define ExprUseXSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
-#define ExprUseYTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
-#define ExprUseYWin(E)      (((E)->flags&EP_WinFunc)!=0)
-#define ExprUseYSub(E)      (((E)->flags&EP_Subrtn)!=0)
+#define पाहायाग_Use_UToken(E)    (((E)->flags&EP_Int_हालागा)==0)
+#define पाहायाग_Use_UValue(E)    (((E)->flags&EP_Int_हालागा)!=0)
+#define पाहायाग_Use_WOfst(E)     (((E)->flags&(EP_InnerON|EP_OuterON))==0)
+#define पाहायाग_Use_WJoin(E)     (((E)->flags&(EP_InnerON|EP_OuterON))!=0)
+#define पाहायाग_Use_XList(E)     (((E)->flags&EP_xIsSelect)==0)
+#define पाहायाग_Use_XSelect(E)   (((E)->flags&EP_xIsSelect)!=0)
+#define पाहायाग_Use_YTab(E)      (((E)->flags&(EP_WinFunc|EP_Subrtn))==0)
+#define पाहायाग_Use_YWin(E)      (((E)->flags&EP_WinFunc)!=0)
+#define पाहायाग_Use_YSub(E)      (((E)->flags&EP_Subrtn)!=0)
 
 /* Flags for use with Expr.vvaFlags
 */
@@ -3208,13 +3208,13 @@ struct Expr {
 ** processes but is a no-op for delivery.
 */
 #ifdef SQLITE_DEBUG
-# define ExprSetVVAProperty(E,P)   (E)->vvaFlags|=(P)
-# define ExprHasVVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
-# define ExprClearVVAProperties(E) (E)->vvaFlags = 0
+# define पाहायाग_Set_VVAProperty(E,P)   (E)->vvaFlags|=(P)
+# define पाहायाग_Has_VVAProperty(E,P)   (((E)->vvaFlags&(P))!=0)
+# define पाहायाग_Clear_VVAProperties(E) (E)->vvaFlags = 0
 #else
-# define ExprSetVVAProperty(E,P)
-# define ExprHasVVAProperty(E,P)   0
-# define ExprClearVVAProperties(E)
+# define पाहायाग_Set_VVAProperty(E,P)
+# define पाहायाग_Has_VVAProperty(E,P)   0
+# define पाहायाग_Clear_VVAProperties(E)
 #endif
 
 /*
@@ -3222,9 +3222,9 @@ struct Expr {
 ** struct, an Expr struct with the EP_Reduced flag set in Expr.flags
 ** and an Expr struct with the EP_TokenOnly flag set.
 */
-#define EXPR_FULLSIZE           sizeof(Expr)           /* Full size */
-#define EXPR_REDUCEDSIZE        offsetof(Expr,iTable)  /* Common features */
-#define EXPR_TOKENONLYSIZE      offsetof(Expr,pLeft)   /* Fewer features */
+#define पाहायाग_FULLSIZE           sizeof(पाहायाग)           /* Full size */
+#define पाहायाग_REDUCEDSIZE        offsetof(पाहायाग,iTable)  /* Common features */
+#define पाहायाग_TOKENONLYSIZE      offsetof(पाहायाग,p_कालिवा)   /* Fewer features */
 
 /*
 ** Flags passed to the sqlite3ExprDup() function. See the header comment
@@ -3240,7 +3240,7 @@ struct Expr {
 # define IsWindowFunc(p) 0
 #else
 # define IsWindowFunc(p) ( \
-    ExprHasProperty((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
+    पाहायाग_Has_Property((p), EP_WinFunc) && p->y.pWin->eFrmType!=TK_FILTER \
  )
 #endif
 
@@ -3266,11 +3266,11 @@ struct Expr {
 **    ENAME_SPAN       Text of the original result set
 **                     expression.
 */
-struct ExprList {
-  int nExpr;             /* Number of expressions on the list */
+struct पाहायाग_List {
+  int n_पाहायाग;             /* Number of expressions on the list */
   int nAlloc;            /* Number of a[] slots allocated */
-  struct ExprList_item { /* For each expression in the list */
-    Expr *pExpr;            /* The parse tree for this expression */
+  struct पाहायाग_List_item { /* For each expression in the list */
+    पाहायाग *p_पाहायाग;            /* The parse tree for this expression */
     char *zEName;           /* Token associated with this expression */
     struct {
       u8 sortFlags;           /* Mask of KEYINFO_ORDER_* flags */
@@ -3289,7 +3289,7 @@ struct ExprList {
         u16 iOrderByCol;      /* For ORDER BY, column number in result set */
         u16 iAlias;           /* Index into Parse.aAlias[] for zName */
       } x;
-      int iConstExprReg;   /* Register in which Expr value is cached. Used only
+      int i_Const_पाहायाग_Reg;   /* Register in which Expr value is cached. Used only
                            ** by Parse.pConstExpr */
     } u;
   } a[FLEXARRAY];          /* One slot for each expression in the list */
@@ -3298,7 +3298,7 @@ struct ExprList {
 /* The size (in bytes) of an ExprList object that is big enough to hold
 ** as many as N expressions. */
 #define SZ_EXPRLIST(N)  \
-             (offsetof(ExprList,a) + (N)*sizeof(struct ExprList_item))
+             (offsetof(पाहायाग_List,a) + (N)*sizeof(struct पाहायाग_List_item))
 
 /*
 ** Allowed values for Expr.a.eEName
@@ -3339,7 +3339,7 @@ struct IdList {
 */
 #define EU4_NONE   0   /* Does not use IdList.a.u4 */
 #define EU4_IDX    1   /* Uses IdList.a.u4.idx */
-#define EU4_EXPR   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
+#define EU4_पाहायाग   2   /* Uses IdList.a.u4.pExpr -- NOT CURRENTLY USED */
 
 /*
 ** Details of the implementation of a subquery.
@@ -3418,7 +3418,7 @@ struct SrcItem {
   Bitmask colUsed;  /* Bit N set if column N used. Details above for N>62 */
   union {
     char *zIndexedBy;    /* Identifier from "INDEXED BY <zIndex>" clause */
-    ExprList *pFuncArg;  /* Arguments to table-valued-function */
+    पाहायाग_List *pFuncArg;  /* Arguments to table-valued-function */
     u32 nRow;            /* Number of rows in a VALUES clause */
   } u1;
   union {
@@ -3426,7 +3426,7 @@ struct SrcItem {
     CteUse *pCteUse;  /* CTE Usage info when fg.isCte is true */
   } u2;
   union {
-    Expr *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
+    पाहायाग *pOn;        /* fg.isUsing==0 =>  The ON clause of a join */
     IdList *pUsing;   /* fg.isUsing==1 =>  The USING clause of a join */
   } u3;
   union {
@@ -3441,7 +3441,7 @@ struct SrcItem {
 ** It can never be both at the same time, but it can be neither.
 */
 struct OnOrUsing {
-  Expr *pOn;         /* The ON clause of a join */
+  पाहायाग *pOn;         /* The ON clause of a join */
   IdList *pUsing;    /* The USING clause of a join */
 };
 
@@ -3472,8 +3472,8 @@ struct SrcList {
 #define JT_INNER     0x01    /* Any kind of inner or cross join */
 #define JT_CROSS     0x02    /* Explicit use of the CROSS keyword */
 #define JT_NATURAL   0x04    /* True for a "natural" join */
-#define JT_LEFT      0x08    /* Left outer join */
-#define JT_RIGHT     0x10    /* Right outer join */
+#define JT_कालिवा      0x08    /* Left outer join */
+#define JT_कानान     0x10    /* Right outer join */
 #define JT_OUTER     0x20    /* The "OUTER" keyword is present */
 #define JT_LTORJ     0x40    /* One of the LEFT operands of a RIGHT JOIN
                              ** Mnemonic: Left Table Of Right Join */
@@ -3500,7 +3500,7 @@ struct SrcList {
 #define WHERE_SORTBYGROUP      0x0200 /* Support sqlite3WhereIsSorted() */
 #define WHERE_AGG_DISTINCT     0x0400 /* Query is "SELECT agg(DISTINCT ...)" */
 #define WHERE_ORDERBY_LIMIT    0x0800 /* ORDERBY+LIMIT on the inner loop */
-#define WHERE_RIGHT_JOIN       0x1000 /* Processing a RIGHT JOIN */
+#define WHERE_कानान_JOIN       0x1000 /* Processing a RIGHT JOIN */
 #define WHERE_KEEP_ALL_JOINS   0x2000 /* Do not do the omit-noop-join opt */
 #define WHERE_USE_LIMIT        0x4000 /* Use the LIMIT in cost estimates */
                         /*     0x8000    not currently used */
@@ -3537,7 +3537,7 @@ struct NameContext {
   Parse *pParse;       /* The parser */
   SrcList *pSrcList;   /* One or more tables used to resolve names */
   union {
-    ExprList *pEList;    /* Optional list of result-set columns */
+    पाहायाग_List *pEList;    /* Optional list of result-set columns */
     AggInfo *pAggInfo;   /* Information about aggregates at this level */
     Upsert *pUpsert;     /* ON CONFLICT clause information from an upsert */
     int iBaseReg;        /* For TK_REGISTER when parsing RETURNING */
@@ -3565,7 +3565,7 @@ struct NameContext {
 #define NC_IsCheck   0x000004 /* True if resolving a CHECK constraint */
 #define NC_GenCol    0x000008 /* True for a GENERATED ALWAYS AS clause */
 #define NC_HasAgg    0x000010 /* One or more aggregate functions seen */
-#define NC_IdxExpr   0x000020 /* True if resolving columns of CREATE INDEX */
+#define NC_Idx_पाहायाग   0x000020 /* True if resolving columns of CREATE INDEX */
 #define NC_SelfRef   0x00002e /* Combo: PartIdx, isCheck, GenCol, and IdxExpr */
 #define NC_Subquery  0x000040 /* A subquery has been seen */
 #define NC_UEList    0x000080 /* True if uNC.pEList is used */
@@ -3598,10 +3598,10 @@ struct NameContext {
 ** WHERE clause is omitted.
 */
 struct Upsert {
-  ExprList *pUpsertTarget;  /* Optional description of conflict target */
-  Expr *pUpsertTargetWhere; /* WHERE clause for partial index targets */
-  ExprList *pUpsertSet;     /* The SET clause from an ON CONFLICT UPDATE */
-  Expr *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
+  पाहायाग_List *pUpsertTarget;  /* Optional description of conflict target */
+  पाहायाग *pUpsertTargetWhere; /* WHERE clause for partial index targets */
+  पाहायाग_List *pUpsertSet;     /* The SET clause from an ON CONFLICT UPDATE */
+  पाहायाग *pUpsertWhere;       /* WHERE clause for the ON CONFLICT UPDATE */
   Upsert *pNextUpsert;      /* Next ON CONFLICT clause in the list */
   u8 isDoUpdate;            /* True for DO UPDATE.  False for DO NOTHING */
   u8 isDup;                 /* True if 2nd or later with same pUpsertIdx */
@@ -3630,15 +3630,15 @@ struct Select {
   u32 selFlags;          /* Various SF_* values */
   int iLimit, iOffset;   /* Memory registers holding LIMIT & OFFSET counters */
   u32 selId;             /* Unique identifier number for this SELECT */
-  ExprList *pEList;      /* The fields of the result */
+  पाहायाग_List *pEList;      /* The fields of the result */
   SrcList *pSrc;         /* The FROM clause */
-  Expr *pWhere;          /* The WHERE clause */
-  ExprList *pGroupBy;    /* The GROUP BY clause */
-  Expr *pHaving;         /* The HAVING clause */
-  ExprList *pOrderBy;    /* The ORDER BY clause */
+  पाहायाग *pWhere;          /* The WHERE clause */
+  पाहायाग_List *pGroupBy;    /* The GROUP BY clause */
+  पाहायाग *pHaving;         /* The HAVING clause */
+  पाहायाग_List *pOrderBy;    /* The ORDER BY clause */
   Select *pPrior;        /* Prior select in a compound select statement */
   Select *pNext;         /* Next select to the left in a compound */
-  Expr *pLimit;          /* LIMIT expression. NULL means not used. */
+  पाहायाग *pLimit;          /* LIMIT expression. NULL means not used. */
   With *pWith;           /* WITH clause attached to this select. Or NULL. */
 #ifndef SQLITE_OMIT_WINDOWFUNC
   Window *pWin;          /* List of window functions */
@@ -3665,8 +3665,8 @@ struct Select {
 #define SF_Expanded      0x0000040 /* sqlite3SelectExpand() called on this */
 #define SF_HasTypeInfo   0x0000080 /* FROM subqueries have Table metadata */
 #define SF_Compound      0x0000100 /* Part of a compound query */
-#define SF_Values        0x0000200 /* Synthesized from VALUES clause */
-#define SF_MultiValue    0x0000400 /* Single VALUES term with multiple rows */
+#define SF_मगा_हालागा        0x0000200 /* Synthesized from VALUES clause */
+#define SF_Multi_हालागा    0x0000400 /* Single VALUES term with multiple rows */
 #define SF_NestedFrom    0x0000800 /* Part of a parenthesized FROM clause */
 #define SF_MinMaxAgg     0x0001000 /* Aggregate containing min() or max() */
 #define SF_Recursive     0x0002000 /* The recursive part of a recursive CTE */
@@ -3680,7 +3680,7 @@ struct Select {
 #define SF_View          0x0200000 /* SELECT statement is a view */
 /*                       0x0400000 // available for reuse */
 #define SF_UFSrcCheck    0x0800000 /* Check pSrc as required by UPDATE...FROM */
-#define SF_PushDown      0x1000000 /* Modified by WHERE-clause push-down opt */
+#define SF_इतुलाक_Down      0x1000000 /* Modified by WHERE-clause push-down opt */
 #define SF_MultiPart     0x2000000 /* Has multiple incompatible PARTITIONs */
 #define SF_CopyCte       0x4000000 /* SELECT statement is a copy of a CTE */
 #define SF_OrderByReqd   0x8000000 /* The ORDER BY clause may not be omitted */
@@ -3795,7 +3795,7 @@ struct SelectDest {
   int iSdst;           /* Base register where results are written */
   int nSdst;           /* Number of registers allocated */
   char *zAffSdst;      /* Affinity used for SRT_Set */
-  ExprList *pOrderBy;  /* Key columns for SRT_Queue and SRT_DistQueue */
+  पाहायाग_List *pOrderBy;  /* Key columns for SRT_Queue and SRT_DistQueue */
 };
 
 /*
@@ -3869,14 +3869,14 @@ struct TriggerPrg {
 ** this list is consulted and if a matching expression is found, the value
 ** is read from the index rather than being recomputed.
 */
-struct IndexedExpr {
-  Expr *pExpr;            /* The expression contained in the index */
+struct Indexed_पाहायाग {
+  पाहायाग *p_पाहायाग;            /* The expression contained in the index */
   int iDataCur;           /* The data cursor associated with the index */
   int iIdxCur;            /* The index cursor */
   int iIdxCol;            /* The index column that contains value of pExpr */
   u8 bMaybeNullRow;       /* True if we need an OP_IfNullRow check */
   u8 aff;                 /* Affinity of the pExpr expression */
-  IndexedExpr *pIENext;   /* Next in a list of all indexed expressions */
+  Indexed_पाहायाग *pIENext;   /* Next in a list of all indexed expressions */
 #ifdef SQLITE_ENABLE_EXPLAIN_COMMENTS
   const char *zIdxName;   /* Name of index, used only for bytecode comments */
 #endif
@@ -3918,7 +3918,7 @@ struct ParseCleanup {
 */
 struct Parse {
   sqlite3 *db;         /* The main database structure */
-  char *zErrMsg;       /* An error message */
+  char *z_Err_मेनसाहे;       /* An error message */
   Vdbe *pVdbe;         /* An engine for executing database bytecode */
   int rc;              /* Return code from execution */
   LogEst nQueryLoop;   /* Est number of iterations of a query (10*log2(N)) */
@@ -3961,9 +3961,9 @@ struct Parse {
   int nLabel;          /* The *negative* of the number of labels used */
   int nLabelAlloc;     /* Number of slots in aLabel */
   int *aLabel;         /* Space to hold the labels */
-  ExprList *pConstExpr;/* Constant expressions */
-  IndexedExpr *pIdxEpr;/* List of expressions used by active indexes */
-  IndexedExpr *pIdxPartExpr; /* Exprs constrained by index WHERE clauses */
+  पाहायाग_List *p_Const_पाहायाग;/* Constant expressions */
+  Indexed_पाहायाग *pIdxEpr;/* List of expressions used by active indexes */
+  Indexed_पाहायाग *p_Idx_Part_पाहायाग; /* Exprs constrained by index WHERE clauses */
   yDbMask writeMask;   /* Start a write transaction on these databases */
   yDbMask cookieMask;  /* Bitmask of schema verified databases */
   int nMaxArg;         /* Max args to xUpdate and xFilter vtab methods */
@@ -3996,7 +3996,7 @@ struct Parse {
     struct {  /* These fields available when isCreate is true */
       int addrCrTab;        /* Address of OP_CreateBtree on CREATE TABLE */
       int regRowid;         /* Register holding rowid of CREATE TABLE entry */
-      int regRoot;          /* Register holding root page for new objects */
+      int reg_उगात;          /* Register holding root page for new objects */
       Token constraintName; /* Name of the constraint currently being parsed */
     } cr;
     struct {  /* These fields available to all other statements */
@@ -4058,8 +4058,8 @@ struct Parse {
 /*
 ** Sizes and pointers of various parts of the Parse object.
 */
-#define PARSE_HDR(X)  (((char*)(X))+offsetof(Parse,zErrMsg))
-#define PARSE_HDR_SZ (offsetof(Parse,aTempReg)-offsetof(Parse,zErrMsg)) /* Recursive part w/o aColCache*/
+#define PARSE_HDR(X)  (((char*)(X))+offsetof(Parse,z_Err_मेनसाहे))
+#define PARSE_HDR_SZ (offsetof(Parse,aTempReg)-offsetof(Parse,z_Err_मेनसाहे)) /* Recursive part w/o aColCache*/
 #define PARSE_RECURSE_SZ offsetof(Parse,sLastToken)    /* Recursive part */
 #define PARSE_TAIL_SZ (sizeof(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
 #define PARSE_TAIL(X) (((char*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
@@ -4149,7 +4149,7 @@ struct Trigger {
   u8 op;                  /* One of TK_DELETE, TK_UPDATE, TK_INSERT         */
   u8 tr_tm;               /* One of TRIGGER_BEFORE, TRIGGER_AFTER */
   u8 bReturning;          /* This trigger implements a RETURNING clause */
-  Expr *pWhen;            /* The WHEN clause of the expression (may be NULL) */
+  पाहायाग *pWhen;            /* The WHEN clause of the expression (may be NULL) */
   IdList *pColumns;       /* If this is an UPDATE OF <column-list> trigger,
                              the <column-list> is stored here */
   Schema *pSchema;        /* Schema containing the trigger */
@@ -4218,8 +4218,8 @@ struct TriggerStep {
   Trigger *pTrig;      /* The trigger that this step is a part of */
   Select *pSelect;     /* SELECT statement or RHS of INSERT INTO SELECT ... */
   SrcList *pSrc;       /* Table to insert/update/delete */
-  Expr *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
-  ExprList *pExprList; /* SET clause for UPDATE, or RETURNING clause */
+  पाहायाग *pWhere;        /* The WHERE clause for DELETE or UPDATE steps */
+  पाहायाग_List *p_पाहायाग_List; /* SET clause for UPDATE, or RETURNING clause */
   IdList *pIdList;     /* Column names for INSERT */
   Upsert *pUpsert;     /* Upsert clauses on an INSERT */
   char *zSpan;         /* Original SQL text of this command */
@@ -4232,7 +4232,7 @@ struct TriggerStep {
 */
 struct Returning {
   Parse *pParse;        /* The parse that includes the RETURNING clause */
-  ExprList *pReturnEL;  /* List of expressions to return */
+  पाहायाग_List *pReturnEL;  /* List of expressions to return */
   Trigger retTrig;      /* The transient trigger that implements RETURNING */
   TriggerStep retTStep; /* The trigger step */
   int iRetCur;          /* Transient table holding RETURNING results */
@@ -4289,7 +4289,7 @@ struct RCStr {
 */
 typedef struct {
   sqlite3 *db;        /* The database being initialized */
-  char **pzErrMsg;    /* Error message stored here */
+  char **pz_Err_मेनसाहे;    /* Error message stored here */
   int iDb;            /* 0 for main database.  1 for TEMP, 2.. for ATTACHed */
   int rc;             /* Result code stored here */
   u32 mInitFlags;     /* Flags controlling error messages */
@@ -4354,7 +4354,7 @@ struct Sqlite3Config {
   void *pPage;                      /* Page cache memory */
   int szPage;                       /* Size of each page in pPage[] */
   int nPage;                        /* Number of pages in pPage[] */
-  int mxParserStack;                /* maximum depth of the parser stack */
+  int mx_Parser_सालानसान;                /* maximum depth of the parser stack */
   int sharedCacheEnabled;           /* true if shared-cache mode enabled */
   u32 szPma;                        /* Maximum Sorter PMA size */
   /* The above might be initialized to non-zero.  The following need to always
@@ -4376,7 +4376,7 @@ struct Sqlite3Config {
   /* The following callback (if not NULL) is invoked on every VDBE branch
   ** operation.  Set the callback using SQLITE_TESTCTRL_VDBE_COVERAGE.
   */
-  void (*xVdbeBranch)(void*,unsigned iSrcLine,u8 eThis,u8 eMx);  /* Callback */
+  void (*xVdbeBranch)(void*,unsigned i_Src_लिन्या,u8 eThis,u8 eMx);  /* Callback */
   void *pVdbeBranchArg;                                     /* 1st argument */
 #endif
 #ifndef SQLITE_OMIT_DESERIALIZE
@@ -4424,7 +4424,7 @@ struct Sqlite3Config {
 */
 struct Walker {
   Parse *pParse;                            /* Parser context.  */
-  int (*xExprCallback)(Walker*, Expr*);     /* Callback for expressions */
+  int (*x_पाहायाग_Callback)(Walker*, पाहायाग*);     /* Callback for expressions */
   int (*xSelectCallback)(Walker*,Select*);  /* Callback for SELECTs */
   void (*xSelectCallback2)(Walker*,Select*);/* Second callback for SELECTs */
   int walkerDepth;                          /* Number of subqueries */
@@ -4440,7 +4440,7 @@ struct Walker {
     struct RefSrcList *pRefSrcList;           /* sqlite3ReferencesSrcList() */
     int *aiCol;                               /* array of column indexes */
     struct IdxCover *pIdxCover;               /* Check for index coverage */
-    ExprList *pGroupBy;                       /* GROUP BY clause */
+    पाहायाग_List *pGroupBy;                       /* GROUP BY clause */
     Select *pSelect;                          /* HAVING to WHERE clause ctx */
     struct WindowRewrite *pRewrite;           /* Window rewrite context */
     struct WhereConst *pConst;                /* WHERE clause constants */
@@ -4470,13 +4470,13 @@ struct DbFixer {
 };
 
 /* Forward declarations */
-int sqlite3WalkExpr(Walker*, Expr*);
-int sqlite3WalkExprNN(Walker*, Expr*);
-int sqlite3WalkExprList(Walker*, ExprList*);
+int sqlite3_Walk_पाहायाग(Walker*, पाहायाग*);
+int sqlite3_Walk_पाहायाग_NN(Walker*, पाहायाग*);
+int sqlite3_Walk_पाहायाग_List(Walker*, पाहायाग_List*);
 int sqlite3WalkSelect(Walker*, Select*);
-int sqlite3WalkSelectExpr(Walker*, Select*);
+int sqlite3_Walk_Select_पाहायाग(Walker*, Select*);
 int sqlite3WalkSelectFrom(Walker*, Select*);
-int sqlite3ExprWalkNoop(Walker*, Expr*);
+int sqlite3_पाहायाग_Walk_Noop(Walker*, पाहायाग*);
 int sqlite3SelectWalkNoop(Walker*, Select*);
 int sqlite3SelectWalkFail(Walker*, Select*);
 int sqlite3WalkerDepthIncrease(Walker*,Select*);
@@ -4488,9 +4488,9 @@ void sqlite3SelectWalkAssert2(Walker*, Select*);
 #endif
 
 #ifndef SQLITE_OMIT_CTE
-void sqlite3SelectPopWith(Walker*, Select*);
+void sqlite3_Select_आलिसिन_With(Walker*, Select*);
 #else
-# define sqlite3SelectPopWith 0
+# define sqlite3_Select_आलिसिन_With 0
 #endif
 
 /*
@@ -4506,7 +4506,7 @@ void sqlite3SelectPopWith(Walker*, Select*);
 */
 struct Cte {
   char *zName;            /* Name of this CTE */
-  ExprList *pCols;        /* List of explicit column names, or NULL */
+  पाहायाग_List *pCols;        /* List of explicit column names, or NULL */
   Select *pSelect;        /* The definition of this CTE */
   const char *zCteErr;    /* Error message for circular references */
   CteUse *pUse;           /* Usage information for this CTE */
@@ -4575,9 +4575,9 @@ struct DbClientData {
 ** An instance of the TreeView object is used for printing the content of
 ** data structures on sqlite3DebugPrintf() using a tree-like view.
 */
-struct TreeView {
+struct पुनो_View {
   int iLevel;             /* Which level of the tree we are on */
-  u8  bLine[100];         /* Draw vertical in column i if bLine[i] is true */
+  u8  b_लिन्या[100];         /* Draw vertical in column i if bLine[i] is true */
 };
 #endif /* SQLITE_DEBUG */
 
@@ -4607,18 +4607,18 @@ struct TreeView {
 struct Window {
   char *zName;            /* Name of window (may be NULL) */
   char *zBase;            /* Name of base window for chaining (may be NULL) */
-  ExprList *pPartition;   /* PARTITION BY clause */
-  ExprList *pOrderBy;     /* ORDER BY clause */
+  पाहायाग_List *pPartition;   /* PARTITION BY clause */
+  पाहायाग_List *pOrderBy;     /* ORDER BY clause */
   u8 eFrmType;            /* TK_RANGE, TK_GROUPS, TK_ROWS, or 0 */
   u8 eStart;              /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
   u8 eEnd;                /* UNBOUNDED, CURRENT, PRECEDING or FOLLOWING */
   u8 bImplicitFrame;      /* True if frame was implicitly specified */
   u8 eExclude;            /* TK_NO, TK_CURRENT, TK_TIES, TK_GROUP, or 0 */
-  Expr *pStart;           /* Expression for "<expr> PRECEDING" */
-  Expr *pEnd;             /* Expression for "<expr> FOLLOWING" */
+  पाहायाग *pStart;           /* Expression for "<expr> PRECEDING" */
+  पाहायाग *pEnd;             /* Expression for "<expr> FOLLOWING" */
   Window **ppThis;        /* Pointer to this object in Select.pWin list */
   Window *pNextWin;       /* Next window function belonging to this SELECT */
-  Expr *pFilter;          /* The FILTER expression */
+  पाहायाग *pFilter;          /* The FILTER expression */
   FuncDef *pWFunc;        /* The function */
   int iEphCsr;            /* Partition buffer or Peer buffer */
   int regAccum;           /* Accumulator */
@@ -4626,36 +4626,36 @@ struct Window {
   int csrApp;             /* Function cursor (used by min/max) */
   int regApp;             /* Function register (also used by min/max) */
   int regPart;            /* Array of registers for PARTITION BY values */
-  Expr *pOwner;           /* Expression object this window is attached to */
+  पाहायाग *pOwner;           /* Expression object this window is attached to */
   int nBufferCol;         /* Number of columns in buffer table */
   int iArgCol;            /* Offset of first argument for this function */
   int regOne;             /* Register containing constant value 1 */
   int regStartRowid;
   int regEndRowid;
-  u8 bExprArgs;           /* Defer evaluation of window function arguments
+  u8 b_पाहायाग_मगा_कातविरान;           /* Defer evaluation of window function arguments
                           ** due to the SQLITE_SUBTYPE flag */
 };
 
-Select *sqlite3MultiValues(Parse *pParse, Select *pLeft, ExprList *pRow);
-void sqlite3MultiValuesEnd(Parse *pParse, Select *pVal);
+Select *sqlite3_Multi_मगा_हालागा(Parse *pParse, Select *p_कालिवा, पाहायाग_List *pRow);
+void sqlite3_Multi_मगा_हालागा_End(Parse *pParse, Select *pVal);
 
 #ifndef SQLITE_OMIT_WINDOWFUNC
 void sqlite3WindowDelete(sqlite3*, Window*);
 void sqlite3WindowUnlinkFromSelect(Window*);
 void sqlite3WindowListDelete(sqlite3 *db, Window *p);
-Window *sqlite3WindowAlloc(Parse*, int, int, Expr*, int , Expr*, u8);
-void sqlite3WindowAttach(Parse*, Expr*, Window*);
+Window *sqlite3WindowAlloc(Parse*, int, int, पाहायाग*, int , पाहायाग*, u8);
+void sqlite3WindowAttach(Parse*, पाहायाग*, Window*);
 void sqlite3WindowLink(Select *pSel, Window *pWin);
 int sqlite3WindowCompare(const Parse*, const Window*, const Window*, int);
 void sqlite3WindowCodeInit(Parse*, Select*);
 void sqlite3WindowCodeStep(Parse*, Select*, WhereInfo*, int, int);
 int sqlite3WindowRewrite(Parse*, Select*);
 void sqlite3WindowUpdate(Parse*, Window*, Window*, FuncDef*);
-Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p);
+Window *sqlite3WindowDup(sqlite3 *db, पाहायाग *pOwner, Window *p);
 Window *sqlite3WindowListDup(sqlite3 *db, Window *p);
 void sqlite3WindowFunctions(void);
 void sqlite3WindowChain(Parse*, Window*, Window*);
-Window *sqlite3WindowAssemble(Parse*, Window*, ExprList*, ExprList*, Token*);
+Window *sqlite3WindowAssemble(Parse*, Window*, पाहायाग_List*, पाहायाग_List*, Token*);
 #else
 # define sqlite3WindowDelete(a,b)
 # define sqlite3WindowFunctions()
@@ -4844,15 +4844,15 @@ int sqlite3HeapNearlyFull(void);
 ** that deal with sqlite3StackAlloc() failures to be unreachable.
 */
 #ifdef SQLITE_USE_ALLOCA
-# define sqlite3StackAllocRaw(D,N)   alloca(N)
-# define sqlite3StackAllocRawNN(D,N) alloca(N)
-# define sqlite3StackFree(D,P)
-# define sqlite3StackFreeNN(D,P)
+# define sqlite3_सालानसान_Alloc_Raw(D,N)   alloca(N)
+# define sqlite3_सालानसान_Alloc_Raw_NN(D,N) alloca(N)
+# define sqlite3_सालानसान_Free(D,P)
+# define sqlite3_सालानसान_Free_NN(D,P)
 #else
-# define sqlite3StackAllocRaw(D,N)   sqlite3DbMallocRaw(D,N)
-# define sqlite3StackAllocRawNN(D,N) sqlite3DbMallocRawNN(D,N)
-# define sqlite3StackFree(D,P)       sqlite3DbFree(D,P)
-# define sqlite3StackFreeNN(D,P)     sqlite3DbFreeNN(D,P)
+# define sqlite3_सालानसान_Alloc_Raw(D,N)   sqlite3DbMallocRaw(D,N)
+# define sqlite3_सालानसान_Alloc_Raw_NN(D,N) sqlite3DbMallocRawNN(D,N)
+# define sqlite3_सालानसान_Free(D,P)       sqlite3DbFree(D,P)
+# define sqlite3_सालानसान_Free_NN(D,P)     sqlite3DbFreeNN(D,P)
 #endif
 
 /* Do not allow both MEMSYS5 and MEMSYS3 to be defined together.  If they
@@ -4880,7 +4880,7 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys3(void);
 # define sqlite3MemoryBarrier()
 #endif
 
-sqlite3_int64 sqlite3StatusValue(int);
+sqlite3_int64 sqlite3_Status_हालागा(int);
 void sqlite3StatusUp(int, int);
 void sqlite3StatusDown(int, int);
 void sqlite3StatusHighwater(int, int);
@@ -4929,7 +4929,7 @@ void sqlite3MutexWarnOnContention(sqlite3_mutex*);
 struct PrintfArguments {
   int nArg;                /* Total number of arguments */
   int nUsed;               /* Number of arguments used so far */
-  sqlite3_value **apArg;   /* The argument values */
+  sqlite3_हालागा **apArg;   /* The argument values */
 };
 
 /*
@@ -4962,37 +4962,37 @@ char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
 #endif
 
 #if defined(SQLITE_DEBUG)
-  void sqlite3TreeViewLine(TreeView*, const char *zFormat, ...);
-  void sqlite3TreeViewExpr(TreeView*, const Expr*, u8);
-  void sqlite3TreeViewBareExprList(TreeView*, const ExprList*, const char*);
-  void sqlite3TreeViewExprList(TreeView*, const ExprList*, u8, const char*);
-  void sqlite3TreeViewBareIdList(TreeView*, const IdList*, const char*);
-  void sqlite3TreeViewIdList(TreeView*, const IdList*, u8, const char*);
-  void sqlite3TreeViewColumnList(TreeView*, const Column*, int, u8);
-  void sqlite3TreeViewSrcList(TreeView*, const SrcList*);
-  void sqlite3TreeViewSelect(TreeView*, const Select*, u8);
-  void sqlite3TreeViewWith(TreeView*, const With*, u8);
-  void sqlite3TreeViewUpsert(TreeView*, const Upsert*, u8);
+  void sqlite3_पुनो_View_लिन्या(पुनो_View*, const char *zFormat, ...);
+  void sqlite3_पुनो_View_पाहायाग(पुनो_View*, const पाहायाग*, u8);
+  void sqlite3_पुनो_View_Bare_पाहायाग_List(पुनो_View*, const पाहायाग_List*, const char*);
+  void sqlite3_पुनो_View_पाहायाग_List(पुनो_View*, const पाहायाग_List*, u8, const char*);
+  void sqlite3_पुनो_View_Bare_Id_List(पुनो_View*, const IdList*, const char*);
+  void sqlite3_पुनो_View_Id_List(पुनो_View*, const IdList*, u8, const char*);
+  void sqlite3_पुनो_View_Column_List(पुनो_View*, const Column*, int, u8);
+  void sqlite3_पुनो_View_Src_List(पुनो_View*, const SrcList*);
+  void sqlite3_पुनो_View_Select(पुनो_View*, const Select*, u8);
+  void sqlite3_पुनो_View_With(पुनो_View*, const With*, u8);
+  void sqlite3_पुनो_View_Upsert(पुनो_View*, const Upsert*, u8);
 #if TREETRACE_ENABLED
-  void sqlite3TreeViewDelete(const With*, const SrcList*, const Expr*,
-                             const ExprList*,const Expr*, const Trigger*);
-  void sqlite3TreeViewInsert(const With*, const SrcList*,
-                             const IdList*, const Select*, const ExprList*,
+  void sqlite3_पुनो_View_Delete(const With*, const SrcList*, const पाहायाग*,
+                             const पाहायाग_List*,const पाहायाग*, const Trigger*);
+  void sqlite3_पुनो_View_इसिंगित(const With*, const SrcList*,
+                             const IdList*, const Select*, const पाहायाग_List*,
                              int, const Upsert*, const Trigger*);
-  void sqlite3TreeViewUpdate(const With*, const SrcList*, const ExprList*,
-                             const Expr*, int, const ExprList*, const Expr*,
+  void sqlite3_पुनो_View_Update(const With*, const SrcList*, const पाहायाग_List*,
+                             const पाहायाग*, int, const पाहायाग_List*, const पाहायाग*,
                              const Upsert*, const Trigger*);
 #endif
 #ifndef SQLITE_OMIT_TRIGGER
-  void sqlite3TreeViewTriggerStep(TreeView*, const TriggerStep*, u8, u8);
-  void sqlite3TreeViewTrigger(TreeView*, const Trigger*, u8, u8);
+  void sqlite3_पुनो_View_Trigger_Step(पुनो_View*, const TriggerStep*, u8, u8);
+  void sqlite3_पुनो_View_Trigger(पुनो_View*, const Trigger*, u8, u8);
 #endif
 #ifndef SQLITE_OMIT_WINDOWFUNC
-  void sqlite3TreeViewWindow(TreeView*, const Window*, u8);
-  void sqlite3TreeViewWinFunc(TreeView*, const Window*, u8);
+  void sqlite3_पुनो_View_Window(पुनो_View*, const Window*, u8);
+  void sqlite3_पुनो_View_Win_Func(पुनो_View*, const Window*, u8);
 #endif
-  void sqlite3ShowExpr(const Expr*);
-  void sqlite3ShowExprList(const ExprList*);
+  void sqlite3_Show_पाहायाग(const पाहायाग*);
+  void sqlite3_Show_पाहायाग_List(const पाहायाग_List*);
   void sqlite3ShowIdList(const IdList*);
   void sqlite3ShowSrcList(const SrcList*);
   void sqlite3ShowSelect(const Select*);
@@ -5013,12 +5013,12 @@ char *sqlite3VMPrintf(sqlite3*,const char*, va_list);
 
 void sqlite3SetString(char **, sqlite3*, const char*);
 void sqlite3ProgressCheck(Parse*);
-void sqlite3ErrorMsg(Parse*, const char*, ...);
+void sqlite3_Error_मेनसाहे(Parse*, const char*, ...);
 int sqlite3ErrorToParser(sqlite3*,int);
 void sqlite3Dequote(char*);
-void sqlite3DequoteExpr(Expr*);
+void sqlite3_Dequote_पाहायाग(पाहायाग*);
 void sqlite3DequoteToken(Token*);
-void sqlite3DequoteNumber(Parse*, Expr*);
+void sqlite3_Dequote_नुमेरो(Parse*, पाहायाग*);
 void sqlite3TokenInit(Token*,char*);
 int sqlite3KeywordCode(const unsigned char*, int);
 int sqlite3RunParser(Parse*, const char*);
@@ -5035,34 +5035,34 @@ int sqlite3FirstAvailableRegister(Parse*,int);
 #ifdef SQLITE_DEBUG
 int sqlite3NoTempsInRange(Parse*,int,int);
 #endif
-Expr *sqlite3ExprAlloc(sqlite3*,int,const Token*,int);
-Expr *sqlite3Expr(sqlite3*,int,const char*);
-Expr *sqlite3ExprInt32(sqlite3*,int);
-void sqlite3ExprAttachSubtrees(sqlite3*,Expr*,Expr*,Expr*);
-Expr *sqlite3PExpr(Parse*, int, Expr*, Expr*);
-void sqlite3PExprAddSelect(Parse*, Expr*, Select*);
-Expr *sqlite3ExprAnd(Parse*,Expr*, Expr*);
-Expr *sqlite3ExprSimplifiedAndOr(Expr*);
-Expr *sqlite3ExprFunction(Parse*,ExprList*, const Token*, int);
-void sqlite3ExprAddFunctionOrderBy(Parse*,Expr*,ExprList*);
-void sqlite3ExprOrderByAggregateError(Parse*,Expr*);
-void sqlite3ExprFunctionUsable(Parse*,const Expr*,const FuncDef*);
-void sqlite3ExprAssignVarNumber(Parse*, Expr*, u32);
-void sqlite3ExprDelete(sqlite3*, Expr*);
-void sqlite3ExprDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprDeferredDelete(Parse*, Expr*);
-void sqlite3ExprUnmapAndDelete(Parse*, Expr*);
-ExprList *sqlite3ExprListAppend(Parse*,ExprList*,Expr*);
-ExprList *sqlite3ExprListAppendVector(Parse*,ExprList*,IdList*,Expr*);
-Select *sqlite3ExprListToValues(Parse*, int, ExprList*);
-void sqlite3ExprListSetSortOrder(ExprList*,int,int);
-void sqlite3ExprListSetName(Parse*,ExprList*,const Token*,int);
-void sqlite3ExprListSetSpan(Parse*,ExprList*,const char*,const char*);
-void sqlite3ExprListDelete(sqlite3*, ExprList*);
-void sqlite3ExprListDeleteGeneric(sqlite3*,void*);
-int sqlite3ExprCanReturnSubtype(Parse*,Expr*);
-u32 sqlite3ExprListFlags(const ExprList*);
-int sqlite3IndexHasDuplicateRootPage(Index*);
+पाहायाग *sqlite3_पाहायाग_Alloc(sqlite3*,int,const Token*,int);
+पाहायाग *sqlite3_पाहायाग(sqlite3*,int,const char*);
+पाहायाग *sqlite3_पाहायाग_Int32(sqlite3*,int);
+void sqlite3_पाहायाग_Attach_Subtrees(sqlite3*,पाहायाग*,पाहायाग*,पाहायाग*);
+पाहायाग *sqlite3PExpr(Parse*, int, पाहायाग*, पाहायाग*);
+void sqlite3PExprAddSelect(Parse*, पाहायाग*, Select*);
+पाहायाग *sqlite3_पाहायाग_And(Parse*,पाहायाग*, पाहायाग*);
+पाहायाग *sqlite3_पाहायाग_Simplified_And_Or(पाहायाग*);
+पाहायाग *sqlite3_पाहायाग_Function(Parse*,पाहायाग_List*, const Token*, int);
+void sqlite3_पाहायाग_Add_Function_Order_By(Parse*,पाहायाग*,पाहायाग_List*);
+void sqlite3_पाहायाग_Order_By_Aggregate_Error(Parse*,पाहायाग*);
+void sqlite3_पाहायाग_Function_Usable(Parse*,const पाहायाग*,const FuncDef*);
+void sqlite3_पाहायाग_Assign_Var_नुमेरो(Parse*, पाहायाग*, u32);
+void sqlite3_पाहायाग_Delete(sqlite3*, पाहायाग*);
+void sqlite3_पाहायाग_Delete_Generic(sqlite3*,void*);
+int sqlite3_पाहायाग_Deferred_Delete(Parse*, पाहायाग*);
+void sqlite3_पाहायाग_Unmap_And_Delete(Parse*, पाहायाग*);
+पाहायाग_List *sqlite3_पाहायाग_List_Append(Parse*,पाहायाग_List*,पाहायाग*);
+पाहायाग_List *sqlite3_पाहायाग_List_Append_Vector(Parse*,पाहायाग_List*,IdList*,पाहायाग*);
+Select *sqlite3_पाहायाग_List_To_मगा_हालागा(Parse*, int, पाहायाग_List*);
+void sqlite3_पाहायाग_List_Set_Sort_Order(पाहायाग_List*,int,int);
+void sqlite3_पाहायाग_List_Set_Name(Parse*,पाहायाग_List*,const Token*,int);
+void sqlite3_पाहायाग_List_Set_Span(Parse*,पाहायाग_List*,const char*,const char*);
+void sqlite3_पाहायाग_List_Delete(sqlite3*, पाहायाग_List*);
+void sqlite3_पाहायाग_List_Delete_Generic(sqlite3*,void*);
+int sqlite3_पाहायाग_Can_Return_Subtype(Parse*,पाहायाग*);
+u32 sqlite3_पाहायाग_List_Flags(const पाहायाग_List*);
+int sqlite3_Index_Has_Duplicate_उगात_Page(Index*);
 int sqlite3Init(sqlite3*, char**);
 int sqlite3InitCallback(void*, int, char**, char**);
 int sqlite3InitOne(sqlite3*, int, char**, u32);
@@ -5074,18 +5074,18 @@ void sqlite3ResetAllSchemasOfConnection(sqlite3*);
 void sqlite3ResetOneSchema(sqlite3*,int);
 void sqlite3CollapseDatabaseArray(sqlite3*);
 void sqlite3CommitInternalChanges(sqlite3*);
-void sqlite3ColumnSetExpr(Parse*,Table*,Column*,Expr*);
-Expr *sqlite3ColumnExpr(Table*,Column*);
-Expr *sqlite3ColumnExprAuth(Table*,Column*,Parse*);
+void sqlite3_Column_Set_पाहायाग(Parse*,Table*,Column*,पाहायाग*);
+पाहायाग *sqlite3_Column_पाहायाग(Table*,Column*);
+पाहायाग *sqlite3_Column_पाहायाग_Auth(Table*,Column*,Parse*);
 void sqlite3ColumnSetColl(sqlite3*,Column*,const char*zColl);
 const char *sqlite3ColumnColl(Column*);
 void sqlite3DeleteColumnNames(sqlite3*,Table*);
 void sqlite3GenerateColumnNames(Parse *pParse, Select *pSelect);
-int sqlite3ColumnsFromExprList(Parse*,ExprList*,i16*,Column**);
+int sqlite3_Columns_From_पाहायाग_List(Parse*,पाहायाग_List*,i16*,Column**);
 void sqlite3SubqueryColumnTypes(Parse*,Table*,Select*,char);
 Table *sqlite3ResultSetOfSelect(Parse*,Select*,char);
 void sqlite3OpenSchemaTable(Parse *, int);
-Index *sqlite3PrimaryKeyIndex(Table*);
+Index *sqlite3_Primary_सुसि_Index(Table*);
 int sqlite3TableColumnToIndex(Index*, int);
 #ifdef SQLITE_OMIT_GENERATED_COLUMNS
 # define sqlite3TableColumnToStorage(T,X) (X)  /* No-op pass-through */
@@ -5102,13 +5102,13 @@ void sqlite3StartTable(Parse*,Token*,Token*,int,int,int,int);
 #endif
 void sqlite3AddColumn(Parse*,Token,Token);
 void sqlite3AddNotNull(Parse*, int);
-void sqlite3AddPrimaryKey(Parse*, ExprList*, int, int, int);
-void sqlite3AddCheckConstraint(Parse*, Expr*, const char*, const char*);
-void sqlite3AddDefaultValue(Parse*,Expr*,const char*,const char*);
+void sqlite3_Add_Primary_सुसि(Parse*, पाहायाग_List*, int, int, int);
+void sqlite3AddCheckConstraint(Parse*, पाहायाग*, const char*, const char*);
+void sqlite3_Add_Default_हालागा(Parse*,पाहायाग*,const char*,const char*);
 void sqlite3AddCollateType(Parse*, Token*);
-void sqlite3AddGenerated(Parse*,Expr*,Token*);
+void sqlite3AddGenerated(Parse*,पाहायाग*,Token*);
 void sqlite3EndTable(Parse*,Token*,Token*,u32,Select*);
-void sqlite3AddReturning(Parse*,ExprList*);
+void sqlite3AddReturning(Parse*,पाहायाग_List*);
 int sqlite3ParseUri(const char*,const char*,unsigned int*,
                     sqlite3_vfs**,char**,char **);
 #define sqlite3CodecQueryParameters(A,B,C) 0
@@ -5134,11 +5134,11 @@ int sqlite3BitvecBuiltinTest(int,int*);
 RowSet *sqlite3RowSetInit(sqlite3*);
 void sqlite3RowSetDelete(void*);
 void sqlite3RowSetClear(void*);
-void sqlite3RowSetInsert(RowSet*, i64);
+void sqlite3_Row_Set_इसिंगित(RowSet*, i64);
 int sqlite3RowSetTest(RowSet*, int iBatch, i64);
 int sqlite3RowSetNext(RowSet*, i64*);
 
-void sqlite3CreateView(Parse*,Token*,Token*,Token*,ExprList*,Select*,int,int);
+void sqlite3CreateView(Parse*,Token*,Token*,Token*,पाहायाग_List*,Select*,int,int);
 
 #if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_VIRTUALTABLE)
   int sqlite3ViewGetColumnNames(Parse*,Table*);
@@ -5161,7 +5161,7 @@ void sqlite3FreeIndex(sqlite3*, Index*);
 # define sqlite3AutoincrementBegin(X)
 # define sqlite3AutoincrementEnd(X)
 #endif
-void sqlite3Insert(Parse*, SrcList*, Select*, IdList*, int, Upsert*);
+void sqlite3_इसिंगित(Parse*, SrcList*, Select*, IdList*, int, Upsert*);
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
   void sqlite3ComputeGeneratedColumns(Parse*, int, Table*);
 #endif
@@ -5177,7 +5177,7 @@ int sqlite3SrcItemAttachSubquery(Parse*, SrcItem*, Select*, int);
 SrcList *sqlite3SrcListAppendFromTerm(Parse*, SrcList*, Token*, Token*,
                                       Token*, Select*, OnOrUsing*);
 void sqlite3SrcListIndexedBy(Parse *, SrcList *, Token *);
-void sqlite3SrcListFuncArgs(Parse*, SrcList*, ExprList*);
+void sqlite3_Src_List_Func_मगा_कातविरान(Parse*, SrcList*, पाहायाग_List*);
 int sqlite3IndexedByLookup(Parse *, SrcItem *);
 void sqlite3SrcListShiftJoinType(Parse*,SrcList*);
 void sqlite3SrcListAssignCursors(Parse*, SrcList*);
@@ -5186,12 +5186,12 @@ void sqlite3ClearOnOrUsing(sqlite3*, OnOrUsing*);
 void sqlite3SrcListDelete(sqlite3*, SrcList*);
 Index *sqlite3AllocateIndexObject(sqlite3*,int,int,char**);
 int sqlite3IndexBloomable(const Index*,int);
-void sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,ExprList*,int,Token*,
-                          Expr*, int, int, u8);
+void sqlite3CreateIndex(Parse*,Token*,Token*,SrcList*,पाहायाग_List*,int,Token*,
+                          पाहायाग*, int, int, u8);
 void sqlite3DropIndex(Parse*, SrcList*, int);
 int sqlite3Select(Parse*, Select*, SelectDest*);
-Select *sqlite3SelectNew(Parse*,ExprList*,SrcList*,Expr*,ExprList*,
-                         Expr*,ExprList*,u32,Expr*);
+Select *sqlite3SelectNew(Parse*,पाहायाग_List*,SrcList*,पाहायाग*,पाहायाग_List*,
+                         पाहायाग*,पाहायाग_List*,u32,पाहायाग*);
 void sqlite3SelectDelete(sqlite3*, Select*);
 void sqlite3SelectDeleteGeneric(sqlite3*,void*);
 void sqlite3SelectCheckOnClauses(Parse *pParse, Select *pSelect);
@@ -5199,16 +5199,16 @@ Table *sqlite3SrcListLookup(Parse*, SrcList*);
 int sqlite3IsReadOnly(Parse*, Table*, Trigger*);
 void sqlite3OpenTable(Parse*, int iCur, int iDb, Table*, int);
 #if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT) && !defined(SQLITE_OMIT_SUBQUERY)
-Expr *sqlite3LimitWhere(Parse*,SrcList*,Expr*,ExprList*,Expr*,char*);
+पाहायाग *sqlite3LimitWhere(Parse*,SrcList*,पाहायाग*,पाहायाग_List*,पाहायाग*,char*);
 #endif
-void sqlite3CodeChangeCount(Vdbe*,int,const char*);
-void sqlite3DeleteFrom(Parse*, SrcList*, Expr*, ExprList*, Expr*);
-void sqlite3Update(Parse*, SrcList*, ExprList*,Expr*,int,ExprList*,Expr*,
+void sqlite3_Code_Change_बिलांग(Vdbe*,int,const char*);
+void sqlite3DeleteFrom(Parse*, SrcList*, पाहायाग*, पाहायाग_List*, पाहायाग*);
+void sqlite3Update(Parse*, SrcList*, पाहायाग_List*,पाहायाग*,int,पाहायाग_List*,पाहायाग*,
                    Upsert*);
-WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,Expr*,ExprList*,
-                             ExprList*,Select*,u16,int);
+WhereInfo *sqlite3WhereBegin(Parse*,SrcList*,पाहायाग*,पाहायाग_List*,
+                             पाहायाग_List*,Select*,u16,int);
 void sqlite3WhereEnd(WhereInfo*);
-LogEst sqlite3WhereOutputRowCount(WhereInfo*);
+LogEst sqlite3_Where_Output_Row_बिलांग(WhereInfo*);
 int sqlite3WhereIsDistinct(WhereInfo*);
 int sqlite3WhereIsOrdered(WhereInfo*);
 int sqlite3WhereOrderByLimitOptLabel(WhereInfo*);
@@ -5221,29 +5221,29 @@ int sqlite3WhereOkOnePass(WhereInfo*, int*);
 #define ONEPASS_SINGLE   1        /* ONEPASS valid for a single row update */
 #define ONEPASS_MULTI    2        /* ONEPASS is valid for multiple rows */
 int sqlite3WhereUsesDeferredSeek(WhereInfo*);
-void sqlite3ExprCodeLoadIndexColumn(Parse*, Index*, int, int, int);
-int sqlite3ExprCodeGetColumn(Parse*, Table*, int, int, int, u8);
-void sqlite3ExprCodeGetColumnOfTable(Vdbe*, Table*, int, int, int);
-void sqlite3ExprCodeMove(Parse*, int, int, int);
-void sqlite3ExprToRegister(Expr *pExpr, int iReg);
-void sqlite3ExprCode(Parse*, Expr*, int);
+void sqlite3_पाहायाग_Code_Load_Index_Column(Parse*, Index*, int, int, int);
+int sqlite3_पाहायाग_Code_Get_Column(Parse*, Table*, int, int, int, u8);
+void sqlite3_पाहायाग_Code_Get_Column_Of_Table(Vdbe*, Table*, int, int, int);
+void sqlite3_पाहायाग_Code_Move(Parse*, int, int, int);
+void sqlite3_पाहायाग_To_Register(पाहायाग *p_पाहायाग, int iReg);
+void sqlite3_पाहायाग_Code(Parse*, पाहायाग*, int);
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
-void sqlite3ExprCodeGeneratedColumn(Parse*, Table*, Column*, int);
+void sqlite3_पाहायाग_Code_Generated_Column(Parse*, Table*, Column*, int);
 #endif
-void sqlite3ExprCodeCopy(Parse*, Expr*, int);
-void sqlite3ExprCodeFactorable(Parse*, Expr*, int);
-int sqlite3ExprCodeRunJustOnce(Parse*, Expr*, int);
-void sqlite3ExprNullRegisterRange(Parse*, int, int);
-int sqlite3ExprCodeTemp(Parse*, Expr*, int*);
-int sqlite3ExprCodeTarget(Parse*, Expr*, int);
-int sqlite3ExprCodeExprList(Parse*, ExprList*, int, int, u8);
+void sqlite3_पाहायाग_Code_Copy(Parse*, पाहायाग*, int);
+void sqlite3_पाहायाग_Code_Factorable(Parse*, पाहायाग*, int);
+int sqlite3_पाहायाग_Code_Run_Just_Once(Parse*, पाहायाग*, int);
+void sqlite3_पाहायाग_Null_Register_Range(Parse*, int, int);
+int sqlite3_पाहायाग_Code_Temp(Parse*, पाहायाग*, int*);
+int sqlite3_पाहायाग_Code_Target(Parse*, पाहायाग*, int);
+int sqlite3_पाहायाग_Code_पाहायाग_List(Parse*, पाहायाग_List*, int, int, u8);
 #define SQLITE_ECEL_DUP      0x01  /* Deep, not shallow copies */
 #define SQLITE_ECEL_FACTOR   0x02  /* Factor out constant terms */
 #define SQLITE_ECEL_REF      0x04  /* Use ExprList.u.x.iOrderByCol */
 #define SQLITE_ECEL_OMITREF  0x08  /* Omit if ExprList.u.x.iOrderByCol */
-void sqlite3ExprIfTrue(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalse(Parse*, Expr*, int, int);
-void sqlite3ExprIfFalseDup(Parse*, Expr*, int, int);
+void sqlite3_पाहायाग_If_True(Parse*, पाहायाग*, int, int);
+void sqlite3_पाहायाग_If_False(Parse*, पाहायाग*, int, int);
+void sqlite3_पाहायाग_If_False_Dup(Parse*, पाहायाग*, int, int);
 Table *sqlite3FindTable(sqlite3*,const char*, const char*);
 #define LOCATE_VIEW    0x01
 #define LOCATE_NOERR   0x02
@@ -5253,19 +5253,19 @@ Table *sqlite3LocateTableItem(Parse*,u32 flags,SrcItem *);
 Index *sqlite3FindIndex(sqlite3*,const char*, const char*);
 void sqlite3UnlinkAndDeleteTable(sqlite3*,int,const char*);
 void sqlite3UnlinkAndDeleteIndex(sqlite3*,int,const char*);
-void sqlite3Vacuum(Parse*,Token*,Expr*);
-int sqlite3RunVacuum(char**, sqlite3*, int, sqlite3_value*);
+void sqlite3Vacuum(Parse*,Token*,पाहायाग*);
+int sqlite3RunVacuum(char**, sqlite3*, int, sqlite3_हालागा*);
 char *sqlite3NameFromToken(sqlite3*, const Token*);
-int sqlite3ExprCompare(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprCompareSkip(Expr*,Expr*,int);
-int sqlite3ExprListCompare(const ExprList*,const ExprList*, int);
-int sqlite3ExprImpliesExpr(const Parse*,const Expr*,const Expr*, int);
-int sqlite3ExprImpliesNonNullRow(Expr*,int,int);
+int sqlite3_पाहायाग_Compare(const Parse*,const पाहायाग*,const पाहायाग*, int);
+int sqlite3_पाहायाग_Compare_Skip(पाहायाग*,पाहायाग*,int);
+int sqlite3_पाहायाग_List_Compare(const पाहायाग_List*,const पाहायाग_List*, int);
+int sqlite3_पाहायाग_Implies_पाहायाग(const Parse*,const पाहायाग*,const पाहायाग*, int);
+int sqlite3_पाहायाग_Implies_Non_Null_Row(पाहायाग*,int,int);
 void sqlite3AggInfoPersistWalkerInit(Walker*,Parse*);
-void sqlite3ExprAnalyzeAggregates(NameContext*, Expr*);
-void sqlite3ExprAnalyzeAggList(NameContext*,ExprList*);
-int sqlite3ExprCoveredByIndex(Expr*, int iCur, Index *pIdx);
-int sqlite3ReferencesSrcList(Parse*, Expr*, SrcList*);
+void sqlite3_पाहायाग_Analyze_Aggregates(NameContext*, पाहायाग*);
+void sqlite3_पाहायाग_Analyze_Agg_List(NameContext*,पाहायाग_List*);
+int sqlite3_पाहायाग_Covered_By_Index(पाहायाग*, int iCur, Index *pIdx);
+int sqlite3ReferencesSrcList(Parse*, पाहायाग*, SrcList*);
 Vdbe *sqlite3GetVdbe(Parse*);
 #ifndef SQLITE_UNTESTABLE
 void sqlite3PrngSaveState(void);
@@ -5280,27 +5280,27 @@ void sqlite3Savepoint(Parse*, int, Token*);
 void sqlite3CloseSavepoints(sqlite3 *);
 void sqlite3LeaveMutexAndCloseZombie(sqlite3*);
 u32 sqlite3IsTrueOrFalse(const char*);
-int sqlite3ExprIdToTrueFalse(Expr*);
-int sqlite3ExprTruthValue(const Expr*);
-int sqlite3ExprIsConstant(Parse*,Expr*);
-int sqlite3ExprIsConstantOrFunction(Expr*, u8);
-int sqlite3ExprIsConstantOrGroupBy(Parse*, Expr*, ExprList*);
-int sqlite3ExprIsTableConstant(Expr*,int,int);
-int sqlite3ExprIsSingleTableConstraint(Expr*,const SrcList*,int,int);
-int sqlite3ExprListIsConstant(Parse *pParse, ExprList *pList, int bNoIs);
-int sqlite3ExprContainsSubquery(Expr*);
-int sqlite3ExprIsInteger(const Expr*, int*, Parse*, int);
-int sqlite3ExprCanBeNull(const Expr*);
-int sqlite3ExprNeedsNoAffinityChange(const Expr*, char);
-int sqlite3ExprIsLikeOperator(const Expr*);
+int sqlite3_पाहायाग_Id_To_True_False(पाहायाग*);
+int sqlite3_पाहायाग_Truth_हालागा(const पाहायाग*);
+int sqlite3_पाहायाग_Is_Constant(Parse*,पाहायाग*);
+int sqlite3_पाहायाग_Is_Constant_Or_Function(पाहायाग*, u8);
+int sqlite3_पाहायाग_Is_Constant_Or_Group_By(Parse*, पाहायाग*, पाहायाग_List*);
+int sqlite3_पाहायाग_Is_Table_Constant(पाहायाग*,int,int);
+int sqlite3_पाहायाग_Is_Single_Table_Constraint(पाहायाग*,const SrcList*,int,int);
+int sqlite3_पाहायाग_List_Is_Constant(Parse *pParse, पाहायाग_List *pList, int bNoIs);
+int sqlite3_पाहायाग_Contains_Subquery(पाहायाग*);
+int sqlite3_पाहायाग_Is_Integer(const पाहायाग*, int*, Parse*, int);
+int sqlite3_पाहायाग_Can_Be_Null(const पाहायाग*);
+int sqlite3_पाहायाग_Needs_No_Affinity_Change(const पाहायाग*, char);
+int sqlite3_पाहायाग_Is_Like_Operator(const पाहायाग*);
 int sqlite3IsRowid(const char*);
 const char *sqlite3RowidAlias(Table *pTab);
 void sqlite3GenerateRowDelete(
     Parse*,Table*,Trigger*,int,int,int,i16,u8,u8,u8,int);
 void sqlite3GenerateRowIndexDelete(Parse*, Table*, int, int, int*, int);
-int sqlite3GenerateIndexKey(Parse*, Index*, int, int, int, int*,Index*,int);
+int sqlite3_Generate_Index_सुसि(Parse*, Index*, int, int, int, int*,Index*,int);
 void sqlite3ResolvePartIdxLabel(Parse*,int);
-int sqlite3ExprReferencesUpdatedColumn(Expr*,int*,int);
+int sqlite3_पाहायाग_References_Updated_Column(पाहायाग*,int*,int);
 void sqlite3GenerateConstraintChecks(Parse*,Table*,int*,int,int,int,int,
                                      u8,u8,int,int*,int*,Upsert*);
 #ifdef SQLITE_ENABLE_NULL_TRIM
@@ -5316,15 +5316,15 @@ void sqlite3MayAbort(Parse*);
 void sqlite3HaltConstraint(Parse*, int, int, char*, i8, u8);
 void sqlite3UniqueConstraint(Parse*, int, Index*);
 void sqlite3RowidConstraint(Parse*, int, Table*);
-Expr *sqlite3ExprDup(sqlite3*,const Expr*,int);
-ExprList *sqlite3ExprListDup(sqlite3*,const ExprList*,int);
+पाहायाग *sqlite3_पाहायाग_Dup(sqlite3*,const पाहायाग*,int);
+पाहायाग_List *sqlite3_पाहायाग_List_Dup(sqlite3*,const पाहायाग_List*,int);
 SrcList *sqlite3SrcListDup(sqlite3*,const SrcList*,int);
 IdList *sqlite3IdListDup(sqlite3*,const IdList*);
 Select *sqlite3SelectDup(sqlite3*,const Select*,int);
-FuncDef *sqlite3FunctionSearch(int,const char*);
-void sqlite3InsertBuiltinFuncs(FuncDef*,int);
+FuncDef *sqlite3_Function_हानाप(int,const char*);
+void sqlite3_इसिंगित_Builtin_Funcs(FuncDef*,int);
 FuncDef *sqlite3FindFunction(sqlite3*,const char*,int,u8,u8);
-void sqlite3QuoteValue(StrAccum*,sqlite3_value*,int);
+void sqlite3_Quote_हालागा(StrAccum*,sqlite3_हालागा*,int);
 int sqlite3AppendOneUtf8Character(char*, u32);
 void sqlite3RegisterBuiltinFunctions(void);
 void sqlite3RegisterDateTimeFunctions(void);
@@ -5343,34 +5343,34 @@ With *sqlite3WithDup(sqlite3 *db, With *p);
 #endif
 
 #if !defined(SQLITE_OMIT_VIEW) && !defined(SQLITE_OMIT_TRIGGER)
-void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
+void sqlite3MaterializeView(Parse*, Table*, पाहायाग*, पाहायाग_List*,पाहायाग*,int);
 #endif
 
 #ifndef SQLITE_OMIT_TRIGGER
   void sqlite3BeginTrigger(Parse*, Token*,Token*,int,int,IdList*,SrcList*,
-                           Expr*,int, int);
+                           पाहायाग*,int, int);
   void sqlite3FinishTrigger(Parse*, TriggerStep*, Token*);
   void sqlite3DropTrigger(Parse*, SrcList*, int);
   void sqlite3DropTriggerPtr(Parse*, Trigger*);
-  Trigger *sqlite3TriggersExist(Parse *, Table*, int, ExprList*, int *pMask);
+  Trigger *sqlite3TriggersExist(Parse *, Table*, int, पाहायाग_List*, int *pMask);
   Trigger *sqlite3TriggerList(Parse *, Table *);
-  void sqlite3CodeRowTrigger(Parse*, Trigger *, int, ExprList*, int, Table *,
+  void sqlite3CodeRowTrigger(Parse*, Trigger *, int, पाहायाग_List*, int, Table *,
                             int, int, int);
   void sqlite3CodeRowTriggerDirect(Parse *, Trigger *, Table *, int, int, int);
-  void sqliteViewTriggers(Parse*, Table*, Expr*, int, ExprList*);
+  void sqliteViewTriggers(Parse*, Table*, पाहायाग*, int, पाहायाग_List*);
   void sqlite3DeleteTriggerStep(sqlite3*, TriggerStep*);
   TriggerStep *sqlite3TriggerSelectStep(sqlite3*,Select*,
                                         const char*,const char*);
-  TriggerStep *sqlite3TriggerInsertStep(Parse*,SrcList*, IdList*,
+  TriggerStep *sqlite3_Trigger_इसिंगित_Step(Parse*,SrcList*, IdList*,
                                         Select*,u8,Upsert*,
                                         const char*,const char*);
-  TriggerStep *sqlite3TriggerUpdateStep(Parse*,SrcList*,SrcList*,ExprList*,
-                                        Expr*, u8, const char*,const char*);
-  TriggerStep *sqlite3TriggerDeleteStep(Parse*,SrcList*, Expr*,
+  TriggerStep *sqlite3TriggerUpdateStep(Parse*,SrcList*,SrcList*,पाहायाग_List*,
+                                        पाहायाग*, u8, const char*,const char*);
+  TriggerStep *sqlite3TriggerDeleteStep(Parse*,SrcList*, पाहायाग*,
                                         const char*,const char*);
   void sqlite3DeleteTrigger(sqlite3*, Trigger*);
   void sqlite3UnlinkAndDeleteTrigger(sqlite3*,int,const char*);
-  u32 sqlite3TriggerColmask(Parse*,Trigger*,ExprList*,int,int,Table*,int);
+  u32 sqlite3TriggerColmask(Parse*,Trigger*,पाहायाग_List*,int,int,Table*,int);
 # define sqlite3ParseToplevel(p) ((p)->pToplevel ? (p)->pToplevel : (p))
 # define sqlite3IsToplevel(p) ((p)->pToplevel==0)
 #else
@@ -5389,28 +5389,28 @@ void sqlite3MaterializeView(Parse*, Table*, Expr*, ExprList*,Expr*,int);
 int sqlite3JoinType(Parse*, Token*, Token*, Token*);
 int sqlite3ColumnIndex(Table *pTab, const char *zCol);
 void sqlite3SrcItemColumnUsed(SrcItem*,int);
-void sqlite3SetJoinExpr(Expr*,int,u32);
-void sqlite3CreateForeignKey(Parse*, ExprList*, Token*, ExprList*, int);
-void sqlite3DeferForeignKey(Parse*, int);
+void sqlite3_Set_Join_पाहायाग(पाहायाग*,int,u32);
+void sqlite3_Create_Foreign_सुसि(Parse*, पाहायाग_List*, Token*, पाहायाग_List*, int);
+void sqlite3_Defer_Foreign_सुसि(Parse*, int);
 #ifndef SQLITE_OMIT_AUTHORIZATION
-  void sqlite3AuthRead(Parse*,Expr*,Schema*,SrcList*);
+  void sqlite3AuthRead(Parse*,पाहायाग*,Schema*,SrcList*);
   int sqlite3AuthCheck(Parse*,int, const char*, const char*, const char*);
-  void sqlite3AuthContextPush(Parse*, AuthContext*, const char*);
-  void sqlite3AuthContextPop(AuthContext*);
+  void sqlite3_Auth_Context_इतुलाक(Parse*, AuthContext*, const char*);
+  void sqlite3_Auth_Context_आलिसिन(AuthContext*);
   int sqlite3AuthReadCol(Parse*, const char *, const char *, int);
 #else
 # define sqlite3AuthRead(a,b,c,d)
 # define sqlite3AuthCheck(a,b,c,d,e)    SQLITE_OK
-# define sqlite3AuthContextPush(a,b,c)
-# define sqlite3AuthContextPop(a)  ((void)(a))
+# define sqlite3_Auth_Context_इतुलाक(a,b,c)
+# define sqlite3_Auth_Context_आलिसिन(a)  ((void)(a))
 #endif
 int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName);
-void sqlite3Attach(Parse*, Expr*, Expr*, Expr*);
-void sqlite3Detach(Parse*, Expr*);
+void sqlite3Attach(Parse*, पाहायाग*, पाहायाग*, पाहायाग*);
+void sqlite3Detach(Parse*, पाहायाग*);
 void sqlite3FixInit(DbFixer*, Parse*, int, const char*, const Token*);
 int sqlite3FixSrcList(DbFixer*, SrcList*);
 int sqlite3FixSelect(DbFixer*, Select*);
-int sqlite3FixExpr(DbFixer*, Expr*);
+int sqlite3_Fix_पाहायाग(DbFixer*, पाहायाग*);
 int sqlite3FixTriggerStep(DbFixer*, TriggerStep*);
 
 int sqlite3RealSameAsInt(double,sqlite3_int64);
@@ -5431,8 +5431,8 @@ LogEst sqlite3LogEstAdd(LogEst,LogEst);
 LogEst sqlite3LogEstFromDouble(double);
 u64 sqlite3LogEstToInt(LogEst);
 VList *sqlite3VListAdd(sqlite3*,VList*,const char*,int,int);
-const char *sqlite3VListNumToName(VList*,int);
-int sqlite3VListNameToNum(VList*,const char*,int);
+const char *sqlite3_VList_नुमेरो_To_Name(VList*,int);
+int sqlite3_VList_Name_To_नुमेरो(VList*,const char*,int);
 
 /*
 ** Routines to read and write variable-length integers.  These used to
@@ -5441,7 +5441,7 @@ int sqlite3VListNameToNum(VList*,const char*,int);
 */
 int sqlite3PutVarint(unsigned char*, u64);
 u8 sqlite3GetVarint(const unsigned char *, u64 *);
-i64 sqlite3VarintValue(const unsigned char*);
+i64 sqlite3_Varint_हालागा(const unsigned char*);
 u8 sqlite3GetVarint32(const unsigned char *, u32 *);
 int sqlite3VarintLen(u64 v);
 
@@ -5461,14 +5461,14 @@ int sqlite3VarintLen(u64 v);
 const char *sqlite3IndexAffinityStr(sqlite3*, Index*);
 char *sqlite3TableAffinityStr(sqlite3*,const Table*);
 void sqlite3TableAffinity(Vdbe*, Table*, int);
-char sqlite3CompareAffinity(const Expr *pExpr, char aff2);
-int sqlite3IndexAffinityOk(const Expr *pExpr, char idx_affinity);
+char sqlite3CompareAffinity(const पाहायाग *p_पाहायाग, char aff2);
+int sqlite3IndexAffinityOk(const पाहायाग *p_पाहायाग, char idx_affinity);
 char sqlite3TableColumnAffinity(const Table*,int);
-char sqlite3ExprAffinity(const Expr *pExpr);
-int sqlite3ExprDataType(const Expr *pExpr);
+char sqlite3_पाहायाग_Affinity(const पाहायाग *p_पाहायाग);
+int sqlite3_पाहायाग_Data_Type(const पाहायाग *p_पाहायाग);
 int sqlite3Atoi64(const char*, i64*, int, u8);
 int sqlite3DecOrHexToI64(const char*, i64*);
-void sqlite3ErrorWithMsg(sqlite3*, int, const char*,...);
+void sqlite3_Error_With_मेनसाहे(sqlite3*, int, const char*,...);
 void sqlite3Error(sqlite3*,int);
 void sqlite3ErrorClear(sqlite3*);
 void sqlite3SystemError(sqlite3*,int);
@@ -5492,25 +5492,25 @@ int sqlite3IsMemdb(const sqlite3_vfs*);
 const char *sqlite3ErrStr(int);
 int sqlite3ReadSchema(Parse *pParse);
 CollSeq *sqlite3FindCollSeq(sqlite3*,u8 enc, const char*,int);
-int sqlite3BinaryCompare(void*,int,const void*,int,const void*);
+int sqlite3_दालावाहान_Compare(void*,int,const void*,int,const void*);
 #if SQLITE_USES_INLINE
-static SQLITE_INLINE int sqlite3IsBinary(const CollSeq *p){
-  assert( p==0 || p->xCmp!=sqlite3BinaryCompare
+static SQLITE_INLINE int sqlite3_Is_दालावाहान(const CollSeq *p){
+  assert( p==0 || p->xCmp!=sqlite3_दालावाहान_Compare
        || strcmp(p->zName,"BINARY")==0 );
-  return p==0 || p->xCmp==sqlite3BinaryCompare;
+  return p==0 || p->xCmp==sqlite3_दालावाहान_Compare;
 }
 #else
-int sqlite3IsBinary(const CollSeq*);
+int sqlite3_Is_दालावाहान(const CollSeq*);
 #endif
 CollSeq *sqlite3LocateCollSeq(Parse *pParse, const char*zName);
 void sqlite3SetTextEncoding(sqlite3 *db, u8);
-CollSeq *sqlite3ExprCollSeq(Parse *pParse, const Expr *pExpr);
-CollSeq *sqlite3ExprNNCollSeq(Parse *pParse, const Expr *pExpr);
-int sqlite3ExprCollSeqMatch(Parse*,const Expr*,const Expr*);
-Expr *sqlite3ExprAddCollateToken(Parse *pParse, Expr*, const Token*, int);
-Expr *sqlite3ExprAddCollateString(Parse*,Expr*,const char*);
-Expr *sqlite3ExprSkipCollate(Expr*);
-Expr *sqlite3ExprSkipCollateAndLikely(Expr*);
+CollSeq *sqlite3_पाहायाग_Coll_Seq(Parse *pParse, const पाहायाग *p_पाहायाग);
+CollSeq *sqlite3_पाहायाग_NNColl_Seq(Parse *pParse, const पाहायाग *p_पाहायाग);
+int sqlite3_पाहायाग_Coll_Seq_Match(Parse*,const पाहायाग*,const पाहायाग*);
+पाहायाग *sqlite3_पाहायाग_Add_Collate_Token(Parse *pParse, पाहायाग*, const Token*, int);
+पाहायाग *sqlite3_पाहायाग_Add_Collate_String(Parse*,पाहायाग*,const char*);
+पाहायाग *sqlite3_पाहायाग_Skip_Collate(पाहायाग*);
+पाहायाग *sqlite3_पाहायाग_Skip_Collate_And_Likely(पाहायाग*);
 int sqlite3CheckCollSeq(Parse *, CollSeq *);
 int sqlite3WritableSchema(sqlite3*);
 int sqlite3CheckObjectName(Parse*, const char*,const char*,const char*);
@@ -5526,25 +5526,25 @@ void sqlite3FileSuffix3(const char*, char*);
 #endif
 u8 sqlite3GetBoolean(const char *z,u8);
 
-const void *sqlite3ValueText(sqlite3_value*, u8);
-int sqlite3ValueIsOfClass(const sqlite3_value*, void(*)(void*));
-int sqlite3ValueBytes(sqlite3_value*, u8);
-void sqlite3ValueSetStr(sqlite3_value*, int, const void *,u8,
+const void *sqlite3_हालागा_Text(sqlite3_हालागा*, u8);
+int sqlite3_हालागा_Is_Of_Class(const sqlite3_हालागा*, void(*)(void*));
+int sqlite3_हालागा_Bytes(sqlite3_हालागा*, u8);
+void sqlite3_हालागा_Set_Str(sqlite3_हालागा*, int, const void *,u8,
                         void(*)(void*));
-void sqlite3ValueSetNull(sqlite3_value*);
-void sqlite3ValueFree(sqlite3_value*);
+void sqlite3_हालागा_Set_Null(sqlite3_हालागा*);
+void sqlite3_हालागा_Free(sqlite3_हालागा*);
 #ifndef SQLITE_UNTESTABLE
 void sqlite3ResultIntReal(sqlite3_context*);
 #endif
-sqlite3_value *sqlite3ValueNew(sqlite3 *);
+sqlite3_हालागा *sqlite3_हालागा_New(sqlite3 *);
 #ifndef SQLITE_OMIT_UTF16
 char *sqlite3Utf16to8(sqlite3 *, const void*, int, u8);
 #endif
-int sqlite3ValueFromExpr(sqlite3 *, const Expr *, u8, u8, sqlite3_value **);
-void sqlite3ValueApplyAffinity(sqlite3_value *, u8, u8);
+int sqlite3_हालागा_From_पाहायाग(sqlite3 *, const पाहायाग *, u8, u8, sqlite3_हालागा **);
+void sqlite3_हालागा_Apply_Affinity(sqlite3_हालागा *, u8, u8);
 #ifndef SQLITE_AMALGAMATION
 extern const unsigned char sqlite3OpcodeProperty[];
-extern const char sqlite3StrBINARY[];
+extern const char sqlite3_Str_दालावाहान[];
 extern const unsigned char sqlite3StdTypeLen[];
 extern const char sqlite3StdTypeAffinity[];
 extern const char *sqlite3StdType[];
@@ -5563,7 +5563,7 @@ extern int sqlite3PendingByte;
 #ifdef VDBE_PROFILE
 extern sqlite3_uint64 sqlite3NProfileCnt;
 #endif
-void sqlite3RootPageMoved(sqlite3*, int, Pgno, Pgno);
+void sqlite3_उगात_Page_Moved(sqlite3*, int, Pgno, Pgno);
 void sqlite3Reindex(Parse*, Token*, Token*);
 void sqlite3AlterFunctions(void);
 void sqlite3AlterRenameTable(Parse*, SrcList*, Token*);
@@ -5574,41 +5574,41 @@ void sqlite3AlterAddConstraint(
   SrcList *pSrc,           /* Table to add constraint to */
   Token *pFirst,           /* First token of new constraint */
   Token *pName,            /* Name of new constraint. NULL if name omitted. */
-  const char *zExpr,       /* Text of CHECK expression */
-  int nExpr,               /* Size of pExpr in bytes */
-  Expr *pExpr              /* The parsed CHECK expression */
+  const char *z_पाहायाग,       /* Text of CHECK expression */
+  int n_पाहायाग,               /* Size of pExpr in bytes */
+  पाहायाग *p_पाहायाग              /* The parsed CHECK expression */
 );
 void sqlite3AlterSetNotNull(Parse*, SrcList*, Token*, Token*);
 i64 sqlite3GetToken(const unsigned char *, int *);
 void sqlite3NestedParse(Parse*, const char*, ...);
 void sqlite3ExpirePreparedStatements(sqlite3*, int);
-void sqlite3CodeRhsOfIN(Parse*, Expr*, int, int);
-int sqlite3CodeSubselect(Parse*, Expr*);
+void sqlite3CodeRhsOfIN(Parse*, पाहायाग*, int, int);
+int sqlite3CodeSubselect(Parse*, पाहायाग*);
 void sqlite3SelectPrep(Parse*, Select*, NameContext*);
 int sqlite3ExpandSubquery(Parse*, SrcItem*);
-void sqlite3SelectWrongNumTermsError(Parse *pParse, Select *p);
+void sqlite3_Select_Wrong_नुमेरो_Terms_Error(Parse *pParse, Select *p);
 int sqlite3MatchEName(
-  const struct ExprList_item*,
+  const struct पाहायाग_List_item*,
   const char*,
   const char*,
   const char*,
   int*
 );
-Bitmask sqlite3ExprColUsed(Expr*);
+Bitmask sqlite3_पाहायाग_Col_Used(पाहायाग*);
 u8 sqlite3StrIHash(const char*);
-int sqlite3ResolveExprNames(NameContext*, Expr*);
-int sqlite3ResolveExprListNames(NameContext*, ExprList*);
+int sqlite3_Resolve_पाहायाग_Names(NameContext*, पाहायाग*);
+int sqlite3_Resolve_पाहायाग_List_Names(NameContext*, पाहायाग_List*);
 void sqlite3ResolveSelectNames(Parse*, Select*, NameContext*);
-int sqlite3ResolveSelfReference(Parse*,Table*,int,Expr*,ExprList*);
-int sqlite3ResolveOrderGroupBy(Parse*, Select*, ExprList*, const char*);
+int sqlite3ResolveSelfReference(Parse*,Table*,int,पाहायाग*,पाहायाग_List*);
+int sqlite3ResolveOrderGroupBy(Parse*, Select*, पाहायाग_List*, const char*);
 void sqlite3ColumnDefault(Vdbe *, Table *, int, int);
 void sqlite3AlterFinishAddColumn(Parse *, Token *);
 void sqlite3AlterBeginAddColumn(Parse *, SrcList *);
 void sqlite3AlterDropColumn(Parse*, SrcList*, const Token*);
 const void *sqlite3RenameTokenMap(Parse*, const void*, const Token*);
 void sqlite3RenameTokenRemap(Parse*, const void *pTo, const void *pFrom);
-void sqlite3RenameExprUnmap(Parse*, Expr*);
-void sqlite3RenameExprlistUnmap(Parse*, ExprList*);
+void sqlite3_Rename_पाहायाग_Unmap(Parse*, पाहायाग*);
+void sqlite3RenameExprlistUnmap(Parse*, पाहायाग_List*);
 CollSeq *sqlite3GetCollSeq(Parse*, u8, CollSeq *, const char*);
 char sqlite3AffinityType(const char*, Column*);
 void sqlite3Analyze(Parse*, Token*, Token*);
@@ -5619,27 +5619,27 @@ int sqlite3AnalysisLoad(sqlite3*,int iDB);
 void sqlite3DeleteIndexSamples(sqlite3*,Index*);
 void sqlite3DefaultRowEst(Index*);
 void sqlite3RegisterLikeFunctions(sqlite3*, int);
-int sqlite3IsLikeFunction(sqlite3*,Expr*,int*,char*);
+int sqlite3IsLikeFunction(sqlite3*,पाहायाग*,int*,char*);
 void sqlite3SchemaClear(void *);
 Schema *sqlite3SchemaGet(sqlite3 *, Btree *);
 int sqlite3SchemaToIndex(sqlite3 *db, Schema *);
-KeyInfo *sqlite3KeyInfoAlloc(sqlite3*,int,int);
-void sqlite3KeyInfoUnref(KeyInfo*);
-KeyInfo *sqlite3KeyInfoRef(KeyInfo*);
-KeyInfo *sqlite3KeyInfoOfIndex(Parse*, Index*);
-KeyInfo *sqlite3KeyInfoFromExprList(Parse*, ExprList*, int, int);
+सुसि_Info *sqlite3_सुसि_Info_Alloc(sqlite3*,int,int);
+void sqlite3_सुसि_Info_Unref(सुसि_Info*);
+सुसि_Info *sqlite3_सुसि_Info_Ref(सुसि_Info*);
+सुसि_Info *sqlite3_सुसि_Info_Of_Index(Parse*, Index*);
+सुसि_Info *sqlite3_सुसि_Info_From_पाहायाग_List(Parse*, पाहायाग_List*, int, int);
 const char *sqlite3SelectOpName(int);
-int sqlite3HasExplicitNulls(Parse*, ExprList*);
+int sqlite3HasExplicitNulls(Parse*, पाहायाग_List*);
 
 #ifdef SQLITE_DEBUG
-int sqlite3KeyInfoIsWriteable(KeyInfo*);
+int sqlite3_सुसि_Info_Is_Writeable(सुसि_Info*);
 #endif
 int sqlite3CreateFunc(sqlite3 *, const char *, int, int, void *,
-  void (*)(sqlite3_context*,int,sqlite3_value **),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
+  void (*)(sqlite3_context*,int,sqlite3_हालागा **),
+  void (*)(sqlite3_context*,int,sqlite3_हालागा **),
   void (*)(sqlite3_context*),
   void (*)(sqlite3_context*),
-  void (*)(sqlite3_context*,int,sqlite3_value **),
+  void (*)(sqlite3_context*,int,sqlite3_हालागा **),
   FuncDestructor *pDestructor
 );
 void sqlite3NoopDestructor(void*);
@@ -5659,25 +5659,25 @@ int sqlite3StrAccumEnlargeIfNeeded(StrAccum*, i64);
 char *sqlite3StrAccumFinish(StrAccum*);
 void sqlite3StrAccumSetError(StrAccum*, u8);
 void sqlite3SelectDestInit(SelectDest*,int,int);
-Expr *sqlite3CreateColumnExpr(sqlite3 *, SrcList *, int, int);
+पाहायाग *sqlite3_Create_Column_पाहायाग(sqlite3 *, SrcList *, int, int);
 void sqlite3RecordErrorByteOffset(sqlite3*,const char*);
-void sqlite3RecordErrorOffsetOfExpr(sqlite3*,const Expr*);
+void sqlite3_Record_Error_Offset_Of_पाहायाग(sqlite3*,const पाहायाग*);
 
 void sqlite3BackupRestart(sqlite3_backup *);
 void sqlite3BackupUpdate(sqlite3_backup *, Pgno, const u8 *);
 
 #ifndef SQLITE_OMIT_SUBQUERY
-int sqlite3ExprCheckIN(Parse*, Expr*);
+int sqlite3_पाहायाग_Check_IN(Parse*, पाहायाग*);
 #else
-# define sqlite3ExprCheckIN(x,y) SQLITE_OK
+# define sqlite3_पाहायाग_Check_IN(x,y) SQLITE_OK
 #endif
 
 #ifdef SQLITE_ENABLE_STAT4
-int sqlite3Stat4ProbeSetValue(
-    Parse*,Index*,UnpackedRecord**,Expr*,int,int,int*);
-int sqlite3Stat4ValueFromExpr(Parse*, Expr*, u8, sqlite3_value**);
+int sqlite3_Stat4_Probe_Set_हालागा(
+    Parse*,Index*,UnpackedRecord**,पाहायाग*,int,int,int*);
+int sqlite3_Stat4_हालागा_From_पाहायाग(Parse*, पाहायाग*, u8, sqlite3_हालागा**);
 void sqlite3Stat4ProbeFree(UnpackedRecord*);
-int sqlite3Stat4Column(sqlite3*, const void*, int, int, sqlite3_value**);
+int sqlite3Stat4Column(sqlite3*, const void*, int, int, sqlite3_हालागा**);
 char sqlite3IndexColumnAffinity(sqlite3*, Index*, int);
 #endif
 
@@ -5691,7 +5691,7 @@ char sqlite3IndexColumnAffinity(sqlite3*, Index*, int);
 void sqlite3Parser(void*, int, Token);
 int sqlite3ParserFallback(int);
 #ifdef YYTRACKMAXSTACKDEPTH
-  int sqlite3ParserStackPeak(void*);
+  int sqlite3_Parser_सालानसान_Peak(void*);
 #endif
 
 void sqlite3AutoLoadExtensions(sqlite3*);
@@ -5769,7 +5769,7 @@ int sqlite3VtabCallConnect(Parse*, Table*);
 int sqlite3VtabCallDestroy(sqlite3*, int, const char *);
 int sqlite3VtabBegin(sqlite3 *, VTable *);
 
-FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, int nArg, Expr*);
+FuncDef *sqlite3VtabOverloadFunction(sqlite3 *,FuncDef*, int nArg, पाहायाग*);
 void sqlite3VtabUsesAllSchemas(Parse*);
 sqlite3_int64 sqlite3StmtCurrentTime(sqlite3_context*);
 int sqlite3VdbeParameterIndex(Vdbe*, const char*, int);
@@ -5781,9 +5781,9 @@ void *sqlite3ParserAddCleanup(Parse*,void(*)(sqlite3*,void*),void*);
 char *sqlite3Normalize(Vdbe*, const char*);
 #endif
 int sqlite3Reprepare(Vdbe*);
-void sqlite3ExprListCheckLength(Parse*, ExprList*, const char*);
-CollSeq *sqlite3ExprCompareCollSeq(Parse*,const Expr*);
-CollSeq *sqlite3BinaryCompareCollSeq(Parse *, const Expr*, const Expr*);
+void sqlite3_पाहायाग_List_Check_Length(Parse*, पाहायाग_List*, const char*);
+CollSeq *sqlite3_पाहायाग_Compare_Coll_Seq(Parse*,const पाहायाग*);
+CollSeq *sqlite3_दालावाहान_Compare_Coll_Seq(Parse *, const पाहायाग*, const पाहायाग*);
 int sqlite3TempInMemory(const sqlite3*);
 const char *sqlite3JournalModename(int);
 #ifndef SQLITE_OMIT_WAL
@@ -5791,21 +5791,21 @@ const char *sqlite3JournalModename(int);
   int sqlite3WalDefaultHook(void*,sqlite3*,const char*,int);
 #endif
 #ifndef SQLITE_OMIT_CTE
-  Cte *sqlite3CteNew(Parse*,Token*,ExprList*,Select*,u8);
+  Cte *sqlite3CteNew(Parse*,Token*,पाहायाग_List*,Select*,u8);
   void sqlite3CteDelete(sqlite3*,Cte*);
   With *sqlite3WithAdd(Parse*,With*,Cte*);
   void sqlite3WithDelete(sqlite3*,With*);
   void sqlite3WithDeleteGeneric(sqlite3*,void*);
-  With *sqlite3WithPush(Parse*, With*, u8);
+  With *sqlite3_With_इतुलाक(Parse*, With*, u8);
 #else
 # define sqlite3CteNew(P,T,E,S)   ((void*)0)
 # define sqlite3CteDelete(D,C)
 # define sqlite3CteWithAdd(P,W,C) ((void*)0)
 # define sqlite3WithDelete(x,y)
-# define sqlite3WithPush(x,y,z) ((void*)0)
+# define sqlite3_With_इतुलाक(x,y,z) ((void*)0)
 #endif
 #ifndef SQLITE_OMIT_UPSERT
-  Upsert *sqlite3UpsertNew(sqlite3*,ExprList*,Expr*,ExprList*,Expr*,Upsert*);
+  Upsert *sqlite3UpsertNew(sqlite3*,पाहायाग_List*,पाहायाग*,पाहायाग_List*,पाहायाग*,Upsert*);
   void sqlite3UpsertDelete(sqlite3*,Upsert*);
   Upsert *sqlite3UpsertDup(sqlite3*,Upsert*);
   int sqlite3UpsertAnalyzeTarget(Parse*,SrcList*,Upsert*,Upsert*);
@@ -5828,10 +5828,10 @@ const char *sqlite3JournalModename(int);
 ** this case foreign keys are parsed, but no other functionality is
 ** provided (enforcement of FK constraints requires the triggers sub-system).
 */
-#if !defined(SQLITE_OMIT_FOREIGN_KEY) && !defined(SQLITE_OMIT_TRIGGER)
+#if !defined(SQLITE_OMIT_FOREIGN_सुसि) && !defined(SQLITE_OMIT_TRIGGER)
   void sqlite3FkCheck(Parse*, Table*, int, int, int*, int);
   void sqlite3FkDropTable(Parse*, SrcList *, Table*);
-  void sqlite3FkActions(Parse*, Table*, ExprList*, int, int*, int);
+  void sqlite3FkActions(Parse*, Table*, पाहायाग_List*, int, int*, int);
   int sqlite3FkRequired(Parse*, Table*, int*, int);
   u32 sqlite3FkOldmask(Parse*, Table*);
   FKey *sqlite3FkReferences(Table *);
@@ -5845,7 +5845,7 @@ const char *sqlite3JournalModename(int);
   #define sqlite3FkReferences(a)        0
   #define sqlite3FkClearTriggerCache(a,b)
 #endif
-#ifndef SQLITE_OMIT_FOREIGN_KEY
+#ifndef SQLITE_OMIT_FOREIGN_सुसि
   void sqlite3FkDelete(sqlite3 *, Table*);
   int sqlite3FkLocateIndex(Parse*,Table*,FKey*,Index**,int**);
 #else
@@ -5858,7 +5858,7 @@ const char *sqlite3JournalModename(int);
 ** Available fault injectors.  Should be numbered beginning with 0.
 */
 #define SQLITE_FAULTINJECTOR_MALLOC     0
-#define SQLITE_FAULTINJECTOR_COUNT      1
+#define SQLITE_FAULTINJECTOR_बिलांग      1
 
 /*
 ** The interface to the code in fault.c used for identifying "benign"
@@ -5887,7 +5887,7 @@ const char *sqlite3JournalModename(int);
 #define IN_INDEX_NOOP_OK     0x0001  /* OK to return IN_INDEX_NOOP */
 #define IN_INDEX_MEMBERSHIP  0x0002  /* IN operator used for membership test */
 #define IN_INDEX_LOOP        0x0004  /* IN operator used as a loop */
-int sqlite3FindInIndex(Parse *, Expr *, u32, int*, int*, int*);
+int sqlite3FindInIndex(Parse *, पाहायाग *, u32, int*, int*, int*);
 
 int sqlite3JournalOpen(sqlite3_vfs *, const char *, sqlite3_file *, int, int);
 int sqlite3JournalSize(sqlite3_vfs *);
@@ -5899,15 +5899,15 @@ int sqlite3JournalSize(sqlite3_vfs *);
 int sqlite3JournalIsInMemory(sqlite3_file *p);
 void sqlite3MemJournalOpen(sqlite3_file *);
 
-void sqlite3ExprSetHeightAndFlags(Parse *pParse, Expr *p);
-#if SQLITE_MAX_EXPR_DEPTH>0
-  int sqlite3SelectExprHeight(const Select *);
-  int sqlite3ExprCheckHeight(Parse*, int);
+void sqlite3_पाहायाग_Set_Height_And_Flags(Parse *pParse, पाहायाग *p);
+#if SQLITE_MAX_पाहायाग_DEPTH>0
+  int sqlite3_Select_पाहायाग_Height(const Select *);
+  int sqlite3_पाहायाग_Check_Height(Parse*, int);
 #else
-  #define sqlite3SelectExprHeight(x) 0
-  #define sqlite3ExprCheckHeight(x,y)
+  #define sqlite3_Select_पाहायाग_Height(x) 0
+  #define sqlite3_पाहायाग_Check_Height(x,y)
 #endif
-void sqlite3ExprSetErrorOffset(Expr*,int);
+void sqlite3_पाहायाग_Set_Error_Offset(पाहायाग*,int);
 
 u32 sqlite3Get4byte(const u8*);
 SQLITE_OPT_INLINE u64 sqlite3Get8byte(const u8*);
@@ -6003,11 +6003,11 @@ int sqlite3DbpageRegister(sqlite3*);
 int sqlite3DbstatRegister(sqlite3*);
 #endif
 
-int sqlite3ExprVectorSize(const Expr *pExpr);
-int sqlite3ExprIsVector(const Expr *pExpr);
-Expr *sqlite3VectorFieldSubexpr(Expr*, int);
-Expr *sqlite3ExprForVectorField(Parse*,Expr*,int,int);
-void sqlite3VectorErrorMsg(Parse*, Expr*);
+int sqlite3_पाहायाग_Vector_Size(const पाहायाग *p_पाहायाग);
+int sqlite3_पाहायाग_Is_Vector(const पाहायाग *p_पाहायाग);
+पाहायाग *sqlite3VectorFieldSubexpr(पाहायाग*, int);
+पाहायाग *sqlite3_पाहायाग_For_Vector_Field(Parse*,पाहायाग*,int,int);
+void sqlite3_Vector_Error_मेनसाहे(Parse*, पाहायाग*);
 
 #ifndef SQLITE_OMIT_COMPILEOPTION_DIAGS
 const char **sqlite3CompileOptions(int *pnOpt);

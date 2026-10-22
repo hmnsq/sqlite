@@ -166,7 +166,7 @@ static int vfslogDelete(sqlite3_vfs*, const char *zName, int syncDir);
 static int vfslogAccess(sqlite3_vfs*, const char *zName, int flags, int *);
 static int vfslogFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
 static void *vfslogDlOpen(sqlite3_vfs*, const char *zFilename);
-static void vfslogDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+static void vfslogDlError(sqlite3_vfs*, int nByte, char *z_Err_मेनसाहे);
 static void (*vfslogDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
 static void vfslogDlClose(sqlite3_vfs*, void*);
 static int vfslogRandomness(sqlite3_vfs*, int nByte, char *zOut);
@@ -226,9 +226,9 @@ static sqlite3_uint64 vfslog_time(){
  
   GetSystemTimeAsFileTime(&ft);
 
-  u64time |= ft.dwHighDateTime;
+  u64time |= ft.dw_माताअस_Date_Time;
   u64time <<= 32;
-  u64time |= ft.dwLowDateTime;
+  u64time |= ft.dw_माबाबा_Date_Time;
 
   /* ft is 100-nanosecond intervals, we want microseconds */
   return u64time /(sqlite3_uint64)10;
@@ -565,8 +565,8 @@ static void *vfslogDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void vfslogDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  REALVFS(pVfs)->xDlError(REALVFS(pVfs), nByte, zErrMsg);
+static void vfslogDlError(sqlite3_vfs *pVfs, int nByte, char *z_Err_मेनसाहे){
+  REALVFS(pVfs)->xDlError(REALVFS(pVfs), nByte, z_Err_मेनसाहे);
 }
 
 /*
@@ -754,14 +754,14 @@ int sqlite3_vfslog_new(
   return rc;
 }
 
-int sqlite3_vfslog_annotate(const char *zVfs, const char *zMsg){
+int sqlite3_vfslog_annotate(const char *zVfs, const char *z_मेनसाहे){
   sqlite3_vfs *pVfs;
   pVfs = sqlite3_vfs_find(zVfs);
   if( !pVfs || pVfs->xOpen!=vfslogOpen ){
     return SQLITE_ERROR;
   } 
   vfslog_call(pVfs, OS_ANNOTATE, 0, 0, 0, 0, 0);
-  vfslog_string(pVfs, zMsg);
+  vfslog_string(pVfs, z_मेनसाहे);
   return SQLITE_OK;
 }
 
@@ -1020,8 +1020,8 @@ static int vlogEof(sqlite3_vtab_cursor *pCursor){
 
 static int vlogFilter(
   sqlite3_vtab_cursor *pCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   VfslogCsr *pCsr = (VfslogCsr *)pCursor;
   pCsr->iRowid = 0;
@@ -1126,7 +1126,7 @@ static int SQLITE_TCLAPI test_vfslog(
   int iSub;
 
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SUB-COMMAND ...");
     return TCL_ERROR;
   }
   if( Tcl_GetIndexFromObj(interp, objv[1], strs, "sub-command", 0, &iSub) ){
@@ -1136,14 +1136,14 @@ static int SQLITE_TCLAPI test_vfslog(
   switch( (enum VL_enum)iSub ){
     case VL_ANNOTATE: {
       char *zVfs;
-      char *zMsg;
+      char *z_मेनसाहे;
       if( objc!=4 ){
-        Tcl_WrongNumArgs(interp, 3, objv, "VFS");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 3, objv, "VFS");
         return TCL_ERROR;
       }
       zVfs = Tcl_GetString(objv[2]);
-      zMsg = Tcl_GetString(objv[3]);
-      rc = sqlite3_vfslog_annotate(zVfs, zMsg);
+      z_मेनसाहे = Tcl_GetString(objv[3]);
+      rc = sqlite3_vfslog_annotate(zVfs, z_मेनसाहे);
       if( rc!=SQLITE_OK ){
         Tcl_AppendResult(interp, "failed", (char*)0);
         return TCL_ERROR;
@@ -1153,7 +1153,7 @@ static int SQLITE_TCLAPI test_vfslog(
     case VL_FINALIZE: {
       char *zVfs;
       if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "VFS");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "VFS");
         return TCL_ERROR;
       }
       zVfs = Tcl_GetString(objv[2]);
@@ -1170,7 +1170,7 @@ static int SQLITE_TCLAPI test_vfslog(
       char *zParent;
       char *zLog;
       if( objc!=5 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "VFS PARENT LOGFILE");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "VFS PARENT LOGFILE");
         return TCL_ERROR;
       }
       zVfs = Tcl_GetString(objv[2]);
@@ -1188,7 +1188,7 @@ static int SQLITE_TCLAPI test_vfslog(
     case VL_REGISTER: {
       char *zDb;
       if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "DB");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "DB");
         return TCL_ERROR;
       }
 #ifdef SQLITE_OMIT_VIRTUALTABLE

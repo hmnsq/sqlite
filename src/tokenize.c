@@ -704,7 +704,7 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
         Token x;
         x.z = zSql;
         x.n = (u32)n;
-        sqlite3ErrorMsg(pParse, "unrecognized token: \"%T\"", &x);
+        sqlite3_Error_मेनसाहे(pParse, "unrecognized token: \"%T\"", &x);
         break;
       }
     }
@@ -719,8 +719,8 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
   assert( nErr==0 );
 #ifdef YYTRACKMAXSTACKDEPTH
   sqlite3_mutex_enter(sqlite3MallocMutex());
-  sqlite3StatusHighwater(SQLITE_STATUS_PARSER_STACK,
-      sqlite3ParserStackPeak(pEngine)
+  sqlite3StatusHighwater(SQLITE_STATUS_PARSER_सालानसान,
+      sqlite3_Parser_सालानसान_Peak(pEngine)
   );
   sqlite3_mutex_leave(sqlite3MallocMutex());
 #endif /* YYDEBUG */
@@ -732,12 +732,12 @@ int sqlite3RunParser(Parse *pParse, const char *zSql){
   if( db->mallocFailed ){
     pParse->rc = SQLITE_NOMEM_BKPT;
   }
-  if( pParse->zErrMsg || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_DONE) ){
-    if( pParse->zErrMsg==0 ){
-      pParse->zErrMsg = sqlite3DbStrDup(db, sqlite3ErrStr(pParse->rc));
+  if( pParse->z_Err_मेनसाहे || (pParse->rc!=SQLITE_OK && pParse->rc!=SQLITE_DONE) ){
+    if( pParse->z_Err_मेनसाहे==0 ){
+      pParse->z_Err_मेनसाहे = sqlite3DbStrDup(db, sqlite3ErrStr(pParse->rc));
     }
     if( (pParse->prepFlags & SQLITE_PREPARE_DONT_LOG)==0 ){
-      sqlite3_log(pParse->rc, "%s in \"%s\"", pParse->zErrMsg, pParse->zTail);
+      sqlite3_log(pParse->rc, "%s in \"%s\"", pParse->z_Err_मेनसाहे, pParse->zTail);
     }
     nErr++;
   }

@@ -233,7 +233,7 @@
 
 /* Forward references */
 typedef struct unixShm unixShm;               /* Connection shared memory */
-typedef struct unixShmNode unixShmNode;       /* Shared memory instance */
+typedef struct unix_Shm_बुहोल unix_Shm_बुहोल;       /* Shared memory instance */
 typedef struct unixInodeInfo unixInodeInfo;   /* An i-node */
 typedef struct UnixUnusedFd UnixUnusedFd;     /* An unused file descriptor */
 
@@ -351,8 +351,8 @@ static pid_t randomnessPid = 0;
 #ifndef O_NOFOLLOW
 # define O_NOFOLLOW 0
 #endif
-#ifndef O_BINARY
-# define O_BINARY 0
+#ifndef O_दालावाहान
+# define O_दालावाहान 0
 #endif
 
 /*
@@ -1329,7 +1329,7 @@ struct unixInodeInfo {
   unsigned char bProcessLock;       /* An exclusive process lock is held */
   UnixUnusedFd *pUnused;            /* Unused file descriptors to close */
   int nRef;                       /* Number of pointers to this structure */
-  unixShmNode *pShmNode;          /* Shared memory associated with this inode */
+  unix_Shm_बुहोल *p_Shm_बुहोल;          /* Shared memory associated with this inode */
   unixInodeInfo *pNext;           /* List of all unixInodeInfo objects */
   unixInodeInfo *pPrev;           /*    .... doubly linked */
 #if SQLITE_ENABLE_LOCKING_STYLE
@@ -1380,12 +1380,12 @@ int unixFileMutexNotheld(unixFile *pFile){
 ** failed (e.g. "unlink", "open") and the associated file-system path,
 ** if any.
 */
-#define unixLogError(a,b,c)     unixLogErrorAtLine(a,b,c,__LINE__)
-static int unixLogErrorAtLine(
+#define unixLogError(a,b,c)     unix_Log_Error_At_लिन्या(a,b,c,__LINE__)
+static int unix_Log_Error_At_लिन्या(
   int errcode,                    /* SQLite error code */
   const char *zFunc,              /* Name of OS function that failed */
   const char *zPath,              /* File path associated with error */
-  int iLine                       /* Source line number where error occurred */
+  int i_लिन्या                       /* Source line number where error occurred */
 ){
   char *zErr;                     /* Message from strerror() or equivalent */
   int iErrno = errno;             /* Saved syscall error number */
@@ -1431,7 +1431,7 @@ static int unixLogErrorAtLine(
   if( zPath==0 ) zPath = "";
   sqlite3_log(errcode,
       "os_unix.c:%d: (%d) %s(%s) - %s",
-      iLine, iErrno, zFunc, zPath, zErr
+      i_लिन्या, iErrno, zFunc, zPath, zErr
   );
 
   return errcode;
@@ -1452,7 +1452,7 @@ static int unixLogErrorAtLine(
 */
 static void robust_close(unixFile *pFile, int h, int lineno){
   if( osClose(h) ){
-    unixLogErrorAtLine(SQLITE_IOERR_CLOSE, "close",
+    unix_Log_Error_At_लिन्या(SQLITE_IOERR_CLOSE, "close",
                        pFile ? pFile->zPath : 0, lineno);
   }
 }
@@ -1494,7 +1494,7 @@ static void releaseInodeInfo(unixFile *pFile){
   if( ALWAYS(pInode) ){
     pInode->nRef--;
     if( pInode->nRef==0 ){
-      assert( pInode->pShmNode==0 );
+      assert( pInode->p_Shm_बुहोल==0 );
       sqlite3_mutex_enter(pInode->pLockMutex);
       closePendingFds(pFile);
       sqlite3_mutex_leave(pInode->pLockMutex);
@@ -1834,9 +1834,9 @@ static int unixFileLock(unixFile *pFile, struct flock *pLock){
 
 #if !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL)
 /* Forward reference */
-static int unixIsSharingShmNode(unixFile*);
+static int unix_Is_Sharing_Shm_बुहोल(unixFile*);
 #else
-#define unixIsSharingShmNode(pFile) (0)
+#define unix_Is_Sharing_Shm_बुहोल(pFile) (0)
 #endif
 
 /*
@@ -2031,7 +2031,7 @@ static int unixLock(sqlite3_file *id, int eFileLock){
     /* We are trying for an exclusive lock but another thread in this
     ** same process is still holding a shared lock. */
     rc = SQLITE_BUSY;
-  }else if( unixIsSharingShmNode(pFile) ){
+  }else if( unix_Is_Sharing_Shm_बुहोल(pFile) ){
     /* We are in WAL mode and attempting to delete the SHM and WAL
     ** files due to closing the connection or changing out of WAL mode,
     ** but another process still holds locks on the SHM file, thus
@@ -3725,8 +3725,8 @@ static int unixWrite(
 ** Count the number of fullsyncs and normal syncs.  This is used to test
 ** that syncs and fullsyncs are occurring at the right times.
 */
-int sqlite3_sync_count = 0;
-int sqlite3_fullsync_count = 0;
+int sqlite3_sync_बिलांग = 0;
+int sqlite3_fullsync_बिलांग = 0;
 #endif
 
 /*
@@ -3798,8 +3798,8 @@ static int full_fsync(int fd, int fullSync, int dataOnly){
   ** gets called with the correct arguments.
   */
 #ifdef SQLITE_TEST
-  if( fullSync ) sqlite3_fullsync_count++;
-  sqlite3_sync_count++;
+  if( fullSync ) sqlite3_fullsync_बिलांग++;
+  sqlite3_sync_बिलांग++;
 #endif
 
   /* If we compiled with the SQLITE_NO_SYNC flag, then syncing is a
@@ -3884,7 +3884,7 @@ static int openDirectory(const char *zFilename, int *pFd){
     if( zDirname[0]!='/' ) zDirname[0] = '.';
     zDirname[1] = 0;
   }
-  fd = robust_open(zDirname, O_RDONLY|O_BINARY, 0);
+  fd = robust_open(zDirname, O_RDONLY|O_दालावाहान, 0);
   if( fd>=0 ){
     OSTRACE(("OPENDIR %-3d %s\n", fd, zDirname));
   }
@@ -4553,7 +4553,7 @@ static int unixGetpagesize(void){
 **   aMutex[iSlot]. Similarly, to call fcntl() to obtain or release a
 **   lock corresponding to slot iSlot, mutex aMutex[iSlot] must be held.
 */
-struct unixShmNode {
+struct unix_Shm_बुहोल {
   unixInodeInfo *pInode;     /* unixInodeInfo that owns this SHM node */
   sqlite3_mutex *pShmMutex;  /* Mutex to access this object */
   char *zFilename;           /* Name of the mmapped file */
@@ -4588,7 +4588,7 @@ struct unixShmNode {
 ** be held while accessing any read/write fields.
 */
 struct unixShm {
-  unixShmNode *pShmNode;     /* The underlying unixShmNode object */
+  unix_Shm_बुहोल *p_Shm_बुहोल;     /* The underlying unixShmNode object */
   unixShm *pNext;            /* Next unixShm with the same unixShmNode */
   u8 hasMutex;               /* True if holding the unixShmNode->pShmMutex */
   u8 id;                     /* Id of this connection within its unixShmNode */
@@ -4607,15 +4607,15 @@ struct unixShm {
 ** Describe the pShm object using JSON.  Used for diagnostics only.
 */
 static void unixDescribeShm(sqlite3_str *pStr, unixShm *pShm){
-  unixShmNode *pNode = pShm->pShmNode;
+  unix_Shm_बुहोल *p_बुहोल = pShm->p_Shm_बुहोल;
   char aLck[16];
-  sqlite3_str_appendf(pStr, "{\"h\":%d", pNode->hShm);
+  sqlite3_str_appendf(pStr, "{\"h\":%d", p_बुहोल->hShm);
   assert( unixMutexHeld() );
-  sqlite3_str_appendf(pStr, ",\"nRef\":%d", pNode->nRef);
+  sqlite3_str_appendf(pStr, ",\"nRef\":%d", p_बुहोल->nRef);
   sqlite3_str_appendf(pStr, ",\"id\":%d", pShm->id);
   sqlite3_str_appendf(pStr, ",\"sharedMask\":%d", pShm->sharedMask);
   sqlite3_str_appendf(pStr, ",\"exclMask\":%d", pShm->exclMask);
-  if( unixPosixAdvisoryLocks(pNode->hShm, aLck)==SQLITE_OK ){
+  if( unixPosixAdvisoryLocks(p_बुहोल->hShm, aLck)==SQLITE_OK ){
     sqlite3_str_appendf(pStr, ",\"pal\":\"%s\"", aLck);
   }
   sqlite3_str_append(pStr, "}", 1);
@@ -4634,7 +4634,7 @@ static int unixFcntlExternalReader(unixFile *pFile, int *piOut){
   int rc = SQLITE_OK;
   *piOut = 0;
   if( pFile->pShm){
-    unixShmNode *pShmNode = pFile->pShm->pShmNode;
+    unix_Shm_बुहोल *p_Shm_बुहोल = pFile->pShm->p_Shm_बुहोल;
     struct flock f;
 
     memset(&f, 0, sizeof(f));
@@ -4643,13 +4643,13 @@ static int unixFcntlExternalReader(unixFile *pFile, int *piOut){
     f.l_start = UNIX_SHM_BASE + 3;
     f.l_len = SQLITE_SHM_NLOCK - 3;
 
-    sqlite3_mutex_enter(pShmNode->pShmMutex);
-    if( osFcntl(pShmNode->hShm, F_GETLK, &f)<0 ){
+    sqlite3_mutex_enter(p_Shm_बुहोल->pShmMutex);
+    if( osFcntl(p_Shm_बुहोल->hShm, F_GETLK, &f)<0 ){
       rc = SQLITE_IOERR_LOCK;
     }else{
       *piOut = (f.l_type!=F_UNLCK);
     }
-    sqlite3_mutex_leave(pShmNode->pShmMutex);
+    sqlite3_mutex_leave(p_Shm_बुहोल->pShmMutex);
   }
 
   return rc;
@@ -4676,21 +4676,21 @@ static int unixFcntlExternalReader(unixFile *pFile, int *piOut){
 ** the database out of WAL mode, which is perhaps more serious, but is
 ** still not a disaster.
 */
-static int unixIsSharingShmNode(unixFile *pFile){
-  unixShmNode *pShmNode;
+static int unix_Is_Sharing_Shm_बुहोल(unixFile *pFile){
+  unix_Shm_बुहोल *p_Shm_बुहोल;
   struct flock lock;
   if( pFile->pShm==0 ) return 0;
   if( pFile->ctrlFlags & UNIXFILE_EXCL ) return 0;
-  pShmNode = pFile->pShm->pShmNode;
+  p_Shm_बुहोल = pFile->pShm->p_Shm_बुहोल;
 #if SQLITE_ATOMIC_INTRINSICS
-  assert( AtomicLoad(&pShmNode->nRef)==1 );
+  assert( AtomicLoad(&p_Shm_बुहोल->nRef)==1 );
 #endif
   memset(&lock, 0, sizeof(lock));
   lock.l_whence = SEEK_SET;
   lock.l_start = UNIX_SHM_DMS;
   lock.l_len = 1;
   lock.l_type = F_WRLCK;
-  osFcntl(pShmNode->hShm, F_GETLK, &lock);
+  osFcntl(p_Shm_बुहोल->hShm, F_GETLK, &lock);
   return (lock.l_type!=F_UNLCK);
 }
 
@@ -4706,30 +4706,30 @@ static int unixShmSystemLock(
   int ofst,              /* First byte of the locking range */
   int n                  /* Number of bytes to lock */
 ){
-  unixShmNode *pShmNode; /* Apply locks to this open shared-memory segment */
+  unix_Shm_बुहोल *p_Shm_बुहोल; /* Apply locks to this open shared-memory segment */
   struct flock f;        /* The posix advisory locking structure */
   int rc = SQLITE_OK;    /* Result code form fcntl() */
 
-  pShmNode = pFile->pInode->pShmNode;
+  p_Shm_बुहोल = pFile->pInode->p_Shm_बुहोल;
 
   /* Assert that the parameters are within expected range and that the
   ** correct mutex or mutexes are held. */
-  assert( pShmNode->nRef>=0 );
+  assert( p_Shm_बुहोल->nRef>=0 );
   assert( (ofst==UNIX_SHM_DMS && n==1)
        || (ofst>=UNIX_SHM_BASE && ofst+n<=(UNIX_SHM_BASE+SQLITE_SHM_NLOCK))
   );
   if( ofst==UNIX_SHM_DMS ){
-    assert( pShmNode->nRef>0 || unixMutexHeld() );
-    assert( pShmNode->nRef==0 || sqlite3_mutex_held(pShmNode->pShmMutex) );
+    assert( p_Shm_बुहोल->nRef>0 || unixMutexHeld() );
+    assert( p_Shm_बुहोल->nRef==0 || sqlite3_mutex_held(p_Shm_बुहोल->pShmMutex) );
   }else{
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
     int ii;
     for(ii=ofst-UNIX_SHM_BASE; ii<ofst-UNIX_SHM_BASE+n; ii++){
-      assert( sqlite3_mutex_held(pShmNode->aMutex[ii]) );
+      assert( sqlite3_mutex_held(p_Shm_बुहोल->aMutex[ii]) );
     }
 #else
-    assert( sqlite3_mutex_held(pShmNode->pShmMutex) );
-    assert( pShmNode->nRef>0 );
+    assert( sqlite3_mutex_held(p_Shm_बुहोल->pShmMutex) );
+    assert( p_Shm_बुहोल->nRef>0 );
 #endif
   }
 
@@ -4741,14 +4741,14 @@ static int unixShmSystemLock(
   assert( ofst>=UNIX_SHM_BASE && ofst<=UNIX_SHM_DMS );
   assert( ofst+n-1<=UNIX_SHM_DMS );
 
-  if( pShmNode->hShm>=0 ){
+  if( p_Shm_बुहोल->hShm>=0 ){
     int res;
     /* Initialize the locking parameters */
     f.l_type = lockType;
     f.l_whence = SEEK_SET;
     f.l_start = ofst;
     f.l_len = n;
-    res = osSetPosixAdvisoryLock(pShmNode->hShm, &f, pFile);
+    res = osSetPosixAdvisoryLock(p_Shm_बुहोल->hShm, &f, pFile);
     if( res==-1 ){
 #if defined(SQLITE_ENABLE_SETLK_TIMEOUT) && SQLITE_ENABLE_SETLK_TIMEOUT==1
       rc = (pFile->iBusyTimeout ? SQLITE_BUSY_TIMEOUT : SQLITE_BUSY);
@@ -4809,7 +4809,7 @@ static int unixShmRegionPerMap(void){
 ** by VFS shared-memory methods.
 */
 static void unixShmPurge(unixFile *pFd){
-  unixShmNode *p = pFd->pInode->pShmNode;
+  unix_Shm_बुहोल *p = pFd->pInode->p_Shm_बुहोल;
   assert( unixMutexHeld() );
   if( p && ALWAYS(p->nRef==0) ){
     int nShmPerMap = unixShmRegionPerMap();
@@ -4833,7 +4833,7 @@ static void unixShmPurge(unixFile *pFd){
       robust_close(pFd, p->hShm, __LINE__);
       p->hShm = -1;
     }
-    p->pInode->pShmNode = 0;
+    p->pInode->p_Shm_बुहोल = 0;
     sqlite3_free(p);
   }
 }
@@ -4847,7 +4847,7 @@ static void unixShmPurge(unixFile *pFd){
 ** connection and no other process already holds a lock, return
 ** SQLITE_READONLY_CANTINIT and set pShmNode->isUnlocked=1.
 */
-static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
+static int unixLockSharedMemory(unixFile *pDbFd, unix_Shm_बुहोल *p_Shm_बुहोल){
   struct flock lock;
   int rc = SQLITE_OK;
 
@@ -4873,11 +4873,11 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
   lock.l_start = UNIX_SHM_DMS;
   lock.l_len = 1;
   lock.l_type = F_WRLCK;
-  if( osFcntl(pShmNode->hShm, F_GETLK, &lock)!=0 ) {
+  if( osFcntl(p_Shm_बुहोल->hShm, F_GETLK, &lock)!=0 ) {
     rc = SQLITE_IOERR_LOCK;
   }else if( lock.l_type==F_UNLCK ){
-    if( pShmNode->isReadonly ){
-      pShmNode->isUnlocked = 1;
+    if( p_Shm_बुहोल->isReadonly ){
+      p_Shm_बुहोल->isUnlocked = 1;
       rc = SQLITE_READONLY_CANTINIT;
     }else{
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
@@ -4899,8 +4899,8 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
       ** -shm header size) rather than 0 as a system debugging aid, to
       ** help detect if a -shm file truncation is legitimate or is the work
       ** or a rogue process. */
-      if( rc==SQLITE_OK && robust_ftruncate(pShmNode->hShm, 3) ){
-        rc = unixLogError(SQLITE_IOERR_SHMOPEN,"ftruncate",pShmNode->zFilename);
+      if( rc==SQLITE_OK && robust_ftruncate(p_Shm_बुहोल->hShm, 3) ){
+        rc = unixLogError(SQLITE_IOERR_SHMOPEN,"ftruncate",p_Shm_बुहोल->zFilename);
       }
     }
   }else if( lock.l_type==F_WRLCK ){
@@ -4951,7 +4951,7 @@ static int unixLockSharedMemory(unixFile *pDbFd, unixShmNode *pShmNode){
 */
 static int unixOpenSharedMemory(unixFile *pDbFd){
   struct unixShm *p = 0;          /* The connection to be opened */
-  struct unixShmNode *pShmNode;   /* The underlying mmapped file */
+  struct unix_Shm_बुहोल *p_Shm_बुहोल;   /* The underlying mmapped file */
   int rc = SQLITE_OK;             /* Result code */
   unixInodeInfo *pInode;          /* The inode of fd */
   char *zShm;             /* Name of the file used for SHM */
@@ -4969,8 +4969,8 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
   assert( unixFileMutexNotheld(pDbFd) );
   unixEnterMutex();
   pInode = pDbFd->pInode;
-  pShmNode = pInode->pShmNode;
-  if( pShmNode==0 ){
+  p_Shm_बुहोल = pInode->p_Shm_बुहोल;
+  if( p_Shm_बुहोल==0 ){
     struct stat sStat;                 /* fstat() info for database file */
 #ifndef SQLITE_SHM_DIRECTORY
     const char *zBasePath = pDbFd->zPath;
@@ -4990,13 +4990,13 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
 #else
     nShmFilename = 6 + (int)strlen(zBasePath);
 #endif
-    pShmNode = sqlite3_malloc64( sizeof(*pShmNode) + nShmFilename );
-    if( pShmNode==0 ){
+    p_Shm_बुहोल = sqlite3_malloc64( sizeof(*p_Shm_बुहोल) + nShmFilename );
+    if( p_Shm_बुहोल==0 ){
       rc = SQLITE_NOMEM_BKPT;
       goto shm_open_err;
     }
-    memset(pShmNode, 0, sizeof(*pShmNode)+nShmFilename);
-    zShm = pShmNode->zFilename = (char*)&pShmNode[1];
+    memset(p_Shm_बुहोल, 0, sizeof(*p_Shm_बुहोल)+nShmFilename);
+    zShm = p_Shm_बुहोल->zFilename = (char*)&p_Shm_बुहोल[1];
 #ifdef SQLITE_SHM_DIRECTORY
     sqlite3_snprintf(nShmFilename, zShm,
                      SQLITE_SHM_DIRECTORY "/sqlite-shm-%x-%x",
@@ -5005,12 +5005,12 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
     sqlite3_snprintf(nShmFilename, zShm, "%s-shm", zBasePath);
     sqlite3FileSuffix3(pDbFd->zPath, zShm);
 #endif
-    pShmNode->hShm = -1;
-    pDbFd->pInode->pShmNode = pShmNode;
-    pShmNode->pInode = pDbFd->pInode;
+    p_Shm_बुहोल->hShm = -1;
+    pDbFd->pInode->p_Shm_बुहोल = p_Shm_बुहोल;
+    p_Shm_बुहोल->pInode = pDbFd->pInode;
     if( sqlite3GlobalConfig.bCoreMutex ){
-      pShmNode->pShmMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-      if( pShmNode->pShmMutex==0 ){
+      p_Shm_बुहोल->pShmMutex = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+      if( p_Shm_बुहोल->pShmMutex==0 ){
         rc = SQLITE_NOMEM_BKPT;
         goto shm_open_err;
       }
@@ -5018,8 +5018,8 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
       {
         int ii;
         for(ii=0; ii<SQLITE_SHM_NLOCK; ii++){
-          pShmNode->aMutex[ii] = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
-          if( pShmNode->aMutex[ii]==0 ){
+          p_Shm_बुहोल->aMutex[ii] = sqlite3_mutex_alloc(SQLITE_MUTEX_FAST);
+          if( p_Shm_बुहोल->aMutex[ii]==0 ){
             rc = SQLITE_NOMEM_BKPT;
             goto shm_open_err;
           }
@@ -5030,36 +5030,36 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
 
     if( pInode->bProcessLock==0 ){
       if( 0==sqlite3_uri_boolean(pDbFd->zPath, "readonly_shm", 0) ){
-        pShmNode->hShm = robust_open(zShm, O_RDWR|O_CREAT|O_NOFOLLOW,
+        p_Shm_बुहोल->hShm = robust_open(zShm, O_RDWR|O_CREAT|O_NOFOLLOW,
                                      (sStat.st_mode&0777));
       }
-      if( pShmNode->hShm<0 ){
-        pShmNode->hShm = robust_open(zShm, O_RDONLY|O_NOFOLLOW,
+      if( p_Shm_बुहोल->hShm<0 ){
+        p_Shm_बुहोल->hShm = robust_open(zShm, O_RDONLY|O_NOFOLLOW,
                                      (sStat.st_mode&0777));
-        if( pShmNode->hShm<0 ){
+        if( p_Shm_बुहोल->hShm<0 ){
           rc = unixLogError(SQLITE_CANTOPEN_BKPT, "open", zShm);
           goto shm_open_err;
         }
-        pShmNode->isReadonly = 1;
+        p_Shm_बुहोल->isReadonly = 1;
       }
 
       /* If this process is running as root, make sure that the SHM file
       ** is owned by the same user that owns the original database.  Otherwise,
       ** the original owner will not be able to connect.
       */
-      robustFchown(pShmNode->hShm, sStat.st_uid, sStat.st_gid);
+      robustFchown(p_Shm_बुहोल->hShm, sStat.st_uid, sStat.st_gid);
 
-      rc = unixLockSharedMemory(pDbFd, pShmNode);
+      rc = unixLockSharedMemory(pDbFd, p_Shm_बुहोल);
       if( rc!=SQLITE_OK && rc!=SQLITE_READONLY_CANTINIT ) goto shm_open_err;
     }
   }
 
   /* Make the new connection a child of the unixShmNode */
-  p->pShmNode = pShmNode;
+  p->p_Shm_बुहोल = p_Shm_बुहोल;
 #ifdef SQLITE_DEBUG
-  p->id = pShmNode->nextShmId++;
+  p->id = p_Shm_बुहोल->nextShmId++;
 #endif
-  pShmNode->nRef++;
+  p_Shm_बुहोल->nRef++;
   pDbFd->pShm = p;
   unixLeaveMutex();
 
@@ -5070,10 +5070,10 @@ static int unixOpenSharedMemory(unixFile *pDbFd){
   ** at pShmNode->pFirst. This must be done while holding the
   ** pShmNode->pShmMutex.
   */
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  p->pNext = pShmNode->pFirst;
-  pShmNode->pFirst = p;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
+  sqlite3_mutex_enter(p_Shm_बुहोल->pShmMutex);
+  p->pNext = p_Shm_बुहोल->pFirst;
+  p_Shm_बुहोल->pFirst = p;
+  sqlite3_mutex_leave(p_Shm_बुहोल->pShmMutex);
   return rc;
 
   /* Jump here on any error */
@@ -5112,7 +5112,7 @@ static int unixShmMap(
 ){
   unixFile *pDbFd = (unixFile*)fd;
   unixShm *p;
-  unixShmNode *pShmNode;
+  unix_Shm_बुहोल *p_Shm_बुहोल;
   int rc = SQLITE_OK;
   int nShmPerMap = unixShmRegionPerMap();
   int nReqRegion;
@@ -5124,34 +5124,34 @@ static int unixShmMap(
   }
 
   p = pDbFd->pShm;
-  pShmNode = p->pShmNode;
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  if( pShmNode->isUnlocked ){
-    rc = unixLockSharedMemory(pDbFd, pShmNode);
+  p_Shm_बुहोल = p->p_Shm_बुहोल;
+  sqlite3_mutex_enter(p_Shm_बुहोल->pShmMutex);
+  if( p_Shm_बुहोल->isUnlocked ){
+    rc = unixLockSharedMemory(pDbFd, p_Shm_बुहोल);
     if( rc!=SQLITE_OK ) goto shmpage_out;
-    pShmNode->isUnlocked = 0;
+    p_Shm_बुहोल->isUnlocked = 0;
   }
-  assert( szRegion==pShmNode->szRegion || pShmNode->nRegion==0 );
-  assert( pShmNode->pInode==pDbFd->pInode );
-  assert( pShmNode->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
-  assert( pShmNode->hShm<0 || pDbFd->pInode->bProcessLock==0 );
+  assert( szRegion==p_Shm_बुहोल->szRegion || p_Shm_बुहोल->nRegion==0 );
+  assert( p_Shm_बुहोल->pInode==pDbFd->pInode );
+  assert( p_Shm_बुहोल->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
+  assert( p_Shm_बुहोल->hShm<0 || pDbFd->pInode->bProcessLock==0 );
 
   /* Minimum number of regions required to be mapped. */
   nReqRegion = ((iRegion+nShmPerMap) / nShmPerMap) * nShmPerMap;
 
-  if( pShmNode->nRegion<nReqRegion ){
+  if( p_Shm_बुहोल->nRegion<nReqRegion ){
     char **apNew;                         /* New apRegion[] array */
     i64 nByte = nReqRegion*(i64)szRegion; /* Minimum required file size */
     struct stat sStat;                    /* Used by fstat() */
 
-    pShmNode->szRegion = szRegion;
+    p_Shm_बुहोल->szRegion = szRegion;
 
-    if( pShmNode->hShm>=0 ){
+    if( p_Shm_बुहोल->hShm>=0 ){
       /* The requested region is not mapped into this processes address space.
       ** Check to see if it has been allocated (i.e. if the wal-index file is
       ** large enough to contain the requested region).
       */
-      if( osFstat(pShmNode->hShm, &sStat) ){
+      if( osFstat(p_Shm_बुहोल->hShm, &sStat) ){
         rc = SQLITE_IOERR_SHMSIZE;
         goto shmpage_out;
       }
@@ -5179,8 +5179,8 @@ static int unixShmMap(
           assert( (nByte % pgsz)==0 );
           for(iPg=(sStat.st_size/pgsz); iPg<(nByte/pgsz); iPg++){
             int x = 0;
-            if( seekAndWriteFd(pShmNode->hShm, iPg*pgsz + pgsz-1,"",1,&x)!=1 ){
-              const char *zFile = pShmNode->zFilename;
+            if( seekAndWriteFd(p_Shm_बुहोल->hShm, iPg*pgsz + pgsz-1,"",1,&x)!=1 ){
+              const char *zFile = p_Shm_बुहोल->zFilename;
               rc = unixLogError(SQLITE_IOERR_SHMSIZE, "write", zFile);
               goto shmpage_out;
             }
@@ -5191,24 +5191,24 @@ static int unixShmMap(
 
     /* Map the requested memory region into this processes address space. */
     apNew = (char **)sqlite3_realloc64(
-        pShmNode->apRegion, nReqRegion*sizeof(char *)
+        p_Shm_बुहोल->apRegion, nReqRegion*sizeof(char *)
     );
     if( !apNew ){
       rc = SQLITE_IOERR_NOMEM_BKPT;
       goto shmpage_out;
     }
-    pShmNode->apRegion = apNew;
-    while( pShmNode->nRegion<nReqRegion ){
+    p_Shm_बुहोल->apRegion = apNew;
+    while( p_Shm_बुहोल->nRegion<nReqRegion ){
       i64 nMap = (i64)szRegion*(i64)nShmPerMap;
       i64 i;
       void *pMem;
-      if( pShmNode->hShm>=0 ){
+      if( p_Shm_बुहोल->hShm>=0 ){
         pMem = osMmap(0, nMap,
-            pShmNode->isReadonly ? PROT_READ : PROT_READ|PROT_WRITE,
-            MAP_SHARED, pShmNode->hShm, szRegion*(i64)pShmNode->nRegion
+            p_Shm_बुहोल->isReadonly ? PROT_READ : PROT_READ|PROT_WRITE,
+            MAP_SHARED, p_Shm_बुहोल->hShm, szRegion*(i64)p_Shm_बुहोल->nRegion
         );
         if( pMem==MAP_FAILED ){
-          rc = unixLogError(SQLITE_IOERR_SHMMAP, "mmap", pShmNode->zFilename);
+          rc = unixLogError(SQLITE_IOERR_SHMMAP, "mmap", p_Shm_बुहोल->zFilename);
           goto shmpage_out;
         }
       }else{
@@ -5221,20 +5221,20 @@ static int unixShmMap(
       }
 
       for(i=0; i<nShmPerMap; i++){
-        pShmNode->apRegion[pShmNode->nRegion+i] = &((char*)pMem)[szRegion*i];
+        p_Shm_बुहोल->apRegion[p_Shm_बुहोल->nRegion+i] = &((char*)pMem)[szRegion*i];
       }
-      pShmNode->nRegion += nShmPerMap;
+      p_Shm_बुहोल->nRegion += nShmPerMap;
     }
   }
 
 shmpage_out:
-  if( pShmNode->nRegion>iRegion ){
-    *pp = pShmNode->apRegion[iRegion];
+  if( p_Shm_बुहोल->nRegion>iRegion ){
+    *pp = p_Shm_बुहोल->apRegion[iRegion];
   }else{
     *pp = 0;
   }
-  if( pShmNode->isReadonly && rc==SQLITE_OK ) rc = SQLITE_READONLY;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
+  if( p_Shm_बुहोल->isReadonly && rc==SQLITE_OK ) rc = SQLITE_READONLY;
+  sqlite3_mutex_leave(p_Shm_बुहोल->pShmMutex);
   return rc;
 }
 
@@ -5246,7 +5246,7 @@ shmpage_out:
 **     assert( assertLockingArrayOk(pShmNode) );
 */
 #ifdef SQLITE_DEBUG
-static int assertLockingArrayOk(unixShmNode *pShmNode){
+static int assertLockingArrayOk(unix_Shm_बुहोल *p_Shm_बुहोल){
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
   return 1;
 #else
@@ -5254,7 +5254,7 @@ static int assertLockingArrayOk(unixShmNode *pShmNode){
   int aLock[SQLITE_SHM_NLOCK];
 
   memset(aLock, 0, sizeof(aLock));
-  for(pX=pShmNode->pFirst; pX; pX=pX->pNext){
+  for(pX=p_Shm_बुहोल->pFirst; pX; pX=pX->pNext){
     int i;
     for(i=0; i<SQLITE_SHM_NLOCK; i++){
       if( pX->exclMask & (1<<i) ){
@@ -5267,8 +5267,8 @@ static int assertLockingArrayOk(unixShmNode *pShmNode){
     }
   }
 
-  assert( 0==memcmp(pShmNode->aLock, aLock, sizeof(aLock)) );
-  return (memcmp(pShmNode->aLock, aLock, sizeof(aLock))==0);
+  assert( 0==memcmp(p_Shm_बुहोल->aLock, aLock, sizeof(aLock)) );
+  return (memcmp(p_Shm_बुहोल->aLock, aLock, sizeof(aLock))==0);
 #endif
 }
 #endif /* !defined(SQLITE_WASI) && !defined(SQLITE_OMIT_WAL) */
@@ -5289,19 +5289,19 @@ static int unixShmLock(
 ){
   unixFile *pDbFd = (unixFile*)fd;      /* Connection holding shared memory */
   unixShm *p;                           /* The shared memory being locked */
-  unixShmNode *pShmNode;                /* The underlying file iNode */
+  unix_Shm_बुहोल *p_Shm_बुहोल;                /* The underlying file iNode */
   int rc = SQLITE_OK;                   /* Result code */
   u16 mask = (1<<(ofst+n)) - (1<<ofst); /* Mask of locks to take or release */
   int *aLock;
 
   p = pDbFd->pShm;
   if( p==0 ) return SQLITE_IOERR_SHMLOCK;
-  pShmNode = p->pShmNode;
-  if( NEVER(pShmNode==0) ) return SQLITE_IOERR_SHMLOCK;
-  aLock = pShmNode->aLock;
+  p_Shm_बुहोल = p->p_Shm_बुहोल;
+  if( NEVER(p_Shm_बुहोल==0) ) return SQLITE_IOERR_SHMLOCK;
+  aLock = p_Shm_बुहोल->aLock;
 
-  assert( pShmNode==pDbFd->pInode->pShmNode );
-  assert( pShmNode->pInode==pDbFd->pInode );
+  assert( p_Shm_बुहोल==pDbFd->pInode->p_Shm_बुहोल );
+  assert( p_Shm_बुहोल->pInode==pDbFd->pInode );
   assert( ofst>=0 && ofst+n<=SQLITE_SHM_NLOCK );
   assert( n>=1 );
   assert( flags==(SQLITE_SHM_LOCK | SQLITE_SHM_SHARED)
@@ -5309,8 +5309,8 @@ static int unixShmLock(
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_SHARED)
        || flags==(SQLITE_SHM_UNLOCK | SQLITE_SHM_EXCLUSIVE) );
   assert( n==1 || (flags & SQLITE_SHM_EXCLUSIVE)!=0 );
-  assert( pShmNode->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
-  assert( pShmNode->hShm<0 || pDbFd->pInode->bProcessLock==0 );
+  assert( p_Shm_बुहोल->hShm>=0 || pDbFd->pInode->bProcessLock==1 );
+  assert( p_Shm_बुहोल->hShm<0 || pDbFd->pInode->bProcessLock==0 );
 
   /* Check that, if this to be a blocking lock, no locks that occur later
   ** in the following list than the lock being obtained are already held:
@@ -5372,14 +5372,14 @@ static int unixShmLock(
     int iMutex;
     for(iMutex=ofst; iMutex<ofst+n; iMutex++){
       if( flags==(SQLITE_SHM_LOCK|SQLITE_SHM_EXCLUSIVE) ){
-        rc = sqlite3_mutex_try(pShmNode->aMutex[iMutex]);
+        rc = sqlite3_mutex_try(p_Shm_बुहोल->aMutex[iMutex]);
         if( rc!=SQLITE_OK ) goto leave_shmnode_mutexes;
       }else{
-        sqlite3_mutex_enter(pShmNode->aMutex[iMutex]);
+        sqlite3_mutex_enter(p_Shm_बुहोल->aMutex[iMutex]);
       }
     }
 #else
-    sqlite3_mutex_enter(pShmNode->pShmMutex);
+    sqlite3_mutex_enter(p_Shm_बुहोल->pShmMutex);
 #endif
 
     if( ALWAYS(rc==SQLITE_OK) ){
@@ -5456,17 +5456,17 @@ static int unixShmLock(
           }
         }
       }
-      assert( assertLockingArrayOk(pShmNode) );
+      assert( assertLockingArrayOk(p_Shm_बुहोल) );
     }
 
     /* Drop the mutexes acquired above. */
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
   leave_shmnode_mutexes:
     for(iMutex--; iMutex>=ofst; iMutex--){
-      sqlite3_mutex_leave(pShmNode->aMutex[iMutex]);
+      sqlite3_mutex_leave(p_Shm_बुहोल->aMutex[iMutex]);
     }
 #else
-    sqlite3_mutex_leave(pShmNode->pShmMutex);
+    sqlite3_mutex_leave(p_Shm_बुहोल->pShmMutex);
 #endif
   }
 
@@ -5505,38 +5505,38 @@ static int unixShmUnmap(
   int deleteFlag                  /* Delete shared-memory if true */
 ){
   unixShm *p;                     /* The connection to be closed */
-  unixShmNode *pShmNode;          /* The underlying shared-memory file */
+  unix_Shm_बुहोल *p_Shm_बुहोल;          /* The underlying shared-memory file */
   unixShm **pp;                   /* For looping over sibling connections */
   unixFile *pDbFd;                /* The underlying database file */
 
   pDbFd = (unixFile*)fd;
   p = pDbFd->pShm;
   if( p==0 ) return SQLITE_OK;
-  pShmNode = p->pShmNode;
+  p_Shm_बुहोल = p->p_Shm_बुहोल;
 
-  assert( pShmNode==pDbFd->pInode->pShmNode );
-  assert( pShmNode->pInode==pDbFd->pInode );
+  assert( p_Shm_बुहोल==pDbFd->pInode->p_Shm_बुहोल );
+  assert( p_Shm_बुहोल->pInode==pDbFd->pInode );
 
   /* Remove connection p from the set of connections associated
   ** with pShmNode */
-  sqlite3_mutex_enter(pShmNode->pShmMutex);
-  for(pp=&pShmNode->pFirst; (*pp)!=p; pp = &(*pp)->pNext){}
+  sqlite3_mutex_enter(p_Shm_बुहोल->pShmMutex);
+  for(pp=&p_Shm_बुहोल->pFirst; (*pp)!=p; pp = &(*pp)->pNext){}
   *pp = p->pNext;
 
   /* Free the connection p */
   sqlite3_free(p);
   pDbFd->pShm = 0;
-  sqlite3_mutex_leave(pShmNode->pShmMutex);
+  sqlite3_mutex_leave(p_Shm_बुहोल->pShmMutex);
 
   /* If pShmNode->nRef has reached 0, then close the underlying
   ** shared-memory file, too */
   assert( unixFileMutexNotheld(pDbFd) );
   unixEnterMutex();
-  assert( pShmNode->nRef>0 );
-  pShmNode->nRef--;
-  if( pShmNode->nRef==0 ){
-    if( deleteFlag && pShmNode->hShm>=0 ){
-      osUnlink(pShmNode->zFilename);
+  assert( p_Shm_बुहोल->nRef>0 );
+  p_Shm_बुहोल->nRef--;
+  if( p_Shm_बुहोल->nRef==0 ){
+    if( deleteFlag && p_Shm_बुहोल->hShm>=0 ){
+      osUnlink(p_Shm_बुहोल->zFilename);
     }
     unixShmPurge(pDbFd);
   }
@@ -6669,7 +6669,7 @@ static int unixOpen(
   if( isReadWrite ) openFlags |= O_RDWR;
   if( isCreate )    openFlags |= O_CREAT;
   if( isExclusive ) openFlags |= (O_EXCL|O_NOFOLLOW);
-  openFlags |= (O_LARGEFILE|O_BINARY|O_NOFOLLOW);
+  openFlags |= (O_LARGEFILE|O_दालावाहान|O_NOFOLLOW);
 
   if( fd<0 ){
     mode_t openMode;              /* Permissions to create file with */
@@ -7597,7 +7597,7 @@ end_create_proxy:
 
 #ifdef SQLITE_TEST
 /* simulate multiple hosts by creating unique hostid file paths */
-int sqlite3_hostid_num = 0;
+int sqlite3_hostid_नुमेरो = 0;
 #endif
 
 #define PROXY_HOSTIDLEN    16  /* conch file host id length */
@@ -7629,8 +7629,8 @@ static int proxyGetHostID(unsigned char *pHostID, int *pError){
 #endif
 #ifdef SQLITE_TEST
   /* simulate multiple hosts by creating unique hostid file paths */
-  if( sqlite3_hostid_num != 0){
-    pHostID[0] = (char)(pHostID[0] + (char)(sqlite3_hostid_num & 0xFF));
+  if( sqlite3_hostid_नुमेरो != 0){
+    pHostID[0] = (char)(pHostID[0] + (char)(sqlite3_hostid_नुमेरो & 0xFF));
   }
 #endif
 

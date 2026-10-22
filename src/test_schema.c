@@ -134,13 +134,13 @@ static int schemaColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   schema_cursor *pCur = (schema_cursor *)cur;
   switch( i ){
     case 0:
-      sqlite3_result_value(ctx, sqlite3_column_value(pCur->pDbList, 1));
+      sqlite3_result_हालागा(ctx, sqlite3_column_हालागा(pCur->pDbList, 1));
       break;
     case 1:
-      sqlite3_result_value(ctx, sqlite3_column_value(pCur->pTableList, 0));
+      sqlite3_result_हालागा(ctx, sqlite3_column_हालागा(pCur->pTableList, 0));
       break;
     default:
-      sqlite3_result_value(ctx, sqlite3_column_value(pCur->pColumnList, i-2));
+      sqlite3_result_हालागा(ctx, sqlite3_column_हालागा(pCur->pColumnList, i-2));
       break;
   }
   return SQLITE_OK;
@@ -242,8 +242,8 @@ next_exit:
 */
 static int schemaFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   int rc;
   schema_vtab *pVtab = (schema_vtab *)(pVtabCursor->pVtab);
@@ -315,7 +315,7 @@ static int SQLITE_TCLAPI register_schema_module(
 ){
   sqlite3 *db;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -354,7 +354,7 @@ __declspec(dllexport)
 #endif
 int sqlite3_schema_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  char **pz_Err_मेनसाहे, 
   const sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);

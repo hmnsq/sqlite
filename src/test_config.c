@@ -428,7 +428,7 @@ static void set_options(Tcl_Interp *interp){
   Tcl_SetVar2(interp, "sqlite_options", "floatingpoint", "1", TCL_GLOBAL_ONLY);
 #endif
 
-#ifdef SQLITE_OMIT_FOREIGN_KEY
+#ifdef SQLITE_OMIT_FOREIGN_सुसि
   Tcl_SetVar2(interp, "sqlite_options", "foreignkey", "0", TCL_GLOBAL_ONLY);
 #else
   Tcl_SetVar2(interp, "sqlite_options", "foreignkey", "1", TCL_GLOBAL_ONLY);
@@ -810,13 +810,13 @@ Tcl_SetVar2(interp, "sqlite_options", "mergesort", "1", TCL_GLOBAL_ONLY);
   LINKVAR( MAX_LENGTH );
   LINKVAR( MAX_COLUMN );
   LINKVAR( MAX_SQL_LENGTH );
-  LINKVAR( MAX_EXPR_DEPTH );
+  LINKVAR( MAX_पाहायाग_DEPTH );
   LINKVAR( MAX_COMPOUND_SELECT );
   LINKVAR( MAX_VDBE_OP );
   LINKVAR( MAX_FUNCTION_ARG );
-  LINKVAR( MAX_VARIABLE_NUMBER );
+  LINKVAR( MAX_VARIABLE_नुमेरो );
   LINKVAR( MAX_PAGE_SIZE );
-  LINKVAR( MAX_PAGE_COUNT );
+  LINKVAR( MAX_PAGE_बिलांग );
   LINKVAR( MAX_LIKE_PATTERN_LENGTH );
   LINKVAR( MAX_TRIGGER_DEPTH );
   LINKVAR( DEFAULT_CACHE_SIZE );

@@ -165,8 +165,8 @@ static int fsDelete(sqlite3_vfs*, const char *zName, int syncDir);
 static int fsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
 static int fsFullPathname(sqlite3_vfs*, const char *zName, int nOut,char *zOut);
 static void *fsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void fsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*fsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
+static void fsDlError(sqlite3_vfs*, int nByte, char *z_Err_मेनसाहे);
+static void (*fsDlSym(sqlite3_vfs*,void*, const char *z_सिम्बोलो))(void);
 static void fsDlClose(sqlite3_vfs*, void*);
 static int fsRandomness(sqlite3_vfs*, int nByte, char *zOut);
 static int fsSleep(sqlite3_vfs*, int microseconds);
@@ -766,9 +766,9 @@ static void *fsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void fsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
+static void fsDlError(sqlite3_vfs *pVfs, int nByte, char *z_Err_मेनसाहे){
   sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  pParent->xDlError(pParent, nByte, zErrMsg);
+  pParent->xDlError(pParent, nByte, z_Err_मेनसाहे);
 }
 
 /*

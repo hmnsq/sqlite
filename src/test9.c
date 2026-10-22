@@ -33,7 +33,7 @@ static int SQLITE_TCLAPI c_collation_test(
 
   int rc;
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -73,7 +73,7 @@ static int SQLITE_TCLAPI c_realloc_test(
   const char *zErrFunction = "N/A";
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -116,7 +116,7 @@ static int SQLITE_TCLAPI c_misuse_test(
   int rc;
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 

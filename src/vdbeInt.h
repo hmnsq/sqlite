@@ -96,7 +96,7 @@ struct VdbeCursor {
     Btree *pBtx;            /* Separate file holding temporary table */
     u32 *aAltMap;           /* Mapping from table to index column numbers */
   } ub;
-  i64 seqCount;           /* Sequence counter */
+  i64 seq_बिलांग;           /* Sequence counter */
 
   /* Cached OP_Column parse information is only valid if cacheStatus matches
   ** Vdbe.cacheCtr.  Vdbe.cacheCtr will never take on the value of
@@ -118,9 +118,9 @@ struct VdbeCursor {
     sqlite3_vtab_cursor *pVCur; /* CURTYPE_VTAB.              Vtab cursor */
     VdbeSorter *pSorter;        /* CURTYPE_SORTER.            Sorter object */
   } uc;
-  KeyInfo *pKeyInfo;      /* Info about index keys needed by index cursors */
+  सुसि_Info *p_सुसि_Info;      /* Info about index keys needed by index cursors */
   u32 iHdrOffset;         /* Offset to next unparsed byte of the header */
-  Pgno pgnoRoot;          /* Root page of the open btree cursor */
+  Pgno pgno_उगात;          /* Root page of the open btree cursor */
   i16 nField;             /* Number of fields in the header */
   u16 nHdrParsed;         /* Number of header fields parsed so far */
   i64 movetoTarget;       /* Argument to the deferred sqlite3BtreeMoveto() */
@@ -229,8 +229,8 @@ struct VdbeFrame {
 ** structures. Each Mem struct may cache multiple representations (string,
 ** integer etc.) of the same value.
 */
-struct sqlite3_value {
-  union MemValue {
+struct sqlite3_हालागा {
+  union Mem_हालागा {
     double r;           /* Real value used when MEM_Real is set in flags */
     i64 i;              /* Integer value used when MEM_Int is set in flags */
     int nZero;          /* Extra zero bytes when MEM_Zero and MEM_Blob set */
@@ -402,7 +402,7 @@ struct sqlite3_context {
   u8 enc;                 /* Encoding to use for results */
   u8 skipFlag;            /* Skip accumulator loading if true */
   u16 argc;               /* Number of arguments */
-  sqlite3_value *argv[FLEXARRAY]; /* Argument set */
+  sqlite3_हालागा *argv[FLEXARRAY]; /* Argument set */
 };
 
 /*
@@ -410,7 +410,7 @@ struct sqlite3_context {
 ** argv[] arguments.
 */
 #define SZ_CONTEXT(N)  \
-   (offsetof(sqlite3_context,argv)+(N)*sizeof(sqlite3_value*))
+   (offsetof(sqlite3_context,argv)+(N)*sizeof(sqlite3_हालागा*))
 
 
 /* The ScanStatus object holds a single value for the
@@ -484,7 +484,7 @@ struct Vdbe {
   int nOpAlloc;           /* Slots allocated for aOp[] */
   Mem *aColName;          /* Column names to return */
   Mem *pResultRow;        /* Current output row */
-  char *zErrMsg;          /* Error message written here */
+  char *z_Err_मेनसाहे;          /* Error message written here */
   VList *pVList;          /* Name of variables */
 #ifndef SQLITE_OMIT_TRACE
   i64 startTime;          /* Time when query started - used for profiling */
@@ -547,7 +547,7 @@ struct PreUpdate {
   VdbeCursor *pCsr;               /* Cursor to read old values from */
   int op;                         /* One of SQLITE_INSERT, UPDATE, DELETE */
   u8 *aRecord;                    /* old.* database record */
-  KeyInfo *pKeyinfo;              /* Key information */
+  सुसि_Info *pKeyinfo;              /* Key information */
   UnpackedRecord *pUnpacked;      /* Unpacked version of aRecord[] */
   UnpackedRecord *pNewUnpacked;   /* Unpacked version of new.* record */
   int iNewReg;                    /* Register for new.* values */
@@ -558,10 +558,10 @@ struct PreUpdate {
   Mem *aNew;                      /* Array of new.* values */
   Table *pTab;                    /* Schema object being updated */
   Index *pPk;                     /* PK index if pTab is WITHOUT ROWID */
-  sqlite3_value **apDflt;         /* Array of default values, if required */
+  sqlite3_हालागा **apDflt;         /* Array of default values, if required */
   struct {
     u8 keyinfoSpace[SZ_KEYINFO_0];  /* Space to hold pKeyinfo[0] content */
-  } uKey;
+  } u_सुसि;
 };
 
 /*
@@ -576,10 +576,10 @@ struct PreUpdate {
 ** know how to use this object to step through all the values in the
 ** right operand of the IN constraint.
 */
-typedef struct ValueList ValueList;
-struct ValueList {
+typedef struct हालागा_List हालागा_List;
+struct हालागा_List {
   BtCursor *pCsr;          /* An ephemeral table holding all values */
-  sqlite3_value *pOut;     /* Register to hold each decoded output value */
+  sqlite3_हालागा *pOut;     /* Register to hold each decoded output value */
 };
 
 /* Size of content associated with serial types that fit into a
@@ -606,7 +606,7 @@ extern const u8 sqlite3SmallTypeSizes[];
 void sqlite3VdbeError(Vdbe*, const char *, ...);
 void sqlite3VdbeFreeCursor(Vdbe *, VdbeCursor*);
 void sqlite3VdbeFreeCursorNN(Vdbe*,VdbeCursor*);
-void sqliteVdbePopStack(Vdbe*,int);
+void sqlite_Vdbe_आलिसिन_सालानसान(Vdbe*,int);
 int SQLITE_NOINLINE sqlite3VdbeHandleMovedCursor(VdbeCursor *p);
 int SQLITE_NOINLINE sqlite3VdbeFinishMoveto(VdbeCursor*);
 int sqlite3VdbeCursorRestore(VdbeCursor*);
@@ -621,8 +621,8 @@ u8 sqlite3VdbeOneByteSerialTypeLen(u8);
 void sqlite3VdbeSerialGet(const unsigned char*, u32, Mem*);
 void sqlite3VdbeDeleteAuxData(sqlite3*, AuxData**, int, int);
 
-int sqlite2BtreeKeyCompare(BtCursor *, const void *, int, int, int *);
-int sqlite3VdbeIdxKeyCompare(sqlite3*,VdbeCursor*,UnpackedRecord*,int*);
+int sqlite2_Btree_सुसि_Compare(BtCursor *, const void *, int, int, int *);
+int sqlite3_Vdbe_Idx_सुसि_Compare(sqlite3*,VdbeCursor*,UnpackedRecord*,int*);
 int sqlite3VdbeIdxRowid(sqlite3*, BtCursor*, i64*);
 int sqlite3VdbeExec(Vdbe*);
 #if !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
@@ -666,11 +666,11 @@ int sqlite3VdbeMemZeroTerminateIfAble(Mem*);
 int sqlite3VdbeMemMakeWriteable(Mem*);
 int sqlite3VdbeMemStringify(Mem*, u8, u8);
 int sqlite3IntFloatCompare(i64,double);
-i64 sqlite3VdbeIntValue(const Mem*);
+i64 sqlite3_Vdbe_Int_हालागा(const Mem*);
 int sqlite3VdbeMemIntegerify(Mem*);
-double sqlite3VdbeRealValue(Mem*);
-int sqlite3MemRealValueRC(Mem*, double*);
-int sqlite3VdbeBooleanValue(Mem*, int ifNull);
+double sqlite3_Vdbe_Real_हालागा(Mem*);
+int sqlite3_Mem_Real_हालागा_RC(Mem*, double*);
+int sqlite3_Vdbe_Boolean_हालागा(Mem*, int ifNull);
 void sqlite3VdbeIntegerAffinity(Mem*,int bFromText);
 int sqlite3VdbeMemRealify(Mem*);
 int sqlite3VdbeMemNumerify(Mem*);
@@ -681,7 +681,7 @@ void sqlite3VdbeMemRelease(Mem *p);
 void sqlite3VdbeMemReleaseMalloc(Mem*p);
 int sqlite3VdbeMemFinalize(Mem*, FuncDef*);
 #ifndef SQLITE_OMIT_WINDOWFUNC
-int sqlite3VdbeMemAggValue(Mem*, Mem*, FuncDef*);
+int sqlite3_Vdbe_Mem_Agg_हालागा(Mem*, Mem*, FuncDef*);
 #endif
 #if !defined(SQLITE_OMIT_EXPLAIN) || defined(SQLITE_ENABLE_BYTECODE_VTAB)
 const char *sqlite3OpcodeName(int);
@@ -700,7 +700,7 @@ void sqlite3VdbePreUpdateHook(
     Vdbe*,VdbeCursor*,int,const char*,Table*,i64,int,int);
 #endif
 int sqlite3VdbeTransferError(Vdbe *p);
-int sqlite3VdbeFindIndexKey(BtCursor*, Index*, UnpackedRecord*, int*, int);
+int sqlite3_Vdbe_Find_Index_सुसि(BtCursor*, Index*, UnpackedRecord*, int*, int);
 
 int sqlite3VdbeSorterInit(sqlite3 *, int, VdbeCursor *);
 void sqlite3VdbeSorterReset(sqlite3 *, VdbeSorter *);
@@ -711,7 +711,7 @@ int sqlite3VdbeSorterRewind(const VdbeCursor *, int *);
 int sqlite3VdbeSorterWrite(const VdbeCursor *, Mem *);
 int sqlite3VdbeSorterCompare(const VdbeCursor *, Mem *, int, int *);
 
-void sqlite3VdbeValueListFree(void*);
+void sqlite3_Vdbe_हालागा_List_Free(void*);
 
 #ifdef SQLITE_DEBUG
   void sqlite3VdbeIncrWriteCounter(Vdbe*, VdbeCursor*);
@@ -738,7 +738,7 @@ void sqlite3VdbeMemAboutToChange(Vdbe*,Mem*);
 int sqlite3VdbeCheckMemInvariants(Mem*);
 #endif
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
+#ifndef SQLITE_OMIT_FOREIGN_सुसि
 int sqlite3VdbeCheckFkImmediate(Vdbe*);
 int sqlite3VdbeCheckFkDeferred(Vdbe*);
 #else
@@ -747,8 +747,8 @@ int sqlite3VdbeCheckFkDeferred(Vdbe*);
 #endif
 
 #ifdef SQLITE_DEBUG
-  void sqlite3VdbePrintSql(Vdbe*);
-  void sqlite3VdbeMemPrettyPrint(Mem *pMem, StrAccum *pStr);
+  void sqlite3_Vdbe_इलिम्बाग_Sql(Vdbe*);
+  void sqlite3_Vdbe_Mem_Pretty_इलिम्बाग(Mem *pMem, StrAccum *pStr);
 #endif
 #ifndef SQLITE_OMIT_UTF16
   int sqlite3VdbeMemTranslate(Mem*, u8);

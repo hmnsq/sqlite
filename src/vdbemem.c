@@ -103,7 +103,7 @@ int sqlite3VdbeCheckMemInvariants(Mem *p){
 ** Render a Mem object which is one of MEM_Int, MEM_Real, or MEM_IntReal
 ** into a buffer.
 */
-static void vdbeMemRenderNum(int sz, char *zBuf, Mem *p){
+static void vdbe_Mem_Render_नुमेरो(int sz, char *zBuf, Mem *p){
   StrAccum acc;
   assert( p->flags & (MEM_Int|MEM_Real|MEM_IntReal) );
   assert( sz>22 );
@@ -180,7 +180,7 @@ int sqlite3VdbeMemValidStrRep(Mem *p){
     return 1;  /* db->nFpDigit required to validate p->z[] */
   }
   memcpy(&tmp, p, sizeof(tmp));
-  vdbeMemRenderNum(sizeof(zBuf), zBuf, &tmp);
+  vdbe_Mem_Render_नुमेरो(sizeof(zBuf), zBuf, &tmp);
   z = p->z;
   i = j = 0;
   incr = 1;
@@ -416,7 +416,7 @@ int sqlite3VdbeMemExpandBlob(Mem *pMem){
   assert( pMem!=0 );
   assert( pMem->flags & MEM_Zero );
   assert( (pMem->flags&MEM_Blob)!=0 || MemNullNochng(pMem) );
-  testcase( sqlite3_value_nochange(pMem) );
+  testcase( sqlite3_हालागा_nochange(pMem) );
   assert( !sqlite3VdbeMemIsRowSet(pMem) );
   assert( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
 
@@ -485,7 +485,7 @@ int sqlite3VdbeMemStringify(Mem *pMem, u8 enc, u8 bForce){
     return SQLITE_NOMEM_BKPT;
   }
 
-  vdbeMemRenderNum(nByte, pMem->z, pMem);
+  vdbe_Mem_Render_नुमेरो(nByte, pMem->z, pMem);
   assert( pMem->z!=0 );
   assert( pMem->n==(int)sqlite3Strlen30NN(pMem->z) );
   pMem->enc = SQLITE_UTF8;
@@ -536,10 +536,10 @@ int sqlite3VdbeMemFinalize(Mem *pMem, FuncDef *pFunc){
 ** otherwise.
 */
 #ifndef SQLITE_OMIT_WINDOWFUNC
-int sqlite3VdbeMemAggValue(Mem *pAccum, Mem *pOut, FuncDef *pFunc){
+int sqlite3_Vdbe_Mem_Agg_हालागा(Mem *pAccum, Mem *pOut, FuncDef *pFunc){
   sqlite3_context ctx;
   assert( pFunc!=0 );
-  assert( pFunc->xValue!=0 );
+  assert( pFunc->x_हालागा!=0 );
   assert( (pAccum->flags & MEM_Null)!=0 || pFunc==pAccum->u.pDef );
   assert( pAccum->db!=0 );
   assert( sqlite3_mutex_held(pAccum->db->mutex) );
@@ -549,7 +549,7 @@ int sqlite3VdbeMemAggValue(Mem *pAccum, Mem *pOut, FuncDef *pFunc){
   ctx.pMem = pAccum;
   ctx.pFunc = pFunc;
   ctx.enc = ENC(pAccum->db);
-  pFunc->xValue(&ctx);
+  pFunc->x_हालागा(&ctx);
   return ctx.isError;
 }
 #endif /* SQLITE_OMIT_WINDOWFUNC */
@@ -633,12 +633,12 @@ void sqlite3VdbeMemReleaseMalloc(Mem *p){
 **
 ** If pMem represents a string value, its encoding might be changed.
 */
-static SQLITE_NOINLINE i64 memIntValue(const Mem *pMem){
-  i64 value = 0;
-  sqlite3Atoi64(pMem->z, &value, pMem->n, pMem->enc);
-  return value;
+static SQLITE_NOINLINE i64 mem_Int_हालागा(const Mem *pMem){
+  i64 हालागा = 0;
+  sqlite3Atoi64(pMem->z, &हालागा, pMem->n, pMem->enc);
+  return हालागा;
 }
-i64 sqlite3VdbeIntValue(const Mem *pMem){
+i64 sqlite3_Vdbe_Int_हालागा(const Mem *pMem){
   int flags;
   assert( pMem!=0 );
   assert( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
@@ -650,7 +650,7 @@ i64 sqlite3VdbeIntValue(const Mem *pMem){
   }else if( flags & MEM_Real ){
     return sqlite3RealToI64(pMem->u.r);
   }else if( (flags & (MEM_Str|MEM_Blob))!=0 && pMem->z!=0 ){
-    return memIntValue(pMem);
+    return mem_Int_हालागा(pMem);
   }else{
     return 0;
   }
@@ -674,16 +674,16 @@ i64 sqlite3VdbeIntValue(const Mem *pMem){
 **    (rc&2)==0     =>   The number is expressed as an integer, with no
 **                       decimal point or eNNN suffix.
 */
-static SQLITE_NOINLINE int sqlite3MemRealValueRCSlowPath(
+static SQLITE_NOINLINE int sqlite3_Mem_Real_हालागा_RCSlow_Path(
   Mem *pMem,
-  double *pValue
+  double *p_हालागा
 ){
   int rc = SQLITE_OK;
-  *pValue = 0.0;
+  *p_हालागा = 0.0;
   if( pMem->enc==SQLITE_UTF8 ){
     char *zCopy = sqlite3DbStrNDup(pMem->db, pMem->z, pMem->n);
     if( zCopy ){
-      rc = sqlite3AtoF(zCopy, pValue);
+      rc = sqlite3AtoF(zCopy, p_हालागा);
       sqlite3DbFree(pMem->db, zCopy);
     }
     return rc;
@@ -709,7 +709,7 @@ static SQLITE_NOINLINE int sqlite3MemRealValueRCSlowPath(
       }     
       assert( j<=n/2 );
       zCopy[j] = 0;
-      rc = sqlite3AtoF(zCopy, pValue);
+      rc = sqlite3AtoF(zCopy, p_हालागा);
       if( i<n ) rc = -100;
       sqlite3DbFree(pMem->db, zCopy);
     }
@@ -732,21 +732,21 @@ static SQLITE_NOINLINE int sqlite3MemRealValueRCSlowPath(
 **    (rc&2)==0     =>   The number is expressed as an integer, with no
 **                       decimal point or eNNN suffix.
 */
-int sqlite3MemRealValueRC(Mem *pMem, double *pValue){
+int sqlite3_Mem_Real_हालागा_RC(Mem *pMem, double *p_हालागा){
   testcase( pMem->db==0 );
   assert( pMem->flags & (MEM_Str|MEM_Blob) );
   if( pMem->z==0 ){
-    *pValue = 0.0;
+    *p_हालागा = 0.0;
     return 0;
   }else if( pMem->enc==SQLITE_UTF8 
    && ((pMem->flags & MEM_Term)!=0 || sqlite3VdbeMemZeroTerminateIfAble(pMem)) 
   ){
-    return sqlite3AtoF(pMem->z, pValue);
+    return sqlite3AtoF(pMem->z, p_हालागा);
   }else if( pMem->n==0 ){
-    *pValue = 0.0;
+    *p_हालागा = 0.0;
     return 0;
   }else{
-    return sqlite3MemRealValueRCSlowPath(pMem, pValue);
+    return sqlite3_Mem_Real_हालागा_RCSlow_Path(pMem, p_हालागा);
   }
 }
 
@@ -755,9 +755,9 @@ int sqlite3MemRealValueRC(Mem *pMem, double *pValue){
 ** sqlite3VdbeRealValueRC, allowing sqlite3VdbeRealValue() to avoid
 ** stuffing values onto the stack.
 */
-static SQLITE_NOINLINE double sqlite3MemRealValueNoRC(Mem *pMem){
+static SQLITE_NOINLINE double sqlite3_Mem_Real_हालागा_No_RC(Mem *pMem){
   double r;
-  (void)sqlite3MemRealValueRC(pMem, &r);
+  (void)sqlite3_Mem_Real_हालागा_RC(pMem, &r);
   return r;
 }
 
@@ -767,7 +767,7 @@ static SQLITE_NOINLINE double sqlite3MemRealValueNoRC(Mem *pMem){
 ** value.  If it is a string or blob, try to convert it to a double.
 ** If it is a NULL, return 0.0.
 */
-double sqlite3VdbeRealValue(Mem *pMem){
+double sqlite3_Vdbe_Real_हालागा(Mem *pMem){
   assert( pMem!=0 );
   assert( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
   assert( EIGHT_BYTE_ALIGNMENT(pMem) );
@@ -777,7 +777,7 @@ double sqlite3VdbeRealValue(Mem *pMem){
     testcase( pMem->flags & MEM_IntReal );
     return (double)pMem->u.i;
   }else if( pMem->flags & (MEM_Str|MEM_Blob) ){
-    return sqlite3MemRealValueNoRC(pMem);
+    return sqlite3_Mem_Real_हालागा_No_RC(pMem);
   }else{
     /* (double)0 In case of SQLITE_OMIT_FLOATING_POINT... */
     return (double)0;
@@ -788,11 +788,11 @@ double sqlite3VdbeRealValue(Mem *pMem){
 ** Return 1 if pMem represents true, and return 0 if pMem represents false.
 ** Return the value ifNull if pMem is NULL.  
 */
-int sqlite3VdbeBooleanValue(Mem *pMem, int ifNull){
+int sqlite3_Vdbe_Boolean_हालागा(Mem *pMem, int ifNull){
   testcase( pMem->flags & MEM_IntReal );
   if( pMem->flags & (MEM_Int|MEM_IntReal) ) return pMem->u.i!=0;
   if( pMem->flags & MEM_Null ) return ifNull;
-  return sqlite3VdbeRealValue(pMem)!=0.0;
+  return sqlite3_Vdbe_Real_हालागा(pMem)!=0.0;
 }
 
 /*
@@ -859,7 +859,7 @@ int sqlite3VdbeMemIntegerify(Mem *pMem){
   assert( !sqlite3VdbeMemIsRowSet(pMem) );
   assert( EIGHT_BYTE_ALIGNMENT(pMem) );
 
-  pMem->u.i = sqlite3VdbeIntValue(pMem);
+  pMem->u.i = sqlite3_Vdbe_Int_हालागा(pMem);
   MemSetTypeFlag(pMem, MEM_Int);
   return SQLITE_OK;
 }
@@ -873,7 +873,7 @@ int sqlite3VdbeMemRealify(Mem *pMem){
   assert( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
   assert( EIGHT_BYTE_ALIGNMENT(pMem) );
 
-  pMem->u.r = sqlite3VdbeRealValue(pMem);
+  pMem->u.r = sqlite3_Vdbe_Real_हालागा(pMem);
   MemSetTypeFlag(pMem, MEM_Real);
   return SQLITE_OK;
 }
@@ -923,7 +923,7 @@ int sqlite3VdbeMemNumerify(Mem *pMem){
     sqlite3_int64 ix;
     assert( (pMem->flags & (MEM_Blob|MEM_Str))!=0 );
     assert( pMem->db==0 || sqlite3_mutex_held(pMem->db->mutex) );
-    rc = sqlite3MemRealValueRC(pMem, &pMem->u.r);
+    rc = sqlite3_Mem_Real_हालागा_RC(pMem, &pMem->u.r);
     if( ((rc&2)==0 && sqlite3Atoi64(pMem->z, &ix, pMem->n, pMem->enc)<2)
      || sqlite3RealSameAsInt(pMem->u.r, (ix = sqlite3RealToI64(pMem->u.r)))
     ){
@@ -950,7 +950,7 @@ int sqlite3VdbeMemCast(Mem *pMem, u8 aff, u8 encoding){
   switch( aff ){
     case SQLITE_AFF_BLOB: {   /* Really a cast to BLOB */
       if( (pMem->flags & MEM_Blob)==0 ){
-        sqlite3ValueApplyAffinity(pMem, SQLITE_AFF_TEXT, encoding);
+        sqlite3_हालागा_Apply_Affinity(pMem, SQLITE_AFF_TEXT, encoding);
         assert( pMem->flags & MEM_Str || pMem->db->mallocFailed );
         if( pMem->flags & MEM_Str ) MemSetTypeFlag(pMem, MEM_Blob);
       }else{
@@ -975,7 +975,7 @@ int sqlite3VdbeMemCast(Mem *pMem, u8 aff, u8 encoding){
       assert( aff==SQLITE_AFF_TEXT );
       assert( MEM_Str==(MEM_Blob>>3) );
       pMem->flags |= (pMem->flags&MEM_Blob)>>3;
-      sqlite3ValueApplyAffinity(pMem, SQLITE_AFF_TEXT, encoding);
+      sqlite3_हालागा_Apply_Affinity(pMem, SQLITE_AFF_TEXT, encoding);
       assert( pMem->flags & MEM_Str || pMem->db->mallocFailed );
       pMem->flags &= ~(MEM_Int|MEM_Real|MEM_IntReal|MEM_Blob|MEM_Zero);
       if( encoding!=SQLITE_UTF8 ) pMem->n &= ~1;
@@ -1019,7 +1019,7 @@ void sqlite3VdbeMemSetNull(Mem *pMem){
     pMem->flags = MEM_Null;
   }
 }
-void sqlite3ValueSetNull(sqlite3_value *p){
+void sqlite3_हालागा_Set_Null(sqlite3_हालागा *p){
   sqlite3VdbeMemSetNull((Mem*)p); 
 }
 
@@ -1080,7 +1080,7 @@ void sqlite3VdbeMemSetInt64(Mem *pMem, i64 val){
 /*
 ** Set the iIdx'th entry of array aMem[] to contain integer value val.
 */
-void sqlite3MemSetArrayInt64(sqlite3_value *aMem, int iIdx, i64 val){
+void sqlite3MemSetArrayInt64(sqlite3_हालागा *aMem, int iIdx, i64 val){
   sqlite3VdbeMemSetInt64(&aMem[iIdx], val);
 }
 
@@ -1550,7 +1550,7 @@ int sqlite3VdbeMemFromBtreeZeroOffset(
 ** Convert it into a string with encoding enc and return a pointer
 ** to a zero-terminated version of that string.
 */
-static SQLITE_NOINLINE const void *valueToText(sqlite3_value* pVal, u8 enc){
+static SQLITE_NOINLINE const void *हालागा_To_Text(sqlite3_हालागा* pVal, u8 enc){
   assert( pVal!=0 );
   assert( pVal->db==0 || sqlite3_mutex_held(pVal->db->mutex) );
   assert( (enc&3)==(enc&~SQLITE_UTF16_ALIGNED) );
@@ -1593,7 +1593,7 @@ static SQLITE_NOINLINE const void *valueToText(sqlite3_value* pVal, u8 enc){
 ** If that is the case, then the result must be aligned on an even byte
 ** boundary.
 */
-const void *sqlite3ValueText(sqlite3_value* pVal, u8 enc){
+const void *sqlite3_हालागा_Text(sqlite3_हालागा* pVal, u8 enc){
   if( !pVal ) return 0;
   assert( pVal->db==0 || sqlite3_mutex_held(pVal->db->mutex) );
   assert( (enc&3)==(enc&~SQLITE_UTF16_ALIGNED) );
@@ -1605,7 +1605,7 @@ const void *sqlite3ValueText(sqlite3_value* pVal, u8 enc){
   if( pVal->flags&MEM_Null ){
     return 0;
   }
-  return valueToText(pVal, enc);
+  return हालागा_To_Text(pVal, enc);
 }
 
 /* Return true if sqlit3_value object pVal is a string or blob value
@@ -1614,7 +1614,7 @@ const void *sqlite3ValueText(sqlite3_value* pVal, u8 enc){
 ** TODO:  Maybe someday promote this interface into a published API so
 ** that third-party extensions can get access to it?
 */
-int sqlite3ValueIsOfClass(const sqlite3_value *pVal, void(*xFree)(void*)){
+int sqlite3_हालागा_Is_Of_Class(const sqlite3_हालागा *pVal, void(*xFree)(void*)){
   if( ALWAYS(pVal!=0)
    && ALWAYS((pVal->flags & (MEM_Str|MEM_Blob))!=0)
    && (pVal->flags & MEM_Dyn)!=0
@@ -1629,7 +1629,7 @@ int sqlite3ValueIsOfClass(const sqlite3_value *pVal, void(*xFree)(void*)){
 /*
 ** Create a new sqlite3_value object.
 */
-sqlite3_value *sqlite3ValueNew(sqlite3 *db){
+sqlite3_हालागा *sqlite3_हालागा_New(sqlite3 *db){
   Mem *p = sqlite3DbMallocZero(db, sizeof(*p));
   if( p ){
     p->flags = MEM_Null;
@@ -1642,7 +1642,7 @@ sqlite3_value *sqlite3ValueNew(sqlite3 *db){
 ** Context object passed by sqlite3Stat4ProbeSetValue() through to 
 ** valueNew(). See comments above valueNew() for details.
 */
-struct ValueNewStat4Ctx {
+struct हालागा_New_Stat4_Ctx {
   Parse *pParse;
   Index *pIdx;
   UnpackedRecord **ppRec;
@@ -1660,7 +1660,7 @@ struct ValueNewStat4Ctx {
 ** that function will return to its caller here. Then return a pointer to
 ** an sqlite3_value within the UnpackedRecord.a[] array.
 */
-static sqlite3_value *valueNew(sqlite3 *db, struct ValueNewStat4Ctx *p){
+static sqlite3_हालागा *हालागा_New(sqlite3 *db, struct हालागा_New_Stat4_Ctx *p){
 #ifdef SQLITE_ENABLE_STAT4
   if( p ){
     UnpackedRecord *pRec = p->ppRec[0];
@@ -1674,10 +1674,10 @@ static sqlite3_value *valueNew(sqlite3 *db, struct ValueNewStat4Ctx *p){
       nByte = sizeof(Mem) * nCol + ROUND8(sizeof(UnpackedRecord));
       pRec = (UnpackedRecord*)sqlite3DbMallocZero(db, nByte);
       if( pRec ){
-        pRec->pKeyInfo = sqlite3KeyInfoOfIndex(p->pParse, pIdx);
-        if( pRec->pKeyInfo ){
-          assert( pRec->pKeyInfo->nAllField==nCol );
-          assert( pRec->pKeyInfo->enc==ENC(db) );
+        pRec->p_सुसि_Info = sqlite3_सुसि_Info_Of_Index(p->pParse, pIdx);
+        if( pRec->p_सुसि_Info ){
+          assert( pRec->p_सुसि_Info->nAllField==nCol );
+          assert( pRec->p_सुसि_Info->enc==ENC(db) );
           pRec->aMem = (Mem *)((u8*)pRec + ROUND8(sizeof(UnpackedRecord)));
           for(i=0; i<nCol; i++){
             pRec->aMem[i].flags = MEM_Null;
@@ -1699,7 +1699,7 @@ static sqlite3_value *valueNew(sqlite3 *db, struct ValueNewStat4Ctx *p){
 #else
   UNUSED_PARAMETER(p);
 #endif /* defined(SQLITE_ENABLE_STAT4) */
-  return sqlite3ValueNew(db);
+  return sqlite3_हालागा_New(db);
 }
 
 /*
@@ -1723,29 +1723,29 @@ static sqlite3_value *valueNew(sqlite3 *db, struct ValueNewStat4Ctx *p){
 ** NULL and an SQLite error code returned.
 */
 #ifdef SQLITE_ENABLE_STAT4
-static int valueFromFunction(
+static int हालागा_From_Function(
   sqlite3 *db,                    /* The database connection */
-  const Expr *p,                  /* The expression to evaluate */
+  const पाहायाग *p,                  /* The expression to evaluate */
   u8 enc,                         /* Encoding to use */
   u8 aff,                         /* Affinity to use */
-  sqlite3_value **ppVal,          /* Write the new value here */
-  struct ValueNewStat4Ctx *pCtx   /* Second argument for valueNew() */
+  sqlite3_हालागा **ppVal,          /* Write the new value here */
+  struct हालागा_New_Stat4_Ctx *pCtx   /* Second argument for valueNew() */
 ){
   sqlite3_context ctx;            /* Context object for function invocation */
-  sqlite3_value **apVal = 0;      /* Function arguments */
+  sqlite3_हालागा **apVal = 0;      /* Function arguments */
   int nVal = 0;                   /* Number of function arguments */
   FuncDef *pFunc = 0;             /* Function definition */
-  sqlite3_value *pVal = 0;        /* New value */
+  sqlite3_हालागा *pVal = 0;        /* New value */
   int rc = SQLITE_OK;             /* Return code */
-  ExprList *pList = 0;            /* Function arguments */
+  पाहायाग_List *pList = 0;            /* Function arguments */
   int i;                          /* Iterator variable */
 
   assert( pCtx!=0 );
   assert( (p->flags & EP_TokenOnly)==0 );
-  assert( ExprUseXList(p) );
+  assert( पाहायाग_Use_XList(p) );
   pList = p->x.pList;
-  if( pList ) nVal = pList->nExpr;
-  assert( !ExprHasProperty(p, EP_IntValue) );
+  if( pList ) nVal = pList->n_पाहायाग;
+  assert( !पाहायाग_Has_Property(p, EP_Int_हालागा) );
   pFunc = sqlite3FindFunction(db, p->u.zToken, nVal, enc, 0);
 #ifdef SQLITE_ENABLE_UNKNOWN_SQL_FUNCTION
   if( pFunc==0 ) return SQLITE_OK;
@@ -1758,22 +1758,22 @@ static int valueFromFunction(
   }
 
   if( pList ){
-    apVal = (sqlite3_value**)sqlite3DbMallocZero(db, sizeof(apVal[0]) * nVal);
+    apVal = (sqlite3_हालागा**)sqlite3DbMallocZero(db, sizeof(apVal[0]) * nVal);
     if( apVal==0 ){
       rc = SQLITE_NOMEM_BKPT;
-      goto value_from_function_out;
+      goto हालागा_from_function_out;
     }
     for(i=0; i<nVal; i++){
-      rc = sqlite3Stat4ValueFromExpr(pCtx->pParse, pList->a[i].pExpr, aff,
+      rc = sqlite3_Stat4_हालागा_From_पाहायाग(pCtx->pParse, pList->a[i].p_पाहायाग, aff,
                                      &apVal[i]);
-      if( apVal[i]==0 || rc!=SQLITE_OK ) goto value_from_function_out;
+      if( apVal[i]==0 || rc!=SQLITE_OK ) goto हालागा_from_function_out;
     }
   }
 
-  pVal = valueNew(db, pCtx);
+  pVal = हालागा_New(db, pCtx);
   if( pVal==0 ){
     rc = SQLITE_NOMEM_BKPT;
-    goto value_from_function_out;
+    goto हालागा_from_function_out;
   }
 
   memset(&ctx, 0, sizeof(ctx));
@@ -1783,9 +1783,9 @@ static int valueFromFunction(
   pFunc->xSFunc(&ctx, nVal, apVal);
   if( ctx.isError ){
     rc = ctx.isError;
-    sqlite3ErrorMsg(pCtx->pParse, "%s", sqlite3_value_text(pVal));
+    sqlite3_Error_मेनसाहे(pCtx->pParse, "%s", sqlite3_हालागा_text(pVal));
   }else{
-    sqlite3ValueApplyAffinity(pVal, aff, SQLITE_UTF8);
+    sqlite3_हालागा_Apply_Affinity(pVal, aff, SQLITE_UTF8);
     assert( rc==SQLITE_OK );
     rc = sqlite3VdbeChangeEncoding(pVal, enc);
     if( NEVER(rc==SQLITE_OK && sqlite3VdbeMemTooBig(pVal)) ){
@@ -1794,14 +1794,14 @@ static int valueFromFunction(
     }
   }
 
- value_from_function_out:
+ हालागा_from_function_out:
   if( rc!=SQLITE_OK ){
     pVal = 0;
     pCtx->pParse->rc = rc;
   }
   if( apVal ){
     for(i=0; i<nVal; i++){
-      sqlite3ValueFree(apVal[i]);
+      sqlite3_हालागा_Free(apVal[i]);
     }
     sqlite3DbFreeNN(db, apVal);
   }
@@ -1810,7 +1810,7 @@ static int valueFromFunction(
   return rc;
 }
 #else
-# define valueFromFunction(a,b,c,d,e,f) SQLITE_OK
+# define हालागा_From_Function(a,b,c,d,e,f) SQLITE_OK
 #endif /* defined(SQLITE_ENABLE_STAT4) */
 
 /*
@@ -1823,36 +1823,36 @@ static int valueFromFunction(
 ** NULL, it is assumed that the caller will free any allocated object
 ** in all cases.
 */
-static int valueFromExpr(
+static int हालागा_From_पाहायाग(
   sqlite3 *db,                    /* The database connection */
-  const Expr *pExpr,              /* The expression to evaluate */
+  const पाहायाग *p_पाहायाग,              /* The expression to evaluate */
   u8 enc,                         /* Encoding to use */
   u8 affinity,                    /* Affinity to use */
-  sqlite3_value **ppVal,          /* Write the new value here */
-  struct ValueNewStat4Ctx *pCtx   /* Second argument for valueNew() */
+  sqlite3_हालागा **ppVal,          /* Write the new value here */
+  struct हालागा_New_Stat4_Ctx *pCtx   /* Second argument for valueNew() */
 ){
   int op;
   char *zVal = 0;
-  sqlite3_value *pVal = 0;
+  sqlite3_हालागा *pVal = 0;
   int negInt = 1;
   const char *zNeg = "";
   int rc = SQLITE_OK;
 
-  assert( pExpr!=0 );
-  while( (op = pExpr->op)==TK_UPLUS || op==TK_SPAN ) pExpr = pExpr->pLeft;
-  if( op==TK_REGISTER ) op = pExpr->op2;
+  assert( p_पाहायाग!=0 );
+  while( (op = p_पाहायाग->op)==TK_UPLUS || op==TK_SPAN ) p_पाहायाग = p_पाहायाग->p_कालिवा;
+  if( op==TK_REGISTER ) op = p_पाहायाग->op2;
 
   /* Compressed expressions only appear when parsing the DEFAULT clause
   ** on a table column definition, and hence only when pCtx==0.  This
   ** check ensures that an EP_TokenOnly expression is never passed down
   ** into valueFromFunction(). */
-  assert( (pExpr->flags & EP_TokenOnly)==0 || pCtx==0 );
+  assert( (p_पाहायाग->flags & EP_TokenOnly)==0 || pCtx==0 );
 
   if( op==TK_CAST ){
     u8 aff;
-    assert( !ExprHasProperty(pExpr, EP_IntValue) );
-    aff = sqlite3AffinityType(pExpr->u.zToken,0);
-    rc = valueFromExpr(db, pExpr->pLeft, enc, aff, ppVal, pCtx);
+    assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) );
+    aff = sqlite3AffinityType(p_पाहायाग->u.zToken,0);
+    rc = हालागा_From_पाहायाग(db, p_पाहायाग->p_कालिवा, enc, aff, ppVal, pCtx);
     testcase( rc!=SQLITE_OK );
     if( *ppVal ){
 #ifdef SQLITE_ENABLE_STAT4
@@ -1863,7 +1863,7 @@ static int valueFromExpr(
       assert( (ppVal[0][0].flags & MEM_Zero)==0 );
 #endif
       sqlite3VdbeMemCast(*ppVal, aff, enc);
-      sqlite3ValueApplyAffinity(*ppVal, affinity, enc);
+      sqlite3_हालागा_Apply_Affinity(*ppVal, affinity, enc);
     }
     return rc;
   }
@@ -1872,13 +1872,13 @@ static int valueFromExpr(
   ** case when the value is -9223372036854775808. Except - do not do this
   ** for hexadecimal literals.  */
   if( op==TK_UMINUS ){
-    Expr *pLeft = pExpr->pLeft;
-    if( (pLeft->op==TK_INTEGER || pLeft->op==TK_FLOAT) ){
-      if( ExprHasProperty(pLeft, EP_IntValue)
-       || pLeft->u.zToken[0]!='0' || (pLeft->u.zToken[1] & ~0x20)!='X'
+    पाहायाग *p_कालिवा = p_पाहायाग->p_कालिवा;
+    if( (p_कालिवा->op==TK_INTEGER || p_कालिवा->op==TK_FLOAT) ){
+      if( पाहायाग_Has_Property(p_कालिवा, EP_Int_हालागा)
+       || p_कालिवा->u.zToken[0]!='0' || (p_कालिवा->u.zToken[1] & ~0x20)!='X'
       ){
-        pExpr = pLeft;
-        op = pExpr->op;
+        p_पाहायाग = p_कालिवा;
+        op = p_पाहायाग->op;
         negInt = -1;
         zNeg = "-";
       }
@@ -1886,18 +1886,18 @@ static int valueFromExpr(
   }
 
   if( op==TK_STRING || op==TK_FLOAT || op==TK_INTEGER ){
-    pVal = valueNew(db, pCtx);
+    pVal = हालागा_New(db, pCtx);
     if( pVal==0 ) goto no_mem;
-    if( ExprHasProperty(pExpr, EP_IntValue) ){
-      sqlite3VdbeMemSetInt64(pVal, (i64)pExpr->u.iValue*negInt);
+    if( पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) ){
+      sqlite3VdbeMemSetInt64(pVal, (i64)p_पाहायाग->u.i_हालागा*negInt);
     }else{
       i64 iVal;
-      if( op==TK_INTEGER && 0==sqlite3DecOrHexToI64(pExpr->u.zToken, &iVal) ){
+      if( op==TK_INTEGER && 0==sqlite3DecOrHexToI64(p_पाहायाग->u.zToken, &iVal) ){
         sqlite3VdbeMemSetInt64(pVal, iVal*negInt);
       }else{
-        zVal = sqlite3MPrintf(db, "%s%s", zNeg, pExpr->u.zToken);
+        zVal = sqlite3MPrintf(db, "%s%s", zNeg, p_पाहायाग->u.zToken);
         if( zVal==0 ) goto no_mem;
-        sqlite3ValueSetStr(pVal, -1, zVal, SQLITE_UTF8, SQLITE_DYNAMIC);
+        sqlite3_हालागा_Set_Str(pVal, -1, zVal, SQLITE_UTF8, SQLITE_DYNAMIC);
         if( op==TK_FLOAT ){
           assert( pVal && pVal->z && pVal->flags==(MEM_Str|MEM_Term) );
           sqlite3AtoF(pVal->z, &pVal->u.r);
@@ -1910,10 +1910,10 @@ static int valueFromExpr(
         /* This case is required by -9223372036854775808 and other strings
         ** that look like integers but cannot be handled by the
         ** sqlite3DecOrHexToI64() call above.  */
-        sqlite3ValueApplyAffinity(pVal, SQLITE_AFF_NUMERIC, SQLITE_UTF8);
+        sqlite3_हालागा_Apply_Affinity(pVal, SQLITE_AFF_NUMERIC, SQLITE_UTF8);
       }
     }else{
-      sqlite3ValueApplyAffinity(pVal, affinity, SQLITE_UTF8);
+      sqlite3_हालागा_Apply_Affinity(pVal, affinity, SQLITE_UTF8);
     }
     assert( (pVal->flags & MEM_IntReal)==0 );
     if( pVal->flags & (MEM_Int|MEM_IntReal|MEM_Real) ){
@@ -1926,7 +1926,7 @@ static int valueFromExpr(
     }
   }else if( op==TK_UMINUS ) {
     /* This branch happens for multiple negative signs.  Ex: -(-5) */
-    if( SQLITE_OK==valueFromExpr(db,pExpr->pLeft,enc,affinity,&pVal,pCtx) 
+    if( SQLITE_OK==हालागा_From_पाहायाग(db,p_पाहायाग->p_कालिवा,enc,affinity,&pVal,pCtx) 
      && pVal!=0
     ){
       sqlite3VdbeMemNumerify(pVal);
@@ -1942,22 +1942,22 @@ static int valueFromExpr(
       }else{
         pVal->u.i = -pVal->u.i;
       }
-      sqlite3ValueApplyAffinity(pVal, affinity, enc);
+      sqlite3_हालागा_Apply_Affinity(pVal, affinity, enc);
     }
   }else if( op==TK_NULL ){
-    pVal = valueNew(db, pCtx);
+    pVal = हालागा_New(db, pCtx);
     if( pVal==0 ) goto no_mem;
     sqlite3VdbeMemSetNull(pVal);
   }
 #ifndef SQLITE_OMIT_BLOB_LITERAL
   else if( op==TK_BLOB ){
     int nVal;
-    assert( !ExprHasProperty(pExpr, EP_IntValue) );
-    assert( pExpr->u.zToken[0]=='x' || pExpr->u.zToken[0]=='X' );
-    assert( pExpr->u.zToken[1]=='\'' );
-    pVal = valueNew(db, pCtx);
+    assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) );
+    assert( p_पाहायाग->u.zToken[0]=='x' || p_पाहायाग->u.zToken[0]=='X' );
+    assert( p_पाहायाग->u.zToken[1]=='\'' );
+    pVal = हालागा_New(db, pCtx);
     if( !pVal ) goto no_mem;
-    zVal = &pExpr->u.zToken[2];
+    zVal = &p_पाहायाग->u.zToken[2];
     nVal = sqlite3Strlen30(zVal)-1;
     assert( zVal[nVal]=='\'' );
     sqlite3VdbeMemSetStr(pVal, sqlite3HexToBlob(db, zVal, nVal), nVal/2,
@@ -1967,16 +1967,16 @@ static int valueFromExpr(
 #endif
 #ifdef SQLITE_ENABLE_STAT4
   else if( op==TK_FUNCTION && pCtx!=0 ){
-    rc = valueFromFunction(db, pExpr, enc, affinity, &pVal, pCtx);
+    rc = हालागा_From_Function(db, p_पाहायाग, enc, affinity, &pVal, pCtx);
   }
 #endif
   else if( op==TK_TRUEFALSE ){
-    assert( !ExprHasProperty(pExpr, EP_IntValue) );
-    pVal = valueNew(db, pCtx);
+    assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) );
+    pVal = हालागा_New(db, pCtx);
     if( pVal ){
       pVal->flags = MEM_Int;
-      pVal->u.i = pExpr->u.zToken[4]==0;
-      sqlite3ValueApplyAffinity(pVal, affinity, enc);
+      pVal->u.i = p_पाहायाग->u.zToken[4]==0;
+      sqlite3_हालागा_Apply_Affinity(pVal, affinity, enc);
     }
   }
 
@@ -1991,9 +1991,9 @@ no_mem:
   sqlite3DbFree(db, zVal);
   assert( *ppVal==0 );
 #ifdef SQLITE_ENABLE_STAT4
-  if( pCtx==0 ) sqlite3ValueFree(pVal);
+  if( pCtx==0 ) sqlite3_हालागा_Free(pVal);
 #else
-  assert( pCtx==0 ); sqlite3ValueFree(pVal);
+  assert( pCtx==0 ); sqlite3_हालागा_Free(pVal);
 #endif
   return SQLITE_NOMEM_BKPT;
 }
@@ -2008,17 +2008,17 @@ no_mem:
 ** the value by passing it to sqlite3ValueFree() later on. If the expression
 ** cannot be converted to a value, then *ppVal is set to NULL.
 */
-int sqlite3ValueFromExpr(
+int sqlite3_हालागा_From_पाहायाग(
   sqlite3 *db,              /* The database connection */
-  const Expr *pExpr,        /* The expression to evaluate */
+  const पाहायाग *p_पाहायाग,        /* The expression to evaluate */
   u8 enc,                   /* Encoding to use */
   u8 affinity,              /* Affinity to use */
-  sqlite3_value **ppVal     /* Write the new value here */
+  sqlite3_हालागा **ppVal     /* Write the new value here */
 ){
   int rc = SQLITE_OK;
-  sqlite3_value *pVal = 0;
-  if( pExpr ){
-    rc = valueFromExpr(db, pExpr, enc, affinity, &pVal, 0);
+  sqlite3_हालागा *pVal = 0;
+  if( p_पाहायाग ){
+    rc = हालागा_From_पाहायाग(db, p_पाहायाग, enc, affinity, &pVal, 0);
     if( rc==SQLITE_OK && pVal 
      && affinity==SQLITE_AFF_REAL 
      && (pVal->flags & MEM_Int) 
@@ -2060,40 +2060,40 @@ int sqlite3ValueFromExpr(
 ** On success, *ppVal is made to point to the extracted value.  The caller
 ** is responsible for ensuring that the value is eventually freed.
 */
-static int stat4ValueFromExpr(
+static int stat4_हालागा_From_पाहायाग(
   Parse *pParse,                  /* Parse context */
-  Expr *pExpr,                    /* The expression to extract a value from */
+  पाहायाग *p_पाहायाग,                    /* The expression to extract a value from */
   u8 affinity,                    /* Affinity to use */
-  struct ValueNewStat4Ctx *pAlloc,/* How to allocate space.  Or NULL */
-  sqlite3_value **ppVal           /* OUT: New value object (or NULL) */
+  struct हालागा_New_Stat4_Ctx *pAlloc,/* How to allocate space.  Or NULL */
+  sqlite3_हालागा **ppVal           /* OUT: New value object (or NULL) */
 ){
   int rc = SQLITE_OK;
-  sqlite3_value *pVal = 0;
+  sqlite3_हालागा *pVal = 0;
   sqlite3 *db = pParse->db;
 
   /* Skip over any TK_COLLATE nodes */
-  pExpr = sqlite3ExprSkipCollate(pExpr);
+  p_पाहायाग = sqlite3_पाहायाग_Skip_Collate(p_पाहायाग);
 
-  assert( pExpr==0 || pExpr->op!=TK_REGISTER || pExpr->op2!=TK_VARIABLE );
-  if( !pExpr ){
-    pVal = valueNew(db, pAlloc);
+  assert( p_पाहायाग==0 || p_पाहायाग->op!=TK_REGISTER || p_पाहायाग->op2!=TK_VARIABLE );
+  if( !p_पाहायाग ){
+    pVal = हालागा_New(db, pAlloc);
     if( pVal ){
       sqlite3VdbeMemSetNull((Mem*)pVal);
     }
-  }else if( pExpr->op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
+  }else if( p_पाहायाग->op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
     Vdbe *v;
-    int iBindVar = pExpr->iColumn;
+    int iBindVar = p_पाहायाग->iColumn;
     sqlite3VdbeReprepareOnBind(pParse->pVdbe, iBindVar, 0);
     if( (v = pParse->pReprepare)!=0 ){
-      pVal = valueNew(db, pAlloc);
+      pVal = हालागा_New(db, pAlloc);
       if( pVal ){
         rc = sqlite3VdbeMemCopy((Mem*)pVal, &v->aVar[iBindVar-1]);
-        sqlite3ValueApplyAffinity(pVal, affinity, ENC(db));
+        sqlite3_हालागा_Apply_Affinity(pVal, affinity, ENC(db));
         pVal->db = pParse->db;
       }
     }
   }else{
-    rc = valueFromExpr(db, pExpr, ENC(db), affinity, &pVal, pAlloc);
+    rc = हालागा_From_पाहायाग(db, p_पाहायाग, ENC(db), affinity, &pVal, pAlloc);
   }
 
   assert( pVal==0 || pVal->db==db );
@@ -2135,11 +2135,11 @@ static int stat4ValueFromExpr(
 ** error if a value cannot be extracted from pExpr. If an error does
 ** occur, an SQLite error code is returned.
 */
-int sqlite3Stat4ProbeSetValue(
+int sqlite3_Stat4_Probe_Set_हालागा(
   Parse *pParse,                  /* Parse context */
   Index *pIdx,                    /* Index being probed */
   UnpackedRecord **ppRec,         /* IN/OUT: Probe record */
-  Expr *pExpr,                    /* The expression to extract a value from */
+  पाहायाग *p_पाहायाग,                    /* The expression to extract a value from */
   int nElem,                      /* Maximum number of values to append */
   int iVal,                       /* Array element to populate */
   int *pnExtract                  /* OUT: Values appended to the record */
@@ -2147,20 +2147,20 @@ int sqlite3Stat4ProbeSetValue(
   int rc = SQLITE_OK;
   int nExtract = 0;
 
-  if( pExpr==0 || pExpr->op!=TK_SELECT ){
+  if( p_पाहायाग==0 || p_पाहायाग->op!=TK_SELECT ){
     int i;
-    struct ValueNewStat4Ctx alloc;
+    struct हालागा_New_Stat4_Ctx alloc;
 
     alloc.pParse = pParse;
     alloc.pIdx = pIdx;
     alloc.ppRec = ppRec;
 
     for(i=0; i<nElem; i++){
-      sqlite3_value *pVal = 0;
-      Expr *pElem = (pExpr ? sqlite3VectorFieldSubexpr(pExpr, i) : 0);
+      sqlite3_हालागा *pVal = 0;
+      पाहायाग *pElem = (p_पाहायाग ? sqlite3VectorFieldSubexpr(p_पाहायाग, i) : 0);
       u8 aff = sqlite3IndexColumnAffinity(pParse->db, pIdx, iVal+i);
       alloc.iVal = iVal+i;
-      rc = stat4ValueFromExpr(pParse, pElem, aff, &alloc, &pVal);
+      rc = stat4_हालागा_From_पाहायाग(pParse, pElem, aff, &alloc, &pVal);
       if( !pVal ) break;
       nExtract++;
     }
@@ -2180,13 +2180,13 @@ int sqlite3Stat4ProbeSetValue(
 ** does occur, return an SQLite error code. The final value of *ppVal
 ** is undefined in this case.
 */
-int sqlite3Stat4ValueFromExpr(
+int sqlite3_Stat4_हालागा_From_पाहायाग(
   Parse *pParse,                  /* Parse context */
-  Expr *pExpr,                    /* The expression to extract a value from */
+  पाहायाग *p_पाहायाग,                    /* The expression to extract a value from */
   u8 affinity,                    /* Affinity to use */
-  sqlite3_value **ppVal           /* OUT: New value object (or NULL) */
+  sqlite3_हालागा **ppVal           /* OUT: New value object (or NULL) */
 ){
-  return stat4ValueFromExpr(pParse, pExpr, affinity, 0, ppVal);
+  return stat4_हालागा_From_पाहायाग(pParse, p_पाहायाग, affinity, 0, ppVal);
 }
 
 /*
@@ -2207,7 +2207,7 @@ int sqlite3Stat4Column(
   const void *pRec,               /* Pointer to buffer containing record */
   int nRec,                       /* Size of buffer pRec in bytes */
   int iCol,                       /* Column to extract */
-  sqlite3_value **ppVal           /* OUT: Extracted value */
+  sqlite3_हालागा **ppVal           /* OUT: Extracted value */
 ){
   u32 t = 0;                      /* a column type code */
   u32 nHdr;                       /* Size of the header in the record */
@@ -2234,7 +2234,7 @@ int sqlite3Stat4Column(
   testcase( iField==nRec+1 );
   if( iField>nRec ) return SQLITE_CORRUPT_BKPT;
   if( pMem==0 ){
-    pMem = *ppVal = sqlite3ValueNew(db);
+    pMem = *ppVal = sqlite3_हालागा_New(db);
     if( pMem==0 ) return SQLITE_NOMEM_BKPT;
   }
   sqlite3VdbeSerialGet(&a[iField-szField], t, pMem);
@@ -2250,13 +2250,13 @@ int sqlite3Stat4Column(
 void sqlite3Stat4ProbeFree(UnpackedRecord *pRec){
   if( pRec ){
     int i;
-    int nCol = pRec->pKeyInfo->nAllField;
+    int nCol = pRec->p_सुसि_Info->nAllField;
     Mem *aMem = pRec->aMem;
     sqlite3 *db = aMem[0].db;
     for(i=0; i<nCol; i++){
       sqlite3VdbeMemRelease(&aMem[i]);
     }
-    sqlite3KeyInfoUnref(pRec->pKeyInfo);
+    sqlite3_सुसि_Info_Unref(pRec->p_सुसि_Info);
     sqlite3DbFreeNN(db, pRec);
   }
 }
@@ -2265,8 +2265,8 @@ void sqlite3Stat4ProbeFree(UnpackedRecord *pRec){
 /*
 ** Change the string value of an sqlite3_value object
 */
-void sqlite3ValueSetStr(
-  sqlite3_value *v,     /* Value to be set */
+void sqlite3_हालागा_Set_Str(
+  sqlite3_हालागा *v,     /* Value to be set */
   int n,                /* Length of string z */
   const void *z,        /* Text of the new string */
   u8 enc,               /* Encoding to use */
@@ -2278,7 +2278,7 @@ void sqlite3ValueSetStr(
 /*
 ** Free an sqlite3_value object
 */
-void sqlite3ValueFree(sqlite3_value *v){
+void sqlite3_हालागा_Free(sqlite3_हालागा *v){
   if( !v ) return;
   sqlite3VdbeMemRelease((Mem *)v);
   sqlite3DbFreeNN(((Mem*)v)->db, v);
@@ -2289,10 +2289,10 @@ void sqlite3ValueFree(sqlite3_value *v){
 ** sqlite3_value object assuming that it uses the encoding "enc".
 ** The valueBytes() routine is a helper function.
 */
-static SQLITE_NOINLINE int valueBytes(sqlite3_value *pVal, u8 enc){
-  return valueToText(pVal, enc)!=0 ? pVal->n : 0;
+static SQLITE_NOINLINE int हालागा_Bytes(sqlite3_हालागा *pVal, u8 enc){
+  return हालागा_To_Text(pVal, enc)!=0 ? pVal->n : 0;
 }
-int sqlite3ValueBytes(sqlite3_value *pVal, u8 enc){
+int sqlite3_हालागा_Bytes(sqlite3_हालागा *pVal, u8 enc){
   Mem *p = (Mem*)pVal;
   assert( (p->flags & MEM_Null)==0 || (p->flags & (MEM_Str|MEM_Blob))==0 );
   if( (p->flags & MEM_Str)!=0 && pVal->enc==enc ){
@@ -2309,5 +2309,5 @@ int sqlite3ValueBytes(sqlite3_value *pVal, u8 enc){
     }
   }
   if( p->flags & MEM_Null ) return 0;
-  return valueBytes(pVal, enc);
+  return हालागा_Bytes(pVal, enc);
 }

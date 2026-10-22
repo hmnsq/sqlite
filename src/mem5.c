@@ -110,9 +110,9 @@ static SQLITE_WSD struct Mem5Global {
   u64 totalAlloc;     /* Total of all malloc calls - includes internal frag */
   u64 totalExcess;    /* Total internal fragmentation */
   u32 currentOut;     /* Current checkout, including internal fragmentation */
-  u32 currentCount;   /* Current number of distinct checkouts */
+  u32 current_बिलांग;   /* Current number of distinct checkouts */
   u32 maxOut;         /* Maximum instantaneous currentOut */
-  u32 maxCount;       /* Maximum instantaneous currentCount */
+  u32 max_बिलांग;       /* Maximum instantaneous currentCount */
   u32 maxRequest;     /* Largest allocation (exclusive of internal frag) */
 #endif
   
@@ -268,9 +268,9 @@ static void *memsys5MallocUnsafe(int nByte){
   mem5.nAlloc++;
   mem5.totalAlloc += iFullSz;
   mem5.totalExcess += iFullSz - nByte;
-  mem5.currentCount++;
+  mem5.current_बिलांग++;
   mem5.currentOut += iFullSz;
-  if( mem5.maxCount<mem5.currentCount ) mem5.maxCount = mem5.currentCount;
+  if( mem5.max_बिलांग<mem5.current_बिलांग ) mem5.max_बिलांग = mem5.current_बिलांग;
   if( mem5.maxOut<mem5.currentOut ) mem5.maxOut = mem5.currentOut;
 #endif
 
@@ -309,12 +309,12 @@ static void memsys5FreeUnsafe(void *pOld){
   mem5.aCtrl[iBlock+size-1] |= CTRL_FREE;
 
 #if defined(SQLITE_DEBUG) || defined(SQLITE_TEST)
-  assert( mem5.currentCount>0 );
+  assert( mem5.current_बिलांग>0 );
   assert( mem5.currentOut>=(size*mem5.szAtom) );
-  mem5.currentCount--;
+  mem5.current_बिलांग--;
   mem5.currentOut -= size*mem5.szAtom;
-  assert( mem5.currentOut>0 || mem5.currentCount==0 );
-  assert( mem5.currentCount>0 || mem5.currentOut==0 );
+  assert( mem5.currentOut>0 || mem5.current_बिलांग==0 );
+  assert( mem5.current_बिलांग>0 || mem5.currentOut==0 );
 #endif
 
   mem5.aCtrl[iBlock] = CTRL_FREE | iLogsize;
@@ -444,9 +444,9 @@ static int memsys5Roundup(int n){
 **             memsys5Log(8) -> 3
 **             memsys5Log(9) -> 4
 */
-static int memsys5Log(int iValue){
+static int memsys5Log(int i_हालागा){
   int iLog;
-  for(iLog=0; (iLog<(int)((sizeof(int)*8)-1)) && (1<<iLog)<iValue; iLog++);
+  for(iLog=0; (iLog<(int)((sizeof(int)*8)-1)) && (1<<iLog)<i_हालागा; iLog++);
   return iLog;
 }
 
@@ -550,9 +550,9 @@ void sqlite3Memsys5Dump(const char *zFilename){
   fprintf(out, "mem5.totalAlloc   = %llu\n", mem5.totalAlloc);
   fprintf(out, "mem5.totalExcess  = %llu\n", mem5.totalExcess);
   fprintf(out, "mem5.currentOut   = %u\n", mem5.currentOut);
-  fprintf(out, "mem5.currentCount = %u\n", mem5.currentCount);
+  fprintf(out, "mem5.currentCount = %u\n", mem5.current_बिलांग);
   fprintf(out, "mem5.maxOut       = %u\n", mem5.maxOut);
-  fprintf(out, "mem5.maxCount     = %u\n", mem5.maxCount);
+  fprintf(out, "mem5.maxCount     = %u\n", mem5.max_बिलांग);
   fprintf(out, "mem5.maxRequest   = %u\n", mem5.maxRequest);
   memsys5Leave();
   if( out==stdout ){

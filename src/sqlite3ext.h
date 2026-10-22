@@ -31,18 +31,18 @@
 */
 struct sqlite3_api_routines {
   void * (*aggregate_context)(sqlite3_context*,int nBytes);
-  int  (*aggregate_count)(sqlite3_context*);
+  int  (*aggregate_बिलांग)(sqlite3_context*);
   int  (*bind_blob)(sqlite3_stmt*,int,const void*,int n,void(*)(void*));
   int  (*bind_double)(sqlite3_stmt*,int,double);
   int  (*bind_int)(sqlite3_stmt*,int,int);
   int  (*bind_int64)(sqlite3_stmt*,int,sqlite_int64);
   int  (*bind_null)(sqlite3_stmt*,int);
-  int  (*bind_parameter_count)(sqlite3_stmt*);
+  int  (*bind_parameter_बिलांग)(sqlite3_stmt*);
   int  (*bind_parameter_index)(sqlite3_stmt*,const char*zName);
   const char * (*bind_parameter_name)(sqlite3_stmt*,int);
   int  (*bind_text)(sqlite3_stmt*,int,const char*,int n,void(*)(void*));
   int  (*bind_text16)(sqlite3_stmt*,int,const void*,int,void(*)(void*));
-  int  (*bind_value)(sqlite3_stmt*,int,const sqlite3_value*);
+  int  (*bind_हालागा)(sqlite3_stmt*,int,const sqlite3_हालागा*);
   int  (*busy_handler)(sqlite3*,int(*)(void*,int),void*);
   int  (*busy_timeout)(sqlite3*,int ms);
   int  (*changes)(sqlite3*);
@@ -54,7 +54,7 @@ struct sqlite3_api_routines {
   const void * (*column_blob)(sqlite3_stmt*,int iCol);
   int  (*column_bytes)(sqlite3_stmt*,int iCol);
   int  (*column_bytes16)(sqlite3_stmt*,int iCol);
-  int  (*column_count)(sqlite3_stmt*pStmt);
+  int  (*column_बिलांग)(sqlite3_stmt*pStmt);
   const char * (*column_database_name)(sqlite3_stmt*,int);
   const void * (*column_database_name16)(sqlite3_stmt*,int);
   const char * (*column_decltype)(sqlite3_stmt*,int i);
@@ -71,7 +71,7 @@ struct sqlite3_api_routines {
   const unsigned char * (*column_text)(sqlite3_stmt*,int iCol);
   const void * (*column_text16)(sqlite3_stmt*,int iCol);
   int  (*column_type)(sqlite3_stmt*,int iCol);
-  sqlite3_value* (*column_value)(sqlite3_stmt*,int iCol);
+  sqlite3_हालागा* (*column_हालागा)(sqlite3_stmt*,int iCol);
   void * (*commit_hook)(sqlite3*,int(*)(void*),void*);
   int  (*complete)(const char*sql);
   int  (*complete16)(const void*sql);
@@ -80,15 +80,15 @@ struct sqlite3_api_routines {
   int  (*create_collation16)(sqlite3*,const void*,int,void*,
                              int(*)(void*,int,const void*,int,const void*));
   int  (*create_function)(sqlite3*,const char*,int,int,void*,
-                          void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                          void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+                          void (*xFunc)(sqlite3_context*,int,sqlite3_हालागा**),
+                          void (*xStep)(sqlite3_context*,int,sqlite3_हालागा**),
                           void (*xFinal)(sqlite3_context*));
   int  (*create_function16)(sqlite3*,const void*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+                            void (*xFunc)(sqlite3_context*,int,sqlite3_हालागा**),
+                            void (*xStep)(sqlite3_context*,int,sqlite3_हालागा**),
                             void (*xFinal)(sqlite3_context*));
   int (*create_module)(sqlite3*,const char*,const sqlite3_module*,void*);
-  int  (*data_count)(sqlite3_stmt*pStmt);
+  int  (*data_बिलांग)(sqlite3_stmt*pStmt);
   sqlite3 * (*db_handle)(sqlite3_stmt*);
   int (*declare_vtab)(sqlite3*,const char*);
   int  (*enable_shared_cache)(int);
@@ -105,9 +105,9 @@ struct sqlite3_api_routines {
   int  (*get_table)(sqlite3*,const char*,char***,int*,int*,char**);
   int  (*global_recover)(void);
   void  (*interruptx)(sqlite3*);
-  sqlite_int64  (*last_insert_rowid)(sqlite3*);
+  sqlite_int64  (*last_इसिंगित_rowid)(sqlite3*);
   const char * (*libversion)(void);
-  int  (*libversion_number)(void);
+  int  (*libversion_नुमेरो)(void);
   void *(*malloc)(int);
   char *(SQLITE_CDECL*mprintf)(const char*,...);
   int  (*open)(const char*,sqlite3**);
@@ -129,7 +129,7 @@ struct sqlite3_api_routines {
   void  (*result_text16)(sqlite3_context*,const void*,int,void(*)(void*));
   void  (*result_text16be)(sqlite3_context*,const void*,int,void(*)(void*));
   void  (*result_text16le)(sqlite3_context*,const void*,int,void(*)(void*));
-  void  (*result_value)(sqlite3_context*,sqlite3_value*);
+  void  (*result_हालागा)(sqlite3_context*,sqlite3_हालागा*);
   void *(*rollback_hook)(sqlite3*,void(*)(void*),void*);
   int  (*set_authorizer)(sqlite3*,int(*)(void*,int,const char*,const char*,
                          const char*,const char*),void*);
@@ -145,18 +145,18 @@ struct sqlite3_api_routines {
   void * (*update_hook)(sqlite3*,void(*)(void*,int ,char const*,char const*,
                                          sqlite_int64),void*);
   void * (*user_data)(sqlite3_context*);
-  const void * (*value_blob)(sqlite3_value*);
-  int  (*value_bytes)(sqlite3_value*);
-  int  (*value_bytes16)(sqlite3_value*);
-  double  (*value_double)(sqlite3_value*);
-  int  (*value_int)(sqlite3_value*);
-  sqlite_int64  (*value_int64)(sqlite3_value*);
-  int  (*value_numeric_type)(sqlite3_value*);
-  const unsigned char * (*value_text)(sqlite3_value*);
-  const void * (*value_text16)(sqlite3_value*);
-  const void * (*value_text16be)(sqlite3_value*);
-  const void * (*value_text16le)(sqlite3_value*);
-  int  (*value_type)(sqlite3_value*);
+  const void * (*हालागा_blob)(sqlite3_हालागा*);
+  int  (*हालागा_bytes)(sqlite3_हालागा*);
+  int  (*हालागा_bytes16)(sqlite3_हालागा*);
+  double  (*हालागा_double)(sqlite3_हालागा*);
+  int  (*हालागा_int)(sqlite3_हालागा*);
+  sqlite_int64  (*हालागा_int64)(sqlite3_हालागा*);
+  int  (*हालागा_numeric_type)(sqlite3_हालागा*);
+  const unsigned char * (*हालागा_text)(sqlite3_हालागा*);
+  const void * (*हालागा_text16)(sqlite3_हालागा*);
+  const void * (*हालागा_text16be)(sqlite3_हालागा*);
+  const void * (*हालागा_text16le)(sqlite3_हालागा*);
+  int  (*हालागा_type)(sqlite3_हालागा*);
   char *(*vmprintf)(const char*,va_list);
   /* Added ??? */
   int (*overload_function)(sqlite3*, const char *zFuncName, int nArg);
@@ -214,8 +214,8 @@ struct sqlite3_api_routines {
   const char *(*compileoption_get)(int);
   int (*compileoption_used)(const char*);
   int (*create_function_v2)(sqlite3*,const char*,int,int,void*,
-                            void (*xFunc)(sqlite3_context*,int,sqlite3_value**),
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+                            void (*xFunc)(sqlite3_context*,int,sqlite3_हालागा**),
+                            void (*xStep)(sqlite3_context*,int,sqlite3_हालागा**),
                             void (*xFinal)(sqlite3_context*),
                             void(*xDestroy)(void*));
   int (SQLITE_CDECL*db_config)(sqlite3*,int,...);
@@ -266,12 +266,12 @@ struct sqlite3_api_routines {
                          void(*)(void*), unsigned char);
   int (*strglob)(const char*,const char*);
   /* Version 3.8.11 and later */
-  sqlite3_value *(*value_dup)(const sqlite3_value*);
-  void (*value_free)(sqlite3_value*);
+  sqlite3_हालागा *(*हालागा_dup)(const sqlite3_हालागा*);
+  void (*हालागा_free)(sqlite3_हालागा*);
   int (*result_zeroblob64)(sqlite3_context*,sqlite3_uint64);
   int (*bind_zeroblob64)(sqlite3_stmt*, int, sqlite3_uint64);
   /* Version 3.9.0 and later */
-  unsigned int (*value_subtype)(sqlite3_value*);
+  unsigned int (*हालागा_subtype)(sqlite3_हालागा*);
   void (*result_subtype)(sqlite3_context*,unsigned int);
   /* Version 3.10.0 and later */
   int (*status64)(int,sqlite3_int64*,sqlite3_int64*,int);
@@ -283,7 +283,7 @@ struct sqlite3_api_routines {
   int (*trace_v2)(sqlite3*,unsigned,int(*)(unsigned,void*,void*,void*),void*);
   char *(*expanded_sql)(sqlite3_stmt*);
   /* Version 3.18.0 and later */
-  void (*set_last_insert_rowid)(sqlite3*,sqlite3_int64);
+  void (*set_last_इसिंगित_rowid)(sqlite3*,sqlite3_int64);
   /* Version 3.20.0 and later */
   int (*prepare_v3)(sqlite3*,const char*,int,unsigned int,
                     sqlite3_stmt**,const char**);
@@ -291,12 +291,12 @@ struct sqlite3_api_routines {
                       sqlite3_stmt**,const void**);
   int (*bind_pointer)(sqlite3_stmt*,int,void*,const char*,void(*)(void*));
   void (*result_pointer)(sqlite3_context*,void*,const char*,void(*)(void*));
-  void *(*value_pointer)(sqlite3_value*,const char*);
+  void *(*हालागा_pointer)(sqlite3_हालागा*,const char*);
   int (*vtab_nochange)(sqlite3_context*);
-  int (*value_nochange)(sqlite3_value*);
+  int (*हालागा_nochange)(sqlite3_हालागा*);
   const char *(*vtab_collation)(sqlite3_index_info*,int);
   /* Version 3.24.0 and later */
-  int (*keyword_count)(void);
+  int (*keyword_बिलांग)(void);
   int (*keyword_name)(int,const char**,int*);
   int (*keyword_check)(const char*,int);
   sqlite3_str *(*str_new)(sqlite3*);
@@ -309,24 +309,24 @@ struct sqlite3_api_routines {
   void (*str_reset)(sqlite3_str*);
   int (*str_errcode)(sqlite3_str*);
   int (*str_length)(sqlite3_str*);
-  char *(*str_value)(sqlite3_str*);
+  char *(*str_हालागा)(sqlite3_str*);
   /* Version 3.25.0 and later */
   int (*create_window_function)(sqlite3*,const char*,int,int,void*,
-                            void (*xStep)(sqlite3_context*,int,sqlite3_value**),
+                            void (*xStep)(sqlite3_context*,int,sqlite3_हालागा**),
                             void (*xFinal)(sqlite3_context*),
-                            void (*xValue)(sqlite3_context*),
-                            void (*xInv)(sqlite3_context*,int,sqlite3_value**),
+                            void (*x_हालागा)(sqlite3_context*),
+                            void (*xInv)(sqlite3_context*,int,sqlite3_हालागा**),
                             void(*xDestroy)(void*));
   /* Version 3.26.0 and later */
   const char *(*normalized_sql)(sqlite3_stmt*);
   /* Version 3.28.0 and later */
   int (*stmt_isexplain)(sqlite3_stmt*);
-  int (*value_frombind)(sqlite3_value*);
+  int (*हालागा_frombind)(sqlite3_हालागा*);
   /* Version 3.30.0 and later */
   int (*drop_modules)(sqlite3*,const char**);
   /* Version 3.31.0 and later */
   sqlite3_int64 (*hard_heap_limit64)(sqlite3_int64);
-  const char *(*uri_key)(const char*,int);
+  const char *(*uri_सुसि)(const char*,int);
   const char *(*filename_database)(const char*);
   const char *(*filename_journal)(const char*);
   const char *(*filename_wal)(const char*);
@@ -346,11 +346,11 @@ struct sqlite3_api_routines {
      void*, void(*)(void*));
   /* Version 3.38.0 and later */
   int (*error_offset)(sqlite3*);
-  int (*vtab_rhs_value)(sqlite3_index_info*,int,sqlite3_value**);
+  int (*vtab_rhs_हालागा)(sqlite3_index_info*,int,sqlite3_हालागा**);
   int (*vtab_distinct)(sqlite3_index_info*);
   int (*vtab_in)(sqlite3_index_info*,int,int);
-  int (*vtab_in_first)(sqlite3_value*,sqlite3_value**);
-  int (*vtab_in_next)(sqlite3_value*,sqlite3_value**);
+  int (*vtab_in_first)(sqlite3_हालागा*,sqlite3_हालागा**);
+  int (*vtab_in_next)(sqlite3_हालागा*,sqlite3_हालागा**);
   /* Version 3.39.0 and later */
   int (*deserialize)(sqlite3*,const char*,unsigned char*,
                      sqlite3_int64,sqlite3_int64,unsigned);
@@ -358,7 +358,7 @@ struct sqlite3_api_routines {
                               unsigned int);
   const char *(*db_name)(sqlite3*,int);
   /* Version 3.40.0 and later */
-  int (*value_encoding)(sqlite3_value*);
+  int (*हालागा_encoding)(sqlite3_हालागा*);
   /* Version 3.41.0 and later */
   int (*is_interrupted)(sqlite3*);
   /* Version 3.43.0 and later */
@@ -387,7 +387,7 @@ struct sqlite3_api_routines {
 */
 typedef int (*sqlite3_loadext_entry)(
   sqlite3 *db,                       /* Handle to the database. */
-  char **pzErrMsg,                   /* Used to set error string on failure. */
+  char **pz_Err_मेनसाहे,                   /* Used to set error string on failure. */
   const sqlite3_api_routines *pThunk /* Extension API function pointers. */
 );
 
@@ -405,19 +405,19 @@ typedef int (*sqlite3_loadext_entry)(
 #if !defined(SQLITE_CORE) && !defined(SQLITE_OMIT_LOAD_EXTENSION)
 #define sqlite3_aggregate_context      sqlite3_api->aggregate_context
 #ifndef SQLITE_OMIT_DEPRECATED
-#define sqlite3_aggregate_count        sqlite3_api->aggregate_count
+#define sqlite3_aggregate_बिलांग        sqlite3_api->aggregate_बिलांग
 #endif
 #define sqlite3_bind_blob              sqlite3_api->bind_blob
 #define sqlite3_bind_double            sqlite3_api->bind_double
 #define sqlite3_bind_int               sqlite3_api->bind_int
 #define sqlite3_bind_int64             sqlite3_api->bind_int64
 #define sqlite3_bind_null              sqlite3_api->bind_null
-#define sqlite3_bind_parameter_count   sqlite3_api->bind_parameter_count
+#define sqlite3_bind_parameter_बिलांग   sqlite3_api->bind_parameter_बिलांग
 #define sqlite3_bind_parameter_index   sqlite3_api->bind_parameter_index
 #define sqlite3_bind_parameter_name    sqlite3_api->bind_parameter_name
 #define sqlite3_bind_text              sqlite3_api->bind_text
 #define sqlite3_bind_text16            sqlite3_api->bind_text16
-#define sqlite3_bind_value             sqlite3_api->bind_value
+#define sqlite3_bind_हालागा             sqlite3_api->bind_हालागा
 #define sqlite3_busy_handler           sqlite3_api->busy_handler
 #define sqlite3_busy_timeout           sqlite3_api->busy_timeout
 #define sqlite3_changes                sqlite3_api->changes
@@ -427,7 +427,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_column_blob            sqlite3_api->column_blob
 #define sqlite3_column_bytes           sqlite3_api->column_bytes
 #define sqlite3_column_bytes16         sqlite3_api->column_bytes16
-#define sqlite3_column_count           sqlite3_api->column_count
+#define sqlite3_column_बिलांग           sqlite3_api->column_बिलांग
 #define sqlite3_column_database_name   sqlite3_api->column_database_name
 #define sqlite3_column_database_name16 sqlite3_api->column_database_name16
 #define sqlite3_column_decltype        sqlite3_api->column_decltype
@@ -444,7 +444,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_column_text            sqlite3_api->column_text
 #define sqlite3_column_text16          sqlite3_api->column_text16
 #define sqlite3_column_type            sqlite3_api->column_type
-#define sqlite3_column_value           sqlite3_api->column_value
+#define sqlite3_column_हालागा           sqlite3_api->column_हालागा
 #define sqlite3_commit_hook            sqlite3_api->commit_hook
 #define sqlite3_complete               sqlite3_api->complete
 #define sqlite3_complete16             sqlite3_api->complete16
@@ -454,7 +454,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_create_function16      sqlite3_api->create_function16
 #define sqlite3_create_module          sqlite3_api->create_module
 #define sqlite3_create_module_v2       sqlite3_api->create_module_v2
-#define sqlite3_data_count             sqlite3_api->data_count
+#define sqlite3_data_बिलांग             sqlite3_api->data_बिलांग
 #define sqlite3_db_handle              sqlite3_api->db_handle
 #define sqlite3_declare_vtab           sqlite3_api->declare_vtab
 #define sqlite3_enable_shared_cache    sqlite3_api->enable_shared_cache
@@ -475,9 +475,9 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_global_recover         sqlite3_api->global_recover
 #endif
 #define sqlite3_interrupt              sqlite3_api->interruptx
-#define sqlite3_last_insert_rowid      sqlite3_api->last_insert_rowid
+#define sqlite3_last_इसिंगित_rowid      sqlite3_api->last_इसिंगित_rowid
 #define sqlite3_libversion             sqlite3_api->libversion
-#define sqlite3_libversion_number      sqlite3_api->libversion_number
+#define sqlite3_libversion_नुमेरो      sqlite3_api->libversion_नुमेरो
 #define sqlite3_malloc                 sqlite3_api->malloc
 #define sqlite3_mprintf                sqlite3_api->mprintf
 #define sqlite3_open                   sqlite3_api->open
@@ -501,7 +501,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_text16          sqlite3_api->result_text16
 #define sqlite3_result_text16be        sqlite3_api->result_text16be
 #define sqlite3_result_text16le        sqlite3_api->result_text16le
-#define sqlite3_result_value           sqlite3_api->result_value
+#define sqlite3_result_हालागा           sqlite3_api->result_हालागा
 #define sqlite3_rollback_hook          sqlite3_api->rollback_hook
 #define sqlite3_set_authorizer         sqlite3_api->set_authorizer
 #define sqlite3_set_auxdata            sqlite3_api->set_auxdata
@@ -516,18 +516,18 @@ typedef int (*sqlite3_loadext_entry)(
 #endif
 #define sqlite3_update_hook            sqlite3_api->update_hook
 #define sqlite3_user_data              sqlite3_api->user_data
-#define sqlite3_value_blob             sqlite3_api->value_blob
-#define sqlite3_value_bytes            sqlite3_api->value_bytes
-#define sqlite3_value_bytes16          sqlite3_api->value_bytes16
-#define sqlite3_value_double           sqlite3_api->value_double
-#define sqlite3_value_int              sqlite3_api->value_int
-#define sqlite3_value_int64            sqlite3_api->value_int64
-#define sqlite3_value_numeric_type     sqlite3_api->value_numeric_type
-#define sqlite3_value_text             sqlite3_api->value_text
-#define sqlite3_value_text16           sqlite3_api->value_text16
-#define sqlite3_value_text16be         sqlite3_api->value_text16be
-#define sqlite3_value_text16le         sqlite3_api->value_text16le
-#define sqlite3_value_type             sqlite3_api->value_type
+#define sqlite3_हालागा_blob             sqlite3_api->हालागा_blob
+#define sqlite3_हालागा_bytes            sqlite3_api->हालागा_bytes
+#define sqlite3_हालागा_bytes16          sqlite3_api->हालागा_bytes16
+#define sqlite3_हालागा_double           sqlite3_api->हालागा_double
+#define sqlite3_हालागा_int              sqlite3_api->हालागा_int
+#define sqlite3_हालागा_int64            sqlite3_api->हालागा_int64
+#define sqlite3_हालागा_numeric_type     sqlite3_api->हालागा_numeric_type
+#define sqlite3_हालागा_text             sqlite3_api->हालागा_text
+#define sqlite3_हालागा_text16           sqlite3_api->हालागा_text16
+#define sqlite3_हालागा_text16be         sqlite3_api->हालागा_text16be
+#define sqlite3_हालागा_text16le         sqlite3_api->हालागा_text16le
+#define sqlite3_हालागा_type             sqlite3_api->हालागा_type
 #define sqlite3_vmprintf               sqlite3_api->vmprintf
 #define sqlite3_vsnprintf              sqlite3_api->xvsnprintf
 #define sqlite3_overload_function      sqlite3_api->overload_function
@@ -621,12 +621,12 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_text64          sqlite3_api->result_text64
 #define sqlite3_strglob                sqlite3_api->strglob
 /* Version 3.8.11 and later */
-#define sqlite3_value_dup              sqlite3_api->value_dup
-#define sqlite3_value_free             sqlite3_api->value_free
+#define sqlite3_हालागा_dup              sqlite3_api->हालागा_dup
+#define sqlite3_हालागा_free             sqlite3_api->हालागा_free
 #define sqlite3_result_zeroblob64      sqlite3_api->result_zeroblob64
 #define sqlite3_bind_zeroblob64        sqlite3_api->bind_zeroblob64
 /* Version 3.9.0 and later */
-#define sqlite3_value_subtype          sqlite3_api->value_subtype
+#define sqlite3_हालागा_subtype          sqlite3_api->हालागा_subtype
 #define sqlite3_result_subtype         sqlite3_api->result_subtype
 /* Version 3.10.0 and later */
 #define sqlite3_status64               sqlite3_api->status64
@@ -638,19 +638,19 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_trace_v2               sqlite3_api->trace_v2
 #define sqlite3_expanded_sql           sqlite3_api->expanded_sql
 /* Version 3.18.0 and later */
-#define sqlite3_set_last_insert_rowid  sqlite3_api->set_last_insert_rowid
+#define sqlite3_set_last_इसिंगित_rowid  sqlite3_api->set_last_इसिंगित_rowid
 /* Version 3.20.0 and later */
 #define sqlite3_prepare_v3             sqlite3_api->prepare_v3
 #define sqlite3_prepare16_v3           sqlite3_api->prepare16_v3
 #define sqlite3_bind_pointer           sqlite3_api->bind_pointer
 #define sqlite3_result_pointer         sqlite3_api->result_pointer
-#define sqlite3_value_pointer          sqlite3_api->value_pointer
+#define sqlite3_हालागा_pointer          sqlite3_api->हालागा_pointer
 /* Version 3.22.0 and later */
 #define sqlite3_vtab_nochange          sqlite3_api->vtab_nochange
-#define sqlite3_value_nochange         sqlite3_api->value_nochange
+#define sqlite3_हालागा_nochange         sqlite3_api->हालागा_nochange
 #define sqlite3_vtab_collation         sqlite3_api->vtab_collation
 /* Version 3.24.0 and later */
-#define sqlite3_keyword_count          sqlite3_api->keyword_count
+#define sqlite3_keyword_बिलांग          sqlite3_api->keyword_बिलांग
 #define sqlite3_keyword_name           sqlite3_api->keyword_name
 #define sqlite3_keyword_check          sqlite3_api->keyword_check
 #define sqlite3_str_new                sqlite3_api->str_new
@@ -663,19 +663,19 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_str_reset              sqlite3_api->str_reset
 #define sqlite3_str_errcode            sqlite3_api->str_errcode
 #define sqlite3_str_length             sqlite3_api->str_length
-#define sqlite3_str_value              sqlite3_api->str_value
+#define sqlite3_str_हालागा              sqlite3_api->str_हालागा
 /* Version 3.25.0 and later */
 #define sqlite3_create_window_function sqlite3_api->create_window_function
 /* Version 3.26.0 and later */
 #define sqlite3_normalized_sql         sqlite3_api->normalized_sql
 /* Version 3.28.0 and later */
 #define sqlite3_stmt_isexplain         sqlite3_api->stmt_isexplain
-#define sqlite3_value_frombind         sqlite3_api->value_frombind
+#define sqlite3_हालागा_frombind         sqlite3_api->हालागा_frombind
 /* Version 3.30.0 and later */
 #define sqlite3_drop_modules           sqlite3_api->drop_modules
 /* Version 3.31.0 and later */
 #define sqlite3_hard_heap_limit64      sqlite3_api->hard_heap_limit64
-#define sqlite3_uri_key                sqlite3_api->uri_key
+#define sqlite3_uri_सुसि                sqlite3_api->uri_सुसि
 #define sqlite3_filename_database      sqlite3_api->filename_database
 #define sqlite3_filename_journal       sqlite3_api->filename_journal
 #define sqlite3_filename_wal           sqlite3_api->filename_wal
@@ -692,7 +692,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_autovacuum_pages       sqlite3_api->autovacuum_pages
 /* Version 3.38.0 and later */
 #define sqlite3_error_offset           sqlite3_api->error_offset
-#define sqlite3_vtab_rhs_value         sqlite3_api->vtab_rhs_value
+#define sqlite3_vtab_rhs_हालागा         sqlite3_api->vtab_rhs_हालागा
 #define sqlite3_vtab_distinct          sqlite3_api->vtab_distinct
 #define sqlite3_vtab_in                sqlite3_api->vtab_in
 #define sqlite3_vtab_in_first          sqlite3_api->vtab_in_first
@@ -704,7 +704,7 @@ typedef int (*sqlite3_loadext_entry)(
 #endif
 #define sqlite3_db_name                sqlite3_api->db_name
 /* Version 3.40.0 and later */
-#define sqlite3_value_encoding         sqlite3_api->value_encoding
+#define sqlite3_हालागा_encoding         sqlite3_api->हालागा_encoding
 /* Version 3.41.0 and later */
 #define sqlite3_is_interrupted         sqlite3_api->is_interrupted
 /* Version 3.43.0 and later */

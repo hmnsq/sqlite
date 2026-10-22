@@ -42,10 +42,10 @@ typedef struct HashElem HashElem;
 */
 struct Hash {
   unsigned int htsize;      /* Number of buckets in the hash table */
-  unsigned int count;       /* Number of entries in this table */
+  unsigned int बिलांग;       /* Number of entries in this table */
   HashElem *first;          /* The first element of the array */
   struct _ht {              /* the hash table */
-    unsigned int count;        /* Number of entries with this hash */
+    unsigned int बिलांग;        /* Number of entries with this hash */
     HashElem *chain;           /* Pointer to first entry with this hash */
   } *ht;
 };
@@ -59,7 +59,7 @@ struct Hash {
 struct HashElem {
   HashElem *next, *prev;       /* Next and previous elements in the table */
   void *data;                  /* Data associated with this element */
-  const char *pKey;            /* Key associated with this element */
+  const char *p_सुसि;            /* Key associated with this element */
   unsigned int h;              /* hash for pKey */
 };
 
@@ -67,8 +67,8 @@ struct HashElem {
 ** Access routines.  To delete, insert a NULL pointer.
 */
 void sqlite3HashInit(Hash*);
-void *sqlite3HashInsert(Hash*, const char *pKey, void *pData);
-void *sqlite3HashFind(const Hash*, const char *pKey);
+void *sqlite3_Hash_इसिंगित(Hash*, const char *p_सुसि, void *pData);
+void *sqlite3HashFind(const Hash*, const char *p_सुसि);
 void sqlite3HashClear(Hash*);
 
 /*
@@ -92,6 +92,6 @@ void sqlite3HashClear(Hash*);
 /*
 ** Number of entries in a hash table
 */
-#define sqliteHashCount(H)  ((H)->count)
+#define sqlite_Hash_बिलांग(H)  ((H)->बिलांग)
 
 #endif /* SQLITE_HASH_H */

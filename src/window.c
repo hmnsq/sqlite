@@ -144,17 +144,17 @@
 **
 **   ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 */
-static void row_numberStepFunc(
+static void row_नुमेरो_Step_Func(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
   i64 *p = (i64*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ) (*p)++;
   UNUSED_PARAMETER(nArg);
   UNUSED_PARAMETER(apArg);
 }
-static void row_numberValueFunc(sqlite3_context *pCtx){
+static void row_नुमेरो_हालागा_Func(sqlite3_context *pCtx){
   i64 *p = (i64*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   sqlite3_result_int64(pCtx, (p ? *p : 0));
 }
@@ -163,8 +163,8 @@ static void row_numberValueFunc(sqlite3_context *pCtx){
 ** Context object type used by rank(), dense_rank(), percent_rank() and
 ** cume_dist().
 */
-struct CallCount {
-  i64 nValue;
+struct Call_बिलांग {
+  i64 n_हालागा;
   i64 nStep;
   i64 nTotal;
 };
@@ -178,23 +178,23 @@ struct CallCount {
 static void dense_rankStepFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  struct Call_बिलांग *p;
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ) p->nStep = 1;
   UNUSED_PARAMETER(nArg);
   UNUSED_PARAMETER(apArg);
 }
-static void dense_rankValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+static void dense_rank_हालागा_Func(sqlite3_context *pCtx){
+  struct Call_बिलांग *p;
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
     if( p->nStep ){
-      p->nValue++;
+      p->n_हालागा++;
       p->nStep = 0;
     }
-    sqlite3_result_int64(pCtx, p->nValue);
+    sqlite3_result_int64(pCtx, p->n_हालागा);
   }
 }
 
@@ -203,25 +203,25 @@ static void dense_rankValueFunc(sqlite3_context *pCtx){
 ** implementation is used in "slow mode" only - when the EXCLUDE clause
 ** is not set to the default value "NO OTHERS".
 */
-struct NthValueCtx {
+struct Nth_हालागा_Ctx {
   i64 nStep;
-  sqlite3_value *pValue;
+  sqlite3_हालागा *p_हालागा;
 };
-static void nth_valueStepFunc(
+static void nth_हालागा_Step_Func(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  struct Nth_हालागा_Ctx *p;
+  p = (struct Nth_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
     i64 iVal;
-    switch( sqlite3_value_numeric_type(apArg[1]) ){
+    switch( sqlite3_हालागा_numeric_type(apArg[1]) ){
       case SQLITE_INTEGER:
-        iVal = sqlite3_value_int64(apArg[1]);
+        iVal = sqlite3_हालागा_int64(apArg[1]);
         break;
       case SQLITE_FLOAT: {
-        double fVal = sqlite3_value_double(apArg[1]);
+        double fVal = sqlite3_हालागा_double(apArg[1]);
         if( sqlite3RealToI64(fVal)!=fVal ) goto error_out;
         iVal = (i64)fVal;
         break;
@@ -233,8 +233,8 @@ static void nth_valueStepFunc(
 
     p->nStep++;
     if( iVal==p->nStep ){
-      p->pValue = sqlite3_value_dup(apArg[0]);
-      if( !p->pValue ){
+      p->p_हालागा = sqlite3_हालागा_dup(apArg[0]);
+      if( !p->p_हालागा ){
         sqlite3_result_error_nomem(pCtx);
       }
     }
@@ -248,45 +248,45 @@ static void nth_valueStepFunc(
       pCtx, "second argument to nth_value must be a positive integer", -1
   );
 }
-static void nth_valueFinalizeFunc(sqlite3_context *pCtx){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, 0);
-  if( p && p->pValue ){
-    sqlite3_result_value(pCtx, p->pValue);
-    sqlite3_value_free(p->pValue);
-    p->pValue = 0;
+static void nth_हालागा_Finalize_Func(sqlite3_context *pCtx){
+  struct Nth_हालागा_Ctx *p;
+  p = (struct Nth_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, 0);
+  if( p && p->p_हालागा ){
+    sqlite3_result_हालागा(pCtx, p->p_हालागा);
+    sqlite3_हालागा_free(p->p_हालागा);
+    p->p_हालागा = 0;
   }
 }
-#define nth_valueInvFunc noopStepFunc
-#define nth_valueValueFunc noopValueFunc
+#define nth_हालागा_Inv_Func noopStepFunc
+#define nth_हालागा_हालागा_Func noop_हालागा_Func
 
-static void first_valueStepFunc(
+static void first_हालागा_Step_Func(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p && p->pValue==0 ){
-    p->pValue = sqlite3_value_dup(apArg[0]);
-    if( !p->pValue ){
+  struct Nth_हालागा_Ctx *p;
+  p = (struct Nth_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  if( p && p->p_हालागा==0 ){
+    p->p_हालागा = sqlite3_हालागा_dup(apArg[0]);
+    if( !p->p_हालागा ){
       sqlite3_result_error_nomem(pCtx);
     }
   }
   UNUSED_PARAMETER(nArg);
   UNUSED_PARAMETER(apArg);
 }
-static void first_valueFinalizeFunc(sqlite3_context *pCtx){
-  struct NthValueCtx *p;
-  p = (struct NthValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
-  if( p && p->pValue ){
-    sqlite3_result_value(pCtx, p->pValue);
-    sqlite3_value_free(p->pValue);
-    p->pValue = 0;
+static void first_हालागा_Finalize_Func(sqlite3_context *pCtx){
+  struct Nth_हालागा_Ctx *p;
+  p = (struct Nth_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  if( p && p->p_हालागा ){
+    sqlite3_result_हालागा(pCtx, p->p_हालागा);
+    sqlite3_हालागा_free(p->p_हालागा);
+    p->p_हालागा = 0;
   }
 }
-#define first_valueInvFunc noopStepFunc
-#define first_valueValueFunc noopValueFunc
+#define first_हालागा_Inv_Func noopStepFunc
+#define first_हालागा_हालागा_Func noop_हालागा_Func
 
 /*
 ** Implementation of built-in window function rank(). Assumes that
@@ -297,25 +297,25 @@ static void first_valueFinalizeFunc(sqlite3_context *pCtx){
 static void rankStepFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  struct Call_बिलांग *p;
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
     p->nStep++;
-    if( p->nValue==0 ){
-      p->nValue = p->nStep;
+    if( p->n_हालागा==0 ){
+      p->n_हालागा = p->nStep;
     }
   }
   UNUSED_PARAMETER(nArg);
   UNUSED_PARAMETER(apArg);
 }
-static void rankValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+static void rank_हालागा_Func(sqlite3_context *pCtx){
+  struct Call_बिलांग *p;
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
-    sqlite3_result_int64(pCtx, p->nValue);
-    p->nValue = 0;
+    sqlite3_result_int64(pCtx, p->n_हालागा);
+    p->n_हालागा = 0;
   }
 }
 
@@ -328,12 +328,12 @@ static void rankValueFunc(sqlite3_context *pCtx){
 static void percent_rankStepFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct CallCount *p;
+  struct Call_बिलांग *p;
   UNUSED_PARAMETER(nArg); assert( nArg==0 );
   UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
     p->nTotal++;
   }
@@ -341,29 +341,29 @@ static void percent_rankStepFunc(
 static void percent_rankInvFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct CallCount *p;
+  struct Call_बिलांग *p;
   UNUSED_PARAMETER(nArg); assert( nArg==0 );
   UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   assert( p!=0 );
   p->nStep++;
 }
-static void percent_rankValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+static void percent_rank_हालागा_Func(sqlite3_context *pCtx){
+  struct Call_बिलांग *p;
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
-    p->nValue = p->nStep;
+    p->n_हालागा = p->nStep;
     if( p->nTotal>1 ){
-      double r = (double)p->nValue / (double)(p->nTotal-1);
+      double r = (double)p->n_हालागा / (double)(p->nTotal-1);
       sqlite3_result_double(pCtx, r);
     }else{
       sqlite3_result_double(pCtx, 0.0);
     }
   }
 }
-#define percent_rankFinalizeFunc percent_rankValueFunc
+#define percent_rankFinalizeFunc percent_rank_हालागा_Func
 
 /*
 ** Implementation of built-in window function cume_dist(). Assumes that
@@ -374,12 +374,12 @@ static void percent_rankValueFunc(sqlite3_context *pCtx){
 static void cume_distStepFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct CallCount *p;
+  struct Call_बिलांग *p;
   UNUSED_PARAMETER(nArg); assert( nArg==0 );
   UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
     p->nTotal++;
   }
@@ -387,24 +387,24 @@ static void cume_distStepFunc(
 static void cume_distInvFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct CallCount *p;
+  struct Call_बिलांग *p;
   UNUSED_PARAMETER(nArg); assert( nArg==0 );
   UNUSED_PARAMETER(apArg);
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   assert( p!=0 );
   p->nStep++;
 }
-static void cume_distValueFunc(sqlite3_context *pCtx){
-  struct CallCount *p;
-  p = (struct CallCount*)sqlite3_aggregate_context(pCtx, 0);
+static void cume_dist_हालागा_Func(sqlite3_context *pCtx){
+  struct Call_बिलांग *p;
+  p = (struct Call_बिलांग*)sqlite3_aggregate_context(pCtx, 0);
   if( p ){
     double r = (double)(p->nStep) / (double)(p->nTotal);
     sqlite3_result_double(pCtx, r);
   }
 }
-#define cume_distFinalizeFunc cume_distValueFunc
+#define cume_distFinalizeFunc cume_dist_हालागा_Func
 
 /*
 ** Context object for ntile() window function.
@@ -424,14 +424,14 @@ struct NtileCtx {
 static void ntileStepFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
   struct NtileCtx *p;
   assert( nArg==1 ); UNUSED_PARAMETER(nArg);
   p = (struct NtileCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
     if( p->nTotal==0 ){
-      p->nParam = sqlite3_value_int64(apArg[0]);
+      p->nParam = sqlite3_हालागा_int64(apArg[0]);
       if( p->nParam<=0 ){
         sqlite3_result_error(
             pCtx, "argument of ntile must be a positive integer", -1
@@ -444,7 +444,7 @@ static void ntileStepFunc(
 static void ntileInvFunc(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
   struct NtileCtx *p;
   assert( nArg==1 ); UNUSED_PARAMETER(nArg);
@@ -453,7 +453,7 @@ static void ntileInvFunc(
   assert( p!=0 );
   p->iRow++;
 }
-static void ntileValueFunc(sqlite3_context *pCtx){
+static void ntile_हालागा_Func(sqlite3_context *pCtx){
   struct NtileCtx *p;
   p = (struct NtileCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p && p->nParam>0 ){
@@ -475,30 +475,30 @@ static void ntileValueFunc(sqlite3_context *pCtx){
     }
   }
 }
-#define ntileFinalizeFunc ntileValueFunc
+#define ntileFinalizeFunc ntile_हालागा_Func
 
 /*
 ** Context object for last_value() window function.
 */
-struct LastValueCtx {
-  sqlite3_value *pVal;
+struct Last_हालागा_Ctx {
+  sqlite3_हालागा *pVal;
   int nVal;
 };
 
 /*
 ** Implementation of last_value().
 */
-static void last_valueStepFunc(
+static void last_हालागा_Step_Func(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct LastValueCtx *p;
+  struct Last_हालागा_Ctx *p;
   UNUSED_PARAMETER(nArg);
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  p = (struct Last_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p ){
-    sqlite3_value_free(p->pVal);
-    p->pVal = sqlite3_value_dup(apArg[0]);
+    sqlite3_हालागा_free(p->pVal);
+    p->pVal = sqlite3_हालागा_dup(apArg[0]);
     if( p->pVal==0 ){
       sqlite3_result_error_nomem(pCtx);
     }else{
@@ -506,36 +506,36 @@ static void last_valueStepFunc(
     }
   }
 }
-static void last_valueInvFunc(
+static void last_हालागा_Inv_Func(
   sqlite3_context *pCtx,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
-  struct LastValueCtx *p;
+  struct Last_हालागा_Ctx *p;
   UNUSED_PARAMETER(nArg);
   UNUSED_PARAMETER(apArg);
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+  p = (struct Last_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( ALWAYS(p) ){
     p->nVal--;
     if( p->nVal==0 ){
-      sqlite3_value_free(p->pVal);
+      sqlite3_हालागा_free(p->pVal);
       p->pVal = 0;
     }
   }
 }
-static void last_valueValueFunc(sqlite3_context *pCtx){
-  struct LastValueCtx *p;
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, 0);
+static void last_हालागा_हालागा_Func(sqlite3_context *pCtx){
+  struct Last_हालागा_Ctx *p;
+  p = (struct Last_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, 0);
   if( p && p->pVal ){
-    sqlite3_result_value(pCtx, p->pVal);
+    sqlite3_result_हालागा(pCtx, p->pVal);
   }
 }
-static void last_valueFinalizeFunc(sqlite3_context *pCtx){
-  struct LastValueCtx *p;
-  p = (struct LastValueCtx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
+static void last_हालागा_Finalize_Func(sqlite3_context *pCtx){
+  struct Last_हालागा_Ctx *p;
+  p = (struct Last_हालागा_Ctx*)sqlite3_aggregate_context(pCtx, sizeof(*p));
   if( p && p->pVal ){
-    sqlite3_result_value(pCtx, p->pVal);
-    sqlite3_value_free(p->pVal);
+    sqlite3_result_हालागा(pCtx, p->pVal);
+    sqlite3_हालागा_free(p->pVal);
     p->pVal = 0;
   }
 }
@@ -548,15 +548,15 @@ static void last_valueFinalizeFunc(sqlite3_context *pCtx){
 **
 **       if( pFuncDef->zName==row_valueName ){ ... }
 */
-static const char row_numberName[] =   "row_number";
+static const char row_नुमेरो_Name[] =   "row_number";
 static const char dense_rankName[] =   "dense_rank";
 static const char rankName[] =         "rank";
 static const char percent_rankName[] = "percent_rank";
 static const char cume_distName[] =    "cume_dist";
 static const char ntileName[] =        "ntile";
-static const char last_valueName[] =   "last_value";
-static const char nth_valueName[] =    "nth_value";
-static const char first_valueName[] =  "first_value";
+static const char last_हालागा_Name[] =   "last_value";
+static const char nth_हालागा_Name[] =    "nth_value";
+static const char first_हालागा_Name[] =  "first_value";
 static const char leadName[] =         "lead";
 static const char lagName[] =          "lag";
 
@@ -572,20 +572,20 @@ static const char lagName[] =          "lag";
 static void noopStepFunc(    /*NO_TEST*/
   sqlite3_context *p,        /*NO_TEST*/
   int n,                     /*NO_TEST*/
-  sqlite3_value **a          /*NO_TEST*/
+  sqlite3_हालागा **a          /*NO_TEST*/
 ){                           /*NO_TEST*/
   UNUSED_PARAMETER(p);       /*NO_TEST*/
   UNUSED_PARAMETER(n);       /*NO_TEST*/
   UNUSED_PARAMETER(a);       /*NO_TEST*/
   assert(0);                 /*NO_TEST*/
 }                            /*NO_TEST*/
-static void noopValueFunc(sqlite3_context *p){ UNUSED_PARAMETER(p); /*no-op*/ }
+static void noop_हालागा_Func(sqlite3_context *p){ UNUSED_PARAMETER(p); /*no-op*/ }
 
 /* Window functions that use all window interfaces: xStep, xFinal,
 ** xValue, and xInverse */
 #define WINDOWFUNCALL(name,nArg,extra) {                                   \
   nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_WINDOW|extra), 0, 0,  \
-  name ## StepFunc, name ## FinalizeFunc, name ## ValueFunc,               \
+  name ## StepFunc, name ## FinalizeFunc, name ## हालागा_Func,               \
   name ## InvFunc, name ## Name, {0}                                       \
 }
 
@@ -593,7 +593,7 @@ static void noopValueFunc(sqlite3_context *p){ UNUSED_PARAMETER(p); /*no-op*/ }
 ** no-op routines for their methods */
 #define WINDOWFUNCNOOP(name,nArg,extra) {                                  \
   nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_WINDOW|extra), 0, 0,  \
-  noopStepFunc, noopValueFunc, noopValueFunc,                              \
+  noopStepFunc, noop_हालागा_Func, noop_हालागा_Func,                              \
   noopStepFunc, name ## Name, {0}                                          \
 }
 
@@ -602,7 +602,7 @@ static void noopValueFunc(sqlite3_context *p){ UNUSED_PARAMETER(p); /*no-op*/ }
 ** xInverse. */
 #define WINDOWFUNCX(name,nArg,extra) {                                     \
   nArg, (SQLITE_FUNC_BUILTIN|SQLITE_UTF8|SQLITE_FUNC_WINDOW|extra), 0, 0,  \
-  name ## StepFunc, name ## ValueFunc, name ## ValueFunc,                  \
+  name ## StepFunc, name ## हालागा_Func, name ## हालागा_Func,                  \
   noopStepFunc, name ## Name, {0}                                          \
 }
 
@@ -612,15 +612,15 @@ static void noopValueFunc(sqlite3_context *p){ UNUSED_PARAMETER(p); /*no-op*/ }
 */
 void sqlite3WindowFunctions(void){
   static FuncDef aWindowFuncs[] = {
-    WINDOWFUNCX(row_number, 0, 0),
+    WINDOWFUNCX(row_नुमेरो, 0, 0),
     WINDOWFUNCX(dense_rank, 0, 0),
     WINDOWFUNCX(rank, 0, 0),
     WINDOWFUNCALL(percent_rank, 0, 0),
     WINDOWFUNCALL(cume_dist, 0, 0),
     WINDOWFUNCALL(ntile, 1, 0),
-    WINDOWFUNCALL(last_value, 1, 0),
-    WINDOWFUNCALL(nth_value, 2, 0),
-    WINDOWFUNCALL(first_value, 1, 0),
+    WINDOWFUNCALL(last_हालागा, 1, 0),
+    WINDOWFUNCALL(nth_हालागा, 2, 0),
+    WINDOWFUNCALL(first_हालागा, 1, 0),
     WINDOWFUNCNOOP(lead, 1, 0),
     WINDOWFUNCNOOP(lead, 2, 0),
     WINDOWFUNCNOOP(lead, 3, 0),
@@ -628,7 +628,7 @@ void sqlite3WindowFunctions(void){
     WINDOWFUNCNOOP(lag, 2, 0),
     WINDOWFUNCNOOP(lag, 3, 0),
   };
-  sqlite3InsertBuiltinFuncs(aWindowFuncs, ArraySize(aWindowFuncs));
+  sqlite3_इसिंगित_Builtin_Funcs(aWindowFuncs, ArraySize(aWindowFuncs));
 }
 
 static Window *windowFind(Parse *pParse, Window *pList, const char *zName){
@@ -637,7 +637,7 @@ static Window *windowFind(Parse *pParse, Window *pList, const char *zName){
     if( sqlite3StrICmp(p->zName, zName)==0 ) break;
   }
   if( p==0 ){
-    sqlite3ErrorMsg(pParse, "no such window: %s", zName);
+    sqlite3_Error_मेनसाहे(pParse, "no such window: %s", zName);
   }
   return p;
 }
@@ -668,10 +668,10 @@ void sqlite3WindowUpdate(
   if( pWin->zName && pWin->eFrmType==0 ){
     Window *p = windowFind(pParse, pList, pWin->zName);
     if( p==0 ) return;
-    pWin->pPartition = sqlite3ExprListDup(pParse->db, p->pPartition, 0);
-    pWin->pOrderBy = sqlite3ExprListDup(pParse->db, p->pOrderBy, 0);
-    pWin->pStart = sqlite3ExprDup(pParse->db, p->pStart, 0);
-    pWin->pEnd = sqlite3ExprDup(pParse->db, p->pEnd, 0);
+    pWin->pPartition = sqlite3_पाहायाग_List_Dup(pParse->db, p->pPartition, 0);
+    pWin->pOrderBy = sqlite3_पाहायाग_List_Dup(pParse->db, p->pOrderBy, 0);
+    pWin->pStart = sqlite3_पाहायाग_Dup(pParse->db, p->pStart, 0);
+    pWin->pEnd = sqlite3_पाहायाग_Dup(pParse->db, p->pEnd, 0);
     pWin->eStart = p->eStart;
     pWin->eEnd = p->eEnd;
     pWin->eFrmType = p->eFrmType;
@@ -681,16 +681,16 @@ void sqlite3WindowUpdate(
   }
   if( (pWin->eFrmType==TK_RANGE)
    && (pWin->pStart || pWin->pEnd)
-   && (pWin->pOrderBy==0 || pWin->pOrderBy->nExpr!=1)
+   && (pWin->pOrderBy==0 || pWin->pOrderBy->n_पाहायाग!=1)
   ){
-    sqlite3ErrorMsg(pParse,
+    sqlite3_Error_मेनसाहे(pParse,
       "RANGE with offset PRECEDING/FOLLOWING requires one ORDER BY expression"
     );
   }else
   if( pFunc->funcFlags & SQLITE_FUNC_WINDOW ){
     sqlite3 *db = pParse->db;
     if( pWin->pFilter ){
-      sqlite3ErrorMsg(pParse,
+      sqlite3_Error_मेनसाहे(pParse,
           "FILTER clause may only be used with aggregate window functions"
       );
     }else{
@@ -700,7 +700,7 @@ void sqlite3WindowUpdate(
         int eStart;
         int eEnd;
       } aUp[] = {
-        { row_numberName,   TK_ROWS,   TK_UNBOUNDED, TK_CURRENT },
+        { row_नुमेरो_Name,   TK_ROWS,   TK_UNBOUNDED, TK_CURRENT },
         { dense_rankName,   TK_RANGE,  TK_UNBOUNDED, TK_CURRENT },
         { rankName,         TK_RANGE,  TK_UNBOUNDED, TK_CURRENT },
         { percent_rankName, TK_GROUPS, TK_CURRENT,   TK_UNBOUNDED },
@@ -712,15 +712,15 @@ void sqlite3WindowUpdate(
       int i;
       for(i=0; i<ArraySize(aUp); i++){
         if( pFunc->zName==aUp[i].zFunc ){
-          sqlite3ExprDelete(db, pWin->pStart);
-          sqlite3ExprDelete(db, pWin->pEnd);
+          sqlite3_पाहायाग_Delete(db, pWin->pStart);
+          sqlite3_पाहायाग_Delete(db, pWin->pEnd);
           pWin->pEnd = pWin->pStart = 0;
           pWin->eFrmType = aUp[i].eFrmType;
           pWin->eStart = aUp[i].eStart;
           pWin->eEnd = aUp[i].eEnd;
           pWin->eExclude = 0;
           if( pWin->eStart==TK_FOLLOWING ){
-            pWin->pStart = sqlite3ExprInt32(db, 1);
+            pWin->pStart = sqlite3_पाहायाग_Int32(db, 1);
           }
           break;
         }
@@ -738,7 +738,7 @@ typedef struct WindowRewrite WindowRewrite;
 struct WindowRewrite {
   Window *pWin;
   SrcList *pSrc;
-  ExprList *pSub;
+  पाहायाग_List *pSub;
   Table *pTab;
   Select *pSubSelect;             /* Current sub-select, if any */
 };
@@ -748,7 +748,7 @@ struct WindowRewrite {
 ** this function appends to the output expression-list and updates
 ** expression (*ppExpr) in place.
 */
-static int selectWindowRewriteExprCb(Walker *pWalker, Expr *pExpr){
+static int select_Window_Rewrite_पाहायाग_Cb(Walker *pWalker, पाहायाग *p_पाहायाग){
   struct WindowRewrite *p = pWalker->u.pRewrite;
   Parse *pParse = pWalker->pParse;
   assert( p!=0 );
@@ -760,33 +760,33 @@ static int selectWindowRewriteExprCb(Walker *pWalker, Expr *pExpr){
   ** SELECT). Do not process window functions at all, as they belong to the
   ** scalar sub-select.  */
   if( p->pSubSelect ){
-    if( pExpr->op==TK_AGG_FUNCTION ){
+    if( p_पाहायाग->op==TK_AGG_FUNCTION ){
       /* If op2==walkerDepth, then this expression aggregates over the rows
       ** of the SELECT being processed, even though it is within a scalar
       ** sub-select. In that case proceed, otherwise skip this node. */
-      if( pExpr->op2!=pWalker->walkerDepth ) return WRC_Continue;
-    }else if( pExpr->op!=TK_COLUMN ){
+      if( p_पाहायाग->op2!=pWalker->walkerDepth ) return WRC_Continue;
+    }else if( p_पाहायाग->op!=TK_COLUMN ){
       return WRC_Continue;
     }else{
       int nSrc = p->pSrc->nSrc;
       int i;
       for(i=0; i<nSrc; i++){
-        if( pExpr->iTable==p->pSrc->a[i].iCursor ) break;
+        if( p_पाहायाग->iTable==p->pSrc->a[i].iCursor ) break;
       }
       if( i==nSrc ) return WRC_Continue;
     }
   }
 
-  switch( pExpr->op ){
+  switch( p_पाहायाग->op ){
 
     case TK_FUNCTION:
-      if( !ExprHasProperty(pExpr, EP_WinFunc) ){
+      if( !पाहायाग_Has_Property(p_पाहायाग, EP_WinFunc) ){
         break;
       }else{
         Window *pWin;
         for(pWin=p->pWin; pWin; pWin=pWin->pNextWin){
-          if( pExpr->y.pWin==pWin ){
-            assert( pWin->pOwner==pExpr );
+          if( p_पाहायाग->y.pWin==pWin ){
+            assert( pWin->pOwner==p_पाहायाग );
             return WRC_Prune;
           }
         }
@@ -800,34 +800,34 @@ static int selectWindowRewriteExprCb(Walker *pWalker, Expr *pExpr){
       if( pParse->db->mallocFailed ) return WRC_Abort;
       if( p->pSub ){
         int i;
-        for(i=0; i<p->pSub->nExpr; i++){
-          if( 0==sqlite3ExprCompare(0, p->pSub->a[i].pExpr, pExpr, -1) ){
+        for(i=0; i<p->pSub->n_पाहायाग; i++){
+          if( 0==sqlite3_पाहायाग_Compare(0, p->pSub->a[i].p_पाहायाग, p_पाहायाग, -1) ){
             iCol = i;
             break;
           }
         }
       }
       if( iCol<0 ){
-        Expr *pDup = sqlite3ExprDup(pParse->db, pExpr, 0);
+        पाहायाग *pDup = sqlite3_पाहायाग_Dup(pParse->db, p_पाहायाग, 0);
         if( pDup && pDup->op==TK_AGG_FUNCTION ) pDup->op = TK_FUNCTION;
-        p->pSub = sqlite3ExprListAppend(pParse, p->pSub, pDup);
+        p->pSub = sqlite3_पाहायाग_List_Append(pParse, p->pSub, pDup);
       }
       if( p->pSub ){
-        int f = pExpr->flags & (EP_Collate|EP_OuterON|EP_InnerON);
-        int iJoin = pExpr->w.iJoin;
+        int f = p_पाहायाग->flags & (EP_Collate|EP_OuterON|EP_InnerON);
+        int iJoin = p_पाहायाग->w.iJoin;
 
-        assert( ExprHasProperty(pExpr, EP_Static)==0 );
-        ExprSetProperty(pExpr, EP_Static);
-        sqlite3ExprDelete(pParse->db, pExpr);
-        ExprClearProperty(pExpr, EP_Static);
-        memset(pExpr, 0, sizeof(Expr));
+        assert( पाहायाग_Has_Property(p_पाहायाग, EP_Static)==0 );
+        पाहायाग_Set_Property(p_पाहायाग, EP_Static);
+        sqlite3_पाहायाग_Delete(pParse->db, p_पाहायाग);
+        पाहायाग_Clear_Property(p_पाहायाग, EP_Static);
+        memset(p_पाहायाग, 0, sizeof(पाहायाग));
 
-        pExpr->op = TK_COLUMN;
-        pExpr->iColumn = (iCol<0 ? p->pSub->nExpr-1: iCol);
-        pExpr->iTable = p->pWin->iEphCsr;
-        pExpr->y.pTab = p->pTab;
-        pExpr->flags = f;
-        if( (f & (EP_OuterON|EP_InnerON)) ) pExpr->w.iJoin = iJoin;
+        p_पाहायाग->op = TK_COLUMN;
+        p_पाहायाग->iColumn = (iCol<0 ? p->pSub->n_पाहायाग-1: iCol);
+        p_पाहायाग->iTable = p->pWin->iEphCsr;
+        p_पाहायाग->y.pTab = p->pTab;
+        p_पाहायाग->flags = f;
+        if( (f & (EP_OuterON|EP_InnerON)) ) p_पाहायाग->w.iJoin = iJoin;
       }
       if( pParse->db->mallocFailed ) return WRC_Abort;
       break;
@@ -872,9 +872,9 @@ static void selectWindowRewriteEList(
   Parse *pParse,
   Window *pWin,
   SrcList *pSrc,
-  ExprList *pEList,               /* Rewrite expressions in this list */
+  पाहायाग_List *pEList,               /* Rewrite expressions in this list */
   Table *pTab,
-  ExprList **ppSub                /* IN/OUT: Sub-select expression-list */
+  पाहायाग_List **ppSub                /* IN/OUT: Sub-select expression-list */
 ){
   Walker sWalker;
   WindowRewrite sRewrite;
@@ -889,11 +889,11 @@ static void selectWindowRewriteEList(
   sRewrite.pTab = pTab;
 
   sWalker.pParse = pParse;
-  sWalker.xExprCallback = selectWindowRewriteExprCb;
+  sWalker.x_पाहायाग_Callback = select_Window_Rewrite_पाहायाग_Cb;
   sWalker.xSelectCallback = selectWindowRewriteSelectCb;
   sWalker.u.pRewrite = &sRewrite;
 
-  (void)sqlite3WalkExprList(&sWalker, pEList);
+  (void)sqlite3_Walk_पाहायाग_List(&sWalker, pEList);
 
   *ppSub = sRewrite.pSub;
 }
@@ -902,33 +902,33 @@ static void selectWindowRewriteEList(
 ** Append a copy of each expression in expression-list pAppend to
 ** expression list pList. Return a pointer to the result list.
 */
-static ExprList *exprListAppendList(
+static पाहायाग_List *पाहायाग_List_Append_List(
   Parse *pParse,          /* Parsing context */
-  ExprList *pList,        /* List to which to append. Might be NULL */
-  ExprList *pAppend,      /* List of values to append. Might be NULL */
+  पाहायाग_List *pList,        /* List to which to append. Might be NULL */
+  पाहायाग_List *pAppend,      /* List of values to append. Might be NULL */
   int bIntToNull
 ){
   if( pAppend ){
     int i;
-    int nInit = pList ? pList->nExpr : 0;
-    for(i=0; i<pAppend->nExpr; i++){
+    int nInit = pList ? pList->n_पाहायाग : 0;
+    for(i=0; i<pAppend->n_पाहायाग; i++){
       sqlite3 *db = pParse->db;
-      Expr *pDup = sqlite3ExprDup(db, pAppend->a[i].pExpr, 0);
+      पाहायाग *pDup = sqlite3_पाहायाग_Dup(db, pAppend->a[i].p_पाहायाग, 0);
       if( db->mallocFailed ){
-        sqlite3ExprDelete(db, pDup);
+        sqlite3_पाहायाग_Delete(db, pDup);
         break;
       }
       if( bIntToNull ){
         int iDummy;
-        Expr *pSub;
-        pSub = sqlite3ExprSkipCollateAndLikely(pDup);
-        if( sqlite3ExprIsInteger(pSub, &iDummy, 0, 0) ){
+        पाहायाग *pSub;
+        pSub = sqlite3_पाहायाग_Skip_Collate_And_Likely(pDup);
+        if( sqlite3_पाहायाग_Is_Integer(pSub, &iDummy, 0, 0) ){
           pSub->op = TK_NULL;
-          pSub->flags &= ~(EP_IntValue|EP_IsTrue|EP_IsFalse);
+          pSub->flags &= ~(EP_Int_हालागा|EP_IsTrue|EP_IsFalse);
           pSub->u.zToken = 0;
         }
       }
-      pList = sqlite3ExprListAppend(pParse, pList, pDup);
+      pList = sqlite3_पाहायाग_List_Append(pParse, pList, pDup);
       if( pList ) pList->a[nInit+i].fg.sortFlags = pAppend->a[i].fg.sortFlags;
     }
   }
@@ -943,11 +943,11 @@ static ExprList *exprListAppendList(
 **
 ** See also the incrAggDepth() routine in resolve.c
 */
-static int sqlite3WindowExtraAggFuncDepth(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_AGG_FUNCTION
-   && pExpr->op2>=pWalker->walkerDepth
+static int sqlite3WindowExtraAggFuncDepth(Walker *pWalker, पाहायाग *p_पाहायाग){
+  if( p_पाहायाग->op==TK_AGG_FUNCTION
+   && p_पाहायाग->op2>=pWalker->walkerDepth
   ){
-    pExpr->op2++;
+    p_पाहायाग->op2++;
   }
   return WRC_Continue;
 }
@@ -956,14 +956,14 @@ static int sqlite3WindowExtraAggFuncDepth(Walker *pWalker, Expr *pExpr){
 ** Walker callback used to detect aggregate functions in the ORDER BY
 ** clause of an otherwise non-aggregate SELECT. 
 */
-static int disallowAggregatesInOrderByCb(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_AGG_FUNCTION
-   && pExpr->pAggInfo==0
-   && pExpr->op2==pWalker->walkerDepth
+static int disallowAggregatesInOrderByCb(Walker *pWalker, पाहायाग *p_पाहायाग){
+  if( p_पाहायाग->op==TK_AGG_FUNCTION
+   && p_पाहायाग->pAggInfo==0
+   && p_पाहायाग->op2==pWalker->walkerDepth
   ){
-    assert( !ExprHasProperty(pExpr, EP_IntValue) );
-     sqlite3ErrorMsg(pWalker->pParse,
-         "misuse of aggregate: %s()", pExpr->u.zToken);
+    assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) );
+     sqlite3_Error_मेनसाहे(pWalker->pParse,
+         "misuse of aggregate: %s()", p_पाहायाग->u.zToken);
   }
   return WRC_Continue;
 }
@@ -986,12 +986,12 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
     sqlite3 *db = pParse->db;
     Select *pSub = 0;             /* The subquery */
     SrcList *pSrc = p->pSrc;
-    Expr *pWhere = p->pWhere;
-    ExprList *pGroupBy = p->pGroupBy;
-    Expr *pHaving = p->pHaving;
-    ExprList *pSort = 0;
+    पाहायाग *pWhere = p->pWhere;
+    पाहायाग_List *pGroupBy = p->pGroupBy;
+    पाहायाग *pHaving = p->pHaving;
+    पाहायाग_List *pSort = 0;
 
-    ExprList *pSublist = 0;       /* Expression list for sub-query */
+    पाहायाग_List *pSublist = 0;       /* Expression list for sub-query */
     Window *pMWin = p->pWin;      /* Main window object */
     Window *pWin;                 /* Window object iterator */
     Table *pTab;
@@ -1006,11 +1006,11 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
     sqlite3AggInfoPersistWalkerInit(&w, pParse);
     sqlite3WalkSelect(&w, p);
     if( (p->selFlags & SF_Aggregate)==0 ){
-      w.xExprCallback = disallowAggregatesInOrderByCb;
+      w.x_पाहायाग_Callback = disallowAggregatesInOrderByCb;
       w.xSelectCallback = sqlite3WalkerDepthIncrease;
       w.xSelectCallback2 = sqlite3WalkerDepthDecrease;
       w.walkerDepth = 0;
-      sqlite3WalkExprList(&w, p->pOrderBy);
+      sqlite3_Walk_पाहायाग_List(&w, p->pOrderBy);
     }
 
     p->pSrc = 0;
@@ -1023,16 +1023,16 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
     /* Create the ORDER BY clause for the sub-select. This is the concatenation
     ** of the window PARTITION and ORDER BY clauses. Then, if this makes it
     ** redundant, remove the ORDER BY from the parent SELECT.  */
-    pSort = exprListAppendList(pParse, 0, pMWin->pPartition, 1);
-    pSort = exprListAppendList(pParse, pSort, pMWin->pOrderBy, 1);
-    if( pSort && p->pOrderBy && p->pOrderBy->nExpr<=pSort->nExpr ){
-      int nSave = pSort->nExpr;
-      pSort->nExpr = p->pOrderBy->nExpr;
-      if( sqlite3ExprListCompare(pSort, p->pOrderBy, -1)==0 ){
-        sqlite3ExprListDelete(db, p->pOrderBy);
+    pSort = पाहायाग_List_Append_List(pParse, 0, pMWin->pPartition, 1);
+    pSort = पाहायाग_List_Append_List(pParse, pSort, pMWin->pOrderBy, 1);
+    if( pSort && p->pOrderBy && p->pOrderBy->n_पाहायाग<=pSort->n_पाहायाग ){
+      int nSave = pSort->n_पाहायाग;
+      pSort->n_पाहायाग = p->pOrderBy->n_पाहायाग;
+      if( sqlite3_पाहायाग_List_Compare(pSort, p->pOrderBy, -1)==0 ){
+        sqlite3_पाहायाग_List_Delete(db, p->pOrderBy);
         p->pOrderBy = 0;
       }
-      pSort->nExpr = nSave;
+      pSort->n_पाहायाग = nSave;
     }
 
     /* Assign a cursor number for the ephemeral table used to buffer rows.
@@ -1043,34 +1043,34 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
 
     selectWindowRewriteEList(pParse, pMWin, pSrc, p->pEList, pTab, &pSublist);
     selectWindowRewriteEList(pParse, pMWin, pSrc, p->pOrderBy, pTab, &pSublist);
-    pMWin->nBufferCol = (pSublist ? pSublist->nExpr : 0);
+    pMWin->nBufferCol = (pSublist ? pSublist->n_पाहायाग : 0);
 
     /* Append the PARTITION BY and ORDER BY expressions to the to the
     ** sub-select expression list. They are required to figure out where
     ** boundaries for partitions and sets of peer rows lie.  */
-    pSublist = exprListAppendList(pParse, pSublist, pMWin->pPartition, 0);
-    pSublist = exprListAppendList(pParse, pSublist, pMWin->pOrderBy, 0);
+    pSublist = पाहायाग_List_Append_List(pParse, pSublist, pMWin->pPartition, 0);
+    pSublist = पाहायाग_List_Append_List(pParse, pSublist, pMWin->pOrderBy, 0);
 
     /* Append the arguments passed to each window function to the
     ** sub-select expression list. Also allocate two registers for each
     ** window function - one for the accumulator, another for interim
     ** results.  */
     for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
-      ExprList *pArgs;
-      assert( ExprUseXList(pWin->pOwner) );
+      पाहायाग_List *p_मगा_कातविरान;
+      assert( पाहायाग_Use_XList(pWin->pOwner) );
       assert( pWin->pWFunc!=0 );
-      pArgs = pWin->pOwner->x.pList;
+      p_मगा_कातविरान = pWin->pOwner->x.pList;
       if( pWin->pWFunc->funcFlags & SQLITE_SUBTYPE ){
-        selectWindowRewriteEList(pParse, pMWin, pSrc, pArgs, pTab, &pSublist);
-        pWin->iArgCol = (pSublist ? pSublist->nExpr : 0);
-        pWin->bExprArgs = 1;
+        selectWindowRewriteEList(pParse, pMWin, pSrc, p_मगा_कातविरान, pTab, &pSublist);
+        pWin->iArgCol = (pSublist ? pSublist->n_पाहायाग : 0);
+        pWin->b_पाहायाग_मगा_कातविरान = 1;
       }else{
-        pWin->iArgCol = (pSublist ? pSublist->nExpr : 0);
-        pSublist = exprListAppendList(pParse, pSublist, pArgs, 0);
+        pWin->iArgCol = (pSublist ? pSublist->n_पाहायाग : 0);
+        pSublist = पाहायाग_List_Append_List(pParse, pSublist, p_मगा_कातविरान, 0);
       }
       if( pWin->pFilter ){
-        Expr *pFilter = sqlite3ExprDup(db, pWin->pFilter, 0);
-        pSublist = sqlite3ExprListAppend(pParse, pSublist, pFilter);
+        पाहायाग *pFilter = sqlite3_पाहायाग_Dup(db, pWin->pFilter, 0);
+        pSublist = sqlite3_पाहायाग_List_Append(pParse, pSublist, pFilter);
       }
       pWin->regAccum = ++pParse->nMem;
       pWin->regResult = ++pParse->nMem;
@@ -1084,7 +1084,7 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
     ** keep everything legal in this case.
     */
     if( pSublist==0 ){
-      pSublist = sqlite3ExprListAppend(pParse, 0, sqlite3ExprInt32(db, 0));
+      pSublist = sqlite3_पाहायाग_List_Append(pParse, 0, sqlite3_पाहायाग_Int32(db, 0));
     }
 
     pSub = sqlite3SelectNew(
@@ -1117,7 +1117,7 @@ int sqlite3WindowRewrite(Parse *pParse, Select *p){
         p->pSrc->a[0].pSTab = pTab;
         pTab = pTab2;
         memset(&w, 0, sizeof(w));
-        w.xExprCallback = sqlite3WindowExtraAggFuncDepth;
+        w.x_पाहायाग_Callback = sqlite3WindowExtraAggFuncDepth;
         w.xSelectCallback = sqlite3WalkerDepthIncrease;
         w.xSelectCallback2 = sqlite3WalkerDepthDecrease;
         sqlite3WalkSelect(&w, pSub);
@@ -1153,11 +1153,11 @@ void sqlite3WindowUnlinkFromSelect(Window *p){
 void sqlite3WindowDelete(sqlite3 *db, Window *p){
   if( p ){
     sqlite3WindowUnlinkFromSelect(p);
-    sqlite3ExprDelete(db, p->pFilter);
-    sqlite3ExprListDelete(db, p->pPartition);
-    sqlite3ExprListDelete(db, p->pOrderBy);
-    sqlite3ExprDelete(db, p->pEnd);
-    sqlite3ExprDelete(db, p->pStart);
+    sqlite3_पाहायाग_Delete(db, p->pFilter);
+    sqlite3_पाहायाग_List_Delete(db, p->pPartition);
+    sqlite3_पाहायाग_List_Delete(db, p->pOrderBy);
+    sqlite3_पाहायाग_Delete(db, p->pEnd);
+    sqlite3_पाहायाग_Delete(db, p->pStart);
     sqlite3DbFree(db, p->zName);
     sqlite3DbFree(db, p->zBase);
     sqlite3DbFree(db, p);
@@ -1182,13 +1182,13 @@ void sqlite3WindowListDelete(sqlite3 *db, Window *p){
 ** integer will be caught later.  But it is important not to leave
 ** variable values in the expression tree.
 */
-static Expr *sqlite3WindowOffsetExpr(Parse *pParse, Expr *pExpr){
-  if( 0==sqlite3ExprIsConstant(0,pExpr) ){
-    if( IN_RENAME_OBJECT ) sqlite3RenameExprUnmap(pParse, pExpr);
-    sqlite3ExprDelete(pParse->db, pExpr);
-    pExpr = sqlite3ExprAlloc(pParse->db, TK_NULL, 0, 0);
+static पाहायाग *sqlite3_Window_Offset_पाहायाग(Parse *pParse, पाहायाग *p_पाहायाग){
+  if( 0==sqlite3_पाहायाग_Is_Constant(0,p_पाहायाग) ){
+    if( IN_RENAME_OBJECT ) sqlite3_Rename_पाहायाग_Unmap(pParse, p_पाहायाग);
+    sqlite3_पाहायाग_Delete(pParse->db, p_पाहायाग);
+    p_पाहायाग = sqlite3_पाहायाग_Alloc(pParse->db, TK_NULL, 0, 0);
   }
-  return pExpr;
+  return p_पाहायाग;
 }
 
 /*
@@ -1198,9 +1198,9 @@ Window *sqlite3WindowAlloc(
   Parse *pParse,    /* Parsing context */
   int eType,        /* Frame type. TK_RANGE, TK_ROWS, TK_GROUPS, or 0 */
   int eStart,       /* Start type: CURRENT, PRECEDING, FOLLOWING, UNBOUNDED */
-  Expr *pStart,     /* Start window size if TK_PRECEDING or FOLLOWING */
+  पाहायाग *pStart,     /* Start window size if TK_PRECEDING or FOLLOWING */
   int eEnd,         /* End type: CURRENT, FOLLOWING, TK_UNBOUNDED, PRECEDING */
-  Expr *pEnd,       /* End window size if TK_FOLLOWING or PRECEDING */
+  पाहायाग *pEnd,       /* End window size if TK_FOLLOWING or PRECEDING */
   u8 eExclude       /* EXCLUDE clause */
 ){
   Window *pWin = 0;
@@ -1237,7 +1237,7 @@ Window *sqlite3WindowAlloc(
   if( (eStart==TK_CURRENT && eEnd==TK_PRECEDING)
    || (eStart==TK_FOLLOWING && (eEnd==TK_PRECEDING || eEnd==TK_CURRENT))
   ){
-    sqlite3ErrorMsg(pParse, "unsupported frame specification");
+    sqlite3_Error_मेनसाहे(pParse, "unsupported frame specification");
     goto windowAllocErr;
   }
 
@@ -1251,13 +1251,13 @@ Window *sqlite3WindowAlloc(
   }
   pWin->eExclude = eExclude;
   pWin->bImplicitFrame = bImplicitFrame;
-  pWin->pEnd = sqlite3WindowOffsetExpr(pParse, pEnd);
-  pWin->pStart = sqlite3WindowOffsetExpr(pParse, pStart);
+  pWin->pEnd = sqlite3_Window_Offset_पाहायाग(pParse, pEnd);
+  pWin->pStart = sqlite3_Window_Offset_पाहायाग(pParse, pStart);
   return pWin;
 
 windowAllocErr:
-  sqlite3ExprDelete(pParse->db, pEnd);
-  sqlite3ExprDelete(pParse->db, pStart);
+  sqlite3_पाहायाग_Delete(pParse->db, pEnd);
+  sqlite3_पाहायाग_Delete(pParse->db, pStart);
   return 0;
 }
 
@@ -1269,8 +1269,8 @@ windowAllocErr:
 Window *sqlite3WindowAssemble(
   Parse *pParse,
   Window *pWin,
-  ExprList *pPartition,
-  ExprList *pOrderBy,
+  पाहायाग_List *pPartition,
+  पाहायाग_List *pOrderBy,
   Token *pBase
 ){
   if( pWin ){
@@ -1280,8 +1280,8 @@ Window *sqlite3WindowAssemble(
       pWin->zBase = sqlite3DbStrNDup(pParse->db, pBase->z, pBase->n);
     }
   }else{
-    sqlite3ExprListDelete(pParse->db, pPartition);
-    sqlite3ExprListDelete(pParse->db, pOrderBy);
+    sqlite3_पाहायाग_List_Delete(pParse->db, pPartition);
+    sqlite3_पाहायाग_List_Delete(pParse->db, pOrderBy);
   }
   return pWin;
 }
@@ -1308,14 +1308,14 @@ void sqlite3WindowChain(Parse *pParse, Window *pWin, Window *pList){
         zErr = "frame specification";
       }
       if( zErr ){
-        sqlite3ErrorMsg(pParse,
+        sqlite3_Error_मेनसाहे(pParse,
             "cannot override %s of window: %s", zErr, pWin->zBase
         );
       }else{
-        pWin->pPartition = sqlite3ExprListDup(db, pExist->pPartition, 0);
+        pWin->pPartition = sqlite3_पाहायाग_List_Dup(db, pExist->pPartition, 0);
         if( pExist->pOrderBy ){
           assert( pWin->pOrderBy==0 );
-          pWin->pOrderBy = sqlite3ExprListDup(db, pExist->pOrderBy, 0);
+          pWin->pOrderBy = sqlite3_पाहायाग_List_Dup(db, pExist->pOrderBy, 0);
         }
         sqlite3DbFree(db, pWin->zBase);
         pWin->zBase = 0;
@@ -1327,16 +1327,16 @@ void sqlite3WindowChain(Parse *pParse, Window *pWin, Window *pList){
 /*
 ** Attach window object pWin to expression p.
 */
-void sqlite3WindowAttach(Parse *pParse, Expr *p, Window *pWin){
+void sqlite3WindowAttach(Parse *pParse, पाहायाग *p, Window *pWin){
   if( p ){
     assert( p->op==TK_FUNCTION );
     assert( pWin );
-    assert( ExprIsFullSize(p) );
+    assert( पाहायाग_Is_Full_Size(p) );
     p->y.pWin = pWin;
-    ExprSetProperty(p, EP_WinFunc|EP_FullSize);
+    पाहायाग_Set_Property(p, EP_WinFunc|EP_FullSize);
     pWin->pOwner = p;
     if( (p->flags & EP_Distinct) && pWin->eFrmType!=TK_FILTER ){
-      sqlite3ErrorMsg(pParse,
+      sqlite3_Error_मेनसाहे(pParse,
           "DISTINCT is not supported for window functions"
       );
     }
@@ -1361,7 +1361,7 @@ void sqlite3WindowLink(Select *pSel, Window *pWin){
       pSel->pWin = pWin;
       pWin->ppThis = &pSel->pWin;
     }else{
-      if( sqlite3ExprListCompare(pWin->pPartition, pSel->pWin->pPartition,-1) ){
+      if( sqlite3_पाहायाग_List_Compare(pWin->pPartition, pSel->pWin->pPartition,-1) ){
         pSel->selFlags |= SF_MultiPart;
       }
     }
@@ -1385,16 +1385,16 @@ int sqlite3WindowCompare(
   if( p1->eStart!=p2->eStart ) return 1;
   if( p1->eEnd!=p2->eEnd ) return 1;
   if( p1->eExclude!=p2->eExclude ) return 1;
-  if( sqlite3ExprCompare(pParse, p1->pStart, p2->pStart, -1) ) return 1;
-  if( sqlite3ExprCompare(pParse, p1->pEnd, p2->pEnd, -1) ) return 1;
-  if( (res = sqlite3ExprListCompare(p1->pPartition, p2->pPartition, -1)) ){
+  if( sqlite3_पाहायाग_Compare(pParse, p1->pStart, p2->pStart, -1) ) return 1;
+  if( sqlite3_पाहायाग_Compare(pParse, p1->pEnd, p2->pEnd, -1) ) return 1;
+  if( (res = sqlite3_पाहायाग_List_Compare(p1->pPartition, p2->pPartition, -1)) ){
     return res;
   }
-  if( (res = sqlite3ExprListCompare(p1->pOrderBy, p2->pOrderBy, -1)) ){
+  if( (res = sqlite3_पाहायाग_List_Compare(p1->pOrderBy, p2->pOrderBy, -1)) ){
     return res;
   }
   if( bFilter ){
-    if( (res = sqlite3ExprCompare(pParse, p1->pFilter, p2->pFilter, -1)) ){
+    if( (res = sqlite3_पाहायाग_Compare(pParse, p1->pFilter, p2->pFilter, -1)) ){
       return res;
     }
   }
@@ -1409,16 +1409,16 @@ int sqlite3WindowCompare(
 */
 void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
   Window *pWin;
-  int nEphExpr;
+  int n_Eph_पाहायाग;
   Window *pMWin;
   Vdbe *v;
 
   assert( pSelect->pSrc->a[0].fg.isSubquery );
-  nEphExpr = pSelect->pSrc->a[0].u4.pSubq->pSelect->pEList->nExpr;
+  n_Eph_पाहायाग = pSelect->pSrc->a[0].u4.pSubq->pSelect->pEList->n_पाहायाग;
   pMWin = pSelect->pWin;
   v = sqlite3GetVdbe(pParse);
 
-  sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pMWin->iEphCsr, nEphExpr);
+  sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pMWin->iEphCsr, n_Eph_पाहायाग);
   sqlite3VdbeAddOp2(v, OP_OpenDup, pMWin->iEphCsr+1, pMWin->iEphCsr);
   sqlite3VdbeAddOp2(v, OP_OpenDup, pMWin->iEphCsr+2, pMWin->iEphCsr);
   sqlite3VdbeAddOp2(v, OP_OpenDup, pMWin->iEphCsr+3, pMWin->iEphCsr);
@@ -1426,10 +1426,10 @@ void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
   /* Allocate registers to use for PARTITION BY values, if any. Initialize
   ** said registers to NULL.  */
   if( pMWin->pPartition ){
-    int nExpr = pMWin->pPartition->nExpr;
+    int n_पाहायाग = pMWin->pPartition->n_पाहायाग;
     pMWin->regPart = pParse->nMem+1;
-    pParse->nMem += nExpr;
-    sqlite3VdbeAddOp3(v, OP_Null, 0, pMWin->regPart, pMWin->regPart+nExpr-1);
+    pParse->nMem += n_पाहायाग;
+    sqlite3VdbeAddOp3(v, OP_Null, 0, pMWin->regPart, pMWin->regPart+n_पाहायाग-1);
   }
 
   pMWin->regOne = ++pParse->nMem;
@@ -1455,23 +1455,23 @@ void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
       **   regApp+1: integer value used to ensure keys are unique
       **   regApp+2: output of MakeRecord
       */
-      ExprList *pList;
-      KeyInfo *pKeyInfo;
-      assert( ExprUseXList(pWin->pOwner) );
+      पाहायाग_List *pList;
+      सुसि_Info *p_सुसि_Info;
+      assert( पाहायाग_Use_XList(pWin->pOwner) );
       pList = pWin->pOwner->x.pList;
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pList, 0, 0);
+      p_सुसि_Info = sqlite3_सुसि_Info_From_पाहायाग_List(pParse, pList, 0, 0);
       pWin->csrApp = pParse->nTab++;
       pWin->regApp = pParse->nMem+1;
       pParse->nMem += 3;
-      if( pKeyInfo && pWin->pWFunc->zName[1]=='i' ){
-        assert( pKeyInfo->aSortFlags[0]==0 );
-        pKeyInfo->aSortFlags[0] = KEYINFO_ORDER_DESC;
+      if( p_सुसि_Info && pWin->pWFunc->zName[1]=='i' ){
+        assert( p_सुसि_Info->aSortFlags[0]==0 );
+        p_सुसि_Info->aSortFlags[0] = KEYINFO_ORDER_DESC;
       }
       sqlite3VdbeAddOp2(v, OP_OpenEphemeral, pWin->csrApp, 2);
-      sqlite3VdbeAppendP4(v, pKeyInfo, P4_KEYINFO);
+      sqlite3VdbeAppendP4(v, p_सुसि_Info, P4_KEYINFO);
       sqlite3VdbeAddOp2(v, OP_Integer, 0, pWin->regApp+1);
     }
-    else if( p->zName==nth_valueName || p->zName==first_valueName ){
+    else if( p->zName==nth_हालागा_Name || p->zName==first_हालागा_Name ){
       /* Allocate two registers at pWin->regApp. These will be used to
       ** store the start and end index of the current frame.  */
       pWin->regApp = pParse->nMem+1;
@@ -1488,9 +1488,9 @@ void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
 
 #define WINDOW_STARTING_INT  0
 #define WINDOW_ENDING_INT    1
-#define WINDOW_NTH_VALUE_INT 2
-#define WINDOW_STARTING_NUM  3
-#define WINDOW_ENDING_NUM    4
+#define WINDOW_NTH_हालागा_INT 2
+#define WINDOW_STARTING_नुमेरो  3
+#define WINDOW_ENDING_नुमेरो    4
 
 /*
 ** A "PRECEDING <expr>" (eCond==0) or "FOLLOWING <expr>" (eCond==1) or the
@@ -1499,7 +1499,7 @@ void sqlite3WindowCodeInit(Parse *pParse, Select *pSelect){
 ** code to check that the value is a non-negative integer and throws an
 ** exception if it is not.
 */
-static void windowCheckValue(Parse *pParse, int reg, int eCond){
+static void window_Check_हालागा(Parse *pParse, int reg, int eCond){
   static const char *azErr[] = {
     "frame starting offset must be a non-negative integer",
     "frame ending offset must be a non-negative integer",
@@ -1512,7 +1512,7 @@ static void windowCheckValue(Parse *pParse, int reg, int eCond){
   int regZero = sqlite3GetTempReg(pParse);
   assert( eCond>=0 && eCond<ArraySize(azErr) );
   sqlite3VdbeAddOp2(v, OP_Integer, 0, regZero);
-  if( eCond>=WINDOW_STARTING_NUM ){
+  if( eCond>=WINDOW_STARTING_नुमेरो ){
     int regString = sqlite3GetTempReg(pParse);
     sqlite3VdbeAddOp4(v, OP_String8, 0, regString, 0, "", P4_STATIC);
     sqlite3VdbeAddOp3(v, OP_Ge, regString, sqlite3VdbeCurrentAddr(v)+2, reg);
@@ -1546,11 +1546,11 @@ static void windowCheckValue(Parse *pParse, int reg, int eCond){
 ** Return the number of arguments passed to the window-function associated
 ** with the object passed as the only argument to this function.
 */
-static int windowArgCount(Window *pWin){
-  const ExprList *pList;
-  assert( ExprUseXList(pWin->pOwner) );
+static int window_Arg_बिलांग(Window *pWin){
+  const पाहायाग_List *pList;
+  assert( पाहायाग_Use_XList(pWin->pOwner) );
   pList = pWin->pOwner->x.pList;
-  return (pList ? pList->nExpr : 0);
+  return (pList ? pList->n_पाहायाग : 0);
 }
 
 typedef struct WindowCodeArg WindowCodeArg;
@@ -1638,19 +1638,19 @@ struct WindowCodeArg {
 ** Generate VM code to read the window frames peer values from cursor csr into
 ** an array of registers starting at reg.
 */
-static void windowReadPeerValues(
+static void window_Read_Peer_मगा_हालागा(
   WindowCodeArg *p,
   int csr,
   int reg
 ){
   Window *pMWin = p->pMWin;
-  ExprList *pOrderBy = pMWin->pOrderBy;
+  पाहायाग_List *pOrderBy = pMWin->pOrderBy;
   if( pOrderBy ){
     Vdbe *v = sqlite3GetVdbe(p->pParse);
-    ExprList *pPart = pMWin->pPartition;
-    int iColOff = pMWin->nBufferCol + (pPart ? pPart->nExpr : 0);
+    पाहायाग_List *pPart = pMWin->pPartition;
+    int iColOff = pMWin->nBufferCol + (pPart ? pPart->n_पाहायाग : 0);
     int i;
-    for(i=0; i<pOrderBy->nExpr; i++){
+    for(i=0; i<pOrderBy->n_पाहायाग; i++){
       sqlite3VdbeAddOp3(v, OP_Column, csr, iColOff+i, reg+i);
     }
   }
@@ -1688,7 +1688,7 @@ static void windowAggStep(
   for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
     FuncDef *pFunc = pWin->pWFunc;
     int regArg;
-    int nArg = pWin->bExprArgs ? 0 : windowArgCount(pWin);
+    int nArg = pWin->b_पाहायाग_मगा_कातविरान ? 0 : window_Arg_बिलांग(pWin);
     int i;
     int addrIf = 0;
 
@@ -1699,7 +1699,7 @@ static void windowAggStep(
     assert( pWin==pMWin || sqlite3WindowCompare(pParse,pWin,pMWin,0)!=1 );
 
     for(i=0; i<nArg; i++){
-      if( i!=1 || pFunc->zName!=nth_valueName ){
+      if( i!=1 || pFunc->zName!=nth_हालागा_Name ){
         sqlite3VdbeAddOp3(v, OP_Column, csr, pWin->iArgCol+i, reg+i);
       }else{
         sqlite3VdbeAddOp3(v, OP_Column, pMWin->iEphCsr, pWin->iArgCol+i, reg+i);
@@ -1709,9 +1709,9 @@ static void windowAggStep(
 
     if( pWin->pFilter ){
       int regTmp;
-      assert( ExprUseXList(pWin->pOwner) );
-      assert( pWin->bExprArgs || !nArg ||nArg==pWin->pOwner->x.pList->nExpr );
-      assert( pWin->bExprArgs || nArg  ||pWin->pOwner->x.pList==0 );
+      assert( पाहायाग_Use_XList(pWin->pOwner) );
+      assert( pWin->b_पाहायाग_मगा_कातविरान || !nArg ||nArg==pWin->pOwner->x.pList->n_पाहायाग );
+      assert( pWin->b_पाहायाग_मगा_कातविरान || nArg  ||pWin->pOwner->x.pList==0 );
       regTmp = sqlite3GetTempReg(pParse);
       sqlite3VdbeAddOp3(v, OP_Column, csr, pWin->iArgCol+nArg,regTmp);
       addrIf = sqlite3VdbeAddOp3(v, OP_IfNot, regTmp, 0, 1);
@@ -1729,7 +1729,7 @@ static void windowAggStep(
         sqlite3VdbeAddOp2(v, OP_AddImm, pWin->regApp+1, 1);
         sqlite3VdbeAddOp2(v, OP_SCopy, regArg, pWin->regApp);
         sqlite3VdbeAddOp3(v, OP_MakeRecord, pWin->regApp, 2, pWin->regApp+2);
-        sqlite3VdbeAddOp2(v, OP_IdxInsert, pWin->csrApp, pWin->regApp+2);
+        sqlite3VdbeAddOp2(v, OP_Idx_इसिंगित, pWin->csrApp, pWin->regApp+2);
       }else{
         sqlite3VdbeAddOp4Int(v, OP_SeekGE, pWin->csrApp, 0, regArg, 1);
         VdbeCoverageNeverTaken(v);
@@ -1739,20 +1739,20 @@ static void windowAggStep(
       sqlite3VdbeJumpHere(v, addrIsNull);
     }else if( pWin->regApp ){
       assert( pWin->pFilter==0 );
-      assert( pFunc->zName==nth_valueName
-           || pFunc->zName==first_valueName
+      assert( pFunc->zName==nth_हालागा_Name
+           || pFunc->zName==first_हालागा_Name
       );
       assert( bInverse==0 || bInverse==1 );
       sqlite3VdbeAddOp2(v, OP_AddImm, pWin->regApp+1-bInverse, 1);
     }else if( pFunc->xSFunc!=noopStepFunc ){
-      if( pWin->bExprArgs ){
+      if( pWin->b_पाहायाग_मगा_कातविरान ){
         int iOp = sqlite3VdbeCurrentAddr(v);
         int iEnd;
 
-        assert( ExprUseXList(pWin->pOwner) );
-        nArg = pWin->pOwner->x.pList->nExpr;
+        assert( पाहायाग_Use_XList(pWin->pOwner) );
+        nArg = pWin->pOwner->x.pList->n_पाहायाग;
         regArg = sqlite3GetTempRange(pParse, nArg);
-        sqlite3ExprCodeExprList(pParse, pWin->pOwner->x.pList, regArg, 0, 0);
+        sqlite3_पाहायाग_Code_पाहायाग_List(pParse, pWin->pOwner->x.pList, regArg, 0, 0);
 
         for(iEnd=sqlite3VdbeCurrentAddr(v); iOp<iEnd; iOp++){
           VdbeOp *pOp = sqlite3VdbeGetOp(v, iOp);
@@ -1764,15 +1764,15 @@ static void windowAggStep(
       if( pFunc->funcFlags & SQLITE_FUNC_NEEDCOLL ){
         CollSeq *pColl;
         assert( nArg>0 );
-        assert( ExprUseXList(pWin->pOwner) );
-        pColl = sqlite3ExprNNCollSeq(pParse, pWin->pOwner->x.pList->a[0].pExpr);
+        assert( पाहायाग_Use_XList(pWin->pOwner) );
+        pColl = sqlite3_पाहायाग_NNColl_Seq(pParse, pWin->pOwner->x.pList->a[0].p_पाहायाग);
         sqlite3VdbeAddOp4(v, OP_CollSeq, 0,0,0, (const char*)pColl, P4_COLLSEQ);
       }
       sqlite3VdbeAddOp3(v, bInverse? OP_AggInverse : OP_AggStep,
                         bInverse, regArg, pWin->regAccum);
       sqlite3VdbeAppendP4(v, pFunc, P4_FUNCDEF);
       sqlite3VdbeChangeP5(v, (u16)nArg);
-      if( pWin->bExprArgs ){
+      if( pWin->b_पाहायाग_मगा_कातविरान ){
         sqlite3ReleaseTempRange(pParse, regArg, nArg);
       }
     }
@@ -1813,14 +1813,14 @@ static void windowAggFinal(WindowCodeArg *p, int bFin){
     }else if( pWin->regApp ){
       assert( pMWin->regStartRowid==0 );
     }else{
-      int nArg = windowArgCount(pWin);
+      int nArg = window_Arg_बिलांग(pWin);
       if( bFin ){
         sqlite3VdbeAddOp2(v, OP_AggFinal, pWin->regAccum, nArg);
         sqlite3VdbeAppendP4(v, pWin->pWFunc, P4_FUNCDEF);
         sqlite3VdbeAddOp2(v, OP_Copy, pWin->regAccum, pWin->regResult);
         sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regAccum);
       }else{
-        sqlite3VdbeAddOp3(v, OP_AggValue,pWin->regAccum,nArg,pWin->regResult);
+        sqlite3VdbeAddOp3(v, OP_Agg_हालागा,pWin->regAccum,nArg,pWin->regResult);
         sqlite3VdbeAppendP4(v, pWin->pWFunc, P4_FUNCDEF);
       }
     }
@@ -1854,7 +1854,7 @@ static void windowFullScan(WindowCodeArg *p){
 
   assert( pMWin!=0 );
   csr = pMWin->csrApp;
-  nPeer = (pMWin->pOrderBy ? pMWin->pOrderBy->nExpr : 0);
+  nPeer = (pMWin->pOrderBy ? pMWin->pOrderBy->n_पाहायाग : 0);
 
   lblNext = sqlite3VdbeMakeLabel(pParse);
   lblBrk = sqlite3VdbeMakeLabel(pParse);
@@ -1867,7 +1867,7 @@ static void windowFullScan(WindowCodeArg *p){
   }
 
   sqlite3VdbeAddOp2(v, OP_Rowid, pMWin->iEphCsr, regCRowid);
-  windowReadPeerValues(p, pMWin->iEphCsr, regCPeer);
+  window_Read_Peer_मगा_हालागा(p, pMWin->iEphCsr, regCPeer);
 
   for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
     sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regAccum);
@@ -1886,19 +1886,19 @@ static void windowFullScan(WindowCodeArg *p){
   }else if( pMWin->eExclude!=TK_NO ){
     int addr;
     int addrEq = 0;
-    KeyInfo *pKeyInfo = 0;
+    सुसि_Info *p_सुसि_Info = 0;
 
     if( pMWin->pOrderBy ){
-      pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pMWin->pOrderBy, 0, 0);
+      p_सुसि_Info = sqlite3_सुसि_Info_From_पाहायाग_List(pParse, pMWin->pOrderBy, 0, 0);
     }
     if( pMWin->eExclude==TK_TIES ){
       addrEq = sqlite3VdbeAddOp3(v, OP_Eq, regCRowid, 0, regRowid);
       VdbeCoverageNeverNull(v);
     }
-    if( pKeyInfo ){
-      windowReadPeerValues(p, csr, regPeer);
+    if( p_सुसि_Info ){
+      window_Read_Peer_मगा_हालागा(p, csr, regPeer);
       sqlite3VdbeAddOp3(v, OP_Compare, regPeer, regCPeer, nPeer);
-      sqlite3VdbeAppendP4(v, (void*)pKeyInfo, P4_KEYINFO);
+      sqlite3VdbeAppendP4(v, (void*)p_सुसि_Info, P4_KEYINFO);
       addr = sqlite3VdbeCurrentAddr(v)+1;
       sqlite3VdbeAddOp3(v, OP_Jump, addr, lblNext, addr);
       VdbeCoverageEqNe(v);
@@ -1951,18 +1951,18 @@ static void windowReturnOneRow(WindowCodeArg *p){
 
     for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
       FuncDef *pFunc = pWin->pWFunc;
-      assert( ExprUseXList(pWin->pOwner) );
-      if( pFunc->zName==nth_valueName
-       || pFunc->zName==first_valueName
+      assert( पाहायाग_Use_XList(pWin->pOwner) );
+      if( pFunc->zName==nth_हालागा_Name
+       || pFunc->zName==first_हालागा_Name
       ){
         int csr = pWin->csrApp;
         int lbl = sqlite3VdbeMakeLabel(pParse);
         int tmpReg = sqlite3GetTempReg(pParse);
         sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regResult);
  
-        if( pFunc->zName==nth_valueName ){
+        if( pFunc->zName==nth_हालागा_Name ){
           sqlite3VdbeAddOp3(v, OP_Column,pMWin->iEphCsr,pWin->iArgCol+1,tmpReg);
-          windowCheckValue(pParse, tmpReg, 2);
+          window_Check_हालागा(pParse, tmpReg, 2);
         }else{
           sqlite3VdbeAddOp2(v, OP_Integer, 1, tmpReg);
         }
@@ -1976,7 +1976,7 @@ static void windowReturnOneRow(WindowCodeArg *p){
         sqlite3ReleaseTempReg(pParse, tmpReg);
       }
       else if( pFunc->zName==leadName || pFunc->zName==lagName ){
-        int nArg = pWin->pOwner->x.pList->nExpr;
+        int nArg = pWin->pOwner->x.pList->n_पाहायाग;
         int csr = pWin->csrApp;
         int lbl = sqlite3VdbeMakeLabel(pParse);
         int tmpReg = sqlite3GetTempReg(pParse);
@@ -2025,9 +2025,9 @@ static int windowInitAccum(Parse *pParse, Window *pMWin){
     FuncDef *pFunc = pWin->pWFunc;
     assert( pWin->regAccum );
     sqlite3VdbeAddOp2(v, OP_Null, 0, pWin->regAccum);
-    nArg = MAX(nArg, windowArgCount(pWin));
+    nArg = MAX(nArg, window_Arg_बिलांग(pWin));
     if( pMWin->regStartRowid==0 ){
-      if( pFunc->zName==nth_valueName || pFunc->zName==first_valueName ){
+      if( pFunc->zName==nth_हालागा_Name || pFunc->zName==first_हालागा_Name ){
         sqlite3VdbeAddOp2(v, OP_Integer, 0, pWin->regApp);
         sqlite3VdbeAddOp2(v, OP_Integer, 0, pWin->regApp+1);
       }
@@ -2053,8 +2053,8 @@ static int windowCacheFrame(Window *pMWin){
   if( pMWin->regStartRowid ) return 1;
   for(pWin=pMWin; pWin; pWin=pWin->pNextWin){
     FuncDef *pFunc = pWin->pWFunc;
-    if( (pFunc->zName==nth_valueName)
-     || (pFunc->zName==first_valueName)
+    if( (pFunc->zName==nth_हालागा_Name)
+     || (pFunc->zName==first_हालागा_Name)
      || (pFunc->zName==leadName)
      || (pFunc->zName==lagName)
     ){
@@ -2076,17 +2076,17 @@ static int windowCacheFrame(Window *pMWin){
 */
 static void windowIfNewPeer(
   Parse *pParse,
-  ExprList *pOrderBy,
+  पाहायाग_List *pOrderBy,
   int regNew,                     /* First in array of new values */
   int regOld,                     /* First in array of old values */
   int addr                        /* Jump here */
 ){
   Vdbe *v = sqlite3GetVdbe(pParse);
   if( pOrderBy ){
-    int nVal = pOrderBy->nExpr;
-    KeyInfo *pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pOrderBy, 0, 0);
+    int nVal = pOrderBy->n_पाहायाग;
+    सुसि_Info *p_सुसि_Info = sqlite3_सुसि_Info_From_पाहायाग_List(pParse, pOrderBy, 0, 0);
     sqlite3VdbeAddOp3(v, OP_Compare, regOld, regNew, nVal);
-    sqlite3VdbeAppendP4(v, (void*)pKeyInfo, P4_KEYINFO);
+    sqlite3VdbeAppendP4(v, (void*)p_सुसि_Info, P4_KEYINFO);
     sqlite3VdbeAddOp3(v, OP_Jump,
       sqlite3VdbeCurrentAddr(v)+1, addr, sqlite3VdbeCurrentAddr(v)+1
     );
@@ -2130,7 +2130,7 @@ static void windowCodeRangeTest(
 ){
   Parse *pParse = p->pParse;
   Vdbe *v = sqlite3GetVdbe(pParse);
-  ExprList *pOrderBy = p->pMWin->pOrderBy;  /* ORDER BY clause for window */
+  पाहायाग_List *pOrderBy = p->pMWin->pOrderBy;  /* ORDER BY clause for window */
   int reg1 = sqlite3GetTempReg(pParse);     /* Reg. for csr1.peerVal+regVal */
   int reg2 = sqlite3GetTempReg(pParse);     /* Reg. for csr2.peerVal */
   int regString = ++pParse->nMem;           /* Reg. for constant value '' */
@@ -2140,11 +2140,11 @@ static void windowCodeRangeTest(
   CollSeq *pColl;
 
   /* Read the peer-value from each cursor into a register */
-  windowReadPeerValues(p, csr1, reg1);
-  windowReadPeerValues(p, csr2, reg2);
+  window_Read_Peer_मगा_हालागा(p, csr1, reg1);
+  window_Read_Peer_मगा_हालागा(p, csr2, reg2);
 
   assert( op==OP_Ge || op==OP_Gt || op==OP_Le );
-  assert( pOrderBy && pOrderBy->nExpr==1 );
+  assert( pOrderBy && pOrderBy->n_पाहायाग==1 );
   if( pOrderBy->a[0].fg.sortFlags & KEYINFO_ORDER_DESC ){
     switch( op ){
       case OP_Ge: op = OP_Le; break;
@@ -2230,7 +2230,7 @@ static void windowCodeRangeTest(
   ** control skips over this test if the BIGNULL flag is set and either
   ** reg1 or reg2 contain a NULL value.  */
   sqlite3VdbeAddOp3(v, op, reg2, lbl, reg1); VdbeCoverage(v);
-  pColl = sqlite3ExprNNCollSeq(pParse, pOrderBy->a[0].pExpr);
+  pColl = sqlite3_पाहायाग_NNColl_Seq(pParse, pOrderBy->a[0].p_पाहायाग);
   sqlite3VdbeAppendP4(v, (void*)pColl, P4_COLLSEQ);
   sqlite3VdbeChangeP5(v, SQLITE_NULLEQ);
   sqlite3VdbeResolveLabel(v, addrDone);
@@ -2381,9 +2381,9 @@ static int windowCodeOp(
   }
 
   if( bPeer ){
-    int nReg = (pMWin->pOrderBy ? pMWin->pOrderBy->nExpr : 0);
+    int nReg = (pMWin->pOrderBy ? pMWin->pOrderBy->n_पाहायाग : 0);
     int regTmp = (nReg ? sqlite3GetTempRange(pParse, nReg) : 0);
-    windowReadPeerValues(p, csr, regTmp);
+    window_Read_Peer_मगा_हालागा(p, csr, regTmp);
     windowIfNewPeer(pParse, pMWin->pOrderBy, regTmp, reg, addrContinue);
     sqlite3ReleaseTempRange(pParse, regTmp, nReg);
   }
@@ -2401,17 +2401,17 @@ static int windowCodeOp(
 ** third argument. Set the Window.pOwner field of the new object to
 ** pOwner.
 */
-Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p){
+Window *sqlite3WindowDup(sqlite3 *db, पाहायाग *pOwner, Window *p){
   Window *pNew = 0;
   if( ALWAYS(p) ){
     pNew = sqlite3DbMallocZero(db, sizeof(Window));
     if( pNew ){
       pNew->zName = sqlite3DbStrDup(db, p->zName);
       pNew->zBase = sqlite3DbStrDup(db, p->zBase);
-      pNew->pFilter = sqlite3ExprDup(db, p->pFilter, 0);
+      pNew->pFilter = sqlite3_पाहायाग_Dup(db, p->pFilter, 0);
       pNew->pWFunc = p->pWFunc;
-      pNew->pPartition = sqlite3ExprListDup(db, p->pPartition, 0);
-      pNew->pOrderBy = sqlite3ExprListDup(db, p->pOrderBy, 0);
+      pNew->pPartition = sqlite3_पाहायाग_List_Dup(db, p->pPartition, 0);
+      pNew->pOrderBy = sqlite3_पाहायाग_List_Dup(db, p->pOrderBy, 0);
       pNew->eFrmType = p->eFrmType;
       pNew->eEnd = p->eEnd;
       pNew->eStart = p->eStart;
@@ -2420,9 +2420,9 @@ Window *sqlite3WindowDup(sqlite3 *db, Expr *pOwner, Window *p){
       pNew->regAccum = p->regAccum;
       pNew->iArgCol = p->iArgCol;
       pNew->iEphCsr = p->iEphCsr;
-      pNew->bExprArgs = p->bExprArgs;
-      pNew->pStart = sqlite3ExprDup(db, p->pStart, 0);
-      pNew->pEnd = sqlite3ExprDup(db, p->pEnd, 0);
+      pNew->b_पाहायाग_मगा_कातविरान = p->b_पाहायाग_मगा_कातविरान;
+      pNew->pStart = sqlite3_पाहायाग_Dup(db, p->pStart, 0);
+      pNew->pEnd = sqlite3_पाहायाग_Dup(db, p->pEnd, 0);
       pNew->pOwner = pOwner;
       pNew->bImplicitFrame = p->bImplicitFrame;
     }
@@ -2456,15 +2456,15 @@ Window *sqlite3WindowListDup(sqlite3 *db, Window *p){
 ** If an OOM error occurs, this function sets the Parse.db.mallocFailed
 ** flag and returns zero.
 */
-static int windowExprGtZero(Parse *pParse, Expr *pExpr){
+static int window_पाहायाग_Gt_Zero(Parse *pParse, पाहायाग *p_पाहायाग){
   int ret = 0;
   sqlite3 *db = pParse->db;
-  sqlite3_value *pVal = 0;
-  sqlite3ValueFromExpr(db, pExpr, db->enc, SQLITE_AFF_NUMERIC, &pVal);
-  if( pVal && sqlite3_value_int(pVal)>0 ){
+  sqlite3_हालागा *pVal = 0;
+  sqlite3_हालागा_From_पाहायाग(db, p_पाहायाग, db->enc, SQLITE_AFF_NUMERIC, &pVal);
+  if( pVal && sqlite3_हालागा_int(pVal)>0 ){
     ret = 1;
   }
-  sqlite3ValueFree(pVal);
+  sqlite3_हालागा_Free(pVal);
   return ret;
 }
 
@@ -2811,12 +2811,12 @@ void sqlite3WindowCodeStep(
   int addrGosub                   /* OP_Gosub here to return each row */
 ){
   Window *pMWin = p->pWin;
-  ExprList *pOrderBy = pMWin->pOrderBy;
+  पाहायाग_List *pOrderBy = pMWin->pOrderBy;
   Vdbe *v = sqlite3GetVdbe(pParse);
   int csrWrite;                   /* Cursor used to write to eph. table */
-  int csrInput = p->pSrc->a[0].iCursor;     /* Cursor of sub-select */
-  int nInput = p->pSrc->a[0].pSTab->nCol;   /* Number of cols returned by sub */
-  int iInput;                               /* To iterate through sub cols */
+  int csr_पासोक = p->pSrc->a[0].iCursor;     /* Cursor of sub-select */
+  int n_पासोक = p->pSrc->a[0].pSTab->nCol;   /* Number of cols returned by sub */
+  int i_पासोक;                               /* To iterate through sub cols */
   int addrNe;                     /* Address of OP_Ne */
   int addrGosubFlush = 0;         /* Address of OP_Gosub to flush: */
   int addrInteger = 0;            /* Address of OP_Integer */
@@ -2865,7 +2865,7 @@ void sqlite3WindowCodeStep(
   switch( pMWin->eStart ){
     case TK_FOLLOWING:
       if( pMWin->eFrmType!=TK_RANGE
-       && windowExprGtZero(pParse, pMWin->pStart)
+       && window_पाहायाग_Gt_Zero(pParse, pMWin->pStart)
       ){
         s.eDelete = WINDOW_RETURN_ROW;
       }
@@ -2874,7 +2874,7 @@ void sqlite3WindowCodeStep(
       if( windowCacheFrame(pMWin)==0 ){
         if( pMWin->eEnd==TK_PRECEDING ){
           if( pMWin->eFrmType!=TK_RANGE
-           && windowExprGtZero(pParse, pMWin->pEnd)
+           && window_पाहायाग_Gt_Zero(pParse, pMWin->pEnd)
           ){
             s.eDelete = WINDOW_AGGSTEP;
           }
@@ -2892,7 +2892,7 @@ void sqlite3WindowCodeStep(
   ** same values in record form, and the rowid used to insert said record
   ** into the ephemeral table.  */
   regNew = pParse->nMem+1;
-  pParse->nMem += nInput;
+  pParse->nMem += n_पासोक;
   regRecord = ++pParse->nMem;
   s.regRowid = ++pParse->nMem;
 
@@ -2910,9 +2910,9 @@ void sqlite3WindowCodeStep(
   ** registers to store copies of the ORDER BY expressions (peer values)
   ** for the main loop, and for each cursor (start, current and end). */
   if( pMWin->eFrmType!=TK_ROWS ){
-    int nPeer = (pOrderBy ? pOrderBy->nExpr : 0);
+    int nPeer = (pOrderBy ? pOrderBy->n_पाहायाग : 0);
     regNewPeer = regNew + pMWin->nBufferCol;
-    if( pMWin->pPartition ) regNewPeer += pMWin->pPartition->nExpr;
+    if( pMWin->pPartition ) regNewPeer += pMWin->pPartition->n_पाहायाग;
     regPeer = pParse->nMem+1;       pParse->nMem += nPeer;
     s.start.reg = pParse->nMem+1;   pParse->nMem += nPeer;
     s.current.reg = pParse->nMem+1; pParse->nMem += nPeer;
@@ -2922,10 +2922,10 @@ void sqlite3WindowCodeStep(
   /* Load the column values for the row returned by the sub-select
   ** into an array of registers starting at regNew. Assemble them into
   ** a record in register regRecord. */
-  for(iInput=0; iInput<nInput; iInput++){
-    sqlite3VdbeAddOp3(v, OP_Column, csrInput, iInput, regNew+iInput);
+  for(i_पासोक=0; i_पासोक<n_पासोक; i_पासोक++){
+    sqlite3VdbeAddOp3(v, OP_Column, csr_पासोक, i_पासोक, regNew+i_पासोक);
   }
-  sqlite3VdbeAddOp3(v, OP_MakeRecord, regNew, nInput, regRecord);
+  sqlite3VdbeAddOp3(v, OP_MakeRecord, regNew, n_पासोक, regRecord);
 
   /* An input row has just been read into an array of registers starting
   ** at regNew. If the window has a PARTITION clause, this block generates
@@ -2934,14 +2934,14 @@ void sqlite3WindowCodeStep(
   ** address of the OP_Gosub is stored in local variable addrGosubFlush. */
   if( pMWin->pPartition ){
     int addr;
-    ExprList *pPart = pMWin->pPartition;
-    int nPart = pPart->nExpr;
+    पाहायाग_List *pPart = pMWin->pPartition;
+    int nPart = pPart->n_पाहायाग;
     int regNewPart = regNew + pMWin->nBufferCol;
-    KeyInfo *pKeyInfo = sqlite3KeyInfoFromExprList(pParse, pPart, 0, 0);
+    सुसि_Info *p_सुसि_Info = sqlite3_सुसि_Info_From_पाहायाग_List(pParse, pPart, 0, 0);
 
     regFlushPart = ++pParse->nMem;
     addr = sqlite3VdbeAddOp3(v, OP_Compare, regNewPart, pMWin->regPart, nPart);
-    sqlite3VdbeAppendP4(v, (void*)pKeyInfo, P4_KEYINFO);
+    sqlite3VdbeAppendP4(v, (void*)p_सुसि_Info, P4_KEYINFO);
     sqlite3VdbeAddOp3(v, OP_Jump, addr+2, addr+4, addr+2);
     VdbeCoverageEqNe(v);
     addrGosubFlush = sqlite3VdbeAddOp1(v, OP_Gosub, regFlushPart);
@@ -2951,7 +2951,7 @@ void sqlite3WindowCodeStep(
 
   /* Insert the new row into the ephemeral table */
   sqlite3VdbeAddOp2(v, OP_NewRowid, csrWrite, s.regRowid);
-  sqlite3VdbeAddOp3(v, OP_Insert, csrWrite, regRecord, s.regRowid);
+  sqlite3VdbeAddOp3(v, OP_इसिंगित, csrWrite, regRecord, s.regRowid);
   addrNe = sqlite3VdbeAddOp3(v, OP_Ne, pMWin->regOne, 0, s.regRowid);
   VdbeCoverageNeverNull(v);
 
@@ -2959,12 +2959,12 @@ void sqlite3WindowCodeStep(
   s.regArg = windowInitAccum(pParse, pMWin);
 
   if( regStart ){
-    sqlite3ExprCode(pParse, pMWin->pStart, regStart);
-    windowCheckValue(pParse, regStart, 0 + (pMWin->eFrmType==TK_RANGE?3:0));
+    sqlite3_पाहायाग_Code(pParse, pMWin->pStart, regStart);
+    window_Check_हालागा(pParse, regStart, 0 + (pMWin->eFrmType==TK_RANGE?3:0));
   }
   if( regEnd ){
-    sqlite3ExprCode(pParse, pMWin->pEnd, regEnd);
-    windowCheckValue(pParse, regEnd, 1 + (pMWin->eFrmType==TK_RANGE?3:0));
+    sqlite3_पाहायाग_Code(pParse, pMWin->pEnd, regEnd);
+    window_Check_हालागा(pParse, regEnd, 1 + (pMWin->eFrmType==TK_RANGE?3:0));
   }
 
   if( pMWin->eFrmType!=TK_RANGE && pMWin->eStart==pMWin->eEnd && regStart ){
@@ -2990,10 +2990,10 @@ void sqlite3WindowCodeStep(
   sqlite3VdbeAddOp1(v, OP_Rewind, s.current.csr);
   sqlite3VdbeAddOp1(v, OP_Rewind, s.end.csr);
   if( regPeer && pOrderBy ){
-    sqlite3VdbeAddOp3(v, OP_Copy, regNewPeer, regPeer, pOrderBy->nExpr-1);
-    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.start.reg, pOrderBy->nExpr-1);
-    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.current.reg, pOrderBy->nExpr-1);
-    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.end.reg, pOrderBy->nExpr-1);
+    sqlite3VdbeAddOp3(v, OP_Copy, regNewPeer, regPeer, pOrderBy->n_पाहायाग-1);
+    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.start.reg, pOrderBy->n_पाहायाग-1);
+    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.current.reg, pOrderBy->n_पाहायाग-1);
+    sqlite3VdbeAddOp3(v, OP_Copy, regPeer, s.end.reg, pOrderBy->n_पाहायाग-1);
   }
 
   sqlite3VdbeAddOp2(v, OP_Goto, 0, lblWhereEnd);

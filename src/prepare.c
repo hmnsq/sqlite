@@ -27,7 +27,7 @@ static void corruptSchema(
   sqlite3 *db = pData->db;
   if( db->mallocFailed ){
     pData->rc = SQLITE_NOMEM_BKPT;
-  }else if( pData->pzErrMsg[0]!=0 ){
+  }else if( pData->pz_Err_मेनसाहे[0]!=0 ){
     /* A error message has already been generated.  Do not overwrite it */
   }else if( pData->mInitFlags & (INITFLAG_AlterMask) ){
     static const char *azAlterType[] = {
@@ -36,7 +36,7 @@ static void corruptSchema(
        "add column",
        "drop constraint"
     };
-    *pData->pzErrMsg = sqlite3MPrintf(db, 
+    *pData->pz_Err_मेनसाहे = sqlite3MPrintf(db, 
         "error in %s %s after %s: %s", azObj[0], azObj[1], 
         azAlterType[(pData->mInitFlags&INITFLAG_AlterMask)-1], 
         zExtra
@@ -49,7 +49,7 @@ static void corruptSchema(
     const char *zObj = azObj[1] ? azObj[1] : "?";
     z = sqlite3MPrintf(db, "malformed database schema (%s)", zObj);
     if( zExtra && zExtra[0] ) z = sqlite3MPrintf(db, "%z - %s", z, zExtra);
-    *pData->pzErrMsg = z;
+    *pData->pz_Err_मेनसाहे = z;
     pData->rc = SQLITE_CORRUPT_BKPT;
   }
 }
@@ -59,7 +59,7 @@ static void corruptSchema(
 ** of pIndex has the same root page number, and if it does, return true.
 ** This would indicate a corrupt schema.
 */
-int sqlite3IndexHasDuplicateRootPage(Index *pIndex){
+int sqlite3_Index_Has_Duplicate_उगात_Page(Index *pIndex){
   Index *p;
   for(p=pIndex->pTable->pIndex; p; p=p->pNext){
     if( p->tnum==pIndex->tnum && p!=pIndex ) return 1;
@@ -182,19 +182,19 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
     if( sqlite3GetUInt32(argv[3],&pIndex->tnum)==0
      || pIndex->tnum<2
      || pIndex->tnum>pData->mxPage
-     || sqlite3IndexHasDuplicateRootPage(pIndex)
+     || sqlite3_Index_Has_Duplicate_उगात_Page(pIndex)
     ){
       if( sqlite3Config.bExtraSchemaChecks ){
         corruptSchema(pData, argv, "invalid rootpage");
       }
     }
   }
-  if( pData->pzErrMsg[0]==0 ){
+  if( pData->pz_Err_मेनसाहे[0]==0 ){
     Schema *pX = db->aDb[iDb].pSchema;
-    if( pX->tblHash.count + pX->idxHash.count + pX->trigHash.count
+    if( pX->tblHash.बिलांग + pX->idxHash.बिलांग + pX->trigHash.बिलांग
                    > (u32)db->aLimit[SQLITE_LIMIT_SCHEMA]
     ){
-      *pData->pzErrMsg = sqlite3MPrintf(db, "too many schema objects");
+      *pData->pz_Err_मेनसाहे = sqlite3MPrintf(db, "too many schema objects");
       pData->rc = SQLITE_ERROR;
       return 1;
     }
@@ -210,7 +210,7 @@ int sqlite3InitCallback(void *pInit, int argc, char **argv, char **NotUsed){
 ** auxiliary databases.  Return one of the SQLITE_ error codes to
 ** indicate success or failure.
 */
-int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
+int sqlite3InitOne(sqlite3 *db, int iDb, char **pz_Err_मेनसाहे, u32 mFlags){
   int rc;
   int i;
 #ifndef SQLITE_OMIT_DEPRECATED
@@ -253,7 +253,7 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   initData.db = db;
   initData.iDb = iDb;
   initData.rc = SQLITE_OK;
-  initData.pzErrMsg = pzErrMsg;
+  initData.pz_Err_मेनसाहे = pz_Err_मेनसाहे;
   initData.mInitFlags = mFlags;
   initData.nInitRow = 0;
   initData.mxPage = 0;
@@ -281,7 +281,7 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
   if( sqlite3BtreeTxnState(pDb->pBt)==SQLITE_TXN_NONE ){
     rc = sqlite3BtreeBeginTrans(pDb->pBt, 0, 0);
     if( rc!=SQLITE_OK ){
-      sqlite3SetString(pzErrMsg, db, sqlite3ErrStr(rc));
+      sqlite3SetString(pz_Err_मेनसाहे, db, sqlite3ErrStr(rc));
       goto initone_error_out;
     }
     openedTransaction = 1;
@@ -331,7 +331,7 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
     }else{
       /* If opening an attached database, the encoding much match ENC(db) */
       if( (meta[BTREE_TEXT_ENCODING-1] & 3)!=ENC(db) ){
-        sqlite3SetString(pzErrMsg, db, "attached databases must use the same"
+        sqlite3SetString(pz_Err_मेनसाहे, db, "attached databases must use the same"
             " text encoding as main database");
         rc = SQLITE_ERROR;
         goto initone_error_out;
@@ -362,7 +362,7 @@ int sqlite3InitOne(sqlite3 *db, int iDb, char **pzErrMsg, u32 mFlags){
     pDb->pSchema->file_format = 1;
   }
   if( pDb->pSchema->file_format>SQLITE_MAX_FILE_FORMAT ){
-    sqlite3SetString(pzErrMsg, db, "unsupported file format");
+    sqlite3SetString(pz_Err_मेनसाहे, db, "unsupported file format");
     rc = SQLITE_ERROR;
     goto initone_error_out;
   }
@@ -455,7 +455,7 @@ error_out:
 ** After a database is initialized, the DB_SchemaLoaded bit is set
 ** bit is set in the flags field of the Db structure. 
 */
-int sqlite3Init(sqlite3 *db, char **pzErrMsg){
+int sqlite3Init(sqlite3 *db, char **pz_Err_मेनसाहे){
   int i, rc;
   int commit_internal = !(db->mDbFlags&DBFLAG_SchemaChange);
   
@@ -466,14 +466,14 @@ int sqlite3Init(sqlite3 *db, char **pzErrMsg){
   assert( db->nDb>0 );
   /* Do the main schema first */
   if( !DbHasProperty(db, 0, DB_SchemaLoaded) ){
-    rc = sqlite3InitOne(db, 0, pzErrMsg, 0);
+    rc = sqlite3InitOne(db, 0, pz_Err_मेनसाहे, 0);
     if( rc ) return rc;
   }
   /* All other schemas after the main schema. The "temp" schema must be last */
   for(i=db->nDb-1; i>0; i--){
     assert( i==1 || sqlite3BtreeHoldsMutex(db->aDb[i].pBt) );
     if( !DbHasProperty(db, i, DB_SchemaLoaded) ){
-      rc = sqlite3InitOne(db, i, pzErrMsg, 0);
+      rc = sqlite3InitOne(db, i, pz_Err_मेनसाहे, 0);
       if( rc ) return rc;
     }
   }
@@ -492,7 +492,7 @@ int sqlite3ReadSchema(Parse *pParse){
   sqlite3 *db = pParse->db;
   assert( sqlite3_mutex_held(db->mutex) );
   if( !db->init.busy ){
-    rc = sqlite3Init(db, &pParse->zErrMsg);
+    rc = sqlite3Init(db, &pParse->z_Err_मेनसाहे);
     if( rc!=SQLITE_OK ){
       pParse->rc = rc;
       pParse->nErr++;
@@ -604,8 +604,8 @@ void sqlite3ParseObjectReset(Parse *pParse){
     sqlite3DbNNFreeNN(db, pCleanup);
   }
   if( pParse->aLabel ) sqlite3DbNNFreeNN(db, pParse->aLabel);
-  if( pParse->pConstExpr ){
-    sqlite3ExprListDelete(db, pParse->pConstExpr);
+  if( pParse->p_Const_पाहायाग ){
+    sqlite3_पाहायाग_List_Delete(db, pParse->p_Const_पाहायाग);
   }
   assert( db->lookaside.bDisable >= pParse->disableLookaside );
   db->lookaside.bDisable -= pParse->disableLookaside;
@@ -686,7 +686,7 @@ void sqlite3ParseObjectInit(Parse *pParse, sqlite3 *db){
   pParse->pOuterParse = db->pParse;
   db->pParse = pParse;
   pParse->db = db;
-  if( db->mallocFailed ) sqlite3ErrorMsg(pParse, "out of memory");
+  if( db->mallocFailed ) sqlite3_Error_मेनसाहे(pParse, "out of memory");
 }
 
 /*
@@ -727,7 +727,7 @@ static int sqlite3Prepare(
   }
   assert( ppStmt && *ppStmt==0 );
   if( db->mallocFailed ){
-    sqlite3ErrorMsg(&sParse, "out of memory");
+    sqlite3_Error_मेनसाहे(&sParse, "out of memory");
     db->errCode = rc = SQLITE_NOMEM;
     goto end_prepare;
   }
@@ -773,7 +773,7 @@ static int sqlite3Prepare(
         rc = sqlite3BtreeSchemaLocked(pBt);
         if( rc ){
           const char *zDb = db->aDb[i].zDbSName;
-          sqlite3ErrorWithMsg(db, rc, "database schema is locked: %s", zDb);
+          sqlite3_Error_With_मेनसाहे(db, rc, "database schema is locked: %s", zDb);
           testcase( db->flags & SQLITE_ReadUncommit );
           goto end_prepare;
         }
@@ -791,7 +791,7 @@ static int sqlite3Prepare(
     testcase( nBytes==mxLen );
     testcase( nBytes==mxLen+1 );
     if( nBytes>mxLen ){
-      sqlite3ErrorWithMsg(db, SQLITE_TOOBIG, "statement too long");
+      sqlite3_Error_With_मेनसाहे(db, SQLITE_TOOBIG, "statement too long");
       rc = sqlite3ApiExit(db, SQLITE_TOOBIG);
       goto end_prepare;
     }
@@ -828,14 +828,14 @@ static int sqlite3Prepare(
     }
     assert( 0==(*ppStmt) );
     rc = sParse.rc;
-    if( sParse.zErrMsg ){
-      sqlite3ErrorWithMsg(db, rc, "%s", sParse.zErrMsg);
-      sqlite3DbFree(db, sParse.zErrMsg);
+    if( sParse.z_Err_मेनसाहे ){
+      sqlite3_Error_With_मेनसाहे(db, rc, "%s", sParse.z_Err_मेनसाहे);
+      sqlite3DbFree(db, sParse.z_Err_मेनसाहे);
     }else{
       sqlite3Error(db, rc);
     }
   }else{
-    assert( sParse.zErrMsg==0 );
+    assert( sParse.z_Err_मेनसाहे==0 );
     *ppStmt = (sqlite3_stmt*)sParse.pVdbe;
     rc = SQLITE_OK;
     sqlite3ErrorClear(db);

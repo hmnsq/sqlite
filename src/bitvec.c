@@ -96,7 +96,7 @@ struct Bitvec {
   u32 nSet;       /* Number of bits that are set - only valid for aHash
                   ** element.  Max is BITVEC_NINT.  For BITVEC_SZ of 512,
                   ** this would be 125. */
-  u32 iDivisor;   /* Number of bits handled by each apSub[] entry. */
+  u32 i_पांगहाति;   /* Number of bits handled by each apSub[] entry. */
                   /* Should >=0 for apSub element. */
                   /* Max iDivisor is max(u32) / BITVEC_NPTR + 1.  */
                   /* For a BITVEC_SZ of 512, this would be 34,359,739. */
@@ -132,9 +132,9 @@ int sqlite3BitvecTestNotNull(Bitvec *p, u32 i){
   assert( p!=0 );
   i--;
   if( i>=p->iSize ) return 0;
-  while( p->iDivisor ){
-    u32 bin = i/p->iDivisor;
-    i = i%p->iDivisor;
+  while( p->i_पांगहाति ){
+    u32 bin = i/p->i_पांगहाति;
+    i = i%p->i_पांगहाति;
     p = p->u.apSub[bin];
     if (!p) {
       return 0;
@@ -173,11 +173,11 @@ int sqlite3BitvecSet(Bitvec *p, u32 i){
   assert( i>0 );
   assert( i<=p->iSize );
   i--;
-  while((p->iSize > BITVEC_NBIT) && p->iDivisor) {
-    u32 bin = i/p->iDivisor;
-    i = i%p->iDivisor;
+  while((p->iSize > BITVEC_NBIT) && p->i_पांगहाति) {
+    u32 bin = i/p->i_पांगहाति;
+    i = i%p->i_पांगहाति;
     if( p->u.apSub[bin]==0 ){
-      p->u.apSub[bin] = sqlite3BitvecCreate( p->iDivisor );
+      p->u.apSub[bin] = sqlite3BitvecCreate( p->i_पांगहाति );
       if( p->u.apSub[bin]==0 ) return SQLITE_NOMEM_BKPT;
     }
     p = p->u.apSub[bin];
@@ -211,20 +211,20 @@ bitvec_set_rehash:
   if( p->nSet>=BITVEC_MXHASH ){
     unsigned int j;
     int rc;
-    u32 *aiValues = sqlite3StackAllocRaw(0, sizeof(p->u.aHash));
-    if( aiValues==0 ){
+    u32 *ai_मगा_हालागा = sqlite3_सालानसान_Alloc_Raw(0, sizeof(p->u.aHash));
+    if( ai_मगा_हालागा==0 ){
       return SQLITE_NOMEM_BKPT;
     }else{
-      memcpy(aiValues, p->u.aHash, sizeof(p->u.aHash));
+      memcpy(ai_मगा_हालागा, p->u.aHash, sizeof(p->u.aHash));
       memset(p->u.apSub, 0, sizeof(p->u.apSub));
-      p->iDivisor = p->iSize/BITVEC_NPTR;
-      if( (p->iSize%BITVEC_NPTR)!=0 ) p->iDivisor++;
-      if( p->iDivisor<BITVEC_NBIT ) p->iDivisor = BITVEC_NBIT;
+      p->i_पांगहाति = p->iSize/BITVEC_NPTR;
+      if( (p->iSize%BITVEC_NPTR)!=0 ) p->i_पांगहाति++;
+      if( p->i_पांगहाति<BITVEC_NBIT ) p->i_पांगहाति = BITVEC_NBIT;
       rc = sqlite3BitvecSet(p, i);
       for(j=0; j<BITVEC_NINT; j++){
-        if( aiValues[j] ) rc |= sqlite3BitvecSet(p, aiValues[j]);
+        if( ai_मगा_हालागा[j] ) rc |= sqlite3BitvecSet(p, ai_मगा_हालागा[j]);
       }
-      sqlite3StackFree(0, aiValues);
+      sqlite3_सालानसान_Free(0, ai_मगा_हालागा);
       return rc;
     }
   }
@@ -244,9 +244,9 @@ void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf){
   if( p==0 ) return;
   assert( i>0 );
   i--;
-  while( p->iDivisor ){
-    u32 bin = i/p->iDivisor;
-    i = i%p->iDivisor;
+  while( p->i_पांगहाति ){
+    u32 bin = i/p->i_पांगहाति;
+    i = i%p->i_पांगहाति;
     p = p->u.apSub[bin];
     if (!p) {
       return;
@@ -256,19 +256,19 @@ void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf){
     p->u.aBitmap[i/BITVEC_SZELEM] &= ~(BITVEC_TELEM)(1<<(i&(BITVEC_SZELEM-1)));
   }else{
     unsigned int j;
-    u32 *aiValues = pBuf;
-    memcpy(aiValues, p->u.aHash, sizeof(p->u.aHash));
+    u32 *ai_मगा_हालागा = pBuf;
+    memcpy(ai_मगा_हालागा, p->u.aHash, sizeof(p->u.aHash));
     memset(p->u.aHash, 0, sizeof(p->u.aHash));
     p->nSet = 0;
     for(j=0; j<BITVEC_NINT; j++){
-      if( aiValues[j] && aiValues[j]!=(i+1) ){
-        u32 h = BITVEC_HASH(aiValues[j]-1);
+      if( ai_मगा_हालागा[j] && ai_मगा_हालागा[j]!=(i+1) ){
+        u32 h = BITVEC_HASH(ai_मगा_हालागा[j]-1);
         p->nSet++;
         while( p->u.aHash[h] ){
           h++;
           if( h>=BITVEC_NINT ) h = 0;
         }
-        p->u.aHash[h] = aiValues[j];
+        p->u.aHash[h] = ai_मगा_हालागा[j];
       }
     }
   }
@@ -279,7 +279,7 @@ void sqlite3BitvecClear(Bitvec *p, u32 i, void *pBuf){
 */
 void sqlite3BitvecDestroy(Bitvec *p){
   if( p==0 ) return;
-  if( p->iDivisor ){
+  if( p->i_पांगहाति ){
     unsigned int i;
     for(i=0; i<BITVEC_NPTR; i++){
       sqlite3BitvecDestroy(p->u.apSub[i]);
@@ -321,7 +321,7 @@ static void showBitvec(Bitvec *p, int n, unsigned x){
       if( sqlite3BitvecTest(p,i) ) printf(" %u", x+(unsigned)i);
     }
     printf("\n");
-  }else if( p->iDivisor==0 ){
+  }else if( p->i_पांगहाति==0 ){
     printf(" hash with %u entries\n", p->nSet);
     printf("%*s   bits:", n, "");
     for(i=0; i<BITVEC_NINT; i++){
@@ -329,11 +329,11 @@ static void showBitvec(Bitvec *p, int n, unsigned x){
     }
     printf("\n");
   }else{
-    printf(" sub-bitvec with iDivisor=%u\n", p->iDivisor);
+    printf(" sub-bitvec with iDivisor=%u\n", p->i_पांगहाति);
     for(i=0; i<BITVEC_NPTR; i++){
       if( p->u.apSub[i]==0 ) continue;
       printf("%*s   apSub[%d]=", n, "", i);
-      showBitvec(p->u.apSub[i], n+4, i*p->iDivisor);
+      showBitvec(p->u.apSub[i], n+4, i*p->i_पांगहाति);
     }
   }
 }

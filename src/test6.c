@@ -684,9 +684,9 @@ static void *cfDlOpen(sqlite3_vfs *pCfVfs, const char *zPath){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
   return pVfs->xDlOpen(pVfs, zPath);
 }
-static void cfDlError(sqlite3_vfs *pCfVfs, int nByte, char *zErrMsg){
+static void cfDlError(sqlite3_vfs *pCfVfs, int nByte, char *z_Err_मेनसाहे){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
-  pVfs->xDlError(pVfs, nByte, zErrMsg);
+  pVfs->xDlError(pVfs, nByte, z_Err_मेनसाहे);
 }
 static void (*cfDlSym(sqlite3_vfs *pCfVfs, void *pH, const char *zSym))(void){
   sqlite3_vfs *pVfs = (sqlite3_vfs *)pCfVfs->pAppData;
@@ -713,7 +713,7 @@ static int cfGetLastError(sqlite3_vfs *pCfVfs, int n, char *z){
   return pVfs->xGetLastError(pVfs, n, z);
 }
 
-static int processDevSymArgs(
+static int process_Dev_Sym_मगा_कातविरान(
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[],
@@ -722,7 +722,7 @@ static int processDevSymArgs(
 ){
   struct DeviceFlag {
     char *zName;
-    int iValue;
+    int i_हालागा;
   } aFlag[] = {
     { "atomic",              SQLITE_IOCAP_ATOMIC                },
     { "atomic512",           SQLITE_IOCAP_ATOMIC512             },
@@ -780,18 +780,18 @@ static int processDevSymArgs(
         int rc;
         int iChoice;
         Tcl_Obj *pFlag = Tcl_DuplicateObj(apObj[j]);
-        Tcl_IncrRefCount(pFlag);
+        Tcl_Incr_Ref_बिलांग(pFlag);
         Tcl_UtfToLower(Tcl_GetString(pFlag));
 
         rc = Tcl_GetIndexFromObjStruct(
             interp, pFlag, aFlag, sizeof(aFlag[0]), "no such flag", 0, &iChoice
         );
-        Tcl_DecrRefCount(pFlag);
+        Tcl_Decr_Ref_बिलांग(pFlag);
         if( rc ){
           return TCL_ERROR;
         }
 
-        iDc |= aFlag[iChoice].iValue;
+        iDc |= aFlag[iChoice].i_हालागा;
       }
       setDeviceChar = 1;
     }
@@ -820,7 +820,7 @@ static int SQLITE_TCLAPI crashNowCmd(
   Tcl_Obj *CONST objv[]
 ){
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
   writeListSync(0, 1);
@@ -866,7 +866,7 @@ static int SQLITE_TCLAPI crashEnableCmd(
   };
 
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "ENABLE ?DEFAULT?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "ENABLE ?DEFAULT?");
     return TCL_ERROR;
   }
 
@@ -928,7 +928,7 @@ static int SQLITE_TCLAPI crashParamsObjCmd(
   iSectorSize = -1;
 
   if( objc<3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?OPTIONS? DELAY CRASHFILE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?OPTIONS? DELAY CRASHFILE");
     goto error;
   }
 
@@ -941,7 +941,7 @@ static int SQLITE_TCLAPI crashParamsObjCmd(
     goto error;
   }
 
-  if( processDevSymArgs(interp, objc-3, &objv[1], &iDc, &iSectorSize) ){
+  if( process_Dev_Sym_मगा_कातविरान(interp, objc-3, &objv[1], &iDc, &iSectorSize) ){
     return TCL_ERROR;
   }
 
@@ -972,7 +972,7 @@ static int SQLITE_TCLAPI devSymObjCmd(
   int iDc = -1;
   int iSectorSize = -1;
 
-  if( processDevSymArgs(interp, objc-1, &objv[1], &iDc, &iSectorSize) ){
+  if( process_Dev_Sym_मगा_कातविरान(interp, objc-1, &objv[1], &iDc, &iSectorSize) ){
     return TCL_ERROR;
   }
   devsym_register(iDc, iSectorSize);
@@ -993,7 +993,7 @@ static int SQLITE_TCLAPI writeCrashObjCmd(
   int nWrite = 0;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NWRITE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "NWRITE");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[1], &nWrite) ){
@@ -1016,7 +1016,7 @@ static int SQLITE_TCLAPI dsUnregisterObjCmd(
   void devsym_unregister(void);
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -1037,7 +1037,7 @@ static int SQLITE_TCLAPI jtObjCmd(
   char *zParent = 0;
 
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?-default? PARENT-VFS");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?-default? PARENT-VFS");
     return TCL_ERROR;
   }
   zParent = Tcl_GetString(objv[1]);
@@ -1074,7 +1074,7 @@ static int SQLITE_TCLAPI jtUnregisterObjCmd(
   void jt_unregister(void);
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 

@@ -274,7 +274,7 @@ static void pcacheUnpin(PgHdr *p){
 ** Compute the number of pages of cache requested.   p->szCache is the
 ** cache size requested by the "PRAGMA cache_size" statement.
 */
-static int numberOfCachePages(PCache *p){
+static int नुमेरो_Of_Cache_Pages(PCache *p){
   if( p->szCache>=0 ){
     /* IMPLEMENTATION-OF: R-42059-47211 If the argument N is positive then the
     ** suggested cache size is set to N. */
@@ -365,7 +365,7 @@ int sqlite3PcacheSetPageSize(PCache *pCache, int szPage){
                 pCache->bPurgeable
     );
     if( pNew==0 ) return SQLITE_NOMEM_BKPT;
-    sqlite3GlobalConfig.pcache2.xCachesize(pNew, numberOfCachePages(pCache));
+    sqlite3GlobalConfig.pcache2.xCachesize(pNew, नुमेरो_Of_Cache_Pages(pCache));
     if( pCache->pCache ){
       sqlite3GlobalConfig.pcache2.xDestroy(pCache->pCache);
     }
@@ -475,7 +475,7 @@ int sqlite3PcacheFetchStress(
                   "spill page %d making room for %d - cache used: %d/%d",
                   pPg->pgno, pgno,
                   sqlite3GlobalConfig.pcache2.xPagecount(pCache->pCache),
-                numberOfCachePages(pCache));
+                नुमेरो_Of_Cache_Pages(pCache));
 #endif
       pcacheTrace(("%p.SPILL %d\n",pCache,pPg->pgno));
       rc = pCache->xStress(pCache->pStress, pPg);
@@ -829,7 +829,7 @@ PgHdr *sqlite3PcacheDirtyList(PCache *pCache){
 ** This is not the total number of pages referenced, but the sum of the
 ** reference count for all pages.
 */
-i64 sqlite3PcacheRefCount(PCache *pCache){
+i64 sqlite3_Pcache_Ref_बिलांग(PCache *pCache){
   return pCache->nRefSum;
 }
 
@@ -853,7 +853,7 @@ int sqlite3PcachePagecount(PCache *pCache){
 ** Get the suggested cache-size value.
 */
 int sqlite3PcacheGetCachesize(PCache *pCache){
-  return numberOfCachePages(pCache);
+  return नुमेरो_Of_Cache_Pages(pCache);
 }
 #endif
 
@@ -864,7 +864,7 @@ void sqlite3PcacheSetCachesize(PCache *pCache, int mxPage){
   assert( pCache->pCache!=0 );
   pCache->szCache = mxPage;
   sqlite3GlobalConfig.pcache2.xCachesize(pCache->pCache,
-                                         numberOfCachePages(pCache));
+                                         नुमेरो_Of_Cache_Pages(pCache));
 }
 
 /*
@@ -881,7 +881,7 @@ int sqlite3PcacheSetSpillsize(PCache *p, int mxPage){
     }
     p->szSpill = mxPage;
   }
-  res = numberOfCachePages(p);
+  res = नुमेरो_Of_Cache_Pages(p);
   if( res<p->szSpill ) res = p->szSpill; 
   return res;
 }
@@ -907,7 +907,7 @@ int sqlite3HeaderSizePcache(void){ return ROUND8(sizeof(PgHdr)); }
 int sqlite3PCachePercentDirty(PCache *pCache){
   PgHdr *pDirty;
   int nDirty = 0;
-  int nCache = numberOfCachePages(pCache);
+  int nCache = नुमेरो_Of_Cache_Pages(pCache);
   for(pDirty=pCache->pDirty; pDirty; pDirty=pDirty->pDirtyNext) nDirty++;
   return nCache ? (int)(((i64)nDirty * 100) / nCache) : 0;
 }

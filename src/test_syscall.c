@@ -92,7 +92,7 @@ extern const char *sqlite3ErrName(int);
 
 static struct TestSyscallGlobal {
   int bPersist;                   /* 1 for persistent errors, 0 for transient */
-  int nCount;                     /* Fail after this many more calls */
+  int n_बिलांग;                     /* Fail after this many more calls */
   int nFail;                      /* Number of failures that have occurred */
   int pgsz;
   sqlite3_syscall_ptr orig_getpagesize;
@@ -175,8 +175,8 @@ struct TestSyscallArray {
 ** fail, or 0 if it should succeed.
 */
 static int tsIsFail(void){
-  gSyscall.nCount--;
-  if( gSyscall.nCount==0 || (gSyscall.nFail && gSyscall.bPersist) ){
+  gSyscall.n_बिलांग--;
+  if( gSyscall.n_बिलांग==0 || (gSyscall.nFail && gSyscall.bPersist) ){
     gSyscall.nFail++;
     return 1;
   }
@@ -433,7 +433,7 @@ static int SQLITE_TCLAPI test_syscall_install(
   Tcl_Obj **apElem;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL-LIST");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "SYSCALL-LIST");
     return TCL_ERROR;
   }
   if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
@@ -467,7 +467,7 @@ static int SQLITE_TCLAPI test_syscall_uninstall(
   int i;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "");
     return TCL_ERROR;
   }
 
@@ -492,7 +492,7 @@ static int SQLITE_TCLAPI test_syscall_reset(
   int rc;
 
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "");
     return TCL_ERROR;
   }
 
@@ -529,7 +529,7 @@ static int SQLITE_TCLAPI test_syscall_exists(
   sqlite3_syscall_ptr x;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "");
     return TCL_ERROR;
   }
 
@@ -546,16 +546,16 @@ static int SQLITE_TCLAPI test_syscall_fault(
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nCount = 0;
+  int n_बिलांग = 0;
   int bPersist = 0;
 
   if( objc!=2 && objc!=4 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "?COUNT PERSIST?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "?COUNT PERSIST?");
     return TCL_ERROR;
   }
 
   if( objc==4 ){
-    if( Tcl_GetIntFromObj(interp, objv[2], &nCount)
+    if( Tcl_GetIntFromObj(interp, objv[2], &n_बिलांग)
      || Tcl_GetBooleanFromObj(interp, objv[3], &bPersist)
     ){
       return TCL_ERROR;
@@ -563,7 +563,7 @@ static int SQLITE_TCLAPI test_syscall_fault(
   }
 
   Tcl_SetObjResult(interp, Tcl_NewIntObj(gSyscall.nFail));
-  gSyscall.nCount = nCount;
+  gSyscall.n_बिलांग = n_बिलांग;
   gSyscall.bPersist = bPersist;
   gSyscall.nFail = 0;
   return TCL_OK;
@@ -598,7 +598,7 @@ static int SQLITE_TCLAPI test_syscall_errno(
   };
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "SYSCALL ERRNO");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "SYSCALL ERRNO");
     return TCL_ERROR;
   }
 
@@ -626,13 +626,13 @@ static int SQLITE_TCLAPI test_syscall_list(
   Tcl_Obj *pList;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "");
     return TCL_ERROR;
   }
 
   pVfs = sqlite3_vfs_find(0);
   pList = Tcl_NewObj();
-  Tcl_IncrRefCount(pList);
+  Tcl_Incr_Ref_बिलांग(pList);
   for(zSys = pVfs->xNextSystemCall(pVfs, 0); 
       zSys!=0;
       zSys = pVfs->xNextSystemCall(pVfs, zSys)
@@ -641,7 +641,7 @@ static int SQLITE_TCLAPI test_syscall_list(
   }
 
   Tcl_SetObjResult(interp, pList);
-  Tcl_DecrRefCount(pList);
+  Tcl_Decr_Ref_बिलांग(pList);
   return TCL_OK;
 }
 
@@ -654,7 +654,7 @@ static int SQLITE_TCLAPI test_syscall_defaultvfs(
   sqlite3_vfs *pVfs; 
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "");
     return TCL_ERROR;
   }
 
@@ -676,7 +676,7 @@ static int SQLITE_TCLAPI test_syscall_pagesize(
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
   int pgsz;
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 2, objv, "PGSZ");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "PGSZ");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[2], &pgsz) ){
@@ -728,7 +728,7 @@ static int SQLITE_TCLAPI test_syscall(
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
 
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SUB-COMMAND ...");
     return TCL_ERROR;
   }
   if( pVfs->iVersion<3 || pVfs->xSetSystemCall==0 ){

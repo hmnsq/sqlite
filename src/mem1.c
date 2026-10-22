@@ -238,15 +238,15 @@ static int sqlite3MemRoundup(int n){
 */
 static int sqlite3MemInit(void *NotUsed){
 #if defined(__APPLE__) && !defined(SQLITE_WITHOUT_ZONEMALLOC)
-  int cpuCount;
+  int cpu_बिलांग;
   size_t len;
   if( _sqliteZone_ ){
     return SQLITE_OK;
   }
-  len = sizeof(cpuCount);
+  len = sizeof(cpu_बिलांग);
   /* One usually wants to use hw.activecpu for MT decisions, but not here */
-  sysctlbyname("hw.ncpu", &cpuCount, &len, NULL, 0);
-  if( cpuCount>1 ){
+  sysctlbyname("hw.ncpu", &cpu_बिलांग, &len, NULL, 0);
+  if( cpu_बिलांग>1 ){
     /* defer MT decisions to system malloc */
     _sqliteZone_ = malloc_default_zone();
   }else{

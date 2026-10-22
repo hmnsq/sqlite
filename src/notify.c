@@ -187,7 +187,7 @@ int sqlite3_unlock_notify(
 
   leaveMutex();
   assert( !db->mallocFailed );
-  sqlite3ErrorWithMsg(db, rc, (rc?"database is deadlocked":0));
+  sqlite3_Error_With_मेनसाहे(db, rc, (rc?"database is deadlocked":0));
   sqlite3_mutex_leave(db->mutex);
   return rc;
 }

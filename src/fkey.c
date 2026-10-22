@@ -13,7 +13,7 @@
 */
 #include "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_FOREIGN_KEY
+#ifndef SQLITE_OMIT_FOREIGN_सुसि
 #ifndef SQLITE_OMIT_TRIGGER
 
 /*
@@ -190,7 +190,7 @@ int sqlite3FkLocateIndex(
   Index *pIdx = 0;                    /* Value to return via *ppIdx */
   int *aiCol = 0;                     /* Value to return via *paiCol */
   int nCol = pFKey->nCol;             /* Number of columns in parent key */
-  char *zKey = pFKey->aCol[0].zCol;   /* Name of left-most parent key column */
+  char *z_सुसि = pFKey->aCol[0].zCol;   /* Name of left-most parent key column */
 
   /* The caller is responsible for zeroing output parameters. */
   assert( ppIdx && *ppIdx==0 );
@@ -214,8 +214,8 @@ int sqlite3FkLocateIndex(
     **      PRIMARY KEY.
     */
     if( pParent->iPKey>=0 ){
-      if( !zKey ) return 0;
-      if( !sqlite3StrICmp(pParent->aCol[pParent->iPKey].zCnName, zKey) ){
+      if( !z_सुसि ) return 0;
+      if( !sqlite3StrICmp(pParent->aCol[pParent->iPKey].zCnName, z_सुसि) ){
         return 0;
       }
     }
@@ -227,16 +227,16 @@ int sqlite3FkLocateIndex(
   }
 
   for(pIdx=pParent->pIndex; pIdx; pIdx=pIdx->pNext){
-    if( pIdx->nKeyCol==nCol && IsUniqueIndex(pIdx) && pIdx->pPartIdxWhere==0 ){ 
+    if( pIdx->n_सुसि_Col==nCol && IsUniqueIndex(pIdx) && pIdx->pPartIdxWhere==0 ){ 
       /* pIdx is a UNIQUE index (or a PRIMARY KEY) and has the right number
       ** of columns. If each indexed column corresponds to a foreign key
       ** column of pFKey, then this index is a winner.  */
 
-      if( zKey==0 ){
+      if( z_सुसि==0 ){
         /* If zKey is NULL, then this foreign key is implicitly mapped to 
         ** the PRIMARY KEY of table pParent. The PRIMARY KEY index may be 
         ** identified by the test.  */
-        if( IsPrimaryKeyIndex(pIdx) ){
+        if( Is_Primary_सुसि_Index(pIdx) ){
           if( aiCol ){
             int i;
             for(i=0; i<nCol; i++) aiCol[i] = pFKey->aCol[i].iFrom;
@@ -260,7 +260,7 @@ int sqlite3FkLocateIndex(
           ** the default collation sequence for the column, this index is
           ** unusable. Bail out early in this case.  */
           zDfltColl = sqlite3ColumnColl(&pParent->aCol[iCol]);
-          if( !zDfltColl ) zDfltColl = sqlite3StrBINARY;
+          if( !zDfltColl ) zDfltColl = sqlite3_Str_दालावाहान;
           if( sqlite3StrICmp(pIdx->azColl[i], zDfltColl) ) break;
 
           zIdxCol = pParent->aCol[iCol].zCnName;
@@ -279,7 +279,7 @@ int sqlite3FkLocateIndex(
 
   if( !pIdx ){
     if( !pParse->disableTriggers ){
-      sqlite3ErrorMsg(pParse,
+      sqlite3_Error_मेनसाहे(pParse,
            "foreign key mismatch - \"%w\" referencing \"%w\"",
            pFKey->pFrom->zName, pFKey->zTo);
     }
@@ -392,7 +392,7 @@ static void fkLookupParent(
       int regTemp = sqlite3GetTempRange(pParse, nCol);
   
       sqlite3VdbeAddOp3(v, OP_OpenRead, iCur, pIdx->tnum, iDb);
-      sqlite3VdbeSetP4KeyInfo(pParse, pIdx);
+      sqlite3_Vdbe_Set_P4_सुसि_Info(pParse, pIdx);
       for(i=0; i<nCol; i++){
         sqlite3VdbeAddOp2(v, OP_Copy, 
                sqlite3TableColumnToStorage(pFKey->pFrom, aiCol[i])+1+regData,
@@ -468,52 +468,52 @@ static void fkLookupParent(
 ** for pTab.  regBase itself holds the rowid.  regBase+1 holds the first
 ** column.  regBase+2 holds the second column, and so forth.
 */
-static Expr *exprTableRegister(
+static पाहायाग *पाहायाग_Table_Register(
   Parse *pParse,     /* Parsing and code generating context */
   Table *pTab,       /* The table whose content is at r[regBase]... */
   int regBase,       /* Contents of table pTab */
   i16 iCol           /* Which column of pTab is desired */
 ){
-  Expr *pExpr;
+  पाहायाग *p_पाहायाग;
   Column *pCol;
   const char *zColl;
   sqlite3 *db = pParse->db;
 
-  pExpr = sqlite3Expr(db, TK_REGISTER, 0);
-  if( pExpr ){
+  p_पाहायाग = sqlite3_पाहायाग(db, TK_REGISTER, 0);
+  if( p_पाहायाग ){
     if( iCol>=0 && iCol!=pTab->iPKey ){
       pCol = &pTab->aCol[iCol];
-      pExpr->iTable = regBase + sqlite3TableColumnToStorage(pTab,iCol) + 1;
-      pExpr->affExpr = pCol->affinity;
+      p_पाहायाग->iTable = regBase + sqlite3TableColumnToStorage(pTab,iCol) + 1;
+      p_पाहायाग->aff_पाहायाग = pCol->affinity;
       zColl = sqlite3ColumnColl(pCol);
       if( zColl==0 ) zColl = db->pDfltColl->zName;
-      pExpr = sqlite3ExprAddCollateString(pParse, pExpr, zColl);
+      p_पाहायाग = sqlite3_पाहायाग_Add_Collate_String(pParse, p_पाहायाग, zColl);
     }else{
-      pExpr->iTable = regBase;
-      pExpr->affExpr = SQLITE_AFF_INTEGER;
+      p_पाहायाग->iTable = regBase;
+      p_पाहायाग->aff_पाहायाग = SQLITE_AFF_INTEGER;
     }
   }
-  return pExpr;
+  return p_पाहायाग;
 }
 
 /*
 ** Return an Expr object that refers to column iCol of table pTab which
 ** has cursor iCur.
 */
-static Expr *exprTableColumn(
+static पाहायाग *पाहायाग_Table_Column(
   sqlite3 *db,      /* The database connection */
   Table *pTab,      /* The table whose column is desired */
   int iCursor,      /* The open cursor on the table */
   i16 iCol          /* The column that is wanted */
 ){
-  Expr *pExpr = sqlite3Expr(db, TK_COLUMN, 0);
-  if( pExpr ){
-    assert( ExprUseYTab(pExpr) );
-    pExpr->y.pTab = pTab;
-    pExpr->iTable = iCursor;
-    pExpr->iColumn = iCol;
+  पाहायाग *p_पाहायाग = sqlite3_पाहायाग(db, TK_COLUMN, 0);
+  if( p_पाहायाग ){
+    assert( पाहायाग_Use_YTab(p_पाहायाग) );
+    p_पाहायाग->y.pTab = pTab;
+    p_पाहायाग->iTable = iCursor;
+    p_पाहायाग->iColumn = iCol;
   }
-  return pExpr;
+  return p_पाहायाग;
 }
 
 /*
@@ -551,7 +551,7 @@ static int fkUsesLhsAffinity(Table *p1, int iCol1, Table *p2, int iCol2){
 ** whose left-most column is iCol and whose collation sequence for that
 ** column is zColl. Return zero otherwise.
 */
-static int fkChildKeyIsIndexed(Table *pTab, int iCol, const char *zColl){
+static int fk_Child_सुसि_Is_Indexed(Table *pTab, int iCol, const char *zColl){
   Index *pIdx;
   if( iCol==pTab->iPKey ) return 1;
   for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
@@ -591,10 +591,10 @@ static int fkChildKeyIsIndexed(Table *pTab, int iCol, const char *zColl){
 ** IN ensure that no affinity other than that of the child column is
 ** applied.
 */
-static Expr *fkParentChildEq(
+static पाहायाग *fkParentChildEq(
   Parse *pParse,            /* Parsing context */
-  Expr *pLeft,              /* Parent key value */
-  Expr *pRight,             /* Unresolved reference to child key column */
+  पाहायाग *p_कालिवा,              /* Parent key value */
+  पाहायाग *p_कानान,             /* Unresolved reference to child key column */
   Table *pTab,              /* Parent table */
   int iCol,                 /* Parent key column, or <0 for rowid */
   Table *pChild,            /* Child table */
@@ -602,54 +602,54 @@ static Expr *fkParentChildEq(
   int bComposite            /* This is part of a composite FK */
 ){
   sqlite3 *db = pParse->db;
-  Expr *pEq;
+  पाहायाग *pEq;
 #ifndef SQLITE_OMIT_CAST
-  Expr *pIn = 0;
+  पाहायाग *pIn = 0;
 #endif
 
   if( fkUsesLhsAffinity(pTab, iCol, pChild, iChildCol) ){
-    return sqlite3PExpr(pParse, TK_EQ, pLeft, pRight);
+    return sqlite3PExpr(pParse, TK_EQ, p_कालिवा, p_कानान);
   }
   assert( iCol>=0 );
 
 #ifndef SQLITE_OMIT_CAST
   {
     const char *zColl = sqlite3ColumnColl(&pTab->aCol[iCol]);
-    if( zColl==0 ) zColl = sqlite3StrBINARY;
+    if( zColl==0 ) zColl = sqlite3_Str_दालावाहान;
 
     /* The IN term is only useful if it can drive a lookup on the child
     ** table. Omit it otherwise, so that a full scan of the child table
     ** does not have to evaluate it for every row.  */
-    if( bComposite || fkChildKeyIsIndexed(pChild, iChildCol, zColl) ){
+    if( bComposite || fk_Child_सुसि_Is_Indexed(pChild, iChildCol, zColl) ){
       static const Token tNumeric = { "NUMERIC", 7 };
-      Expr *pCast;
-      ExprList *pList;
+      पाहायाग *pCast;
+      पाहायाग_List *pList;
 
-      pCast = sqlite3ExprAlloc(db, TK_CAST, &tNumeric, 0);
-      sqlite3ExprAttachSubtrees(db, pCast, sqlite3ExprDup(db, pLeft, 0), 0);
-      pList = sqlite3ExprListAppend(pParse, 0,
-          sqlite3PExpr(pParse, TK_UPLUS, sqlite3ExprDup(db, pLeft, 0), 0)
+      pCast = sqlite3_पाहायाग_Alloc(db, TK_CAST, &tNumeric, 0);
+      sqlite3_पाहायाग_Attach_Subtrees(db, pCast, sqlite3_पाहायाग_Dup(db, p_कालिवा, 0), 0);
+      pList = sqlite3_पाहायाग_List_Append(pParse, 0,
+          sqlite3PExpr(pParse, TK_UPLUS, sqlite3_पाहायाग_Dup(db, p_कालिवा, 0), 0)
       );
-      pList = sqlite3ExprListAppend(pParse, pList,
+      pList = sqlite3_पाहायाग_List_Append(pParse, pList,
           sqlite3PExpr(pParse, TK_UPLUS, pCast, 0)
       );
-      pIn = sqlite3PExpr(pParse, TK_IN, sqlite3ExprAddCollateString(pParse,
-            sqlite3ExprDup(db, pRight, 0), zColl
+      pIn = sqlite3PExpr(pParse, TK_IN, sqlite3_पाहायाग_Add_Collate_String(pParse,
+            sqlite3_पाहायाग_Dup(db, p_कानान, 0), zColl
       ), 0);
       if( pIn ){
         pIn->x.pList = pList;
-        sqlite3ExprSetHeightAndFlags(pParse, pIn);
+        sqlite3_पाहायाग_Set_Height_And_Flags(pParse, pIn);
       }else{
-        sqlite3ExprListDelete(db, pList);
+        sqlite3_पाहायाग_List_Delete(db, pList);
       }
     }
   }
 #endif
 
-  pRight = sqlite3PExpr(pParse, TK_UPLUS, pRight, 0);
-  pEq = sqlite3PExpr(pParse, TK_EQ, pLeft, pRight);
+  p_कानान = sqlite3PExpr(pParse, TK_UPLUS, p_कानान, 0);
+  pEq = sqlite3PExpr(pParse, TK_EQ, p_कालिवा, p_कानान);
 #ifndef SQLITE_OMIT_CAST
-  pEq = sqlite3ExprAnd(pParse, pEq, pIn);
+  pEq = sqlite3_पाहायाग_And(pParse, pEq, pIn);
 #endif
   return pEq;
 }
@@ -694,14 +694,14 @@ static void fkScanChildren(
 ){
   sqlite3 *db = pParse->db;       /* Database handle */
   int i;                          /* Iterator variable */
-  Expr *pWhere = 0;               /* WHERE clause to scan with */
+  पाहायाग *pWhere = 0;               /* WHERE clause to scan with */
   NameContext sNameContext;       /* Context used to resolve WHERE clause */
   WhereInfo *pWInfo;              /* Context used by sqlite3WhereXXX() */
   int iFkIfZero = 0;              /* Address of OP_FkIfZero */
   Vdbe *v = sqlite3GetVdbe(pParse);
 
   assert( pIdx==0 || pIdx->pTable==pTab );
-  assert( pIdx==0 || pIdx->nKeyCol==pFKey->nCol );
+  assert( pIdx==0 || pIdx->n_सुसि_Col==pFKey->nCol );
   assert( pIdx!=0 || pFKey->nCol==1 );
   assert( pIdx!=0 || HasRowid(pTab) );
 
@@ -719,22 +719,22 @@ static void fkScanChildren(
   ** be applied to each child key value before the comparison takes place.
   */
   for(i=0; i<pFKey->nCol; i++){
-    Expr *pLeft;                  /* Value from parent table row */
-    Expr *pRight;                 /* Column ref to child table */
-    Expr *pEq;                    /* Expression (pLeft = pRight) */
+    पाहायाग *p_कालिवा;                  /* Value from parent table row */
+    पाहायाग *p_कानान;                 /* Column ref to child table */
+    पाहायाग *pEq;                    /* Expression (pLeft = pRight) */
     i16 iCol;                     /* Index of column in parent table */
     i16 iCol2;                    /* Index of column in child table */
     const char *zCol;             /* Name of column in child table */
 
     iCol = pIdx ? pIdx->aiColumn[i] : -1;
-    pLeft = exprTableRegister(pParse, pTab, regData, iCol);
+    p_कालिवा = पाहायाग_Table_Register(pParse, pTab, regData, iCol);
     iCol2 = aiCol ? aiCol[i] : pFKey->aCol[0].iFrom;
     assert( iCol2>=0 );
     zCol = pFKey->pFrom->aCol[iCol2].zCnName;
-    pRight = sqlite3Expr(db, TK_ID, zCol);
-    pEq = fkParentChildEq(pParse, pLeft, pRight, pTab, iCol,
+    p_कानान = sqlite3_पाहायाग(db, TK_ID, zCol);
+    pEq = fkParentChildEq(pParse, p_कालिवा, p_कानान, pTab, iCol,
                           pFKey->pFrom, iCol2, pFKey->nCol>0);
-    pWhere = sqlite3ExprAnd(pParse, pWhere, pEq);
+    pWhere = sqlite3_पाहायाग_And(pParse, pWhere, pEq);
   }
 
   /* If the child table is the same as the parent table, then add terms
@@ -752,34 +752,34 @@ static void fkScanChildren(
   ** by the caller.
   */
   if( pTab==pFKey->pFrom && nIncr>0 ){
-    Expr *pNe;                    /* Expression (pLeft != pRight) */
-    Expr *pLeft;                  /* Value from parent table row */
-    Expr *pRight;                 /* Column ref to child table */
+    पाहायाग *pNe;                    /* Expression (pLeft != pRight) */
+    पाहायाग *p_कालिवा;                  /* Value from parent table row */
+    पाहायाग *p_कानान;                 /* Column ref to child table */
     if( HasRowid(pTab) ){
-      pLeft = exprTableRegister(pParse, pTab, regData, -1);
-      pRight = exprTableColumn(db, pTab, pSrc->a[0].iCursor, -1);
-      pNe = sqlite3PExpr(pParse, TK_NE, pLeft, pRight);
+      p_कालिवा = पाहायाग_Table_Register(pParse, pTab, regData, -1);
+      p_कानान = पाहायाग_Table_Column(db, pTab, pSrc->a[0].iCursor, -1);
+      pNe = sqlite3PExpr(pParse, TK_NE, p_कालिवा, p_कानान);
     }else{
-      Expr *pEq, *pAll = 0;
+      पाहायाग *pEq, *pAll = 0;
       assert( pIdx!=0 );
-      for(i=0; i<pIdx->nKeyCol; i++){
+      for(i=0; i<pIdx->n_सुसि_Col; i++){
         i16 iCol = pIdx->aiColumn[i];
         assert( iCol>=0 );
-        pLeft = exprTableRegister(pParse, pTab, regData, iCol);
-        pRight = sqlite3Expr(db, TK_ID, pTab->aCol[iCol].zCnName);
-        pEq = sqlite3PExpr(pParse, TK_IS, pLeft, pRight);
-        pAll = sqlite3ExprAnd(pParse, pAll, pEq);
+        p_कालिवा = पाहायाग_Table_Register(pParse, pTab, regData, iCol);
+        p_कानान = sqlite3_पाहायाग(db, TK_ID, pTab->aCol[iCol].zCnName);
+        pEq = sqlite3PExpr(pParse, TK_IS, p_कालिवा, p_कानान);
+        pAll = sqlite3_पाहायाग_And(pParse, pAll, pEq);
       }
       pNe = sqlite3PExpr(pParse, TK_NOT, pAll, 0);
     }
-    pWhere = sqlite3ExprAnd(pParse, pWhere, pNe);
+    pWhere = sqlite3_पाहायाग_And(pParse, pWhere, pNe);
   }
 
   /* Resolve the references in the WHERE clause. */
   memset(&sNameContext, 0, sizeof(NameContext));
   sNameContext.pSrcList = pSrc;
   sNameContext.pParse = pParse;
-  sqlite3ResolveExprNames(&sNameContext, pWhere);
+  sqlite3_Resolve_पाहायाग_Names(&sNameContext, pWhere);
 
   /* Create VDBE to loop through the entries in pSrc that match the WHERE
   ** clause. For each row found, increment either the deferred or immediate
@@ -793,9 +793,9 @@ static void fkScanChildren(
   }
 
   /* Clean up the WHERE clause constructed above. */
-  sqlite3ExprDelete(db, pWhere);
+  sqlite3_पाहायाग_Delete(db, pWhere);
   if( iFkIfZero ){
-    sqlite3VdbeJumpHereOrPopInst(v, iFkIfZero);
+    sqlite3_Vdbe_Jump_Here_Or_आलिसिन_Inst(v, iFkIfZero);
   }
 }
 
@@ -829,10 +829,10 @@ static void fkTriggerDelete(sqlite3 *dbMem, Trigger *p){
   if( p ){
     TriggerStep *pStep = p->step_list;
     sqlite3SrcListDelete(dbMem, pStep->pSrc);
-    sqlite3ExprDelete(dbMem, pStep->pWhere);
-    sqlite3ExprListDelete(dbMem, pStep->pExprList);
+    sqlite3_पाहायाग_Delete(dbMem, pStep->pWhere);
+    sqlite3_पाहायाग_List_Delete(dbMem, pStep->p_पाहायाग_List);
     sqlite3SelectDelete(dbMem, pStep->pSelect);
-    sqlite3ExprDelete(dbMem, p->pWhen);
+    sqlite3_पाहायाग_Delete(dbMem, p->pWhen);
     sqlite3DbFree(dbMem, p);
   }
 }
@@ -875,7 +875,7 @@ void sqlite3FkClearTriggerCache(sqlite3 *db, int iDb){
 */
 void sqlite3FkDropTable(Parse *pParse, SrcList *pName, Table *pTab){
   sqlite3 *db = pParse->db;
-  if( (db->flags&SQLITE_ForeignKeys) && IsOrdinaryTable(pTab) ){
+  if( (db->flags&SQLITE_Foreign_मगा_सुसि) && IsOrdinaryTable(pTab) ){
     int iSkip = 0;
     Vdbe *v = sqlite3GetVdbe(pParse);
 
@@ -944,9 +944,9 @@ static int fkChildIsModified(
 ){
   int i;
   for(i=0; i<p->nCol; i++){
-    int iChildKey = p->aCol[i].iFrom;
-    if( aChange[iChildKey]>=0 ) return 1;
-    if( iChildKey==pTab->iPKey && bChngRowid ) return 1;
+    int i_Child_सुसि = p->aCol[i].iFrom;
+    if( aChange[i_Child_सुसि]>=0 ) return 1;
+    if( i_Child_सुसि==pTab->iPKey && bChngRowid ) return 1;
   }
   return 0;
 }
@@ -971,13 +971,13 @@ static int fkParentIsModified(
 ){
   int i;
   for(i=0; i<p->nCol; i++){
-    char *zKey = p->aCol[i].zCol;
-    int iKey;
-    for(iKey=0; iKey<pTab->nCol; iKey++){
-      if( aChange[iKey]>=0 || (iKey==pTab->iPKey && bChngRowid) ){
-        Column *pCol = &pTab->aCol[iKey];
-        if( zKey ){
-          if( 0==sqlite3StrICmp(pCol->zCnName, zKey) ) return 1;
+    char *z_सुसि = p->aCol[i].zCol;
+    int i_सुसि;
+    for(i_सुसि=0; i_सुसि<pTab->nCol; i_सुसि++){
+      if( aChange[i_सुसि]>=0 || (i_सुसि==pTab->iPKey && bChngRowid) ){
+        Column *pCol = &pTab->aCol[i_सुसि];
+        if( z_सुसि ){
+          if( 0==sqlite3StrICmp(pCol->zCnName, z_सुसि) ) return 1;
         }else if( pCol->colFlags & COLFLAG_PRIMKEY ){
           return 1;
         }
@@ -1043,7 +1043,7 @@ void sqlite3FkCheck(
   assert( (regOld==0)!=(regNew==0) );
 
   /* If foreign-keys are disabled, this function is a no-op. */
-  if( (db->flags&SQLITE_ForeignKeys)==0 ) return;
+  if( (db->flags&SQLITE_Foreign_मगा_सुसि)==0 ) return;
   if( !IsOrdinaryTable(pTab) ) return;
 
   iDb = sqlite3SchemaToIndex(db, pTab->pSchema);
@@ -1236,7 +1236,7 @@ u32 sqlite3FkOldmask(
   Table *pTab                     /* Table being modified */
 ){
   u32 mask = 0;
-  if( pParse->db->flags&SQLITE_ForeignKeys && IsOrdinaryTable(pTab) ){
+  if( pParse->db->flags&SQLITE_Foreign_मगा_सुसि && IsOrdinaryTable(pTab) ){
     FKey *p;
     int i;
     for(p=pTab->u.tab.pFKey; p; p=p->pNextFrom){
@@ -1246,7 +1246,7 @@ u32 sqlite3FkOldmask(
       Index *pIdx = 0;
       sqlite3FkLocateIndex(pParse, pTab, p, &pIdx, 0);
       if( pIdx ){
-        for(i=0; i<pIdx->nKeyCol; i++){
+        for(i=0; i<pIdx->n_सुसि_Col; i++){
           assert( pIdx->aiColumn[i]>=0 );
           mask |= COLUMN_MASK(pIdx->aiColumn[i]);
         }
@@ -1289,7 +1289,7 @@ int sqlite3FkRequired(
 ){
   int eRet = 1;                   /* Value to return if bHaveFK is true */
   int bHaveFK = 0;                /* If FK processing is required */
-  if( pParse->db->flags&SQLITE_ForeignKeys && IsOrdinaryTable(pTab) ){
+  if( pParse->db->flags&SQLITE_Foreign_मगा_सुसि && IsOrdinaryTable(pTab) ){
     if( !aChange ){
       /* A DELETE operation. Foreign key processing is required if the 
       ** table in question is either the child or parent table for any 
@@ -1357,7 +1357,7 @@ static Trigger *fkActionTrigger(
   Parse *pParse,                  /* Parse context */
   Table *pTab,                    /* Table being updated or deleted from */
   FKey *pFKey,                    /* Foreign key to get action for */
-  ExprList *pChanges              /* Change-list for UPDATE, NULL for DELETE */
+  पाहायाग_List *pChanges              /* Change-list for UPDATE, NULL for DELETE */
 ){
   sqlite3 *db = pParse->db;       /* Database handle */
   int action;                     /* One of OE_None, OE_Cascade etc. */
@@ -1377,11 +1377,11 @@ static Trigger *fkActionTrigger(
     Index *pIdx = 0;              /* Parent key index for this FK */
     int *aiCol = 0;               /* child table cols -> parent key cols */
     TriggerStep *pStep = 0;        /* First (only) step of trigger program */
-    Expr *pWhere = 0;             /* WHERE clause of trigger step */
-    ExprList *pList = 0;          /* Changes list if ON UPDATE CASCADE */
+    पाहायाग *pWhere = 0;             /* WHERE clause of trigger step */
+    पाहायाग_List *pList = 0;          /* Changes list if ON UPDATE CASCADE */
     Select *pSelect = 0;          /* If RESTRICT, "SELECT RAISE(...)" */
     int i;                        /* Iterator variable */
-    Expr *pWhen = 0;              /* WHEN clause for the trigger */
+    पाहायाग *pWhen = 0;              /* WHEN clause for the trigger */
 
     if( sqlite3FkLocateIndex(pParse, pTab, pFKey, &pIdx, &aiCol) ) return 0;
     assert( aiCol || pFKey->nCol==1 );
@@ -1393,9 +1393,9 @@ static Trigger *fkActionTrigger(
       Token tToCol;               /* Name of column in parent table */
       int iFromCol;               /* Idx of column in child table */
       int iToCol;                 /* Idx of column in parent table */
-      Expr *pEq;                  /* OLD.tToCol = tFromCol */
-      Expr *pLeft;                /* OLD.tToCol */
-      Expr *pRight;               /* tFromCol */
+      पाहायाग *pEq;                  /* OLD.tToCol = tFromCol */
+      पाहायाग *p_कालिवा;                /* OLD.tToCol */
+      पाहायाग *p_कानान;               /* tFromCol */
 
       iFromCol = aiCol ? aiCol[i] : pFKey->aCol[0].iFrom;
       assert( iFromCol>=0 );
@@ -1405,23 +1405,23 @@ static Trigger *fkActionTrigger(
       sqlite3TokenInit(&tToCol, pTab->aCol[iToCol].zCnName);
       sqlite3TokenInit(&tFromCol, pFKey->pFrom->aCol[iFromCol].zCnName);
 
-      pLeft = sqlite3PExpr(pParse, TK_DOT,
-          sqlite3ExprAlloc(db, TK_ID, &tOld, 0),
-          sqlite3ExprAlloc(db, TK_ID, &tToCol, 0)
+      p_कालिवा = sqlite3PExpr(pParse, TK_DOT,
+          sqlite3_पाहायाग_Alloc(db, TK_ID, &tOld, 0),
+          sqlite3_पाहायाग_Alloc(db, TK_ID, &tToCol, 0)
       );
-      pRight = sqlite3ExprAlloc(db, TK_ID, &tFromCol, 0);
+      p_कानान = sqlite3_पाहायाग_Alloc(db, TK_ID, &tFromCol, 0);
 
       /* OLD.* columns do not normally have an affinity. So set the affinity
       ** of OLD.tToCol (the parent key) explicitly here. */
-      if( pLeft ) pLeft->affExpr = pTab->aCol[iToCol].affinity;
+      if( p_कालिवा ) p_कालिवा->aff_पाहायाग = pTab->aCol[iToCol].affinity;
 
       /* Create the expression "OLD.tToCol = tFromCol". It is important
       ** that the "OLD.tToCol" term is on the LHS of the = operator, so
       ** that the collation sequence associated with the parent table is
       ** used for the comparison. */
-      pEq = fkParentChildEq(pParse, pLeft, pRight, pTab, iToCol,
+      pEq = fkParentChildEq(pParse, p_कालिवा, p_कानान, pTab, iToCol,
                             pFKey->pFrom, iFromCol, pFKey->nCol>1);
-      pWhere = sqlite3ExprAnd(pParse, pWhere, pEq);
+      pWhere = sqlite3_पाहायाग_And(pParse, pWhere, pEq);
 
       /* For ON UPDATE, construct the next term of the WHEN clause.
       ** The final WHEN clause will be like this:
@@ -1431,41 +1431,41 @@ static Trigger *fkActionTrigger(
       if( pChanges ){
         pEq = sqlite3PExpr(pParse, TK_IS,
             sqlite3PExpr(pParse, TK_DOT, 
-              sqlite3ExprAlloc(db, TK_ID, &tOld, 0),
-              sqlite3ExprAlloc(db, TK_ID, &tToCol, 0)),
+              sqlite3_पाहायाग_Alloc(db, TK_ID, &tOld, 0),
+              sqlite3_पाहायाग_Alloc(db, TK_ID, &tToCol, 0)),
             sqlite3PExpr(pParse, TK_DOT, 
-              sqlite3ExprAlloc(db, TK_ID, &tNew, 0),
-              sqlite3ExprAlloc(db, TK_ID, &tToCol, 0))
+              sqlite3_पाहायाग_Alloc(db, TK_ID, &tNew, 0),
+              sqlite3_पाहायाग_Alloc(db, TK_ID, &tToCol, 0))
             );
-        pWhen = sqlite3ExprAnd(pParse, pWhen, pEq);
+        pWhen = sqlite3_पाहायाग_And(pParse, pWhen, pEq);
       }
   
       if( action!=OE_Restrict && (action!=OE_Cascade || pChanges) ){
-        Expr *pNew;
+        पाहायाग *pNew;
         if( action==OE_Cascade ){
           pNew = sqlite3PExpr(pParse, TK_DOT, 
-            sqlite3ExprAlloc(db, TK_ID, &tNew, 0),
-            sqlite3ExprAlloc(db, TK_ID, &tToCol, 0));
+            sqlite3_पाहायाग_Alloc(db, TK_ID, &tNew, 0),
+            sqlite3_पाहायाग_Alloc(db, TK_ID, &tToCol, 0));
         }else if( action==OE_SetDflt ){
           Column *pCol = pFKey->pFrom->aCol + iFromCol;
-          Expr *pDflt;
+          पाहायाग *pDflt;
           if( pCol->colFlags & COLFLAG_GENERATED ){
             testcase( pCol->colFlags & COLFLAG_VIRTUAL );
             testcase( pCol->colFlags & COLFLAG_STORED );
             pDflt = 0;
           }else{
-            pDflt = sqlite3ColumnExprAuth(pFKey->pFrom, pCol, pParse);
+            pDflt = sqlite3_Column_पाहायाग_Auth(pFKey->pFrom, pCol, pParse);
           }
           if( pDflt ){
-            pNew = sqlite3ExprDup(db, pDflt, 0);
+            pNew = sqlite3_पाहायाग_Dup(db, pDflt, 0);
           }else{
-            pNew = sqlite3ExprAlloc(db, TK_NULL, 0, 0);
+            pNew = sqlite3_पाहायाग_Alloc(db, TK_NULL, 0, 0);
           }
         }else{
-          pNew = sqlite3ExprAlloc(db, TK_NULL, 0, 0);
+          pNew = sqlite3_पाहायाग_Alloc(db, TK_NULL, 0, 0);
         }
-        pList = sqlite3ExprListAppend(pParse, pList, pNew);
-        sqlite3ExprListSetName(pParse, pList, &tFromCol, 0);
+        pList = sqlite3_पाहायाग_List_Append(pParse, pList, pNew);
+        sqlite3_पाहायाग_List_Set_Name(pParse, pList, &tFromCol, 0);
       }
     }
     sqlite3DbFree(db, aiCol);
@@ -1475,12 +1475,12 @@ static Trigger *fkActionTrigger(
 
     if( action==OE_Restrict ){
       SrcList *pSrc;
-      Expr *pRaise; 
+      पाहायाग *pRaise; 
 
-      pRaise = sqlite3Expr(db, TK_STRING, "FOREIGN KEY constraint failed"),
+      pRaise = sqlite3_पाहायाग(db, TK_STRING, "FOREIGN KEY constraint failed"),
       pRaise = sqlite3PExpr(pParse, TK_RAISE, pRaise, 0);
       if( pRaise ){
-        pRaise->affExpr = OE_Abort;
+        pRaise->aff_पाहायाग = OE_Abort;
       }
       pSrc = sqlite3SrcListAppend(pParse, 0, 0, 0);
       if( pSrc ){
@@ -1490,7 +1490,7 @@ static Trigger *fkActionTrigger(
         pItem->u4.pSchema = pTab->pSchema;
       }
       pSelect = sqlite3SelectNew(pParse, 
-          sqlite3ExprListAppend(pParse, 0, pRaise),
+          sqlite3_पाहायाग_List_Append(pParse, 0, pRaise),
           pSrc,
           pWhere,
           0, 0, 0, 0, 0
@@ -1514,21 +1514,21 @@ static Trigger *fkActionTrigger(
         pItem->u4.pSchema = pTab->pSchema;
         pItem->fg.fixedSchema = 1;
       }
-      pStep->pWhere = sqlite3ExprDup(db, pWhere, EXPRDUP_REDUCE);
-      pStep->pExprList = sqlite3ExprListDup(db, pList, EXPRDUP_REDUCE);
+      pStep->pWhere = sqlite3_पाहायाग_Dup(db, pWhere, EXPRDUP_REDUCE);
+      pStep->p_पाहायाग_List = sqlite3_पाहायाग_List_Dup(db, pList, EXPRDUP_REDUCE);
       pStep->pSelect = sqlite3SelectDup(db, pSelect, EXPRDUP_REDUCE);
       if( pWhen ){
         pWhen = sqlite3PExpr(pParse, TK_NOT, pWhen, 0);
-        pTrigger->pWhen = sqlite3ExprDup(db, pWhen, EXPRDUP_REDUCE);
+        pTrigger->pWhen = sqlite3_पाहायाग_Dup(db, pWhen, EXPRDUP_REDUCE);
       }
     }
 
     /* Re-enable the lookaside buffer, if it was disabled earlier. */
     EnableLookaside;
 
-    sqlite3ExprDelete(db, pWhere);
-    sqlite3ExprDelete(db, pWhen);
-    sqlite3ExprListDelete(db, pList);
+    sqlite3_पाहायाग_Delete(db, pWhere);
+    sqlite3_पाहायाग_Delete(db, pWhen);
+    sqlite3_पाहायाग_List_Delete(db, pList);
     sqlite3SelectDelete(db, pSelect);
     if( db->mallocFailed==1 ){
       fkTriggerDelete(db, pTrigger);
@@ -1567,7 +1567,7 @@ static Trigger *fkActionTrigger(
 void sqlite3FkActions(
   Parse *pParse,                  /* Parse context */
   Table *pTab,                    /* Table being updated or deleted from */
-  ExprList *pChanges,             /* Change-list for UPDATE, NULL for DELETE */
+  पाहायाग_List *pChanges,             /* Change-list for UPDATE, NULL for DELETE */
   int regOld,                     /* Address of array containing old row */
   int *aChange,                   /* Array indicating UPDATEd columns (or 0) */
   int bChngRowid                  /* True if rowid is UPDATEd */
@@ -1576,7 +1576,7 @@ void sqlite3FkActions(
   ** refer to table pTab. If there is an action associated with the FK 
   ** for this operation (either update or delete), invoke the associated 
   ** trigger sub-program.  */
-  if( pParse->db->flags&SQLITE_ForeignKeys ){
+  if( pParse->db->flags&SQLITE_Foreign_मगा_सुसि ){
     FKey *pFKey;                  /* Iterator variable */
     for(pFKey = sqlite3FkReferences(pTab); pFKey; pFKey=pFKey->pNextTo){
       if( aChange==0 || fkParentIsModified(pTab, pFKey, aChange, bChngRowid) ){
@@ -1611,7 +1611,7 @@ void sqlite3FkDelete(sqlite3 *db, Table *pTab){
         pFKey->pPrevTo->pNextTo = pFKey->pNextTo;
       }else{
         const char *z = (pFKey->pNextTo ? pFKey->pNextTo->zTo : pFKey->zTo);
-        sqlite3HashInsert(&pTab->pSchema->fkeyHash, z, pFKey->pNextTo);
+        sqlite3_Hash_इसिंगित(&pTab->pSchema->fkeyHash, z, pFKey->pNextTo);
       }
       if( pFKey->pNextTo ){
         pFKey->pNextTo->pPrevTo = pFKey->pPrevTo;

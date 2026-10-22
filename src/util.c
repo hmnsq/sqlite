@@ -125,7 +125,7 @@ char *sqlite3ColumnType(Column *pCol, char *zDflt){
 ** sqlite3Error().
 */
 static SQLITE_NOINLINE void  sqlite3ErrorFinish(sqlite3 *db, int err_code){
-  if( db->pErr ) sqlite3ValueSetNull(db->pErr);
+  if( db->pErr ) sqlite3_हालागा_Set_Null(db->pErr);
   sqlite3SystemError(db, err_code);
 }
 
@@ -152,7 +152,7 @@ void sqlite3ErrorClear(sqlite3 *db){
   assert( db!=0 );
   db->errCode = SQLITE_OK;
   db->errByteOffset = -1;
-  if( db->pErr ) sqlite3ValueSetNull(db->pErr);
+  if( db->pErr ) sqlite3_हालागा_Set_Null(db->pErr);
 }
 
 /*
@@ -196,19 +196,19 @@ void sqlite3SystemError(sqlite3 *db, int rc){
 ** should be called with err_code set to SQLITE_OK and zFormat set
 ** to NULL.
 */
-void sqlite3ErrorWithMsg(sqlite3 *db, int err_code, const char *zFormat, ...){
+void sqlite3_Error_With_मेनसाहे(sqlite3 *db, int err_code, const char *zFormat, ...){
   assert( db!=0 );
   db->errCode = err_code;
   sqlite3SystemError(db, err_code);
   if( zFormat==0 ){
     sqlite3Error(db, err_code);
-  }else if( db->pErr || (db->pErr = sqlite3ValueNew(db))!=0 ){
+  }else if( db->pErr || (db->pErr = sqlite3_हालागा_New(db))!=0 ){
     char *z;
     va_list ap;
     va_start(ap, zFormat);
     z = sqlite3VMPrintf(db, zFormat, ap);
     va_end(ap);
-    sqlite3ValueSetStr(db->pErr, -1, z, SQLITE_UTF8, SQLITE_DYNAMIC);
+    sqlite3_हालागा_Set_Str(db->pErr, -1, z, SQLITE_UTF8, SQLITE_DYNAMIC);
   }
 }
 
@@ -246,27 +246,27 @@ void sqlite3ProgressCheck(Parse *p){
 ** Functions sqlite3Error() or sqlite3ErrorWithMsg() should be used
 ** during statement execution (sqlite3_step() etc.).
 */
-void sqlite3ErrorMsg(Parse *pParse, const char *zFormat, ...){
-  char *zMsg;
+void sqlite3_Error_मेनसाहे(Parse *pParse, const char *zFormat, ...){
+  char *z_मेनसाहे;
   va_list ap;
   sqlite3 *db = pParse->db;
   assert( db!=0 );
   assert( db->pParse==pParse || db->pParse->pToplevel==pParse );
   db->errByteOffset = -2;
   va_start(ap, zFormat);
-  zMsg = sqlite3VMPrintf(db, zFormat, ap);
+  z_मेनसाहे = sqlite3VMPrintf(db, zFormat, ap);
   va_end(ap);
   if( db->errByteOffset<-1 ) db->errByteOffset = -1;
   if( db->suppressErr ){
-    sqlite3DbFree(db, zMsg);
+    sqlite3DbFree(db, z_मेनसाहे);
     if( db->mallocFailed ){
       pParse->nErr++;
       pParse->rc = SQLITE_NOMEM;
     }
   }else{
     pParse->nErr++;
-    sqlite3DbFree(db, pParse->zErrMsg);
-    pParse->zErrMsg = zMsg;
+    sqlite3DbFree(db, pParse->z_Err_मेनसाहे);
+    pParse->z_Err_मेनसाहे = z_मेनसाहे;
     pParse->rc = SQLITE_ERROR;
     pParse->pWith = 0;
   }
@@ -324,8 +324,8 @@ void sqlite3Dequote(char *z){
   }
   z[j] = 0;
 }
-void sqlite3DequoteExpr(Expr *p){
-  assert( !ExprHasProperty(p, EP_IntValue) );
+void sqlite3_Dequote_पाहायाग(पाहायाग *p){
+  assert( !पाहायाग_Has_Property(p, EP_Int_हालागा) );
   assert( sqlite3Isquote(p->u.zToken[0]) );
   p->flags |= p->u.zToken[0]=='"' ? EP_Quoted|EP_DblQuoted : EP_Quoted;
   sqlite3Dequote(p->u.zToken);
@@ -336,13 +336,13 @@ void sqlite3DequoteExpr(Expr *p){
 ** and set the type to INTEGER or FLOAT. "Quoted" integers or floats are those
 ** that contain '_' characters that must be removed before further processing.
 */
-void sqlite3DequoteNumber(Parse *pParse, Expr *p){
+void sqlite3_Dequote_नुमेरो(Parse *pParse, पाहायाग *p){
   assert( p!=0 || pParse->db->mallocFailed );
   if( p ){
     const char *pIn = p->u.zToken;
     char *pOut = p->u.zToken;
     int bHex = (pIn[0]=='0' && (pIn[1]=='x' || pIn[1]=='X'));
-    int iValue;
+    int i_हालागा;
     assert( p->op==TK_QNUMBER );
     p->op = TK_INTEGER;
     do {
@@ -353,7 +353,7 @@ void sqlite3DequoteNumber(Parse *pParse, Expr *p){
         if( (bHex==0 && (!sqlite3Isdigit(pIn[-1]) || !sqlite3Isdigit(pIn[1])))
          || (bHex==1 && (!sqlite3Isxdigit(pIn[-1]) || !sqlite3Isxdigit(pIn[1])))
         ){
-          sqlite3ErrorMsg(pParse, "unrecognized token: \"%s\"", p->u.zToken);
+          sqlite3_Error_मेनसाहे(pParse, "unrecognized token: \"%s\"", p->u.zToken);
         }
       }
     }while( *pIn++ );
@@ -362,9 +362,9 @@ void sqlite3DequoteNumber(Parse *pParse, Expr *p){
     /* tag-20240227-a: If after dequoting, the number is an integer that
     ** fits in 32 bits, then it must be converted into EP_IntValue.  Other
     ** parts of the code expect this.  See also tag-20240227-b. */
-    if( p->op==TK_INTEGER && sqlite3GetInt32(p->u.zToken, &iValue) ){
-      p->u.iValue = iValue;
-      p->flags |= EP_IntValue;
+    if( p->op==TK_INTEGER && sqlite3GetInt32(p->u.zToken, &i_हालागा) ){
+      p->u.i_हालागा = i_हालागा;
+      p->flags |= EP_Int_हालागा;
     }
   }
 }
@@ -412,19 +412,19 @@ void sqlite3TokenInit(Token *p, char *z){
 ** case-independent fashion, using the same definition of "case
 ** independence" that SQLite uses internally when comparing identifiers.
 */
-int sqlite3_stricmp(const char *zLeft, const char *zRight){
-  if( zLeft==0 ){
-    return zRight ? -1 : 0;
-  }else if( zRight==0 ){
+int sqlite3_stricmp(const char *z_कालिवा, const char *z_कानान){
+  if( z_कालिवा==0 ){
+    return z_कानान ? -1 : 0;
+  }else if( z_कानान==0 ){
     return 1;
   }
-  return sqlite3StrICmp(zLeft, zRight);
+  return sqlite3StrICmp(z_कालिवा, z_कानान);
 }
-int sqlite3StrICmp(const char *zLeft, const char *zRight){
+int sqlite3StrICmp(const char *z_कालिवा, const char *z_कानान){
   unsigned char *a, *b;
   int c, x;
-  a = (unsigned char *)zLeft;
-  b = (unsigned char *)zRight;
+  a = (unsigned char *)z_कालिवा;
+  b = (unsigned char *)z_कानान;
   for(;;){
     c = *a;
     x = *b;
@@ -439,15 +439,15 @@ int sqlite3StrICmp(const char *zLeft, const char *zRight){
   }
   return c;
 }
-int sqlite3_strnicmp(const char *zLeft, const char *zRight, int N){
+int sqlite3_strnicmp(const char *z_कालिवा, const char *z_कानान, int N){
   register unsigned char *a, *b;
-  if( zLeft==0 ){
-    return zRight ? -1 : 0;
-  }else if( zRight==0 ){
+  if( z_कालिवा==0 ){
+    return z_कानान ? -1 : 0;
+  }else if( z_कानान==0 ){
     return 1;
   }
-  a = (unsigned char *)zLeft;
-  b = (unsigned char *)zRight;
+  a = (unsigned char *)z_कालिवा;
+  b = (unsigned char *)z_कानान;
   while( N-- > 0 && *a!=0 && UpperToLower[*a]==UpperToLower[*b]){ a++; b++; }
   return N<0 ? 0 : UpperToLower[*a] - UpperToLower[*b];
 }
@@ -736,7 +736,7 @@ static int pwr2to10(int p){ return (p*78913) >> 18; }
 /*
 ** Count leading zeros for a 64-bit unsigned integer.
 */
-static int countLeadingZeros(u64 m){
+static int बिलांग_Leading_Zeros(u64 m){
 #if (defined(__GNUC__) || defined(__clang__)) \
     && !defined(SQLITE_DISABLE_INTRINSIC)
   return __builtin_clzll(m);
@@ -791,7 +791,7 @@ static double sqlite3Fp10Convert2(u64 d, int p){
   double r;
   if( p<POWERSOF10_FIRST ) return 0.0;
   if( p>POWERSOF10_LAST ) return (double)INFINITY;
-  b = 64 - countLeadingZeros(d);
+  b = 64 - बिलांग_Leading_Zeros(d);
   lp = pwr10to2(p);
   e = 53 - b - lp;
   if( e > 1074 ){
@@ -1137,16 +1137,16 @@ int sqlite3Int64ToText(i64 v, char *zOut){
 **
 ** will return -8.
 */
-static int compare2pow63(const char *zNum, int incr){
+static int compare2pow63(const char *z_नुमेरो, int incr){
   int c = 0;
   int i;
                     /* 012345678901234567 */
   const char *pow63 = "922337203685477580";
   for(i=0; c==0 && i<18; i++){
-    c = (zNum[i*incr]-pow63[i])*10;
+    c = (z_नुमेरो[i*incr]-pow63[i])*10;
   }
   if( c==0 ){
-    c = zNum[18*incr] - '8';
+    c = z_नुमेरो[18*incr] - '8';
     testcase( c==(-1) );
     testcase( c==0 );
     testcase( c==(+1) );
@@ -1170,16 +1170,16 @@ static int compare2pow63(const char *zNum, int incr){
 ** The string is not necessarily zero-terminated.  The encoding is
 ** given by enc.
 */
-int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
+int sqlite3Atoi64(const char *z_नुमेरो, i64 *p_नुमेरो, int length, u8 enc){
   int incr;
   u64 u = 0;
   int neg = 0; /* assume positive */
   int i, j;
   unsigned int c = 0;
-  int nonNum = 0;  /* True if input contains UTF16 with high byte non-zero */
+  int non_नुमेरो = 0;  /* True if input contains UTF16 with high byte non-zero */
   int rc;          /* Baseline return code */
   const char *zStart;
-  const char *zEnd = zNum + length;
+  const char *zEnd = z_नुमेरो + length;
   assert( enc==SQLITE_UTF8 || enc==SQLITE_UTF16LE || enc==SQLITE_UTF16BE );
   if( enc==SQLITE_UTF8 ){
     incr = 1;
@@ -1187,23 +1187,23 @@ int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
     incr = 2;
     length &= ~1;
     assert( SQLITE_UTF16LE==2 && SQLITE_UTF16BE==3 );
-    for(i=3-enc; i<length && zNum[i]==0; i+=2){}
-    nonNum = i<length;
-    zEnd = &zNum[i^1];
-    zNum += (enc&1);
+    for(i=3-enc; i<length && z_नुमेरो[i]==0; i+=2){}
+    non_नुमेरो = i<length;
+    zEnd = &z_नुमेरो[i^1];
+    z_नुमेरो += (enc&1);
   }
-  while( zNum<zEnd && sqlite3Isspace(*zNum) ) zNum+=incr;
-  if( zNum<zEnd ){
-    if( *zNum=='-' ){
+  while( z_नुमेरो<zEnd && sqlite3Isspace(*z_नुमेरो) ) z_नुमेरो+=incr;
+  if( z_नुमेरो<zEnd ){
+    if( *z_नुमेरो=='-' ){
       neg = 1;
-      zNum+=incr;
-    }else if( *zNum=='+' ){
-      zNum+=incr;
+      z_नुमेरो+=incr;
+    }else if( *z_नुमेरो=='+' ){
+      z_नुमेरो+=incr;
     }
   }
-  zStart = zNum;
-  while( zNum<zEnd && zNum[0]=='0' ){ zNum+=incr; } /* Skip leading zeros. */
-  for(i=0; &zNum[i]<zEnd && (c=(unsigned)zNum[i]-'0')<=9; i+=incr){
+  zStart = z_नुमेरो;
+  while( z_नुमेरो<zEnd && z_नुमेरो[0]=='0' ){ z_नुमेरो+=incr; } /* Skip leading zeros. */
+  for(i=0; &z_नुमेरो[i]<zEnd && (c=(unsigned)z_नुमेरो[i]-'0')<=9; i+=incr){
     u = u*10 + c;
   }
   testcase( i==18*incr );
@@ -1214,26 +1214,26 @@ int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
     ** from clang and -fsanitize=undefined.  This test and assignment make
     ** the code a little larger and slower, and no harm comes from omitting
     ** them, but we must appease the undefined-behavior pharisees. */
-    *pNum = neg ? SMALLEST_INT64 : LARGEST_INT64;
+    *p_नुमेरो = neg ? SMALLEST_INT64 : LARGEST_INT64;
   }else if( neg ){
-    *pNum = -(i64)u;
+    *p_नुमेरो = -(i64)u;
   }else{
-    *pNum = (i64)u;
+    *p_नुमेरो = (i64)u;
   }
   rc = 0;
-  if( i==0 && zStart==zNum ){    /* No digits */
+  if( i==0 && zStart==z_नुमेरो ){    /* No digits */
     rc = -1;
-  }else if( nonNum ){            /* UTF16 with high-order bytes non-zero */
+  }else if( non_नुमेरो ){            /* UTF16 with high-order bytes non-zero */
     rc = 1;
-  }else if( &zNum[i]<zEnd ){     /* Extra bytes at the end */
+  }else if( &z_नुमेरो[i]<zEnd ){     /* Extra bytes at the end */
     int jj = i;
     do{
-      if( !sqlite3Isspace(zNum[jj]) ){
+      if( !sqlite3Isspace(z_नुमेरो[jj]) ){
         rc = 1;          /* Extra non-space text after the integer */
         break;
       }
       jj += incr;
-    }while( &zNum[jj]<zEnd );
+    }while( &z_नुमेरो[jj]<zEnd );
   }
   if( i<19*incr ){
     /* Less than 19 digits, so we know that it fits in 64 bits */
@@ -1241,13 +1241,13 @@ int sqlite3Atoi64(const char *zNum, i64 *pNum, int length, u8 enc){
     return rc;
   }else{
     /* zNum is a 19-digit numbers.  Compare it against 9223372036854775808. */
-    j = i>19*incr ? 1 : compare2pow63(zNum, incr);
+    j = i>19*incr ? 1 : compare2pow63(z_नुमेरो, incr);
     if( j<0 ){
       /* zNum is less than 9223372036854775808 so it fits */
       assert( u<=LARGEST_INT64 );
       return rc;
     }else{
-      *pNum = neg ? SMALLEST_INT64 : LARGEST_INT64;
+      *p_नुमेरो = neg ? SMALLEST_INT64 : LARGEST_INT64;
       if( j>0 ){
         /* zNum is greater than 9223372036854775808 so it overflows */
         return 2;
@@ -1307,38 +1307,38 @@ int sqlite3DecOrHexToI64(const char *z, i64 *pOut){
 ** This is different from sqlite3Atoi64() which requires the
 ** input number to be zero-terminated.
 */
-int sqlite3GetInt32(const char *zNum, int *pValue){
+int sqlite3GetInt32(const char *z_नुमेरो, int *p_हालागा){
   sqlite_int64 v = 0;
   int i, c;
   int neg = 0;
-  if( zNum[0]=='-' ){
+  if( z_नुमेरो[0]=='-' ){
     neg = 1;
-    zNum++;
-  }else if( zNum[0]=='+' ){
-    zNum++;
+    z_नुमेरो++;
+  }else if( z_नुमेरो[0]=='+' ){
+    z_नुमेरो++;
   }
 #ifndef SQLITE_OMIT_HEX_INTEGER
-  else if( zNum[0]=='0'
-        && (zNum[1]=='x' || zNum[1]=='X')
-        && sqlite3Isxdigit(zNum[2])
+  else if( z_नुमेरो[0]=='0'
+        && (z_नुमेरो[1]=='x' || z_नुमेरो[1]=='X')
+        && sqlite3Isxdigit(z_नुमेरो[2])
   ){
     u32 u = 0;
-    zNum += 2;
-    while( zNum[0]=='0' ) zNum++;
-    for(i=0; i<8 && sqlite3Isxdigit(zNum[i]); i++){
-      u = u*16 + sqlite3HexToInt(zNum[i]);
+    z_नुमेरो += 2;
+    while( z_नुमेरो[0]=='0' ) z_नुमेरो++;
+    for(i=0; i<8 && sqlite3Isxdigit(z_नुमेरो[i]); i++){
+      u = u*16 + sqlite3HexToInt(z_नुमेरो[i]);
     }
-    if( (u&0x80000000)==0 && sqlite3Isxdigit(zNum[i])==0 ){
-      memcpy(pValue, &u, 4);
+    if( (u&0x80000000)==0 && sqlite3Isxdigit(z_नुमेरो[i])==0 ){
+      memcpy(p_हालागा, &u, 4);
       return 1;
     }else{
       return 0;
     }
   }
 #endif
-  if( !sqlite3Isdigit(zNum[0]) ) return 0;
-  while( zNum[0]=='0' ) zNum++;
-  for(i=0; i<11 && (c = zNum[i] - '0')>=0 && c<=9; i++){
+  if( !sqlite3Isdigit(z_नुमेरो[0]) ) return 0;
+  while( z_नुमेरो[0]=='0' ) z_नुमेरो++;
+  for(i=0; i<11 && (c = z_नुमेरो[i] - '0')>=0 && c<=9; i++){
     v = v*10 + c;
   }
 
@@ -1358,7 +1358,7 @@ int sqlite3GetInt32(const char *zNum, int *pValue){
   if( neg ){
     v = -v;
   }
-  *pValue = (int)v;
+  *p_हालागा = (int)v;
   return 1;
 }
 
@@ -1428,7 +1428,7 @@ void sqlite3FpDecode(FpDecode *p, double r, int iRound, int mxRound){
   }
   v &= 0x000fffffffffffffULL;
   if( e==0 ){
-    int nn = countLeadingZeros(v);
+    int nn = बिलांग_Leading_Zeros(v);
     v <<= nn;
     e = -1074 - nn;
   }else{
@@ -1628,38 +1628,38 @@ int sqlite3PutVarint(unsigned char *p, u64 v){
 ** Return the number of bytes read.  The value is stored in *v.
 */
 u8 sqlite3GetVarint(const unsigned char *p, u64 *v){
-  u64 iKey = p[0];
+  u64 i_सुसि = p[0];
   const u8 *pStart = p;
-  if( iKey>=0x80 ){
+  if( i_सुसि>=0x80 ){
     u8 x;
-    iKey = (iKey<<7) ^ (x = *++p);
+    i_सुसि = (i_सुसि<<7) ^ (x = *++p);
     if( x>=0x80 ){
-      iKey = (iKey<<7) ^ (x = *++p);
+      i_सुसि = (i_सुसि<<7) ^ (x = *++p);
       if( x>=0x80 ){
-        iKey = (iKey<<7) ^ 0x10204000 ^ (x = *++p);
+        i_सुसि = (i_सुसि<<7) ^ 0x10204000 ^ (x = *++p);
         if( x>=0x80 ){
-          iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+          i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
           if( x>=0x80 ){
-            iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+            i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
             if( x>=0x80 ){
-              iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+              i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
               if( x>=0x80 ){
-                iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+                i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
                 if( x>=0x80 ){
-                  iKey = (iKey<<8) ^ 0x8000 ^ (*++p);
+                  i_सुसि = (i_सुसि<<8) ^ 0x8000 ^ (*++p);
                 }
               }
             }
           }
         }
       }else{
-        iKey ^= 0x204000;
+        i_सुसि ^= 0x204000;
       }
     }else{
-      iKey ^= 0x4000;
+      i_सुसि ^= 0x4000;
     }
   }
-  *v = iKey;
+  *v = i_सुसि;
   return (u8)(p - pStart) + 1;
 }
 
@@ -1668,38 +1668,38 @@ u8 sqlite3GetVarint(const unsigned char *p, u64 *v){
 ** its length.  This is an optimization on sqlite3GetVarint() for the
 ** cases when the return value of sqlite3GetVarint() is not needed.
 */
-i64 sqlite3VarintValue(const unsigned char *p){
-  u64 iKey = p[0];
-  if( iKey>=0x80 ){
+i64 sqlite3_Varint_हालागा(const unsigned char *p){
+  u64 i_सुसि = p[0];
+  if( i_सुसि>=0x80 ){
     u8 x;
-    iKey = (iKey<<7) ^ (x = *++p);
+    i_सुसि = (i_सुसि<<7) ^ (x = *++p);
     if( x>=0x80 ){
-      iKey = (iKey<<7) ^ (x = *++p);
+      i_सुसि = (i_सुसि<<7) ^ (x = *++p);
       if( x>=0x80 ){
-        iKey = (iKey<<7) ^ 0x10204000 ^ (x = *++p);
+        i_सुसि = (i_सुसि<<7) ^ 0x10204000 ^ (x = *++p);
         if( x>=0x80 ){
-          iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+          i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
           if( x>=0x80 ){
-            iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+            i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
             if( x>=0x80 ){
-              iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+              i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
               if( x>=0x80 ){
-                iKey = (iKey<<7) ^ 0x4000 ^ (x = *++p);
+                i_सुसि = (i_सुसि<<7) ^ 0x4000 ^ (x = *++p);
                 if( x>=0x80 ){
-                  iKey = (iKey<<8) ^ 0x8000 ^ (*++p);
+                  i_सुसि = (i_सुसि<<8) ^ 0x8000 ^ (*++p);
                 }
               }
             }
           }
         }
       }else{
-        iKey ^= 0x204000;
+        i_सुसि ^= 0x204000;
       }
     }else{
-      iKey ^= 0x4000;
+      i_सुसि ^= 0x4000;
     }
   }
-  return *(i64*)&iKey;
+  return *(i64*)&i_सुसि;
 }
 
 /*
@@ -2203,7 +2203,7 @@ VList *sqlite3VListAdd(
 ** has the value iVal.  Or return a NULL if there is no such variable in
 ** the list
 */
-const char *sqlite3VListNumToName(VList *pIn, int iVal){
+const char *sqlite3_VList_नुमेरो_To_Name(VList *pIn, int iVal){
   int i, mx;
   if( pIn==0 ) return 0;
   mx = pIn[1];
@@ -2219,7 +2219,7 @@ const char *sqlite3VListNumToName(VList *pIn, int iVal){
 ** Return the number of the variable named zName, if it is in VList.
 ** or return 0 if there is no such variable.
 */
-int sqlite3VListNameToNum(VList *pIn, const char *zName, int nName){
+int sqlite3_VList_Name_To_नुमेरो(VList *pIn, const char *zName, int nName){
   int i, mx;
   if( pIn==0 ) return 0;
   mx = pIn[1];

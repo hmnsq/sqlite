@@ -275,7 +275,7 @@ static int SQLITE_TCLAPI superunlock_cmd(
   Tcl_Obj *CONST objv[]
 ){
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
   Tcl_DeleteCommand(interp, Tcl_GetString(objv[0]));
@@ -288,11 +288,11 @@ static int superlock_busy(void *pCtx, int nBusy){
   int iVal = 0;                   /* Value to return */
 
   pEval = Tcl_DuplicateObj(p->pScript);
-  Tcl_IncrRefCount(pEval);
+  Tcl_Incr_Ref_बिलांग(pEval);
   Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewIntObj(nBusy));
   Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
   Tcl_GetIntFromObj(p->interp, Tcl_GetObjResult(p->interp), &iVal);
-  Tcl_DecrRefCount(pEval);
+  Tcl_Decr_Ref_बिलांग(pEval);
 
   return iVal;
 }
@@ -314,7 +314,7 @@ static int SQLITE_TCLAPI superlock_cmd(
   int rc;                         /* Return code from sqlite3demo_superlock() */
 
   if( objc<3 || objc>5 ){
-    Tcl_WrongNumArgs(
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(
         interp, 1, objv, "CMDNAME PATH ?VFS? ?BUSY-HANDLER-SCRIPT?");
     return TCL_ERROR;
   }

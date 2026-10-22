@@ -23,7 +23,7 @@
 void sqlite3HashInit(Hash *pNew){
   assert( pNew!=0 );
   pNew->first = 0;
-  pNew->count = 0;
+  pNew->बिलांग = 0;
   pNew->htsize = 0;
   pNew->ht = 0;
 }
@@ -46,7 +46,7 @@ void sqlite3HashClear(Hash *pH){
     sqlite3_free(elem);
     elem = next_elem;
   }
-  pH->count = 0;
+  pH->बिलांग = 0;
 }
 
 /*
@@ -76,15 +76,15 @@ static unsigned int strHash(const char *z){
 /* Link pNew element into the hash table pH.  If pEntry!=0 then also
 ** insert pNew into the pEntry hash bucket.
 */
-static void insertElement(
+static void इसिंगित_Element(
   Hash *pH,              /* The complete hash table */
   struct _ht *pEntry,    /* The entry into which pNew is inserted */
   HashElem *pNew         /* The element to be inserted */
 ){
   HashElem *pHead;       /* First element already in pEntry */
   if( pEntry ){
-    pHead = pEntry->count ? pEntry->chain : 0;
-    pEntry->count++;
+    pHead = pEntry->बिलांग ? pEntry->chain : 0;
+    pEntry->बिलांग++;
     pEntry->chain = pNew;
   }else{
     pHead = 0;
@@ -140,7 +140,7 @@ static int rehash(Hash *pH, unsigned int new_size){
   memset(new_ht, 0, new_size*sizeof(struct _ht));
   for(elem=pH->first, pH->first=0; elem; elem = next_elem){
     next_elem = elem->next;
-    insertElement(pH, &new_ht[elem->h % new_size], elem);
+    इसिंगित_Element(pH, &new_ht[elem->h % new_size], elem);
   }
   return 1;
 }
@@ -152,32 +152,32 @@ static int rehash(Hash *pH, unsigned int new_size){
 */
 static HashElem *findElementWithHash(
   const Hash *pH,     /* The pH to be searched */
-  const char *pKey,   /* The key we are searching for */
+  const char *p_सुसि,   /* The key we are searching for */
   unsigned int *pHash /* Write the hash value here */
 ){
   HashElem *elem;                /* Used to loop thru the element list */
-  unsigned int count;            /* Number of elements left to test */
+  unsigned int बिलांग;            /* Number of elements left to test */
   unsigned int h;                /* The computed hash */
   static HashElem nullElement = { 0, 0, 0, 0, 0 };
 
-  h = strHash(pKey);
+  h = strHash(p_सुसि);
   if( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
     struct _ht *pEntry;
     pEntry = &pH->ht[h % pH->htsize];
     elem = pEntry->chain;
-    count = pEntry->count;
+    बिलांग = pEntry->बिलांग;
   }else{
     elem = pH->first;
-    count = pH->count;
+    बिलांग = pH->बिलांग;
   }
   if( pHash ) *pHash = h;
-  while( count ){
+  while( बिलांग ){
     assert( elem!=0 );
-    if( h==elem->h && sqlite3StrICmp(elem->pKey,pKey)==0 ){ 
+    if( h==elem->h && sqlite3StrICmp(elem->p_सुसि,p_सुसि)==0 ){ 
       return elem;
     }
     elem = elem->next;
-    count--;
+    बिलांग--;
   }
   return &nullElement;
 }
@@ -203,14 +203,14 @@ static void removeElement(
     if( pEntry->chain==elem ){
       pEntry->chain = elem->next;
     }
-    assert( pEntry->count>0 );
-    pEntry->count--;
+    assert( pEntry->बिलांग>0 );
+    pEntry->बिलांग--;
   }
   sqlite3_free( elem );
-  pH->count--;
-  if( pH->count==0 ){
+  pH->बिलांग--;
+  if( pH->बिलांग==0 ){
     assert( pH->first==0 );
-    assert( pH->count==0 );
+    assert( pH->बिलांग==0 );
     sqlite3HashClear(pH);
   }
 }
@@ -219,10 +219,10 @@ static void removeElement(
 ** that matches pKey.  Return the data for this element if it is
 ** found, or NULL if there is no match.
 */
-void *sqlite3HashFind(const Hash *pH, const char *pKey){
+void *sqlite3HashFind(const Hash *pH, const char *p_सुसि){
   assert( pH!=0 );
-  assert( pKey!=0 );
-  return findElementWithHash(pH, pKey, 0)->data;
+  assert( p_सुसि!=0 );
+  return findElementWithHash(pH, p_सुसि, 0)->data;
 }
 
 /* Insert an element into the hash table pH.  The key is pKey
@@ -239,35 +239,35 @@ void *sqlite3HashFind(const Hash *pH, const char *pKey){
 ** If the "data" parameter to this function is NULL, then the
 ** element corresponding to "key" is removed from the hash table.
 */
-void *sqlite3HashInsert(Hash *pH, const char *pKey, void *data){
+void *sqlite3_Hash_इसिंगित(Hash *pH, const char *p_सुसि, void *data){
   unsigned int h;       /* the hash of the key modulo hash table size */
   HashElem *elem;       /* Used to loop thru the element list */
   HashElem *new_elem;   /* New element added to the pH */
 
   assert( pH!=0 );
-  assert( pKey!=0 );
-  elem = findElementWithHash(pH,pKey,&h);
+  assert( p_सुसि!=0 );
+  elem = findElementWithHash(pH,p_सुसि,&h);
   if( elem->data ){
     void *old_data = elem->data;
     if( data==0 ){
       removeElement(pH,elem);
     }else{
       elem->data = data;
-      elem->pKey = pKey;
+      elem->p_सुसि = p_सुसि;
     }
     return old_data;
   }
   if( data==0 ) return 0;
   new_elem = (HashElem*)sqlite3Malloc( sizeof(HashElem) );
   if( new_elem==0 ) return data;
-  new_elem->pKey = pKey;
+  new_elem->p_सुसि = p_सुसि;
   new_elem->h = h;
   new_elem->data = data;
-  pH->count++;
-  if( pH->count>=5 && pH->count > 2*pH->htsize ){
-    rehash(pH, pH->count*3);
+  pH->बिलांग++;
+  if( pH->बिलांग>=5 && pH->बिलांग > 2*pH->htsize ){
+    rehash(pH, pH->बिलांग*3);
   }
-  insertElement(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
+  इसिंगित_Element(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
   return 0;
 }
 

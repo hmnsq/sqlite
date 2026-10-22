@@ -215,7 +215,7 @@ static int SQLITE_TCLAPI init_wrapper_uninstall(
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -233,7 +233,7 @@ static int SQLITE_TCLAPI init_wrapper_clear(
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -252,7 +252,7 @@ static int SQLITE_TCLAPI init_wrapper_query(
   Tcl_Obj *pRet;
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 

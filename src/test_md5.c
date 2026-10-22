@@ -234,24 +234,24 @@ void MD5Update(MD5Context *ctx, const unsigned char *buf, unsigned int len){
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
 static void MD5Final(unsigned char digest[16], MD5Context *ctx){
-        unsigned count;
+        unsigned बिलांग;
         unsigned char *p;
 
         /* Compute number of bytes mod 64 */
-        count = (ctx->bits[0] >> 3) & 0x3F;
+        बिलांग = (ctx->bits[0] >> 3) & 0x3F;
 
         /* Set the first char of padding to 0x80.  This is safe since there is
            always at least one byte free */
-        p = ctx->in + count;
+        p = ctx->in + बिलांग;
         *p++ = 0x80;
 
         /* Bytes of padding needed to make 64 bytes */
-        count = 64 - 1 - count;
+        बिलांग = 64 - 1 - बिलांग;
 
         /* Pad out to 56 mod 64 */
-        if (count < 8) {
+        if (बिलांग < 8) {
                 /* Two lots of padding:  Pad the first block to 64 bytes */
-                memset(p, 0, count);
+                memset(p, 0, बिलांग);
                 byteReverse(ctx->in, 16);
                 MD5Transform(ctx->buf, (uint32 *)ctx->in);
 
@@ -259,7 +259,7 @@ static void MD5Final(unsigned char digest[16], MD5Context *ctx){
                 memset(ctx->in, 0, 56);
         } else {
                 /* Pad block to 56 bytes */
-                memset(p, 0, count-8);
+                memset(p, 0, बिलांग-8);
         }
         byteReverse(ctx->in, 14);
 
@@ -406,7 +406,7 @@ int Md5_Init(Tcl_Interp *interp){
 ** During testing, the special md5sum() aggregate function is available.
 ** inside SQLite.  The following routines implement that function.
 */
-static void md5step(sqlite3_context *context, int argc, sqlite3_value **argv){
+static void md5step(sqlite3_context *context, int argc, sqlite3_हालागा **argv){
   MD5Context *p;
   int i;
   if( argc<1 ) return;
@@ -416,7 +416,7 @@ static void md5step(sqlite3_context *context, int argc, sqlite3_value **argv){
     MD5Init(p);
   }
   for(i=0; i<argc; i++){
-    const char *zData = (char*)sqlite3_value_text(argv[i]);
+    const char *zData = (char*)sqlite3_हालागा_text(argv[i]);
     if( zData ){
       MD5Update(p, (unsigned char*)zData, (int)strlen(zData));
     }
@@ -433,7 +433,7 @@ static void md5finalize(sqlite3_context *context){
 }
 int Md5_Register(
   sqlite3 *db,
-  char **pzErrMsg,
+  char **pz_Err_मेनसाहे,
   const sqlite3_api_routines *pThunk
 ){
   int rc = sqlite3_create_function(db, "md5sum", -1, SQLITE_UTF8, 0, 0,

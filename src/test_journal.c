@@ -153,8 +153,8 @@ static int jtDelete(sqlite3_vfs*, const char *zName, int syncDir);
 static int jtAccess(sqlite3_vfs*, const char *zName, int flags, int *);
 static int jtFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
 static void *jtDlOpen(sqlite3_vfs*, const char *zFilename);
-static void jtDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*jtDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
+static void jtDlError(sqlite3_vfs*, int nByte, char *z_Err_मेनसाहे);
+static void (*jtDlSym(sqlite3_vfs*,void*, const char *z_सिम्बोलो))(void);
 static void jtDlClose(sqlite3_vfs*, void*);
 static int jtRandomness(sqlite3_vfs*, int nByte, char *zOut);
 static int jtSleep(sqlite3_vfs*, int microseconds);
@@ -782,8 +782,8 @@ static void *jtDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void jtDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  g.pVfs->xDlError(g.pVfs, nByte, zErrMsg);
+static void jtDlError(sqlite3_vfs *pVfs, int nByte, char *z_Err_मेनसाहे){
+  g.pVfs->xDlError(g.pVfs, nByte, z_Err_मेनसाहे);
 }
 
 /*

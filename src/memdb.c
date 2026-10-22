@@ -125,7 +125,7 @@ static int memdbOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
 static int memdbAccess(sqlite3_vfs*, const char *zName, int flags, int *);
 static int memdbFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
 static void *memdbDlOpen(sqlite3_vfs*, const char *zFilename);
-static void memdbDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
+static void memdbDlError(sqlite3_vfs*, int nByte, char *z_Err_मेनसाहे);
 static void (*memdbDlSym(sqlite3_vfs *pVfs, void *p, const char*zSym))(void);
 static void memdbDlClose(sqlite3_vfs*, void*);
 static int memdbRandomness(sqlite3_vfs*, int nByte, char *zOut);
@@ -677,8 +677,8 @@ static void *memdbDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void memdbDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  ORIGVFS(pVfs)->xDlError(ORIGVFS(pVfs), nByte, zErrMsg);
+static void memdbDlError(sqlite3_vfs *pVfs, int nByte, char *z_Err_मेनसाहे){
+  ORIGVFS(pVfs)->xDlError(ORIGVFS(pVfs), nByte, z_Err_मेनसाहे);
 }
 
 /*

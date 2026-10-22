@@ -98,8 +98,8 @@
 ** A value of 0 for this compile-time option causes all expression
 ** depth limiting code to be omitted.
 */
-#ifndef SQLITE_MAX_EXPR_DEPTH
-# define SQLITE_MAX_EXPR_DEPTH 1000
+#ifndef SQLITE_MAX_पाहायाग_DEPTH
+# define SQLITE_MAX_पाहायाग_DEPTH 1000
 #endif
 
 /*
@@ -186,8 +186,8 @@
 ** structure.  But otherwise, we believe that the number can be as large
 ** as a signed 32-bit integer can hold.
 */
-#ifndef SQLITE_MAX_VARIABLE_NUMBER
-# define SQLITE_MAX_VARIABLE_NUMBER 32766
+#ifndef SQLITE_MAX_VARIABLE_नुमेरो
+# define SQLITE_MAX_VARIABLE_नुमेरो 32766
 #endif
 
 /* Maximum page size.  The upper bound on this value is 65536.  This a limit
@@ -245,8 +245,8 @@
 ** This value can be lowered (or raised) at run-time using the
 ** max_page_count macro.
 */
-#ifndef SQLITE_MAX_PAGE_COUNT
-# define SQLITE_MAX_PAGE_COUNT 0xfffffffe /* 4294967294 */
+#ifndef SQLITE_MAX_PAGE_बिलांग
+# define SQLITE_MAX_PAGE_बिलांग 0xfffffffe /* 4294967294 */
 #endif
 
 /*

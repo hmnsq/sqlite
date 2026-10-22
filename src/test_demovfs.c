@@ -565,9 +565,9 @@ static int demoFullPathname(
 static void *demoDlOpen(sqlite3_vfs *pVfs, const char *zPath){
   return 0;
 }
-static void demoDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3_snprintf(nByte, zErrMsg, "Loadable extensions are not supported");
-  zErrMsg[nByte-1] = '\0';
+static void demoDlError(sqlite3_vfs *pVfs, int nByte, char *z_Err_मेनसाहे){
+  sqlite3_snprintf(nByte, z_Err_मेनसाहे, "Loadable extensions are not supported");
+  z_Err_मेनसाहे[nByte-1] = '\0';
 }
 static void (*demoDlSym(sqlite3_vfs *pVfs, void *pH, const char *z))(void){
   return 0;

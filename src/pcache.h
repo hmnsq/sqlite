@@ -122,7 +122,7 @@ void sqlite3PcacheClearSyncFlags(PCache *);
 void sqlite3PcacheClear(PCache*);
 
 /* Return the total number of outstanding page references */
-i64 sqlite3PcacheRefCount(PCache*);
+i64 sqlite3_Pcache_Ref_बिलांग(PCache*);
 
 /* Increment the reference count of an existing page */
 void sqlite3PcacheRef(PgHdr*);

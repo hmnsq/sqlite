@@ -97,7 +97,7 @@ static int simulateVtabError(echo_vtab *p, const char *zMethod){
   sqlite3_snprintf(127, zVarname, "echo_module_fail(%s,%s)", zMethod, p->zTableName);
   zErr = Tcl_GetVar(p->interp, zVarname, TCL_GLOBAL_ONLY);
   if( zErr ){
-    p->base.zErrMsg = sqlite3_mprintf("echo-vtab-error: %s", zErr);
+    p->base.z_Err_मेनसाहे = sqlite3_mprintf("echo-vtab-error: %s", zErr);
   }
   return (zErr!=0);
 }
@@ -180,7 +180,7 @@ static int getColumnNames(
     int ii;
     int nBytes;
     char *zSpace;
-    nCol = sqlite3_column_count(pStmt);
+    nCol = sqlite3_column_बिलांग(pStmt);
 
     /* Figure out how much space to allocate for the array of column names 
     ** (including space for the strings themselves). Then allocate it.
@@ -307,7 +307,7 @@ get_index_array_out:
 ** the string element zArg to that list in interpreter interp.
 */
 static void appendToEchoModule(Tcl_Interp *interp, const char *zArg){
-  int flags = (TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_GLOBAL_ONLY);
+  int flags = (TCL_APPEND_हालागा | TCL_LIST_ELEMENT | TCL_GLOBAL_ONLY);
   Tcl_SetVar(interp, "echo_module", (zArg?zArg:""), flags);
 }
 
@@ -619,8 +619,8 @@ static int echoColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
   if( !pStmt ){
     sqlite3_result_null(ctx);
   }else{
-    assert( sqlite3_data_count(pStmt)>iCol );
-    sqlite3_result_value(ctx, sqlite3_column_value(pStmt, iCol));
+    assert( sqlite3_data_बिलांग(pStmt)>iCol );
+    sqlite3_result_हालागा(ctx, sqlite3_column_हालागा(pStmt, iCol));
   }
   return SQLITE_OK;
 }
@@ -662,8 +662,8 @@ static int hashString(const char *zString){
 */
 static int echoFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   int rc;
   int i;
@@ -677,13 +677,13 @@ static int echoFilter(
   }
 
   /* Check that idxNum matches idxStr */
-  assert( idxNum==hashString(idxStr) );
+  assert( idx_नुमेरो==hashString(idxStr) );
 
   /* Log arguments to the ::echo_module Tcl variable */
   appendToEchoModule(pVtab->interp, "xFilter");
   appendToEchoModule(pVtab->interp, idxStr);
   for(i=0; i<argc; i++){
-    appendToEchoModule(pVtab->interp, (const char*)sqlite3_value_text(argv[i]));
+    appendToEchoModule(pVtab->interp, (const char*)sqlite3_हालागा_text(argv[i]));
   }
 
   sqlite3_finalize(pCur->pStmt);
@@ -695,7 +695,7 @@ static int echoFilter(
   rc = sqlite3_prepare(db, idxStr, -1, &pCur->pStmt, 0);
   assert( pCur->pStmt || rc!=SQLITE_OK );
   for(i=0; rc==SQLITE_OK && i<argc; i++){
-    rc = sqlite3_bind_value(pCur->pStmt, i+1, argv[i]);
+    rc = sqlite3_bind_हालागा(pCur->pStmt, i+1, argv[i]);
   }
 
   /* If everything was successful, advance to the first row of the scan */
@@ -758,7 +758,7 @@ static void string_concat(char **pzStr, char *zAppend, int doFree, int *pRc){
 */
 static char *echoSelectList(echo_vtab *pTab, sqlite3_index_info *pIdxInfo){
   char *zRet = 0;
-  if( sqlite3_libversion_number()<3010000 ){
+  if( sqlite3_libversion_नुमेरो()<3010000 ){
     zRet = sqlite3_mprintf(", *");
   }else{
     int i;
@@ -930,7 +930,7 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   if( !zQuery ){
     return rc;
   }
-  pIdxInfo->idxNum = hashString(zQuery);
+  pIdxInfo->idx_नुमेरो = hashString(zQuery);
   pIdxInfo->idxStr = zQuery;
   pIdxInfo->needToFreeIdxStr = 1;
   if( useCost ){
@@ -965,7 +965,7 @@ static int echoBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 int echoUpdate(
   sqlite3_vtab *tab, 
   int nData, 
-  sqlite3_value **apData, 
+  sqlite3_हालागा **apData, 
   sqlite_int64 *pRowid
 ){
   echo_vtab *pVtab = (echo_vtab *)tab;
@@ -989,14 +989,14 @@ int echoUpdate(
   }
 
   /* If apData[0] is an integer and nData>1 then do an UPDATE */
-  if( nData>1 && sqlite3_value_type(apData[0])==SQLITE_INTEGER ){
+  if( nData>1 && sqlite3_हालागा_type(apData[0])==SQLITE_INTEGER ){
     char *zSep = " SET";
     z = sqlite3_mprintf("UPDATE %Q", pVtab->zTableName);
     if( !z ){
       rc = SQLITE_NOMEM;
     }
 
-    bindArgOne = (apData[1] && sqlite3_value_type(apData[1])==SQLITE_INTEGER);
+    bindArgOne = (apData[1] && sqlite3_हालागा_type(apData[1])==SQLITE_INTEGER);
     bindArgZero = 1;
 
     if( bindArgOne ){
@@ -1013,7 +1013,7 @@ int echoUpdate(
   }
 
   /* If apData[0] is an integer and nData==1 then do a DELETE */
-  else if( nData==1 && sqlite3_value_type(apData[0])==SQLITE_INTEGER ){
+  else if( nData==1 && sqlite3_हालागा_type(apData[0])==SQLITE_INTEGER ){
     z = sqlite3_mprintf("DELETE FROM %Q WHERE rowid = ?1", pVtab->zTableName);
     if( !z ){
       rc = SQLITE_NOMEM;
@@ -1022,32 +1022,32 @@ int echoUpdate(
   }
 
   /* If the first argument is NULL and there are more than two args, INSERT */
-  else if( nData>2 && sqlite3_value_type(apData[0])==SQLITE_NULL ){
+  else if( nData>2 && sqlite3_हालागा_type(apData[0])==SQLITE_NULL ){
     int ii;
-    char *zInsert = 0;
-    char *zValues = 0;
+    char *z_इसिंगित = 0;
+    char *z_मगा_हालागा = 0;
   
-    zInsert = sqlite3_mprintf("INSERT INTO %Q (", pVtab->zTableName);
-    if( !zInsert ){
+    z_इसिंगित = sqlite3_mprintf("INSERT INTO %Q (", pVtab->zTableName);
+    if( !z_इसिंगित ){
       rc = SQLITE_NOMEM;
     }
-    if( sqlite3_value_type(apData[1])==SQLITE_INTEGER ){
+    if( sqlite3_हालागा_type(apData[1])==SQLITE_INTEGER ){
       bindArgOne = 1;
-      zValues = sqlite3_mprintf("?");
-      string_concat(&zInsert, "rowid", 0, &rc);
+      z_मगा_हालागा = sqlite3_mprintf("?");
+      string_concat(&z_इसिंगित, "rowid", 0, &rc);
     }
 
     assert((pVtab->nCol+2)==nData);
     for(ii=2; ii<nData; ii++){
-      string_concat(&zInsert, 
-          sqlite3_mprintf("%s%Q", zValues?", ":"", pVtab->aCol[ii-2]), 1, &rc);
-      string_concat(&zValues, 
-          sqlite3_mprintf("%s?%d", zValues?", ":"", ii), 1, &rc);
+      string_concat(&z_इसिंगित, 
+          sqlite3_mprintf("%s%Q", z_मगा_हालागा?", ":"", pVtab->aCol[ii-2]), 1, &rc);
+      string_concat(&z_मगा_हालागा, 
+          sqlite3_mprintf("%s?%d", z_मगा_हालागा?", ":"", ii), 1, &rc);
     }
 
-    string_concat(&z, zInsert, 1, &rc);
+    string_concat(&z, z_इसिंगित, 1, &rc);
     string_concat(&z, ") VALUES(", 0, &rc);
-    string_concat(&z, zValues, 1, &rc);
+    string_concat(&z, z_मगा_हालागा, 1, &rc);
     string_concat(&z, ")", 0, &rc);
   }
 
@@ -1064,13 +1064,13 @@ int echoUpdate(
   sqlite3_free(z);
   if( rc==SQLITE_OK ) {
     if( bindArgZero ){
-      sqlite3_bind_value(pStmt, nData, apData[0]);
+      sqlite3_bind_हालागा(pStmt, nData, apData[0]);
     }
     if( bindArgOne ){
-      sqlite3_bind_value(pStmt, 1, apData[1]);
+      sqlite3_bind_हालागा(pStmt, 1, apData[1]);
     }
     for(i=2; i<nData && rc==SQLITE_OK; i++){
-      if( apData[i] ) rc = sqlite3_bind_value(pStmt, i, apData[i]);
+      if( apData[i] ) rc = sqlite3_bind_हालागा(pStmt, i, apData[i]);
     }
     if( rc==SQLITE_OK ){
       sqlite3_step(pStmt);
@@ -1081,10 +1081,10 @@ int echoUpdate(
   }
 
   if( pRowid && rc==SQLITE_OK ){
-    *pRowid = sqlite3_last_insert_rowid(db);
+    *pRowid = sqlite3_last_इसिंगित_rowid(db);
   }
   if( rc!=SQLITE_OK ){
-    tab->zErrMsg = sqlite3_mprintf("echo-vtab-error: %s", sqlite3_errmsg(db));
+    tab->z_Err_मेनसाहे = sqlite3_mprintf("echo-vtab-error: %s", sqlite3_errmsg(db));
   }
 
   return rc;
@@ -1203,7 +1203,7 @@ static int echoRollback(sqlite3_vtab *tab){
 static void overloadedGlobFunction(
   sqlite3_context *pContext,
   int nArg,
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
   Tcl_Interp *interp = sqlite3_user_data(pContext);
   Tcl_DString str;
@@ -1212,9 +1212,9 @@ static void overloadedGlobFunction(
   Tcl_DStringInit(&str);
   Tcl_DStringAppendElement(&str, "::echo_glob_overload");
   for(i=0; i<nArg; i++){
-    Tcl_DStringAppendElement(&str, (char*)sqlite3_value_text(apArg[i]));
+    Tcl_DStringAppendElement(&str, (char*)sqlite3_हालागा_text(apArg[i]));
   }
-  rc = Tcl_Eval(interp, Tcl_DStringValue(&str));
+  rc = Tcl_Eval(interp, Tcl_DString_हालागा(&str));
   Tcl_DStringFree(&str);
   if( rc ){
     sqlite3_result_error(pContext, Tcl_GetStringResult(interp), -1);
@@ -1237,7 +1237,7 @@ static int echoFindFunction(
   sqlite3_vtab *vtab,
   int nArg,
   const char *zFuncName,
-  void (**pxFunc)(sqlite3_context*,int,sqlite3_value**),
+  void (**pxFunc)(sqlite3_context*,int,sqlite3_हालागा**),
   void **ppArg
 ){
   echo_vtab *pVtab = (echo_vtab *)vtab;
@@ -1375,7 +1375,7 @@ static int SQLITE_TCLAPI register_echo_module(
   sqlite3 *db;
   EchoModule *pMod;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -1416,7 +1416,7 @@ static int SQLITE_TCLAPI declare_vtab(
   sqlite3 *db;
   int rc;
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB SQL");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB SQL");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;

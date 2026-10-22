@@ -187,13 +187,13 @@ static char *sqllogFindFile(const char *zFile){
   ** entry is a match, then set zRet to point to the filename of the existing
   ** copy and break out of the loop.  */
   while( feof(fd)==0 ){
-    char zLine[SQLLOG_NAMESZ*2+5];
-    if( fgets(zLine, sizeof(zLine), fd) ){
+    char z_लिन्या[SQLLOG_NAMESZ*2+5];
+    if( fgets(z_लिन्या, sizeof(z_लिन्या), fd) ){
       int n;
       char *z;
 
-      zLine[sizeof(zLine)-1] = '\0';
-      z = zLine;
+      z_लिन्या[sizeof(z_लिन्या)-1] = '\0';
+      z = z_लिन्या;
       while( *z>='0' && *z<='9' ) z++;
       while( *z==' ' ) z++;
 
@@ -203,9 +203,9 @@ static char *sqllogFindFile(const char *zFile){
       if( n==strlen(zFile) && 0==memcmp(zFile, z, n) ){
         char zBuf[16];
         memset(zBuf, 0, sizeof(zBuf));
-        z = zLine;
+        z = z_लिन्या;
         while( *z>='0' && *z<='9' ){
-          zBuf[z-zLine] = *z;
+          zBuf[z-z_लिन्या] = *z;
           z++;
         }
         zRet = sqlite3_mprintf("%s_%s.db", sqllogglobal.zPrefix, zBuf);
@@ -224,7 +224,7 @@ static char *sqllogFindFile(const char *zFile){
 
 static int sqllogFindAttached(
   sqlite3 *db,                    /* Database connection */
-  const char *zSearch,            /* Name to search for (or NULL) */
+  const char *z_हानाप,            /* Name to search for (or NULL) */
   char *zName,                    /* OUT: Name of attached database */
   char *zFile                     /* OUT: Name of attached file */
 ){
@@ -252,8 +252,8 @@ static int sqllogFindAttached(
       nVal2 = sqlite3_column_bytes(pStmt, 2);
       memcpy(zFile, zVal2, nVal2+1);
 
-      if( zSearch && strlen(zSearch)==nVal1 
-       && 0==sqlite3_strnicmp(zSearch, zVal1, nVal1)
+      if( z_हानाप && strlen(z_हानाप)==nVal1 
+       && 0==sqlite3_strnicmp(z_हानाप, zVal1, nVal1)
       ){
         break;
       }
@@ -288,14 +288,14 @@ static int sqllogFindAttached(
 **
 ** The SLGlobal.mutex mutex is always held when this function is called.
 */
-static void sqllogCopydb(struct SLConn *p, const char *zSearch, int bLog){
+static void sqllogCopydb(struct SLConn *p, const char *z_हानाप, int bLog){
   char zName[SQLLOG_NAMESZ];      /* Attached database name */
   char zFile[SQLLOG_NAMESZ];      /* Database file name */
   char *zFree;
   char *zInit = 0;
   int rc;
 
-  rc = sqllogFindAttached(p->db, zSearch, zName, zFile);
+  rc = sqllogFindAttached(p->db, z_हानाप, zName, zFile);
   if( rc!=SQLITE_OK ) return;
 
   if( zFile[0]=='\0' ){

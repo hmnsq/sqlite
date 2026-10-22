@@ -56,7 +56,7 @@ static int SQLITE_TCLAPI backupTestCmd(
     return rc;
   }
   if( objc!=(2 + aSub[iCmd].nArg) ){
-    Tcl_WrongNumArgs(interp, 2, objv, aSub[iCmd].zArg);
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, aSub[iCmd].zArg);
     return TCL_ERROR;
   }
 
@@ -121,7 +121,7 @@ static int SQLITE_TCLAPI backupTestInit(
   const char *zCmd;
 
   if( objc!=6 ){
-    Tcl_WrongNumArgs(
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(
       interp, 1, objv, "CMDNAME DESTHANDLE DESTNAME SRCHANDLE SRCNAME"
     );
     return TCL_ERROR;

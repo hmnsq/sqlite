@@ -28,8 +28,8 @@
 #include "sqlite3.h"
 
 /* The following #defines are copied from test_multiplex.c */
-#ifndef MX_CHUNK_NUMBER 
-# define MX_CHUNK_NUMBER 299
+#ifndef MX_CHUNK_नुमेरो 
+# define MX_CHUNK_नुमेरो 299
 #endif
 #ifndef SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET
 # define SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET 400
@@ -142,7 +142,7 @@ SQLITE_API int sqlite3_delete_database(
   for(i=0; rc==0 && i<sizeof(aMFile)/sizeof(aMFile[0]); i++){
     struct MFile *p = &aMFile[i];
     int iChunk;
-    for(iChunk=1; iChunk<=MX_CHUNK_NUMBER; iChunk++){
+    for(iChunk=1; iChunk<=MX_CHUNK_नुमेरो; iChunk++){
       int bExists;
       sqlite3_snprintf(nBuf, zBuf, p->zFmt, zFile, iChunk+p->iOffset);
       if( p->b83 ) sqlite3Delete83Name(zBuf);

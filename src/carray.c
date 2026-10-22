@@ -120,9 +120,9 @@ static int carrayConnect(
   int rc;
 
 /* Column numbers */
-#define CARRAY_COLUMN_VALUE   0
+#define CARRAY_COLUMN_हालागा   0
 #define CARRAY_COLUMN_POINTER 1
-#define CARRAY_COLUMN_COUNT   2
+#define CARRAY_COLUMN_बिलांग   2
 #define CARRAY_COLUMN_CTYPE   3
 
   rc = sqlite3_declare_vtab(db,
@@ -186,7 +186,7 @@ static int carrayColumn(
   sqlite3_int64 x = 0;
   switch( i ){
     case CARRAY_COLUMN_POINTER:   return SQLITE_OK;
-    case CARRAY_COLUMN_COUNT:     x = pCur->iCnt;   break;
+    case CARRAY_COLUMN_बिलांग:     x = pCur->iCnt;   break;
     case CARRAY_COLUMN_CTYPE: {
       sqlite3_result_text(ctx, azCarrayType[pCur->eType], -1, SQLITE_STATIC);
       return SQLITE_OK;
@@ -258,15 +258,15 @@ static int carrayEof(sqlite3_vtab_cursor *cur){
 */
 static int carrayFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   carray_cursor *pCur = (carray_cursor *)pVtabCursor;
   pCur->pPtr = 0;
   pCur->iCnt = 0;
-  switch( idxNum ){
+  switch( idx_नुमेरो ){
     case 1: {
-      carray_bind *pBind = sqlite3_value_pointer(argv[0], "carray-bind");
+      carray_bind *pBind = sqlite3_हालागा_pointer(argv[0], "carray-bind");
       if( pBind==0 ) break;
       pCur->pPtr = pBind->aData;
       pCur->iCnt = pBind->nData;
@@ -275,18 +275,18 @@ static int carrayFilter(
     }
     case 2:
     case 3: {
-      pCur->pPtr = sqlite3_value_pointer(argv[0], "carray");
-      pCur->iCnt = pCur->pPtr ? sqlite3_value_int64(argv[1]) : 0;
-      if( idxNum<3 ){
+      pCur->pPtr = sqlite3_हालागा_pointer(argv[0], "carray");
+      pCur->iCnt = pCur->pPtr ? sqlite3_हालागा_int64(argv[1]) : 0;
+      if( idx_नुमेरो<3 ){
         pCur->eType = CARRAY_INT32;
       }else{
         unsigned char i;
-        const char *zType = (const char*)sqlite3_value_text(argv[2]);
+        const char *zType = (const char*)sqlite3_हालागा_text(argv[2]);
         for(i=0; i<sizeof(azCarrayType)/sizeof(azCarrayType[0]); i++){
           if( sqlite3_stricmp(zType, azCarrayType[i])==0 ) break;
         }
         if( i>=sizeof(azCarrayType)/sizeof(azCarrayType[0]) ){
-          pVtabCursor->pVtab->zErrMsg = sqlite3_mprintf(
+          pVtabCursor->pVtab->z_Err_मेनसाहे = sqlite3_mprintf(
             "unknown datatype: %Q", zType);
           return SQLITE_ERROR;
         }else{
@@ -340,7 +340,7 @@ static int carrayBestIndex(
       case CARRAY_COLUMN_POINTER:
         ptrIdx = i;
         break;
-      case CARRAY_COLUMN_COUNT:
+      case CARRAY_COLUMN_बिलांग:
         cntIdx = i;
         break;
       case CARRAY_COLUMN_CTYPE:
@@ -353,21 +353,21 @@ static int carrayBestIndex(
     pIdxInfo->aConstraintUsage[ptrIdx].omit = 1;
     pIdxInfo->estimatedCost = (double)1;
     pIdxInfo->estimatedRows = 100;
-    pIdxInfo->idxNum = 1;
+    pIdxInfo->idx_नुमेरो = 1;
     if( cntIdx>=0 ){
       pIdxInfo->aConstraintUsage[cntIdx].argvIndex = 2;
       pIdxInfo->aConstraintUsage[cntIdx].omit = 1;
-      pIdxInfo->idxNum = 2;
+      pIdxInfo->idx_नुमेरो = 2;
       if( ctypeIdx>=0 ){
         pIdxInfo->aConstraintUsage[ctypeIdx].argvIndex = 3;
         pIdxInfo->aConstraintUsage[ctypeIdx].omit = 1;
-        pIdxInfo->idxNum = 3;
+        pIdxInfo->idx_नुमेरो = 3;
       }else if( seen & (1<<CARRAY_COLUMN_CTYPE) ){
         /* In a three-argument carray(), we need to know the value of all
         ** three arguments */
         return SQLITE_CONSTRAINT;
       }
-    }else if( seen & (1<<CARRAY_COLUMN_COUNT) ){
+    }else if( seen & (1<<CARRAY_COLUMN_बिलांग) ){
       /* In a two-argument carray(), we need to know the value of both
       ** arguments */
       return SQLITE_CONSTRAINT;
@@ -375,7 +375,7 @@ static int carrayBestIndex(
   }else{
     pIdxInfo->estimatedCost = (double)2147483647;
     pIdxInfo->estimatedRows = 2147483647;
-    pIdxInfo->idxNum = 0;
+    pIdxInfo->idx_नुमेरो = 0;
   }
   return SQLITE_OK;
 }

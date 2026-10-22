@@ -107,7 +107,7 @@ static int SQLITE_TCLAPI hexio_read(
   FILE *in;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME OFFSET AMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILENAME OFFSET AMT");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[2], &offset) ) return TCL_ERROR;
@@ -159,7 +159,7 @@ static int SQLITE_TCLAPI hexio_write(
   FILE *out;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME OFFSET HEXDATA");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILENAME OFFSET HEXDATA");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[2], &offset) ) return TCL_ERROR;
@@ -204,7 +204,7 @@ static int SQLITE_TCLAPI hexio_get_int(
   int nOut;
   const unsigned char *zIn;
   unsigned char *aOut;
-  unsigned char aNum[4];
+  unsigned char a_नुमेरो[4];
   int bLittle = 0;
 
   if( objc==3 ){
@@ -215,7 +215,7 @@ static int SQLITE_TCLAPI hexio_get_int(
     }
   }
   if( (objc-bLittle)!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "[-littleendian] HEXDATA");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "[-littleendian] HEXDATA");
     return TCL_ERROR;
   }
   zIn = (const unsigned char *)Tcl_GetStringFromObj(objv[1+bLittle], &nIn);
@@ -225,16 +225,16 @@ static int SQLITE_TCLAPI hexio_get_int(
   }
   nOut = sqlite3TestHexToBin(zIn, (int)nIn, aOut);
   if( nOut>=4 ){
-    memcpy(aNum, aOut, 4);
+    memcpy(a_नुमेरो, aOut, 4);
   }else{
-    memset(aNum, 0, sizeof(aNum));
-    memcpy(&aNum[4-nOut], aOut, nOut);
+    memset(a_नुमेरो, 0, sizeof(a_नुमेरो));
+    memcpy(&a_नुमेरो[4-nOut], aOut, nOut);
   }
   sqlite3_free(aOut);
   if( bLittle ){
-    val = (int)((u32)aNum[3]<<24) | (aNum[2]<<16) | (aNum[1]<<8) | aNum[0];
+    val = (int)((u32)a_नुमेरो[3]<<24) | (a_नुमेरो[2]<<16) | (a_नुमेरो[1]<<8) | a_नुमेरो[0];
   }else{
-    val = (int)((u32)aNum[0]<<24) | (aNum[1]<<16) | (aNum[2]<<8) | aNum[3];
+    val = (int)((u32)a_नुमेरो[0]<<24) | (a_नुमेरो[1]<<16) | (a_नुमेरो[2]<<8) | a_नुमेरो[3];
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(val));
   return TCL_OK;
@@ -253,17 +253,17 @@ static int SQLITE_TCLAPI hexio_render_int16(
   Tcl_Obj *CONST objv[]
 ){
   int val;
-  unsigned char aNum[10];
+  unsigned char a_नुमेरो[10];
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTEGER");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "INTEGER");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[1], &val) ) return TCL_ERROR;
-  aNum[0] = val>>8;
-  aNum[1] = val;
-  sqlite3TestBinToHex(aNum, 2);
-  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)aNum, 4));
+  a_नुमेरो[0] = val>>8;
+  a_नुमेरो[1] = val;
+  sqlite3TestBinToHex(a_नुमेरो, 2);
+  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)a_नुमेरो, 4));
   return TCL_OK;
 }
 
@@ -280,19 +280,19 @@ static int SQLITE_TCLAPI hexio_render_int32(
   Tcl_Obj *CONST objv[]
 ){
   int val;
-  unsigned char aNum[10];
+  unsigned char a_नुमेरो[10];
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTEGER");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "INTEGER");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[1], &val) ) return TCL_ERROR;
-  aNum[0] = val>>24;
-  aNum[1] = val>>16;
-  aNum[2] = val>>8;
-  aNum[3] = val;
-  sqlite3TestBinToHex(aNum, 4);
-  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)aNum, 8));
+  a_नुमेरो[0] = val>>24;
+  a_नुमेरो[1] = val>>16;
+  a_नुमेरो[2] = val>>8;
+  a_नुमेरो[3] = val;
+  sqlite3TestBinToHex(a_नुमेरो, 4);
+  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)a_नुमेरो, 8));
   return TCL_OK;
 }
 
@@ -315,7 +315,7 @@ static int SQLITE_TCLAPI utf8_to_utf8(
   const unsigned char *zOrig;
   unsigned char *z;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HEX");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HEX");
     return TCL_ERROR;
   }
   zOrig = (unsigned char *)Tcl_GetStringFromObj(objv[1], &n);
@@ -377,7 +377,7 @@ static int SQLITE_TCLAPI read_fts3varint(
   int nVal;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BLOB VARNAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "BLOB VARNAME");
     return TCL_ERROR;
   }
   zBlob = Tcl_GetByteArrayFromObj(objv[1], &nBlob);
@@ -405,7 +405,7 @@ static int SQLITE_TCLAPI make_fts3record(
   int i;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "LIST");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "LIST");
     return TCL_ERROR;
   }
   if( Tcl_ListObjGetElements(interp, objv[1], &nArg, &aArg) ){

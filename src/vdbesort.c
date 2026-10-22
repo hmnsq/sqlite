@@ -254,9 +254,9 @@ struct SorterList {
 ** being merged (rounded up to the next power of 2).
 */
 struct MergeEngine {
-  int nTree;                 /* Used size of aTree/aReadr (power of 2) */
+  int n_पुनो;                 /* Used size of aTree/aReadr (power of 2) */
   SortSubtask *pTask;        /* Used by this thread only */
-  int *aTree;                /* Current state of incremental merge */
+  int *a_पुनो;                /* Current state of incremental merge */
   PmaReader *aReadr;         /* Array of PmaReaders to merge data from */
 };
 
@@ -323,7 +323,7 @@ struct VdbeSorter {
   PmaReader *pReader;             /* Readr data from here after Rewind() */
   MergeEngine *pMerger;           /* Or here, if bUseThreads==0 */
   sqlite3 *db;                    /* Database connection */
-  KeyInfo *pKeyInfo;              /* How to compare records */
+  सुसि_Info *p_सुसि_Info;              /* How to compare records */
   UnpackedRecord *pUnpacked;      /* Used by VdbeSorterCompare() */
   SorterList list;                /* List of in-memory records */
   int iMemory;                    /* Offset of free space in list.aMemory */
@@ -356,10 +356,10 @@ struct PmaReader {
   i64 iReadOff;               /* Current read offset */
   i64 iEof;                   /* 1 byte past EOF for this PmaReader */
   int nAlloc;                 /* Bytes of space at aAlloc */
-  int nKey;                   /* Number of bytes in key */
+  int n_सुसि;                   /* Number of bytes in key */
   sqlite3_file *pFd;          /* File handle we are reading from */
   u8 *aAlloc;                 /* Space for aKey if aBuffer and pMap wont work */
-  u8 *aKey;                   /* Pointer to current key */
+  u8 *a_सुसि;                   /* Pointer to current key */
   u8 *aBuffer;                /* Current read buffer */
   int nBuffer;                /* Size of read buffer in bytes */
   u8 *aMap;                   /* Pointer to mapping of entire file */
@@ -463,7 +463,7 @@ struct SorterRecord {
 
 
 /* Maximum number of PMAs that a single MergeEngine can merge */
-#define SORTER_MAX_MERGE_COUNT 16
+#define SORTER_MAX_MERGE_बिलांग 16
 
 static int vdbeIncrSwap(IncrMerger*);
 static void vdbeIncrFree(IncrMerger *);
@@ -711,8 +711,8 @@ static int vdbePmaReaderNext(PmaReader *pReadr){
     rc = vdbePmaReadVarint(pReadr, &nRec);
   }
   if( rc==SQLITE_OK ){
-    pReadr->nKey = (int)nRec;
-    rc = vdbePmaReadBlob(pReadr, (int)nRec, &pReadr->aKey);
+    pReadr->n_सुसि = (int)nRec;
+    rc = vdbePmaReadBlob(pReadr, (int)nRec, &pReadr->a_सुसि);
     testcase( rc!=SQLITE_OK );
   }
 
@@ -830,15 +830,15 @@ static int vdbeSorterCompareText(
   }
 
   if( res==0 ){
-    if( pTask->pSorter->pKeyInfo->nKeyField>1 ){
+    if( pTask->pSorter->p_सुसि_Info->n_सुसि_Field>1 ){
       res = vdbeSorterCompareTail(
           pTask, pbKey2Cached, pKey1, nKey1, pKey2, nKey2
       );
     }
   }else{
-    assert( pTask->pSorter->pKeyInfo->aSortFlags!=0 );
-    assert( !(pTask->pSorter->pKeyInfo->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
-    if( pTask->pSorter->pKeyInfo->aSortFlags[0] ){
+    assert( pTask->pSorter->p_सुसि_Info->aSortFlags!=0 );
+    assert( !(pTask->pSorter->p_सुसि_Info->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
+    if( pTask->pSorter->p_सुसि_Info->aSortFlags[0] ){
       res = res * -1;
     }
   }
@@ -900,15 +900,15 @@ static int vdbeSorterCompareInt(
     }
   }
 
-  assert( pTask->pSorter->pKeyInfo->aSortFlags!=0 );
+  assert( pTask->pSorter->p_सुसि_Info->aSortFlags!=0 );
   if( res==0 ){
-    if( pTask->pSorter->pKeyInfo->nKeyField>1 ){
+    if( pTask->pSorter->p_सुसि_Info->n_सुसि_Field>1 ){
       res = vdbeSorterCompareTail(
           pTask, pbKey2Cached, pKey1, nKey1, pKey2, nKey2
       );
     }
-  }else if( pTask->pSorter->pKeyInfo->aSortFlags[0] ){
-    assert( !(pTask->pSorter->pKeyInfo->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
+  }else if( pTask->pSorter->p_सुसि_Info->aSortFlags[0] ){
+    assert( !(pTask->pSorter->p_सुसि_Info->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
     res = res * -1;
   }
 
@@ -938,15 +938,15 @@ static int vdbeSorterFinishRealCompare(
   }else{
     res = 0;
   }
-  assert( pTask->pSorter->pKeyInfo->aSortFlags!=0 );
+  assert( pTask->pSorter->p_सुसि_Info->aSortFlags!=0 );
   if( res==0 ){
-    if( pTask->pSorter->pKeyInfo->nKeyField>1 ){
+    if( pTask->pSorter->p_सुसि_Info->n_सुसि_Field>1 ){
       res = vdbeSorterCompareTail(
           pTask, pbKey2Cached, pKey1, nKey1, pKey2, nKey2
       );
     }
-  }else if( pTask->pSorter->pKeyInfo->aSortFlags[0] ){
-    assert( !(pTask->pSorter->pKeyInfo->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
+  }else if( pTask->pSorter->p_सुसि_Info->aSortFlags[0] ){
+    assert( !(pTask->pSorter->p_सुसि_Info->aSortFlags[0]&KEYINFO_ORDER_BIGNULL) );
     res = res * -1;
   }
   return res;
@@ -1086,8 +1086,8 @@ int sqlite3VdbeSorterInit(
   int pgsz;                       /* Page size of main database */
   int i;                          /* Used to iterate through aTask[] */
   VdbeSorter *pSorter;            /* The new sorter */
-  KeyInfo *pKeyInfo;              /* Copy of pCsr->pKeyInfo with db==0 */
-  int szKeyInfo;                  /* Size of pCsr->pKeyInfo in bytes */
+  सुसि_Info *p_सुसि_Info;              /* Copy of pCsr->pKeyInfo with db==0 */
+  int sz_सुसि_Info;                  /* Size of pCsr->pKeyInfo in bytes */
   i64 sz;                         /* Size of pSorter in bytes */
   int rc = SQLITE_OK;
 #if SQLITE_MAX_WORKER_THREADS==0
@@ -1107,38 +1107,38 @@ int sqlite3VdbeSorterInit(
 
   /* Do not allow the total number of threads (main thread + all workers)
   ** to exceed the maximum merge count */
-#if SQLITE_MAX_WORKER_THREADS>=SORTER_MAX_MERGE_COUNT
-  if( nWorker>=SORTER_MAX_MERGE_COUNT ){
-    nWorker = SORTER_MAX_MERGE_COUNT-1;
+#if SQLITE_MAX_WORKER_THREADS>=SORTER_MAX_MERGE_बिलांग
+  if( nWorker>=SORTER_MAX_MERGE_बिलांग ){
+    nWorker = SORTER_MAX_MERGE_बिलांग-1;
   }
 #endif
 
-  assert( pCsr->pKeyInfo );
+  assert( pCsr->p_सुसि_Info );
   assert( !pCsr->isEphemeral );
   assert( pCsr->eCurType==CURTYPE_SORTER );
-  assert( sizeof(KeyInfo) + UMXV(pCsr->pKeyInfo->nKeyField)*sizeof(CollSeq*)
+  assert( sizeof(सुसि_Info) + UMXV(pCsr->p_सुसि_Info->n_सुसि_Field)*sizeof(CollSeq*)
                < 0x7fffffff );
-  assert( pCsr->pKeyInfo->nKeyField<=pCsr->pKeyInfo->nAllField );
-  szKeyInfo = SZ_KEYINFO(pCsr->pKeyInfo->nAllField);
+  assert( pCsr->p_सुसि_Info->n_सुसि_Field<=pCsr->p_सुसि_Info->nAllField );
+  sz_सुसि_Info = SZ_KEYINFO(pCsr->p_सुसि_Info->nAllField);
   sz = SZ_VDBESORTER(nWorker+1);
 
-  pSorter = (VdbeSorter*)sqlite3DbMallocZero(db, sz + szKeyInfo);
+  pSorter = (VdbeSorter*)sqlite3DbMallocZero(db, sz + sz_सुसि_Info);
   pCsr->uc.pSorter = pSorter;
   if( pSorter==0 ){
     rc = SQLITE_NOMEM_BKPT;
   }else{
     Btree *pBt = db->aDb[0].pBt;
-    pSorter->pKeyInfo = pKeyInfo = (KeyInfo*)((u8*)pSorter + sz);
-    memcpy(pKeyInfo, pCsr->pKeyInfo, szKeyInfo);
-    pKeyInfo->db = 0;
+    pSorter->p_सुसि_Info = p_सुसि_Info = (सुसि_Info*)((u8*)pSorter + sz);
+    memcpy(p_सुसि_Info, pCsr->p_सुसि_Info, sz_सुसि_Info);
+    p_सुसि_Info->db = 0;
     if( nField && nWorker==0 ){
-      pKeyInfo->nKeyField = nField;
-      assert( nField<=pCsr->pKeyInfo->nAllField );
+      p_सुसि_Info->n_सुसि_Field = nField;
+      assert( nField<=pCsr->p_सुसि_Info->nAllField );
     }
     /* It is OK that pKeyInfo reuses the aSortFlags field from pCsr->pKeyInfo,
     ** since the pCsr->pKeyInfo->aSortFlags[] array is invariant and lives
     ** longer that pSorter. */
-    assert( pKeyInfo->aSortFlags==pCsr->pKeyInfo->aSortFlags );
+    assert( p_सुसि_Info->aSortFlags==pCsr->p_सुसि_Info->aSortFlags );
     sqlite3BtreeEnter(pBt);
     pSorter->pgsz = pgsz = sqlite3BtreeGetPageSize(pBt);
     sqlite3BtreeLeave(pBt);
@@ -1177,9 +1177,9 @@ int sqlite3VdbeSorterInit(
       }
     }
 
-    if( pKeyInfo->nAllField<13
-     && (pKeyInfo->aColl[0]==0 || pKeyInfo->aColl[0]==db->pDfltColl)
-     && (pKeyInfo->aSortFlags[0] & KEYINFO_ORDER_BIGNULL)==0
+    if( p_सुसि_Info->nAllField<13
+     && (p_सुसि_Info->aColl[0]==0 || p_सुसि_Info->aColl[0]==db->pDfltColl)
+     && (p_सुसि_Info->aSortFlags[0] & KEYINFO_ORDER_BIGNULL)==0
     ){
       pSorter->typeMask = SORTER_TYPE_INTEGER|SORTER_TYPE_TEXT|SORTER_TYPE_REAL;
     }
@@ -1340,17 +1340,17 @@ static MergeEngine *vdbeMergeEngineNew(int nReader){
   i64 nByte;                      /* Total bytes of space to allocate */
   MergeEngine *pNew;              /* Pointer to allocated object to return */
 
-  assert( nReader<=SORTER_MAX_MERGE_COUNT );
+  assert( nReader<=SORTER_MAX_MERGE_बिलांग );
 
   while( N<nReader ) N += N;
   nByte = sizeof(MergeEngine) + N * (sizeof(int) + sizeof(PmaReader));
 
   pNew = sqlite3FaultSim(100) ? 0 : (MergeEngine*)sqlite3MallocZero(nByte);
   if( pNew ){
-    pNew->nTree = N;
+    pNew->n_पुनो = N;
     pNew->pTask = 0;
     pNew->aReadr = (PmaReader*)&pNew[1];
-    pNew->aTree = (int*)&pNew->aReadr[N];
+    pNew->a_पुनो = (int*)&pNew->aReadr[N];
   }
   return pNew;
 }
@@ -1361,7 +1361,7 @@ static MergeEngine *vdbeMergeEngineNew(int nReader){
 static void vdbeMergeEngineFree(MergeEngine *pMerger){
   int i;
   if( pMerger ){
-    for(i=0; i<pMerger->nTree; i++){
+    for(i=0; i<pMerger->n_पुनो; i++){
       vdbePmaReaderClear(&pMerger->aReadr[i]);
     }
   }
@@ -1498,9 +1498,9 @@ static int vdbeSorterOpenTempFile(
 */
 static int vdbeSortAllocUnpacked(SortSubtask *pTask){
   if( pTask->pUnpacked==0 ){
-    pTask->pUnpacked = sqlite3VdbeAllocUnpackedRecord(pTask->pSorter->pKeyInfo);
+    pTask->pUnpacked = sqlite3VdbeAllocUnpackedRecord(pTask->pSorter->p_सुसि_Info);
     if( pTask->pUnpacked==0 ) return SQLITE_NOMEM_BKPT;
-    pTask->pUnpacked->nField = pTask->pSorter->pKeyInfo->nKeyField;
+    pTask->pUnpacked->nField = pTask->pSorter->p_सुसि_Info->n_सुसि_Field;
     pTask->pUnpacked->errCode = 0;
   }
   return SQLITE_OK;
@@ -1791,7 +1791,7 @@ static int vdbeMergeEngineStep(
   int *pbEof                 /* Set TRUE at EOF.  Set false for more content */
 ){
   int rc;
-  int iPrev = pMerger->aTree[1];/* Index of PmaReader to advance */
+  int iPrev = pMerger->a_पुनो[1];/* Index of PmaReader to advance */
   SortSubtask *pTask = pMerger->pTask;
 
   /* Advance the current PmaReader */
@@ -1809,7 +1809,7 @@ static int vdbeMergeEngineStep(
     pReadr1 = &pMerger->aReadr[(iPrev & 0xFFFE)];
     pReadr2 = &pMerger->aReadr[(iPrev | 0x0001)];
 
-    for(i=(pMerger->nTree+iPrev)/2; i>0; i=i/2){
+    for(i=(pMerger->n_पुनो+iPrev)/2; i>0; i=i/2){
       /* Compare pReadr1 and pReadr2. Store the result in variable iRes. */
       int iRes;
       if( pReadr1->pFd==0 ){
@@ -1818,7 +1818,7 @@ static int vdbeMergeEngineStep(
         iRes = -1;
       }else{
         iRes = pTask->xCompare(pTask, &bCached,
-            pReadr1->aKey, pReadr1->nKey, pReadr2->aKey, pReadr2->nKey
+            pReadr1->a_सुसि, pReadr1->n_सुसि, pReadr2->a_सुसि, pReadr2->n_सुसि
         );
       }
 
@@ -1838,16 +1838,16 @@ static int vdbeMergeEngineStep(
       ** is sorted from oldest to newest, so pReadr1 contains older values
       ** than pReadr2 iff (pReadr1<pReadr2).  */
       if( iRes<0 || (iRes==0 && pReadr1<pReadr2) ){
-        pMerger->aTree[i] = (int)(pReadr1 - pMerger->aReadr);
-        pReadr2 = &pMerger->aReadr[ pMerger->aTree[i ^ 0x0001] ];
+        pMerger->a_पुनो[i] = (int)(pReadr1 - pMerger->aReadr);
+        pReadr2 = &pMerger->aReadr[ pMerger->a_पुनो[i ^ 0x0001] ];
         bCached = 0;
       }else{
         if( pReadr1->pFd ) bCached = 0;
-        pMerger->aTree[i] = (int)(pReadr2 - pMerger->aReadr);
-        pReadr1 = &pMerger->aReadr[ pMerger->aTree[i ^ 0x0001] ];
+        pMerger->a_पुनो[i] = (int)(pReadr2 - pMerger->aReadr);
+        pReadr1 = &pMerger->aReadr[ pMerger->a_पुनो[i ^ 0x0001] ];
       }
     }
-    *pbEof = (pMerger->aReadr[pMerger->aTree[1]].pFd==0);
+    *pbEof = (pMerger->aReadr[pMerger->a_पुनो[1]].pFd==0);
   }
 
   return (rc==SQLITE_OK ? pTask->pUnpacked->errCode : rc);
@@ -2072,18 +2072,18 @@ static int vdbeIncrPopulate(IncrMerger *pIncr){
   vdbePmaWriterInit(pOut->pFd, &writer, pTask->pSorter->pgsz, iStart);
   while( rc==SQLITE_OK ){
     int dummy;
-    PmaReader *pReader = &pMerger->aReadr[ pMerger->aTree[1] ];
-    int nKey = pReader->nKey;
+    PmaReader *pReader = &pMerger->aReadr[ pMerger->a_पुनो[1] ];
+    int n_सुसि = pReader->n_सुसि;
     i64 iEof = writer.iWriteOff + writer.iBufEnd;
 
     /* Check if the output file is full or if the input has been exhausted.
     ** In either case exit the loop. */
     if( pReader->pFd==0 ) break;
-    if( (iEof + nKey + sqlite3VarintLen(nKey))>(iStart + pIncr->mxSz) ) break;
+    if( (iEof + n_सुसि + sqlite3VarintLen(n_सुसि))>(iStart + pIncr->mxSz) ) break;
 
     /* Write the next key to the output. */
-    vdbePmaWriteVarint(&writer, nKey);
-    vdbePmaWriteBlob(&writer, pReader->aKey, nKey);
+    vdbePmaWriteVarint(&writer, n_सुसि);
+    vdbePmaWriteBlob(&writer, pReader->a_सुसि, n_सुसि);
     assert( pIncr->pMerger->pTask==pTask );
     rc = vdbeMergeEngineStep(pIncr->pMerger, &dummy);
   }
@@ -2220,14 +2220,14 @@ static void vdbeMergeEngineCompare(
   PmaReader *p1;
   PmaReader *p2;
 
-  assert( iOut<pMerger->nTree && iOut>0 );
+  assert( iOut<pMerger->n_पुनो && iOut>0 );
 
-  if( iOut>=(pMerger->nTree/2) ){
-    i1 = (iOut - pMerger->nTree/2) * 2;
+  if( iOut>=(pMerger->n_पुनो/2) ){
+    i1 = (iOut - pMerger->n_पुनो/2) * 2;
     i2 = i1 + 1;
   }else{
-    i1 = pMerger->aTree[iOut*2];
-    i2 = pMerger->aTree[iOut*2+1];
+    i1 = pMerger->a_पुनो[iOut*2];
+    i2 = pMerger->a_पुनो[iOut*2+1];
   }
 
   p1 = &pMerger->aReadr[i1];
@@ -2243,7 +2243,7 @@ static void vdbeMergeEngineCompare(
     int res;
     assert( pTask->pUnpacked!=0 );  /* from vdbeSortSubtaskMain() */
     res = pTask->xCompare(
-        pTask, &bCached, p1->aKey, p1->nKey, p2->aKey, p2->nKey
+        pTask, &bCached, p1->a_सुसि, p1->n_सुसि, p2->a_सुसि, p2->n_सुसि
     );
     if( res<=0 ){
       iRes = i1;
@@ -2252,7 +2252,7 @@ static void vdbeMergeEngineCompare(
     }
   }
 
-  pMerger->aTree[iOut] = iRes;
+  pMerger->a_पुनो[iOut] = iRes;
 }
 
 /*
@@ -2265,7 +2265,7 @@ static void vdbeMergeEngineCompare(
 */
 #define INCRINIT_NORMAL 0
 #define INCRINIT_TASK   1
-#define INCRINIT_ROOT   2
+#define INCRINIT_उगात   2
 
 /*
 ** Forward reference required as the vdbeIncrMergeInit() and
@@ -2299,7 +2299,7 @@ static int vdbeMergeEngineInit(
 ){
   int rc = SQLITE_OK;             /* Return code */
   int i;                          /* For looping over PmaReader objects */
-  int nTree;                      /* Number of subtrees to merge */
+  int n_पुनो;                      /* Number of subtrees to merge */
 
   /* Failure to allocate the merge would have been detected prior to
   ** invoking this routine */
@@ -2312,9 +2312,9 @@ static int vdbeMergeEngineInit(
   assert( pMerger->pTask==0 );
   pMerger->pTask = pTask;
 
-  nTree = pMerger->nTree;
-  for(i=0; i<nTree; i++){
-    if( SQLITE_MAX_WORKER_THREADS>0 && eMode==INCRINIT_ROOT ){
+  n_पुनो = pMerger->n_पुनो;
+  for(i=0; i<n_पुनो; i++){
+    if( SQLITE_MAX_WORKER_THREADS>0 && eMode==INCRINIT_उगात ){
       /* PmaReaders should be normally initialized in order, as if they are
       ** reading from the same temp file this makes for more linear file IO.
       ** However, in the INCRINIT_ROOT case, if PmaReader aReadr[nTask-1] is
@@ -2322,14 +2322,14 @@ static int vdbeMergeEngineInit(
       ** the main thread to fill its buffer. So calling PmaReaderNext()
       ** on this PmaReader before any of the multi-threaded PmaReaders takes
       ** better advantage of multi-processor hardware. */
-      rc = vdbePmaReaderNext(&pMerger->aReadr[nTree-i-1]);
+      rc = vdbePmaReaderNext(&pMerger->aReadr[n_पुनो-i-1]);
     }else{
       rc = vdbePmaReaderIncrInit(&pMerger->aReadr[i], INCRINIT_NORMAL);
     }
     if( rc!=SQLITE_OK ) return rc;
   }
 
-  for(i=pMerger->nTree-1; i>0; i--){
+  for(i=pMerger->n_पुनो-1; i>0; i--){
     vdbeMergeEngineCompare(pMerger, i);
   }
   return pTask->pUnpacked->errCode;
@@ -2418,7 +2418,7 @@ static int vdbePmaReaderIncrMergeInit(PmaReader *pReadr, int eMode){
     ** control to the VDBE or proceed with anything useful until the
     ** first results are ready from this merger object anyway.
     */
-    assert( eMode==INCRINIT_ROOT || eMode==INCRINIT_TASK );
+    assert( eMode==INCRINIT_उगात || eMode==INCRINIT_TASK );
     rc = vdbeIncrPopulate(pIncr);
   }
 #endif
@@ -2525,11 +2525,11 @@ static int vdbeMergeEngineLevel0(
 **   nPMA<=256   -> TreeDepth() == 1
 **   nPMA<=65536 -> TreeDepth() == 2
 */
-static int vdbeSorterTreeDepth(int nPMA){
+static int vdbe_Sorter_पुनो_Depth(int nPMA){
   int nDepth = 0;
-  i64 nDiv = SORTER_MAX_MERGE_COUNT;
+  i64 nDiv = SORTER_MAX_MERGE_बिलांग;
   while( nDiv < (i64)nPMA ){
-    nDiv = nDiv * SORTER_MAX_MERGE_COUNT;
+    nDiv = nDiv * SORTER_MAX_MERGE_बिलांग;
     nDepth++;
   }
   return nDepth;
@@ -2543,31 +2543,31 @@ static int vdbeSorterTreeDepth(int nPMA){
 ** If successful, SQLITE_OK is returned. If an error occurs, an SQLite error
 ** code is returned and pLeaf is freed.
 */
-static int vdbeSorterAddToTree(
+static int vdbe_Sorter_Add_To_पुनो(
   SortSubtask *pTask,             /* Task context */
   int nDepth,                     /* Depth of tree according to TreeDepth() */
   int iSeq,                       /* Sequence number of leaf within tree */
-  MergeEngine *pRoot,             /* Root of tree */
+  MergeEngine *p_उगात,             /* Root of tree */
   MergeEngine *pLeaf              /* Leaf to add to tree */
 ){
   int rc = SQLITE_OK;
   int nDiv = 1;
   int i;
-  MergeEngine *p = pRoot;
+  MergeEngine *p = p_उगात;
   IncrMerger *pIncr;
 
   rc = vdbeIncrMergerNew(pTask, pLeaf, &pIncr);
 
   for(i=1; i<nDepth; i++){
-    nDiv = nDiv * SORTER_MAX_MERGE_COUNT;
+    nDiv = nDiv * SORTER_MAX_MERGE_बिलांग;
   }
 
   for(i=1; i<nDepth && rc==SQLITE_OK; i++){
-    int iIter = (iSeq / nDiv) % SORTER_MAX_MERGE_COUNT;
+    int iIter = (iSeq / nDiv) % SORTER_MAX_MERGE_बिलांग;
     PmaReader *pReadr = &p->aReadr[iIter];
 
     if( pReadr->pIncr==0 ){
-      MergeEngine *pNew = vdbeMergeEngineNew(SORTER_MAX_MERGE_COUNT);
+      MergeEngine *pNew = vdbeMergeEngineNew(SORTER_MAX_MERGE_बिलांग);
       if( pNew==0 ){
         rc = SQLITE_NOMEM_BKPT;
       }else{
@@ -2576,12 +2576,12 @@ static int vdbeSorterAddToTree(
     }
     if( rc==SQLITE_OK ){
       p = pReadr->pIncr->pMerger;
-      nDiv = nDiv / SORTER_MAX_MERGE_COUNT;
+      nDiv = nDiv / SORTER_MAX_MERGE_बिलांग;
     }
   }
 
   if( rc==SQLITE_OK ){
-    p->aReadr[iSeq % SORTER_MAX_MERGE_COUNT].pIncr = pIncr;
+    p->aReadr[iSeq % SORTER_MAX_MERGE_बिलांग].pIncr = pIncr;
   }else{
     vdbeIncrFree(pIncr);
   }
@@ -2599,7 +2599,7 @@ static int vdbeSorterAddToTree(
 ** error occurs, an SQLite error code is returned and the final value
 ** of *ppOut is undefined.
 */
-static int vdbeSorterMergeTreeBuild(
+static int vdbe_Sorter_Merge_पुनो_Build(
   VdbeSorter *pSorter,       /* The VDBE cursor that implements the sort */
   MergeEngine **ppOut        /* Write the MergeEngine here */
 ){
@@ -2622,25 +2622,25 @@ static int vdbeSorterMergeTreeBuild(
     SortSubtask *pTask = &pSorter->aTask[iTask];
     assert( pTask->nPMA>0 || SQLITE_MAX_WORKER_THREADS>0 );
     if( SQLITE_MAX_WORKER_THREADS==0 || pTask->nPMA ){
-      MergeEngine *pRoot = 0;     /* Root node of tree for this task */
-      int nDepth = vdbeSorterTreeDepth(pTask->nPMA);
+      MergeEngine *p_उगात = 0;     /* Root node of tree for this task */
+      int nDepth = vdbe_Sorter_पुनो_Depth(pTask->nPMA);
       i64 iReadOff = 0;
 
-      if( pTask->nPMA<=SORTER_MAX_MERGE_COUNT ){
-        rc = vdbeMergeEngineLevel0(pTask, pTask->nPMA, &iReadOff, &pRoot);
+      if( pTask->nPMA<=SORTER_MAX_MERGE_बिलांग ){
+        rc = vdbeMergeEngineLevel0(pTask, pTask->nPMA, &iReadOff, &p_उगात);
       }else{
         int i;
         int iSeq = 0;
-        pRoot = vdbeMergeEngineNew(SORTER_MAX_MERGE_COUNT);
-        if( pRoot==0 ) rc = SQLITE_NOMEM_BKPT;
-        for(i=0; i<pTask->nPMA && rc==SQLITE_OK; i += SORTER_MAX_MERGE_COUNT){
+        p_उगात = vdbeMergeEngineNew(SORTER_MAX_MERGE_बिलांग);
+        if( p_उगात==0 ) rc = SQLITE_NOMEM_BKPT;
+        for(i=0; i<pTask->nPMA && rc==SQLITE_OK; i += SORTER_MAX_MERGE_बिलांग){
           MergeEngine *pMerger = 0; /* New level-0 PMA merger */
           int nReader;              /* Number of level-0 PMAs to merge */
 
-          nReader = MIN(pTask->nPMA - i, SORTER_MAX_MERGE_COUNT);
+          nReader = MIN(pTask->nPMA - i, SORTER_MAX_MERGE_बिलांग);
           rc = vdbeMergeEngineLevel0(pTask, nReader, &iReadOff, &pMerger);
           if( rc==SQLITE_OK ){
-            rc = vdbeSorterAddToTree(pTask, nDepth, iSeq++, pRoot, pMerger);
+            rc = vdbe_Sorter_Add_To_पुनो(pTask, nDepth, iSeq++, p_उगात, pMerger);
           }
         }
       }
@@ -2648,15 +2648,15 @@ static int vdbeSorterMergeTreeBuild(
       if( rc==SQLITE_OK ){
 #if SQLITE_MAX_WORKER_THREADS>0
         if( pMain!=0 ){
-          rc = vdbeIncrMergerNew(pTask, pRoot, &pMain->aReadr[iTask].pIncr);
+          rc = vdbeIncrMergerNew(pTask, p_उगात, &pMain->aReadr[iTask].pIncr);
         }else
 #endif
         {
           assert( pMain==0 );
-          pMain = pRoot;
+          pMain = p_उगात;
         }
       }else{
-        vdbeMergeEngineFree(pRoot);
+        vdbeMergeEngineFree(p_उगात);
       }
     }
   }
@@ -2691,7 +2691,7 @@ static int vdbeSorterSetupMerge(VdbeSorter *pSorter){
   }
 #endif
 
-  rc = vdbeSorterMergeTreeBuild(pSorter, &pMain);
+  rc = vdbe_Sorter_Merge_पुनो_Build(pSorter, &pMain);
   if( rc==SQLITE_OK ){
 #if SQLITE_MAX_WORKER_THREADS
     assert( pSorter->bUseThreads==0 || pSorter->nTask>1 );
@@ -2737,7 +2737,7 @@ static int vdbeSorterSetupMerge(VdbeSorter *pSorter){
         pMain = 0;
       }
       if( rc==SQLITE_OK ){
-        rc = vdbePmaReaderIncrMergeInit(pReadr, INCRINIT_ROOT);
+        rc = vdbePmaReaderIncrMergeInit(pReadr, INCRINIT_उगात);
       }
     }else
 #endif
@@ -2852,9 +2852,9 @@ int sqlite3VdbeSorterNext(sqlite3 *db, const VdbeCursor *pCsr){
 */
 static void *vdbeSorterRowkey(
   const VdbeSorter *pSorter,      /* Sorter object */
-  int *pnKey                      /* OUT: Size of current key in bytes */
+  int *pn_सुसि                      /* OUT: Size of current key in bytes */
 ){
-  void *pKey;
+  void *p_सुसि;
   if( pSorter->bUsePMA ){
     PmaReader *pReader;
 #if SQLITE_MAX_WORKER_THREADS>0
@@ -2863,15 +2863,15 @@ static void *vdbeSorterRowkey(
     }else
 #endif
     /*if( !pSorter->bUseThreads )*/{
-      pReader = &pSorter->pMerger->aReadr[pSorter->pMerger->aTree[1]];
+      pReader = &pSorter->pMerger->aReadr[pSorter->pMerger->a_पुनो[1]];
     }
-    *pnKey = pReader->nKey;
-    pKey = pReader->aKey;
+    *pn_सुसि = pReader->n_सुसि;
+    p_सुसि = pReader->a_सुसि;
   }else{
-    *pnKey = pSorter->list.pList->nVal;
-    pKey = SRVAL(pSorter->list.pList);
+    *pn_सुसि = pSorter->list.pList->nVal;
+    p_सुसि = SRVAL(pSorter->list.pList);
   }
-  return pKey;
+  return p_सुसि;
 }
 
 /*
@@ -2879,17 +2879,17 @@ static void *vdbeSorterRowkey(
 */
 int sqlite3VdbeSorterRowkey(const VdbeCursor *pCsr, Mem *pOut){
   VdbeSorter *pSorter;
-  void *pKey; int nKey;           /* Sorter key to copy into pOut */
+  void *p_सुसि; int n_सुसि;           /* Sorter key to copy into pOut */
 
   assert( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
-  pKey = vdbeSorterRowkey(pSorter, &nKey);
-  if( sqlite3VdbeMemClearAndResize(pOut, nKey) ){
+  p_सुसि = vdbeSorterRowkey(pSorter, &n_सुसि);
+  if( sqlite3VdbeMemClearAndResize(pOut, n_सुसि) ){
     return SQLITE_NOMEM_BKPT;
   }
-  pOut->n = nKey;
+  pOut->n = n_सुसि;
   MemSetTypeFlag(pOut, MEM_Blob);
-  memcpy(pOut->z, pKey, nKey);
+  memcpy(pOut->z, p_सुसि, n_सुसि);
 
   return SQLITE_OK;
 }
@@ -2913,29 +2913,29 @@ int sqlite3VdbeSorterRowkey(const VdbeCursor *pCsr, Mem *pOut){
 int sqlite3VdbeSorterCompare(
   const VdbeCursor *pCsr,         /* Sorter cursor */
   Mem *pVal,                      /* Value to compare to current sorter key */
-  int nKeyCol,                    /* Compare this many columns */
+  int n_सुसि_Col,                    /* Compare this many columns */
   int *pRes                       /* OUT: Result of comparison */
 ){
   VdbeSorter *pSorter;
   UnpackedRecord *r2;
-  KeyInfo *pKeyInfo;
+  सुसि_Info *p_सुसि_Info;
   int i;
-  void *pKey; int nKey;           /* Sorter key to compare pVal with */
+  void *p_सुसि; int n_सुसि;           /* Sorter key to compare pVal with */
 
   assert( pCsr->eCurType==CURTYPE_SORTER );
   pSorter = pCsr->uc.pSorter;
   r2 = pSorter->pUnpacked;
-  pKeyInfo = pCsr->pKeyInfo;
+  p_सुसि_Info = pCsr->p_सुसि_Info;
   if( r2==0 ){
-    r2 = pSorter->pUnpacked = sqlite3VdbeAllocUnpackedRecord(pKeyInfo);
+    r2 = pSorter->pUnpacked = sqlite3VdbeAllocUnpackedRecord(p_सुसि_Info);
     if( r2==0 ) return SQLITE_NOMEM_BKPT;
-    r2->nField = nKeyCol;
+    r2->nField = n_सुसि_Col;
   }
-  assert( r2->nField==nKeyCol );
+  assert( r2->nField==n_सुसि_Col );
 
-  pKey = vdbeSorterRowkey(pSorter, &nKey);
-  sqlite3VdbeRecordUnpack(nKey, pKey, r2);
-  for(i=0; i<nKeyCol; i++){
+  p_सुसि = vdbeSorterRowkey(pSorter, &n_सुसि);
+  sqlite3VdbeRecordUnpack(n_सुसि, p_सुसि, r2);
+  for(i=0; i<n_सुसि_Col; i++){
     if( r2->aMem[i].flags & MEM_Null ){
       *pRes = -1;
       return SQLITE_OK;

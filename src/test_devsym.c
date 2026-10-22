@@ -65,8 +65,8 @@ static int devsymAccess(sqlite3_vfs*, const char *zName, int flags, int *);
 static int devsymFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 static void *devsymDlOpen(sqlite3_vfs*, const char *zFilename);
-static void devsymDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*devsymDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
+static void devsymDlError(sqlite3_vfs*, int nByte, char *z_Err_मेनसाहे);
+static void (*devsymDlSym(sqlite3_vfs*,void*, const char *z_सिम्बोलो))(void);
 static void devsymDlClose(sqlite3_vfs*, void*);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
 static int devsymRandomness(sqlite3_vfs*, int nByte, char *zOut);
@@ -303,8 +303,8 @@ static void *devsymDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void devsymDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3OsDlError(g.pVfs, nByte, zErrMsg);
+static void devsymDlError(sqlite3_vfs *pVfs, int nByte, char *z_Err_मेनसाहे){
+  sqlite3OsDlError(g.pVfs, nByte, z_Err_मेनसाहे);
 }
 
 /*

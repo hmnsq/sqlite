@@ -536,7 +536,7 @@ struct Wal {
 #ifdef SQLITE_USE_SEH
   u32 lockMask;              /* Mask of locks held */
   void *pFree;               /* Pointer to sqlite3_free() if exception thrown */
-  u32 *pWiValue;             /* Value to write into apWiData[iWiPg] */
+  u32 *p_Wi_हालागा;             /* Value to write into apWiData[iWiPg] */
   int iWiPg;                 /* Write pWiValue into apWiData[iWiPg] */
   int iSysErrno;             /* System error code following exception */
 #endif
@@ -697,7 +697,7 @@ struct WalIterator {
 static int sehExceptionFilter(Wal *pWal, int eCode, EXCEPTION_POINTERS *p){
   VVA_ONLY(pWal->nSehTry--);
   if( eCode==EXCEPTION_IN_PAGE_ERROR ){
-    if( p && p->ExceptionRecord && p->ExceptionRecord->NumberParameters>=3 ){
+    if( p && p->ExceptionRecord && p->ExceptionRecord->नुमेरो_Parameters>=3 ){
       /* From MSDN: For this type of exception, the first element of the
       ** ExceptionInformation[] array is a read-write flag - 0 if the exception
       ** was thrown while reading, 1 if while writing. The second element is
@@ -707,7 +707,7 @@ static int sehExceptionFilter(Wal *pWal, int eCode, EXCEPTION_POINTERS *p){
     }
     return EXCEPTION_EXECUTE_HANDLER;
   }
-  return EXCEPTION_CONTINUE_SEARCH;
+  return EXCEPTION_CONTINUE_हानाप;
 }
 
 /*
@@ -756,7 +756,7 @@ static void sehInjectFault(Wal *pWal){
 **
 **   SEH_SET_ON_ERROR(0, 0);
 */
-#define SEH_SET_ON_ERROR(X,Y)  pWal->iWiPg = X; pWal->pWiValue = Y
+#define SEH_SET_ON_ERROR(X,Y)  pWal->iWiPg = X; pWal->p_Wi_हालागा = Y
 
 #else
 # define SEH_TRY          VVA_ONLY(pWal->nSehTry++);
@@ -1314,12 +1314,12 @@ static void walCleanupHash(Wal *pWal){
   */
   if( iLimit ){
     int j;           /* Loop counter */
-    int iKey;        /* Hash key */
+    int i_सुसि;        /* Hash key */
     for(j=0; j<iLimit; j++){
-      for(iKey=walHash(sLoc.aPgno[j]);sLoc.aHash[iKey];iKey=walNextHash(iKey)){
-        if( sLoc.aHash[iKey]==j+1 ) break;
+      for(i_सुसि=walHash(sLoc.aPgno[j]);sLoc.aHash[i_सुसि];i_सुसि=walNextHash(i_सुसि)){
+        if( sLoc.aHash[i_सुसि]==j+1 ) break;
       }
-      assert( sLoc.aHash[iKey]==j+1 );
+      assert( sLoc.aHash[i_सुसि]==j+1 );
     }
   }
 #endif /* SQLITE_ENABLE_EXPENSIVE_ASSERT */
@@ -1340,7 +1340,7 @@ static int walIndexAppend(Wal *pWal, u32 iFrame, u32 iPage){
   ** page number array and hash table entry.
   */
   if( rc==SQLITE_OK ){
-    int iKey;                     /* Hash table key */
+    int i_सुसि;                     /* Hash table key */
     int idx;                      /* Value to write to hash-table slot */
     int nCollide;                 /* Number of hash collisions */
 
@@ -1369,11 +1369,11 @@ static int walIndexAppend(Wal *pWal, u32 iFrame, u32 iPage){
 
     /* Write the aPgno[] array entry and the hash-table slot. */
     nCollide = idx;
-    for(iKey=walHash(iPage); sLoc.aHash[iKey]; iKey=walNextHash(iKey)){
+    for(i_सुसि=walHash(iPage); sLoc.aHash[i_सुसि]; i_सुसि=walNextHash(i_सुसि)){
       if( (nCollide--)==0 ) return SQLITE_CORRUPT_BKPT;
     }
     sLoc.aPgno[(idx-1)&(HASHTABLE_NPAGE-1)] = iPage;
-    AtomicStore(&sLoc.aHash[iKey], (ht_slot)idx);
+    AtomicStore(&sLoc.aHash[i_सुसि], (ht_slot)idx);
 
 #ifdef SQLITE_ENABLE_EXPENSIVE_ASSERT
     /* Verify that the number of entries in the hash table exactly equals
@@ -1394,12 +1394,12 @@ static int walIndexAppend(Wal *pWal, u32 iFrame, u32 iPage){
     if( (idx&0x3ff)==0 ){
       int i;           /* Loop counter */
       for(i=0; i<idx; i++){
-        for(iKey=walHash(sLoc.aPgno[i]);
-            sLoc.aHash[iKey];
-            iKey=walNextHash(iKey)){
-          if( sLoc.aHash[iKey]==i+1 ) break;
+        for(i_सुसि=walHash(sLoc.aPgno[i]);
+            sLoc.aHash[i_सुसि];
+            i_सुसि=walNextHash(i_सुसि)){
+          if( sLoc.aHash[i_सुसि]==i+1 ) break;
         }
-        assert( sLoc.aHash[iKey]==i+1 );
+        assert( sLoc.aHash[i_सुसि]==i+1 );
       }
     }
 #endif /* SQLITE_ENABLE_EXPENSIVE_ASSERT */
@@ -1862,42 +1862,42 @@ static int walIteratorNext(
 */
 static void walMerge(
   const u32 *aContent,            /* Pages in wal - keys for the sort */
-  ht_slot *aLeft,                 /* IN: Left hand input list */
-  int nLeft,                      /* IN: Elements in array *paLeft */
-  ht_slot **paRight,              /* IN/OUT: Right hand input list */
-  int *pnRight,                   /* IN/OUT: Elements in *paRight */
+  ht_slot *a_कालिवा,                 /* IN: Left hand input list */
+  int n_कालिवा,                      /* IN: Elements in array *paLeft */
+  ht_slot **pa_कानान,              /* IN/OUT: Right hand input list */
+  int *pn_कानान,                   /* IN/OUT: Elements in *paRight */
   ht_slot *aTmp                   /* Temporary buffer */
 ){
-  int iLeft = 0;                  /* Current index in aLeft */
-  int iRight = 0;                 /* Current index in aRight */
+  int i_कालिवा = 0;                  /* Current index in aLeft */
+  int i_कानान = 0;                 /* Current index in aRight */
   int iOut = 0;                   /* Current index in output buffer */
-  int nRight = *pnRight;
-  ht_slot *aRight = *paRight;
+  int n_कानान = *pn_कानान;
+  ht_slot *a_कानान = *pa_कानान;
 
-  assert( nLeft>0 && nRight>0 );
-  while( iRight<nRight || iLeft<nLeft ){
+  assert( n_कालिवा>0 && n_कानान>0 );
+  while( i_कानान<n_कानान || i_कालिवा<n_कालिवा ){
     ht_slot logpage;
     Pgno dbpage;
 
-    if( (iLeft<nLeft)
-     && (iRight>=nRight || aContent[aLeft[iLeft]]<aContent[aRight[iRight]])
+    if( (i_कालिवा<n_कालिवा)
+     && (i_कानान>=n_कानान || aContent[a_कालिवा[i_कालिवा]]<aContent[a_कानान[i_कानान]])
     ){
-      logpage = aLeft[iLeft++];
+      logpage = a_कालिवा[i_कालिवा++];
     }else{
-      logpage = aRight[iRight++];
+      logpage = a_कानान[i_कानान++];
     }
     dbpage = aContent[logpage];
 
     aTmp[iOut++] = logpage;
-    if( iLeft<nLeft && aContent[aLeft[iLeft]]==dbpage ) iLeft++;
+    if( i_कालिवा<n_कालिवा && aContent[a_कालिवा[i_कालिवा]]==dbpage ) i_कालिवा++;
 
-    assert( iLeft>=nLeft || aContent[aLeft[iLeft]]>dbpage );
-    assert( iRight>=nRight || aContent[aRight[iRight]]>dbpage );
+    assert( i_कालिवा>=n_कालिवा || aContent[a_कालिवा[i_कालिवा]]>dbpage );
+    assert( i_कानान>=n_कानान || aContent[a_कानान[i_कानान]]>dbpage );
   }
 
-  *paRight = aLeft;
-  *pnRight = iOut;
-  memcpy(aLeft, aTmp, sizeof(aTmp[0])*iOut);
+  *pa_कानान = a_कालिवा;
+  *pn_कानान = iOut;
+  memcpy(a_कालिवा, aTmp, sizeof(aTmp[0])*iOut);
 }
 
 /*
@@ -2535,9 +2535,9 @@ static int walHandleException(Wal *pWal){
   }
   sqlite3_free(pWal->pFree);
   pWal->pFree = 0;
-  if( pWal->pWiValue ){
-    pWal->apWiData[pWal->iWiPg] = pWal->pWiValue;
-    pWal->pWiValue = 0;
+  if( pWal->p_Wi_हालागा ){
+    pWal->apWiData[pWal->iWiPg] = pWal->p_Wi_हालागा;
+    pWal->p_Wi_हालागा = 0;
   }
   return SQLITE_IOERR_IN_PAGE;
 }
@@ -3656,7 +3656,7 @@ static int walFindFrame(
   iMinHash = walFramePage(pWal->minFrame);
   for(iHash=walFramePage(iLast); iHash>=iMinHash; iHash--){
     WalHashLoc sLoc;              /* Hash table location */
-    int iKey;                     /* Hash slot index */
+    int i_सुसि;                     /* Hash slot index */
     int nCollide;                 /* Number of hash collisions remaining */
     int rc;                       /* Error code */
     u32 iH;
@@ -3666,9 +3666,9 @@ static int walFindFrame(
       return rc;
     }
     nCollide = HASHTABLE_NSLOT;
-    iKey = walHash(pgno);
+    i_सुसि = walHash(pgno);
     SEH_INJECT_FAULT;
-    while( (iH = AtomicLoad(&sLoc.aHash[iKey]))!=0 ){
+    while( (iH = AtomicLoad(&sLoc.aHash[i_सुसि]))!=0 ){
       u32 iFrame = iH + sLoc.iZero;
       if( iFrame<=iLast
        && iFrame>=pWal->minFrame
@@ -3681,7 +3681,7 @@ static int walFindFrame(
         *piRead = 0;
         return SQLITE_CORRUPT_BKPT;
       }
-      iKey = walNextHash(iKey);
+      i_सुसि = walNextHash(i_सुसि);
     }
     if( iRead ) break;
   }

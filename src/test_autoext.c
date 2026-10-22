@@ -23,9 +23,9 @@ SQLITE_EXTENSION_INIT1
 static void sqrFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  double r = sqlite3_value_double(argv[0]);
+  double r = sqlite3_हालागा_double(argv[0]);
   sqlite3_result_double(context, r*r);
 }
 
@@ -34,7 +34,7 @@ static void sqrFunc(
 */
 static int sqr_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  char **pz_Err_मेनसाहे, 
   const sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
@@ -48,9 +48,9 @@ static int sqr_init(
 static void cubeFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  double r = sqlite3_value_double(argv[0]);
+  double r = sqlite3_हालागा_double(argv[0]);
   sqlite3_result_double(context, r*r*r);
 }
 
@@ -59,7 +59,7 @@ static void cubeFunc(
 */
 static int cube_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  char **pz_Err_मेनसाहे, 
   const sqlite3_api_routines *pApi
 ){
   SQLITE_EXTENSION_INIT2(pApi);
@@ -72,13 +72,13 @@ static int cube_init(
 */
 static int broken_init(
   sqlite3 *db, 
-  char **pzErrMsg, 
+  char **pz_Err_मेनसाहे, 
   const sqlite3_api_routines *pApi
 ){
   char *zErr;
   SQLITE_EXTENSION_INIT2(pApi);
   zErr = sqlite3_mprintf("broken autoext!");
-  *pzErrMsg = zErr;
+  *pz_Err_मेनसाहे = zErr;
   return 1;
 }
 

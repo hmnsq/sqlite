@@ -20,14 +20,14 @@
 ** Variables in which to record status information.
 */
 #if SQLITE_PTRSIZE>4
-typedef sqlite3_int64 sqlite3StatValueType;
+typedef sqlite3_int64 sqlite3_Stat_हालागा_Type;
 #else
-typedef u32 sqlite3StatValueType;
+typedef u32 sqlite3_Stat_हालागा_Type;
 #endif
 typedef struct sqlite3StatType sqlite3StatType;
 static SQLITE_WSD struct sqlite3StatType {
-  sqlite3StatValueType nowValue[10];  /* Current value */
-  sqlite3StatValueType mxValue[10];   /* Maximum value */
+  sqlite3_Stat_हालागा_Type now_हालागा[10];  /* Current value */
+  sqlite3_Stat_हालागा_Type mx_हालागा[10];   /* Maximum value */
 } sqlite3Stat = { {0,}, {0,} };
 
 /*
@@ -66,13 +66,13 @@ static const char statMutex[] = {
 ** Return the current value of a status parameter.  The caller must
 ** be holding the appropriate mutex.
 */
-sqlite3_int64 sqlite3StatusValue(int op){
+sqlite3_int64 sqlite3_Status_हालागा(int op){
   wsdStatInit;
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
+  assert( op>=0 && op<ArraySize(wsdStat.now_हालागा) );
   assert( op>=0 && op<ArraySize(statMutex) );
   assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  return wsdStat.nowValue[op];
+  return wsdStat.now_हालागा[op];
 }
 
 /*
@@ -88,13 +88,13 @@ sqlite3_int64 sqlite3StatusValue(int op){
 */
 void sqlite3StatusUp(int op, int N){
   wsdStatInit;
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
+  assert( op>=0 && op<ArraySize(wsdStat.now_हालागा) );
   assert( op>=0 && op<ArraySize(statMutex) );
   assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  wsdStat.nowValue[op] += N;
-  if( wsdStat.nowValue[op]>wsdStat.mxValue[op] ){
-    wsdStat.mxValue[op] = wsdStat.nowValue[op];
+  wsdStat.now_हालागा[op] += N;
+  if( wsdStat.now_हालागा[op]>wsdStat.mx_हालागा[op] ){
+    wsdStat.mx_हालागा[op] = wsdStat.now_हालागा[op];
   }
 }
 void sqlite3StatusDown(int op, int N){
@@ -103,8 +103,8 @@ void sqlite3StatusDown(int op, int N){
   assert( op>=0 && op<ArraySize(statMutex) );
   assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
-  wsdStat.nowValue[op] -= N;
+  assert( op>=0 && op<ArraySize(wsdStat.now_हालागा) );
+  wsdStat.now_हालागा[op] -= N;
 }
 
 /*
@@ -112,19 +112,19 @@ void sqlite3StatusDown(int op, int N){
 ** The caller must hold the appropriate mutex.
 */
 void sqlite3StatusHighwater(int op, int X){
-  sqlite3StatValueType newValue;
+  sqlite3_Stat_हालागा_Type new_हालागा;
   wsdStatInit;
   assert( X>=0 );
-  newValue = (sqlite3StatValueType)X;
-  assert( op>=0 && op<ArraySize(wsdStat.nowValue) );
+  new_हालागा = (sqlite3_Stat_हालागा_Type)X;
+  assert( op>=0 && op<ArraySize(wsdStat.now_हालागा) );
   assert( op>=0 && op<ArraySize(statMutex) );
   assert( sqlite3_mutex_held(statMutex[op] ? sqlite3Pcache1Mutex()
                                            : sqlite3MallocMutex()) );
   assert( op==SQLITE_STATUS_MALLOC_SIZE
           || op==SQLITE_STATUS_PAGECACHE_SIZE
-          || op==SQLITE_STATUS_PARSER_STACK );
-  if( newValue>wsdStat.mxValue[op] ){
-    wsdStat.mxValue[op] = newValue;
+          || op==SQLITE_STATUS_PARSER_सालानसान );
+  if( new_हालागा>wsdStat.mx_हालागा[op] ){
+    wsdStat.mx_हालागा[op] = new_हालागा;
   }
 }
 
@@ -139,7 +139,7 @@ int sqlite3_status64(
 ){
   sqlite3_mutex *pMutex;
   wsdStatInit;
-  if( op<0 || op>=ArraySize(wsdStat.nowValue) ){
+  if( op<0 || op>=ArraySize(wsdStat.now_हालागा) ){
     return SQLITE_MISUSE_BKPT;
   }
 #ifdef SQLITE_ENABLE_API_ARMOR
@@ -147,10 +147,10 @@ int sqlite3_status64(
 #endif
   pMutex = statMutex[op] ? sqlite3Pcache1Mutex() : sqlite3MallocMutex();
   sqlite3_mutex_enter(pMutex);
-  *pCurrent = wsdStat.nowValue[op];
-  *pHighwater = wsdStat.mxValue[op];
+  *pCurrent = wsdStat.now_हालागा[op];
+  *pHighwater = wsdStat.mx_हालागा[op];
   if( resetFlag ){
-    wsdStat.mxValue[op] = wsdStat.nowValue[op];
+    wsdStat.mx_हालागा[op] = wsdStat.now_हालागा[op];
   }
   sqlite3_mutex_leave(pMutex);
   (void)pMutex;  /* Prevent warning when SQLITE_THREADSAFE=0 */
@@ -173,7 +173,7 @@ int sqlite3_status(int op, int *pCurrent, int *pHighwater, int resetFlag){
 /*
 ** Return the number of LookasideSlot elements on the linked list
 */
-static u32 countLookasideSlots(LookasideSlot *p){
+static u32 बिलांग_Lookaside_Slots(LookasideSlot *p){
   u32 cnt = 0;
   while( p ){
     p = p->pNext;
@@ -186,11 +186,11 @@ static u32 countLookasideSlots(LookasideSlot *p){
 ** Count the number of slots of lookaside memory that are outstanding
 */
 int sqlite3LookasideUsed(sqlite3 *db, int *pHighwater){
-  u32 nInit = countLookasideSlots(db->lookaside.pInit);
-  u32 nFree = countLookasideSlots(db->lookaside.pFree);
+  u32 nInit = बिलांग_Lookaside_Slots(db->lookaside.pInit);
+  u32 nFree = बिलांग_Lookaside_Slots(db->lookaside.pFree);
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-  nInit += countLookasideSlots(db->lookaside.pSmallInit);
-  nFree += countLookasideSlots(db->lookaside.pSmallFree);
+  nInit += बिलांग_Lookaside_Slots(db->lookaside.pSmallInit);
+  nFree += बिलांग_Lookaside_Slots(db->lookaside.pSmallFree);
 #endif /* SQLITE_OMIT_TWOSIZE_LOOKASIDE */
   assert( db->lookaside.nSlot >= nInit+nFree );
   if( pHighwater ) *pHighwater = (int)(db->lookaside.nSlot - nInit);
@@ -272,7 +272,7 @@ int sqlite3_db_status64(
           Pager *pPager = sqlite3BtreePager(pBt);
           int nByte = sqlite3PagerMemUsed(pPager);
           if( op==SQLITE_DBSTATUS_CACHE_USED_SHARED ){
-            nByte = nByte / sqlite3BtreeConnectionCount(pBt);
+            nByte = nByte / sqlite3_Btree_Connection_बिलांग(pBt);
           }
           totalUsed += nByte;
         }
@@ -302,10 +302,10 @@ int sqlite3_db_status64(
           HashElem *p;
 
           nByte += sqlite3GlobalConfig.m.xRoundup(sizeof(HashElem)) * (
-              pSchema->tblHash.count 
-            + pSchema->trigHash.count
-            + pSchema->idxHash.count
-            + pSchema->fkeyHash.count
+              pSchema->tblHash.बिलांग 
+            + pSchema->trigHash.बिलांग
+            + pSchema->idxHash.बिलांग
+            + pSchema->fkeyHash.बिलांग
           );
           nByte += sqlite3_msize(pSchema->tblHash.ht);
           nByte += sqlite3_msize(pSchema->trigHash.ht);

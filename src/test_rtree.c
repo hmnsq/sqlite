@@ -201,7 +201,7 @@ static int circle_query_func(sqlite3_rtree_query_info *p){
       pCircle->radius = p->aParam[2];
       pCircle->eScoreType = (int)p->aParam[3];
     }else{
-      const char *z = (const char*)sqlite3_value_text(p->apSqlParam[0]);
+      const char *z = (const char*)sqlite3_हालागा_text(p->apSqlParam[0]);
       pCircle->centerx = 0.0;
       pCircle->centery = 0.0;
       pCircle->radius = 0.0;
@@ -450,7 +450,7 @@ static int SQLITE_TCLAPI register_cube_geom(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -478,7 +478,7 @@ static int SQLITE_TCLAPI register_circle_geom(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;

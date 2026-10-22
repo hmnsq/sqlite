@@ -161,7 +161,7 @@ static int SQLITE_TCLAPI test_shutdown(
   int rc;
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -182,7 +182,7 @@ static int SQLITE_TCLAPI test_initialize(
   int rc;
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -216,7 +216,7 @@ static int SQLITE_TCLAPI test_install_mutex_counters(
   };
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "BOOLEAN");
     return TCL_ERROR;
   }
   if( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
@@ -265,18 +265,18 @@ static int SQLITE_TCLAPI test_read_mutex_counters(
   int ii;
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
   pRet = Tcl_NewObj();
-  Tcl_IncrRefCount(pRet);
+  Tcl_Incr_Ref_बिलांग(pRet);
   for(ii=0; ii<MAX_MUTEXES; ii++){
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewStringObj(aName[ii], -1));
     Tcl_ListObjAppendElement(interp, pRet, Tcl_NewIntObj(g.aCounter[ii]));
   }
   Tcl_SetObjResult(interp, pRet);
-  Tcl_DecrRefCount(pRet);
+  Tcl_Decr_Ref_बिलांग(pRet);
 
   return TCL_OK;
 }
@@ -293,7 +293,7 @@ static int SQLITE_TCLAPI test_clear_mutex_counters(
   int ii;
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -343,7 +343,7 @@ static int SQLITE_TCLAPI test_config(
 ){
   struct ConfigOption {
     const char *zName;
-    int iValue;
+    int i_हालागा;
   } aOpt[] = {
     {"singlethread", SQLITE_CONFIG_SINGLETHREAD},
     {"multithread",  SQLITE_CONFIG_MULTITHREAD},
@@ -355,7 +355,7 @@ static int SQLITE_TCLAPI test_config(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -364,7 +364,7 @@ static int SQLITE_TCLAPI test_config(
       return TCL_ERROR;
     }
   }else{
-    i = aOpt[i].iValue;
+    i = aOpt[i].i_हालागा;
   }
 
   rc = sqlite3_config(i);
@@ -392,7 +392,7 @@ static int SQLITE_TCLAPI test_enter_static_mutex(
 ){
   sqlite3_mutex *pMutex;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "NAME");
     return TCL_ERROR;
   }
   pMutex = getStaticMutexPointer(interp, objv[1]);
@@ -411,7 +411,7 @@ static int SQLITE_TCLAPI test_leave_static_mutex(
 ){
   sqlite3_mutex *pMutex;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "NAME");
     return TCL_ERROR;
   }
   pMutex = getStaticMutexPointer(interp, objv[1]);
@@ -430,7 +430,7 @@ static int SQLITE_TCLAPI test_enter_db_mutex(
 ){
   sqlite3 *db;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
@@ -451,7 +451,7 @@ static int SQLITE_TCLAPI test_leave_db_mutex(
 ){
   sqlite3 *db;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){

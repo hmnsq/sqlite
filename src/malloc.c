@@ -110,7 +110,7 @@ sqlite3_int64 sqlite3_soft_heap_limit64(sqlite3_int64 n){
     n = mem0.hardLimit;
   }
   mem0.alarmThreshold = n;
-  nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
+  nUsed = sqlite3_Status_हालागा(SQLITE_STATUS_MEMORY_USED);
   AtomicStore(&mem0.nearlyFull, n>0 && n<=nUsed);
   sqlite3_mutex_leave(mem0.mutex);
   excess = sqlite3_memory_used() - n;
@@ -258,12 +258,12 @@ static void mallocWithAlarm(int n, void **pp){
 
   sqlite3StatusHighwater(SQLITE_STATUS_MALLOC_SIZE, n);
   if( mem0.alarmThreshold>0 ){
-    sqlite3_int64 nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
+    sqlite3_int64 nUsed = sqlite3_Status_हालागा(SQLITE_STATUS_MEMORY_USED);
     if( nUsed >= mem0.alarmThreshold - nFull ){
       AtomicStore(&mem0.nearlyFull, 1);
       sqlite3MallocAlarm(nFull);
       if( mem0.hardLimit ){
-        nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED);
+        nUsed = sqlite3_Status_हालागा(SQLITE_STATUS_MEMORY_USED);
         if( nUsed >= mem0.hardLimit - nFull ){
           test_oom_breakpoint(1);
           *pp = 0;
@@ -284,7 +284,7 @@ static void mallocWithAlarm(int n, void **pp){
   if( p ){
     nFull = sqlite3MallocSize(p);
     sqlite3StatusUp(SQLITE_STATUS_MEMORY_USED, nFull);
-    sqlite3StatusUp(SQLITE_STATUS_MALLOC_COUNT, 1);
+    sqlite3StatusUp(SQLITE_STATUS_MALLOC_बिलांग, 1);
   }
   *pp = p;
 }
@@ -347,7 +347,7 @@ int sqlite3MallocSize(const void *p){
 }
 static int lookasideMallocSize(sqlite3 *db, const void *p){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE    
-  return p<db->lookaside.pMiddle ? db->lookaside.szTrue : LOOKASIDE_SMALL;
+  return p<db->lookaside.p_गित्ना ? db->lookaside.szTrue : LOOKASIDE_SMALL;
 #else
   return db->lookaside.szTrue;
 #endif  
@@ -366,7 +366,7 @@ int sqlite3DbMallocSize(sqlite3 *db, const void *p){
   if( db ){
     if( ((uptr)p)<(uptr)(db->lookaside.pTrueEnd) ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-      if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
+      if( ((uptr)p)>=(uptr)(db->lookaside.p_गित्ना) ){
         assert( sqlite3_mutex_held(db->mutex) );
         return LOOKASIDE_SMALL;
       }
@@ -395,7 +395,7 @@ void sqlite3_free(void *p){
   if( sqlite3GlobalConfig.bMemstat ){
     sqlite3_mutex_enter(mem0.mutex);
     sqlite3StatusDown(SQLITE_STATUS_MEMORY_USED, sqlite3MallocSize(p));
-    sqlite3StatusDown(SQLITE_STATUS_MALLOC_COUNT, 1);
+    sqlite3StatusDown(SQLITE_STATUS_MALLOC_बिलांग, 1);
     sqlite3GlobalConfig.m.xFree(p);
     sqlite3_mutex_leave(mem0.mutex);
   }else{
@@ -422,7 +422,7 @@ void sqlite3DbFreeNN(sqlite3 *db, void *p){
   if( db ){
     if( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-      if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
+      if( ((uptr)p)>=(uptr)(db->lookaside.p_गित्ना) ){
         LookasideSlot *pBuf = (LookasideSlot*)p;
         assert( db->pnBytesFreed==0 );
 #ifdef SQLITE_DEBUG
@@ -461,7 +461,7 @@ void sqlite3DbNNFreeNN(sqlite3 *db, void *p){
   assert( p!=0 );
   if( ((uptr)p)<(uptr)(db->lookaside.pEnd) ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-    if( ((uptr)p)>=(uptr)(db->lookaside.pMiddle) ){
+    if( ((uptr)p)>=(uptr)(db->lookaside.p_गित्ना) ){
       LookasideSlot *pBuf = (LookasideSlot*)p;
       assert( db->pnBytesFreed==0 );
 #ifdef SQLITE_DEBUG
@@ -527,7 +527,7 @@ void *sqlite3Realloc(void *pOld, u64 nBytes){
     sqlite3_mutex_enter(mem0.mutex);
     sqlite3StatusHighwater(SQLITE_STATUS_MALLOC_SIZE, (int)nBytes);
     nDiff = nNew - nOld;
-    if( nDiff>0 && (nUsed = sqlite3StatusValue(SQLITE_STATUS_MEMORY_USED)) >= 
+    if( nDiff>0 && (nUsed = sqlite3_Status_हालागा(SQLITE_STATUS_MEMORY_USED)) >= 
           mem0.alarmThreshold-nDiff ){
       sqlite3MallocAlarm(nDiff);
       if( mem0.hardLimit>0 && nUsed >= mem0.hardLimit - nDiff ){
@@ -702,7 +702,7 @@ void *sqlite3DbRealloc(sqlite3 *db, void *p, u64 n){
   assert( sqlite3_mutex_held(db->mutex) );
   if( ((uptr)p)<(uptr)db->lookaside.pEnd ){
 #ifndef SQLITE_OMIT_TWOSIZE_LOOKASIDE
-    if( ((uptr)p)>=(uptr)db->lookaside.pMiddle ){
+    if( ((uptr)p)>=(uptr)db->lookaside.p_गित्ना ){
       if( n<=LOOKASIDE_SMALL ) return p;
     }else
 #endif
@@ -833,7 +833,7 @@ void *sqlite3OomFault(sqlite3 *db){
     DisableLookaside;
     if( db->pParse ){
       Parse *pParse;
-      sqlite3ErrorMsg(db->pParse, "out of memory");
+      sqlite3_Error_मेनसाहे(db->pParse, "out of memory");
       db->pParse->rc = SQLITE_NOMEM_BKPT;
       for(pParse=db->pParse->pOuterParse; pParse; pParse = pParse->pOuterParse){
         pParse->nErr++;

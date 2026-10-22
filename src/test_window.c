@@ -25,7 +25,7 @@ typedef struct TestWindow TestWindow;
 struct TestWindow {
   Tcl_Obj *xStep;
   Tcl_Obj *xFinal;
-  Tcl_Obj *xValue;
+  Tcl_Obj *x_हालागा;
   Tcl_Obj *xInverse;
   Tcl_Interp *interp;
 };
@@ -39,14 +39,14 @@ static void doTestWindowStep(
   int bInverse,
   sqlite3_context *ctx, 
   int nArg, 
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
   int i;
   TestWindow *p = (TestWindow*)sqlite3_user_data(ctx);
   Tcl_Obj *pEval = Tcl_DuplicateObj(bInverse ? p->xInverse : p->xStep);
   TestWindowCtx *pCtx = sqlite3_aggregate_context(ctx, sizeof(TestWindowCtx));
 
-  Tcl_IncrRefCount(pEval);
+  Tcl_Incr_Ref_बिलांग(pEval);
   if( pCtx ){
     const char *zResult;
     int rc;
@@ -57,7 +57,7 @@ static void doTestWindowStep(
     }
     for(i=0; i<nArg; i++){
       Tcl_Obj *pArg;
-      pArg = Tcl_NewStringObj((const char*)sqlite3_value_text(apArg[i]), -1);
+      pArg = Tcl_NewStringObj((const char*)sqlite3_हालागा_text(apArg[i]), -1);
       Tcl_ListObjAppendElement(p->interp, pEval, pArg);
     }
     rc = Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
@@ -65,20 +65,20 @@ static void doTestWindowStep(
       zResult = Tcl_GetStringResult(p->interp);
       sqlite3_result_error(ctx, zResult, -1);
     }else{
-      if( pCtx->pVal ) Tcl_DecrRefCount(pCtx->pVal);
+      if( pCtx->pVal ) Tcl_Decr_Ref_बिलांग(pCtx->pVal);
       pCtx->pVal = Tcl_DuplicateObj(Tcl_GetObjResult(p->interp));
-      Tcl_IncrRefCount(pCtx->pVal);
+      Tcl_Incr_Ref_बिलांग(pCtx->pVal);
     }
   }
-  Tcl_DecrRefCount(pEval);
+  Tcl_Decr_Ref_बिलांग(pEval);
 }
 
-static void doTestWindowFinalize(int bValue, sqlite3_context *ctx){
+static void doTestWindowFinalize(int b_हालागा, sqlite3_context *ctx){
   TestWindow *p = (TestWindow*)sqlite3_user_data(ctx);
-  Tcl_Obj *pEval = Tcl_DuplicateObj(bValue ? p->xValue : p->xFinal);
+  Tcl_Obj *pEval = Tcl_DuplicateObj(b_हालागा ? p->x_हालागा : p->xFinal);
   TestWindowCtx *pCtx = sqlite3_aggregate_context(ctx, sizeof(TestWindowCtx));
 
-  Tcl_IncrRefCount(pEval);
+  Tcl_Incr_Ref_बिलांग(pEval);
   if( pCtx ){
     const char *zResult;
     int rc;
@@ -96,25 +96,25 @@ static void doTestWindowFinalize(int bValue, sqlite3_context *ctx){
       sqlite3_result_text(ctx, zResult, -1, SQLITE_TRANSIENT);
     }
 
-    if( bValue==0 ){
-      if( pCtx->pVal ) Tcl_DecrRefCount(pCtx->pVal);
+    if( b_हालागा==0 ){
+      if( pCtx->pVal ) Tcl_Decr_Ref_बिलांग(pCtx->pVal);
       pCtx->pVal = 0;
     }
   }
-  Tcl_DecrRefCount(pEval);
+  Tcl_Decr_Ref_बिलांग(pEval);
 }
 
 static void testWindowStep(
   sqlite3_context *ctx, 
   int nArg, 
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
   doTestWindowStep(0, ctx, nArg, apArg);
 }
 static void testWindowInverse(
   sqlite3_context *ctx, 
   int nArg, 
-  sqlite3_value **apArg
+  sqlite3_हालागा **apArg
 ){
   doTestWindowStep(1, ctx, nArg, apArg);
 }
@@ -122,7 +122,7 @@ static void testWindowInverse(
 static void testWindowFinal(sqlite3_context *ctx){
   doTestWindowFinalize(0, ctx);
 }
-static void testWindowValue(sqlite3_context *ctx){
+static void test_Window_हालागा(sqlite3_context *ctx){
   doTestWindowFinalize(1, ctx);
 }
 
@@ -145,7 +145,7 @@ static int SQLITE_TCLAPI test_create_window(
   int rc;
 
   if( objc!=7 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB NAME XSTEP XFINAL XVALUE XINVERSE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB NAME XSTEP XFINAL XVALUE XINVERSE");
     return TCL_ERROR;
   }
 
@@ -155,17 +155,17 @@ static int SQLITE_TCLAPI test_create_window(
   memset(pNew, 0, sizeof(TestWindow));
   pNew->xStep = Tcl_DuplicateObj(objv[3]);
   pNew->xFinal = Tcl_DuplicateObj(objv[4]);
-  pNew->xValue = Tcl_DuplicateObj(objv[5]);
+  pNew->x_हालागा = Tcl_DuplicateObj(objv[5]);
   pNew->xInverse = Tcl_DuplicateObj(objv[6]);
   pNew->interp = interp;
 
-  Tcl_IncrRefCount(pNew->xStep);
-  Tcl_IncrRefCount(pNew->xFinal);
-  Tcl_IncrRefCount(pNew->xValue);
-  Tcl_IncrRefCount(pNew->xInverse);
+  Tcl_Incr_Ref_बिलांग(pNew->xStep);
+  Tcl_Incr_Ref_बिलांग(pNew->xFinal);
+  Tcl_Incr_Ref_बिलांग(pNew->x_हालागा);
+  Tcl_Incr_Ref_बिलांग(pNew->xInverse);
 
   rc = sqlite3_create_window_function(db, zName, -1, SQLITE_UTF8, (void*)pNew,
-      testWindowStep, testWindowFinal, testWindowValue, testWindowInverse,
+      testWindowStep, testWindowFinal, test_Window_हालागा, testWindowInverse,
       testWindowDestroy
   );
   if( rc!=SQLITE_OK ){
@@ -186,18 +186,18 @@ static int SQLITE_TCLAPI test_create_window_misuse(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
 
   rc = sqlite3_create_window_function(db, "fff", -1, SQLITE_UTF8, 0,
-      0, testWindowFinal, testWindowValue, testWindowInverse,
+      0, testWindowFinal, test_Window_हालागा, testWindowInverse,
       0
   );
   if( rc!=SQLITE_MISUSE ) goto error;
   rc = sqlite3_create_window_function(db, "fff", -1, SQLITE_UTF8, 0,
-      testWindowStep, 0, testWindowValue, testWindowInverse,
+      testWindowStep, 0, test_Window_हालागा, testWindowInverse,
       0
   );
   if( rc!=SQLITE_MISUSE ) goto error;
@@ -207,7 +207,7 @@ static int SQLITE_TCLAPI test_create_window_misuse(
   );
   if( rc!=SQLITE_MISUSE ) goto error;
   rc = sqlite3_create_window_function(db, "fff", -1, SQLITE_UTF8, 0,
-      testWindowStep, testWindowFinal, testWindowValue, 0,
+      testWindowStep, testWindowFinal, test_Window_हालागा, 0,
       0
   );
   if( rc!=SQLITE_MISUSE ) goto error;
@@ -225,18 +225,18 @@ static int SQLITE_TCLAPI test_create_window_misuse(
 static void sumintStep(
   sqlite3_context *ctx, 
   int nArg, 
-  sqlite3_value *apArg[]
+  sqlite3_हालागा *apArg[]
 ){
   sqlite3_int64 *pInt;
 
   assert( nArg==1 );
-  if( sqlite3_value_type(apArg[0])!=SQLITE_INTEGER ){
+  if( sqlite3_हालागा_type(apArg[0])!=SQLITE_INTEGER ){
     sqlite3_result_error(ctx, "invalid argument", -1);
     return;
   }
   pInt = (sqlite3_int64*)sqlite3_aggregate_context(ctx, sizeof(sqlite3_int64));
   if( pInt ){
-    *pInt += sqlite3_value_int64(apArg[0]);
+    *pInt += sqlite3_हालागा_int64(apArg[0]);
   }
 }
 
@@ -246,11 +246,11 @@ static void sumintStep(
 static void sumintInverse(
   sqlite3_context *ctx, 
   int nArg, 
-  sqlite3_value *apArg[]
+  sqlite3_हालागा *apArg[]
 ){
   sqlite3_int64 *pInt;
   pInt = (sqlite3_int64*)sqlite3_aggregate_context(ctx, sizeof(sqlite3_int64));
-  *pInt -= sqlite3_value_int64(apArg[0]);
+  *pInt -= sqlite3_हालागा_int64(apArg[0]);
 }
 
 /*
@@ -267,7 +267,7 @@ static void sumintFinal(sqlite3_context *ctx){
 /*
 ** xValue for sumint().
 */
-static void sumintValue(sqlite3_context *ctx){
+static void sumint_हालागा(sqlite3_context *ctx){
   sqlite3_int64 res = 0;
   sqlite3_int64 *pInt;
   pInt = (sqlite3_int64*)sqlite3_aggregate_context(ctx, 0);
@@ -285,13 +285,13 @@ static int SQLITE_TCLAPI test_create_sumint(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
 
   rc = sqlite3_create_window_function(db, "sumint", 1, SQLITE_UTF8, 0,
-      sumintStep, sumintFinal, sumintValue, sumintInverse,
+      sumintStep, sumintFinal, sumint_हालागा, sumintInverse,
       0
   );
 
@@ -312,7 +312,7 @@ static int SQLITE_TCLAPI test_override_sum(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;

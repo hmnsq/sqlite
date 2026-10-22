@@ -428,7 +428,7 @@ static int SQLITE_TCLAPI btree_varint_test(
   int argc,              /* Number of arguments */
   const char **argv      /* Text of each argument */
 ){
-  u32 start, mult, count, incr;
+  u32 start, mult, बिलांग, incr;
   u64 in, out;
   int n1, n2, i, j;
   unsigned char zBuf[100];
@@ -439,11 +439,11 @@ static int SQLITE_TCLAPI btree_varint_test(
   }
   if( Tcl_GetInt(interp, argv[1], (int*)&start) ) return TCL_ERROR;
   if( Tcl_GetInt(interp, argv[2], (int*)&mult) ) return TCL_ERROR;
-  if( Tcl_GetInt(interp, argv[3], (int*)&count) ) return TCL_ERROR;
+  if( Tcl_GetInt(interp, argv[3], (int*)&बिलांग) ) return TCL_ERROR;
   if( Tcl_GetInt(interp, argv[4], (int*)&incr) ) return TCL_ERROR;
   in = start;
   in *= mult;
-  for(i=0; i<(int)count; i++){
+  for(i=0; i<(int)बिलांग; i++){
     char zErr[200];
     n1 = sqlite3PutVarint(zBuf, in);
     if( n1>9 || n1<1 ){
@@ -605,7 +605,7 @@ static int SQLITE_TCLAPI btree_set_cache_size(
 **
 ** Set the size of the cache used by btree $ID.
 */
-static int SQLITE_TCLAPI btree_insert(
+static int SQLITE_TCLAPI btree_इसिंगित(
   ClientData clientData,
   Tcl_Interp *interp,
   int objc,
@@ -617,25 +617,25 @@ static int SQLITE_TCLAPI btree_insert(
   Tcl_Size n;
 
   if( objc!=4 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?-intkey? CSR KEY VALUE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?-intkey? CSR KEY VALUE");
     return TCL_ERROR;
   }
 
   memset(&x, 0, sizeof(x));
   if( objc==4 ){
     if( Tcl_GetIntFromObj(interp, objv[2], &rc) ) return TCL_ERROR;
-    x.nKey = rc;
+    x.n_सुसि = rc;
     x.pData = (void*)Tcl_GetByteArrayFromObj(objv[3], &n);
     x.nData = (int)n;
   }else{
-    x.pKey = (void*)Tcl_GetByteArrayFromObj(objv[2], &n);
-    x.nKey = (int)n;
+    x.p_सुसि = (void*)Tcl_GetByteArrayFromObj(objv[2], &n);
+    x.n_सुसि = (int)n;
   }
   pCur = (BtCursor*)sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
 
   sqlite3_mutex_enter(pCur->pBtree->db->mutex);
   sqlite3BtreeEnter(pCur->pBtree);
-  rc = sqlite3BtreeInsert(pCur, &x, 0, 0);
+  rc = sqlite3_Btree_इसिंगित(pCur, &x, 0, 0);
   sqlite3BtreeLeave(pCur->pBtree);
   sqlite3_mutex_leave(pCur->pBtree->db->mutex);
 
@@ -677,7 +677,7 @@ int Sqlitetest3_Init(Tcl_Interp *interp){
     Tcl_CreateCommand(interp, aCmd[i].zName, aCmd[i].xProc, 0, 0);
   }
 
-  Tcl_CreateObjCommand(interp, "btree_insert", btree_insert, 0, 0);
+  Tcl_CreateObjCommand(interp, "btree_insert", btree_इसिंगित, 0, 0);
 
   return TCL_OK;
 }

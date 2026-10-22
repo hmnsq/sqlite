@@ -54,14 +54,14 @@ static int SQLITE_TCLAPI binarize(
 ** If <do-calls> is 0, then the calls to sqlite3_value_text() are not
 ** actually made.
 */
-static int SQLITE_TCLAPI test_value_overhead(
+static int SQLITE_TCLAPI test_हालागा_overhead(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
   Tcl_Obj *CONST objv[]
 ){
   int do_calls;
-  int repeat_count;
+  int repeat_बिलांग;
   int i;
   Mem val;
 
@@ -71,16 +71,16 @@ static int SQLITE_TCLAPI test_value_overhead(
     return TCL_ERROR;
   }
 
-  if( Tcl_GetIntFromObj(interp, objv[1], &repeat_count) ) return TCL_ERROR;
+  if( Tcl_GetIntFromObj(interp, objv[1], &repeat_बिलांग) ) return TCL_ERROR;
   if( Tcl_GetIntFromObj(interp, objv[2], &do_calls) ) return TCL_ERROR;
 
   val.flags = MEM_Str|MEM_Term|MEM_Static;
   val.z = "hello world";
   val.enc = SQLITE_UTF8;
 
-  for(i=0; i<repeat_count; i++){
+  for(i=0; i<repeat_बिलांग; i++){
     if( do_calls ){
-      sqlite3_value_text(&val);
+      sqlite3_हालागा_text(&val);
     }
   }
 
@@ -126,7 +126,7 @@ static int SQLITE_TCLAPI test_translate(
 ){
   u8 enc_from;
   u8 enc_to;
-  sqlite3_value *pVal;
+  sqlite3_हालागा *pVal;
 
   char *z;
   Tcl_Size len;
@@ -148,14 +148,14 @@ static int SQLITE_TCLAPI test_translate(
   enc_to = name_to_enc(interp, objv[3]);
   if( !enc_to ) return TCL_ERROR;
 
-  pVal = sqlite3ValueNew(0);
+  pVal = sqlite3_हालागा_New(0);
 
   if( enc_from==SQLITE_UTF8 ){
     z = Tcl_GetString(objv[1]);
     if( objc==5 ){
       z = sqlite3_mprintf("%s", z);
     }
-    sqlite3ValueSetStr(pVal, -1, z, enc_from, xDel);
+    sqlite3_हालागा_Set_Str(pVal, -1, z, enc_from, xDel);
   }else{
     z = (char*)Tcl_GetByteArrayFromObj(objv[1], &len);
     if( objc==5 ){
@@ -163,14 +163,14 @@ static int SQLITE_TCLAPI test_translate(
       z = sqlite3_malloc64(len);
       memcpy(z, zTmp, len);
     }
-    sqlite3ValueSetStr(pVal, -1, z, enc_from, xDel);
+    sqlite3_हालागा_Set_Str(pVal, -1, z, enc_from, xDel);
   }
 
-  z = (char *)sqlite3ValueText(pVal, enc_to);
-  len = sqlite3ValueBytes(pVal, enc_to) + (enc_to==SQLITE_UTF8?1:2);
+  z = (char *)sqlite3_हालागा_Text(pVal, enc_to);
+  len = sqlite3_हालागा_Bytes(pVal, enc_to) + (enc_to==SQLITE_UTF8?1:2);
   Tcl_SetObjResult(interp, Tcl_NewByteArrayObj((u8*)z, len));
 
-  sqlite3ValueFree(pVal);
+  sqlite3_हालागा_Free(pVal);
 
   return TCL_OK;
 }
@@ -204,7 +204,7 @@ int Sqlitetest5_Init(Tcl_Interp *interp){
     Tcl_ObjCmdProc *xProc;
   } aCmd[] = {
     { "binarize",                (Tcl_ObjCmdProc*)binarize },
-    { "test_value_overhead",     (Tcl_ObjCmdProc*)test_value_overhead },
+    { "test_value_overhead",     (Tcl_ObjCmdProc*)test_हालागा_overhead },
     { "test_translate",          (Tcl_ObjCmdProc*)test_translate     },
     { "translate_selftest",      (Tcl_ObjCmdProc*)test_translate_selftest},
   };

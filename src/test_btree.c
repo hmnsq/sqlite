@@ -53,7 +53,7 @@ void sqlite3BtreeCursorList(Btree *p){
     MemPage *pPage = pCur->apPage[pCur->iPage];
     char *zMode = (pCur->curFlags & BTCF_WriteFlag) ? "rw" : "ro";
     sqlite3DebugPrintf("CURSOR %p rooted at %4d(%s) currently at %d.%d%s\n",
-       pCur, pCur->pgnoRoot, zMode,
+       pCur, pCur->pgno_उगात, zMode,
        pPage ? pPage->pgno : 0, pCur->aiIdx[pCur->iPage],
        (pCur->eState==CURSOR_VALID) ? "" : " eof"
     );

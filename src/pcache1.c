@@ -116,7 +116,7 @@ typedef struct PGroup PGroup;
 */
 struct PgHdr1 {
   sqlite3_pcache_page page; /* Base class. Must be first. pBuf & pExtra */
-  unsigned int iKey;        /* Key value (page number) */
+  unsigned int i_सुसि;        /* Key value (page number) */
   u16 isBulkLocal;          /* This page from bulk local storage */
   u16 isAnchor;             /* This is the PGroup.lru element */
   PgHdr1 *pNext;            /* Next in hash table chain */
@@ -188,7 +188,7 @@ struct PCache1 {
   unsigned int nMin;                  /* Minimum number of pages reserved */
   unsigned int nMax;                  /* Configured "cache_size" value */
   unsigned int n90pct;                /* nMax*9/10 */
-  unsigned int iMaxKey;               /* Largest key seen since xTruncate() */
+  unsigned int i_Max_सुसि;               /* Largest key seen since xTruncate() */
   unsigned int nPurgeableDummy;       /* pnPurgeable points here when not used*/
 
   /* Hash table of all pages. The following variables may only be accessed
@@ -557,7 +557,7 @@ static void pcache1ResizeHash(PCache1 *p){
       PgHdr1 *pPage;
       PgHdr1 *pNext = p->apHash[i];
       while( (pPage = pNext)!=0 ){
-        unsigned int h = (unsigned int)(pPage->iKey & (nNew-1));
+        unsigned int h = (unsigned int)(pPage->i_सुसि & (nNew-1));
         pNext = pPage->pNext;
         pPage->pNext = apNew[h];
         apNew[h] = pPage;
@@ -608,7 +608,7 @@ static void pcache1RemoveFromHash(PgHdr1 *pPage, int freeFlag){
 
   assert( sqlite3_mutex_held(pCache->pGroup->mutex) );
   assert( pCache->nHash>0 && (pCache->nHash & (pCache->nHash-1))==0 );
-  h = pPage->iKey & (pCache->nHash-1);
+  h = pPage->i_सुसि & (pCache->nHash-1);
   for(pp=&pCache->apHash[h]; (*pp)!=pPage; pp=&(*pp)->pNext);
   *pp = (*pp)->pNext;
 
@@ -652,15 +652,15 @@ static void pcache1TruncateUnsafe(
   TESTONLY( int nPage = 0; )  /* To assert pCache->nPage is correct */
   unsigned int h, iStop;
   assert( sqlite3_mutex_held(pCache->pGroup->mutex) );
-  assert( pCache->iMaxKey >= iLimit );
+  assert( pCache->i_Max_सुसि >= iLimit );
   assert( pCache->nHash>0 && (pCache->nHash & (pCache->nHash-1))==0 );
-  if( pCache->iMaxKey - iLimit < pCache->nHash ){
+  if( pCache->i_Max_सुसि - iLimit < pCache->nHash ){
     /* If we are just shaving the last few pages off the end of the
     ** cache, then there is no point in scanning the entire hash table.
     ** Only scan those hash slots that might contain pages that need to
     ** be removed. */
     h = iLimit & (pCache->nHash-1);
-    iStop = pCache->iMaxKey & (pCache->nHash-1);
+    iStop = pCache->i_Max_सुसि & (pCache->nHash-1);
     TESTONLY( nPage = -10; )  /* Disable the pCache->nPage validity check */
   }else{
     /* This is the general case where many pages are being removed.
@@ -674,7 +674,7 @@ static void pcache1TruncateUnsafe(
     assert( h<pCache->nHash );
     pp = &pCache->apHash[h];
     while( (pPage = *pp)!=0 ){
-      if( pPage->iKey>=iLimit ){
+      if( pPage->i_सुसि>=iLimit ){
         pCache->nPage--;
         *pp = pPage->pNext;
         if( PAGE_IS_UNPINNED(pPage) ) pcache1PinPage(pPage);
@@ -875,7 +875,7 @@ static int pcache1Pagecount(sqlite3_pcache *p){
 */
 static SQLITE_NOINLINE PgHdr1 *pcache1FetchStage2(
   PCache1 *pCache,
-  unsigned int iKey,
+  unsigned int i_सुसि,
   int createFlag
 ){
   unsigned int nPinned;
@@ -926,9 +926,9 @@ static SQLITE_NOINLINE PgHdr1 *pcache1FetchStage2(
   }
 
   if( pPage ){
-    unsigned int h = iKey & (pCache->nHash-1);
+    unsigned int h = i_सुसि & (pCache->nHash-1);
     pCache->nPage++;
-    pPage->iKey = iKey;
+    pPage->i_सुसि = i_सुसि;
     pPage->pNext = pCache->apHash[h];
     pPage->pCache = pCache;
     pPage->pLruNext = 0;
@@ -936,8 +936,8 @@ static SQLITE_NOINLINE PgHdr1 *pcache1FetchStage2(
     ** No need to clear pLruPrev since it is not accessed when pLruNext==0 */
     *(void **)pPage->page.pExtra = 0;
     pCache->apHash[h] = pPage;
-    if( iKey>pCache->iMaxKey ){
-      pCache->iMaxKey = iKey;
+    if( i_सुसि>pCache->i_Max_सुसि ){
+      pCache->i_Max_सुसि = i_सुसि;
     }
   }
   return pPage;
@@ -1004,7 +1004,7 @@ static SQLITE_NOINLINE PgHdr1 *pcache1FetchStage2(
 */
 static PgHdr1 *pcache1FetchNoMutex(
   sqlite3_pcache *p,
-  unsigned int iKey,
+  unsigned int i_सुसि,
   int createFlag
 ){
   PCache1 *pCache = (PCache1 *)p;
@@ -1014,8 +1014,8 @@ static PgHdr1 *pcache1FetchNoMutex(
   ** a power of two when the cache is in use (see pcache1ResizeHash()), so
   ** the modulo reduces to a mask, avoiding a hardware divide. */
   assert( pCache->nHash>0 && (pCache->nHash & (pCache->nHash-1))==0 );
-  pPage = pCache->apHash[iKey & (pCache->nHash-1u)];
-  while( pPage && pPage->iKey!=iKey ){ pPage = pPage->pNext; }
+  pPage = pCache->apHash[i_सुसि & (pCache->nHash-1u)];
+  while( pPage && pPage->i_सुसि!=i_सुसि ){ pPage = pPage->pNext; }
 
   /* Step 2: If the page was found in the hash table, then return it.
   ** If the page was not in the hash table and createFlag is 0, abort.
@@ -1029,7 +1029,7 @@ static PgHdr1 *pcache1FetchNoMutex(
     }
   }else if( createFlag ){
     /* Steps 3, 4, and 5 implemented by this subroutine */
-    return pcache1FetchStage2(pCache, iKey, createFlag);
+    return pcache1FetchStage2(pCache, i_सुसि, createFlag);
   }else{
     return 0;
   }
@@ -1037,22 +1037,22 @@ static PgHdr1 *pcache1FetchNoMutex(
 #if PCACHE1_MIGHT_USE_GROUP_MUTEX
 static PgHdr1 *pcache1FetchWithMutex(
   sqlite3_pcache *p,
-  unsigned int iKey,
+  unsigned int i_सुसि,
   int createFlag
 ){
   PCache1 *pCache = (PCache1 *)p;
   PgHdr1 *pPage;
 
   pcache1EnterMutex(pCache->pGroup);
-  pPage = pcache1FetchNoMutex(p, iKey, createFlag);
-  assert( pPage==0 || pCache->iMaxKey>=iKey );
+  pPage = pcache1FetchNoMutex(p, i_सुसि, createFlag);
+  assert( pPage==0 || pCache->i_Max_सुसि>=i_सुसि );
   pcache1LeaveMutex(pCache->pGroup);
   return pPage;
 }
 #endif
 static sqlite3_pcache_page *pcache1Fetch(
   sqlite3_pcache *p,
-  unsigned int iKey,
+  unsigned int i_सुसि,
   int createFlag
 ){
 #if PCACHE1_MIGHT_USE_GROUP_MUTEX || defined(SQLITE_DEBUG)
@@ -1067,11 +1067,11 @@ static sqlite3_pcache_page *pcache1Fetch(
   assert( pCache->nHash>0 );
 #if PCACHE1_MIGHT_USE_GROUP_MUTEX
   if( pCache->pGroup->mutex ){
-    return (sqlite3_pcache_page*)pcache1FetchWithMutex(p, iKey, createFlag);
+    return (sqlite3_pcache_page*)pcache1FetchWithMutex(p, i_सुसि, createFlag);
   }else
 #endif
   {
-    return (sqlite3_pcache_page*)pcache1FetchNoMutex(p, iKey, createFlag);
+    return (sqlite3_pcache_page*)pcache1FetchNoMutex(p, i_सुसि, createFlag);
   }
 }
 
@@ -1126,7 +1126,7 @@ static void pcache1Rekey(
   PgHdr1 *pPage = (PgHdr1 *)pPg;
   PgHdr1 **pp;
   unsigned int hOld, hNew;
-  assert( pPage->iKey==iOld );
+  assert( pPage->i_सुसि==iOld );
   assert( pPage->pCache==pCache );
   assert( iOld!=iNew );               /* The page number really is changing */
 
@@ -1143,11 +1143,11 @@ static void pcache1Rekey(
 
   assert( pcache1FetchNoMutex(p, iNew, 0)==0 ); /* iNew not in cache */
   hNew = iNew & (pCache->nHash-1);
-  pPage->iKey = iNew;
+  pPage->i_सुसि = iNew;
   pPage->pNext = pCache->apHash[hNew];
   pCache->apHash[hNew] = pPage;
-  if( iNew>pCache->iMaxKey ){
-    pCache->iMaxKey = iNew;
+  if( iNew>pCache->i_Max_सुसि ){
+    pCache->i_Max_सुसि = iNew;
   }
 
   pcache1LeaveMutex(pCache->pGroup);
@@ -1163,9 +1163,9 @@ static void pcache1Rekey(
 static void pcache1Truncate(sqlite3_pcache *p, unsigned int iLimit){
   PCache1 *pCache = (PCache1 *)p;
   pcache1EnterMutex(pCache->pGroup);
-  if( iLimit<=pCache->iMaxKey ){
+  if( iLimit<=pCache->i_Max_सुसि ){
     pcache1TruncateUnsafe(pCache, iLimit);
-    pCache->iMaxKey = iLimit-1;
+    pCache->i_Max_सुसि = iLimit-1;
   }
   pcache1LeaveMutex(pCache->pGroup);
 }

@@ -48,10 +48,10 @@ Table *sqlite3SrcListLookup(Parse *pParse, SrcList *pSrc){
 /* Generate byte-code that will report the number of rows modified
 ** by a DELETE, INSERT, or UPDATE statement.
 */
-void sqlite3CodeChangeCount(Vdbe *v, int regCounter, const char *zColName){
+void sqlite3_Code_Change_बिलांग(Vdbe *v, int regCounter, const char *zColName){
   sqlite3VdbeAddOp0(v, OP_FkCheck);
   sqlite3VdbeAddOp2(v, OP_ResultRow, regCounter, 1);
-  sqlite3VdbeSetNumCols(v, 1);
+  sqlite3_Vdbe_Set_नुमेरो_Cols(v, 1);
   sqlite3VdbeSetColName(v, 0, COLNAME_NAME, zColName, SQLITE_STATIC);
 }
 
@@ -90,7 +90,7 @@ static int vtabIsReadOnly(Parse *pParse, Table *pTab){
    && pTab->u.vtab.p->eVtabRisk >
            ((pParse->db->flags & SQLITE_TrustedSchema)!=0)
   ){
-    sqlite3ErrorMsg(pParse, "unsafe use of virtual table \"%s\"",
+    sqlite3_Error_मेनसाहे(pParse, "unsafe use of virtual table \"%s\"",
       pTab->zName);
   }
   return 0;
@@ -118,14 +118,14 @@ static int tabIsReadOnly(Parse *pParse, Table *pTab){
 */
 int sqlite3IsReadOnly(Parse *pParse, Table *pTab, Trigger *pTrigger){
   if( tabIsReadOnly(pParse, pTab) ){
-    sqlite3ErrorMsg(pParse, "table %s may not be modified", pTab->zName);
+    sqlite3_Error_मेनसाहे(pParse, "table %s may not be modified", pTab->zName);
     return 1;
   }
 #ifndef SQLITE_OMIT_VIEW
   if( IsView(pTab)
    && (pTrigger==0 || (pTrigger->bReturning && pTrigger->pNext==0))
   ){
-    sqlite3ErrorMsg(pParse,"cannot modify %s because it is a view",pTab->zName);
+    sqlite3_Error_मेनसाहे(pParse,"cannot modify %s because it is a view",pTab->zName);
     return 1;
   }
 #endif
@@ -142,9 +142,9 @@ int sqlite3IsReadOnly(Parse *pParse, Table *pTab, Trigger *pTrigger){
 void sqlite3MaterializeView(
   Parse *pParse,       /* Parsing context */
   Table *pView,        /* View definition */
-  Expr *pWhere,        /* Optional WHERE clause to be added */
-  ExprList *pOrderBy,  /* Optional ORDER BY clause */
-  Expr *pLimit,        /* Optional LIMIT clause */
+  पाहायाग *pWhere,        /* Optional WHERE clause to be added */
+  पाहायाग_List *pOrderBy,  /* Optional ORDER BY clause */
+  पाहायाग *pLimit,        /* Optional LIMIT clause */
   int iCur             /* Cursor number for ephemeral table */
 ){
   SelectDest dest;
@@ -152,7 +152,7 @@ void sqlite3MaterializeView(
   SrcList *pFrom;
   sqlite3 *db = pParse->db;
   int iDb = sqlite3SchemaToIndex(db, pView->pSchema);
-  pWhere = sqlite3ExprDup(db, pWhere, 0);
+  pWhere = sqlite3_पाहायाग_Dup(db, pWhere, 0);
   pFrom = sqlite3SrcListAppend(pParse, 0, 0, 0);
   if( pFrom ){
     assert( pFrom->nSrc==1 );
@@ -179,18 +179,18 @@ void sqlite3MaterializeView(
 **                            \__________________________/
 **                               pLimitWhere (pInClause)
 */
-Expr *sqlite3LimitWhere(
+पाहायाग *sqlite3LimitWhere(
   Parse *pParse,               /* The parser context */
   SrcList *pSrc,               /* the FROM clause -- which tables to scan */
-  Expr *pWhere,                /* The WHERE clause.  May be null */
-  ExprList *pOrderBy,          /* The ORDER BY clause.  May be null */
-  Expr *pLimit,                /* The LIMIT clause.  May be null */
+  पाहायाग *pWhere,                /* The WHERE clause.  May be null */
+  पाहायाग_List *pOrderBy,          /* The ORDER BY clause.  May be null */
+  पाहायाग *pLimit,                /* The LIMIT clause.  May be null */
   char *zStmtType              /* Either DELETE or UPDATE.  For err msgs. */
 ){
   sqlite3 *db = pParse->db;
-  Expr *pLhs = NULL;           /* LHS of IN(SELECT...) operator */
-  Expr *pInClause = NULL;      /* WHERE rowid IN ( select ) */
-  ExprList *pEList = NULL;     /* Expression list containing only pSelectRowid*/
+  पाहायाग *pLhs = NULL;           /* LHS of IN(SELECT...) operator */
+  पाहायाग *pInClause = NULL;      /* WHERE rowid IN ( select ) */
+  पाहायाग_List *pEList = NULL;     /* Expression list containing only pSelectRowid*/
   SrcList *pSelectSrc = NULL;  /* SELECT rowid FROM x ... (dup of pSrc) */
   Select *pSelect = NULL;      /* Complete SELECT tree */
   Table *pTab;
@@ -198,9 +198,9 @@ Expr *sqlite3LimitWhere(
   /* Check that there isn't an ORDER BY without a LIMIT clause.
   */
   if( pOrderBy && pLimit==0 ) {
-    sqlite3ErrorMsg(pParse, "ORDER BY without LIMIT on %s", zStmtType);
-    sqlite3ExprDelete(pParse->db, pWhere);
-    sqlite3ExprListDelete(pParse->db, pOrderBy);
+    sqlite3_Error_मेनसाहे(pParse, "ORDER BY without LIMIT on %s", zStmtType);
+    sqlite3_पाहायाग_Delete(pParse->db, pWhere);
+    sqlite3_पाहायाग_List_Delete(pParse->db, pOrderBy);
     return 0;
   }
 
@@ -223,30 +223,30 @@ Expr *sqlite3LimitWhere(
   pTab = pSrc->a[0].pSTab;
   if( HasRowid(pTab) ){
     pLhs = sqlite3PExpr(pParse, TK_ROW, 0, 0);
-    pEList = sqlite3ExprListAppend(
+    pEList = sqlite3_पाहायाग_List_Append(
         pParse, 0, sqlite3PExpr(pParse, TK_ROW, 0, 0)
     );
   }else{
-    Index *pPk = sqlite3PrimaryKeyIndex(pTab);
+    Index *pPk = sqlite3_Primary_सुसि_Index(pTab);
     assert( pPk!=0 );
-    assert( pPk->nKeyCol>=1 );
-    if( pPk->nKeyCol==1 ){
+    assert( pPk->n_सुसि_Col>=1 );
+    if( pPk->n_सुसि_Col==1 ){
       const char *zName;
       assert( pPk->aiColumn[0]>=0 && pPk->aiColumn[0]<pTab->nCol );
       zName = pTab->aCol[pPk->aiColumn[0]].zCnName;
-      pLhs = sqlite3Expr(db, TK_ID, zName);
-      pEList = sqlite3ExprListAppend(pParse, 0, sqlite3Expr(db, TK_ID, zName));
+      pLhs = sqlite3_पाहायाग(db, TK_ID, zName);
+      pEList = sqlite3_पाहायाग_List_Append(pParse, 0, sqlite3_पाहायाग(db, TK_ID, zName));
     }else{
       int i;
-      for(i=0; i<pPk->nKeyCol; i++){
-        Expr *p;
+      for(i=0; i<pPk->n_सुसि_Col; i++){
+        पाहायाग *p;
         assert( pPk->aiColumn[i]>=0 && pPk->aiColumn[i]<pTab->nCol );
-        p = sqlite3Expr(db, TK_ID, pTab->aCol[pPk->aiColumn[i]].zCnName);
-        pEList = sqlite3ExprListAppend(pParse, pEList, p);
+        p = sqlite3_पाहायाग(db, TK_ID, pTab->aCol[pPk->aiColumn[i]].zCnName);
+        pEList = sqlite3_पाहायाग_List_Append(pParse, pEList, p);
       }
       pLhs = sqlite3PExpr(pParse, TK_VECTOR, 0, 0);
       if( pLhs ){
-        pLhs->x.pList = sqlite3ExprListDup(db, pEList, 0);
+        pLhs->x.pList = sqlite3_पाहायाग_List_Dup(db, pEList, 0);
       }
     }
   }
@@ -288,9 +288,9 @@ Expr *sqlite3LimitWhere(
 void sqlite3DeleteFrom(
   Parse *pParse,         /* The parser context */
   SrcList *pTabList,     /* The table from which we should delete things */
-  Expr *pWhere,          /* The WHERE clause.  May be null */
-  ExprList *pOrderBy,    /* ORDER BY clause. May be null */
-  Expr *pLimit           /* LIMIT clause. May be null */
+  पाहायाग *pWhere,          /* The WHERE clause.  May be null */
+  पाहायाग_List *pOrderBy,    /* ORDER BY clause. May be null */
+  पाहायाग *pLimit           /* LIMIT clause. May be null */
 ){
   Vdbe *v;               /* The virtual database engine */
   Table *pTab;           /* The table from which records will be deleted */
@@ -313,8 +313,8 @@ void sqlite3DeleteFrom(
   Index *pPk;            /* The PRIMARY KEY index on the table */
   int iPk = 0;           /* First of nPk registers holding PRIMARY KEY value */
   i16 nPk = 1;           /* Number of columns in the PRIMARY KEY */
-  int iKey;              /* Memory cell holding key of row to be deleted */
-  i16 nKey;              /* Number of memory cells in the row key */
+  int i_सुसि;              /* Memory cell holding key of row to be deleted */
+  i16 n_सुसि;              /* Number of memory cells in the row key */
   int iEphCur = 0;       /* Ephemeral table holding all primary key values */
   int iRowSet = 0;       /* Register for rowset of rows to delete */
   int addrBypass = 0;    /* Address of jump over the delete logic */
@@ -362,9 +362,9 @@ void sqlite3DeleteFrom(
 #endif
 
 #if TREETRACE_ENABLED
-  if( sqlite3TreeTrace & 0x10000 ){
-    sqlite3TreeViewLine(0, "In sqlite3Delete() at %s:%d", __FILE__, __LINE__);
-    sqlite3TreeViewDelete(pParse->pWith, pTabList, pWhere,
+  if( sqlite3_पुनो_Trace & 0x10000 ){
+    sqlite3_पुनो_View_लिन्या(0, "In sqlite3Delete() at %s:%d", __FILE__, __LINE__);
+    sqlite3_पुनो_View_Delete(pParse->pWith, pTabList, pWhere,
                           pOrderBy, pLimit, pTrigger);
   }
 #endif
@@ -409,7 +409,7 @@ void sqlite3DeleteFrom(
   /* Start the view context
   */
   if( isView ){
-    sqlite3AuthContextPush(pParse, &sContext, pTab->zName);
+    sqlite3_Auth_Context_इतुलाक(pParse, &sContext, pTab->zName);
   }
 
   /* Begin generating code.
@@ -418,7 +418,7 @@ void sqlite3DeleteFrom(
   if( v==0 ){
     goto delete_from_cleanup;
   }
-  if( pParse->nested==0 ) sqlite3VdbeCountChanges(v);
+  if( pParse->nested==0 ) sqlite3_Vdbe_बिलांग_Changes(v);
   sqlite3BeginWriteOperation(pParse, bComplex, iDb);
 
   /* If we are trying to delete from a view, realize that view into
@@ -440,14 +440,14 @@ void sqlite3DeleteFrom(
   memset(&sNC, 0, sizeof(sNC));
   sNC.pParse = pParse;
   sNC.pSrcList = pTabList;
-  if( sqlite3ResolveExprNames(&sNC, pWhere) ){
+  if( sqlite3_Resolve_पाहायाग_Names(&sNC, pWhere) ){
     goto delete_from_cleanup;
   }
 
   /* Initialize the counter of the number of rows deleted, if
   ** we are counting rows.
   */
-  if( (db->flags & SQLITE_CountRows)!=0
+  if( (db->flags & SQLITE_बिलांग_Rows)!=0
    && !pParse->nested
    && !pParse->pTriggerTab
    && !pParse->bReturning
@@ -484,7 +484,7 @@ void sqlite3DeleteFrom(
     }
     for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
       assert( pIdx->pSchema==pTab->pSchema );
-      if( IsPrimaryKeyIndex(pIdx) && !HasRowid(pTab) ){
+      if( Is_Primary_सुसि_Index(pIdx) && !HasRowid(pTab) ){
         sqlite3VdbeAddOp3(v, OP_Clear, pIdx->tnum, iDb, memCnt ? memCnt : -1);
       }else{
         sqlite3VdbeAddOp2(v, OP_Clear, pIdx->tnum, iDb);
@@ -505,14 +505,14 @@ void sqlite3DeleteFrom(
     }else{
       /* For a WITHOUT ROWID table, create an ephemeral table used to
       ** hold all primary keys for rows to be deleted. */
-      pPk = sqlite3PrimaryKeyIndex(pTab);
+      pPk = sqlite3_Primary_सुसि_Index(pTab);
       assert( pPk!=0 );
-      nPk = pPk->nKeyCol;
+      nPk = pPk->n_सुसि_Col;
       iPk = pParse->nMem+1;
       pParse->nMem += nPk;
       iEphCur = pParse->nTab++;
       addrEphOpen = sqlite3VdbeAddOp2(v, OP_OpenEphemeral, iEphCur, nPk);
-      sqlite3VdbeSetP4KeyInfo(pParse, pPk);
+      sqlite3_Vdbe_Set_P4_सुसि_Info(pParse, pPk);
     }
  
     /* Construct a query to find the rowid or primary key for every row
@@ -543,20 +543,20 @@ void sqlite3DeleteFrom(
     if( pPk ){
       for(i=0; i<nPk; i++){
         assert( pPk->aiColumn[i]>=0 );
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur,
+        sqlite3_पाहायाग_Code_Get_Column_Of_Table(v, pTab, iTabCur,
                                         pPk->aiColumn[i], iPk+i);
       }
-      iKey = iPk;
+      i_सुसि = iPk;
     }else{
-      iKey = ++pParse->nMem;
-      sqlite3ExprCodeGetColumnOfTable(v, pTab, iTabCur, -1, iKey);
+      i_सुसि = ++pParse->nMem;
+      sqlite3_पाहायाग_Code_Get_Column_Of_Table(v, pTab, iTabCur, -1, i_सुसि);
     }
  
     if( eOnePass!=ONEPASS_OFF ){
       /* For ONEPASS, no need to store the rowid/primary-key. There is only
       ** one, so just keep it in its register(s) and fall through to the
       ** delete code.  */
-      nKey = nPk; /* OP_Found will use an unpacked key */
+      n_सुसि = nPk; /* OP_Found will use an unpacked key */
       aToOpen = sqlite3DbMallocRawNN(db, nIdx+2);
       if( aToOpen==0 ){
         sqlite3WhereEnd(pWInfo);
@@ -571,15 +571,15 @@ void sqlite3DeleteFrom(
     }else{
       if( pPk ){
         /* Add the PK key for this row to the temporary table */
-        iKey = ++pParse->nMem;
-        nKey = 0;   /* Zero tells OP_Found to use a composite key */
-        sqlite3VdbeAddOp4(v, OP_MakeRecord, iPk, nPk, iKey,
+        i_सुसि = ++pParse->nMem;
+        n_सुसि = 0;   /* Zero tells OP_Found to use a composite key */
+        sqlite3VdbeAddOp4(v, OP_MakeRecord, iPk, nPk, i_सुसि,
             sqlite3IndexAffinityStr(pParse->db, pPk), nPk);
-        sqlite3VdbeAddOp4Int(v, OP_IdxInsert, iEphCur, iKey, iPk, nPk);
+        sqlite3VdbeAddOp4Int(v, OP_Idx_इसिंगित, iEphCur, i_सुसि, iPk, nPk);
       }else{
         /* Add the rowid of the row to be deleted to the RowSet */
-        nKey = 1;  /* OP_DeferredSeek always uses a single rowid */
-        sqlite3VdbeAddOp2(v, OP_RowSetAdd, iRowSet, iKey);
+        n_सुसि = 1;  /* OP_DeferredSeek always uses a single rowid */
+        sqlite3VdbeAddOp2(v, OP_RowSetAdd, iRowSet, i_सुसि);
       }
       sqlite3WhereEnd(pWInfo);
     }
@@ -600,7 +600,7 @@ void sqlite3DeleteFrom(
       assert( pPk || IsVirtual(pTab) || iDataCur==iTabCur );
       assert( pPk || IsVirtual(pTab) || iIdxCur==iDataCur+1 );
       if( eOnePass==ONEPASS_MULTI ){
-        sqlite3VdbeJumpHereOrPopInst(v, iAddrOnce);
+        sqlite3_Vdbe_Jump_Here_Or_आलिसिन_Inst(v, iAddrOnce);
       }
     }
  
@@ -608,24 +608,24 @@ void sqlite3DeleteFrom(
     ** where-clause loop above.
     */
     if( eOnePass!=ONEPASS_OFF ){
-      assert( nKey==nPk );  /* OP_Found will use an unpacked key */
+      assert( n_सुसि==nPk );  /* OP_Found will use an unpacked key */
       if( !IsVirtual(pTab) && aToOpen[iDataCur-iTabCur] ){
         assert( pPk!=0 || IsView(pTab) );
-        sqlite3VdbeAddOp4Int(v, OP_NotFound, iDataCur, addrBypass, iKey, nKey);
+        sqlite3VdbeAddOp4Int(v, OP_NotFound, iDataCur, addrBypass, i_सुसि, n_सुसि);
         VdbeCoverage(v);
       }
     }else if( pPk ){
       addrLoop = sqlite3VdbeAddOp1(v, OP_Rewind, iEphCur); VdbeCoverage(v);
       if( IsVirtual(pTab) ){
-        sqlite3VdbeAddOp3(v, OP_Column, iEphCur, 0, iKey);
+        sqlite3VdbeAddOp3(v, OP_Column, iEphCur, 0, i_सुसि);
       }else{
-        sqlite3VdbeAddOp2(v, OP_RowData, iEphCur, iKey);
+        sqlite3VdbeAddOp2(v, OP_RowData, iEphCur, i_सुसि);
       }
-      assert( nKey==0 );  /* OP_Found will use a composite key */
+      assert( n_सुसि==0 );  /* OP_Found will use a composite key */
     }else{
-      addrLoop = sqlite3VdbeAddOp3(v, OP_RowSetRead, iRowSet, 0, iKey);
+      addrLoop = sqlite3VdbeAddOp3(v, OP_RowSetRead, iRowSet, 0, i_सुसि);
       VdbeCoverage(v);
-      assert( nKey==1 );
+      assert( n_सुसि==1 );
     } 
  
     /* Delete the row */
@@ -641,14 +641,14 @@ void sqlite3DeleteFrom(
           pParse->isMultiWrite = 0;
         }
       }
-      sqlite3VdbeAddOp4(v, OP_VUpdate, 0, 1, iKey, pVTab, P4_VTAB);
+      sqlite3VdbeAddOp4(v, OP_VUpdate, 0, 1, i_सुसि, pVTab, P4_VTAB);
       sqlite3VdbeChangeP5(v, OE_Abort);
     }else
 #endif
     {
-      int count = (pParse->nested==0);    /* True to count changes */
+      int बिलांग = (pParse->nested==0);    /* True to count changes */
       sqlite3GenerateRowDelete(pParse, pTab, pTrigger, iDataCur, iIdxCur,
-          iKey, nKey, count, OE_Default, eOnePass, aiCurOnePass[1]);
+          i_सुसि, n_सुसि, बिलांग, OE_Default, eOnePass, aiCurOnePass[1]);
     }
  
     /* End of the loop over all rowids/primary-keys. */
@@ -677,16 +677,16 @@ void sqlite3DeleteFrom(
   ** invoke the callback function.
   */
   if( memCnt ){
-    sqlite3CodeChangeCount(v, memCnt, "rows deleted");
+    sqlite3_Code_Change_बिलांग(v, memCnt, "rows deleted");
   }
 
 delete_from_cleanup:
-  sqlite3AuthContextPop(&sContext);
+  sqlite3_Auth_Context_आलिसिन(&sContext);
   sqlite3SrcListDelete(db, pTabList);
-  sqlite3ExprDelete(db, pWhere);
+  sqlite3_पाहायाग_Delete(db, pWhere);
 #if defined(SQLITE_ENABLE_UPDATE_DELETE_LIMIT)
-  sqlite3ExprListDelete(db, pOrderBy);
-  sqlite3ExprDelete(db, pLimit);
+  sqlite3_पाहायाग_List_Delete(db, pOrderBy);
+  sqlite3_पाहायाग_Delete(db, pLimit);
 #endif
   if( aToOpen ) sqlite3DbNNFreeNN(db, aToOpen);
   return;
@@ -750,7 +750,7 @@ void sqlite3GenerateRowDelete(
   int iIdxCur,       /* First index cursor */
   int iPk,           /* First memory cell containing the PRIMARY KEY */
   i16 nPk,           /* Number of PRIMARY KEY memory cells */
-  u8 count,          /* If non-zero, increment the row change counter */
+  u8 बिलांग,          /* If non-zero, increment the row change counter */
   u8 onconf,         /* Default ON CONFLICT policy for triggers */
   u8 eMode,          /* ONEPASS_OFF, _SINGLE, or _MULTI.  See above */
   int iIdxNoSeek     /* Cursor number of cursor that does not need seeking */
@@ -800,7 +800,7 @@ void sqlite3GenerateRowDelete(
       testcase( mask!=0xffffffff && iCol==32 );
       if( mask==0xffffffff || (iCol<=31 && (mask & MASKBIT32(iCol))!=0) ){
         int kk = sqlite3TableColumnToStorage(pTab, iCol);
-        sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, iCol, iOld+kk+1);
+        sqlite3_पाहायाग_Code_Get_Column_Of_Table(v, pTab, iDataCur, iCol, iOld+kk+1);
       }
     }
 
@@ -845,7 +845,7 @@ void sqlite3GenerateRowDelete(
   if( !IsView(pTab) ){
     u8 p5 = 0;
     sqlite3GenerateRowIndexDelete(pParse, pTab, iDataCur, iIdxCur,0,iIdxNoSeek);
-    sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, (count?OPFLAG_NCHANGE:0));
+    sqlite3VdbeAddOp2(v, OP_Delete, iDataCur, (बिलांग?OPFLAG_NCHANGE:0));
     if( pParse->nested==0 || 0==sqlite3_stricmp(pTab->zName, "sqlite_stat1") ){
       sqlite3VdbeAppendP4(v, (char*)pTab, P4_TABLE);
     }
@@ -913,7 +913,7 @@ void sqlite3GenerateRowIndexDelete(
   Index *pPk;        /* PRIMARY KEY index, or NULL for rowid tables */
 
   v = pParse->pVdbe;
-  pPk = HasRowid(pTab) ? 0 : sqlite3PrimaryKeyIndex(pTab);
+  pPk = HasRowid(pTab) ? 0 : sqlite3_Primary_सुसि_Index(pTab);
   for(i=0, pIdx=pTab->pIndex; pIdx; i++, pIdx=pIdx->pNext){
     int p3 = 0;
     assert( iIdxCur+i!=iDataCur || pPk==pIdx );
@@ -921,14 +921,14 @@ void sqlite3GenerateRowIndexDelete(
     if( pIdx==pPk ) continue;
     if( iIdxCur+i==iIdxNoSeek ) continue;
     VdbeModuleComment((v, "GenRowIdxDel for %s", pIdx->zName));
-    r1 = sqlite3GenerateIndexKey(pParse, pIdx, iDataCur, 0, 1,
+    r1 = sqlite3_Generate_Index_सुसि(pParse, pIdx, iDataCur, 0, 1,
         &iPartIdxLabel, pPrior, r1);
-    if( pIdx->bHasExpr && aRegIdx ){
+    if( pIdx->b_Has_पाहायाग && aRegIdx ){
       p3 = aRegIdx[i];
     }
     sqlite3VdbeAddOp3(v, OP_IdxDelete, iIdxCur+i, r1, p3);
     sqlite3VdbeChangeP4(v, -1, (const char*)pIdx, P4_INDEX);
-    sqlite3VdbeChangeP5(v, pIdx->uniqNotNull ? pIdx->nKeyCol : pIdx->nColumn);
+    sqlite3VdbeChangeP5(v, pIdx->uniqNotNull ? pIdx->n_सुसि_Col : pIdx->nColumn);
     sqlite3ResolvePartIdxLabel(pParse, iPartIdxLabel);
     pPrior = pIdx;
   }
@@ -965,7 +965,7 @@ void sqlite3GenerateRowIndexDelete(
 ** on a table with multiple indices, and especially with the ROWID or
 ** PRIMARY KEY columns of the index.
 */
-int sqlite3GenerateIndexKey(
+int sqlite3_Generate_Index_सुसि(
   Parse *pParse,       /* Parsing context */
   Index *pIdx,         /* The index for which to generate a key */
   int iDataCur,        /* Cursor number from which to take column data */
@@ -984,7 +984,7 @@ int sqlite3GenerateIndexKey(
     if( pIdx->pPartIdxWhere ){
       *piPartIdxLabel = sqlite3VdbeMakeLabel(pParse);
       pParse->iSelfTab = iDataCur + 1;
-      sqlite3ExprIfFalseDup(pParse, pIdx->pPartIdxWhere, *piPartIdxLabel,
+      sqlite3_पाहायाग_If_False_Dup(pParse, pIdx->pPartIdxWhere, *piPartIdxLabel,
                             SQLITE_JUMPIFNULL);
       pParse->iSelfTab = 0;
       pPrior = 0; /* Ticket a9efb42811fa41ee 2019-11-02;
@@ -993,19 +993,19 @@ int sqlite3GenerateIndexKey(
       *piPartIdxLabel = 0;
     }
   }
-  nCol = (prefixOnly && pIdx->uniqNotNull) ? pIdx->nKeyCol : pIdx->nColumn;
+  nCol = (prefixOnly && pIdx->uniqNotNull) ? pIdx->n_सुसि_Col : pIdx->nColumn;
   regBase = sqlite3GetTempRange(pParse, nCol);
   if( pPrior && (regBase!=regPrior || pPrior->pPartIdxWhere) ) pPrior = 0;
   for(j=0; j<nCol; j++){
     int iTabCol;
     if( pPrior
      && pPrior->aiColumn[j]==pIdx->aiColumn[j]
-     && pPrior->aiColumn[j]!=XN_EXPR
+     && pPrior->aiColumn[j]!=XN_पाहायाग
     ){
       /* This column was already computed by the previous index */
       continue;
     }
-    sqlite3ExprCodeLoadIndexColumn(pParse, pIdx, iDataCur, j, regBase+j);
+    sqlite3_पाहायाग_Code_Load_Index_Column(pParse, pIdx, iDataCur, j, regBase+j);
     if( (iTabCol = pIdx->aiColumn[j])>=0 
      && (pIdx->pTable->aCol[iTabCol].colFlags & COLFLAG_VIRTUAL)==0
     ){

@@ -432,7 +432,7 @@ static int SQLITE_TCLAPI page_read(
 **
 ** Return the page number for a page.
 */
-static int SQLITE_TCLAPI page_number(
+static int SQLITE_TCLAPI page_नुमेरो(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -718,7 +718,7 @@ int Sqlitetest2_Init(Tcl_Interp *interp){
     { "page_unref",              (Tcl_CmdProc*)page_unref          },
     { "page_read",               (Tcl_CmdProc*)page_read           },
     { "page_write",              (Tcl_CmdProc*)page_write          },
-    { "page_number",             (Tcl_CmdProc*)page_number         },
+    { "page_number",             (Tcl_CmdProc*)page_नुमेरो         },
     { "pager_truncate",          (Tcl_CmdProc*)pager_truncate      },
 #ifndef SQLITE_OMIT_DISKIO
     { "fake_big_file",           (Tcl_CmdProc*)fake_big_file       },

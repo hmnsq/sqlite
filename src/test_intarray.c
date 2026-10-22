@@ -166,8 +166,8 @@ static int intarrayNext(sqlite3_vtab_cursor *cur){
 */
 static int intarrayFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   intarray_cursor *pCur = (intarray_cursor *)pVtabCursor;
   pCur->i = 0;
@@ -309,7 +309,7 @@ static int SQLITE_TCLAPI test_intarray_create(
   char zPtr[100];
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -343,7 +343,7 @@ static int SQLITE_TCLAPI test_intarray_bind(
   sqlite3_int64 *a;
 
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTARRAY");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "INTARRAY");
     return TCL_ERROR;
   }
   pArray = (sqlite3_intarray*)sqlite3TestTextToPtr(Tcl_GetString(objv[1]));

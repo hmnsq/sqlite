@@ -90,8 +90,8 @@ static void local_ioerr(){
 ** When testing, keep a count of the number of open files.
 */
 #if defined(SQLITE_TEST)
-extern int sqlite3_open_file_count;
-#define OpenCounter(X)  sqlite3_open_file_count+=(X)
+extern int sqlite3_open_file_बिलांग;
+#define OpenCounter(X)  sqlite3_open_file_बिलांग+=(X)
 #else
 #define OpenCounter(X)
 #endif /* defined(SQLITE_TEST) */

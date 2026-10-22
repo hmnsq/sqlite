@@ -190,7 +190,7 @@ static void quotaLeave(void){ sqlite3_mutex_leave(gQuota.pMutex); }
 
 /* Count the number of open files in a quotaGroup
 */
-static int quotaGroupOpenFileCount(quotaGroup *pGroup){
+static int quota_Group_Open_File_बिलांग(quotaGroup *pGroup){
   int N = 0;
   quotaFile *pFile = pGroup->pFiles;
   while( pFile ){
@@ -225,7 +225,7 @@ static void quotaRemoveAllFiles(quotaGroup *pGroup){
 ** zero, then destroy the quotaGroup.
 */
 static void quotaGroupDeref(quotaGroup *pGroup){
-  if( pGroup->iLimit==0 && quotaGroupOpenFileCount(pGroup)==0 ){
+  if( pGroup->iLimit==0 && quota_Group_Open_File_बिलांग(pGroup)==0 ){
     quotaRemoveAllFiles(pGroup);
     *pGroup->ppPrev = pGroup->pNext;
     if( pGroup->pNext ) pGroup->pNext->ppPrev = pGroup->ppPrev;
@@ -797,13 +797,13 @@ int sqlite3_quota_shutdown(void){
   quotaGroup *pGroup;
   if( gQuota.isInitialized==0 ) return SQLITE_MISUSE;
   for(pGroup=gQuota.pGroup; pGroup; pGroup=pGroup->pNext){
-    if( quotaGroupOpenFileCount(pGroup)>0 ) return SQLITE_MISUSE;
+    if( quota_Group_Open_File_बिलांग(pGroup)>0 ) return SQLITE_MISUSE;
   }
   while( gQuota.pGroup ){
     pGroup = gQuota.pGroup;
     gQuota.pGroup = pGroup->pNext;
     pGroup->iLimit = 0;
-    assert( quotaGroupOpenFileCount(pGroup)==0 );
+    assert( quota_Group_Open_File_बिलांग(pGroup)==0 );
     quotaGroupDeref(pGroup);
   }
   gQuota.isInitialized = 0;
@@ -1305,13 +1305,13 @@ static void tclQuotaCallback(
   if( p==0 ) return;
 
   pVarname = Tcl_NewStringObj("::piLimit_", -1);
-  Tcl_IncrRefCount(pVarname);
+  Tcl_Incr_Ref_बिलांग(pVarname);
   sqlite3_randomness(sizeof(rnd), (void *)&rnd);
   Tcl_AppendObjToObj(pVarname, Tcl_NewIntObj((int)(rnd&0x7FFFFFFF)));
   Tcl_ObjSetVar2(p->interp, pVarname, 0, Tcl_NewWideIntObj(*piLimit), 0);
 
   pEval = Tcl_DuplicateObj(p->pScript);
-  Tcl_IncrRefCount(pEval);
+  Tcl_Incr_Ref_बिलांग(pEval);
   Tcl_ListObjAppendElement(0, pEval, Tcl_NewStringObj(zFilename, -1));
   Tcl_ListObjAppendElement(0, pEval, pVarname);
   Tcl_ListObjAppendElement(0, pEval, Tcl_NewWideIntObj(iSize));
@@ -1325,8 +1325,8 @@ static void tclQuotaCallback(
     Tcl_UnsetVar(p->interp, Tcl_GetString(pVarname), 0);
   }
 
-  Tcl_DecrRefCount(pEval);
-  Tcl_DecrRefCount(pVarname);
+  Tcl_Decr_Ref_बिलांग(pEval);
+  Tcl_Decr_Ref_बिलांग(pVarname);
   if( rc!=TCL_OK ) Tcl_BackgroundError(p->interp);
 }
 
@@ -1336,7 +1336,7 @@ static void tclQuotaCallback(
 static void tclCallbackDestructor(void *pObj){
   TclQuotaCallback *p = (TclQuotaCallback*)pObj;
   if( p ){
-    Tcl_DecrRefCount(p->pScript);
+    Tcl_Decr_Ref_बिलांग(p->pScript);
     sqlite3_free((char *)p);
   }
 }
@@ -1356,7 +1356,7 @@ static int SQLITE_TCLAPI test_quota_initialize(
 
   /* Process arguments */
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME MAKEDEFAULT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "NAME MAKEDEFAULT");
     return TCL_ERROR;
   }
   zName = Tcl_GetString(objv[1]);
@@ -1382,7 +1382,7 @@ static int SQLITE_TCLAPI test_quota_shutdown(
   int rc;                         /* Value returned by quota_shutdown() */
 
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
 
@@ -1413,7 +1413,7 @@ static int SQLITE_TCLAPI test_quota_set(
 
   /* Process arguments */
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "PATTERN LIMIT SCRIPT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "PATTERN LIMIT SCRIPT");
     return TCL_ERROR;
   }
   zPattern = Tcl_GetString(objv[1]);
@@ -1430,7 +1430,7 @@ static int SQLITE_TCLAPI test_quota_set(
     }
     memset(p, 0, sizeof(TclQuotaCallback));
     p->interp = interp;
-    Tcl_IncrRefCount(pScript);
+    Tcl_Incr_Ref_बिलांग(pScript);
     p->pScript = pScript;
     xDestroy = tclCallbackDestructor;
     xCallback = tclQuotaCallback;
@@ -1461,7 +1461,7 @@ static int SQLITE_TCLAPI test_quota_file(
 
   /* Process arguments */
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILENAME");
     return TCL_ERROR;
   }
   zFilename = Tcl_GetString(objv[1]);
@@ -1540,7 +1540,7 @@ static int SQLITE_TCLAPI test_quota_fopen(
 
   /* Process arguments */
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME MODE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILENAME MODE");
     return TCL_ERROR;
   }
   zFilename = Tcl_GetString(objv[1]);
@@ -1566,7 +1566,7 @@ static int SQLITE_TCLAPI test_quota_fread(
   size_t got;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE SIZE NELEM");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE SIZE NELEM");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1600,7 +1600,7 @@ static int SQLITE_TCLAPI test_quota_fwrite(
   size_t got;
 
   if( objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE SIZE NELEM CONTENT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE SIZE NELEM CONTENT");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1625,7 +1625,7 @@ static int SQLITE_TCLAPI test_quota_fclose(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1648,7 +1648,7 @@ static int SQLITE_TCLAPI test_quota_fflush(
   int doSync = 0;
 
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE ?HARDSYNC?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE ?HARDSYNC?");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1676,7 +1676,7 @@ static int SQLITE_TCLAPI test_quota_fseek(
   int rc;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE OFFSET WHENCE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE OFFSET WHENCE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1709,7 +1709,7 @@ static int SQLITE_TCLAPI test_quota_rewind(
 ){
   quota_FILE *p;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1729,7 +1729,7 @@ static int SQLITE_TCLAPI test_quota_ftell(
   quota_FILE *p;
   sqlite3_int64 x;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1752,7 +1752,7 @@ static int SQLITE_TCLAPI test_quota_ftruncate(
   Tcl_WideInt w;
   int rc;
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE SIZE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE SIZE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1775,7 +1775,7 @@ static int SQLITE_TCLAPI test_quota_file_size(
   quota_FILE *p;
   sqlite3_int64 x;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1796,7 +1796,7 @@ static int SQLITE_TCLAPI test_quota_file_truesize(
   quota_FILE *p;
   sqlite3_int64 x;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1817,7 +1817,7 @@ static int SQLITE_TCLAPI test_quota_file_mtime(
   quota_FILE *p;
   time_t t;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1840,7 +1840,7 @@ static int SQLITE_TCLAPI test_quota_remove(
   const char *zFilename;          /* File pattern to configure */
   int rc;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILENAME");
     return TCL_ERROR;
   }
   zFilename = Tcl_GetString(objv[1]);
@@ -1865,7 +1865,7 @@ static int SQLITE_TCLAPI test_quota_glob(
   const char *zText;             /* Text to compare against the pattern */
   int rc;
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "PATTERN TEXT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "PATTERN TEXT");
     return TCL_ERROR;
   }
   zPattern = Tcl_GetString(objv[1]);
@@ -1890,7 +1890,7 @@ static int SQLITE_TCLAPI test_quota_file_available(
   quota_FILE *p;
   sqlite3_int64 x;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));
@@ -1913,7 +1913,7 @@ static int SQLITE_TCLAPI test_quota_ferror(
   quota_FILE *p;
   int x;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE");
     return TCL_ERROR;
   }
   p = sqlite3TestTextToPtr(Tcl_GetString(objv[1]));

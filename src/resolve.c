@@ -19,7 +19,7 @@
 /*
 ** Magic table number to mean the EXCLUDED table in an UPSERT statement.
 */
-#define EXCLUDED_TABLE_NUMBER  2
+#define EXCLUDED_TABLE_नुमेरो  2
 
 /*
 ** Walk the expression tree pExpr and increase the aggregate function
@@ -32,17 +32,17 @@
 **
 ** See also the sqlite3WindowExtraAggFuncDepth() routine in window.c
 */
-static int incrAggDepth(Walker *pWalker, Expr *pExpr){
-  if( pExpr->op==TK_AGG_FUNCTION ) pExpr->op2 += pWalker->u.n;
+static int incrAggDepth(Walker *pWalker, पाहायाग *p_पाहायाग){
+  if( p_पाहायाग->op==TK_AGG_FUNCTION ) p_पाहायाग->op2 += pWalker->u.n;
   return WRC_Continue;
 }
-static void incrAggFunctionDepth(Expr *pExpr, int N){
+static void incrAggFunctionDepth(पाहायाग *p_पाहायाग, int N){
   if( N>0 ){
     Walker w;
     memset(&w, 0, sizeof(w));
-    w.xExprCallback = incrAggDepth;
+    w.x_पाहायाग_Callback = incrAggDepth;
     w.u.n = N;
-    sqlite3WalkExpr(&w, pExpr);
+    sqlite3_Walk_पाहायाग(&w, p_पाहायाग);
   }
 }
 
@@ -67,41 +67,41 @@ static void incrAggFunctionDepth(Expr *pExpr, int N){
 */
 static void resolveAlias(
   Parse *pParse,         /* Parsing context */
-  ExprList *pEList,      /* A result set */
+  पाहायाग_List *pEList,      /* A result set */
   int iCol,              /* A column in the result set.  0..pEList->nExpr-1 */
-  Expr *pExpr,           /* Transform this into an alias to the result set */
+  पाहायाग *p_पाहायाग,           /* Transform this into an alias to the result set */
   int nSubquery          /* Number of subqueries that the label is moving */
 ){
-  Expr *pOrig;           /* The iCol-th column of the result set */
-  Expr *pDup;            /* Copy of pOrig */
+  पाहायाग *pOrig;           /* The iCol-th column of the result set */
+  पाहायाग *pDup;            /* Copy of pOrig */
   sqlite3 *db;           /* The database connection */
 
-  assert( iCol>=0 && iCol<pEList->nExpr );
-  pOrig = pEList->a[iCol].pExpr;
+  assert( iCol>=0 && iCol<pEList->n_पाहायाग );
+  pOrig = pEList->a[iCol].p_पाहायाग;
   assert( pOrig!=0 );
-  assert( !ExprHasProperty(pExpr, EP_Reduced|EP_TokenOnly) );
-  if( pExpr->pAggInfo ) return;
+  assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Reduced|EP_TokenOnly) );
+  if( p_पाहायाग->pAggInfo ) return;
   db = pParse->db;
-  pDup = sqlite3ExprDup(db, pOrig, 0);
+  pDup = sqlite3_पाहायाग_Dup(db, pOrig, 0);
   if( db->mallocFailed ){
-    sqlite3ExprDelete(db, pDup);
+    sqlite3_पाहायाग_Delete(db, pDup);
     pDup = 0;
   }else{
-    Expr temp;
+    पाहायाग temp;
     incrAggFunctionDepth(pDup, nSubquery);
-    if( pExpr->op==TK_COLLATE ){
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      pDup = sqlite3ExprAddCollateString(pParse, pDup, pExpr->u.zToken);
+    if( p_पाहायाग->op==TK_COLLATE ){
+      assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) );
+      pDup = sqlite3_पाहायाग_Add_Collate_String(pParse, pDup, p_पाहायाग->u.zToken);
     }
-    memcpy(&temp, pDup, sizeof(Expr));
-    memcpy(pDup, pExpr, sizeof(Expr));
-    memcpy(pExpr, &temp, sizeof(Expr));
-    if( ExprHasProperty(pExpr, EP_WinFunc) ){
-      if( ALWAYS(pExpr->y.pWin!=0) ){
-        pExpr->y.pWin->pOwner = pExpr;
+    memcpy(&temp, pDup, sizeof(पाहायाग));
+    memcpy(pDup, p_पाहायाग, sizeof(पाहायाग));
+    memcpy(p_पाहायाग, &temp, sizeof(पाहायाग));
+    if( पाहायाग_Has_Property(p_पाहायाग, EP_WinFunc) ){
+      if( ALWAYS(p_पाहायाग->y.pWin!=0) ){
+        p_पाहायाग->y.pWin->pOwner = p_पाहायाग;
       }
     }
-    sqlite3ExprDeferredDelete(pParse, pDup);
+    sqlite3_पाहायाग_Deferred_Delete(pParse, pDup);
   }
 }
 
@@ -123,7 +123,7 @@ static void resolveAlias(
 ** is set to 1 if there is this kind of match.
 */
 int sqlite3MatchEName(
-  const struct ExprList_item *pItem,
+  const struct पाहायाग_List_item *pItem,
   const char *zCol,
   const char *zTab,
   const char *zDb,
@@ -158,9 +158,9 @@ int sqlite3MatchEName(
 /*
 ** Return TRUE if the double-quoted string  mis-feature should be supported.
 */
-static int areDoubleQuotedStringsEnabled(sqlite3 *db, NameContext *pTopNC){
+static int areDoubleQuotedStringsEnabled(sqlite3 *db, NameContext *p_इताअस_NC){
   if( db->init.busy ) return 1;  /* Always support for legacy schemas */
-  if( pTopNC->ncFlags & NC_IsDDL ){
+  if( p_इताअस_NC->ncFlags & NC_IsDDL ){
     /* Currently parsing a DDL statement */
     if( sqlite3WritableSchema(db) && (db->flags & SQLITE_DqsDML)!=0 ){
       return 1;
@@ -176,13 +176,13 @@ static int areDoubleQuotedStringsEnabled(sqlite3 *db, NameContext *pTopNC){
 ** The argument is guaranteed to be a non-NULL Expr node of type TK_COLUMN.
 ** return the appropriate colUsed mask.
 */
-Bitmask sqlite3ExprColUsed(Expr *pExpr){
+Bitmask sqlite3_पाहायाग_Col_Used(पाहायाग *p_पाहायाग){
   int n;
   Table *pExTab;
 
-  n = pExpr->iColumn;
-  assert( ExprUseYTab(pExpr) );
-  pExTab = pExpr->y.pTab;
+  n = p_पाहायाग->iColumn;
+  assert( पाहायाग_Use_YTab(p_पाहायाग) );
+  pExTab = p_पाहायाग->y.pTab;
   assert( pExTab!=0 );
   assert( n < pExTab->nCol );
   if( (pExTab->tabFlags & TF_HasGenerated)!=0
@@ -207,18 +207,18 @@ Bitmask sqlite3ExprColUsed(Expr *pExpr){
 */
 static void extendFJMatch(
   Parse *pParse,          /* Parsing context */
-  ExprList **ppList,      /* ExprList to extend */
+  पाहायाग_List **ppList,      /* ExprList to extend */
   SrcItem *pMatch,        /* Source table containing the column */
   i16 iColumn             /* The column number */
 ){
-  Expr *pNew = sqlite3ExprAlloc(pParse->db, TK_COLUMN, 0, 0);
+  पाहायाग *pNew = sqlite3_पाहायाग_Alloc(pParse->db, TK_COLUMN, 0, 0);
   if( pNew ){
     pNew->iTable = pMatch->iCursor;
     pNew->iColumn = iColumn;
     pNew->y.pTab = pMatch->pSTab;
-    assert( (pMatch->fg.jointype & (JT_LEFT|JT_LTORJ))!=0 );
-    ExprSetProperty(pNew, EP_CanBeNull);
-    *ppList = sqlite3ExprListAppend(pParse, *ppList, pNew);
+    assert( (pMatch->fg.jointype & (JT_कालिवा|JT_LTORJ))!=0 );
+    पाहायाग_Set_Property(pNew, EP_CanBeNull);
+    *ppList = sqlite3_पाहायाग_List_Append(pParse, *ppList, pNew);
   }
 }
 
@@ -279,9 +279,9 @@ static int lookupName(
   Parse *pParse,       /* The parsing context */
   const char *zDb,     /* Name of the database containing table, or NULL */
   const char *zTab,    /* Name of table containing column, or NULL */
-  const Expr *pRight,  /* Name of the column. */
+  const पाहायाग *p_कानान,  /* Name of the column. */
   NameContext *pNC,    /* The name context used to resolve the name */
-  Expr *pExpr          /* Make this EXPR node point to the selected column */
+  पाहायाग *p_पाहायाग          /* Make this EXPR node point to the selected column */
 ){
   int i, j;                         /* Loop counters */
   int cnt = 0;                      /* Number of matching column names */
@@ -290,21 +290,21 @@ static int lookupName(
   sqlite3 *db = pParse->db;         /* The database connection */
   SrcItem *pItem;                   /* Use for looping over pSrcList items */
   SrcItem *pMatch = 0;              /* The matching pSrcList item */
-  NameContext *pTopNC = pNC;        /* First namecontext in the list */
+  NameContext *p_इताअस_NC = pNC;        /* First namecontext in the list */
   Schema *pSchema = 0;              /* Schema of the expression */
-  int eNewExprOp = TK_COLUMN;       /* New value for pExpr->op on success */
+  int e_New_पाहायाग_Op = TK_COLUMN;       /* New value for pExpr->op on success */
   Table *pTab = 0;                  /* Table holding the row */
-  ExprList *pFJMatch = 0;           /* Matches for FULL JOIN .. USING */
-  const char *zCol = pRight->u.zToken;
+  पाहायाग_List *pFJMatch = 0;           /* Matches for FULL JOIN .. USING */
+  const char *zCol = p_कानान->u.zToken;
 
   assert( pNC );     /* the name context cannot be NULL. */
   assert( zCol );    /* The Z in X.Y.Z cannot be NULL */
   assert( zDb==0 || zTab!=0 );
-  assert( !ExprHasProperty(pExpr, EP_TokenOnly|EP_Reduced) );
+  assert( !पाहायाग_Has_Property(p_पाहायाग, EP_TokenOnly|EP_Reduced) );
 
   /* Initialize the node to no-match */
-  pExpr->iTable = -1;
-  ExprSetVVAProperty(pExpr, EP_NoReduce);
+  p_पाहायाग->iTable = -1;
+  पाहायाग_Set_VVAProperty(p_पाहायाग, EP_NoReduce);
 
   /* Translate the schema name in zDb into a pointer to the corresponding
   ** schema.  If not found, pSchema will remain NULL and nothing will match
@@ -339,7 +339,7 @@ static int lookupName(
   /* Start at the inner-most context and move outward until a match is found */
   assert( pNC && cnt==0 );
   do{
-    ExprList *pEList;
+    पाहायाग_List *pEList;
     SrcList *pSrcList = pNC->pSrcList;
 
     if( pSrcList ){
@@ -363,8 +363,8 @@ static int lookupName(
           assert( pSel!=0 );
           pEList = pSel->pEList;
           assert( pEList!=0 );
-          assert( pEList->nExpr==pTab->nCol );
-          for(j=0; j<pEList->nExpr; j++){
+          assert( pEList->n_पाहायाग==pTab->nCol );
+          for(j=0; j<pEList->n_पाहायाग; j++){
             int bRowid = 0;       /* True if possible rowid match */
             if( !sqlite3MatchEName(&pEList->a[j], zCol, zTab, zDb, &bRowid) ){
               continue;
@@ -380,21 +380,21 @@ static int lookupName(
                   ** that match a USING term (if pMatch==pItem). These are both
                   ** "ambiguous column name" errors. Signal as much by clearing
                   ** pFJMatch and letting cnt go above 1. */
-                  sqlite3ExprListDelete(db, pFJMatch);
+                  sqlite3_पाहायाग_List_Delete(db, pFJMatch);
                   pFJMatch = 0;
                 }else
-                if( (pItem->fg.jointype & JT_RIGHT)==0 ){
+                if( (pItem->fg.jointype & JT_कानान)==0 ){
                   /* An INNER or LEFT JOIN.  Use the left-most table */
                   continue;
                 }else
-                if( (pItem->fg.jointype & JT_LEFT)==0 ){
+                if( (pItem->fg.jointype & JT_कालिवा)==0 ){
                   /* A RIGHT JOIN.  Use the right-most table */
                   cnt = 0;
-                  sqlite3ExprListDelete(db, pFJMatch);
+                  sqlite3_पाहायाग_List_Delete(db, pFJMatch);
                   pFJMatch = 0;
                 }else{
                   /* For a FULL JOIN, we must construct a coalesce() func */
-                  extendFJMatch(pParse, &pFJMatch, pMatch, pExpr->iColumn);
+                  extendFJMatch(pParse, &pFJMatch, pMatch, p_पाहायाग->iColumn);
                 }
               }
               cnt++;
@@ -406,7 +406,7 @@ static int lookupName(
             }
             cntTab++;
             pMatch = pItem;
-            pExpr->iColumn = j;
+            p_पाहायाग->iColumn = j;
             pEList->a[j].fg.bUsed = 1;
 
             /* rowid cannot be part of a USING clause - assert() this. */
@@ -429,9 +429,9 @@ static int lookupName(
             if( pTab->tnum!=1 ) continue;
             if( !isValidSchemaTableName(zTab, pTab, zDb) ) continue;
           }
-          assert( ExprUseYTab(pExpr) );
+          assert( पाहायाग_Use_YTab(p_पाहायाग) );
           if( IN_RENAME_OBJECT && pItem->zAlias ){
-            sqlite3RenameTokenRemap(pParse, 0, (void*)&pExpr->y.pTab);
+            sqlite3RenameTokenRemap(pParse, 0, (void*)&p_पाहायाग->y.pTab);
           }
         }
         j = sqlite3ColumnIndex(pTab, zCol);
@@ -443,27 +443,27 @@ static int lookupName(
               /* Two or more tables have the same column name which is
               ** not joined by USING.  This is an error.  Signal as much
               ** by clearing pFJMatch and letting cnt go above 1. */
-              sqlite3ExprListDelete(db, pFJMatch);
+              sqlite3_पाहायाग_List_Delete(db, pFJMatch);
               pFJMatch = 0;
             }else
-            if( (pItem->fg.jointype & JT_RIGHT)==0 ){
+            if( (pItem->fg.jointype & JT_कानान)==0 ){
               /* An INNER or LEFT JOIN.  Use the left-most table */
               continue;
             }else
-            if( (pItem->fg.jointype & JT_LEFT)==0 ){
+            if( (pItem->fg.jointype & JT_कालिवा)==0 ){
               /* A RIGHT JOIN.  Use the right-most table */
               cnt = 0;
-              sqlite3ExprListDelete(db, pFJMatch);
+              sqlite3_पाहायाग_List_Delete(db, pFJMatch);
               pFJMatch = 0;
             }else{
               /* For a FULL JOIN, we must construct a coalesce() func */
-              extendFJMatch(pParse, &pFJMatch, pMatch, pExpr->iColumn);
+              extendFJMatch(pParse, &pFJMatch, pMatch, p_पाहायाग->iColumn);
             }
           }
           cnt++;
           pMatch = pItem;
           /* Substitute the rowid (column -1) for the INTEGER PRIMARY KEY */
-          pExpr->iColumn = j==pTab->iPKey ? -1 : (i16)j;
+          p_पाहायाग->iColumn = j==pTab->iPKey ? -1 : (i16)j;
           if( pItem->fg.isNestedFrom ){
             sqlite3SrcItemColumnUsed(pItem, j);
           }
@@ -503,13 +503,13 @@ static int lookupName(
         }
       }
       if( pMatch ){
-        pExpr->iTable = pMatch->iCursor;
-        assert( ExprUseYTab(pExpr) );
-        pExpr->y.pTab = pMatch->pSTab;
-        if( (pMatch->fg.jointype & (JT_LEFT|JT_LTORJ))!=0 ){
-          ExprSetProperty(pExpr, EP_CanBeNull);
+        p_पाहायाग->iTable = pMatch->iCursor;
+        assert( पाहायाग_Use_YTab(p_पाहायाग) );
+        p_पाहायाग->y.pTab = pMatch->pSTab;
+        if( (pMatch->fg.jointype & (JT_कालिवा|JT_LTORJ))!=0 ){
+          पाहायाग_Set_Property(p_पाहायाग, EP_CanBeNull);
         }
-        pSchema = pExpr->y.pTab->pSchema;
+        pSchema = p_पाहायाग->y.pTab->pSchema;
       }
     } /* if( pSrcList ) */
 
@@ -524,21 +524,21 @@ static int lookupName(
 #ifndef SQLITE_OMIT_TRIGGER
       if( pParse->pTriggerTab!=0 ){
         int op = pParse->eTriggerOp;
-        assert( op==TK_DELETE || op==TK_UPDATE || op==TK_INSERT );
+        assert( op==TK_DELETE || op==TK_UPDATE || op==TK_इसिंगित );
         if( pParse->bReturning ){
           if( (pNC->ncFlags & NC_UBaseReg)!=0
            && ALWAYS(zTab==0
                      || sqlite3StrICmp(zTab,pParse->pTriggerTab->zName)==0
                      || isValidSchemaTableName(zTab, pParse->pTriggerTab, 0))
           ){
-            pExpr->iTable = op!=TK_DELETE;
+            p_पाहायाग->iTable = op!=TK_DELETE;
             pTab = pParse->pTriggerTab;
           }
         }else if( op!=TK_DELETE && zTab && sqlite3StrICmp("new",zTab) == 0 ){
-          pExpr->iTable = 1;
+          p_पाहायाग->iTable = 1;
           pTab = pParse->pTriggerTab;
-        }else if( op!=TK_INSERT && zTab && sqlite3StrICmp("old",zTab)==0 ){
-          pExpr->iTable = 0;
+        }else if( op!=TK_इसिंगित && zTab && sqlite3StrICmp("old",zTab)==0 ){
+          p_पाहायाग->iTable = 0;
           pTab = pParse->pTriggerTab;
         }
       }
@@ -548,9 +548,9 @@ static int lookupName(
         Upsert *pUpsert = pNC->uNC.pUpsert;
         if( pUpsert && sqlite3StrICmp("excluded",zTab)==0 ){
           pTab = pUpsert->pUpsertSrc->a[0].pSTab;
-          pExpr->iTable = EXCLUDED_TABLE_NUMBER;
+          p_पाहायाग->iTable = EXCLUDED_TABLE_नुमेरो;
           if( IN_RENAME_OBJECT ){
-            sqlite3RenameTokenRemap(pParse, 0, (void*)&pExpr->y.pTab);
+            sqlite3RenameTokenRemap(pParse, 0, (void*)&p_पाहायाग->y.pTab);
           }
         }
       }
@@ -574,36 +574,36 @@ static int lookupName(
           cnt++;
           pMatch = 0;
 #ifndef SQLITE_OMIT_UPSERT
-          if( pExpr->iTable==EXCLUDED_TABLE_NUMBER ){
+          if( p_पाहायाग->iTable==EXCLUDED_TABLE_नुमेरो ){
             testcase( iCol==(-1) );
-            assert( ExprUseYTab(pExpr) );
+            assert( पाहायाग_Use_YTab(p_पाहायाग) );
             if( IN_RENAME_OBJECT ){
-              pExpr->iColumn = iCol;
-              pExpr->y.pTab = pTab;
-              eNewExprOp = TK_COLUMN;
+              p_पाहायाग->iColumn = iCol;
+              p_पाहायाग->y.pTab = pTab;
+              e_New_पाहायाग_Op = TK_COLUMN;
             }else{
-              pExpr->iTable = pNC->uNC.pUpsert->regData +
+              p_पाहायाग->iTable = pNC->uNC.pUpsert->regData +
                  sqlite3TableColumnToStorage(pTab, iCol);
-              eNewExprOp = TK_REGISTER;
+              e_New_पाहायाग_Op = TK_REGISTER;
             }
           }else
 #endif /* SQLITE_OMIT_UPSERT */
           {
-            assert( ExprUseYTab(pExpr) );
-            pExpr->y.pTab = pTab;
+            assert( पाहायाग_Use_YTab(p_पाहायाग) );
+            p_पाहायाग->y.pTab = pTab;
             if( pParse->bReturning ){
-              eNewExprOp = TK_REGISTER;
-              pExpr->op2 = TK_COLUMN;
-              pExpr->iColumn = iCol;
-              pExpr->iTable = pNC->uNC.iBaseReg + (pTab->nCol+1)*pExpr->iTable +
+              e_New_पाहायाग_Op = TK_REGISTER;
+              p_पाहायाग->op2 = TK_COLUMN;
+              p_पाहायाग->iColumn = iCol;
+              p_पाहायाग->iTable = pNC->uNC.iBaseReg + (pTab->nCol+1)*p_पाहायाग->iTable +
                  sqlite3TableColumnToStorage(pTab, iCol) + 1;
             }else{
-              pExpr->iColumn = (i16)iCol;
-              eNewExprOp = TK_TRIGGER;
+              p_पाहायाग->iColumn = (i16)iCol;
+              e_New_पाहायाग_Op = TK_TRIGGER;
 #ifndef SQLITE_OMIT_TRIGGER
               if( iCol<0 ){
-                pExpr->affExpr = SQLITE_AFF_INTEGER;
-              }else if( pExpr->iTable==0 ){
+                p_पाहायाग->aff_पाहायाग = SQLITE_AFF_INTEGER;
+              }else if( p_पाहायाग->iTable==0 ){
                 testcase( iCol==31 );
                 testcase( iCol==32 );
                 pParse->oldmask |= (iCol>=32 ? 0xffffffff : (((u32)1)<<iCol));
@@ -626,18 +626,18 @@ static int lookupName(
     if( cnt==0
      && cntTab>=1
      && pMatch
-     && (pNC->ncFlags & (NC_IdxExpr|NC_GenCol))==0
+     && (pNC->ncFlags & (NC_Idx_पाहायाग|NC_GenCol))==0
      && sqlite3IsRowid(zCol)
      && ALWAYS(VisibleRowid(pMatch->pSTab) || pMatch->fg.isNestedFrom)
     ){
       cnt = cntTab;
 #if SQLITE_ALLOW_ROWID_IN_VIEW+0==2
       if( pMatch->pSTab!=0 && IsView(pMatch->pSTab) ){
-        eNewExprOp = TK_NULL;
+        e_New_पाहायाग_Op = TK_NULL;
       }
 #endif
-      if( pMatch->fg.isNestedFrom==0 ) pExpr->iColumn = -1;
-      pExpr->affExpr = SQLITE_AFF_INTEGER;
+      if( pMatch->fg.isNestedFrom==0 ) p_पाहायाग->iColumn = -1;
+      p_पाहायाग->aff_पाहायाग = SQLITE_AFF_INTEGER;
     }
 
     /*
@@ -664,36 +664,36 @@ static int lookupName(
     ){
       pEList = pNC->uNC.pEList;
       assert( pEList!=0 );
-      for(j=0; j<pEList->nExpr; j++){
+      for(j=0; j<pEList->n_पाहायाग; j++){
         char *zAs = pEList->a[j].zEName;
         if( pEList->a[j].fg.eEName==ENAME_NAME
          && sqlite3_stricmp(zAs, zCol)==0
         ){
-          Expr *pOrig;
-          assert( pExpr->pLeft==0 && pExpr->pRight==0 );
-          assert( ExprUseXList(pExpr)==0 || pExpr->x.pList==0 );
-          assert( ExprUseXSelect(pExpr)==0 || pExpr->x.pSelect==0 );
-          pOrig = pEList->a[j].pExpr;
-          if( (pNC->ncFlags&NC_AllowAgg)==0 && ExprHasProperty(pOrig, EP_Agg) ){
-            sqlite3ErrorMsg(pParse, "misuse of aliased aggregate %s", zAs);
+          पाहायाग *pOrig;
+          assert( p_पाहायाग->p_कालिवा==0 && p_पाहायाग->p_कानान==0 );
+          assert( पाहायाग_Use_XList(p_पाहायाग)==0 || p_पाहायाग->x.pList==0 );
+          assert( पाहायाग_Use_XSelect(p_पाहायाग)==0 || p_पाहायाग->x.pSelect==0 );
+          pOrig = pEList->a[j].p_पाहायाग;
+          if( (pNC->ncFlags&NC_AllowAgg)==0 && पाहायाग_Has_Property(pOrig, EP_Agg) ){
+            sqlite3_Error_मेनसाहे(pParse, "misuse of aliased aggregate %s", zAs);
             return WRC_Abort;
           }
-          if( ExprHasProperty(pOrig, EP_Win)
-           && ((pNC->ncFlags&NC_AllowWin)==0 || pNC!=pTopNC )
+          if( पाहायाग_Has_Property(pOrig, EP_Win)
+           && ((pNC->ncFlags&NC_AllowWin)==0 || pNC!=p_इताअस_NC )
           ){
-            sqlite3ErrorMsg(pParse, "misuse of aliased window function %s",zAs);
+            sqlite3_Error_मेनसाहे(pParse, "misuse of aliased window function %s",zAs);
             return WRC_Abort;
           }
-          if( sqlite3ExprVectorSize(pOrig)!=1 ){
-            sqlite3ErrorMsg(pParse, "row value misused");
+          if( sqlite3_पाहायाग_Vector_Size(pOrig)!=1 ){
+            sqlite3_Error_मेनसाहे(pParse, "row value misused");
             return WRC_Abort;
           }
-          resolveAlias(pParse, pEList, j, pExpr, nSubquery);
+          resolveAlias(pParse, pEList, j, p_पाहायाग, nSubquery);
           cnt = 1;
           pMatch = 0;
           assert( zTab==0 && zDb==0 );
           if( IN_RENAME_OBJECT ){
-            sqlite3RenameTokenRemap(pParse, 0, (void*)pExpr);
+            sqlite3RenameTokenRemap(pParse, 0, (void*)p_पाहायाग);
           }
           goto lookupname_end;
         }
@@ -720,9 +720,9 @@ static int lookupName(
   ** fields are not changed in any context.
   */
   if( cnt==0 && zTab==0 ){
-    assert( pExpr->op==TK_ID );
-    if( ExprHasProperty(pExpr,EP_DblQuoted)
-     && areDoubleQuotedStringsEnabled(db, pTopNC)
+    assert( p_पाहायाग->op==TK_ID );
+    if( पाहायाग_Has_Property(p_पाहायाग,EP_DblQuoted)
+     && areDoubleQuotedStringsEnabled(db, p_इताअस_NC)
     ){
       /* If a double-quoted identifier does not match any known column name,
       ** then treat it as a string.
@@ -743,11 +743,11 @@ static int lookupName(
 #ifdef SQLITE_ENABLE_NORMALIZE
       sqlite3VdbeAddDblquoteStr(db, pParse->pVdbe, zCol);
 #endif
-      pExpr->op = TK_STRING;
-      memset(&pExpr->y, 0, sizeof(pExpr->y));
+      p_पाहायाग->op = TK_STRING;
+      memset(&p_पाहायाग->y, 0, sizeof(p_पाहायाग->y));
       return WRC_Prune;
     }
-    if( sqlite3ExprIdToTrueFalse(pExpr) ){
+    if( sqlite3_पाहायाग_Id_To_True_False(p_पाहायाग) ){
       return WRC_Prune;
     }
   }
@@ -760,57 +760,57 @@ static int lookupName(
   ** be multiple matches for a NATURAL OUTER JOIN or a OUTER JOIN USING.
   */
   assert( pFJMatch==0 || cnt>0 );
-  assert( !ExprHasProperty(pExpr, EP_xIsSelect|EP_IntValue) );
+  assert( !पाहायाग_Has_Property(p_पाहायाग, EP_xIsSelect|EP_Int_हालागा) );
   if( cnt!=1 ){
     const char *zErr;
     if( pFJMatch ){
-      if( pFJMatch->nExpr==cnt-1 ){
-        if( ExprHasProperty(pExpr,EP_Leaf) ){
-          ExprClearProperty(pExpr,EP_Leaf);
+      if( pFJMatch->n_पाहायाग==cnt-1 ){
+        if( पाहायाग_Has_Property(p_पाहायाग,EP_Leaf) ){
+          पाहायाग_Clear_Property(p_पाहायाग,EP_Leaf);
         }else{
-          sqlite3ExprDelete(db, pExpr->pLeft);
-          pExpr->pLeft = 0;
-          sqlite3ExprDelete(db, pExpr->pRight);
-          pExpr->pRight = 0;
+          sqlite3_पाहायाग_Delete(db, p_पाहायाग->p_कालिवा);
+          p_पाहायाग->p_कालिवा = 0;
+          sqlite3_पाहायाग_Delete(db, p_पाहायाग->p_कानान);
+          p_पाहायाग->p_कानान = 0;
         }
-        extendFJMatch(pParse, &pFJMatch, pMatch, pExpr->iColumn);
-        pExpr->op = TK_FUNCTION;
-        pExpr->u.zToken = "coalesce";
-        pExpr->x.pList = pFJMatch;
-        pExpr->affExpr = SQLITE_AFF_DEFER;
+        extendFJMatch(pParse, &pFJMatch, pMatch, p_पाहायाग->iColumn);
+        p_पाहायाग->op = TK_FUNCTION;
+        p_पाहायाग->u.zToken = "coalesce";
+        p_पाहायाग->x.pList = pFJMatch;
+        p_पाहायाग->aff_पाहायाग = SQLITE_AFF_DEFER;
         cnt = 1;
         goto lookupname_end;
       }else{
-        sqlite3ExprListDelete(db, pFJMatch);
+        sqlite3_पाहायाग_List_Delete(db, pFJMatch);
         pFJMatch = 0;
       }
     }
     zErr = cnt==0 ? "no such column" : "ambiguous column name";
     if( zDb ){
-      sqlite3ErrorMsg(pParse, "%s: %s.%s.%s", zErr, zDb, zTab, zCol);
+      sqlite3_Error_मेनसाहे(pParse, "%s: %s.%s.%s", zErr, zDb, zTab, zCol);
     }else if( zTab ){
-      sqlite3ErrorMsg(pParse, "%s: %s.%s", zErr, zTab, zCol);
-    }else if( cnt==0 && ExprHasProperty(pRight,EP_DblQuoted) ){
-      sqlite3ErrorMsg(pParse, "%s: \"%s\" - should this be a"
+      sqlite3_Error_मेनसाहे(pParse, "%s: %s.%s", zErr, zTab, zCol);
+    }else if( cnt==0 && पाहायाग_Has_Property(p_कानान,EP_DblQuoted) ){
+      sqlite3_Error_मेनसाहे(pParse, "%s: \"%s\" - should this be a"
                               " string literal in single-quotes?",
                               zErr, zCol);
     }else{
-      sqlite3ErrorMsg(pParse, "%s: %s", zErr, zCol);
+      sqlite3_Error_मेनसाहे(pParse, "%s: %s", zErr, zCol);
     }
-    sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
+    sqlite3_Record_Error_Offset_Of_पाहायाग(pParse->db, p_पाहायाग);
     pParse->checkSchema = 1;
-    pTopNC->nNcErr++;
-    eNewExprOp = TK_NULL;
+    p_इताअस_NC->nNcErr++;
+    e_New_पाहायाग_Op = TK_NULL;
   }
   assert( pFJMatch==0 );
 
   /* Remove all substructure from pExpr */
-  if( !ExprHasProperty(pExpr,(EP_TokenOnly|EP_Leaf)) ){
-    sqlite3ExprDelete(db, pExpr->pLeft);
-    pExpr->pLeft = 0;
-    sqlite3ExprDelete(db, pExpr->pRight);
-    pExpr->pRight = 0;
-    ExprSetProperty(pExpr, EP_Leaf);
+  if( !पाहायाग_Has_Property(p_पाहायाग,(EP_TokenOnly|EP_Leaf)) ){
+    sqlite3_पाहायाग_Delete(db, p_पाहायाग->p_कालिवा);
+    p_पाहायाग->p_कालिवा = 0;
+    sqlite3_पाहायाग_Delete(db, p_पाहायाग->p_कानान);
+    p_पाहायाग->p_कानान = 0;
+    पाहायाग_Set_Property(p_पाहायाग, EP_Leaf);
   }
 
   /* If a column from a table in pSrcList is referenced, then record
@@ -828,40 +828,40 @@ static int lookupName(
   ** of the table.
   */
   if( pMatch ){
-    if( pExpr->iColumn>=0 ){
-      pMatch->colUsed |= sqlite3ExprColUsed(pExpr);
+    if( p_पाहायाग->iColumn>=0 ){
+      pMatch->colUsed |= sqlite3_पाहायाग_Col_Used(p_पाहायाग);
     }else{
       pMatch->fg.rowidUsed = 1;
     }
   }
 
-  pExpr->op = eNewExprOp;
+  p_पाहायाग->op = e_New_पाहायाग_Op;
 lookupname_end:
   if( cnt==1 ){
     assert( pNC!=0 );
 #ifndef SQLITE_OMIT_AUTHORIZATION
     if( db->xAuth ){
       if( pFJMatch ){
-        assert( pExpr->op==TK_FUNCTION );
-        assert( sqlite3_stricmp(pExpr->u.zToken,"coalesce")==0 );
-        assert( pExpr->x.pList==pFJMatch );
-        assert( pFJMatch->nExpr>0 );
-        for(i=0; i<pFJMatch->nExpr; i++){
-          assert( pFJMatch->a[i].pExpr->op==TK_COLUMN );
-          sqlite3AuthRead(pParse,pFJMatch->a[i].pExpr,pSchema,pNC->pSrcList);
+        assert( p_पाहायाग->op==TK_FUNCTION );
+        assert( sqlite3_stricmp(p_पाहायाग->u.zToken,"coalesce")==0 );
+        assert( p_पाहायाग->x.pList==pFJMatch );
+        assert( pFJMatch->n_पाहायाग>0 );
+        for(i=0; i<pFJMatch->n_पाहायाग; i++){
+          assert( pFJMatch->a[i].p_पाहायाग->op==TK_COLUMN );
+          sqlite3AuthRead(pParse,pFJMatch->a[i].p_पाहायाग,pSchema,pNC->pSrcList);
         }
-      }else if( pExpr->op==TK_COLUMN || pExpr->op==TK_TRIGGER ){
-        sqlite3AuthRead(pParse, pExpr, pSchema, pNC->pSrcList);
+      }else if( p_पाहायाग->op==TK_COLUMN || p_पाहायाग->op==TK_TRIGGER ){
+        sqlite3AuthRead(pParse, p_पाहायाग, pSchema, pNC->pSrcList);
       }
     } 
 #endif
     /* Increment the nRef value on all name contexts from TopNC up to
     ** the point where the name matched. */
     for(;;){
-      assert( pTopNC!=0 );
-      pTopNC->nRef++;
-      if( pTopNC==pNC ) break;
-      pTopNC = pTopNC->pNext;
+      assert( p_इताअस_NC!=0 );
+      p_इताअस_NC->nRef++;
+      if( p_इताअस_NC==pNC ) break;
+      p_इताअस_NC = p_इताअस_NC->pNext;
     }
     return WRC_Prune;
   } else {
@@ -873,12 +873,12 @@ lookupname_end:
 ** Allocate and return a pointer to an expression to load the column iCol
 ** from datasource iSrc in SrcList pSrc.
 */
-Expr *sqlite3CreateColumnExpr(sqlite3 *db, SrcList *pSrc, int iSrc, int iCol){
-  Expr *p = sqlite3ExprAlloc(db, TK_COLUMN, 0, 0);
+पाहायाग *sqlite3_Create_Column_पाहायाग(sqlite3 *db, SrcList *pSrc, int iSrc, int iCol){
+  पाहायाग *p = sqlite3_पाहायाग_Alloc(db, TK_COLUMN, 0, 0);
   if( p ){
     SrcItem *pItem = &pSrc->a[iSrc];
     Table *pTab;
-    assert( ExprUseYTab(p) );
+    assert( पाहायाग_Use_YTab(p) );
     pTab = p->y.pTab = pItem->pSTab;
     p->iTable = pItem->iCursor;
     if( p->y.pTab->iPKey==iCol ){
@@ -920,24 +920,24 @@ Expr *sqlite3CreateColumnExpr(sqlite3 *db, SrcList *pSrc, int iSrc, int iCol){
 static void notValidImpl(
    Parse *pParse,       /* Leave error message here */
    NameContext *pNC,    /* The name context */
-   const char *zMsg,    /* Type of error */
-   Expr *pExpr,         /* Invalidate this expression on error */
-   Expr *pError         /* Associate error with this expression */
+   const char *z_मेनसाहे,    /* Type of error */
+   पाहायाग *p_पाहायाग,         /* Invalidate this expression on error */
+   पाहायाग *pError         /* Associate error with this expression */
 ){
   const char *zIn = "partial index WHERE clauses";
-  if( pNC->ncFlags & NC_IdxExpr )      zIn = "index expressions";
+  if( pNC->ncFlags & NC_Idx_पाहायाग )      zIn = "index expressions";
 #ifndef SQLITE_OMIT_CHECK
   else if( pNC->ncFlags & NC_IsCheck ) zIn = "CHECK constraints";
 #endif
 #ifndef SQLITE_OMIT_GENERATED_COLUMNS
   else if( pNC->ncFlags & NC_GenCol ) zIn = "generated columns";
 #endif
-  sqlite3ErrorMsg(pParse, "%s prohibited in %s", zMsg, zIn);
-  if( pExpr ) pExpr->op = TK_NULL;
-  sqlite3RecordErrorOffsetOfExpr(pParse->db, pError);
+  sqlite3_Error_मेनसाहे(pParse, "%s prohibited in %s", z_मेनसाहे, zIn);
+  if( p_पाहायाग ) p_पाहायाग->op = TK_NULL;
+  sqlite3_Record_Error_Offset_Of_पाहायाग(pParse->db, pError);
 }
 #define sqlite3ResolveNotValid(P,N,M,X,E,R) \
-  assert( ((X)&~(NC_IsCheck|NC_PartIdx|NC_IdxExpr|NC_GenCol))==0 ); \
+  assert( ((X)&~(NC_IsCheck|NC_PartIdx|NC_Idx_पाहायाग|NC_GenCol))==0 ); \
   if( ((N)->ncFlags & (X))!=0 ) notValidImpl(P,N,M,E,R);
 
 /*
@@ -945,10 +945,10 @@ static void notValidImpl(
 ** Return 134,217,728 (2^27) times this value.  Or return -1 if p is not
 ** a floating point value between 1.0 and 0.0.
 */
-static int exprProbability(Expr *p){
+static int पाहायाग_Probability(पाहायाग *p){
   double r = -1.0;
   if( p->op!=TK_FLOAT ) return -1;
-  assert( !ExprHasProperty(p, EP_IntValue) );
+  assert( !पाहायाग_Has_Property(p, EP_Int_हालागा) );
   sqlite3AtoF(p->u.zToken, &r);
   assert( r>=0.0 );
   if( r>1.0 ) return -1;
@@ -961,22 +961,22 @@ static int exprProbability(Expr *p){
 ** also set the EP_SubtArg property on the first result-set
 ** column of that subquery.
 */
-static SQLITE_NOINLINE void resolveSetExprSubtypeArg(ExprList *pList){
+static SQLITE_NOINLINE void resolve_Set_पाहायाग_Subtype_Arg(पाहायाग_List *pList){
   int nn, ii;
-  nn = pList ? pList->nExpr : 0;
+  nn = pList ? pList->n_पाहायाग : 0;
   for(ii=0; ii<nn; ii++){
-    Expr *pExpr = pList->a[ii].pExpr;
+    पाहायाग *p_पाहायाग = pList->a[ii].p_पाहायाग;
     while( 1 /*exit-by-break*/ ){
-      ExprSetProperty(pExpr, EP_SubtArg);
-      if( pExpr->op==TK_SELECT ){
-        assert( ExprUseXSelect(pExpr) );
-        assert( pExpr->x.pSelect!=0 );
-        resolveSetExprSubtypeArg(pExpr->x.pSelect->pEList);
+      पाहायाग_Set_Property(p_पाहायाग, EP_SubtArg);
+      if( p_पाहायाग->op==TK_SELECT ){
+        assert( पाहायाग_Use_XSelect(p_पाहायाग) );
+        assert( p_पाहायाग->x.pSelect!=0 );
+        resolve_Set_पाहायाग_Subtype_Arg(p_पाहायाग->x.pSelect->pEList);
         break;
       }
-      if( pExpr->op==TK_UPLUS ){
-        pExpr = pExpr->pLeft;
-        assert( pExpr!=0 );
+      if( p_पाहायाग->op==TK_UPLUS ){
+        p_पाहायाग = p_पाहायाग->p_कालिवा;
+        assert( p_पाहायाग!=0 );
       }else{
         break;
       }
@@ -995,7 +995,7 @@ static SQLITE_NOINLINE void resolveSetExprSubtypeArg(ExprList *pList){
 ** function names.  The operator for aggregate functions is changed
 ** to TK_AGG_FUNCTION.
 */
-static int resolveExprStep(Walker *pWalker, Expr *pExpr){
+static int resolve_पाहायाग_Step(Walker *pWalker, पाहायाग *p_पाहायाग){
   NameContext *pNC;
   Parse *pParse;
 
@@ -1013,7 +1013,7 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
     }
   }
 #endif
-  switch( pExpr->op ){
+  switch( p_पाहायाग->op ){
 
     /* The special operator TK_ROW means use the rowid for the first
     ** column in the FROM clause.  This is used by the LIMIT and ORDER BY
@@ -1025,12 +1025,12 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
       SrcItem *pItem;
       assert( pSrcList && pSrcList->nSrc>=1 );
       pItem = pSrcList->a;
-      pExpr->op = TK_COLUMN;
-      assert( ExprUseYTab(pExpr) );
-      pExpr->y.pTab = pItem->pSTab;
-      pExpr->iTable = pItem->iCursor;
-      pExpr->iColumn--;
-      pExpr->affExpr = SQLITE_AFF_INTEGER;
+      p_पाहायाग->op = TK_COLUMN;
+      assert( पाहायाग_Use_YTab(p_पाहायाग) );
+      p_पाहायाग->y.pTab = pItem->pSTab;
+      p_पाहायाग->iTable = pItem->iCursor;
+      p_पाहायाग->iColumn--;
+      p_पाहायाग->aff_पाहायाग = SQLITE_AFF_INTEGER;
       break;
     }
 
@@ -1069,9 +1069,9 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
       for(i=0, p=pNC; p && i<ArraySize(anRef); p=p->pNext, i++){
         anRef[i] = p->nRef;
       }
-      sqlite3WalkExpr(pWalker, pExpr->pLeft);
+      sqlite3_Walk_पाहायाग(pWalker, p_पाहायाग->p_कालिवा);
       if( IN_RENAME_OBJECT ) return WRC_Prune;
-      if( sqlite3ExprCanBeNull(pExpr->pLeft) ){
+      if( sqlite3_पाहायाग_Can_Be_Null(p_पाहायाग->p_कालिवा) ){
         /* The expression can be NULL.  So the optimization does not apply */
         return WRC_Prune;
       }
@@ -1081,25 +1081,25 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
           return WRC_Prune;  /* Not in a WHERE clause.  Unsafe to optimize. */
         }
       }
-      testcase( ExprHasProperty(pExpr, EP_OuterON) );
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
+      testcase( पाहायाग_Has_Property(p_पाहायाग, EP_OuterON) );
+      assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) );
 #if TREETRACE_ENABLED
-      if( sqlite3TreeTrace & 0x80000 ){
+      if( sqlite3_पुनो_Trace & 0x80000 ){
         sqlite3DebugPrintf(
            "NOT NULL strength reduction converts the following to %d:\n",
-           pExpr->op==TK_NOTNULL
+           p_पाहायाग->op==TK_NOTNULL
         );
-        sqlite3ShowExpr(pExpr);
+        sqlite3_Show_पाहायाग(p_पाहायाग);
       }
 #endif /* TREETRACE_ENABLED */
-      pExpr->u.iValue = (pExpr->op==TK_NOTNULL);
-      pExpr->flags |= EP_IntValue;
-      pExpr->op = TK_INTEGER;
+      p_पाहायाग->u.i_हालागा = (p_पाहायाग->op==TK_NOTNULL);
+      p_पाहायाग->flags |= EP_Int_हालागा;
+      p_पाहायाग->op = TK_INTEGER;
       for(i=0, p=pNC; p && i<ArraySize(anRef); p=p->pNext, i++){
         p->nRef = anRef[i];
       }
-      sqlite3ExprDelete(pParse->db, pExpr->pLeft);
-      pExpr->pLeft = 0;
+      sqlite3_पाहायाग_Delete(pParse->db, p_पाहायाग->p_कालिवा);
+      p_पाहायाग->p_कालिवा = 0;
       return WRC_Prune;
     }
 
@@ -1115,78 +1115,78 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
     case TK_DOT: {
       const char *zTable;
       const char *zDb;
-      Expr *pRight;
+      पाहायाग *p_कानान;
 
-      if( pExpr->op==TK_ID ){
+      if( p_पाहायाग->op==TK_ID ){
         zDb = 0;
         zTable = 0;
-        assert( !ExprHasProperty(pExpr, EP_IntValue) );
-        pRight = pExpr;
+        assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Int_हालागा) );
+        p_कानान = p_पाहायाग;
       }else{
-        Expr *pLeft = pExpr->pLeft;
-        testcase( pNC->ncFlags & NC_IdxExpr );
+        पाहायाग *p_कालिवा = p_पाहायाग->p_कालिवा;
+        testcase( pNC->ncFlags & NC_Idx_पाहायाग );
         testcase( pNC->ncFlags & NC_GenCol );
         sqlite3ResolveNotValid(pParse, pNC, "the \".\" operator",
-                               NC_IdxExpr|NC_GenCol, 0, pExpr);
-        pRight = pExpr->pRight;
-        if( pRight->op==TK_ID ){
+                               NC_Idx_पाहायाग|NC_GenCol, 0, p_पाहायाग);
+        p_कानान = p_पाहायाग->p_कानान;
+        if( p_कानान->op==TK_ID ){
           zDb = 0;
         }else{
-          assert( pRight->op==TK_DOT );
-          assert( !ExprHasProperty(pRight, EP_IntValue) );
-          zDb = pLeft->u.zToken;
-          pLeft = pRight->pLeft;
-          pRight = pRight->pRight;
+          assert( p_कानान->op==TK_DOT );
+          assert( !पाहायाग_Has_Property(p_कानान, EP_Int_हालागा) );
+          zDb = p_कालिवा->u.zToken;
+          p_कालिवा = p_कानान->p_कालिवा;
+          p_कानान = p_कानान->p_कानान;
         }
-        assert( ExprUseUToken(pLeft) && ExprUseUToken(pRight) );
-        zTable = pLeft->u.zToken;
-        assert( ExprUseYTab(pExpr) );
+        assert( पाहायाग_Use_UToken(p_कालिवा) && पाहायाग_Use_UToken(p_कानान) );
+        zTable = p_कालिवा->u.zToken;
+        assert( पाहायाग_Use_YTab(p_पाहायाग) );
         if( IN_RENAME_OBJECT ){
-          sqlite3RenameTokenRemap(pParse, (void*)pExpr, (void*)pRight);
-          sqlite3RenameTokenRemap(pParse, (void*)&pExpr->y.pTab, (void*)pLeft);
+          sqlite3RenameTokenRemap(pParse, (void*)p_पाहायाग, (void*)p_कानान);
+          sqlite3RenameTokenRemap(pParse, (void*)&p_पाहायाग->y.pTab, (void*)p_कालिवा);
         }
       }
-      return lookupName(pParse, zDb, zTable, pRight, pNC, pExpr);
+      return lookupName(pParse, zDb, zTable, p_कानान, pNC, p_पाहायाग);
     }
 
     /* Resolve function names
     */
     case TK_FUNCTION: {
-      ExprList *pList;            /* The argument list */
+      पाहायाग_List *pList;            /* The argument list */
       int n;                      /* Number of arguments */
       int no_such_func = 0;       /* True if no such function exists */
-      int wrong_num_args = 0;     /* True if wrong number of arguments */
+      int wrong_नुमेरो_मगा_कातविरान = 0;     /* True if wrong number of arguments */
       int is_agg = 0;             /* True if is an aggregate function */
       const char *zId;            /* The function name. */
       FuncDef *pDef;              /* Information about the function */
       u8 enc = ENC(pParse->db);   /* The database encoding */
       int savedAllowFlags = (pNC->ncFlags & (NC_AllowAgg | NC_AllowWin));
 #ifndef SQLITE_OMIT_WINDOWFUNC
-      Window *pWin = (IsWindowFunc(pExpr) ? pExpr->y.pWin : 0);
+      Window *pWin = (IsWindowFunc(p_पाहायाग) ? p_पाहायाग->y.pWin : 0);
 #endif
-      assert( !ExprHasProperty(pExpr, EP_xIsSelect|EP_IntValue) );
-      assert( pExpr->pLeft==0 || pExpr->pLeft->op==TK_ORDER );
-      pList = pExpr->x.pList;
-      n = pList ? pList->nExpr : 0;
-      zId = pExpr->u.zToken;
+      assert( !पाहायाग_Has_Property(p_पाहायाग, EP_xIsSelect|EP_Int_हालागा) );
+      assert( p_पाहायाग->p_कालिवा==0 || p_पाहायाग->p_कालिवा->op==TK_ORDER );
+      pList = p_पाहायाग->x.pList;
+      n = pList ? pList->n_पाहायाग : 0;
+      zId = p_पाहायाग->u.zToken;
       pDef = sqlite3FindFunction(pParse->db, zId, n, enc, 0);
       if( pDef==0 ){
         pDef = sqlite3FindFunction(pParse->db, zId, -2, enc, 0);
         if( pDef==0 ){
           no_such_func = 1;
         }else{
-          wrong_num_args = 1;
+          wrong_नुमेरो_मगा_कातविरान = 1;
         }
       }else{
         is_agg = pDef->xFinalize!=0;
         if( pDef->funcFlags & SQLITE_FUNC_UNLIKELY ){
-          ExprSetProperty(pExpr, EP_Unlikely);
+          पाहायाग_Set_Property(p_पाहायाग, EP_Unlikely);
           if( n==2 ){
-            pExpr->iTable = exprProbability(pList->a[1].pExpr);
-            if( pExpr->iTable<0 ){
-              sqlite3ErrorMsg(pParse,
+            p_पाहायाग->iTable = पाहायाग_Probability(pList->a[1].p_पाहायाग);
+            if( p_पाहायाग->iTable<0 ){
+              sqlite3_Error_मेनसाहे(pParse,
                 "second argument to %#T() must be a "
-                "constant between 0.0 and 1.0", pExpr);
+                "constant between 0.0 and 1.0", p_पाहायाग);
               pNC->nNcErr++;
             }
           }else{
@@ -1199,7 +1199,7 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
             ** EVIDENCE-OF: R-53436-40973 The likely(X) function is equivalent
             ** to likelihood(X,0.9375). */
             /* TUNING: unlikely() probability is 0.0625.  likely() is 0.9375 */
-            pExpr->iTable = pDef->zName[0]=='u' ? 8388608 : 125829120;
+            p_पाहायाग->iTable = pDef->zName[0]=='u' ? 8388608 : 125829120;
           }            
         }
 #ifndef SQLITE_OMIT_AUTHORIZATION
@@ -1207,11 +1207,11 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
           int auth = sqlite3AuthCheck(pParse, SQLITE_FUNCTION, 0,pDef->zName,0);
           if( auth!=SQLITE_OK ){
             if( auth==SQLITE_DENY ){
-              sqlite3ErrorMsg(pParse, "not authorized to use function: %#T",
-                                      pExpr);
+              sqlite3_Error_मेनसाहे(pParse, "not authorized to use function: %#T",
+                                      p_पाहायाग);
               pNC->nNcErr++;
             }
-            pExpr->op = TK_NULL;
+            p_पाहायाग->op = TK_NULL;
             return WRC_Prune;
           }
         }
@@ -1226,9 +1226,9 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
         ** the function may return a value with a subtype back to its 
         ** caller using sqlite3_result_value().  */
         if( (pDef->funcFlags & SQLITE_SUBTYPE) 
-         || ExprHasProperty(pExpr, EP_SubtArg) 
+         || पाहायाग_Has_Property(p_पाहायाग, EP_SubtArg) 
         ){
-          resolveSetExprSubtypeArg(pList);
+          resolve_Set_पाहायाग_Subtype_Arg(pList);
         }
 
         if( pDef->funcFlags & (SQLITE_FUNC_CONSTANT|SQLITE_FUNC_SLOCHNG) ){
@@ -1236,7 +1236,7 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
           ** functions and other functions that change slowly are considered
           ** constant because they are constant for the duration of one query.
           ** This allows them to be factored out of inner loops. */
-          ExprSetProperty(pExpr,EP_ConstFunc);
+          पाहायाग_Set_Property(p_पाहायाग,EP_ConstFunc);
         }
         if( (pDef->funcFlags & SQLITE_FUNC_CONSTANT)==0 ){
           /* Clearly non-deterministic functions like random(), but also
@@ -1246,10 +1246,10 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
           ** in a CHECK constraint.  SQLServer, MySQL, and PostgreSQL all
           ** allow this. */
           sqlite3ResolveNotValid(pParse, pNC, "non-deterministic functions",
-                                 NC_IdxExpr|NC_PartIdx|NC_GenCol, 0, pExpr);
+                                 NC_Idx_पाहायाग|NC_PartIdx|NC_GenCol, 0, p_पाहायाग);
         }else{
           assert( (NC_SelfRef & 0xff)==NC_SelfRef ); /* Must fit in 8 bits */
-          pExpr->op2 = pNC->ncFlags & NC_SelfRef;
+          p_पाहायाग->op2 = pNC->ncFlags & NC_SelfRef;
         }
         if( (pDef->funcFlags & SQLITE_FUNC_INTERNAL)!=0
          && pParse->nested==0
@@ -1270,20 +1270,20 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
         if( (pDef->funcFlags & (SQLITE_FUNC_DIRECT|SQLITE_FUNC_UNSAFE))!=0
          && !IN_RENAME_OBJECT
         ){
-          if( pNC->ncFlags & NC_FromDDL ) ExprSetProperty(pExpr, EP_FromDDL);
-          sqlite3ExprFunctionUsable(pParse, pExpr, pDef);
+          if( pNC->ncFlags & NC_FromDDL ) पाहायाग_Set_Property(p_पाहायाग, EP_FromDDL);
+          sqlite3_पाहायाग_Function_Usable(pParse, p_पाहायाग, pDef);
         }
       }
 
       if( 0==IN_RENAME_OBJECT ){
 #ifndef SQLITE_OMIT_WINDOWFUNC
         assert( is_agg==0 || (pDef->funcFlags & SQLITE_FUNC_MINMAX)
-          || (pDef->xValue==0 && pDef->xInverse==0)
-          || (pDef->xValue && pDef->xInverse && pDef->xSFunc && pDef->xFinalize)
+          || (pDef->x_हालागा==0 && pDef->xInverse==0)
+          || (pDef->x_हालागा && pDef->xInverse && pDef->xSFunc && pDef->xFinalize)
         );
-        if( pDef && pDef->xValue==0 && pWin ){
-          sqlite3ErrorMsg(pParse,
-              "%#T() may not be used as a window function", pExpr
+        if( pDef && pDef->x_हालागा==0 && pWin ){
+          sqlite3_Error_मेनसाहे(pParse,
+              "%#T() may not be used as a window function", p_पाहायाग
           );
           pNC->nNcErr++;
         }else if(
@@ -1297,13 +1297,13 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
           }else{
             zType = "aggregate";
           }
-          sqlite3ErrorMsg(pParse, "misuse of %s function %#T()",zType,pExpr);
+          sqlite3_Error_मेनसाहे(pParse, "misuse of %s function %#T()",zType,p_पाहायाग);
           pNC->nNcErr++;
           is_agg = 0;
         }
 #else
         if( (is_agg && (pNC->ncFlags & NC_AllowAgg)==0) ){
-          sqlite3ErrorMsg(pParse,"misuse of aggregate function %#T()",pExpr);
+          sqlite3_Error_मेनसाहे(pParse,"misuse of aggregate function %#T()",p_पाहायाग);
           pNC->nNcErr++;
           is_agg = 0;
         }
@@ -1320,24 +1320,24 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
               && pParse->explain==0
 #endif
         ){
-          sqlite3ErrorMsg(pParse, "no such function: %#T", pExpr);
+          sqlite3_Error_मेनसाहे(pParse, "no such function: %#T", p_पाहायाग);
           pNC->nNcErr++;
-        }else if( wrong_num_args ){
-          sqlite3ErrorMsg(pParse,"wrong number of arguments to function %#T()",
-               pExpr);
+        }else if( wrong_नुमेरो_मगा_कातविरान ){
+          sqlite3_Error_मेनसाहे(pParse,"wrong number of arguments to function %#T()",
+               p_पाहायाग);
           pNC->nNcErr++;
         }
 #ifndef SQLITE_OMIT_WINDOWFUNC
-        else if( is_agg==0 && ExprHasProperty(pExpr, EP_WinFunc) ){
-          sqlite3ErrorMsg(pParse,
+        else if( is_agg==0 && पाहायाग_Has_Property(p_पाहायाग, EP_WinFunc) ){
+          sqlite3_Error_मेनसाहे(pParse,
               "FILTER may not be used with non-aggregate %#T()",
-              pExpr
+              p_पाहायाग
           );
           pNC->nNcErr++;
         }
 #endif
-        else if( is_agg==0 && pExpr->pLeft ){
-          sqlite3ExprOrderByAggregateError(pParse, pExpr);
+        else if( is_agg==0 && p_पाहायाग->p_कालिवा ){
+          sqlite3_पाहायाग_Order_By_Aggregate_Error(pParse, p_पाहायाग);
           pNC->nNcErr++;
         }
         if( is_agg ){
@@ -1351,50 +1351,50 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
 #endif
         }
       }
-      else if( ExprHasProperty(pExpr, EP_WinFunc) || pExpr->pLeft ){
+      else if( पाहायाग_Has_Property(p_पाहायाग, EP_WinFunc) || p_पाहायाग->p_कालिवा ){
         is_agg = 1;
       }
-      sqlite3WalkExprList(pWalker, pList);
+      sqlite3_Walk_पाहायाग_List(pWalker, pList);
       if( is_agg ){
-        if( pExpr->pLeft ){
-          assert( pExpr->pLeft->op==TK_ORDER );
-          assert( ExprUseXList(pExpr->pLeft) );
-          sqlite3WalkExprList(pWalker, pExpr->pLeft->x.pList);
+        if( p_पाहायाग->p_कालिवा ){
+          assert( p_पाहायाग->p_कालिवा->op==TK_ORDER );
+          assert( पाहायाग_Use_XList(p_पाहायाग->p_कालिवा) );
+          sqlite3_Walk_पाहायाग_List(pWalker, p_पाहायाग->p_कालिवा->x.pList);
         }
 #ifndef SQLITE_OMIT_WINDOWFUNC
         if( pWin && pParse->nErr==0 ){
           Select *pSel = pNC->pWinSelect;
-          assert( ExprUseYWin(pExpr) && pWin==pExpr->y.pWin );
+          assert( पाहायाग_Use_YWin(p_पाहायाग) && pWin==p_पाहायाग->y.pWin );
           if( IN_RENAME_OBJECT==0 ){
             sqlite3WindowUpdate(pParse, pSel ? pSel->pWinDefn : 0, pWin, pDef);
             if( pParse->db->mallocFailed ) break;
           }
-          sqlite3WalkExprList(pWalker, pWin->pPartition);
-          sqlite3WalkExprList(pWalker, pWin->pOrderBy);
-          sqlite3WalkExpr(pWalker, pWin->pFilter);
+          sqlite3_Walk_पाहायाग_List(pWalker, pWin->pPartition);
+          sqlite3_Walk_पाहायाग_List(pWalker, pWin->pOrderBy);
+          sqlite3_Walk_पाहायाग(pWalker, pWin->pFilter);
           sqlite3WindowLink(pSel, pWin);
           pNC->ncFlags |= NC_HasWin;
         }else
 #endif /* SQLITE_OMIT_WINDOWFUNC */
         {
           NameContext *pNC2;          /* For looping up thru outer contexts */
-          pExpr->op = TK_AGG_FUNCTION;
-          pExpr->op2 = 0;
+          p_पाहायाग->op = TK_AGG_FUNCTION;
+          p_पाहायाग->op2 = 0;
 #ifndef SQLITE_OMIT_WINDOWFUNC
-          if( ExprHasProperty(pExpr, EP_WinFunc) ){
-            sqlite3WalkExpr(pWalker, pExpr->y.pWin->pFilter);
+          if( पाहायाग_Has_Property(p_पाहायाग, EP_WinFunc) ){
+            sqlite3_Walk_पाहायाग(pWalker, p_पाहायाग->y.pWin->pFilter);
           }
 #endif
           pNC2 = pNC;
           while( pNC2
-              && sqlite3ReferencesSrcList(pParse, pExpr, pNC2->pSrcList)==0
+              && sqlite3ReferencesSrcList(pParse, p_पाहायाग, pNC2->pSrcList)==0
           ){
-            pExpr->op2 += (1 + pNC2->nNestedSelect);
+            p_पाहायाग->op2 += (1 + pNC2->nNestedSelect);
             pNC2 = pNC2->pNext;
           }
           assert( pDef!=0 || IN_RENAME_OBJECT );
           if( pNC2 && pDef ){
-            pExpr->op2 += pNC2->nNestedSelect;
+            p_पाहायाग->op2 += pNC2->nNestedSelect;
             assert( SQLITE_FUNC_MINMAX==NC_MinMaxAgg );
             assert( SQLITE_FUNC_ANYORDER==NC_OrderAgg );
             testcase( (pDef->funcFlags & SQLITE_FUNC_MINMAX)!=0 );
@@ -1416,26 +1416,26 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
     case TK_SELECT:
 #endif
     case TK_IN: {
-      testcase( pExpr->op==TK_IN );
-      testcase( pExpr->op==TK_EXISTS );
-      testcase( pExpr->op==TK_SELECT );
-      if( ExprUseXSelect(pExpr) ){
+      testcase( p_पाहायाग->op==TK_IN );
+      testcase( p_पाहायाग->op==TK_EXISTS );
+      testcase( p_पाहायाग->op==TK_SELECT );
+      if( पाहायाग_Use_XSelect(p_पाहायाग) ){
         int nRef = pNC->nRef;
         testcase( pNC->ncFlags & NC_IsCheck );
         testcase( pNC->ncFlags & NC_PartIdx );
-        testcase( pNC->ncFlags & NC_IdxExpr );
+        testcase( pNC->ncFlags & NC_Idx_पाहायाग );
         testcase( pNC->ncFlags & NC_GenCol );
-        assert( pExpr->x.pSelect );
-        if( pExpr->op==TK_EXISTS )  pParse->bHasExists = 1;
+        assert( p_पाहायाग->x.pSelect );
+        if( p_पाहायाग->op==TK_EXISTS )  pParse->bHasExists = 1;
         if( pNC->ncFlags & NC_SelfRef ){
-          notValidImpl(pParse, pNC, "subqueries", pExpr, pExpr);
+          notValidImpl(pParse, pNC, "subqueries", p_पाहायाग, p_पाहायाग);
         }else{
-          sqlite3WalkSelect(pWalker, pExpr->x.pSelect);
+          sqlite3WalkSelect(pWalker, p_पाहायाग->x.pSelect);
         }
         assert( pNC->nRef>=nRef );
         if( nRef!=pNC->nRef ){
-          ExprSetProperty(pExpr, EP_VarSelect);
-          pExpr->x.pSelect->selFlags |= SF_Correlated;
+          पाहायाग_Set_Property(p_पाहायाग, EP_VarSelect);
+          p_पाहायाग->x.pSelect->selFlags |= SF_Correlated;
         }
         pNC->ncFlags |= NC_Subquery;
       }
@@ -1444,24 +1444,24 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
     case TK_VARIABLE: {
       testcase( pNC->ncFlags & NC_IsCheck );
       testcase( pNC->ncFlags & NC_PartIdx );
-      testcase( pNC->ncFlags & NC_IdxExpr );
+      testcase( pNC->ncFlags & NC_Idx_पाहायाग );
       testcase( pNC->ncFlags & NC_GenCol );
       sqlite3ResolveNotValid(pParse, pNC, "parameters",
-               NC_IsCheck|NC_PartIdx|NC_IdxExpr|NC_GenCol, pExpr, pExpr);
+               NC_IsCheck|NC_PartIdx|NC_Idx_पाहायाग|NC_GenCol, p_पाहायाग, p_पाहायाग);
       break;
     }
     case TK_IS:
     case TK_ISNOT: {
-      Expr *pRight = sqlite3ExprSkipCollateAndLikely(pExpr->pRight);
-      assert( !ExprHasProperty(pExpr, EP_Reduced) );
+      पाहायाग *p_कानान = sqlite3_पाहायाग_Skip_Collate_And_Likely(p_पाहायाग->p_कानान);
+      assert( !पाहायाग_Has_Property(p_पाहायाग, EP_Reduced) );
       /* Handle special cases of "x IS TRUE", "x IS FALSE", "x IS NOT TRUE",
       ** and "x IS NOT FALSE". */
-      if( ALWAYS(pRight) && (pRight->op==TK_ID || pRight->op==TK_TRUEFALSE) ){
-        int rc = resolveExprStep(pWalker, pRight);
+      if( ALWAYS(p_कानान) && (p_कानान->op==TK_ID || p_कानान->op==TK_TRUEFALSE) ){
+        int rc = resolve_पाहायाग_Step(pWalker, p_कानान);
         if( rc==WRC_Abort ) return WRC_Abort;
-        if( pRight->op==TK_TRUEFALSE ){
-          pExpr->op2 = pExpr->op;
-          pExpr->op = TK_TRUTH;
+        if( p_कानान->op==TK_TRUEFALSE ){
+          p_पाहायाग->op2 = p_पाहायाग->op;
+          p_पाहायाग->op = TK_TRUTH;
           return WRC_Continue;
         }
       }
@@ -1474,32 +1474,32 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
     case TK_LE:
     case TK_GT:
     case TK_GE: {
-      int nLeft, nRight;
+      int n_कालिवा, n_कानान;
       if( pParse->db->mallocFailed ) break;
-      assert( pExpr->pLeft!=0 );
-      nLeft = sqlite3ExprVectorSize(pExpr->pLeft);
-      if( pExpr->op==TK_BETWEEN ){
-        assert( ExprUseXList(pExpr) );
-        nRight = sqlite3ExprVectorSize(pExpr->x.pList->a[0].pExpr);
-        if( nRight==nLeft ){
-          nRight = sqlite3ExprVectorSize(pExpr->x.pList->a[1].pExpr);
+      assert( p_पाहायाग->p_कालिवा!=0 );
+      n_कालिवा = sqlite3_पाहायाग_Vector_Size(p_पाहायाग->p_कालिवा);
+      if( p_पाहायाग->op==TK_BETWEEN ){
+        assert( पाहायाग_Use_XList(p_पाहायाग) );
+        n_कानान = sqlite3_पाहायाग_Vector_Size(p_पाहायाग->x.pList->a[0].p_पाहायाग);
+        if( n_कानान==n_कालिवा ){
+          n_कानान = sqlite3_पाहायाग_Vector_Size(p_पाहायाग->x.pList->a[1].p_पाहायाग);
         }
       }else{
-        assert( pExpr->pRight!=0 );
-        nRight = sqlite3ExprVectorSize(pExpr->pRight);
+        assert( p_पाहायाग->p_कानान!=0 );
+        n_कानान = sqlite3_पाहायाग_Vector_Size(p_पाहायाग->p_कानान);
       }
-      if( nLeft!=nRight ){
-        testcase( pExpr->op==TK_EQ );
-        testcase( pExpr->op==TK_NE );
-        testcase( pExpr->op==TK_LT );
-        testcase( pExpr->op==TK_LE );
-        testcase( pExpr->op==TK_GT );
-        testcase( pExpr->op==TK_GE );
-        testcase( pExpr->op==TK_IS );
-        testcase( pExpr->op==TK_ISNOT );
-        testcase( pExpr->op==TK_BETWEEN );
-        sqlite3ErrorMsg(pParse, "row value misused");
-        sqlite3RecordErrorOffsetOfExpr(pParse->db, pExpr);
+      if( n_कालिवा!=n_कानान ){
+        testcase( p_पाहायाग->op==TK_EQ );
+        testcase( p_पाहायाग->op==TK_NE );
+        testcase( p_पाहायाग->op==TK_LT );
+        testcase( p_पाहायाग->op==TK_LE );
+        testcase( p_पाहायाग->op==TK_GT );
+        testcase( p_पाहायाग->op==TK_GE );
+        testcase( p_पाहायाग->op==TK_IS );
+        testcase( p_पाहायाग->op==TK_ISNOT );
+        testcase( p_पाहायाग->op==TK_BETWEEN );
+        sqlite3_Error_मेनसाहे(pParse, "row value misused");
+        sqlite3_Record_Error_Offset_Of_पाहायाग(pParse->db, p_पाहायाग);
       }
       break;
     }
@@ -1522,8 +1522,8 @@ static int resolveExprStep(Walker *pWalker, Expr *pExpr){
 */
 static int resolveAsName(
   Parse *pParse,     /* Parsing context for error messages */
-  ExprList *pEList,  /* List of expressions to scan */
-  Expr *pE           /* Expression we are trying to match */
+  पाहायाग_List *pEList,  /* List of expressions to scan */
+  पाहायाग *pE           /* Expression we are trying to match */
 ){
   int i;             /* Loop counter */
 
@@ -1531,9 +1531,9 @@ static int resolveAsName(
 
   if( pE->op==TK_ID ){
     const char *zCol;
-    assert( !ExprHasProperty(pE, EP_IntValue) );
+    assert( !पाहायाग_Has_Property(pE, EP_Int_हालागा) );
     zCol = pE->u.zToken;
-    for(i=0; i<pEList->nExpr; i++){
+    for(i=0; i<pEList->n_पाहायाग; i++){
       if( pEList->a[i].fg.eEName==ENAME_NAME
        && sqlite3_stricmp(pEList->a[i].zEName, zCol)==0
       ){
@@ -1562,19 +1562,19 @@ static int resolveAsName(
 **
 ** If there is no match, return 0.  Return -1 if an error occurs.
 */
-static int resolveOrderByTermToExprList(
+static int resolve_Order_By_Term_To_पाहायाग_List(
   Parse *pParse,     /* Parsing context for error messages */
   Select *pSelect,   /* The SELECT statement with the ORDER BY clause */
-  Expr *pE           /* The specific ORDER BY term */
+  पाहायाग *pE           /* The specific ORDER BY term */
 ){
   int i;             /* Loop counter */
-  ExprList *pEList;  /* The columns of the result set */
+  पाहायाग_List *pEList;  /* The columns of the result set */
   NameContext nc;    /* Name context for resolving pE */
   sqlite3 *db;       /* Database connection */
   int rc;            /* Return code from subprocedures */
   u8 savedSuppErr;   /* Saved value of db->suppressErr */
 
-  assert( sqlite3ExprIsInteger(pE, &i, 0, 1)==0 );
+  assert( sqlite3_पाहायाग_Is_Integer(pE, &i, 0, 1)==0 );
   pEList = pSelect->pEList;
 
   /* Resolve all names in the ORDER BY term expression
@@ -1588,7 +1588,7 @@ static int resolveOrderByTermToExprList(
   db = pParse->db;
   savedSuppErr = db->suppressErr;
   db->suppressErr = 1;
-  rc = sqlite3ResolveExprNames(&nc, pE);
+  rc = sqlite3_Resolve_पाहायाग_Names(&nc, pE);
   db->suppressErr = savedSuppErr;
   if( rc ) return 0;
 
@@ -1596,8 +1596,8 @@ static int resolveOrderByTermToExprList(
   ** in the result set.  Return an 1-based index of the matching
   ** result-set entry.
   */
-  for(i=0; i<pEList->nExpr; i++){
-    if( sqlite3ExprCompare(0, pEList->a[i].pExpr, pE, -1)<2 ){
+  for(i=0; i<pEList->n_पाहायाग; i++){
+    if( sqlite3_पाहायाग_Compare(0, pEList->a[i].p_पाहायाग, pE, -1)<2 ){
       return i+1;
     }
   }
@@ -1614,12 +1614,12 @@ static void resolveOutOfRangeError(
   const char *zType,     /* "ORDER" or "GROUP" */
   int i,                 /* The index (1-based) of the term out of range */
   int mx,                /* Largest permissible value of i */
-  Expr *pError           /* Associate the error with the expression */
+  पाहायाग *pError           /* Associate the error with the expression */
 ){
-  sqlite3ErrorMsg(pParse,
+  sqlite3_Error_मेनसाहे(pParse,
     "%r %s BY term out of range - should be "
     "between 1 and %d", i, zType, mx);
-  sqlite3RecordErrorOffsetOfExpr(pParse->db, pError);
+  sqlite3_Record_Error_Offset_Of_पाहायाग(pParse->db, pError);
 }
 
 /*
@@ -1642,19 +1642,19 @@ static int resolveCompoundOrderBy(
   Select *pSelect       /* The SELECT statement containing the ORDER BY */
 ){
   int i;
-  ExprList *pOrderBy;
-  ExprList *pEList;
+  पाहायाग_List *pOrderBy;
+  पाहायाग_List *pEList;
   sqlite3 *db;
   int moreToDo = 1;
 
   pOrderBy = pSelect->pOrderBy;
   if( pOrderBy==0 ) return 0;
   db = pParse->db;
-  if( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
-    sqlite3ErrorMsg(pParse, "too many terms in ORDER BY clause");
+  if( pOrderBy->n_पाहायाग>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+    sqlite3_Error_मेनसाहे(pParse, "too many terms in ORDER BY clause");
     return 1;
   }
-  for(i=0; i<pOrderBy->nExpr; i++){
+  for(i=0; i<pOrderBy->n_पाहायाग; i++){
     pOrderBy->a[i].fg.done = 0;
   }
   pSelect->pNext = 0;
@@ -1663,19 +1663,19 @@ static int resolveCompoundOrderBy(
     pSelect = pSelect->pPrior;
   }
   while( pSelect && moreToDo ){
-    struct ExprList_item *pItem;
+    struct पाहायाग_List_item *pItem;
     moreToDo = 0;
     pEList = pSelect->pEList;
     assert( pEList!=0 );
-    for(i=0, pItem=pOrderBy->a; i<pOrderBy->nExpr; i++, pItem++){
+    for(i=0, pItem=pOrderBy->a; i<pOrderBy->n_पाहायाग; i++, pItem++){
       int iCol = -1;
-      Expr *pE, *pDup;
+      पाहायाग *pE, *pDup;
       if( pItem->fg.done ) continue;
-      pE = sqlite3ExprSkipCollateAndLikely(pItem->pExpr);
+      pE = sqlite3_पाहायाग_Skip_Collate_And_Likely(pItem->p_पाहायाग);
       if( NEVER(pE==0) ) continue;
-      if( sqlite3ExprIsInteger(pE, &iCol, 0, 1) ){
-        if( iCol<=0 || iCol>pEList->nExpr ){
-          resolveOutOfRangeError(pParse, "ORDER", i+1, pEList->nExpr, pE);
+      if( sqlite3_पाहायाग_Is_Integer(pE, &iCol, 0, 1) ){
+        if( iCol<=0 || iCol>pEList->n_पाहायाग ){
+          resolveOutOfRangeError(pParse, "ORDER", i+1, pEList->n_पाहायाग, pE);
           return 1;
         }
       }else{
@@ -1692,33 +1692,33 @@ static int resolveCompoundOrderBy(
           ** the symbols resolve successfully, also resolve the symbols in the
           ** actual expression. This allows the code in alter.c to modify
           ** column references within the ORDER BY expression as required.  */
-          pDup = sqlite3ExprDup(db, pE, 0);
+          pDup = sqlite3_पाहायाग_Dup(db, pE, 0);
           if( !db->mallocFailed ){
             assert(pDup);
-            iCol = resolveOrderByTermToExprList(pParse, pSelect, pDup);
+            iCol = resolve_Order_By_Term_To_पाहायाग_List(pParse, pSelect, pDup);
             if( IN_RENAME_OBJECT && iCol>0 ){
-              resolveOrderByTermToExprList(pParse, pSelect, pE);
+              resolve_Order_By_Term_To_पाहायाग_List(pParse, pSelect, pE);
             }
           }
-          sqlite3ExprDelete(db, pDup);
+          sqlite3_पाहायाग_Delete(db, pDup);
         }
       }
       if( iCol>0 ){
         /* Convert the ORDER BY term into an integer column number iCol,
         ** taking care to preserve the COLLATE clause if it exists. */
         if( !IN_RENAME_OBJECT ){
-          Expr *pNew = sqlite3ExprInt32(db, iCol);
+          पाहायाग *pNew = sqlite3_पाहायाग_Int32(db, iCol);
           if( pNew==0 ) return 1;
-          if( pItem->pExpr==pE ){
-            pItem->pExpr = pNew;
+          if( pItem->p_पाहायाग==pE ){
+            pItem->p_पाहायाग = pNew;
           }else{
-            Expr *pParent = pItem->pExpr;
+            पाहायाग *pParent = pItem->p_पाहायाग;
             assert( pParent->op==TK_COLLATE );
-            while( pParent->pLeft->op==TK_COLLATE ) pParent = pParent->pLeft;
-            assert( pParent->pLeft==pE );
-            pParent->pLeft = pNew;
+            while( pParent->p_कालिवा->op==TK_COLLATE ) pParent = pParent->p_कालिवा;
+            assert( pParent->p_कालिवा==pE );
+            pParent->p_कालिवा = pNew;
           }
-          sqlite3ExprDelete(db, pE);
+          sqlite3_पाहायाग_Delete(db, pE);
           pItem->u.x.iOrderByCol = (u16)iCol;
         }
         pItem->fg.done = 1;
@@ -1728,9 +1728,9 @@ static int resolveCompoundOrderBy(
     }
     pSelect = pSelect->pNext;
   }
-  for(i=0; i<pOrderBy->nExpr; i++){
+  for(i=0; i<pOrderBy->n_पाहायाग; i++){
     if( pOrderBy->a[i].fg.done==0 ){
-      sqlite3ErrorMsg(pParse, "%r ORDER BY term does not match any "
+      sqlite3_Error_मेनसाहे(pParse, "%r ORDER BY term does not match any "
             "column in the result set", i+1);
       return 1;
     }
@@ -1751,28 +1751,28 @@ static int resolveCompoundOrderBy(
 int sqlite3ResolveOrderGroupBy(
   Parse *pParse,        /* Parsing context.  Leave error messages here */
   Select *pSelect,      /* The SELECT statement containing the clause */
-  ExprList *pOrderBy,   /* The ORDER BY or GROUP BY clause to be processed */
+  पाहायाग_List *pOrderBy,   /* The ORDER BY or GROUP BY clause to be processed */
   const char *zType     /* "ORDER" or "GROUP" */
 ){
   int i;
   sqlite3 *db = pParse->db;
-  ExprList *pEList;
-  struct ExprList_item *pItem;
+  पाहायाग_List *pEList;
+  struct पाहायाग_List_item *pItem;
 
   if( pOrderBy==0 || pParse->db->mallocFailed || IN_RENAME_OBJECT ) return 0;
-  if( pOrderBy->nExpr>db->aLimit[SQLITE_LIMIT_COLUMN] ){
-    sqlite3ErrorMsg(pParse, "too many terms in %s BY clause", zType);
+  if( pOrderBy->n_पाहायाग>db->aLimit[SQLITE_LIMIT_COLUMN] ){
+    sqlite3_Error_मेनसाहे(pParse, "too many terms in %s BY clause", zType);
     return 1;
   }
   pEList = pSelect->pEList;
   assert( pEList!=0 );  /* sqlite3SelectNew() guarantees this */
-  for(i=0, pItem=pOrderBy->a; i<pOrderBy->nExpr; i++, pItem++){
+  for(i=0, pItem=pOrderBy->a; i<pOrderBy->n_पाहायाग; i++, pItem++){
     if( pItem->u.x.iOrderByCol ){
-      if( pItem->u.x.iOrderByCol>pEList->nExpr ){
-        resolveOutOfRangeError(pParse, zType, i+1, pEList->nExpr, 0);
+      if( pItem->u.x.iOrderByCol>pEList->n_पाहायाग ){
+        resolveOutOfRangeError(pParse, zType, i+1, pEList->n_पाहायाग, 0);
         return 1;
       }
-      resolveAlias(pParse, pEList, pItem->u.x.iOrderByCol-1, pItem->pExpr,0);
+      resolveAlias(pParse, pEList, pItem->u.x.iOrderByCol-1, pItem->p_पाहायाग,0);
     }
   }
   return 0;
@@ -1782,10 +1782,10 @@ int sqlite3ResolveOrderGroupBy(
 /*
 ** Walker callback for windowRemoveExprFromSelect().
 */
-static int resolveRemoveWindowsCb(Walker *pWalker, Expr *pExpr){
+static int resolveRemoveWindowsCb(Walker *pWalker, पाहायाग *p_पाहायाग){
   UNUSED_PARAMETER(pWalker);
-  if( ExprHasProperty(pExpr, EP_WinFunc) ){
-    Window *pWin = pExpr->y.pWin;
+  if( पाहायाग_Has_Property(p_पाहायाग, EP_WinFunc) ){
+    Window *pWin = p_पाहायाग->y.pWin;
     sqlite3WindowUnlinkFromSelect(pWin);
   }
   return WRC_Continue;
@@ -1795,17 +1795,17 @@ static int resolveRemoveWindowsCb(Walker *pWalker, Expr *pExpr){
 ** Remove any Window objects owned by the expression pExpr from the
 ** Select.pWin list of Select object pSelect.
 */
-static void windowRemoveExprFromSelect(Select *pSelect, Expr *pExpr){
+static void window_Remove_पाहायाग_From_Select(Select *pSelect, पाहायाग *p_पाहायाग){
   if( pSelect->pWin ){
     Walker sWalker;
     memset(&sWalker, 0, sizeof(Walker));
-    sWalker.xExprCallback = resolveRemoveWindowsCb;
+    sWalker.x_पाहायाग_Callback = resolveRemoveWindowsCb;
     sWalker.u.pSelect = pSelect;
-    sqlite3WalkExpr(&sWalker, pExpr);
+    sqlite3_Walk_पाहायाग(&sWalker, p_पाहायाग);
   }
 }
 #else
-# define windowRemoveExprFromSelect(a, b)
+# define window_Remove_पाहायाग_From_Select(a, b)
 #endif /* SQLITE_OMIT_WINDOWFUNC */
 
 /*
@@ -1829,21 +1829,21 @@ static void windowRemoveExprFromSelect(Select *pSelect, Expr *pExpr){
 static int resolveOrderGroupBy(
   NameContext *pNC,     /* The name context of the SELECT statement */
   Select *pSelect,      /* The SELECT statement holding pOrderBy */
-  ExprList *pOrderBy,   /* An ORDER BY or GROUP BY clause to resolve */
+  पाहायाग_List *pOrderBy,   /* An ORDER BY or GROUP BY clause to resolve */
   const char *zType     /* Either "ORDER" or "GROUP", as appropriate */
 ){
   int i, j;                      /* Loop counters */
   int iCol;                      /* Column number */
-  struct ExprList_item *pItem;   /* A term of the ORDER BY clause */
+  struct पाहायाग_List_item *pItem;   /* A term of the ORDER BY clause */
   Parse *pParse;                 /* Parsing context */
   int nResult;                   /* Number of terms in the result set */
 
   assert( pOrderBy!=0 );
-  nResult = pSelect->pEList->nExpr;
+  nResult = pSelect->pEList->n_पाहायाग;
   pParse = pNC->pParse;
-  for(i=0, pItem=pOrderBy->a; i<pOrderBy->nExpr; i++, pItem++){
-    Expr *pE = pItem->pExpr;
-    Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pE);
+  for(i=0, pItem=pOrderBy->a; i<pOrderBy->n_पाहायाग; i++, pItem++){
+    पाहायाग *pE = pItem->p_पाहायाग;
+    पाहायाग *pE2 = sqlite3_पाहायाग_Skip_Collate_And_Likely(pE);
     if( NEVER(pE2==0) ) continue;
     if( zType[0]!='G' ){
       iCol = resolveAsName(pParse, pSelect->pEList, pE2);
@@ -1856,7 +1856,7 @@ static int resolveOrderGroupBy(
         continue;
       }
     }
-    if( sqlite3ExprIsInteger(pE2, &iCol, 0, 1) ){
+    if( sqlite3_पाहायाग_Is_Integer(pE2, &iCol, 0, 1) ){
       /* The ORDER BY term is an integer constant.  Again, set the column
       ** number so that sqlite3ResolveOrderGroupBy() will convert the
       ** order-by term to a copy of the result-set expression */
@@ -1870,15 +1870,15 @@ static int resolveOrderGroupBy(
 
     /* Otherwise, treat the ORDER BY term as an ordinary expression */
     pItem->u.x.iOrderByCol = 0;
-    if( sqlite3ResolveExprNames(pNC, pE) ){
+    if( sqlite3_Resolve_पाहायाग_Names(pNC, pE) ){
       return 1;
     }
-    for(j=0; j<pSelect->pEList->nExpr; j++){
-      if( sqlite3ExprCompare(0, pE, pSelect->pEList->a[j].pExpr, -1)==0 ){
+    for(j=0; j<pSelect->pEList->n_पाहायाग; j++){
+      if( sqlite3_पाहायाग_Compare(0, pE, pSelect->pEList->a[j].p_पाहायाग, -1)==0 ){
         /* Since this expression is being changed into a reference
         ** to an identical expression in the result set, remove all Window
         ** objects belonging to the expression from the Select.pWin list. */
-        windowRemoveExprFromSelect(pSelect, pE);
+        window_Remove_पाहायाग_From_Select(pSelect, pE);
         pItem->u.x.iOrderByCol = j+1;
       }
     }
@@ -1896,7 +1896,7 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
   int nCompound;          /* Number of compound terms processed so far */
   Parse *pParse;          /* Parsing context */
   int i;                  /* Loop counter */
-  ExprList *pGroupBy;     /* The GROUP BY clause */
+  पाहायाग_List *pGroupBy;     /* The GROUP BY clause */
   Select *pLeftmost;      /* Left-most of SELECT of a compound */
   sqlite3 *db;            /* Database connection */
  
@@ -1936,7 +1936,7 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     memset(&sNC, 0, sizeof(sNC));
     sNC.pParse = pParse;
     sNC.pWinSelect = p;
-    if( sqlite3ResolveExprNames(&sNC, p->pLimit) ){
+    if( sqlite3_Resolve_पाहायाग_Names(&sNC, p->pLimit) ){
       return WRC_Abort;
     }
 
@@ -2001,7 +2001,7 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     sNC.pNext = pOuterNC;
  
     /* Resolve names in the result set. */
-    if( sqlite3ResolveExprListNames(&sNC, p->pEList) ) return WRC_Abort;
+    if( sqlite3_Resolve_पाहायाग_List_Names(&sNC, p->pEList) ) return WRC_Abort;
     sNC.ncFlags &= ~NC_AllowWin;
  
     /* If there are no aggregate functions in the result-set, and no GROUP BY
@@ -2030,20 +2030,20 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     sNC.ncFlags |= NC_UEList;
     if( p->pHaving ){
       if( (p->selFlags & SF_Aggregate)==0 ){
-        sqlite3ErrorMsg(pParse, "HAVING clause on a non-aggregate query");
+        sqlite3_Error_मेनसाहे(pParse, "HAVING clause on a non-aggregate query");
         return WRC_Abort;
       }
-      if( sqlite3ResolveExprNames(&sNC, p->pHaving) ) return WRC_Abort;
+      if( sqlite3_Resolve_पाहायाग_Names(&sNC, p->pHaving) ) return WRC_Abort;
     }
     sNC.ncFlags |= NC_Where;
-    if( sqlite3ResolveExprNames(&sNC, p->pWhere) ) return WRC_Abort;
+    if( sqlite3_Resolve_पाहायाग_Names(&sNC, p->pWhere) ) return WRC_Abort;
     sNC.ncFlags &= ~NC_Where;
 
     /* Resolve names in table-valued-function arguments */
     for(i=0; i<p->pSrc->nSrc; i++){
       SrcItem *pItem = &p->pSrc->a[i];
       if( pItem->fg.isTabFunc
-       && sqlite3ResolveExprListNames(&sNC, pItem->u1.pFuncArg)
+       && sqlite3_Resolve_पाहायाग_List_Names(&sNC, pItem->u1.pFuncArg)
       ){
         return WRC_Abort;
       }
@@ -2053,8 +2053,8 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     if( IN_RENAME_OBJECT ){
       Window *pWin;
       for(pWin=p->pWinDefn; pWin; pWin=pWin->pNextWin){
-        if( sqlite3ResolveExprListNames(&sNC, pWin->pOrderBy)
-         || sqlite3ResolveExprListNames(&sNC, pWin->pPartition)
+        if( sqlite3_Resolve_पाहायाग_List_Names(&sNC, pWin->pOrderBy)
+         || sqlite3_Resolve_पाहायाग_List_Names(&sNC, pWin->pPartition)
         ){
           return WRC_Abort;
         }
@@ -2103,14 +2103,14 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
     ** the GROUP BY clause does not contain aggregate functions.
     */
     if( pGroupBy ){
-      struct ExprList_item *pItem;
+      struct पाहायाग_List_item *pItem;
    
       if( resolveOrderGroupBy(&sNC, p, pGroupBy, "GROUP") || db->mallocFailed ){
         return WRC_Abort;
       }
-      for(i=0, pItem=pGroupBy->a; i<pGroupBy->nExpr; i++, pItem++){
-        if( ExprHasProperty(pItem->pExpr, EP_Agg) ){
-          sqlite3ErrorMsg(pParse, "aggregate functions are not allowed in "
+      for(i=0, pItem=pGroupBy->a; i<pGroupBy->n_पाहायाग; i++, pItem++){
+        if( पाहायाग_Has_Property(pItem->p_पाहायाग, EP_Agg) ){
+          sqlite3_Error_मेनसाहे(pParse, "aggregate functions are not allowed in "
               "the GROUP BY clause");
           return WRC_Abort;
         }
@@ -2119,8 +2119,8 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
 
     /* If this is part of a compound SELECT, check that it has the right
     ** number of expressions in the select list. */
-    if( p->pNext && p->pEList->nExpr!=p->pNext->pEList->nExpr ){
-      sqlite3SelectWrongNumTermsError(pParse, p->pNext);
+    if( p->pNext && p->pEList->n_पाहायाग!=p->pNext->pEList->n_पाहायाग ){
+      sqlite3_Select_Wrong_नुमेरो_Terms_Error(pParse, p->pNext);
       return WRC_Abort;
     }
 
@@ -2196,37 +2196,37 @@ static int resolveSelectStep(Walker *pWalker, Select *p){
 ** An error message is left in pParse if anything is amiss.  The number
 ** if errors is returned.
 */
-int sqlite3ResolveExprNames(
+int sqlite3_Resolve_पाहायाग_Names(
   NameContext *pNC,       /* Namespace to resolve expressions in. */
-  Expr *pExpr             /* The expression to be analyzed. */
+  पाहायाग *p_पाहायाग             /* The expression to be analyzed. */
 ){
   int savedHasAgg;
   Walker w;
 
-  if( pExpr==0 ) return SQLITE_OK;
+  if( p_पाहायाग==0 ) return SQLITE_OK;
   savedHasAgg = pNC->ncFlags & (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
   pNC->ncFlags &= ~(NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
   w.pParse = pNC->pParse;
-  w.xExprCallback = resolveExprStep;
+  w.x_पाहायाग_Callback = resolve_पाहायाग_Step;
   w.xSelectCallback = (pNC->ncFlags & NC_NoSelect) ? 0 : resolveSelectStep;
   w.xSelectCallback2 = 0;
   w.u.pNC = pNC;
-#if SQLITE_MAX_EXPR_DEPTH>0
-  w.pParse->nHeight += pExpr->nHeight;
-  if( sqlite3ExprCheckHeight(w.pParse, w.pParse->nHeight) ){
+#if SQLITE_MAX_पाहायाग_DEPTH>0
+  w.pParse->nHeight += p_पाहायाग->nHeight;
+  if( sqlite3_पाहायाग_Check_Height(w.pParse, w.pParse->nHeight) ){
     return SQLITE_ERROR;
   }
 #endif
-  assert( pExpr!=0 );
-  sqlite3WalkExprNN(&w, pExpr);
-#if SQLITE_MAX_EXPR_DEPTH>0
-  w.pParse->nHeight -= pExpr->nHeight;
+  assert( p_पाहायाग!=0 );
+  sqlite3_Walk_पाहायाग_NN(&w, p_पाहायाग);
+#if SQLITE_MAX_पाहायाग_DEPTH>0
+  w.pParse->nHeight -= p_पाहायाग->nHeight;
 #endif
   assert( EP_Agg==NC_HasAgg );
   assert( EP_Win==NC_HasWin );
   testcase( pNC->ncFlags & NC_HasAgg );
   testcase( pNC->ncFlags & NC_HasWin );
-  ExprSetProperty(pExpr, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
+  पाहायाग_Set_Property(p_पाहायाग, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
   pNC->ncFlags |= savedHasAgg;
   return pNC->nNcErr>0 || w.pParse->nErr>0;
 }
@@ -2239,40 +2239,40 @@ int sqlite3ResolveExprNames(
 ** The return value is SQLITE_OK (0) for success or SQLITE_ERROR (1) for a
 ** failure.
 */
-int sqlite3ResolveExprListNames(
+int sqlite3_Resolve_पाहायाग_List_Names(
   NameContext *pNC,       /* Namespace to resolve expressions in. */
-  ExprList *pList         /* The expression list to be analyzed. */
+  पाहायाग_List *pList         /* The expression list to be analyzed. */
 ){
   int i;
   int savedHasAgg = 0;
   Walker w;
   if( pList==0 ) return SQLITE_OK;
   w.pParse = pNC->pParse;
-  w.xExprCallback = resolveExprStep;
+  w.x_पाहायाग_Callback = resolve_पाहायाग_Step;
   w.xSelectCallback = resolveSelectStep;
   w.xSelectCallback2 = 0;
   w.u.pNC = pNC;
   savedHasAgg = pNC->ncFlags & (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
   pNC->ncFlags &= ~(NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
-  for(i=0; i<pList->nExpr; i++){
-    Expr *pExpr = pList->a[i].pExpr;
-    if( pExpr==0 ) continue;
-#if SQLITE_MAX_EXPR_DEPTH>0
-    w.pParse->nHeight += pExpr->nHeight;
-    if( sqlite3ExprCheckHeight(w.pParse, w.pParse->nHeight) ){
+  for(i=0; i<pList->n_पाहायाग; i++){
+    पाहायाग *p_पाहायाग = pList->a[i].p_पाहायाग;
+    if( p_पाहायाग==0 ) continue;
+#if SQLITE_MAX_पाहायाग_DEPTH>0
+    w.pParse->nHeight += p_पाहायाग->nHeight;
+    if( sqlite3_पाहायाग_Check_Height(w.pParse, w.pParse->nHeight) ){
       return SQLITE_ERROR;
     }
 #endif
-    sqlite3WalkExprNN(&w, pExpr);
-#if SQLITE_MAX_EXPR_DEPTH>0
-    w.pParse->nHeight -= pExpr->nHeight;
+    sqlite3_Walk_पाहायाग_NN(&w, p_पाहायाग);
+#if SQLITE_MAX_पाहायाग_DEPTH>0
+    w.pParse->nHeight -= p_पाहायाग->nHeight;
 #endif
     assert( EP_Agg==NC_HasAgg );
     assert( EP_Win==NC_HasWin );
     testcase( pNC->ncFlags & NC_HasAgg );
     testcase( pNC->ncFlags & NC_HasWin );
     if( pNC->ncFlags & (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg) ){
-      ExprSetProperty(pExpr, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
+      पाहायाग_Set_Property(p_पाहायाग, pNC->ncFlags & (NC_HasAgg|NC_HasWin) );
       savedHasAgg |= pNC->ncFlags &
                           (NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
       pNC->ncFlags &= ~(NC_HasAgg|NC_MinMaxAgg|NC_HasWin|NC_OrderAgg);
@@ -2303,7 +2303,7 @@ void sqlite3ResolveSelectNames(
   Walker w;
 
   assert( p!=0 );
-  w.xExprCallback = resolveExprStep;
+  w.x_पाहायाग_Callback = resolve_पाहायाग_Step;
   w.xSelectCallback = resolveSelectStep;
   w.xSelectCallback2 = 0;
   w.pParse = pParse;
@@ -2333,8 +2333,8 @@ int sqlite3ResolveSelfReference(
   Parse *pParse,   /* Parsing context */
   Table *pTab,     /* The table being referenced, or NULL */
   int type,        /* NC_IsCheck, NC_PartIdx, NC_IdxExpr, NC_GenCol, or 0 */
-  Expr *pExpr,     /* Expression to resolve.  May be NULL. */
-  ExprList *pList  /* Expression list to resolve.  May be NULL. */
+  पाहायाग *p_पाहायाग,     /* Expression to resolve.  May be NULL. */
+  पाहायाग_List *pList  /* Expression list to resolve.  May be NULL. */
 ){
   SrcList *pSrc;                  /* Fake SrcList for pParse->pNewTable */
   NameContext sNC;                /* Name context for pParse->pNewTable */
@@ -2345,7 +2345,7 @@ int sqlite3ResolveSelfReference(
   } uSrc;
 
   assert( type==0 || pTab!=0 );
-  assert( type==NC_IsCheck || type==NC_PartIdx || type==NC_IdxExpr
+  assert( type==NC_IsCheck || type==NC_PartIdx || type==NC_Idx_पाहायाग
           || type==NC_GenCol || pTab==0 );
   memset(&sNC, 0, sizeof(sNC));
   memset(&uSrc, 0, sizeof(uSrc));
@@ -2364,7 +2364,7 @@ int sqlite3ResolveSelfReference(
   sNC.pParse = pParse;
   sNC.pSrcList = pSrc;
   sNC.ncFlags = type | NC_IsDDL;
-  if( (rc = sqlite3ResolveExprNames(&sNC, pExpr))!=SQLITE_OK ) return rc;
-  if( pList ) rc = sqlite3ResolveExprListNames(&sNC, pList);
+  if( (rc = sqlite3_Resolve_पाहायाग_Names(&sNC, p_पाहायाग))!=SQLITE_OK ) return rc;
+  if( pList ) rc = sqlite3_Resolve_पाहायाग_List_Names(&sNC, pList);
   return rc;
 }

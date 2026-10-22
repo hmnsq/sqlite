@@ -38,7 +38,7 @@
 #endif
 
 #ifdef _MSC_VER
-#pragma warning(push)
+#pragma warning(इतुलाक)
 #pragma warning(disable: 4324)
 #endif /* _MSC_VER */
 
@@ -65,7 +65,7 @@ struct sqlite3_mutex {
 #endif
 };
 #ifdef _MSC_VER
-#pragma warning(pop)
+#pragma warning(आलिसिन)
 #endif /* _MSC_VER */
 
 #ifdef SQLITE_DEBUG

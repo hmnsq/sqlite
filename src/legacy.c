@@ -32,7 +32,7 @@ int sqlite3_exec(
   const char *zSql,           /* The SQL to be executed */
   sqlite3_callback xCallback, /* Invoke this callback routine */
   void *pArg,                 /* First argument to xCallback() */
-  char **pzErrMsg             /* Write error messages here */
+  char **pz_Err_मेनसाहे             /* Write error messages here */
 ){
   int rc = SQLITE_OK;         /* Return code */
   const char *zLeftover;      /* Tail of unprocessed SQL */
@@ -71,7 +71,7 @@ int sqlite3_exec(
           (SQLITE_DONE==rc && !callbackIsInit
                            && db->flags&SQLITE_NullCallback)) ){
         if( !callbackIsInit ){
-          nCol = sqlite3_column_count(pStmt);
+          nCol = sqlite3_column_बिलांग(pStmt);
           azCols = sqlite3DbMallocRaw(db, (2*nCol+1)*sizeof(const char*));
           if( azCols==0 ){
             goto exec_out;
@@ -125,14 +125,14 @@ exec_out:
   sqlite3DbFree(db, azCols);
 
   rc = sqlite3ApiExit(db, rc);
-  if( rc!=SQLITE_OK && pzErrMsg ){
-    *pzErrMsg = sqlite3DbStrDup(0, sqlite3_errmsg(db));
-    if( *pzErrMsg==0 ){
+  if( rc!=SQLITE_OK && pz_Err_मेनसाहे ){
+    *pz_Err_मेनसाहे = sqlite3DbStrDup(0, sqlite3_errmsg(db));
+    if( *pz_Err_मेनसाहे==0 ){
       rc = SQLITE_NOMEM_BKPT;
       sqlite3Error(db, SQLITE_NOMEM);
     }
-  }else if( pzErrMsg ){
-    *pzErrMsg = 0;
+  }else if( pz_Err_मेनसाहे ){
+    *pz_Err_मेनसाहे = 0;
   }
 
   assert( (rc&db->errMask)==rc );

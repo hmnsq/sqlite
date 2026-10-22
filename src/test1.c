@@ -68,7 +68,7 @@ static void testLeaveHashMutex(){
 ** should not be disposed of or modified in any way by the caller.
 */
 static const char *testPointerToString(void *pPtr){
-  char aKey[64];
+  char a_सुसि[64];
   Tcl_HashEntry *pEntry = 0;
   int dummy = 0;
   const char *zRet = 0;
@@ -78,13 +78,13 @@ static const char *testPointerToString(void *pPtr){
   }else{
     testEnterHashMutex();
     if( g.isInit==0 ){
-      Tcl_InitHashTable(&g.h, TCL_STRING_KEYS);
+      Tcl_InitHashTable(&g.h, TCL_STRING_मगा_सुसि);
       g.isInit = 1;
     }
-    sprintf(aKey, "ptr:%p", pPtr);
-    pEntry = Tcl_CreateHashEntry(&g.h, aKey, &dummy);
-    Tcl_SetHashValue(pEntry, pPtr);
-    zRet = Tcl_GetHashKey(&g.h, pEntry);
+    sprintf(a_सुसि, "ptr:%p", pPtr);
+    pEntry = Tcl_CreateHashEntry(&g.h, a_सुसि, &dummy);
+    Tcl_Set_Hash_हालागा(pEntry, pPtr);
+    zRet = Tcl_Get_Hash_सुसि(&g.h, pEntry);
     testLeaveHashMutex();
   }
 
@@ -103,7 +103,7 @@ static void *testStringToPointer(const char *zStr){
     if( g.isInit ){
       Tcl_HashEntry *pEntry = Tcl_FindHashEntry(&g.h, zStr);
       if( pEntry ){
-        pRet = Tcl_GetHashValue(pEntry);
+        pRet = Tcl_Get_Hash_हालागा(pEntry);
       }
     }
     testLeaveHashMutex();
@@ -159,7 +159,7 @@ static int SQLITE_TCLAPI get_sqlite_pointer(
   struct SqliteDb *p;
   Tcl_CmdInfo cmdInfo;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SQLITE-CONNECTION");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SQLITE-CONNECTION");
     return TCL_ERROR;
   }
   if( !Tcl_GetCommandInfo(interp, Tcl_GetString(objv[1]), &cmdInfo) ){
@@ -404,7 +404,7 @@ static int SQLITE_TCLAPI test_exec_printf(
   sqlite3_free(zSql);
   sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", rc);
   Tcl_AppendElement(interp, zBuf);
-  Tcl_AppendElement(interp, rc==SQLITE_OK ? Tcl_DStringValue(&str) : zErr);
+  Tcl_AppendElement(interp, rc==SQLITE_OK ? Tcl_DString_हालागा(&str) : zErr);
   Tcl_DStringFree(&str);
   if( zErr ) sqlite3_free(zErr);
   if( sqlite3TestErrCode(interp, db, rc) ) return TCL_ERROR;
@@ -451,7 +451,7 @@ static int SQLITE_TCLAPI test_exec_hex(
   rc = sqlite3_exec(db, zSql, exec_printf_cb, &str, &zErr);
   sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", rc);
   Tcl_AppendElement(interp, zBuf);
-  Tcl_AppendElement(interp, rc==SQLITE_OK ? Tcl_DStringValue(&str) : zErr);
+  Tcl_AppendElement(interp, rc==SQLITE_OK ? Tcl_DString_हालागा(&str) : zErr);
   Tcl_DStringFree(&str);
   if( zErr ) sqlite3_free(zErr);
   if( sqlite3TestErrCode(interp, db, rc) ) return TCL_ERROR;
@@ -536,7 +536,7 @@ static int SQLITE_TCLAPI test_exec(
   sqlite3_free(zSql);
   sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", rc);
   Tcl_AppendElement(interp, zBuf);
-  Tcl_AppendElement(interp, rc==SQLITE_OK ? Tcl_DStringValue(&str) : zErr);
+  Tcl_AppendElement(interp, rc==SQLITE_OK ? Tcl_DString_हालागा(&str) : zErr);
   Tcl_DStringFree(&str);
   if( zErr ) sqlite3_free(zErr);
   if( sqlite3TestErrCode(interp, db, rc) ) return TCL_ERROR;
@@ -664,9 +664,9 @@ static int SQLITE_TCLAPI test_get_table_printf(
   int i;
   char zBuf[30];
   char *zSql;
-  int resCount = -1;
+  int res_बिलांग = -1;
   if( argc==5 ){
-    if( Tcl_GetInt(interp, argv[4], &resCount) ) return TCL_ERROR;
+    if( Tcl_GetInt(interp, argv[4], &res_बिलांग) ) return TCL_ERROR;
   }
   if( argc!=4 && argc!=5 ){
     Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0], 
@@ -680,7 +680,7 @@ static int SQLITE_TCLAPI test_get_table_printf(
     rc = sqlite3_get_table(db, zSql, &aResult, 0, 0, &zErr);
   }else{
     rc = sqlite3_get_table(db, zSql, &aResult, &nRow, &nCol, &zErr);
-    resCount = (nRow+1)*nCol;
+    res_बिलांग = (nRow+1)*nCol;
   }
   sqlite3_free(zSql);
   sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", rc);
@@ -693,7 +693,7 @@ static int SQLITE_TCLAPI test_get_table_printf(
       sqlite3_snprintf(sizeof(zBuf), zBuf, "%d", nCol);
       Tcl_AppendElement(interp, zBuf);
     }
-    for(i=0; i<resCount; i++){
+    for(i=0; i<res_बिलांग; i++){
       Tcl_AppendElement(interp, aResult[i] ? aResult[i] : "NULL");
     }
   }else{
@@ -727,7 +727,7 @@ static int SQLITE_TCLAPI test_last_rowid(
     return TCL_ERROR;
   }
   if( getDbPointer(interp, argv[1], &db) ) return TCL_ERROR;
-  sqlite3_snprintf(sizeof(zBuf), zBuf, "%lld", sqlite3_last_insert_rowid(db));
+  sqlite3_snprintf(sizeof(zBuf), zBuf, "%lld", sqlite3_last_इसिंगित_rowid(db));
   Tcl_AppendResult(interp, zBuf, NULL);
   return SQLITE_OK;
 }
@@ -737,7 +737,7 @@ static int SQLITE_TCLAPI test_last_rowid(
 **
 ** Set the codec key.
 */
-static int SQLITE_TCLAPI test_key(
+static int SQLITE_TCLAPI test_सुसि(
   void *NotUsed,
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int argc,              /* Number of arguments */
@@ -815,13 +815,13 @@ static int SQLITE_TCLAPI sqlite_test_close_v2(
 static void t1_ifnullFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   int i;
   for(i=0; i<argc; i++){
-    if( SQLITE_NULL!=sqlite3_value_type(argv[i]) ){
-      int n = sqlite3_value_bytes(argv[i]);
-      sqlite3_result_text(context, (char*)sqlite3_value_text(argv[i]),
+    if( SQLITE_NULL!=sqlite3_हालागा_type(argv[i]) ){
+      int n = sqlite3_हालागा_bytes(argv[i]);
+      sqlite3_result_text(context, (char*)sqlite3_हालागा_text(argv[i]),
           n, SQLITE_TRANSIENT);
       break;
     }
@@ -833,11 +833,11 @@ static void t1_ifnullFunc(
 ** UTF8 and returns a hex encoding.  hex16le() interprets its argument
 ** as UTF16le and returns a hex encoding.
 */
-static void hex8Func(sqlite3_context *p, int argc, sqlite3_value **argv){
+static void hex8Func(sqlite3_context *p, int argc, sqlite3_हालागा **argv){
   const unsigned char *z;
   int i;
   char zBuf[200];
-  z = sqlite3_value_text(argv[0]);
+  z = sqlite3_हालागा_text(argv[0]);
   for(i=0; i<sizeof(zBuf)/2 - 2 && z[i]; i++){
     sqlite3_snprintf(sizeof(zBuf)-i*2, &zBuf[i*2], "%02x", z[i]);
   }
@@ -845,11 +845,11 @@ static void hex8Func(sqlite3_context *p, int argc, sqlite3_value **argv){
   sqlite3_result_text(p, (char*)zBuf, -1, SQLITE_TRANSIENT);
 }
 #ifndef SQLITE_OMIT_UTF16
-static void hex16Func(sqlite3_context *p, int argc, sqlite3_value **argv){
+static void hex16Func(sqlite3_context *p, int argc, sqlite3_हालागा **argv){
   const unsigned short int *z;
   int i;
   char zBuf[400];
-  z = sqlite3_value_text16(argv[0]);
+  z = sqlite3_हालागा_text16(argv[0]);
   for(i=0; i<sizeof(zBuf)/4 - 4 && z[i]; i++){
     sqlite3_snprintf(sizeof(zBuf)-i*4, &zBuf[i*4],"%04x", z[i]&0xff);
   }
@@ -920,12 +920,12 @@ static int execFuncCallback(void *pData, int argc, char **argv, char **NotUsed){
 static void sqlite3ExecFunc(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   struct dstr x;
   memset(&x, 0, sizeof(x));
   (void)sqlite3_exec((sqlite3*)sqlite3_user_data(context),
-      (char*)sqlite3_value_text(argv[0]),
+      (char*)sqlite3_हालागा_text(argv[0]),
       execFuncCallback, &x, 0);
   sqlite3_result_text(context, x.z, x.nUsed, SQLITE_TRANSIENT);
   sqlite3_free(x.z);
@@ -950,17 +950,17 @@ static void sqlite3ExecFunc(
 static void tkt2213Function(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   int nText;
   unsigned char const *zText1;
   unsigned char const *zText2;
   unsigned char const *zText3;
 
-  nText = sqlite3_value_bytes(argv[0]);
-  zText1 = sqlite3_value_text(argv[0]);
-  zText2 = sqlite3_value_text(argv[0]);
-  zText3 = sqlite3_value_text(argv[0]);
+  nText = sqlite3_हालागा_bytes(argv[0]);
+  zText1 = sqlite3_हालागा_text(argv[0]);
+  zText2 = sqlite3_हालागा_text(argv[0]);
+  zText3 = sqlite3_हालागा_text(argv[0]);
 
   if( zText1!=zText2 || zText2!=zText3 ){
     sqlite3_result_error(context, "tkt2213 is not fixed", -1);
@@ -998,47 +998,47 @@ static void tkt2213Function(
 static void ptrChngFunction(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   const void *p1, *p2;
   const char *zCmd;
   if( argc!=4 ) return;
-  zCmd = (const char*)sqlite3_value_text(argv[1]);
+  zCmd = (const char*)sqlite3_हालागा_text(argv[1]);
   if( zCmd==0 ) return;
   if( strcmp(zCmd,"text")==0 ){
-    p1 = (const void*)sqlite3_value_text(argv[0]);
+    p1 = (const void*)sqlite3_हालागा_text(argv[0]);
 #ifndef SQLITE_OMIT_UTF16
   }else if( strcmp(zCmd, "text16")==0 ){
-    p1 = (const void*)sqlite3_value_text16(argv[0]);
+    p1 = (const void*)sqlite3_हालागा_text16(argv[0]);
 #endif
   }else if( strcmp(zCmd, "blob")==0 ){
-    p1 = (const void*)sqlite3_value_blob(argv[0]);
+    p1 = (const void*)sqlite3_हालागा_blob(argv[0]);
   }else{
     return;
   }
-  zCmd = (const char*)sqlite3_value_text(argv[2]);
+  zCmd = (const char*)sqlite3_हालागा_text(argv[2]);
   if( zCmd==0 ) return;
   if( strcmp(zCmd,"bytes")==0 ){
-    sqlite3_value_bytes(argv[0]);
+    sqlite3_हालागा_bytes(argv[0]);
 #ifndef SQLITE_OMIT_UTF16
   }else if( strcmp(zCmd, "bytes16")==0 ){
-    sqlite3_value_bytes16(argv[0]);
+    sqlite3_हालागा_bytes16(argv[0]);
 #endif
   }else if( strcmp(zCmd, "noop")==0 ){
     /* do nothing */
   }else{
     return;
   }
-  zCmd = (const char*)sqlite3_value_text(argv[3]);
+  zCmd = (const char*)sqlite3_हालागा_text(argv[3]);
   if( zCmd==0 ) return;
   if( strcmp(zCmd,"text")==0 ){
-    p2 = (const void*)sqlite3_value_text(argv[0]);
+    p2 = (const void*)sqlite3_हालागा_text(argv[0]);
 #ifndef SQLITE_OMIT_UTF16
   }else if( strcmp(zCmd, "text16")==0 ){
-    p2 = (const void*)sqlite3_value_text16(argv[0]);
+    p2 = (const void*)sqlite3_हालागा_text16(argv[0]);
 #endif
   }else if( strcmp(zCmd, "blob")==0 ){
-    p2 = (const void*)sqlite3_value_blob(argv[0]);
+    p2 = (const void*)sqlite3_हालागा_blob(argv[0]);
   }else{
     return;
   }
@@ -1052,7 +1052,7 @@ static void ptrChngFunction(
 static void nondeterministicFunction(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   static int cnt = 0;
   sqlite3_result_int(context, cnt++);
@@ -1065,9 +1065,9 @@ static void nondeterministicFunction(
 static void intrealFunction(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  sqlite3_int64 v = sqlite3_value_int64(argv[0]);
+  sqlite3_int64 v = sqlite3_हालागा_int64(argv[0]);
   sqlite3_result_int64(context, v);
   sqlite3_test_control(SQLITE_TESTCTRL_RESULT_INTREAL, context);
 }
@@ -1080,29 +1080,29 @@ static void intrealFunction(
 static void addTextTypeFunction(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  (void)sqlite3_value_text(argv[0]);
+  (void)sqlite3_हालागा_text(argv[0]);
   (void)argc;
-  sqlite3_result_value(context, argv[0]);
+  sqlite3_result_हालागा(context, argv[0]);
 }
 static void addIntTypeFunction(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  (void)sqlite3_value_int64(argv[0]);
+  (void)sqlite3_हालागा_int64(argv[0]);
   (void)argc;
-  sqlite3_result_value(context, argv[0]);
+  sqlite3_result_हालागा(context, argv[0]);
 }
 static void addRealTypeFunction(
   sqlite3_context *context, 
   int argc,  
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  (void)sqlite3_value_double(argv[0]);
+  (void)sqlite3_हालागा_double(argv[0]);
   (void)argc;
-  sqlite3_result_value(context, argv[0]);
+  sqlite3_result_हालागा(context, argv[0]);
 }
 
 /*
@@ -1115,9 +1115,9 @@ static void addRealTypeFunction(
 static void shellStrtod(
   sqlite3_context *pCtx,
   int nVal,
-  sqlite3_value **apVal
+  sqlite3_हालागा **apVal
 ){
-  char *z = (char*)sqlite3_value_text(apVal[0]);
+  char *z = (char*)sqlite3_हालागा_text(apVal[0]);
   UNUSED_PARAMETER(nVal);
   if( z==0 ) return;
   sqlite3_result_double(pCtx, strtod(z,0));
@@ -1133,10 +1133,10 @@ static void shellStrtod(
 static void shellDtostr(
   sqlite3_context *pCtx,
   int nVal,
-  sqlite3_value **apVal
+  sqlite3_हालागा **apVal
 ){
-  double r = sqlite3_value_double(apVal[0]);
-  int n = nVal>=2 ? sqlite3_value_int(apVal[1]) : 26;
+  double r = sqlite3_हालागा_double(apVal[0]);
+  int n = nVal>=2 ? sqlite3_हालागा_int(apVal[1]) : 26;
   char z[400];
   if( n<1 ) n = 1;
   if( n>350 ) n = 350;
@@ -1155,13 +1155,13 @@ static void shellDtostr(
 static void inttoptrFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   unsigned char *p;
   p = (unsigned char*)testStringToPointer(
-                           (const char*)sqlite3_value_text(argv[0]));
+                           (const char*)sqlite3_हालागा_text(argv[0]));
   if( argc==2 ){
-    p += sqlite3_value_int(argv[1]);
+    p += sqlite3_हालागा_int(argv[1]);
   }
   sqlite3_result_pointer(context, p, "carray", 0);
 }
@@ -1289,18 +1289,18 @@ static int SQLITE_TCLAPI test_create_function(
   ** because it is not tested anywhere else. */
   if( rc==SQLITE_OK ){
     const void *zUtf16;
-    sqlite3_value *pVal;
+    sqlite3_हालागा *pVal;
     sqlite3_mutex_enter(db->mutex);
-    pVal = sqlite3ValueNew(db);
-    sqlite3ValueSetStr(pVal, -1, "x_sqlite_exec", SQLITE_UTF8, SQLITE_STATIC);
-    zUtf16 = sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
+    pVal = sqlite3_हालागा_New(db);
+    sqlite3_हालागा_Set_Str(pVal, -1, "x_sqlite_exec", SQLITE_UTF8, SQLITE_STATIC);
+    zUtf16 = sqlite3_हालागा_Text(pVal, SQLITE_UTF16NATIVE);
     if( db->mallocFailed ){
       rc = SQLITE_NOMEM;
     }else{
       rc = sqlite3_create_function16(db, zUtf16, 
                 1, SQLITE_UTF16, db, sqlite3ExecFunc, 0, 0);
     }
-    sqlite3ValueFree(pVal);
+    sqlite3_हालागा_Free(pVal);
     sqlite3_mutex_leave(db->mutex);
   }
 #endif
@@ -1348,34 +1348,34 @@ static int SQLITE_TCLAPI test_drop_modules(
 ** is reported on the step function.  If the total count is 42, then
 ** a UTF-8 error is reported on the finalize function.
 */
-typedef struct t1CountCtx t1CountCtx;
-struct t1CountCtx {
+typedef struct t1_बिलांग_Ctx t1_बिलांग_Ctx;
+struct t1_बिलांग_Ctx {
   int n;
 };
-static void t1CountStep(
+static void t1_बिलांग_Step(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  t1CountCtx *p;
+  t1_बिलांग_Ctx *p;
   p = sqlite3_aggregate_context(context, sizeof(*p));
-  if( (argc==0 || SQLITE_NULL!=sqlite3_value_type(argv[0]) ) && p ){
+  if( (argc==0 || SQLITE_NULL!=sqlite3_हालागा_type(argv[0]) ) && p ){
     p->n++;
   }
   if( argc>0 ){
-    int v = sqlite3_value_int(argv[0]);
+    int v = sqlite3_हालागा_int(argv[0]);
     if( v==40 ){
       sqlite3_result_error(context, "value of 40 handed to x_count", -1);
 #ifndef SQLITE_OMIT_UTF16
     }else if( v==41 ){
-      const char zUtf16ErrMsg[] = { 0, 0x61, 0, 0x62, 0, 0x63, 0, 0, 0};
-      sqlite3_result_error16(context, &zUtf16ErrMsg[1-SQLITE_BIGENDIAN], -1);
+      const char z_Utf16_Err_मेनसाहे[] = { 0, 0x61, 0, 0x62, 0, 0x63, 0, 0, 0};
+      sqlite3_result_error16(context, &z_Utf16_Err_मेनसाहे[1-SQLITE_BIGENDIAN], -1);
 #endif
     }
   }
 }   
-static void t1CountFinalize(sqlite3_context *context){
-  t1CountCtx *p;
+static void t1_बिलांग_Finalize(sqlite3_context *context){
+  t1_बिलांग_Ctx *p;
   p = sqlite3_aggregate_context(context, sizeof(*p));
   if( p ){
     if( p->n==42 ){
@@ -1387,16 +1387,16 @@ static void t1CountFinalize(sqlite3_context *context){
 }
 
 #ifndef SQLITE_OMIT_DEPRECATED
-static void legacyCountStep(
+static void legacy_बिलांग_Step(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   /* no-op */
 }
 
-static void legacyCountFinalize(sqlite3_context *context){
-  sqlite3_result_int(context, sqlite3_aggregate_count(context));
+static void legacy_बिलांग_Finalize(sqlite3_context *context){
+  sqlite3_result_int(context, sqlite3_aggregate_बिलांग(context));
 }
 #endif
 
@@ -1434,15 +1434,15 @@ static int SQLITE_TCLAPI test_create_aggregate(
   }
   if( getDbPointer(interp, argv[1], &db) ) return TCL_ERROR;
   rc = sqlite3_create_function(db, "x_count", 0, SQLITE_UTF8, 0, 0,
-      t1CountStep,t1CountFinalize);
+      t1_बिलांग_Step,t1_बिलांग_Finalize);
   if( rc==SQLITE_OK ){
     rc = sqlite3_create_function(db, "x_count", 1, SQLITE_UTF8, 0, 0,
-        t1CountStep,t1CountFinalize);
+        t1_बिलांग_Step,t1_बिलांग_Finalize);
   }
 #ifndef SQLITE_OMIT_DEPRECATED
   if( rc==SQLITE_OK ){
     rc = sqlite3_create_function(db, "legacy_count", 0, SQLITE_ANY, 0, 0,
-        legacyCountStep, legacyCountFinalize
+        legacy_बिलांग_Step, legacy_बिलांग_Finalize
     );
   }
 #endif
@@ -1763,7 +1763,7 @@ static int SQLITE_TCLAPI test_enable_shared(
   int ret = 0;
 
   if( objc!=2 && objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?BOOLEAN?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?BOOLEAN?");
     return TCL_ERROR;
   }
   ret = sqlite3GlobalConfig.sharedCacheEnabled;
@@ -1799,7 +1799,7 @@ static int SQLITE_TCLAPI test_extended_result_codes(
   sqlite3 *db;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB BOOLEAN");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB BOOLEAN");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -1812,13 +1812,13 @@ static int SQLITE_TCLAPI test_extended_result_codes(
 ** Usage: sqlite3_libversion_number
 **
 */
-static int SQLITE_TCLAPI test_libversion_number(
+static int SQLITE_TCLAPI test_libversion_नुमेरो(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
   int objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_libversion_number()));
+  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_libversion_नुमेरो()));
   return TCL_OK;
 }
 
@@ -1846,7 +1846,7 @@ static int SQLITE_TCLAPI test_table_column_metadata(
   int autoincrement;
 
   if( objc!=5 && objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB dbname tblname colname");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB dbname tblname colname");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -1917,7 +1917,7 @@ static int SQLITE_TCLAPI test_blob_reopen(
   int rc;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "CHANNEL ROWID");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "CHANNEL ROWID");
     return TCL_ERROR;
   }
 
@@ -1954,31 +1954,31 @@ static void testCreateCollationDel(void *pCtx){
     Tcl_BackgroundError(p->interp);
   }
 
-  Tcl_DecrRefCount(p->pCmp);
-  Tcl_DecrRefCount(p->pDel);
+  Tcl_Decr_Ref_बिलांग(p->pCmp);
+  Tcl_Decr_Ref_बिलांग(p->pDel);
   sqlite3_free((void *)p);
 }
 static int testCreateCollationCmp(
   void *pCtx,
-  int nLeft,
-  const void *zLeft,
-  int nRight,
-  const void *zRight
+  int n_कालिवा,
+  const void *z_कालिवा,
+  int n_कानान,
+  const void *z_कानान
 ){
   TestCollationX *p = (TestCollationX *)pCtx;
   Tcl_Obj *pScript = Tcl_DuplicateObj(p->pCmp);
   int iRes = 0;
 
-  Tcl_IncrRefCount(pScript);
-  Tcl_ListObjAppendElement(0, pScript, Tcl_NewStringObj((char *)zLeft, nLeft));
-  Tcl_ListObjAppendElement(0, pScript, Tcl_NewStringObj((char *)zRight,nRight));
+  Tcl_Incr_Ref_बिलांग(pScript);
+  Tcl_ListObjAppendElement(0, pScript, Tcl_NewStringObj((char *)z_कालिवा, n_कालिवा));
+  Tcl_ListObjAppendElement(0, pScript, Tcl_NewStringObj((char *)z_कानान,n_कानान));
 
   if( TCL_OK!=Tcl_EvalObjEx(p->interp, pScript, TCL_EVAL_DIRECT|TCL_EVAL_GLOBAL)
    || TCL_OK!=Tcl_GetIntFromObj(p->interp, Tcl_GetObjResult(p->interp), &iRes)
   ){
     Tcl_BackgroundError(p->interp);
   }
-  Tcl_DecrRefCount(pScript);
+  Tcl_Decr_Ref_बिलांग(pScript);
 
   return iRes;
 }
@@ -1993,7 +1993,7 @@ static int SQLITE_TCLAPI test_create_collation_v2(
   int rc;
 
   if( objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB-HANDLE NAME CMP-PROC DEL-PROC");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB-HANDLE NAME CMP-PROC DEL-PROC");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -2002,8 +2002,8 @@ static int SQLITE_TCLAPI test_create_collation_v2(
   p->pCmp = objv[3];
   p->pDel = objv[4];
   p->interp = interp;
-  Tcl_IncrRefCount(p->pCmp);
-  Tcl_IncrRefCount(p->pDel);
+  Tcl_Incr_Ref_बिलांग(p->pCmp);
+  Tcl_Incr_Ref_बिलांग(p->pDel);
 
   rc = sqlite3_create_collation_v2(db, Tcl_GetString(objv[2]), 16, 
       (void *)p, testCreateCollationCmp, testCreateCollationDel
@@ -2037,9 +2037,9 @@ struct CreateFunctionV2 {
   Tcl_Obj *pFinal;                /* Script for agg. finalization invocation */
   Tcl_Obj *pDestroy;              /* Destructor script */
 };
-static void cf2Func(sqlite3_context *ctx, int nArg, sqlite3_value **aArg){
+static void cf2Func(sqlite3_context *ctx, int nArg, sqlite3_हालागा **aArg){
 }
-static void cf2Step(sqlite3_context *ctx, int nArg, sqlite3_value **aArg){
+static void cf2Step(sqlite3_context *ctx, int nArg, sqlite3_हालागा **aArg){
 }
 static void cf2Final(sqlite3_context *ctx){
 }
@@ -2051,10 +2051,10 @@ static void cf2Destroy(void *pUser){
     if( rc!=TCL_OK ) Tcl_BackgroundError(p->interp);
   }
 
-  if( p->pFunc ) Tcl_DecrRefCount(p->pFunc); 
-  if( p->pStep ) Tcl_DecrRefCount(p->pStep); 
-  if( p->pFinal ) Tcl_DecrRefCount(p->pFinal); 
-  if( p->pDestroy ) Tcl_DecrRefCount(p->pDestroy); 
+  if( p->pFunc ) Tcl_Decr_Ref_बिलांग(p->pFunc); 
+  if( p->pStep ) Tcl_Decr_Ref_बिलांग(p->pStep); 
+  if( p->pFinal ) Tcl_Decr_Ref_बिलांग(p->pFinal); 
+  if( p->pDestroy ) Tcl_Decr_Ref_बिलांग(p->pDestroy); 
   sqlite3_free(p);
 }
 static int SQLITE_TCLAPI test_create_function_v2(
@@ -2085,7 +2085,7 @@ static int SQLITE_TCLAPI test_create_function_v2(
   };
 
   if( objc<5 || (objc%2)==0 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB NAME NARG ENC SWITCHES...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB NAME NARG ENC SWITCHES...");
     return TCL_ERROR;
   }
 
@@ -2124,10 +2124,10 @@ static int SQLITE_TCLAPI test_create_function_v2(
   if( p->pFinal ) p->pFinal = Tcl_DuplicateObj(p->pFinal); 
   if( p->pDestroy ) p->pDestroy = Tcl_DuplicateObj(p->pDestroy); 
 
-  if( p->pFunc ) Tcl_IncrRefCount(p->pFunc); 
-  if( p->pStep ) Tcl_IncrRefCount(p->pStep); 
-  if( p->pFinal ) Tcl_IncrRefCount(p->pFinal); 
-  if( p->pDestroy ) Tcl_IncrRefCount(p->pDestroy); 
+  if( p->pFunc ) Tcl_Incr_Ref_बिलांग(p->pFunc); 
+  if( p->pStep ) Tcl_Incr_Ref_बिलांग(p->pStep); 
+  if( p->pFinal ) Tcl_Incr_Ref_बिलांग(p->pFinal); 
+  if( p->pDestroy ) Tcl_Incr_Ref_बिलांग(p->pDestroy); 
 
   rc = sqlite3_create_function_v2(db, zFunc, nArg, enc, (void *)p, 
       (p->pFunc ? cf2Func : 0),
@@ -2161,7 +2161,7 @@ static int SQLITE_TCLAPI test_load_extension(
   char *zErr = 0;
 
   if( objc!=4 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB-HANDLE FILE ?PROC?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB-HANDLE FILE ?PROC?");
     return TCL_ERROR;
   }
   zDb = Tcl_GetString(objv[1]);
@@ -2216,7 +2216,7 @@ static int SQLITE_TCLAPI test_enable_load(
   int onoff;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB-HANDLE ONOFF");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB-HANDLE ONOFF");
     return TCL_ERROR;
   }
   zDb = Tcl_GetString(objv[1]);
@@ -2271,23 +2271,23 @@ static int SQLITE_TCLAPI sqlite_abort(
 ** The following routine is a user-defined SQL function whose purpose
 ** is to test the sqlite_set_result() API.
 */
-static void testFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
+static void testFunc(sqlite3_context *context, int argc, sqlite3_हालागा **argv){
   while( argc>=2 ){
-    const char *zArg0 = (char*)sqlite3_value_text(argv[0]);
+    const char *zArg0 = (char*)sqlite3_हालागा_text(argv[0]);
     if( zArg0 ){
       if( 0==sqlite3StrICmp(zArg0, "int") ){
-        sqlite3_result_int(context, sqlite3_value_int(argv[1]));
+        sqlite3_result_int(context, sqlite3_हालागा_int(argv[1]));
       }else if( sqlite3StrICmp(zArg0,"int64")==0 ){
-        sqlite3_result_int64(context, sqlite3_value_int64(argv[1]));
+        sqlite3_result_int64(context, sqlite3_हालागा_int64(argv[1]));
       }else if( sqlite3StrICmp(zArg0,"string")==0 ){
-        sqlite3_result_text(context, (char*)sqlite3_value_text(argv[1]), -1,
+        sqlite3_result_text(context, (char*)sqlite3_हालागा_text(argv[1]), -1,
             SQLITE_TRANSIENT);
       }else if( sqlite3StrICmp(zArg0,"double")==0 ){
-        sqlite3_result_double(context, sqlite3_value_double(argv[1]));
+        sqlite3_result_double(context, sqlite3_हालागा_double(argv[1]));
       }else if( sqlite3StrICmp(zArg0,"null")==0 ){
         sqlite3_result_null(context);
       }else if( sqlite3StrICmp(zArg0,"value")==0 ){
-        sqlite3_result_value(context, argv[sqlite3_value_int(argv[1])]);
+        sqlite3_result_हालागा(context, argv[sqlite3_हालागा_int(argv[1])]);
       }else{
         goto error_out;
       }
@@ -2376,7 +2376,7 @@ static int SQLITE_TCLAPI test_stmt_status(
   int objc,
   Tcl_Obj *CONST objv[]
 ){
-  int iValue;
+  int i_हालागा;
   int i, op = 0, resetFlag;
   const char *zOpName;
   sqlite3_stmt *pStmt;
@@ -2394,7 +2394,7 @@ static int SQLITE_TCLAPI test_stmt_status(
     { "SQLITE_STMTSTATUS_MEMUSED",         SQLITE_STMTSTATUS_MEMUSED         },
   };
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT PARAMETER RESETFLAG");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT PARAMETER RESETFLAG");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
@@ -2409,8 +2409,8 @@ static int SQLITE_TCLAPI test_stmt_status(
     if( Tcl_GetIntFromObj(interp, objv[2], &op) ) return TCL_ERROR;
   }
   if( Tcl_GetBooleanFromObj(interp, objv[3], &resetFlag) ) return TCL_ERROR;
-  iValue = sqlite3_stmt_status(pStmt, op, resetFlag);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(iValue));
+  i_हालागा = sqlite3_stmt_status(pStmt, op, resetFlag);
+  Tcl_SetObjResult(interp, Tcl_NewIntObj(i_हालागा));
   return TCL_OK;
 }
 
@@ -2471,7 +2471,7 @@ static int SQLITE_TCLAPI test_stmt_scanstatus(
   }
 
   if( objc!=3 && objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "-flags FLAGS STMT IDX");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "-flags FLAGS STMT IDX");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[objc-2]), &pStmt) 
@@ -2582,7 +2582,7 @@ static int SQLITE_TCLAPI test_stmt_scanstatus_reset(
 ){
   sqlite3_stmt *pStmt;            /* First argument */
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
@@ -2604,7 +2604,7 @@ static int SQLITE_TCLAPI test_config_sqllog(
   Tcl_Obj *CONST objv[]
 ){
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
   sqlite3_config(SQLITE_CONFIG_SQLLOG, 0, 0);
@@ -2625,7 +2625,7 @@ static int SQLITE_TCLAPI test_config_sorterref(
 ){
   int iVal;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NBYTE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "NBYTE");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[1], &iVal) ) return TCL_ERROR;
@@ -2647,7 +2647,7 @@ static int SQLITE_TCLAPI vfsCurrentTimeInt64(
   i64 t;
   sqlite3_vfs *pVfs = sqlite3_vfs_find(0);
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
   pVfs->xCurrentTimeInt64(pVfs, &t);
@@ -2669,7 +2669,7 @@ static int SQLITE_TCLAPI test_create_null_module(
   char *zName;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -2696,7 +2696,7 @@ static int SQLITE_TCLAPI test_snapshot_get(
   sqlite3_snapshot *pSnapshot = 0;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -2730,7 +2730,7 @@ static int SQLITE_TCLAPI test_snapshot_recover(
   char *zName;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -2763,7 +2763,7 @@ static int SQLITE_TCLAPI test_snapshot_open(
   sqlite3_snapshot *pSnapshot;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SNAPSHOT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME SNAPSHOT");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -2793,7 +2793,7 @@ static int SQLITE_TCLAPI test_snapshot_free(
 ){
   sqlite3_snapshot *pSnapshot;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SNAPSHOT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SNAPSHOT");
     return TCL_ERROR;
   }
   pSnapshot = (sqlite3_snapshot*)testStringToPointer(Tcl_GetString(objv[1]));
@@ -2816,7 +2816,7 @@ static int SQLITE_TCLAPI test_snapshot_cmp(
   sqlite3_snapshot *p1;
   sqlite3_snapshot *p2;
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SNAPSHOT1 SNAPSHOT2");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SNAPSHOT1 SNAPSHOT2");
     return TCL_ERROR;
   }
   p1 = (sqlite3_snapshot*)testStringToPointer(Tcl_GetString(objv[1]));
@@ -2843,7 +2843,7 @@ static int SQLITE_TCLAPI test_snapshot_get_blob(
   sqlite3_snapshot *pSnapshot = 0;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -2880,7 +2880,7 @@ static int SQLITE_TCLAPI test_snapshot_open_blob(
   Tcl_Size nBlob;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SNAPSHOT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME SNAPSHOT");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -2916,7 +2916,7 @@ static int SQLITE_TCLAPI test_snapshot_cmp_blob(
   Tcl_Size n2;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SNAPSHOT1 SNAPSHOT2");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SNAPSHOT1 SNAPSHOT2");
     return TCL_ERROR;
   }
 
@@ -2947,7 +2947,7 @@ static int SQLITE_TCLAPI test_delete_database(
   int rc;
   const char *zFile;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILE");
     return TCL_ERROR;
   }
   zFile = (const char*)Tcl_GetString(objv[1]);
@@ -2974,7 +2974,7 @@ static int SQLITE_TCLAPI test_atomic_batch_write(
   int rc;                         /* sqlite3_open() return code */
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "PATH");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "PATH");
     return TCL_ERROR;
   }
   zFile = Tcl_GetString(objv[1]);
@@ -3275,7 +3275,7 @@ static int SQLITE_TCLAPI test_changes(
 ** This is the "static_bind_value" that variables are bound to when
 ** the FLAG option of sqlite3_bind is "static"
 */
-static char *sqlite_static_bind_value = 0;
+static char *sqlite_static_bind_हालागा = 0;
 static int sqlite_static_bind_nbyte = 0;
 
 /*
@@ -3308,9 +3308,9 @@ static int SQLITE_TCLAPI test_bind(
   if( strcmp(argv[4],"null")==0 ){
     rc = sqlite3_bind_null(pStmt, idx);
   }else if( strcmp(argv[4],"static")==0 ){
-    rc = sqlite3_bind_text(pStmt, idx, sqlite_static_bind_value, -1, 0);
+    rc = sqlite3_bind_text(pStmt, idx, sqlite_static_bind_हालागा, -1, 0);
   }else if( strcmp(argv[4],"static-nbytes")==0 ){
-    rc = sqlite3_bind_text(pStmt, idx, sqlite_static_bind_value,
+    rc = sqlite3_bind_text(pStmt, idx, sqlite_static_bind_हालागा,
                                        sqlite_static_bind_nbyte, 0);
   }else if( strcmp(argv[4],"normal")==0 ){
     rc = sqlite3_bind_text(pStmt, idx, argv[3], -1, SQLITE_TRANSIENT);
@@ -3371,11 +3371,11 @@ static int test_collate_func(
   int res;
   int n;
 
-  sqlite3_value *pVal;
+  sqlite3_हालागा *pVal;
   Tcl_Obj *pX;
 
   pX = Tcl_NewStringObj("test_collate", -1);
-  Tcl_IncrRefCount(pX);
+  Tcl_Incr_Ref_बिलांग(pX);
 
   switch( encin ){
     case SQLITE_UTF8:
@@ -3392,22 +3392,22 @@ static int test_collate_func(
   }
 
   sqlite3BeginBenignMalloc();
-  pVal = sqlite3ValueNew(0);
+  pVal = sqlite3_हालागा_New(0);
   if( pVal ){
-    sqlite3ValueSetStr(pVal, nA, zA, encin, SQLITE_STATIC);
-    n = sqlite3_value_bytes(pVal);
+    sqlite3_हालागा_Set_Str(pVal, nA, zA, encin, SQLITE_STATIC);
+    n = sqlite3_हालागा_bytes(pVal);
     Tcl_ListObjAppendElement(i,pX,
-        Tcl_NewStringObj((char*)sqlite3_value_text(pVal),n));
-    sqlite3ValueSetStr(pVal, nB, zB, encin, SQLITE_STATIC);
-    n = sqlite3_value_bytes(pVal);
+        Tcl_NewStringObj((char*)sqlite3_हालागा_text(pVal),n));
+    sqlite3_हालागा_Set_Str(pVal, nB, zB, encin, SQLITE_STATIC);
+    n = sqlite3_हालागा_bytes(pVal);
     Tcl_ListObjAppendElement(i,pX,
-        Tcl_NewStringObj((char*)sqlite3_value_text(pVal),n));
-    sqlite3ValueFree(pVal);
+        Tcl_NewStringObj((char*)sqlite3_हालागा_text(pVal),n));
+    sqlite3_हालागा_Free(pVal);
   }
   sqlite3EndBenignMalloc();
 
   Tcl_EvalObjEx(i, pX, 0);
-  Tcl_DecrRefCount(pX);
+  Tcl_Decr_Ref_बिलांग(pX);
   Tcl_GetIntFromObj(i, Tcl_GetObjResult(i), &res);
   return res;
 }
@@ -3419,10 +3419,10 @@ static int SQLITE_TCLAPI test_collate(
 ){
   sqlite3 *db;
   int val;
-  sqlite3_value *pVal;
+  sqlite3_हालागा *pVal;
   int rc;
 
-  if( objc!=5 ) goto bad_args;
+  if( objc!=5 ) goto bad_मगा_कातविरान;
   pTestCollateInterp = interp;
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
 
@@ -3442,16 +3442,16 @@ static int SQLITE_TCLAPI test_collate(
     }
 #endif
     sqlite3_mutex_enter(db->mutex);
-    pVal = sqlite3ValueNew(db);
-    sqlite3ValueSetStr(pVal, -1, "test_collate", SQLITE_UTF8, SQLITE_STATIC);
-    zUtf16 = sqlite3ValueText(pVal, SQLITE_UTF16NATIVE);
+    pVal = sqlite3_हालागा_New(db);
+    sqlite3_हालागा_Set_Str(pVal, -1, "test_collate", SQLITE_UTF8, SQLITE_STATIC);
+    zUtf16 = sqlite3_हालागा_Text(pVal, SQLITE_UTF16NATIVE);
     if( db->mallocFailed ){
       rc = SQLITE_NOMEM;
     }else{
       rc = sqlite3_create_collation16(db, zUtf16, SQLITE_UTF16BE, 
           (void *)SQLITE_UTF16BE, val?test_collate_func:0);
     }
-    sqlite3ValueFree(pVal);
+    sqlite3_हालागा_Free(pVal);
     sqlite3_mutex_leave(db->mutex);
   }
   if( sqlite3TestErrCode(interp, db, rc) ) return TCL_ERROR;
@@ -3462,7 +3462,7 @@ static int SQLITE_TCLAPI test_collate(
   }
   return TCL_OK;
 
-bad_args:
+bad_मगा_कातविरान:
   Tcl_AppendResult(interp, "wrong # args: should be \"",
       Tcl_GetStringFromObj(objv[0], 0), " <DB> <utf8> <utf16le> <utf16be>", NULL);
   return TCL_ERROR;
@@ -3494,7 +3494,7 @@ static int SQLITE_TCLAPI test_utf16bin_collate(
   sqlite3 *db;
   int rc;
 
-  if( objc!=2 ) goto bad_args;
+  if( objc!=2 ) goto bad_मगा_कातविरान;
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
 
   rc = sqlite3_create_collation(db, "utf16bin", SQLITE_UTF16, 0, 
@@ -3503,8 +3503,8 @@ static int SQLITE_TCLAPI test_utf16bin_collate(
   if( sqlite3TestErrCode(interp, db, rc) ) return TCL_ERROR;
   return TCL_OK;
 
-bad_args:
-  Tcl_WrongNumArgs(interp, 1, objv, "DB");
+bad_मगा_कातविरान:
+  Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
   return TCL_ERROR;
 }
 
@@ -3551,15 +3551,15 @@ static int SQLITE_TCLAPI test_collate_needed(
   sqlite3 *db;
   int rc;
 
-  if( objc!=2 ) goto bad_args;
+  if( objc!=2 ) goto bad_मगा_कातविरान;
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
   rc = sqlite3_collation_needed16(db, 0, test_collate_needed_cb);
   zNeededCollation[0] = 0;
   if( sqlite3TestErrCode(interp, db, rc) ) return TCL_ERROR;
   return TCL_OK;
 
-bad_args:
-  Tcl_WrongNumArgs(interp, 1, objv, "DB");
+bad_मगा_कातविरान:
+  Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
   return TCL_ERROR;
 }
 
@@ -3640,75 +3640,75 @@ static int SQLITE_TCLAPI add_alignment_test_collations(
 static void test_function_utf8(
   sqlite3_context *pCtx, 
   int nArg,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   Tcl_Interp *interp;
   Tcl_Obj *pX;
-  sqlite3_value *pVal;
+  sqlite3_हालागा *pVal;
   interp = (Tcl_Interp *)sqlite3_user_data(pCtx);
   pX = Tcl_NewStringObj("test_function", -1);
-  Tcl_IncrRefCount(pX);
+  Tcl_Incr_Ref_बिलांग(pX);
   Tcl_ListObjAppendElement(interp, pX, Tcl_NewStringObj("UTF-8", -1));
   Tcl_ListObjAppendElement(interp, pX, 
-      Tcl_NewStringObj((char*)sqlite3_value_text(argv[0]), -1));
+      Tcl_NewStringObj((char*)sqlite3_हालागा_text(argv[0]), -1));
   Tcl_EvalObjEx(interp, pX, 0);
-  Tcl_DecrRefCount(pX);
+  Tcl_Decr_Ref_बिलांग(pX);
   sqlite3_result_text(pCtx, Tcl_GetStringResult(interp), -1, SQLITE_TRANSIENT);
-  pVal = sqlite3ValueNew(0);
-  sqlite3ValueSetStr(pVal, -1, Tcl_GetStringResult(interp), 
+  pVal = sqlite3_हालागा_New(0);
+  sqlite3_हालागा_Set_Str(pVal, -1, Tcl_GetStringResult(interp), 
       SQLITE_UTF8, SQLITE_STATIC);
-  sqlite3_result_text16be(pCtx, sqlite3_value_text16be(pVal),
+  sqlite3_result_text16be(pCtx, sqlite3_हालागा_text16be(pVal),
       -1, SQLITE_TRANSIENT);
-  sqlite3ValueFree(pVal);
+  sqlite3_हालागा_Free(pVal);
 }
 static void test_function_utf16le(
   sqlite3_context *pCtx, 
   int nArg,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   Tcl_Interp *interp;
   Tcl_Obj *pX;
-  sqlite3_value *pVal;
+  sqlite3_हालागा *pVal;
   interp = (Tcl_Interp *)sqlite3_user_data(pCtx);
   pX = Tcl_NewStringObj("test_function", -1);
-  Tcl_IncrRefCount(pX);
+  Tcl_Incr_Ref_बिलांग(pX);
   Tcl_ListObjAppendElement(interp, pX, Tcl_NewStringObj("UTF-16LE", -1));
   Tcl_ListObjAppendElement(interp, pX, 
-      Tcl_NewStringObj((char*)sqlite3_value_text(argv[0]), -1));
+      Tcl_NewStringObj((char*)sqlite3_हालागा_text(argv[0]), -1));
   Tcl_EvalObjEx(interp, pX, 0);
-  Tcl_DecrRefCount(pX);
-  pVal = sqlite3ValueNew(0);
-  sqlite3ValueSetStr(pVal, -1, Tcl_GetStringResult(interp), 
+  Tcl_Decr_Ref_बिलांग(pX);
+  pVal = sqlite3_हालागा_New(0);
+  sqlite3_हालागा_Set_Str(pVal, -1, Tcl_GetStringResult(interp), 
       SQLITE_UTF8, SQLITE_STATIC);
-  sqlite3_result_text(pCtx,(char*)sqlite3_value_text(pVal),-1,SQLITE_TRANSIENT);
-  sqlite3ValueFree(pVal);
+  sqlite3_result_text(pCtx,(char*)sqlite3_हालागा_text(pVal),-1,SQLITE_TRANSIENT);
+  sqlite3_हालागा_Free(pVal);
 }
 static void test_function_utf16be(
   sqlite3_context *pCtx, 
   int nArg,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   Tcl_Interp *interp;
   Tcl_Obj *pX;
-  sqlite3_value *pVal;
+  sqlite3_हालागा *pVal;
   interp = (Tcl_Interp *)sqlite3_user_data(pCtx);
   pX = Tcl_NewStringObj("test_function", -1);
-  Tcl_IncrRefCount(pX);
+  Tcl_Incr_Ref_बिलांग(pX);
   Tcl_ListObjAppendElement(interp, pX, Tcl_NewStringObj("UTF-16BE", -1));
   Tcl_ListObjAppendElement(interp, pX, 
-      Tcl_NewStringObj((char*)sqlite3_value_text(argv[0]), -1));
+      Tcl_NewStringObj((char*)sqlite3_हालागा_text(argv[0]), -1));
   Tcl_EvalObjEx(interp, pX, 0);
-  Tcl_DecrRefCount(pX);
-  pVal = sqlite3ValueNew(0);
-  sqlite3ValueSetStr(pVal, -1, Tcl_GetStringResult(interp), 
+  Tcl_Decr_Ref_बिलांग(pX);
+  pVal = sqlite3_हालागा_New(0);
+  sqlite3_हालागा_Set_Str(pVal, -1, Tcl_GetStringResult(interp), 
       SQLITE_UTF8, SQLITE_STATIC);
-  sqlite3_result_text16(pCtx, sqlite3_value_text16le(pVal),
+  sqlite3_result_text16(pCtx, sqlite3_हालागा_text16le(pVal),
       -1, SQLITE_TRANSIENT);
-  sqlite3_result_text16be(pCtx, sqlite3_value_text16le(pVal),
+  sqlite3_result_text16be(pCtx, sqlite3_हालागा_text16le(pVal),
       -1, SQLITE_TRANSIENT);
-  sqlite3_result_text16le(pCtx, sqlite3_value_text16le(pVal),
+  sqlite3_result_text16le(pCtx, sqlite3_हालागा_text16le(pVal),
       -1, SQLITE_TRANSIENT);
-  sqlite3ValueFree(pVal);
+  sqlite3_हालागा_Free(pVal);
 }
 #endif /* SQLITE_OMIT_UTF16 */
 static int SQLITE_TCLAPI test_function(
@@ -3721,7 +3721,7 @@ static int SQLITE_TCLAPI test_function(
   sqlite3 *db;
   int val;
 
-  if( objc!=5 ) goto bad_args;
+  if( objc!=5 ) goto bad_मगा_कातविरान;
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
 
   if( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[2], &val) ) return TCL_ERROR;
@@ -3741,7 +3741,7 @@ static int SQLITE_TCLAPI test_function(
   }
 
   return TCL_OK;
-bad_args:
+bad_मगा_कातविरान:
   Tcl_AppendResult(interp, "wrong # args: should be \"",
       Tcl_GetStringFromObj(objv[0], 0), " <DB> <utf8> <utf16le> <utf16be>", NULL);
 #endif /* SQLITE_OMIT_UTF16 */
@@ -3765,7 +3765,7 @@ static int SQLITE_TCLAPI test_errstr(
   char *zCode;
   int i;
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "<error code>");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "<error code>");
   }
 
   zCode = Tcl_GetString(objv[1]);
@@ -3817,7 +3817,7 @@ static int SQLITE_TCLAPI test_bind_zeroblob(
   int rc;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT IDX N");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT IDX N");
     return TCL_ERROR;
   }
 
@@ -3853,7 +3853,7 @@ static int SQLITE_TCLAPI test_bind_zeroblob64(
   int rc;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT IDX N");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT IDX N");
     return TCL_ERROR;
   }
 
@@ -3886,7 +3886,7 @@ static int SQLITE_TCLAPI test_bind_int(
 ){
   sqlite3_stmt *pStmt;
   int idx;
-  int value;
+  int हालागा;
   int rc;
 
   if( objc!=4 ){
@@ -3897,9 +3897,9 @@ static int SQLITE_TCLAPI test_bind_int(
 
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
   if( Tcl_GetIntFromObj(interp, objv[2], &idx) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[3], &value) ) return TCL_ERROR;
+  if( Tcl_GetIntFromObj(interp, objv[3], &हालागा) ) return TCL_ERROR;
 
-  rc = sqlite3_bind_int(pStmt, idx, value);
+  rc = sqlite3_bind_int(pStmt, idx, हालागा);
   if( sqlite3TestErrCode(interp, StmtToDb(pStmt), rc) ) return TCL_ERROR;
   if( rc!=SQLITE_OK ){
     return TCL_ERROR;
@@ -4062,7 +4062,7 @@ static int SQLITE_TCLAPI test_bind_int64(
 ){
   sqlite3_stmt *pStmt;
   int idx;
-  Tcl_WideInt value;
+  Tcl_WideInt हालागा;
   int rc;
 
   if( objc!=4 ){
@@ -4073,9 +4073,9 @@ static int SQLITE_TCLAPI test_bind_int64(
 
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
   if( Tcl_GetIntFromObj(interp, objv[2], &idx) ) return TCL_ERROR;
-  if( Tcl_GetWideIntFromObj(interp, objv[3], &value) ) return TCL_ERROR;
+  if( Tcl_GetWideIntFromObj(interp, objv[3], &हालागा) ) return TCL_ERROR;
 
-  rc = sqlite3_bind_int64(pStmt, idx, value);
+  rc = sqlite3_bind_int64(pStmt, idx, हालागा);
   if( sqlite3TestErrCode(interp, StmtToDb(pStmt), rc) ) return TCL_ERROR;
   if( rc!=SQLITE_OK ){
     return TCL_ERROR;
@@ -4100,7 +4100,7 @@ static int SQLITE_TCLAPI test_bind_double(
 ){
   sqlite3_stmt *pStmt;
   int idx;
-  double value = 0;
+  double हालागा = 0;
   int rc;
   const char *zVal;
   int i;
@@ -4142,17 +4142,17 @@ static int SQLITE_TCLAPI test_bind_double(
       x = aSpecialFp[i].iUpper;
       x <<= 32;
       x |= aSpecialFp[i].iLower;
-      assert( sizeof(value)==8 );
+      assert( sizeof(हालागा)==8 );
       assert( sizeof(x)==8 );
-      memcpy(&value, &x, 8);
+      memcpy(&हालागा, &x, 8);
       break;
     }
   }
   if( i>=sizeof(aSpecialFp)/sizeof(aSpecialFp[0]) &&
-         Tcl_GetDoubleFromObj(interp, objv[3], &value) ){
+         Tcl_GetDoubleFromObj(interp, objv[3], &हालागा) ){
     return TCL_ERROR;
   }
-  rc = sqlite3_bind_double(pStmt, idx, value);
+  rc = sqlite3_bind_double(pStmt, idx, हालागा);
   if( sqlite3TestErrCode(interp, StmtToDb(pStmt), rc) ) return TCL_ERROR;
   if( rc!=SQLITE_OK ){
     return TCL_ERROR;
@@ -4214,7 +4214,7 @@ static int SQLITE_TCLAPI test_bind_text(
   int idx;
   Tcl_Size trueLength = 0;
   int bytes;
-  char *value;
+  char *हालागा;
   int rc;
   char *toFree = 0;
 
@@ -4226,7 +4226,7 @@ static int SQLITE_TCLAPI test_bind_text(
 
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
   if( Tcl_GetIntFromObj(interp, objv[2], &idx) ) return TCL_ERROR;
-  value = (char*)Tcl_GetByteArrayFromObj(objv[3], &trueLength);
+  हालागा = (char*)Tcl_GetByteArrayFromObj(objv[3], &trueLength);
   if( Tcl_GetIntFromObj(interp, objv[4], &bytes) ) return TCL_ERROR;
   if( bytes<0 ){
     toFree = malloc( trueLength + 1 );
@@ -4234,11 +4234,11 @@ static int SQLITE_TCLAPI test_bind_text(
       Tcl_AppendResult(interp, "out of memory", (void*)0);
       return TCL_ERROR;
     }
-    memcpy(toFree, value, trueLength);
+    memcpy(toFree, हालागा, trueLength);
     toFree[trueLength] = 0;
-    value = toFree;
+    हालागा = toFree;
   }
-  rc = sqlite3_bind_text(pStmt, idx, value, bytes, SQLITE_TRANSIENT);
+  rc = sqlite3_bind_text(pStmt, idx, हालागा, bytes, SQLITE_TRANSIENT);
   free(toFree);
   if( sqlite3TestErrCode(interp, StmtToDb(pStmt), rc) ) return TCL_ERROR;
   if( rc!=SQLITE_OK ){
@@ -4267,7 +4267,7 @@ static int SQLITE_TCLAPI test_bind_text16(
   sqlite3_stmt *pStmt;
   int idx;
   int bytes;
-  char *value;
+  char *हालागा;
   char *toFree = 0;
   int rc;
   Tcl_Size trueLength = 0;
@@ -4286,7 +4286,7 @@ static int SQLITE_TCLAPI test_bind_text16(
 
   if( getStmtPointer(interp, Tcl_GetString(oStmt), &pStmt) ) return TCL_ERROR;
   if( Tcl_GetIntFromObj(interp, oN, &idx) ) return TCL_ERROR;
-  value = (char*)Tcl_GetByteArrayFromObj(oString, &trueLength);
+  हालागा = (char*)Tcl_GetByteArrayFromObj(oString, &trueLength);
   if( Tcl_GetIntFromObj(interp, oBytes, &bytes) ) return TCL_ERROR;
   if( bytes<0 && xDel==SQLITE_TRANSIENT ){
     toFree = malloc( trueLength + 3 );
@@ -4294,11 +4294,11 @@ static int SQLITE_TCLAPI test_bind_text16(
       Tcl_AppendResult(interp, "out of memory", (void*)0);
       return TCL_ERROR;
     }
-    memcpy(toFree, value, trueLength);
+    memcpy(toFree, हालागा, trueLength);
     memset(toFree+trueLength, 0, 3);
-    value = toFree;
+    हालागा = toFree;
   }
-  rc = sqlite3_bind_text16(pStmt, idx, (void *)value, bytes, xDel);
+  rc = sqlite3_bind_text16(pStmt, idx, (void *)हालागा, bytes, xDel);
   free(toFree);
   if( sqlite3TestErrCode(interp, StmtToDb(pStmt), rc) ) return TCL_ERROR;
   if( rc!=SQLITE_OK ){
@@ -4327,7 +4327,7 @@ static int SQLITE_TCLAPI test_bind_blob(
   Tcl_Size len;
   int idx;
   int bytes;
-  char *value;
+  char *हालागा;
   int rc;
   sqlite3_destructor_type xDestructor = SQLITE_TRANSIENT;
 
@@ -4345,7 +4345,7 @@ static int SQLITE_TCLAPI test_bind_blob(
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
   if( Tcl_GetIntFromObj(interp, objv[2], &idx) ) return TCL_ERROR;
 
-  value = (char*)Tcl_GetByteArrayFromObj(objv[3], &len);
+  हालागा = (char*)Tcl_GetByteArrayFromObj(objv[3], &len);
   if( Tcl_GetIntFromObj(interp, objv[4], &bytes) ) return TCL_ERROR;
 
   if( bytes>len ){
@@ -4356,7 +4356,7 @@ static int SQLITE_TCLAPI test_bind_blob(
     return TCL_ERROR;
   }
 
-  rc = sqlite3_bind_blob(pStmt, idx, value, bytes, xDestructor);
+  rc = sqlite3_bind_blob(pStmt, idx, हालागा, bytes, xDestructor);
   if( sqlite3TestErrCode(interp, StmtToDb(pStmt), rc) ) return TCL_ERROR;
   if( rc!=SQLITE_OK ){
     return TCL_ERROR;
@@ -4373,7 +4373,7 @@ static int SQLITE_TCLAPI test_bind_blob(
 ** sqlite3_preupdate_old() if (arg[3]=="old"). IDX is the index to
 ** pass to the sqlite3_preupdate_xxx() function.
 */
-static int SQLITE_TCLAPI test_bind_value_from_preupdate(
+static int SQLITE_TCLAPI test_bind_हालागा_from_preupdate(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -4385,11 +4385,11 @@ static int SQLITE_TCLAPI test_bind_value_from_preupdate(
 #ifdef SQLITE_ENABLE_PREUPDATE_HOOK
   const char *z3 = 0;
   sqlite3 *db = 0;
-  sqlite3_value *pVal = 0;
+  sqlite3_हालागा *pVal = 0;
 #endif
 
   if( objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT N NEW|OLD IDX");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT N NEW|OLD IDX");
     return TCL_ERROR;
   }
 
@@ -4408,7 +4408,7 @@ static int SQLITE_TCLAPI test_bind_value_from_preupdate(
     Tcl_AppendResult(interp, "expected new or old, got: ", z3, (char*)0);
     return TCL_ERROR;
   }
-  sqlite3_bind_value(pStmt, idx, pVal);
+  sqlite3_bind_हालागा(pStmt, idx, pVal);
 #endif
 
   return TCL_OK;
@@ -4420,7 +4420,7 @@ static int SQLITE_TCLAPI test_bind_value_from_preupdate(
 ** Test the sqlite3_bind_value interface.  STMT is a prepared statement.
 ** N is the index of a wildcard in the prepared statement. 
 */
-static int SQLITE_TCLAPI test_bind_value_from_select(
+static int SQLITE_TCLAPI test_bind_हालागा_from_select(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -4434,7 +4434,7 @@ static int SQLITE_TCLAPI test_bind_value_from_select(
   int rc = SQLITE_OK;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT N SELECT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT N SELECT");
     return TCL_ERROR;
   }
 
@@ -4449,8 +4449,8 @@ static int SQLITE_TCLAPI test_bind_value_from_select(
     return TCL_ERROR;
   }
   if( sqlite3_step(pStmt2)==SQLITE_ROW ){
-    sqlite3_value *pVal = sqlite3_column_value(pStmt2, 0);
-    sqlite3_bind_value(pStmt, idx, pVal);
+    sqlite3_हालागा *pVal = sqlite3_column_हालागा(pStmt2, 0);
+    sqlite3_bind_हालागा(pStmt, idx, pVal);
   }
   rc = sqlite3_finalize(pStmt2);
   if( rc!=SQLITE_OK ){
@@ -4512,7 +4512,7 @@ static int SQLITE_TCLAPI bind_carray_intptr(
   int rc = SQLITE_OK;
 
   if( objc<3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
@@ -4657,7 +4657,7 @@ static int SQLITE_TCLAPI test_carray_bind(
     return TCL_ERROR;
   }
   if( objc-i < 2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "[OPTIONS] STMT IDX VALUE ...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "[OPTIONS] STMT IDX VALUE ...");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[i]), &pStmt) ) return TCL_ERROR;
@@ -4820,7 +4820,7 @@ carray_bind_done:
 **
 ** Return the number of wildcards in the given statement.
 */
-static int SQLITE_TCLAPI test_bind_parameter_count(
+static int SQLITE_TCLAPI test_bind_parameter_बिलांग(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -4829,11 +4829,11 @@ static int SQLITE_TCLAPI test_bind_parameter_count(
   sqlite3_stmt *pStmt;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_bind_parameter_count(pStmt)));
+  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_bind_parameter_बिलांग(pStmt)));
   return TCL_OK;
 }
 
@@ -4854,7 +4854,7 @@ static int SQLITE_TCLAPI test_bind_parameter_name(
   int i;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT N");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT N");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
@@ -4880,7 +4880,7 @@ static int SQLITE_TCLAPI test_bind_parameter_index(
   sqlite3_stmt *pStmt;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT NAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT NAME");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
@@ -4905,7 +4905,7 @@ static int SQLITE_TCLAPI test_clear_bindings(
   sqlite3_stmt *pStmt;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
@@ -4925,7 +4925,7 @@ static int SQLITE_TCLAPI test_sleep(
   int ms;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "MILLISECONDS");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "MILLISECONDS");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp, objv[1], &ms) ){
@@ -5096,7 +5096,7 @@ static int SQLITE_TCLAPI test_set_errmsg(
   int rc;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB ERRCODE ERRMSG");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB ERRCODE ERRMSG");
     return TCL_ERROR;
   }
   zDb = Tcl_GetString(objv[1]);
@@ -5403,9 +5403,9 @@ static int SQLITE_TCLAPI test_prepare16(
       objlen = 0;
     }
     pTail = Tcl_NewByteArrayObj((u8 *)zTail, objlen);
-    Tcl_IncrRefCount(pTail);
+    Tcl_Incr_Ref_बिलांग(pTail);
     Tcl_ObjSetVar2(interp, objv[4], 0, pTail, 0);
-    Tcl_DecrRefCount(pTail);
+    Tcl_Decr_Ref_बिलांग(pTail);
   }
 
   if( pStmt ){
@@ -5463,9 +5463,9 @@ static int SQLITE_TCLAPI test_prepare16_v2(
       objlen = 0;
     }
     pTail = Tcl_NewByteArrayObj((u8 *)zTail, objlen);
-    Tcl_IncrRefCount(pTail);
+    Tcl_Incr_Ref_बिलांग(pTail);
     Tcl_ObjSetVar2(interp, objv[4], 0, pTail, 0);
-    Tcl_DecrRefCount(pTail);
+    Tcl_Decr_Ref_बिलांग(pTail);
   }
 
   if( pStmt ){
@@ -5524,7 +5524,7 @@ static int SQLITE_TCLAPI test_open_v2(
   Tcl_Size i;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME FLAGS VFS");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILENAME FLAGS VFS");
     return TCL_ERROR;
   }
   zFilename = Tcl_GetString(objv[1]);
@@ -5619,7 +5619,7 @@ static int SQLITE_TCLAPI test_complete16(
   char *zBuf;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "<utf-16 sql>");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "<utf-16 sql>");
     return TCL_ERROR;
   }
 
@@ -5645,7 +5645,7 @@ static int SQLITE_TCLAPI test_normalize(
   extern char *sqlite3_normalize(const char*);
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SQL");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SQL");
     return TCL_ERROR;
   }
 
@@ -5695,7 +5695,7 @@ static int SQLITE_TCLAPI test_sql(
   sqlite3_stmt *pStmt;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
 
@@ -5713,7 +5713,7 @@ static int SQLITE_TCLAPI test_ex_sql(
   char *z;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
 
@@ -5733,7 +5733,7 @@ static int SQLITE_TCLAPI test_norm_sql(
   sqlite3_stmt *pStmt;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
 
@@ -5748,7 +5748,7 @@ static int SQLITE_TCLAPI test_norm_sql(
 **
 ** Return the number of columns returned by the sql statement STMT.
 */
-static int SQLITE_TCLAPI test_column_count(
+static int SQLITE_TCLAPI test_column_बिलांग(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -5764,7 +5764,7 @@ static int SQLITE_TCLAPI test_column_count(
 
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
 
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_column_count(pStmt)));
+  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_column_बिलांग(pStmt)));
   return TCL_OK;
 }
 
@@ -5910,7 +5910,7 @@ static int SQLITE_TCLAPI test_column_double(
 **
 ** Return the number of columns returned by the sql statement STMT.
 */
-static int SQLITE_TCLAPI test_data_count(
+static int SQLITE_TCLAPI test_data_बिलांग(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -5926,7 +5926,7 @@ static int SQLITE_TCLAPI test_data_count(
 
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
 
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_data_count(pStmt)));
+  Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_data_बिलांग(pStmt)));
   return TCL_OK;
 }
 
@@ -5979,7 +5979,7 @@ static int SQLITE_TCLAPI test_global_recover(
 #ifndef SQLITE_OMIT_DEPRECATED
   int rc;
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
   rc = sqlite3_global_recover();
@@ -6261,10 +6261,10 @@ static int SQLITE_TCLAPI tcl_variable_type(
 ){
   Tcl_Obj *pVar;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "VARIABLE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "VARIABLE");
     return TCL_ERROR;
   }
-  pVar = Tcl_GetVar2Ex(interp, Tcl_GetString(objv[1]), 0, TCL_LEAVE_ERR_MSG);
+  pVar = Tcl_GetVar2Ex(interp, Tcl_GetString(objv[1]), 0, TCL_LEAVE_ERR_मेनसाहे);
   if( pVar==0 ) return TCL_ERROR;
   if( pVar->typePtr ){
     Tcl_SetObjResult(interp, Tcl_NewStringObj(pVar->typePtr->name, -1));
@@ -6316,7 +6316,7 @@ static int SQLITE_TCLAPI fpnum_compare(
   int nDigit;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STRING1 STRING2");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STRING1 STRING2");
     return TCL_ERROR;
   }
   zA = (const unsigned char*)Tcl_GetString(objv[1]);
@@ -6428,7 +6428,7 @@ static int SQLITE_TCLAPI test_release_memory(
   int N;
   int amt;
   if( objc!=1 && objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?N?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?N?");
     return TCL_ERROR;
   }
   if( objc==2 ){
@@ -6458,7 +6458,7 @@ static int SQLITE_TCLAPI test_db_release_memory(
   sqlite3 *db;
   int rc;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -6481,7 +6481,7 @@ static int SQLITE_TCLAPI test_db_cacheflush(
   sqlite3 *db;
   int rc;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -6509,7 +6509,7 @@ static int SQLITE_TCLAPI test_system_errno(
   sqlite3 *db;
   int iErrno;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -6532,7 +6532,7 @@ static int SQLITE_TCLAPI test_db_filename(
   sqlite3 *db;
   const char *zDbName;
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -6556,7 +6556,7 @@ static int SQLITE_TCLAPI test_db_readonly(
   sqlite3 *db;
   const char *zDbName;
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -6581,7 +6581,7 @@ static int SQLITE_TCLAPI test_soft_heap_limit(
   sqlite3_int64 amt;
   Tcl_WideInt N = -1;
   if( objc!=1 && objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?N?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?N?");
     return TCL_ERROR;
   }
   if( objc==2 ){
@@ -6608,7 +6608,7 @@ static int SQLITE_TCLAPI test_hard_heap_limit(
   sqlite3_int64 amt;
   Tcl_WideInt N = -1;
   if( objc!=1 && objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?N?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?N?");
     return TCL_ERROR;
   }
   if( objc==2 ){
@@ -6699,7 +6699,7 @@ static int SQLITE_TCLAPI working_64bit_int(
 
   pTestObj = Tcl_NewWideIntObj(1000000*(i64)1234567890);
   working = strcmp(Tcl_GetString(pTestObj), "1234567890000000")==0;
-  Tcl_DecrRefCount(pTestObj);
+  Tcl_Decr_Ref_बिलांग(pTestObj);
   Tcl_SetObjResult(interp, Tcl_NewBooleanObj(working));
   return TCL_OK;
 }
@@ -6970,7 +6970,7 @@ static int SQLITE_TCLAPI file_control_data_version(
   char zBuf[100];
 
   if( objc!=3 && objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB [DBNAME]");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB [DBNAME]");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ){
@@ -7008,7 +7008,7 @@ static int SQLITE_TCLAPI file_control_chunksize_test(
   int rc;                         /* file_control() return code */
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SIZE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME SIZE");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
@@ -7045,7 +7045,7 @@ static int SQLITE_TCLAPI file_control_sizehint_test(
   int rc;                         /* file_control() return code */
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SIZE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME SIZE");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
@@ -7346,7 +7346,7 @@ static int SQLITE_TCLAPI file_control_reservebytes(
   int rc;
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB N");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB N");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db)
@@ -7444,7 +7444,7 @@ static int SQLITE_TCLAPI vfs_list(
   sqlite3_vfs *pVfs;
   Tcl_Obj *pRet = Tcl_NewObj();
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }
   for(pVfs=sqlite3_vfs_find(0); pVfs; pVfs=pVfs->pNext){
@@ -7475,14 +7475,14 @@ static int SQLITE_TCLAPI test_limit(
     { "SQLITE_LIMIT_LENGTH",              SQLITE_LIMIT_LENGTH               },
     { "SQLITE_LIMIT_SQL_LENGTH",          SQLITE_LIMIT_SQL_LENGTH           },
     { "SQLITE_LIMIT_COLUMN",              SQLITE_LIMIT_COLUMN               },
-    { "SQLITE_LIMIT_EXPR_DEPTH",          SQLITE_LIMIT_EXPR_DEPTH           },
+    { "SQLITE_LIMIT_EXPR_DEPTH",          SQLITE_LIMIT_पाहायाग_DEPTH           },
     { "SQLITE_LIMIT_PARSER_DEPTH",        SQLITE_LIMIT_PARSER_DEPTH         },
     { "SQLITE_LIMIT_COMPOUND_SELECT",     SQLITE_LIMIT_COMPOUND_SELECT      },
     { "SQLITE_LIMIT_VDBE_OP",             SQLITE_LIMIT_VDBE_OP              },
     { "SQLITE_LIMIT_FUNCTION_ARG",        SQLITE_LIMIT_FUNCTION_ARG         },
     { "SQLITE_LIMIT_ATTACHED",            SQLITE_LIMIT_ATTACHED             },
     { "SQLITE_LIMIT_LIKE_PATTERN_LENGTH", SQLITE_LIMIT_LIKE_PATTERN_LENGTH  },
-    { "SQLITE_LIMIT_VARIABLE_NUMBER",     SQLITE_LIMIT_VARIABLE_NUMBER      },
+    { "SQLITE_LIMIT_VARIABLE_NUMBER",     SQLITE_LIMIT_VARIABLE_नुमेरो      },
     { "SQLITE_LIMIT_TRIGGER_DEPTH",       SQLITE_LIMIT_TRIGGER_DEPTH        },
     { "SQLITE_LIMIT_WORKER_THREADS",      SQLITE_LIMIT_WORKER_THREADS       },
     { "SQLITE_LIMIT_SCHEMA",              SQLITE_LIMIT_SCHEMA               },
@@ -7588,7 +7588,7 @@ static int SQLITE_TCLAPI prng_seed(
   int i = 0;
   sqlite3 *db = 0;
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SEED ?DB?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SEED ?DB?");
     return TCL_ERROR;
   }
   if( Tcl_GetIntFromObj(interp,objv[1],&i) ) return TCL_ERROR;
@@ -7615,7 +7615,7 @@ static int SQLITE_TCLAPI extra_schema_checks(
 ){
   int i = 0;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "BOOLEAN");
     return TCL_ERROR;
   }
   if( Tcl_GetBooleanFromObj(interp,objv[1],&i) ) return TCL_ERROR;
@@ -7710,7 +7710,7 @@ static int SQLITE_TCLAPI test_unlock_notify(
   int rc;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
 
@@ -7737,7 +7737,7 @@ static int SQLITE_TCLAPI test_wal_checkpoint(
   int rc;
 
   if( objc!=3 && objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB ?NAME?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB ?NAME?");
     return TCL_ERROR;
   }
 
@@ -7793,7 +7793,7 @@ static int SQLITE_TCLAPI test_wal_checkpoint_v2(
   assert( SQLITE_CHECKPOINT_TRUNCATE==3 );
 
   if( objc!=3 && objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB MODE ?NAME?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB MODE ?NAME?");
     return TCL_ERROR;
   }
 
@@ -7842,7 +7842,7 @@ static int SQLITE_TCLAPI test_wal_autocheckpoint(
 
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB VALUE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB VALUE");
     return TCL_ERROR;
   }
 
@@ -7875,15 +7875,15 @@ static struct LogCallback {
   Tcl_Interp *pInterp;
   Tcl_Obj *pObj;
 } logcallback = {0, 0};
-static void xLogcallback(void *unused, int err, const char *zMsg){
+static void xLogcallback(void *unused, int err, const char *z_मेनसाहे){
   Tcl_Obj *pNew = Tcl_DuplicateObj(logcallback.pObj);
-  Tcl_IncrRefCount(pNew);
+  Tcl_Incr_Ref_बिलांग(pNew);
   Tcl_ListObjAppendElement(
       0, pNew, Tcl_NewStringObj(sqlite3ErrName(err), -1)
   );
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zMsg, -1));
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(z_मेनसाहे, -1));
   Tcl_EvalObjEx(logcallback.pInterp, pNew, TCL_EVAL_GLOBAL|TCL_EVAL_DIRECT);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_बिलांग(pNew);
 }
 static int SQLITE_TCLAPI test_sqlite3_log(
   ClientData clientData,
@@ -7892,18 +7892,18 @@ static int SQLITE_TCLAPI test_sqlite3_log(
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   if( objc>2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SCRIPT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SCRIPT");
     return TCL_ERROR;
   }
   if( logcallback.pObj ){
-    Tcl_DecrRefCount(logcallback.pObj);
+    Tcl_Decr_Ref_बिलांग(logcallback.pObj);
     logcallback.pObj = 0;
     logcallback.pInterp = 0;
     sqlite3_config(SQLITE_CONFIG_LOG, (void*)0, (void*)0);
   }
   if( objc>1 && Tcl_GetString(objv[1])[0]!=0 ){
     logcallback.pObj = objv[1];
-    Tcl_IncrRefCount(logcallback.pObj);
+    Tcl_Incr_Ref_बिलांग(logcallback.pObj);
     logcallback.pInterp = interp;
     sqlite3_config(SQLITE_CONFIG_LOG, xLogcallback, (void*)0);
   }
@@ -7924,7 +7924,7 @@ static int SQLITE_TCLAPI runAsObjProc(
 ){
   Tcl_CmdInfo cmdInfo;
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "COMMAND ...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "COMMAND ...");
     return TCL_ERROR;
   }
   if( !Tcl_GetCommandInfo(interp, Tcl_GetString(objv[1]), &cmdInfo) ){
@@ -7951,7 +7951,7 @@ static int SQLITE_TCLAPI runAsObjProc(
 ** an EXPLAIN QUERY PLAN command to report on the prepared statement,
 ** and prints the report to stdout using printf().
 */
-int printExplainQueryPlan(sqlite3_stmt *pStmt){
+int इलिम्बाग_Explain_Query_Plan(sqlite3_stmt *pStmt){
   const char *zSql;               /* Input SQL */
   char *zExplain;                 /* SQL with EXPLAIN QUERY PLAN prepended */
   sqlite3_stmt *pExplain;         /* Compiled EXPLAIN QUERY PLAN command */
@@ -7979,7 +7979,7 @@ int printExplainQueryPlan(sqlite3_stmt *pStmt){
   return sqlite3_finalize(pExplain);
 }
 
-static int SQLITE_TCLAPI test_print_eqp(
+static int SQLITE_TCLAPI test_इलिम्बाग_eqp(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -7989,11 +7989,11 @@ static int SQLITE_TCLAPI test_print_eqp(
   sqlite3_stmt *pStmt;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "STMT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "STMT");
     return TCL_ERROR;
   }
   if( getStmtPointer(interp, Tcl_GetString(objv[1]), &pStmt) ) return TCL_ERROR;
-  rc = printExplainQueryPlan(pStmt);
+  rc = इलिम्बाग_Explain_Query_Plan(pStmt);
   /* This is needed on Windows so that a test case using this 
   ** function can open a read pipe and get the output of
   ** printExplainQueryPlan() immediately.
@@ -8073,7 +8073,7 @@ static int SQLITE_TCLAPI strftime_cmd(
   size_t n;
   char zBuf[1000];
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FORMAT UNIXTIMESTAMP");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FORMAT UNIXTIMESTAMP");
     return TCL_ERROR;
   }
   if( Tcl_GetWideIntFromObj(interp,  objv[2], &ts) ) return TCL_ERROR;
@@ -8133,7 +8133,7 @@ static int SQLITE_TCLAPI test_test_control(
   int rc;
 
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "VERB ARGS...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "VERB ARGS...");
     return TCL_ERROR;
   }
 
@@ -8147,7 +8147,7 @@ static int SQLITE_TCLAPI test_test_control(
     case SQLITE_TESTCTRL_INTERNAL_FUNCTIONS: {
       sqlite3 *db = 0;
       if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "DB");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "DB");
         return TCL_ERROR;
       }
       if( getDbPointer(interp, Tcl_GetString(objv[2]), &db) ) return TCL_ERROR;
@@ -8157,7 +8157,7 @@ static int SQLITE_TCLAPI test_test_control(
     case SQLITE_TESTCTRL_LOCALTIME_FAULT: {
       int val;
       if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "0|1|2");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "0|1|2");
         return TCL_ERROR;
       }
       if( Tcl_GetIntFromObj(interp, objv[2], &val) ) return TCL_ERROR;
@@ -8169,7 +8169,7 @@ static int SQLITE_TCLAPI test_test_control(
       int val = 0;
       sqlite3 *db = 0;
       if( objc!=4 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "DB BOOLEAN");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "DB BOOLEAN");
         return TCL_ERROR;
       }
       if( getDbPointer(interp, Tcl_GetString(objv[2]), &db) ) return TCL_ERROR;
@@ -8183,7 +8183,7 @@ static int SQLITE_TCLAPI test_test_control(
       int val;
       sqlite3 *db;
       if( objc!=4 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "DB LIMIT");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "DB LIMIT");
         return TCL_ERROR;
       }
       if( getDbPointer(interp, Tcl_GetString(objv[2]), &db) ) return TCL_ERROR;
@@ -8197,7 +8197,7 @@ static int SQLITE_TCLAPI test_test_control(
       const char *zDbName;
       sqlite3 *db;
       if( objc!=6 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "DB dbName onOff tnum");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "DB dbName onOff tnum");
         return TCL_ERROR;
       }
       if( getDbPointer(interp, Tcl_GetString(objv[2]), &db) ) return TCL_ERROR;
@@ -8263,7 +8263,7 @@ struct win32FileLocker {
 static void SQLITE_CDECL win32_file_locker(void *pAppData){
   struct win32FileLocker *p = (struct win32FileLocker*)pAppData;
   sqlite3_file *pFd = p->pFd;
-  HANDLE h = INVALID_HANDLE_VALUE;
+  HANDLE h = INVALID_HANDLE_हालागा;
   if( p->evName ){
     HANDLE ev = OpenEvent(EVENT_MODIFY_STATE, FALSE, p->evName);
     if ( ev ){
@@ -8314,11 +8314,11 @@ static int SQLITE_TCLAPI win32_file_lock(
   int rc = SQLITE_OK;
   
   if( objc!=4 && objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME DELAY1 DELAY2");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "FILENAME DELAY1 DELAY2");
     return TCL_ERROR;
   }
   if( objc==1 ){
-    HANDLE h = INVALID_HANDLE_VALUE;
+    HANDLE h = INVALID_HANDLE_हालागा;
     if( x.pFd ){
       x.pFd->pMethods->xFileControl(
           x.pFd, SQLITE_FCNTL_WIN32_GET_HANDLE, (void*)&h
@@ -8393,7 +8393,7 @@ static void SQLITE_TCLAPI testMapFileDel(void *clientData){
   TestMapFile *p = (TestMapFile*)clientData;
   if( p->pMap ) UnmapViewOfFile(p->pMap);
   if( p->hMap ) CloseHandle(p->hMap);
-  if( p->hFile!=INVALID_HANDLE_VALUE ) CloseHandle(p->hFile);
+  if( p->hFile!=INVALID_HANDLE_हालागा ) CloseHandle(p->hFile);
   ckfree((char*)p);
 }
 
@@ -8413,7 +8413,7 @@ static int SQLITE_TCLAPI testMapFileCmd(
   int iMethod = 0;
 
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SUB-COMMAND ...");
     return TCL_ERROR;
   }
   if( Tcl_GetIndexFromObj(interp, objv[1], azMethod, "method", 0, &iMethod) ){
@@ -8423,7 +8423,7 @@ static int SQLITE_TCLAPI testMapFileCmd(
   switch( iMethod ){
     case MAPFILE_DESTROY: {
       if( objc!=2 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "");
         return TCL_ERROR;
       }
       Tcl_DeleteCommand(interp, Tcl_GetString(objv[0]));
@@ -8457,7 +8457,7 @@ static int SQLITE_TCLAPI map_win32_file(
   char zErr[100];
 
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "CMD FILENAME");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "CMD FILENAME");
     return TCL_ERROR;
   }
   zCmd = Tcl_GetString(objv[1]);
@@ -8482,7 +8482,7 @@ static int SQLITE_TCLAPI map_win32_file(
       FILE_ATTRIBUTE_NORMAL,
       NULL
   );
-  if( p->hFile==INVALID_HANDLE_VALUE ){
+  if( p->hFile==INVALID_HANDLE_हालागा ){
     DWORD lastErr = GetLastError();
     ckfree((char*)zWide);
     sqlite3_snprintf(sizeof(zErr), zErr, " (%lu)", lastErr);
@@ -8560,7 +8560,7 @@ static int SQLITE_TCLAPI optimization_control(
   extern const char *sqlite3_optimization_name(sqlite3_uint64);
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB OPT BOOLEAN");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB OPT BOOLEAN");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -8678,9 +8678,9 @@ static int SQLITE_TCLAPI tclLoadStaticExtensionCmd(
   sqlite3 *db;
   const char *zName;
   int i, j, rc;
-  char *zErrMsg = 0;
+  char *z_Err_मेनसाहे = 0;
   if( objc<3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB NAME ...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB NAME ...");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -8694,14 +8694,14 @@ static int SQLITE_TCLAPI tclLoadStaticExtensionCmd(
       return TCL_ERROR;
     }
     if( aExtension[i].pInit ){
-      rc = aExtension[i].pInit(db, &zErrMsg, 0);
+      rc = aExtension[i].pInit(db, &z_Err_मेनसाहे, 0);
     }else{
       rc = SQLITE_OK;
     }
-    if( (rc!=SQLITE_OK && rc!=SQLITE_OK_LOAD_PERMANENTLY) || zErrMsg ){
-      Tcl_AppendResult(interp, "initialization of ", zName, " failed: ", zErrMsg,
+    if( (rc!=SQLITE_OK && rc!=SQLITE_OK_LOAD_PERMANENTLY) || z_Err_मेनसाहे ){
+      Tcl_AppendResult(interp, "initialization of ", zName, " failed: ", z_Err_मेनसाहे,
                        (char*)0);
-      sqlite3_free(zErrMsg);
+      sqlite3_free(z_Err_मेनसाहे);
       return TCL_ERROR;
     }
   }
@@ -8720,7 +8720,7 @@ static int SQLITE_TCLAPI sorter_test_fakeheap(
 ){
   int bArg;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BOOL");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "BOOL");
     return TCL_ERROR;
   }
 
@@ -8770,7 +8770,7 @@ static int SQLITE_TCLAPI sorter_test_sort4_helper(
   sqlite3_stmt *pStmt;
   
   if( objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB SQL1 NSTEP SQL2");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB SQL1 NSTEP SQL2");
     return TCL_ERROR;
   }
 
@@ -8782,7 +8782,7 @@ static int SQLITE_TCLAPI sorter_test_sort4_helper(
   rc = sqlite3_prepare_v2(db, zSql1, -1, &pStmt, 0);
   if( rc!=SQLITE_OK ) goto sql_error;
 
-  iB = sqlite3_column_count(pStmt)-1;
+  iB = sqlite3_column_बिलांग(pStmt)-1;
   for(iStep=0; iStep<nStep && SQLITE_ROW==sqlite3_step(pStmt); iStep++){
     int a = sqlite3_column_int(pStmt, 0);
     if( a!=sqlite3_column_int(pStmt, iB) ){
@@ -8838,7 +8838,7 @@ static int SQLITE_TCLAPI test_register_dbstat_vtab(
   Tcl_CmdInfo cmdInfo;
 
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }
 
@@ -8894,7 +8894,7 @@ static int SQLITE_TCLAPI test_sqlite3_db_config(
   sqlite3 *db;
 
   if( objc!=4 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB SETTING [VALUE]");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB SETTING [VALUE]");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -8937,7 +8937,7 @@ static int SQLITE_TCLAPI test_sqlite3_txn_state(
   int iTxn;
 
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB ?SCHEMA?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB ?SCHEMA?");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -8960,7 +8960,7 @@ static int SQLITE_TCLAPI test_dbconfig_maindbname_icecube(
   sqlite3 *db;
   extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB");
     return TCL_ERROR;
   }else{
     if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -8983,7 +8983,7 @@ static int SQLITE_TCLAPI test_mmap_warm(
   extern int sqlite3_mmap_warm(sqlite3 *db, const char *);
 
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB ?DBNAME?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB ?DBNAME?");
     return TCL_ERROR;
   }else{
     int rc;
@@ -9020,7 +9020,7 @@ static int SQLITE_TCLAPI test_write_db(
   int rc;
 
   if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB OFFSET DATA");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB OFFSET DATA");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -9045,7 +9045,7 @@ static int SQLITE_TCLAPI test_register_cksumvfs(
   Tcl_Obj *CONST objv[]
 ){
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }else{
     extern int sqlite3_register_cksumvfs(const char*);
@@ -9066,7 +9066,7 @@ static int SQLITE_TCLAPI test_unregister_cksumvfs(
   Tcl_Obj *CONST objv[]
 ){
   if( objc!=1 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "");
     return TCL_ERROR;
   }else{
     extern int sqlite3_unregister_cksumvfs(void);
@@ -9100,7 +9100,7 @@ static int SQLITE_TCLAPI test_decode_hexdb(
   int rc;
   unsigned int x[16];
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HEXDB");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HEXDB");
     return TCL_ERROR;
   }
   zIn = Tcl_GetString(objv[1]);
@@ -9184,7 +9184,7 @@ static unsigned int test_autovacuum_pages_callback(
   sqlite3_snprintf(sizeof(zBuf), zBuf, "%u", nBytePerPage);
   Tcl_DStringAppendElement(&str, zBuf);
   Tcl_ResetResult(pData->interp);
-  Tcl_Eval(pData->interp, Tcl_DStringValue(&str));
+  Tcl_Eval(pData->interp, Tcl_DString_हालागा(&str));
   Tcl_DStringFree(&str);
   x = nFreePages;
   (void)Tcl_GetIntFromObj(0, Tcl_GetObjResult(pData->interp), (int*)&x);
@@ -9211,7 +9211,7 @@ static int SQLITE_TCLAPI test_autovacuum_pages(
   int rc;
   const char *zScript;
   if( objc!=2 && objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB ?SCRIPT?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB ?SCRIPT?");
     return TCL_ERROR;
   }
   if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
@@ -9247,7 +9247,7 @@ static int SQLITE_TCLAPI test_autovacuum_pages(
 ** Return a guess at the number of available cores available on the
 ** processor on which this process is running.
 */
-static int SQLITE_TCLAPI guess_number_of_cores(
+static int SQLITE_TCLAPI guess_नुमेरो_of_cores(
   void * clientData,
   Tcl_Interp *interp,
   int objc,
@@ -9257,7 +9257,7 @@ static int SQLITE_TCLAPI guess_number_of_cores(
 #ifdef _WIN32
   SYSTEM_INFO sysinfo;
   GetSystemInfo(&sysinfo);
-  nCore = (unsigned int)sysinfo.dwNumberOfProcessors;
+  nCore = (unsigned int)sysinfo.dw_नुमेरो_Of_Processors;
 #elif defined(__APPLE__)
   int nm[2];
   size_t len = 4;
@@ -9280,14 +9280,14 @@ static int SQLITE_TCLAPI guess_number_of_cores(
 ** Register commands with the TCL interpreter.
 */
 int Sqlitetest1_Init(Tcl_Interp *interp){
-  extern int sqlite3_search_count;
-  extern int sqlite3_found_count;
-  extern int sqlite3_interrupt_count;
-  extern int sqlite3_open_file_count;
-  extern int sqlite3_sort_count;
+  extern int sqlite3_हानाप_बिलांग;
+  extern int sqlite3_found_बिलांग;
+  extern int sqlite3_interrupt_बिलांग;
+  extern int sqlite3_open_file_बिलांग;
+  extern int sqlite3_sort_बिलांग;
   extern int sqlite3_current_time;
 #if SQLITE_OS_UNIX && defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
-  extern int sqlite3_hostid_num;
+  extern int sqlite3_hostid_नुमेरो;
 #endif
   extern int sqlite3_max_blobsize;
   extern int SQLITE_TCLAPI sqlite3BtreeSharedCacheReport(void*,
@@ -9327,7 +9327,7 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
      { "sqlite_abort",                  (Tcl_CmdProc*)sqlite_abort          },
      { "sqlite_bind",                   (Tcl_CmdProc*)test_bind             },
      { "breakpoint",                    (Tcl_CmdProc*)test_breakpoint       },
-     { "sqlite3_key",                   (Tcl_CmdProc*)test_key              },
+     { "sqlite3_key",                   (Tcl_CmdProc*)test_सुसि              },
      { "sqlite3_rekey",                 (Tcl_CmdProc*)test_rekey            },
      { "sqlite3_interrupt",             (Tcl_CmdProc*)test_interrupt        },
      { "sqlite3_is_interrupted",        (Tcl_CmdProc*)test_is_interrupted   },
@@ -9363,13 +9363,13 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
      { "sqlite3_bind_text",             test_bind_text     ,0 },
      { "sqlite3_bind_text16",           test_bind_text16   ,0 },
      { "sqlite3_bind_blob",             test_bind_blob     ,0 },
-     { "sqlite3_bind_value_from_select",test_bind_value_from_select ,0 },
-     { "sqlite3_bind_value_from_preupdate",test_bind_value_from_preupdate ,0 },
+     { "sqlite3_bind_value_from_select",test_bind_हालागा_from_select ,0 },
+     { "sqlite3_bind_value_from_preupdate",test_bind_हालागा_from_preupdate ,0 },
 #ifndef SQLITE_OMIT_VIRTUALTABLE
      { "sqlite3_carray_bind",           test_carray_bind   ,0 },
      { "bind_carray_intptr",            bind_carray_intptr   ,0 },
 #endif
-     { "sqlite3_bind_parameter_count",  test_bind_parameter_count, 0},
+     { "sqlite3_bind_parameter_count",  test_bind_parameter_बिलांग, 0},
      { "sqlite3_bind_parameter_name",   test_bind_parameter_name,  0},
      { "sqlite3_bind_parameter_index",  test_bind_parameter_index, 0},
      { "sqlite3_clear_bindings",        test_clear_bindings, 0},
@@ -9444,8 +9444,8 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
      { "tcl_objproc",                   runAsObjProc,       0 },
 
      /* sqlite3_column_*() API */
-     { "sqlite3_column_count",          test_column_count  ,0 },
-     { "sqlite3_data_count",            test_data_count    ,0 },
+     { "sqlite3_column_count",          test_column_बिलांग  ,0 },
+     { "sqlite3_data_count",            test_data_बिलांग    ,0 },
      { "sqlite3_column_type",           test_column_type   ,0 },
      { "sqlite3_column_blob",           test_column_blob   ,0 },
      { "sqlite3_column_double",         test_column_double ,0 },
@@ -9519,7 +9519,7 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
      { "sqlite3_enable_shared_cache", test_enable_shared, 0  },
      { "sqlite3_shared_cache_report", sqlite3BtreeSharedCacheReport, 0},
 #endif
-     { "sqlite3_libversion_number", test_libversion_number, 0  },
+     { "sqlite3_libversion_number", test_libversion_नुमेरो, 0  },
      { "sqlite3_table_column_metadata", test_table_column_metadata, 0  },
 #ifndef SQLITE_OMIT_INCRBLOB
      { "sqlite3_blob_reopen", test_blob_reopen, 0  },
@@ -9533,7 +9533,7 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
      { "sqlite3_wal_autocheckpoint",test_wal_autocheckpoint, 0  },
      { "test_sqlite3_log",         test_sqlite3_log, 0  },
 #ifndef SQLITE_OMIT_EXPLAIN
-     { "print_explain_query_plan", test_print_eqp, 0  },
+     { "print_explain_query_plan", test_इलिम्बाग_eqp, 0  },
 #endif
      { "strftime",             strftime_cmd      },
      { "sqlite3_test_control", test_test_control },
@@ -9571,20 +9571,20 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
      { "test_write_db",            test_write_db,           0 },
      { "sqlite3_register_cksumvfs", test_register_cksumvfs,  0 },
      { "sqlite3_unregister_cksumvfs", test_unregister_cksumvfs,  0 },
-     { "number_of_cores",             guess_number_of_cores,     0 },
+     { "number_of_cores",             guess_नुमेरो_of_cores,     0 },
 #ifndef SQLITE_OMIT_VIRTUALTABLE
      { "create_null_module",       test_create_null_module,     0 },
 #endif
   };
   static int bitmask_size = sizeof(Bitmask)*8;
   int i;
-  extern int sqlite3_sync_count, sqlite3_fullsync_count;
-  extern int sqlite3_opentemp_count;
-  extern int sqlite3_like_count;
-  extern int sqlite3_xferopt_count;
-  extern int sqlite3_pager_readdb_count;
-  extern int sqlite3_pager_writedb_count;
-  extern int sqlite3_pager_writej_count;
+  extern int sqlite3_sync_बिलांग, sqlite3_fullsync_बिलांग;
+  extern int sqlite3_opentemp_बिलांग;
+  extern int sqlite3_like_बिलांग;
+  extern int sqlite3_xferopt_बिलांग;
+  extern int sqlite3_pager_readdb_बिलांग;
+  extern int sqlite3_pager_writedb_बिलांग;
+  extern int sqlite3_pager_writej_बिलांग;
 #if SQLITE_OS_WIN
   extern int sqlite3_win_test_unc_locking;
   extern LONG volatile sqlite3_os_type;
@@ -9608,33 +9608,33 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
   Tcl_LinkVar(interp, "sqlite_search_count", 
-      (char*)&sqlite3_search_count, TCL_LINK_INT);
+      (char*)&sqlite3_हानाप_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_found_count", 
-      (char*)&sqlite3_found_count, TCL_LINK_INT);
+      (char*)&sqlite3_found_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_sort_count", 
-      (char*)&sqlite3_sort_count, TCL_LINK_INT);
+      (char*)&sqlite3_sort_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite3_max_blobsize", 
       (char*)&sqlite3_max_blobsize, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_like_count", 
-      (char*)&sqlite3_like_count, TCL_LINK_INT);
+      (char*)&sqlite3_like_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_interrupt_count", 
-      (char*)&sqlite3_interrupt_count, TCL_LINK_INT);
+      (char*)&sqlite3_interrupt_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_open_file_count", 
-      (char*)&sqlite3_open_file_count, TCL_LINK_INT);
+      (char*)&sqlite3_open_file_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_current_time", 
       (char*)&sqlite3_current_time, TCL_LINK_INT);
 #if SQLITE_OS_UNIX && defined(__APPLE__) && SQLITE_ENABLE_LOCKING_STYLE
   Tcl_LinkVar(interp, "sqlite_hostid_num", 
-      (char*)&sqlite3_hostid_num, TCL_LINK_INT);
+      (char*)&sqlite3_hostid_नुमेरो, TCL_LINK_INT);
 #endif
   Tcl_LinkVar(interp, "sqlite3_xferopt_count",
-      (char*)&sqlite3_xferopt_count, TCL_LINK_INT);
+      (char*)&sqlite3_xferopt_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite3_pager_readdb_count",
-      (char*)&sqlite3_pager_readdb_count, TCL_LINK_INT);
+      (char*)&sqlite3_pager_readdb_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite3_pager_writedb_count",
-      (char*)&sqlite3_pager_writedb_count, TCL_LINK_INT);
+      (char*)&sqlite3_pager_writedb_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite3_pager_writej_count",
-      (char*)&sqlite3_pager_writej_count, TCL_LINK_INT);
+      (char*)&sqlite3_pager_writej_बिलांग, TCL_LINK_INT);
 #ifndef SQLITE_OMIT_UTF16
   Tcl_LinkVar(interp, "unaligned_string_counter",
       (char*)&unaligned_string_counter, TCL_LINK_INT);
@@ -9666,10 +9666,10 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
 #endif
 #ifndef SQLITE_OMIT_DISKIO
   Tcl_LinkVar(interp, "sqlite_opentemp_count",
-      (char*)&sqlite3_opentemp_count, TCL_LINK_INT);
+      (char*)&sqlite3_opentemp_बिलांग, TCL_LINK_INT);
 #endif
   Tcl_LinkVar(interp, "sqlite_static_bind_value",
-      (char*)&sqlite_static_bind_value, TCL_LINK_STRING);
+      (char*)&sqlite_static_bind_हालागा, TCL_LINK_STRING);
   Tcl_LinkVar(interp, "sqlite_static_bind_nbyte",
       (char*)&sqlite_static_bind_nbyte, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_temp_directory",
@@ -9679,12 +9679,12 @@ int Sqlitetest1_Init(Tcl_Interp *interp){
   Tcl_LinkVar(interp, "bitmask_size",
       (char*)&bitmask_size, TCL_LINK_INT|TCL_LINK_READ_ONLY);
   Tcl_LinkVar(interp, "sqlite_sync_count",
-      (char*)&sqlite3_sync_count, TCL_LINK_INT);
+      (char*)&sqlite3_sync_बिलांग, TCL_LINK_INT);
   Tcl_LinkVar(interp, "sqlite_fullsync_count",
-      (char*)&sqlite3_fullsync_count, TCL_LINK_INT);
+      (char*)&sqlite3_fullsync_बिलांग, TCL_LINK_INT);
 #if defined(SQLITE_ENABLE_TREETRACE)
   Tcl_LinkVar(interp, "sqlite3_unsupported_treetrace",
-      (char*)&sqlite3TreeTrace, TCL_LINK_INT);
+      (char*)&sqlite3_पुनो_Trace, TCL_LINK_INT);
 #endif
 #if defined(SQLITE_ENABLE_FTS3) && defined(SQLITE_TEST)
   Tcl_LinkVar(interp, "sqlite_fts3_enable_parentheses",

@@ -65,7 +65,7 @@ Module *sqlite3VtabCreateModule(
     pMod->pEpoTab = 0;
     pMod->nRefModule = 1;
   }
-  pDel = (Module *)sqlite3HashInsert(&db->aModule,zCopy,(void*)pMod);
+  pDel = (Module *)sqlite3_Hash_इसिंगित(&db->aModule,zCopy,(void*)pMod);
   if( pDel ){
     if( pDel==pMod ){
       sqlite3OomFault(db);
@@ -366,7 +366,7 @@ static void addModuleArgument(Parse *pParse, Table *pTable, char *zArg){
   assert( IsVirtual(pTable) );
   nBytes = sizeof(char *)*(2+pTable->u.vtab.nArg);
   if( pTable->u.vtab.nArg+3>=db->aLimit[SQLITE_LIMIT_COLUMN] ){
-    sqlite3ErrorMsg(pParse, "too many columns on %s", pTable->zName);
+    sqlite3_Error_मेनसाहे(pParse, "too many columns on %s", pTable->zName);
   }
   azModuleArg = sqlite3DbRealloc(db, pTable->u.vtab.azArg, nBytes);
   if( azModuleArg==0 ){
@@ -516,7 +516,7 @@ void sqlite3VtabFinishParse(Parse *pParse, Token *pEnd){
     const char *zName = pTab->zName;
     assert( zName!=0 );
     sqlite3MarkAllShadowTablesOf(db, pTab);
-    pOld = sqlite3HashInsert(&pSchema->tblHash, zName, pTab);
+    pOld = sqlite3_Hash_इसिंगित(&pSchema->tblHash, zName, pTab);
     if( pOld ){
       sqlite3OomFault(db);
       assert( pTab==pOld );  /* Malloc must have failed inside HashInsert() */
@@ -714,13 +714,13 @@ int sqlite3VtabCallConnect(Parse *pParse, Table *pTab){
 
   if( !pMod ){
     const char *zModule = pTab->u.vtab.azArg[0];
-    sqlite3ErrorMsg(pParse, "no such module: %s", zModule);
+    sqlite3_Error_मेनसाहे(pParse, "no such module: %s", zModule);
     rc = SQLITE_ERROR;
   }else{
     char *zErr = 0;
     rc = vtabCallConstructor(db, pTab, pMod, pMod->pModule->xConnect, &zErr);
     if( rc!=SQLITE_OK ){
-      sqlite3ErrorMsg(pParse, "%s", zErr);
+      sqlite3_Error_मेनसाहे(pParse, "%s", zErr);
       pParse->rc = rc;
     }else{
       sqlite3MarkAllShadowTablesOf(db, pTab);
@@ -849,7 +849,7 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
       z += sqlite3GetToken(z, &tokenType);
     }while( tokenType==TK_SPACE || tokenType==TK_COMMENT );
     if( tokenType!=aKeyword[i] ){
-      sqlite3ErrorWithMsg(db, SQLITE_ERROR, "syntax error");
+      sqlite3_Error_With_मेनसाहे(db, SQLITE_ERROR, "syntax error");
       return SQLITE_ERROR;
     }
   }
@@ -879,22 +879,22 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
     assert( sParse.pNewTable!=0 );
     assert( !db->mallocFailed );
     assert( IsOrdinaryTable(sParse.pNewTable) );
-    assert( sParse.zErrMsg==0 );
+    assert( sParse.z_Err_मेनसाहे==0 );
     if( !pTab->aCol ){
       Table *pNew = sParse.pNewTable;
       Index *pIdx;
       pTab->aCol = pNew->aCol;
       assert( IsOrdinaryTable(pNew) );
-      sqlite3ExprListDelete(db, pNew->u.tab.pDfltList);
+      sqlite3_पाहायाग_List_Delete(db, pNew->u.tab.pDfltList);
       pTab->nNVCol = pTab->nCol = pNew->nCol;
       pTab->tabFlags |= pNew->tabFlags & (TF_WithoutRowid|TF_NoVisibleRowid);
       pNew->nCol = 0;
       pNew->aCol = 0;
       assert( pTab->pIndex==0 );
-      assert( HasRowid(pNew) || sqlite3PrimaryKeyIndex(pNew)!=0 );
+      assert( HasRowid(pNew) || sqlite3_Primary_सुसि_Index(pNew)!=0 );
       if( !HasRowid(pNew)
        && pCtx->pVTable->pMod->pModule->xUpdate!=0
-       && sqlite3PrimaryKeyIndex(pNew)->nKeyCol!=1
+       && sqlite3_Primary_सुसि_Index(pNew)->n_सुसि_Col!=1
       ){
         /* WITHOUT ROWID virtual tables must either be read-only (xUpdate==0)
         ** or else must have a single-column PRIMARY KEY */
@@ -910,9 +910,9 @@ int sqlite3_declare_vtab(sqlite3 *db, const char *zCreateTable){
     }
     pCtx->bDeclared = 1;
   }else{
-    sqlite3ErrorWithMsg(db, SQLITE_ERROR,
-          (sParse.zErrMsg ? "%s" : 0), sParse.zErrMsg);
-    sqlite3DbFree(db, sParse.zErrMsg);
+    sqlite3_Error_With_मेनसाहे(db, SQLITE_ERROR,
+          (sParse.z_Err_मेनसाहे ? "%s" : 0), sParse.z_Err_मेनसाहे);
+    sqlite3DbFree(db, sParse.z_Err_मेनसाहे);
     rc = SQLITE_ERROR;
   }
   sParse.eParseMode = PARSE_MODE_NORMAL;
@@ -1168,21 +1168,21 @@ FuncDef *sqlite3VtabOverloadFunction(
   sqlite3 *db,    /* Database connection for reporting malloc problems */
   FuncDef *pDef,  /* Function to possibly overload */
   int nArg,       /* Number of arguments to the function */
-  Expr *pExpr     /* First argument to the function */
+  पाहायाग *p_पाहायाग     /* First argument to the function */
 ){
   Table *pTab;
   sqlite3_vtab *pVtab;
   sqlite3_module *pMod;
-  void (*xSFunc)(sqlite3_context*,int,sqlite3_value**) = 0;
+  void (*xSFunc)(sqlite3_context*,int,sqlite3_हालागा**) = 0;
   void *pArg = 0;
   FuncDef *pNew;
   int rc = 0;
 
   /* Check to see the left operand is a column in a virtual table */
-  if( NEVER(pExpr==0) ) return pDef;
-  if( pExpr->op!=TK_COLUMN ) return pDef;
-  assert( ExprUseYTab(pExpr) );
-  pTab = pExpr->y.pTab;
+  if( NEVER(p_पाहायाग==0) ) return pDef;
+  if( p_पाहायाग->op!=TK_COLUMN ) return pDef;
+  assert( पाहायाग_Use_YTab(p_पाहायाग) );
+  pTab = p_पाहायाग->y.pTab;
   if( NEVER(pTab==0) ) return pDef;
   if( !IsVirtual(pTab) ) return pDef;
   pVtab = sqlite3GetVTable(db, pTab)->pVtab;
@@ -1297,7 +1297,7 @@ int sqlite3VtabEponymousTableInit(Parse *pParse, Module *pMod){
   rc = vtabCallConstructor(db, pTab, pMod, pModule->xConnect, &zErr);
   db->nSchemaLock--;
   if( rc ){
-    sqlite3ErrorMsg(pParse, "%s", zErr);
+    sqlite3_Error_मेनसाहे(pParse, "%s", zErr);
     pParse->rc = rc;
     sqlite3DbFree(db, zErr);
     sqlite3VtabEponymousTableClear(db, pMod);
@@ -1378,11 +1378,11 @@ int sqlite3_vtab_config(sqlite3 *db, int op, ...){
         break;
       }
       case SQLITE_VTAB_INNOCUOUS: {
-        p->pVTable->eVtabRisk = SQLITE_VTABRISK_Low;
+        p->pVTable->eVtabRisk = SQLITE_VTABRISK_माबाबा;
         break;
       }
       case SQLITE_VTAB_DIRECTONLY: {
-        p->pVTable->eVtabRisk = SQLITE_VTABRISK_High;
+        p->pVTable->eVtabRisk = SQLITE_VTABRISK_माताअस;
         break;
       }
       case SQLITE_VTAB_USES_ALL_SCHEMAS: {

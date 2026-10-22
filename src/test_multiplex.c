@@ -69,7 +69,7 @@
 #define DEFAULT_SECTOR_SIZE 0x1000
 
 /* Maximum chunk number */
-#define MX_CHUNK_NUMBER 299
+#define MX_CHUNK_नुमेरो 299
 
 /* First chunk for rollback journal files */
 #define SQLITE_MULTIPLEX_JOURNAL_8_3_OFFSET 400
@@ -225,7 +225,7 @@ static void multiplexFilename(
 ){
   int n = nBase;
   memcpy(zOut, zBase, n+1);
-  if( iChunk!=0 && iChunk<=MX_CHUNK_NUMBER ){
+  if( iChunk!=0 && iChunk<=MX_CHUNK_नुमेरो ){
 #ifdef SQLITE_ENABLE_8_3_NAMES
     int i;
     for(i=n-1; i>0 && i>=n-4 && zOut[i]!='.'; i--){}
@@ -375,7 +375,7 @@ static sqlite3_int64 multiplexSubSize(
 static void multiplexControlFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   int rc = SQLITE_OK;
   sqlite3 *db = sqlite3_context_db_handle(context);
@@ -386,8 +386,8 @@ static void multiplexControlFunc(
     rc = SQLITE_ERROR;
   }else{
     /* extract params */
-    op = sqlite3_value_int(argv[0]);
-    iVal = sqlite3_value_int(argv[1]);
+    op = sqlite3_हालागा_int(argv[0]);
+    iVal = sqlite3_हालागा_int(argv[1]);
     /* map function op to file_control op */
     switch( op ){
       case 1:
@@ -416,7 +416,7 @@ static void multiplexControlFunc(
 */
 static int multiplexFuncInit(
   sqlite3 *db,
-  char **pzErrMsg,
+  char **pz_Err_मेनसाहे,
   const sqlite3_api_routines *pApi
 ){
   int rc;
@@ -1240,7 +1240,7 @@ static int SQLITE_TCLAPI test_multiplex_initialize(
 
   /* Process arguments */
   if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "NAME MAKEDEFAULT");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "NAME MAKEDEFAULT");
     return TCL_ERROR;
   }
   zName = Tcl_GetString(objv[1]);
@@ -1271,7 +1271,7 @@ static int SQLITE_TCLAPI test_multiplex_shutdown(
     objc = 3;
   }
   if( (objc!=1 && objc!=2) ){
-    Tcl_WrongNumArgs(interp, 1, objv, "?-force?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "?-force?");
     return TCL_ERROR;
   }
 
@@ -1295,7 +1295,7 @@ static int SQLITE_TCLAPI test_multiplex_control(
   int idx;                        /* Index in aSub[] */
   Tcl_CmdInfo cmdInfo;            /* Command info structure for HANDLE */
   sqlite3 *db;                    /* Underlying db handle for HANDLE */
-  int iValue = 0;
+  int i_हालागा = 0;
   void *pArg = 0;
 
   struct SubCommand {
@@ -1310,7 +1310,7 @@ static int SQLITE_TCLAPI test_multiplex_control(
   };
 
   if( objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE DBNAME SUB-COMMAND INT-VALUE");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "HANDLE DBNAME SUB-COMMAND INT-VALUE");
     return TCL_ERROR;
   }
 
@@ -1329,13 +1329,13 @@ static int SQLITE_TCLAPI test_multiplex_control(
 
   switch( aSub[idx].argtype ){
     case 1:
-      if( Tcl_GetIntFromObj(interp, objv[4], &iValue) ){
+      if( Tcl_GetIntFromObj(interp, objv[4], &i_हालागा) ){
         return TCL_ERROR;
       }
-      pArg = (void *)&iValue;
+      pArg = (void *)&i_हालागा;
       break;
     default:
-      Tcl_WrongNumArgs(interp, 4, objv, "SUB-COMMAND");
+      Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 4, objv, "SUB-COMMAND");
       return TCL_ERROR;
   }
 

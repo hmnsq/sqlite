@@ -90,10 +90,10 @@ static Btree *findBtree(sqlite3 *pErrorDb, sqlite3 *pDb, const char *zDb){
     int rc = 0;
     sqlite3ParseObjectInit(&sParse,pDb);
     if( sqlite3OpenTempDatabase(&sParse) ){
-      sqlite3ErrorWithMsg(pErrorDb, sParse.rc, "%s", sParse.zErrMsg);
+      sqlite3_Error_With_मेनसाहे(pErrorDb, sParse.rc, "%s", sParse.z_Err_मेनसाहे);
       rc = SQLITE_ERROR;
     }
-    sqlite3DbFree(pErrorDb, sParse.zErrMsg);
+    sqlite3DbFree(pErrorDb, sParse.z_Err_मेनसाहे);
     sqlite3ParseObjectReset(&sParse);
     if( rc ){
       return 0;
@@ -101,7 +101,7 @@ static Btree *findBtree(sqlite3 *pErrorDb, sqlite3 *pDb, const char *zDb){
   }
 
   if( i<0 ){
-    sqlite3ErrorWithMsg(pErrorDb, SQLITE_ERROR, "unknown database %s", zDb);
+    sqlite3_Error_With_मेनसाहे(pErrorDb, SQLITE_ERROR, "unknown database %s", zDb);
     return 0;
   }
 
@@ -124,7 +124,7 @@ static int setDestPgsz(Btree *pDest, Btree *pSrc){
 */
 static int checkReadTransaction(sqlite3 *db, Btree *p){
   if( sqlite3BtreeTxnState(p)!=SQLITE_TXN_NONE ){
-    sqlite3ErrorWithMsg(db, SQLITE_ERROR, "destination database is in use");
+    sqlite3_Error_With_मेनसाहे(db, SQLITE_ERROR, "destination database is in use");
     return SQLITE_ERROR;
   }
   return SQLITE_OK;
@@ -165,7 +165,7 @@ sqlite3_backup *sqlite3_backup_init(
   sqlite3_mutex_enter(pDestDb->mutex);
 
   if( pSrcDb==pDestDb ){
-    sqlite3ErrorWithMsg(
+    sqlite3_Error_With_मेनसाहे(
         pDestDb, SQLITE_ERROR, "source and destination must be distinct"
     );
     p = 0;

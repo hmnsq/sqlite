@@ -417,7 +417,7 @@ static int setDateTimeToCurrent(sqlite3_context *context, DateTime *p){
 ** range of a julian day number, install it as such and set validJD.
 ** If the value is a valid unix timestamp, put it in p->s and set p->rawS.
 */
-static void setRawDateNumber(DateTime *p, double r){
+static void set_Raw_Date_नुमेरो(DateTime *p, double r){
   p->s = r;
   p->rawS = 1;
   if( r>=0.0 && r<5373484.5 ){
@@ -455,7 +455,7 @@ static int parseDateOrTime(
   }else if( sqlite3StrICmp(zDate,"now")==0 && sqlite3NotPureFunc(context) ){
     return setDateTimeToCurrent(context, p);
   }else if( sqlite3AtoF(zDate, &r)>0 ){
-    setRawDateNumber(p, r);
+    set_Raw_Date_नुमेरो(p, r);
     return 0;
   }else if( (sqlite3StrICmp(zDate,"subsec")==0
              || sqlite3StrICmp(zDate,"subsecond")==0)
@@ -1185,7 +1185,7 @@ static int parseModifier(
 static int isDate(
   sqlite3_context *context, 
   int argc, 
-  sqlite3_value **argv, 
+  sqlite3_हालागा **argv, 
   DateTime *p
 ){
   int i, n;
@@ -1196,18 +1196,18 @@ static int isDate(
     if( !sqlite3NotPureFunc(context) ) return 1;
     return setDateTimeToCurrent(context, p);
   }
-  if( (eType = sqlite3_value_type(argv[0]))==SQLITE_FLOAT
+  if( (eType = sqlite3_हालागा_type(argv[0]))==SQLITE_FLOAT
                    || eType==SQLITE_INTEGER ){
-    setRawDateNumber(p, sqlite3_value_double(argv[0]));
+    set_Raw_Date_नुमेरो(p, sqlite3_हालागा_double(argv[0]));
   }else{
-    z = sqlite3_value_text(argv[0]);
+    z = sqlite3_हालागा_text(argv[0]);
     if( !z || parseDateOrTime(context, (char*)z, p) ){
       return 1;
     }
   }
   for(i=1; i<argc; i++){
-    z = sqlite3_value_text(argv[i]);
-    n = sqlite3_value_bytes(argv[i]);
+    z = sqlite3_हालागा_text(argv[i]);
+    n = sqlite3_हालागा_bytes(argv[i]);
     if( z==0 || parseModifier(context, (char*)z, n, p, i) ) return 1;
   }
   computeJD(p);
@@ -1235,7 +1235,7 @@ static int isDate(
 static void juliandayFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   DateTime x;
   if( isDate(context, argc, argv, &x)==0 ){
@@ -1253,7 +1253,7 @@ static void juliandayFunc(
 static void unixepochFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   DateTime x;
   if( isDate(context, argc, argv, &x)==0 ){
@@ -1274,7 +1274,7 @@ static void unixepochFunc(
 static void datetimeFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   DateTime x;
   if( isDate(context, argc, argv, &x)==0 ){
@@ -1334,7 +1334,7 @@ static void datetimeFunc(
 static void timeFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   DateTime x;
   if( isDate(context, argc, argv, &x)==0 ){
@@ -1376,7 +1376,7 @@ static void timeFunc(
 static void dateFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   DateTime x;
   if( isDate(context, argc, argv, &x)==0 ){
@@ -1488,7 +1488,7 @@ static int daysAfterSunday(DateTime *pDate){
 static void strftimeFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   DateTime x;
   size_t i,j;
@@ -1498,7 +1498,7 @@ static void strftimeFunc(
 
 
   if( argc==0 ) return;
-  zFmt = (const char*)sqlite3_value_text(argv[0]);
+  zFmt = (const char*)sqlite3_हालागा_text(argv[0]);
   if( zFmt==0 || isDate(context, argc-1, argv+1, &x) ) return;
   db = sqlite3_context_db_handle(context);
   pRes = sqlite3_str_new(db);
@@ -1656,7 +1656,7 @@ static void strftimeFunc(
 static void ctimeFunc(
   sqlite3_context *context,
   int NotUsed,
-  sqlite3_value **NotUsed2
+  sqlite3_हालागा **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   timeFunc(context, 0, 0);
@@ -1670,7 +1670,7 @@ static void ctimeFunc(
 static void cdateFunc(
   sqlite3_context *context,
   int NotUsed,
-  sqlite3_value **NotUsed2
+  sqlite3_हालागा **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   dateFunc(context, 0, 0);
@@ -1696,7 +1696,7 @@ static void cdateFunc(
 static void timediffFunc(
   sqlite3_context *context,
   int NotUsed1,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   char sign;
   int Y, M;
@@ -1793,7 +1793,7 @@ static void timediffFunc(
 static void ctimestampFunc(
   sqlite3_context *context,
   int NotUsed,
-  sqlite3_value **NotUsed2
+  sqlite3_हालागा **NotUsed2
 ){
   UNUSED_PARAMETER2(NotUsed, NotUsed2);
   datetimeFunc(context, 0, 0);
@@ -1815,7 +1815,7 @@ static void ctimestampFunc(
 static void currentTimeFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   time_t t;
   char *zFormat = (char *)sqlite3_user_data(context);
@@ -1855,7 +1855,7 @@ static void currentTimeFunc(
 static void datedebugFunc(
   sqlite3_context *context,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   DateTime x;
   if( isDate(context, argc, argv, &x)==0 ){
@@ -1902,5 +1902,5 @@ void sqlite3RegisterDateTimeFunctions(void){
     STR_FUNCTION(current_timestamp, 0, "%Y-%m-%d %H:%M:%S", 0, currentTimeFunc),
 #endif
   };
-  sqlite3InsertBuiltinFuncs(aDateTimeFuncs, ArraySize(aDateTimeFuncs));
+  sqlite3_इसिंगित_Builtin_Funcs(aDateTimeFuncs, ArraySize(aDateTimeFuncs));
 }

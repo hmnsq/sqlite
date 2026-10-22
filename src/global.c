@@ -363,7 +363,7 @@ int sqlite3PendingByte = 0x40000000;
 /*
 ** Tracing flags set by SQLITE_TESTCTRL_TRACEFLAGS.
 */
-u32 sqlite3TreeTrace = 0;
+u32 sqlite3_पुनो_Trace = 0;
 u32 sqlite3WhereTrace = 0;
 
 #include "opcodes.h"
@@ -378,7 +378,7 @@ const unsigned char sqlite3OpcodeProperty[] = OPFLG_INITIALIZER;
 /*
 ** Name of the default collating sequence
 */
-const char sqlite3StrBINARY[] = "BINARY";
+const char sqlite3_Str_दालावाहान[] = "BINARY";
 
 /*
 ** Standard typenames.  These names must match the COLTYPE_* definitions.

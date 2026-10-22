@@ -332,7 +332,7 @@ struct JsonString {
 #define JSON_AINS      0x08        /* json_array_insert(), not json_insert() */
 #define JSON_BLOB      0x10        /* Use the BLOB output format */
 
-#define JSON_INSERT_TYPE(X)  (((X)&0xC)>>2)
+#define JSON_इसिंगित_TYPE(X)  (((X)&0xC)>>2)
 
 
 /* A parsed JSON value.  Lifecycle:
@@ -404,10 +404,10 @@ struct JsonParse {
 ** Forward references
 **************************************************************************/
 static void jsonReturnStringAsBlob(JsonString*);
-static int jsonArgIsJsonb(sqlite3_value *pJson, JsonParse *p);
+static int jsonArgIsJsonb(sqlite3_हालागा *pJson, JsonParse *p);
 static u32 jsonTranslateBlobToText(JsonParse*,u32,JsonString*);
 static void jsonReturnParse(sqlite3_context*,JsonParse*);
-static JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_value*,u32);
+static JsonParse *jsonParseFuncArg(sqlite3_context*,sqlite3_हालागा*,u32);
 static void jsonParseFree(JsonParse*);
 static u32 jsonbPayloadSize(const JsonParse*, u32, u32*);
 static u32 jsonUnescapeOneChar(const char*, u32, u32*);
@@ -437,7 +437,7 @@ static void jsonCacheDeleteGeneric(void *p){
 **
 ** Cache entries are stored in age order, oldest first.
 */
-static int jsonCacheInsert(
+static int json_Cache_इसिंगित(
   sqlite3_context *ctx,   /* The SQL statement context holding the cache */
   JsonParse *pParse       /* The parse object to be added to the cache */
 ){
@@ -481,21 +481,21 @@ static int jsonCacheInsert(
 ** be deleted at any moment.  If the caller wants the JsonParse to
 ** linger, it needs to increment the nPJRef reference counter.
 */
-static JsonParse *jsonCacheSearch(
+static JsonParse *json_Cache_हानाप(
   sqlite3_context *ctx,    /* The SQL statement context holding the cache */
-  sqlite3_value *pArg      /* Function argument containing SQL text */
+  sqlite3_हालागा *pArg      /* Function argument containing SQL text */
 ){
   JsonCache *p;
   int i;
   const char *zJson;
   int nJson;
 
-  if( sqlite3_value_type(pArg)!=SQLITE_TEXT ){
+  if( sqlite3_हालागा_type(pArg)!=SQLITE_TEXT ){
     return 0;
   }
-  zJson = (const char*)sqlite3_value_text(pArg);
+  zJson = (const char*)sqlite3_हालागा_text(pArg);
   if( zJson==0 ) return 0;
-  nJson = sqlite3_value_bytes(pArg);
+  nJson = sqlite3_हालागा_bytes(pArg);
 
   p = sqlite3_get_auxdata(ctx, JSON_CACHE_ID);
   if( p==0 ){
@@ -801,29 +801,29 @@ static void jsonAppendString(JsonString *p, const char *zIn, u32 N){
 ** Append an sqlite3_value (such as a function parameter) to the JSON
 ** string under construction in p.
 */
-static void jsonAppendSqlValue(
+static void json_Append_Sql_हालागा(
   JsonString *p,                 /* Append to this JSON string */
-  sqlite3_value *pValue          /* Value to append */
+  sqlite3_हालागा *p_हालागा          /* Value to append */
 ){
-  switch( sqlite3_value_type(pValue) ){
+  switch( sqlite3_हालागा_type(p_हालागा) ){
     case SQLITE_NULL: {
       jsonAppendRawNZ(p, "null", 4);
       break;
     }
     case SQLITE_FLOAT: {
-      jsonPrintf(100, p, "%!0.17g", sqlite3_value_double(pValue));
+      jsonPrintf(100, p, "%!0.17g", sqlite3_हालागा_double(p_हालागा));
       break;
     }
     case SQLITE_INTEGER: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
-      u32 n = (u32)sqlite3_value_bytes(pValue);
+      const char *z = (const char*)sqlite3_हालागा_text(p_हालागा);
+      u32 n = (u32)sqlite3_हालागा_bytes(p_हालागा);
       jsonAppendRaw(p, z, n);
       break;
     }
     case SQLITE_TEXT: {
-      const char *z = (const char*)sqlite3_value_text(pValue);
-      u32 n = (u32)sqlite3_value_bytes(pValue);
-      if( sqlite3_value_subtype(pValue)==JSON_SUBTYPE ){
+      const char *z = (const char*)sqlite3_हालागा_text(p_हालागा);
+      u32 n = (u32)sqlite3_हालागा_bytes(p_हालागा);
+      if( sqlite3_हालागा_subtype(p_हालागा)==JSON_SUBTYPE ){
         jsonAppendRaw(p, z, n);
       }else{
         jsonAppendString(p, z, n);
@@ -833,7 +833,7 @@ static void jsonAppendSqlValue(
     default: {
       JsonParse px;
       memset(&px, 0, sizeof(px));
-      if( jsonArgIsJsonb(pValue, &px) ){
+      if( jsonArgIsJsonb(p_हालागा, &px) ){
         jsonTranslateBlobToText(&px, 0, p);
       }else if( p->eErr==0 ){
         sqlite3_result_error(p->pCtx, "JSON cannot hold BLOB values", -1);
@@ -875,7 +875,7 @@ static void jsonReturnString(
         pParse->zJson = sqlite3RCStrRef(p->zBuf);
         pParse->nJson = p->nUsed;
         pParse->bJsonIsRCStr = 1;
-        rc = jsonCacheInsert(ctx, pParse);
+        rc = json_Cache_इसिंगित(ctx, pParse);
         if( rc==SQLITE_NOMEM ){
           sqlite3_result_error_nomem(ctx);
           jsonStringReset(p);
@@ -1132,14 +1132,14 @@ static const struct NanInfName {
 ** Report the wrong number of arguments for json_insert(), json_replace()
 ** or json_set().
 */
-static void jsonWrongNumArgs(
+static void json_Wrong_नुमेरो_मगा_कातविरान(
   sqlite3_context *pCtx,
   const char *zFuncName
 ){
-  char *zMsg = sqlite3_mprintf("json_%s() needs an odd number of arguments",
+  char *z_मेनसाहे = sqlite3_mprintf("json_%s() needs an odd number of arguments",
                                zFuncName);
-  sqlite3_result_error(pCtx, zMsg, -1);
-  sqlite3_free(zMsg);
+  sqlite3_result_error(pCtx, z_मेनसाहे, -1);
+  sqlite3_free(z_मेनसाहे);
 }
 
 /****************************************************************************
@@ -1220,15 +1220,15 @@ static void jsonBlobAppendOneByte(JsonParse *pParse, u8 c){
 /* Slow version of jsonBlobAppendNode() that first resizes the
 ** pParse->aBlob structure.
 */
-static void jsonBlobAppendNode(JsonParse*,u8,u64,const void*);
-static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
+static void json_Blob_Append_बुहोल(JsonParse*,u8,u64,const void*);
+static SQLITE_NOINLINE void json_Blob_Expand_And_Append_बुहोल(
   JsonParse *pParse,
   u8 eType,
   u64 szPayload,
   const void *aPayload
 ){
   if( jsonBlobExpand(pParse, (u64)pParse->nBlob+(u64)szPayload+9) ) return;
-  jsonBlobAppendNode(pParse, eType, szPayload, aPayload);
+  json_Blob_Append_बुहोल(pParse, eType, szPayload, aPayload);
 }
 
 
@@ -1241,7 +1241,7 @@ static SQLITE_NOINLINE void jsonBlobExpandAndAppendNode(
 ** payload, but the payload is not appended and pParse->nBlob is left
 ** pointing to where the first byte of payload will eventually be.
 */
-static void jsonBlobAppendNode(
+static void json_Blob_Append_बुहोल(
   JsonParse *pParse,          /* The JsonParse object under construction */
   u8 eType,                   /* Node type.  One of JSONB_* */
   u64 szPayload,              /* Number of bytes of payload */
@@ -1249,7 +1249,7 @@ static void jsonBlobAppendNode(
 ){
   u8 *a;
   if( pParse->nBlob+szPayload+9 > pParse->nBlobAlloc ){
-    jsonBlobExpandAndAppendNode(pParse,eType,szPayload,aPayload);
+    json_Blob_Expand_And_Append_बुहोल(pParse,eType,szPayload,aPayload);
     return;
   }
   assert( pParse->aBlob!=0 );
@@ -1591,7 +1591,7 @@ json_parse_restart:
   case '{': {
     /* Parse object */
     iThis = pParse->nBlob;
-    jsonBlobAppendNode(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
+    json_Blob_Append_बुहोल(pParse, JSONB_OBJECT, pParse->nJson-i, 0);
     if( ++pParse->iDepth > JSON_MAX_DEPTH ){
       pParse->iErr = i;
       return -1;
@@ -1619,7 +1619,7 @@ json_parse_restart:
             k++;
           }
           assert( iBlob==pParse->nBlob );
-          jsonBlobAppendNode(pParse, op, k-j, &z[j]);
+          json_Blob_Append_बुहोल(pParse, op, k-j, &z[j]);
           pParse->hasNonstd = 1;
           x = k;
         }else{
@@ -1642,7 +1642,7 @@ json_parse_restart:
           do{ j++; }while( jsonIsspace(z[j]) );
           if( z[j]==':' ){
             j++;
-            goto parse_object_value;
+            goto parse_object_हालागा;
           }
         }
         x = jsonTranslateTextToBlob(pParse, j);
@@ -1652,7 +1652,7 @@ json_parse_restart:
         }
         j = pParse->iErr+1;
       }
-    parse_object_value:
+    parse_object_हालागा:
       x = jsonTranslateTextToBlob(pParse, j);
       if( x<=0 ){
         if( x!=(-1) ) pParse->iErr = j;
@@ -1693,7 +1693,7 @@ json_parse_restart:
     /* Parse array */
     iThis = pParse->nBlob;
     assert( i<=(u32)pParse->nJson );
-    jsonBlobAppendNode(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
+    json_Blob_Append_बुहोल(pParse, JSONB_ARRAY, pParse->nJson - i, 0);
     iStart = pParse->nBlob;
     if( pParse->oom ) return -1;
     if( ++pParse->iDepth > JSON_MAX_DEPTH ){
@@ -1807,7 +1807,7 @@ json_parse_restart:
       }
       j++;
     }
-    jsonBlobAppendNode(pParse, opcode, j-1-i, &z[i+1]);
+    json_Blob_Append_बुहोल(pParse, opcode, j-1-i, &z[i+1]);
     return j+1;
   }
   case 't': {
@@ -1830,13 +1830,13 @@ json_parse_restart:
     u8 seenE;
     pParse->hasNonstd = 1;
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-    goto parse_number;
+    goto parse_नुमेरो;
   case '.':
     if( sqlite3Isdigit(z[i+1]) ){
       pParse->hasNonstd = 1;
       t = 0x03;          /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
       seenE = 0;
-      goto parse_number_2;
+      goto parse_नुमेरो_2;
     }
     pParse->iErr = i;
     return -1;
@@ -1853,7 +1853,7 @@ json_parse_restart:
   case '9':
     /* Parse number */
     t = 0x00;            /* Bit 0x01:  JSON5.   Bit 0x02:  FLOAT */
-  parse_number:
+  parse_नुमेरो:
     seenE = 0;
     assert( '-' < '0' );
     assert( '+' < '0' );
@@ -1867,7 +1867,7 @@ json_parse_restart:
           pParse->hasNonstd = 1;
           t = 0x01;
           for(j=i+3; sqlite3Isxdigit(z[j]); j++){}
-          goto parse_number_finish;
+          goto parse_नुमेरो_finish;
         }else if( sqlite3Isdigit(z[i+1]) ){
           pParse->iErr = i+1;
           return -1;
@@ -1882,16 +1882,16 @@ json_parse_restart:
           ){
             pParse->hasNonstd = 1;
             if( z[i]=='-' ){
-              jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
+              json_Blob_Append_बुहोल(pParse, JSONB_FLOAT, 6, "-9e999");
             }else{
-              jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
+              json_Blob_Append_बुहोल(pParse, JSONB_FLOAT, 5, "9e999");
             }
             return i + (sqlite3StrNICmp(&z[i+4],"inity",5)==0 ? 9 : 4);
           }
           if( z[i+1]=='.' ){
             pParse->hasNonstd = 1;
             t |= 0x01;
-            goto parse_number_2;
+            goto parse_नुमेरो_2;
           }
           pParse->iErr = i;
           return -1;
@@ -1904,13 +1904,13 @@ json_parse_restart:
             pParse->hasNonstd = 1;
             t |= 0x01;
             for(j=i+4; sqlite3Isxdigit(z[j]); j++){}
-            goto parse_number_finish;
+            goto parse_नुमेरो_finish;
           }
         }
       }
     }
 
-  parse_number_2:
+  parse_नुमेरो_2:
     for(j=i+1;; j++){
       c = z[j];
       if( sqlite3Isdigit(c) ) continue;
@@ -1960,12 +1960,12 @@ json_parse_restart:
         return -1;
       }
     }
-  parse_number_finish:
+  parse_नुमेरो_finish:
     assert( JSONB_INT+0x01==JSONB_INT5 );
     assert( JSONB_FLOAT+0x01==JSONB_FLOAT5 );
     assert( JSONB_INT+0x02==JSONB_FLOAT );
     if( z[i]=='+' ) i++;
-    jsonBlobAppendNode(pParse, JSONB_INT+t, j-i, &z[i]);
+    json_Blob_Append_बुहोल(pParse, JSONB_INT+t, j-i, &z[i]);
     return j;
   }
   case '}': {
@@ -2031,7 +2031,7 @@ json_parse_restart:
       }
       if( sqlite3Isalnum(z[i+nn]) ) continue;
       if( aNanInfName[k].eType==JSONB_FLOAT ){
-        jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
+        json_Blob_Append_बुहोल(pParse, JSONB_FLOAT, 5, "9e999");
       }else{
         jsonBlobAppendOneByte(pParse, JSONB_NULL);
       }
@@ -2702,12 +2702,12 @@ static u32 jsonTranslateBlobToPrettyText(
 ** Given that a JSONB_ARRAY object starts at offset i, return
 ** the number of entries in that array.
 */
-static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
+static u32 jsonb_Array_बिलांग(JsonParse *pParse, u32 i_उगात){
   u32 n, sz, i, iEnd;
   u32 k = 0;
-  n = jsonbPayloadSize(pParse, iRoot, &sz);
-  iEnd = iRoot+n+sz;
-  for(i=iRoot+n; n>0 && i<iEnd; i+=sz+n, k++){
+  n = jsonbPayloadSize(pParse, i_उगात, &sz);
+  iEnd = i_उगात+n+sz;
+  for(i=i_उगात+n; n>0 && i<iEnd; i+=sz+n, k++){
     n = jsonbPayloadSizeSemiInline(pParse, i, &sz);
   }
   return k;
@@ -2717,17 +2717,17 @@ static u32 jsonbArrayCount(JsonParse *pParse, u32 iRoot){
 ** Edit the payload size of the element at iRoot by the amount in
 ** pParse->delta.
 */
-static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 iRoot){
+static void jsonAfterEditSizeAdjust(JsonParse *pParse, u32 i_उगात){
   u32 sz = 0;
   u32 nBlob;
   assert( pParse->delta!=0 );
   assert( pParse->nBlobAlloc >= pParse->nBlob );
   nBlob = pParse->nBlob;
   pParse->nBlob = pParse->nBlobAlloc;
-  (void)jsonbPayloadSize(pParse, iRoot, &sz);
+  (void)jsonbPayloadSize(pParse, i_उगात, &sz);
   pParse->nBlob = nBlob;
   sz += pParse->delta;
-  pParse->delta += jsonBlobChangePayloadSize(pParse, iRoot, sz);
+  pParse->delta += jsonBlobChangePayloadSize(pParse, i_उगात, sz);
 }
 
 /*
@@ -2991,54 +2991,54 @@ static u32 jsonUnescapeOneChar(const char *z, u32 n, u32 *piOut){
 ** two comparands contains an escape sequence.
 */
 static SQLITE_NOINLINE int jsonLabelCompareEscaped(
-  const char *zLeft,          /* The left label */
-  u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
-  u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+  const char *z_कालिवा,          /* The left label */
+  u32 n_कालिवा,                  /* Size of the left label in bytes */
+  int raw_कालिवा,                /* True if zLeft contains no escapes */
+  const char *z_कानान,         /* The right label */
+  u32 n_कानान,                 /* Size of the right label in bytes */
+  int raw_कानान                /* True if zRight is escape-free */
 ){
-  u32 cLeft, cRight;
-  assert( rawLeft==0 || rawRight==0 );
+  u32 c_कालिवा, c_कानान;
+  assert( raw_कालिवा==0 || raw_कानान==0 );
   while( 1 /*exit-by-return*/ ){
-    if( nLeft==0 ){
-      cLeft = 0;
-    }else if( rawLeft || zLeft[0]!='\\' ){
-      cLeft = ((u8*)zLeft)[0];
-      if( cLeft>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zLeft, nLeft, &cLeft);
-        zLeft += sz;
-        nLeft -= sz;
+    if( n_कालिवा==0 ){
+      c_कालिवा = 0;
+    }else if( raw_कालिवा || z_कालिवा[0]!='\\' ){
+      c_कालिवा = ((u8*)z_कालिवा)[0];
+      if( c_कालिवा>=0xc0 ){
+        int sz = sqlite3Utf8ReadLimited((u8*)z_कालिवा, n_कालिवा, &c_कालिवा);
+        z_कालिवा += sz;
+        n_कालिवा -= sz;
       }else{
-        zLeft++;
-        nLeft--;
+        z_कालिवा++;
+        n_कालिवा--;
       }
     }else{
-      u32 n = jsonUnescapeOneChar(zLeft, nLeft, &cLeft);
-      zLeft += n;
-      assert( n<=nLeft );
-      nLeft -= n;
+      u32 n = jsonUnescapeOneChar(z_कालिवा, n_कालिवा, &c_कालिवा);
+      z_कालिवा += n;
+      assert( n<=n_कालिवा );
+      n_कालिवा -= n;
     }
-    if( nRight==0 ){
-      cRight = 0;
-    }else if( rawRight || zRight[0]!='\\' ){
-      cRight = ((u8*)zRight)[0];
-      if( cRight>=0xc0 ){
-        int sz = sqlite3Utf8ReadLimited((u8*)zRight, nRight, &cRight);
-        zRight += sz;
-        nRight -= sz;
+    if( n_कानान==0 ){
+      c_कानान = 0;
+    }else if( raw_कानान || z_कानान[0]!='\\' ){
+      c_कानान = ((u8*)z_कानान)[0];
+      if( c_कानान>=0xc0 ){
+        int sz = sqlite3Utf8ReadLimited((u8*)z_कानान, n_कानान, &c_कानान);
+        z_कानान += sz;
+        n_कानान -= sz;
       }else{
-        zRight++;
-        nRight--;
+        z_कानान++;
+        n_कानान--;
       }
     }else{
-      u32 n = jsonUnescapeOneChar(zRight, nRight, &cRight);
-      zRight += n;
-      assert( n<=nRight );
-      nRight -= n;
+      u32 n = jsonUnescapeOneChar(z_कानान, n_कानान, &c_कानान);
+      z_कानान += n;
+      assert( n<=n_कानान );
+      n_कानान -= n;
     }
-    if( cLeft!=cRight ) return 0;
-    if( cLeft==0 ) return 1;
+    if( c_कालिवा!=c_कानान ) return 0;
+    if( c_कालिवा==0 ) return 1;
   }
 }
 
@@ -3047,21 +3047,21 @@ static SQLITE_NOINLINE int jsonLabelCompareEscaped(
 ** 0 if they differ.  Return -1 if an OOM occurs.
 */
 static int jsonLabelCompare(
-  const char *zLeft,          /* The left label */
-  u32 nLeft,                  /* Size of the left label in bytes */
-  int rawLeft,                /* True if zLeft contains no escapes */
-  const char *zRight,         /* The right label */
-  u32 nRight,                 /* Size of the right label in bytes */
-  int rawRight                /* True if zRight is escape-free */
+  const char *z_कालिवा,          /* The left label */
+  u32 n_कालिवा,                  /* Size of the left label in bytes */
+  int raw_कालिवा,                /* True if zLeft contains no escapes */
+  const char *z_कानान,         /* The right label */
+  u32 n_कानान,                 /* Size of the right label in bytes */
+  int raw_कानान                /* True if zRight is escape-free */
 ){
-  if( rawLeft && rawRight ){
+  if( raw_कालिवा && raw_कानान ){
     /* Simpliest case:  Neither label contains escapes.  A simple
     ** memcmp() is sufficient. */
-    if( nLeft!=nRight ) return 0;
-    return memcmp(zLeft, zRight, nLeft)==0;
+    if( n_कालिवा!=n_कानान ) return 0;
+    return memcmp(z_कालिवा, z_कानान, n_कालिवा)==0;
   }else{
-    return jsonLabelCompareEscaped(zLeft, nLeft, rawLeft,
-                                   zRight, nRight, rawRight);
+    return jsonLabelCompareEscaped(z_कालिवा, n_कालिवा, raw_कालिवा,
+                                   z_कानान, n_कानान, raw_कानान);
   }
 }
 
@@ -3149,24 +3149,24 @@ static u32 jsonCreateEditSubstructure(
 */
 static u32 jsonLookupStep(
   JsonParse *pParse,      /* The JSON to search */
-  u32 iRoot,              /* Begin the search at this element of aBlob[] */
+  u32 i_उगात,              /* Begin the search at this element of aBlob[] */
   const char *zPath,      /* The path to search */
   u32 iLabel              /* Label if iRoot is a value of in an object */
 ){
-  u32 i, j, k, nKey, sz, n, iEnd, rc;
-  const char *zKey;
+  u32 i, j, k, n_सुसि, sz, n, iEnd, rc;
+  const char *z_सुसि;
   u8 x;
 
   if( zPath[0]==0 ){
     if( pParse->eEdit && jsonBlobMakeEditable(pParse, pParse->nIns) ){
-      n = jsonbPayloadSize(pParse, iRoot, &sz);
+      n = jsonbPayloadSize(pParse, i_उगात, &sz);
       sz += n;
       if( pParse->eEdit==JEDIT_DEL ){
         if( iLabel>0 ){
-          sz += iRoot - iLabel;
-          iRoot = iLabel;
+          sz += i_उगात - iLabel;
+          i_उगात = iLabel;
         }
-        jsonBlobEdit(pParse, iRoot, sz, 0, 0);
+        jsonBlobEdit(pParse, i_उगात, sz, 0, 0);
       }else if( pParse->eEdit==JEDIT_INS ){
         /* Already exists, so json_insert() is a no-op */
       }else if( pParse->eEdit==JEDIT_AINS ){
@@ -3174,44 +3174,44 @@ static u32 jsonLookupStep(
         if( zPath[-1]!=']' ){
           return JSON_LOOKUP_NOTARRAY;
         }else{
-          jsonBlobEdit(pParse, iRoot, 0, pParse->aIns, pParse->nIns);
+          jsonBlobEdit(pParse, i_उगात, 0, pParse->aIns, pParse->nIns);
         }
       }else{
         /* json_set() or json_replace() */
-        jsonBlobEdit(pParse, iRoot, sz, pParse->aIns, pParse->nIns);
+        jsonBlobEdit(pParse, i_उगात, sz, pParse->aIns, pParse->nIns);
       }
     }
     pParse->iLabel = iLabel;
-    return iRoot;
+    return i_उगात;
   }
   if( zPath[0]=='.' ){
-    int rawKey = 1;
-    x = pParse->aBlob[iRoot];
+    int raw_सुसि = 1;
+    x = pParse->aBlob[i_उगात];
     zPath++;
     if( zPath[0]=='"' ){
-      zKey = zPath + 1;
+      z_सुसि = zPath + 1;
       for(i=1; zPath[i] && zPath[i]!='"'; i++){
         if( zPath[i]=='\\' && zPath[i+1]!=0 ) i++;
       }
-      nKey = i-1;
+      n_सुसि = i-1;
       if( zPath[i] ){
         i++;
       }else{
         return JSON_LOOKUP_PATHERROR;
       }
-      testcase( nKey==0 );
-      rawKey = memchr(zKey, '\\', nKey)==0;
+      testcase( n_सुसि==0 );
+      raw_सुसि = memchr(z_सुसि, '\\', n_सुसि)==0;
     }else{
-      zKey = zPath;
+      z_सुसि = zPath;
       for(i=0; zPath[i] && zPath[i]!='.' && zPath[i]!='['; i++){}
-      nKey = i;
-      if( nKey==0 ){
+      n_सुसि = i;
+      if( n_सुसि==0 ){
         return JSON_LOOKUP_PATHERROR;
       }
     }
     if( (x & 0x0f)!=JSONB_OBJECT ) return JSON_LOOKUP_NOTFOUND;
-    n = jsonbPayloadSize(pParse, iRoot, &sz);
-    j = iRoot + n;  /* j is the index of a label */
+    n = jsonbPayloadSize(pParse, i_उगात, &sz);
+    j = i_उगात + n;  /* j is the index of a label */
     iEnd = j+sz;
     while( j<iEnd ){
       int rawLabel;
@@ -3224,7 +3224,7 @@ static u32 jsonLookupStep(
       if( k+sz>=iEnd ) return JSON_LOOKUP_ERROR;
       zLabel = (const char*)&pParse->aBlob[k];
       rawLabel = x==JSONB_TEXT || x==JSONB_TEXTRAW;
-      if( jsonLabelCompare(zKey, nKey, rawKey, zLabel, sz, rawLabel) ){
+      if( jsonLabelCompare(z_सुसि, n_सुसि, raw_सुसि, zLabel, sz, rawLabel) ){
         u32 v = k+sz;  /* v is the index of the value */
         if( ((pParse->aBlob[v])&0x0f)>JSONB_OBJECT ) return JSON_LOOKUP_ERROR;
         n = jsonbPayloadSize(pParse, v, &sz);
@@ -3235,7 +3235,7 @@ static u32 jsonLookupStep(
         }
         rc = jsonLookupStep(pParse, v, &zPath[i], j);
         pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, i_उगात);
         return rc;
       }
       j = k+sz;
@@ -3257,24 +3257,24 @@ static u32 jsonLookupStep(
       }
       memset(&ix, 0, sizeof(ix));
       ix.db = pParse->db;
-      jsonBlobAppendNode(&ix, rawKey?JSONB_TEXTRAW:JSONB_TEXT5, nKey, 0);
+      json_Blob_Append_बुहोल(&ix, raw_सुसि?JSONB_TEXTRAW:JSONB_TEXT5, n_सुसि, 0);
       pParse->oom |= ix.oom;
       rc = jsonCreateEditSubstructure(pParse, &v, &zPath[i]);
       if( !JSON_LOOKUP_ISERROR(rc)
-       && jsonBlobMakeEditable(pParse, ix.nBlob+nKey+v.nBlob)
+       && jsonBlobMakeEditable(pParse, ix.nBlob+n_सुसि+v.nBlob)
       ){
         assert( !pParse->oom );
-        nIns = ix.nBlob + nKey + v.nBlob;
+        nIns = ix.nBlob + n_सुसि + v.nBlob;
         jsonBlobEdit(pParse, j, 0, 0, nIns);
         if( !pParse->oom ){
           assert( pParse->aBlob!=0 ); /* Because pParse->oom!=0 */
           assert( ix.aBlob!=0 );      /* Because pPasre->oom!=0 */
           memcpy(&pParse->aBlob[j], ix.aBlob, ix.nBlob);
           k = j + ix.nBlob;
-          memcpy(&pParse->aBlob[k], zKey, nKey);
-          k += nKey;
+          memcpy(&pParse->aBlob[k], z_सुसि, n_सुसि);
+          k += n_सुसि;
           memcpy(&pParse->aBlob[k], v.aBlob, v.nBlob);
-          if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, iRoot);
+          if( ALWAYS(pParse->delta) ) jsonAfterEditSizeAdjust(pParse, i_उगात);
         }
       }
       jsonParseReset(&v);
@@ -3283,9 +3283,9 @@ static u32 jsonLookupStep(
     }
   }else if( zPath[0]=='[' ){
     u64 kk = 0;
-    x = pParse->aBlob[iRoot] & 0x0f;
+    x = pParse->aBlob[i_उगात] & 0x0f;
     if( x!=JSONB_ARRAY )  return JSON_LOOKUP_NOTFOUND;
-    n = jsonbPayloadSize(pParse, iRoot, &sz);
+    n = jsonbPayloadSize(pParse, i_उगात, &sz);
     i = 1;
     while( sqlite3Isdigit(zPath[i]) ){
       if( kk<0xffffffff ) kk = kk*10 + zPath[i] - '0';
@@ -3295,7 +3295,7 @@ static u32 jsonLookupStep(
     }
     if( i<2 || zPath[i]!=']' ){
       if( zPath[1]=='#' ){
-        kk = jsonbArrayCount(pParse, iRoot);
+        kk = jsonb_Array_बिलांग(pParse, i_उगात);
         i = 2;
         if( zPath[2]=='-' && sqlite3Isdigit(zPath[3]) ){
           u64 nn = 0;
@@ -3316,7 +3316,7 @@ static u32 jsonLookupStep(
         return JSON_LOOKUP_PATHERROR;
       }
     }
-    j = iRoot+n;
+    j = i_उगात+n;
     iEnd = j+sz;
     while( j<iEnd ){
       if( kk==0 ){
@@ -3325,7 +3325,7 @@ static u32 jsonLookupStep(
         }
         rc = jsonLookupStep(pParse, j, &zPath[i+1], 0);
         pParse->iDepth--;
-        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+        if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, i_उगात);
         return rc;
       }
       kk--;
@@ -3348,7 +3348,7 @@ static u32 jsonLookupStep(
         jsonBlobEdit(pParse, j, 0, v.aBlob, v.nBlob);
       }
       jsonParseReset(&v);
-      if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, iRoot);
+      if( pParse->delta ) jsonAfterEditSizeAdjust(pParse, i_उगात);
       return rc;
     }
   }else{
@@ -3588,10 +3588,10 @@ returnfromblob_malformed:
 */
 static int jsonFunctionArgToBlob(
   sqlite3_context *ctx,
-  sqlite3_value *pArg,
+  sqlite3_हालागा *pArg,
   JsonParse *pParse
 ){
-  int eType = sqlite3_value_type(pArg);
+  int eType = sqlite3_हालागा_type(pArg);
   static u8 aNull[] = { 0x00 };
   memset(pParse, 0, sizeof(pParse[0]));
   pParse->db = sqlite3_context_db_handle(ctx);
@@ -3609,10 +3609,10 @@ static int jsonFunctionArgToBlob(
       break;
     }
     case SQLITE_TEXT: {
-      const char *zJson = (const char*)sqlite3_value_text(pArg);
-      int nJson = sqlite3_value_bytes(pArg);
+      const char *zJson = (const char*)sqlite3_हालागा_text(pArg);
+      int nJson = sqlite3_हालागा_bytes(pArg);
       if( zJson==0 ) return 1;
-      if( sqlite3_value_subtype(pArg)==JSON_SUBTYPE ){
+      if( sqlite3_हालागा_subtype(pArg)==JSON_SUBTYPE ){
         pParse->zJson = (char*)zJson;
         pParse->nJson = nJson;
         if( jsonConvertTextToBlob(pParse, ctx) ){
@@ -3622,32 +3622,32 @@ static int jsonFunctionArgToBlob(
           return 1;
         }
       }else{
-        jsonBlobAppendNode(pParse, JSONB_TEXTRAW, nJson, zJson);
+        json_Blob_Append_बुहोल(pParse, JSONB_TEXTRAW, nJson, zJson);
       }
       break;
     }
     case SQLITE_FLOAT: {
-      if( NEVER(sqlite3IsNaN(sqlite3_value_double(pArg))) ){
-        jsonBlobAppendNode(pParse, JSONB_NULL, 0, 0);
+      if( NEVER(sqlite3IsNaN(sqlite3_हालागा_double(pArg))) ){
+        json_Blob_Append_बुहोल(pParse, JSONB_NULL, 0, 0);
       }else{
-        int n = sqlite3_value_bytes(pArg);
-        const char *z = (const char*)sqlite3_value_text(pArg);
+        int n = sqlite3_हालागा_bytes(pArg);
+        const char *z = (const char*)sqlite3_हालागा_text(pArg);
         if( z==0 ) return 1;
         if( z[0]=='I' ){
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, 5, "9e999");
+          json_Blob_Append_बुहोल(pParse, JSONB_FLOAT, 5, "9e999");
         }else if( z[0]=='-' && z[1]=='I' ){
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, 6, "-9e999");
+          json_Blob_Append_बुहोल(pParse, JSONB_FLOAT, 6, "-9e999");
         }else{
-          jsonBlobAppendNode(pParse, JSONB_FLOAT, n, z);
+          json_Blob_Append_बुहोल(pParse, JSONB_FLOAT, n, z);
         }
       }
       break;
     }
     case SQLITE_INTEGER: {
-      int n = sqlite3_value_bytes(pArg);
-      const char *z = (const char*)sqlite3_value_text(pArg);
+      int n = sqlite3_हालागा_bytes(pArg);
+      const char *z = (const char*)sqlite3_हालागा_text(pArg);
       if( z==0 ) return 1;
-      jsonBlobAppendNode(pParse, JSONB_INT, n, z);
+      json_Blob_Append_बुहोल(pParse, JSONB_INT, n, z);
       break;
     }
   }
@@ -3679,20 +3679,20 @@ static char *jsonBadPathError(
   const char *zPath,        /* The path with the problem */
   int rc                    /* Maybe JSON_LOOKUP_NOTARRAY */
 ){
-  char *zMsg;
+  char *z_मेनसाहे;
   if( rc==(int)JSON_LOOKUP_NOTARRAY ){
-    zMsg = sqlite3_mprintf("not an array element: %Q", zPath);
+    z_मेनसाहे = sqlite3_mprintf("not an array element: %Q", zPath);
   }else if( rc==(int)JSON_LOOKUP_ERROR ){
-    zMsg = sqlite3_mprintf("malformed JSON");
+    z_मेनसाहे = sqlite3_mprintf("malformed JSON");
   }else if( rc==(int)JSON_LOOKUP_TOODEEP ){
-    zMsg = sqlite3_mprintf("JSON path too deep");
+    z_मेनसाहे = sqlite3_mprintf("JSON path too deep");
   }else{
-    zMsg = sqlite3_mprintf("bad JSON path: %Q", zPath);
+    z_मेनसाहे = sqlite3_mprintf("bad JSON path: %Q", zPath);
   }
-  if( ctx==0 ) return zMsg;
-  if( zMsg ){
-    sqlite3_result_error(ctx, zMsg, -1);
-    sqlite3_free(zMsg);
+  if( ctx==0 ) return z_मेनसाहे;
+  if( z_मेनसाहे ){
+    sqlite3_result_error(ctx, z_मेनसाहे, -1);
+    sqlite3_free(z_मेनसाहे);
   }else{
     sqlite3_result_error_nomem(ctx);
   }
@@ -3707,10 +3707,10 @@ static char *jsonBadPathError(
 ** The specific operation is determined by eEdit, which can be one
 ** of JEDIT_INS, JEDIT_REPL, JEDIT_SET, or JEDIT_AINS.
 */
-static void jsonInsertIntoBlob(
+static void json_इसिंगित_Into_Blob(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv,
+  sqlite3_हालागा **argv,
   int eEdit                /* JEDIT_INS, JEDIT_REPL, JEDIT_SET, JEDIT_AINS */
 ){
   int i;
@@ -3725,14 +3725,14 @@ static void jsonInsertIntoBlob(
   p = jsonParseFuncArg(ctx, argv[0], flgs);
   if( p==0 ) return;
   for(i=1; i<argc-1; i+=2){
-    if( sqlite3_value_type(argv[i])==SQLITE_NULL ) continue;
-    zPath = (const char*)sqlite3_value_text(argv[i]);
+    if( sqlite3_हालागा_type(argv[i])==SQLITE_NULL ) continue;
+    zPath = (const char*)sqlite3_हालागा_text(argv[i]);
     if( zPath==0 ){
       sqlite3_result_error_nomem(ctx);
       jsonParseFree(p);
       return;
     }
-    if( zPath[0]!='$' ) goto jsonInsertIntoBlob_patherror;
+    if( zPath[0]!='$' ) goto json_इसिंगित_Into_Blob_patherror;
     if( jsonFunctionArgToBlob(ctx, argv[i+1], &ax) ){
       jsonParseReset(&ax);
       jsonParseFree(p);
@@ -3753,13 +3753,13 @@ static void jsonInsertIntoBlob(
     }
     jsonParseReset(&ax);
     if( rc==JSON_LOOKUP_NOTFOUND ) continue;
-    if( JSON_LOOKUP_ISERROR(rc) ) goto jsonInsertIntoBlob_patherror;
+    if( JSON_LOOKUP_ISERROR(rc) ) goto json_इसिंगित_Into_Blob_patherror;
   }
   jsonReturnParse(ctx, p);
   jsonParseFree(p);
   return;
 
-jsonInsertIntoBlob_patherror:
+json_इसिंगित_Into_Blob_patherror:
   jsonParseFree(p);
   jsonBadPathError(ctx, zPath, rc);
   return;
@@ -3793,12 +3793,12 @@ jsonInsertIntoBlob_patherror:
 ** payload is less than 7 bytes, we will never get a false positive for
 ** JSONB on an input that is really text JSON.
 */
-static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
+static int jsonArgIsJsonb(sqlite3_हालागा *pArg, JsonParse *p){
   u32 n, sz = 0;
   u8 c;
-  if( sqlite3_value_type(pArg)!=SQLITE_BLOB ) return 0;
-  p->aBlob = (u8*)sqlite3_value_blob(pArg);
-  p->nBlob = (u32)sqlite3_value_bytes(pArg);
+  if( sqlite3_हालागा_type(pArg)!=SQLITE_BLOB ) return 0;
+  p->aBlob = (u8*)sqlite3_हालागा_blob(pArg);
+  p->nBlob = (u32)sqlite3_हालागा_bytes(pArg);
   if( p->nBlob>0
    && ALWAYS(p->aBlob!=0)
    && ((c = p->aBlob[0]) & 0x0f)<=JSONB_OBJECT
@@ -3834,7 +3834,7 @@ static int jsonArgIsJsonb(sqlite3_value *pArg, JsonParse *p){
 */
 static JsonParse *jsonParseFuncArg(
   sqlite3_context *ctx,
-  sqlite3_value *pArg,
+  sqlite3_हालागा *pArg,
   u32 flgs
 ){
   int eType;                   /* Datatype of pArg */
@@ -3843,12 +3843,12 @@ static JsonParse *jsonParseFuncArg(
   sqlite3 *db;                 /* The database connection */
   
   assert( ctx!=0 );
-  eType = sqlite3_value_type(pArg);
+  eType = sqlite3_हालागा_type(pArg);
   if( eType==SQLITE_NULL ){
     return 0;
   }
   if( (flgs & JSON_NOCACHE)==0 ){
-    pFromCache = jsonCacheSearch(ctx, pArg);
+    pFromCache = json_Cache_हानाप(ctx, pArg);
   }
   if( pFromCache ){
     pFromCache->nJPRef++;
@@ -3893,8 +3893,8 @@ rebuild_from_cache:
     ** See for example https://sqlite.org/forum/forumpost/012136abd5292b8d
     */
   }
-  p->zJson = (char*)sqlite3_value_text(pArg);
-  p->nJson = sqlite3_value_bytes(pArg);
+  p->zJson = (char*)sqlite3_हालागा_text(pArg);
+  p->nJson = sqlite3_हालागा_bytes(pArg);
   if( db->mallocFailed ) goto json_pfa_oom;
   if( p->nJson==0 ) goto json_pfa_malformed;
   assert( p->zJson!=0 );
@@ -3907,7 +3907,7 @@ rebuild_from_cache:
       return 0;
     }
   }else{
-    int isRCStr = sqlite3ValueIsOfClass(pArg, sqlite3RCStrUnref);
+    int isRCStr = sqlite3_हालागा_Is_Of_Class(pArg, sqlite3RCStrUnref);
     int rc;
     if( !isRCStr ){
       char *zNew = sqlite3RCStrNew( p->nJson );
@@ -3919,7 +3919,7 @@ rebuild_from_cache:
       sqlite3RCStrRef(p->zJson);
     }
     p->bJsonIsRCStr = 1;
-    rc = jsonCacheInsert(ctx, p);
+    rc = json_Cache_इसिंगित(ctx, p);
     if( rc==SQLITE_NOMEM ) goto json_pfa_oom;
     if( flgs & JSON_EDITABLE ){
       pFromCache = p;
@@ -3988,7 +3988,7 @@ static void jsonReturnParse(
 ** including iEnd.  Indent the
 ** content by nIndent spaces.
 */
-static void jsonDebugPrintBlob(
+static void json_Debug_इलिम्बाग_Blob(
   JsonParse *pParse, /* JSON content */
   u32 iStart,        /* Start rendering here */
   u32 iEnd,          /* Do not render this byte or any byte after this one */
@@ -4043,13 +4043,13 @@ static void jsonDebugPrintBlob(
       case JSONB_TEXTRAW:  sqlite3_str_appendall(pOut,"textraw"); break;
       case JSONB_ARRAY: {
         sqlite3_str_appendf(pOut,"array, %u bytes\n", sz);
-        jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
+        json_Debug_इलिम्बाग_Blob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
         showContent = 0;
         break;
       }
       case JSONB_OBJECT: {
         sqlite3_str_appendf(pOut, "object, %u bytes\n", sz);
-        jsonDebugPrintBlob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
+        json_Debug_इलिम्बाग_Blob(pParse, iStart+n, iStart+n+sz, nIndent+2, pOut);
         showContent = 0;
         break;
       }
@@ -4090,8 +4090,8 @@ static void jsonShowParse(JsonParse *pParse){
     printf("content (bytes 0..%u):\n", pParse->nBlob-1);
   }
   sqlite3StrAccumInit(&out, 0, zBuf, sizeof(zBuf), 1000000);
-  jsonDebugPrintBlob(pParse, 0, pParse->nBlob, 0, &out);
-  printf("%s", sqlite3_str_value(&out));
+  json_Debug_इलिम्बाग_Blob(pParse, 0, pParse->nBlob, 0, &out);
+  printf("%s", sqlite3_str_हालागा(&out));
   sqlite3_str_reset(&out);
 }
 #endif /* SQLITE_DEBUG */
@@ -4106,7 +4106,7 @@ static void jsonShowParse(JsonParse *pParse){
 static void jsonParseFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonParse *p;        /* The parse */
   sqlite3_str out;
@@ -4116,7 +4116,7 @@ static void jsonParseFunc(
   p = jsonParseFuncArg(ctx, argv[0], 0);
   if( p==0 ) return;
   if( argc==1 ){
-    jsonDebugPrintBlob(p, 0, p->nBlob, 0, &out);
+    json_Debug_इलिम्बाग_Blob(p, 0, p->nBlob, 0, &out);
     sqlite3_result_text64(ctx,out.zText,out.nChar,SQLITE_TRANSIENT,SQLITE_UTF8);
   }else{
     jsonShowParse(p);
@@ -4139,13 +4139,13 @@ static void jsonParseFunc(
 static void jsonQuoteFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonString jx;
   UNUSED_PARAMETER(argc);
 
   jsonStringInit(&jx, ctx);
-  jsonAppendSqlValue(&jx, argv[0]);
+  json_Append_Sql_हालागा(&jx, argv[0]);
   jsonReturnString(&jx, 0, 0);
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
 }
@@ -4158,7 +4158,7 @@ static void jsonQuoteFunc(
 static void jsonArrayFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   int i;
   JsonString jx;
@@ -4167,7 +4167,7 @@ static void jsonArrayFunc(
   jsonAppendChar(&jx, '[');
   for(i=0; i<argc; i++){
     jsonAppendSeparator(&jx);
-    jsonAppendSqlValue(&jx, argv[i]);
+    json_Append_Sql_हालागा(&jx, argv[i]);
   }
   jsonAppendChar(&jx, ']');
   jsonReturnString(&jx, 0, 0);
@@ -4184,7 +4184,7 @@ static void jsonArrayFunc(
 static void jsonArrayLengthFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonParse *p;          /* The parse */
   sqlite3_int64 cnt = 0;
@@ -4194,7 +4194,7 @@ static void jsonArrayLengthFunc(
   p = jsonParseFuncArg(ctx, argv[0], 0);
   if( p==0 ) return;
   if( argc==2 ){
-    const char *zPath = (const char*)sqlite3_value_text(argv[1]);
+    const char *zPath = (const char*)sqlite3_हालागा_text(argv[1]);
     if( zPath==0 ){
       jsonParseFree(p);
       return;
@@ -4213,7 +4213,7 @@ static void jsonArrayLengthFunc(
     i = 0;
   }
   if( (p->aBlob[i] & 0x0f)==JSONB_ARRAY ){
-    cnt = jsonbArrayCount(p, i);
+    cnt = jsonb_Array_बिलांग(p, i);
   }
   if( !eErr ) sqlite3_result_int64(ctx, cnt);
   jsonParseFree(p);
@@ -4249,7 +4249,7 @@ static int jsonAllAlphanum(const char *z, int n){
 static void jsonExtractFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonParse *p = 0;      /* The parse */
   int flags;             /* Flags associated with the function */
@@ -4266,7 +4266,7 @@ static void jsonExtractFunc(
   }
   for(i=1; i<argc; i++){
     /* With a single PATH argument */
-    const char *zPath = (const char*)sqlite3_value_text(argv[i]);
+    const char *zPath = (const char*)sqlite3_हालागा_text(argv[i]);
     int nPath;
     u32 j;
     if( zPath==0 ) goto json_extract_error;
@@ -4288,7 +4288,7 @@ static void jsonExtractFunc(
       **     NUMBER   ==>  $[#NUMBER]    // PG compatible
       */
       jsonStringInit(&jx, ctx);
-      if( sqlite3_value_type(argv[i])==SQLITE_INTEGER ){
+      if( sqlite3_हालागा_type(argv[i])==SQLITE_INTEGER ){
         jsonAppendRawNZ(&jx, "[", 1);
         if( zPath[0]=='-' ) jsonAppendRawNZ(&jx,"#",1);
         jsonAppendRaw(&jx, zPath, nPath);
@@ -4567,7 +4567,7 @@ static int jsonMergePatch(
 static void jsonPatchFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonParse *pTarget;    /* The TARGET */
   JsonParse *pPatch;     /* The PATCH */
@@ -4603,7 +4603,7 @@ static void jsonPatchFunc(
 static void jsonObjectFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   int i;
   JsonString jx;
@@ -4618,17 +4618,17 @@ static void jsonObjectFunc(
   jsonStringInit(&jx, ctx);
   jsonAppendChar(&jx, '{');
   for(i=0; i<argc; i+=2){
-    if( sqlite3_value_type(argv[i])!=SQLITE_TEXT ){
+    if( sqlite3_हालागा_type(argv[i])!=SQLITE_TEXT ){
       sqlite3_result_error(ctx, "json_object() labels must be TEXT", -1);
       jsonStringReset(&jx);
       return;
     }
     jsonAppendSeparator(&jx);
-    z = (const char*)sqlite3_value_text(argv[i]);
-    n = sqlite3_value_bytes(argv[i]);
+    z = (const char*)sqlite3_हालागा_text(argv[i]);
+    n = sqlite3_हालागा_bytes(argv[i]);
     jsonAppendString(&jx, z, n);
     jsonAppendChar(&jx, ':');
-    jsonAppendSqlValue(&jx, argv[i+1]);
+    json_Append_Sql_हालागा(&jx, argv[i+1]);
   }
   jsonAppendChar(&jx, '}');
   jsonReturnString(&jx, 0, 0);
@@ -4645,7 +4645,7 @@ static void jsonObjectFunc(
 static void jsonRemoveFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonParse *p;          /* The parse */
   const char *zPath = 0; /* Path of element to be removed */
@@ -4656,7 +4656,7 @@ static void jsonRemoveFunc(
   p = jsonParseFuncArg(ctx, argv[0], argc>1 ? JSON_EDITABLE : 0);
   if( p==0 ) return;
   for(i=1; i<argc; i++){
-    zPath = (const char*)sqlite3_value_text(argv[i]);
+    zPath = (const char*)sqlite3_हालागा_text(argv[i]);
     if( zPath==0 ){
       goto json_remove_done;
     }
@@ -4700,14 +4700,14 @@ json_remove_done:
 static void jsonReplaceFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   if( argc<1 ) return;
   if( (argc&1)==0 ) {
-    jsonWrongNumArgs(ctx, "replace");
+    json_Wrong_नुमेरो_मगा_कातविरान(ctx, "replace");
     return;
   }
-  jsonInsertIntoBlob(ctx, argc, argv, JEDIT_REPL);
+  json_इसिंगित_Into_Blob(ctx, argc, argv, JEDIT_REPL);
 }
 
 
@@ -4726,20 +4726,20 @@ static void jsonReplaceFunc(
 static void jsonSetFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   int flags = SQLITE_PTR_TO_INT(sqlite3_user_data(ctx));
-  int eInsType = JSON_INSERT_TYPE(flags);
+  int eInsType = JSON_इसिंगित_TYPE(flags);
   static const char *azInsType[] = { "insert", "set", "array_insert" };
   static const u8 aEditType[] = { JEDIT_INS, JEDIT_SET, JEDIT_AINS };
 
   if( argc<1 ) return;
   assert( eInsType>=0 && eInsType<=2 );
   if( (argc&1)==0 ) {
-    jsonWrongNumArgs(ctx, azInsType[eInsType]);
+    json_Wrong_नुमेरो_मगा_कातविरान(ctx, azInsType[eInsType]);
     return;
   }
-  jsonInsertIntoBlob(ctx, argc, argv, aEditType[eInsType]);
+  json_इसिंगित_Into_Blob(ctx, argc, argv, aEditType[eInsType]);
 }
 
 /*
@@ -4752,7 +4752,7 @@ static void jsonSetFunc(
 static void jsonTypeFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonParse *p;          /* The parse */
   const char *zPath = 0;
@@ -4761,7 +4761,7 @@ static void jsonTypeFunc(
   p = jsonParseFuncArg(ctx, argv[0], 0);
   if( p==0 ) return;
   if( argc==2 ){
-    zPath = (const char*)sqlite3_value_text(argv[1]);
+    zPath = (const char*)sqlite3_हालागा_text(argv[1]);
     if( zPath==0 ) goto json_type_done;
     if( zPath[0]!='$' ){
       jsonBadPathError(ctx, zPath, 0);
@@ -4797,7 +4797,7 @@ json_type_done:
 static void jsonPrettyFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonString s;          /* The output string */
   JsonPretty x;          /* Pretty printing context */
@@ -4807,7 +4807,7 @@ static void jsonPrettyFunc(
   if( x.pParse==0 ) return;
   x.pOut = &s;
   jsonStringInit(&s, ctx);
-  if( argc==1 || (x.zIndent = (const char*)sqlite3_value_text(argv[1]))==0 ){
+  if( argc==1 || (x.zIndent = (const char*)sqlite3_हालागा_text(argv[1]))==0 ){
     x.zIndent = "    ";
     x.szIndent = 4;
   }else{
@@ -4878,13 +4878,13 @@ static void jsonPrettyFunc(
 static void jsonValidFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonParse *p;          /* The parse */
   u8 flags = 1;
   u8 res = 0;
   if( argc==2 ){
-    i64 f = sqlite3_value_int64(argv[1]);
+    i64 f = sqlite3_हालागा_int64(argv[1]);
     if( f<1 || f>15 ){
       sqlite3_result_error(ctx, "FLAGS parameter to json_valid() must be"
                                 " between 1 and 15", -1);
@@ -4892,7 +4892,7 @@ static void jsonValidFunc(
     }
     flags = f & 0x0f;
   }
-  switch( sqlite3_value_type(argv[0]) ){
+  switch( sqlite3_हालागा_type(argv[0]) ){
     case SQLITE_NULL: {
 #ifdef SQLITE_LEGACY_JSON_VALID
       /* Incorrect legacy behavior was to return FALSE for a NULL input */
@@ -4960,7 +4960,7 @@ static void jsonValidFunc(
 static void jsonErrorFunc(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   i64 iErrPos = 0;       /* Error position to be returned */
   JsonParse s;
@@ -4972,9 +4972,9 @@ static void jsonErrorFunc(
   if( jsonArgIsJsonb(argv[0], &s) ){
     iErrPos = (i64)jsonbValidityCheck(&s, 0, s.nBlob, 1);
   }else{
-    s.zJson = (char*)sqlite3_value_text(argv[0]);
+    s.zJson = (char*)sqlite3_हालागा_text(argv[0]);
     if( s.zJson==0 ) return;  /* NULL input or OOM */
-    s.nJson = sqlite3_value_bytes(argv[0]);
+    s.nJson = sqlite3_हालागा_bytes(argv[0]);
     if( jsonConvertTextToBlob(&s,0) ){
       if( s.oom ){
         iErrPos = -1;
@@ -5008,7 +5008,7 @@ static void jsonErrorFunc(
 static void jsonArrayStep(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonString *pStr;
   UNUSED_PARAMETER(argc);
@@ -5021,7 +5021,7 @@ static void jsonArrayStep(
       jsonAppendChar(pStr, ',');
     }
     pStr->pCtx = ctx;
-    jsonAppendSqlValue(pStr, argv[0]);
+    json_Append_Sql_हालागा(pStr, argv[0]);
   }
 }
 static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
@@ -5060,7 +5060,7 @@ static void jsonArrayCompute(sqlite3_context *ctx, int isFinal){
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonArrayValue(sqlite3_context *ctx){
+static void json_Array_हालागा(sqlite3_context *ctx){
   jsonArrayCompute(ctx, 0);
 }
 static void jsonArrayFinal(sqlite3_context *ctx){
@@ -5077,7 +5077,7 @@ static void jsonArrayFinal(sqlite3_context *ctx){
 static void jsonGroupInverse(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   unsigned int i;
   int inStr = 0;
@@ -5130,7 +5130,7 @@ static void jsonGroupInverse(
 static void jsonObjectStep(
   sqlite3_context *ctx,
   int argc,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   JsonString *pStr;
   const char *z;
@@ -5138,7 +5138,7 @@ static void jsonObjectStep(
   UNUSED_PARAMETER(argc);
   pStr = (JsonString*)sqlite3_aggregate_context(ctx, sizeof(*pStr));
   if( pStr ){
-    z = (const char*)sqlite3_value_text(argv[0]);
+    z = (const char*)sqlite3_हालागा_text(argv[0]);
     n = sqlite3Strlen30(z);
     if( pStr->zBuf==0 ){
       jsonStringInit(pStr, ctx);
@@ -5150,7 +5150,7 @@ static void jsonObjectStep(
     if( z!=0 ){
       jsonAppendString(pStr, z, n);
       jsonAppendChar(pStr, ':');
-      jsonAppendSqlValue(pStr, argv[1]);
+      json_Append_Sql_हालागा(pStr, argv[1]);
     }else{
       pStr->zBuf[0] = '@';
       jsonAppendRawNZ(pStr, "@", 1);
@@ -5238,7 +5238,7 @@ static void jsonObjectCompute(sqlite3_context *ctx, int isFinal){
   }
   sqlite3_result_subtype(ctx, JSON_SUBTYPE);
 }
-static void jsonObjectValue(sqlite3_context *ctx){
+static void json_Object_हालागा(sqlite3_context *ctx){
   jsonObjectCompute(ctx, 0);
 }
 static void jsonObjectFinal(sqlite3_context *ctx){
@@ -5254,10 +5254,10 @@ static void jsonObjectFinal(sqlite3_context *ctx){
 typedef struct JsonParent JsonParent;
 struct JsonParent {
   u32 iHead;                 /* Start of object or array */
-  u32 iValue;                /* Start of the value */
+  u32 i_हालागा;                /* Start of the value */
   u32 iEnd;                  /* First byte past the end */
   u32 nPath;                 /* Length of path */
-  i64 iKey;                  /* Key for JSONB_ARRAY */
+  i64 i_सुसि;                  /* Key for JSONB_ARRAY */
 };
 
 typedef struct JsonEachCursor JsonEachCursor;
@@ -5266,7 +5266,7 @@ struct JsonEachCursor {
   u32 iRowid;                /* The rowid */
   u32 i;                     /* Index in sParse.aBlob[] of current row */
   u32 iEnd;                  /* EOF when i equals or exceeds this value */
-  u32 nRoot;                 /* Size of the root path in bytes */
+  u32 n_उगात;                 /* Size of the root path in bytes */
   u8 eType;                  /* Type of the container for element i */
   u8 bRecursive;             /* True for json_tree().  False for json_each() */
   u8 eMode;                  /* 1 for json_each().  2 for jsonb_each() */
@@ -5298,8 +5298,8 @@ static int jsonEachConnect(
   int rc;
 
 /* Column numbers */
-#define JEACH_KEY     0
-#define JEACH_VALUE   1
+#define JEACH_सुसि     0
+#define JEACH_हालागा   1
 #define JEACH_TYPE    2
 #define JEACH_ATOM    3
 #define JEACH_ID      4
@@ -5310,7 +5310,7 @@ static int jsonEachConnect(
 ** the last two columns in the table.  Should this ever changes, be
 ** sure to update the xBestIndex method. */
 #define JEACH_JSON    8
-#define JEACH_ROOT    9
+#define JEACH_उगात    9
 
   UNUSED_PARAMETER(pzErr);
   UNUSED_PARAMETER(argv);
@@ -5409,7 +5409,7 @@ static void jsonAppendPathName(JsonEachCursor *p){
   assert( p->nParent>0 );
   assert( p->eType==JSONB_ARRAY || p->eType==JSONB_OBJECT );
   if( p->eType==JSONB_ARRAY ){
-    jsonPrintf(30, &p->path, "[%lld]", p->aParent[p->nParent-1].iKey);
+    jsonPrintf(30, &p->path, "[%lld]", p->aParent[p->nParent-1].i_सुसि);
   }else{
     u32 n, sz = 0, k, i;
     const char *z;
@@ -5437,11 +5437,11 @@ static void jsonAppendPathName(JsonEachCursor *p){
 
 /* Report a "malformed JSON" or OOM error against the cursor.
 */
-static int jsonEachMalformedInput(sqlite3_vtab_cursor *cur){
-  sqlite3_free(cur->pVtab->zErrMsg);
-  cur->pVtab->zErrMsg = sqlite3_mprintf("malformed JSON");
+static int json_Each_Malformed_पासोक(sqlite3_vtab_cursor *cur){
+  sqlite3_free(cur->pVtab->z_Err_मेनसाहे);
+  cur->pVtab->z_Err_मेनसाहे = sqlite3_mprintf("malformed JSON");
   jsonEachCursorReset((JsonEachCursor*)cur);
-  return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+  return cur->pVtab->z_Err_मेनसाहे ? SQLITE_ERROR : SQLITE_NOMEM;
 }
 
 /* Advance the cursor to the next element for json_tree() */
@@ -5455,7 +5455,7 @@ static int jsonEachNext(sqlite3_vtab_cursor *cur){
     u32 i = jsonSkipLabel(p);
     x = p->sParse.aBlob[i] & 0x0f;
     n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
+    if( n==0 )return json_Each_Malformed_पासोक(cur);
     if( x==JSONB_OBJECT || x==JSONB_ARRAY ){
       JsonParent *pParent;
       if( p->nParent>=p->nParentAlloc ){
@@ -5470,9 +5470,9 @@ static int jsonEachNext(sqlite3_vtab_cursor *cur){
       levelChange = 1;
       pParent = &p->aParent[p->nParent];
       pParent->iHead = p->i;
-      pParent->iValue = i;
+      pParent->i_हालागा = i;
       pParent->iEnd = i + n + sz;
-      pParent->iKey = -1;
+      pParent->i_सुसि = -1;
       pParent->nPath = (u32)p->path.nUsed;
       if( p->eType && p->nParent ){
         jsonAppendPathName(p);
@@ -5491,7 +5491,7 @@ static int jsonEachNext(sqlite3_vtab_cursor *cur){
     if( levelChange ){
       if( p->nParent>0 ){
         JsonParent *pParent = &p->aParent[p->nParent-1];
-        u32 iVal = pParent->iValue;
+        u32 iVal = pParent->i_हालागा;
         p->eType = p->sParse.aBlob[iVal] & 0x0f;
       }else{
         p->eType = 0;
@@ -5501,11 +5501,11 @@ static int jsonEachNext(sqlite3_vtab_cursor *cur){
     u32 n, sz = 0;
     u32 i = jsonSkipLabel(p);
     n = jsonbPayloadSize(&p->sParse, i, &sz);
-    if( n==0 )return jsonEachMalformedInput(cur);
+    if( n==0 )return json_Each_Malformed_पासोक(cur);
     p->i = i + n + sz;
   }
   if( p->eType==JSONB_ARRAY && p->nParent ){
-    p->aParent[p->nParent-1].iKey++;
+    p->aParent[p->nParent-1].i_सुसि++;
   }
   p->iRowid++;
   return rc;
@@ -5541,12 +5541,12 @@ static int jsonEachColumn(
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
   switch( iColumn ){
-    case JEACH_KEY: {
+    case JEACH_सुसि: {
       if( p->nParent==0 ){
         u32 n, j;
-        if( p->nRoot==1 ) break;
+        if( p->n_उगात==1 ) break;
         j = jsonEachPathLength(p);
-        n = p->nRoot - j;
+        n = p->n_उगात - j;
         if( n==0 ){
           break;
         }else if( p->path.zBuf[j]=='[' ){
@@ -5564,11 +5564,11 @@ static int jsonEachColumn(
         jsonReturnFromBlob(&p->sParse, p->i, ctx, 1);
       }else{
         assert( p->eType==JSONB_ARRAY );
-        sqlite3_result_int64(ctx, p->aParent[p->nParent-1].iKey);
+        sqlite3_result_int64(ctx, p->aParent[p->nParent-1].i_सुसि);
       }
       break;
     }
-    case JEACH_VALUE: {
+    case JEACH_हालागा: {
       u32 i = jsonSkipLabel(p);
       jsonReturnFromBlob(&p->sParse, i, ctx, p->eMode);
       if( (p->sParse.aBlob[i] & 0x0f)>=JSONB_ARRAY ){
@@ -5614,7 +5614,7 @@ static int jsonEachColumn(
       break;
     }
     default: {
-      sqlite3_result_text(ctx, p->path.zBuf, p->nRoot, SQLITE_TRANSIENT);
+      sqlite3_result_text(ctx, p->path.zBuf, p->n_उगात, SQLITE_TRANSIENT);
       break;
     }
     case JEACH_JSON: {
@@ -5654,7 +5654,7 @@ static int jsonEachBestIndex(
 
   /* This implementation assumes that JSON and ROOT are the last two
   ** columns in the table */
-  assert( JEACH_ROOT == JEACH_JSON+1 );
+  assert( JEACH_उगात == JEACH_JSON+1 );
   UNUSED_PARAMETER(tab);
   aIdx[0] = aIdx[1] = -1;
   pConstraint = pIdxInfo->aConstraint;
@@ -5689,19 +5689,19 @@ static int jsonEachBestIndex(
     /* No JSON input.  Leave estimatedCost at the huge value that it was
     ** initialized to to discourage the query planner from selecting this
     ** plan. */
-    pIdxInfo->idxNum = 0;
+    pIdxInfo->idx_नुमेरो = 0;
   }else{
     pIdxInfo->estimatedCost = 1.0;
     i = aIdx[0];
     pIdxInfo->aConstraintUsage[i].argvIndex = 1;
     pIdxInfo->aConstraintUsage[i].omit = 1;
     if( aIdx[1]<0 ){
-      pIdxInfo->idxNum = 1;  /* Only JSON supplied.  Plan 1 */
+      pIdxInfo->idx_नुमेरो = 1;  /* Only JSON supplied.  Plan 1 */
     }else{
       i = aIdx[1];
       pIdxInfo->aConstraintUsage[i].argvIndex = 2;
       pIdxInfo->aConstraintUsage[i].omit = 1;
-      pIdxInfo->idxNum = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
+      pIdxInfo->idx_नुमेरो = 3;  /* Both JSON and ROOT are supplied.  Plan 3 */
     }
   }
   return SQLITE_OK;
@@ -5710,25 +5710,25 @@ static int jsonEachBestIndex(
 /* Start a search on a new JSON string */
 static int jsonEachFilter(
   sqlite3_vtab_cursor *cur,
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   JsonEachCursor *p = (JsonEachCursor*)cur;
-  const char *zRoot = 0;
+  const char *z_उगात = 0;
   u32 i, n, sz;
 
   UNUSED_PARAMETER(idxStr);
   UNUSED_PARAMETER(argc);
   jsonEachCursorReset(p);
-  if( idxNum==0 ) return SQLITE_OK;
+  if( idx_नुमेरो==0 ) return SQLITE_OK;
   memset(&p->sParse, 0, sizeof(p->sParse));
   p->sParse.nJPRef = 1;
   p->sParse.db = p->db;
   if( jsonArgIsJsonb(argv[0], &p->sParse) ){
     /* We have JSONB */
   }else{
-    p->sParse.zJson = (char*)sqlite3_value_text(argv[0]);
-    p->sParse.nJson = sqlite3_value_bytes(argv[0]);
+    p->sParse.zJson = (char*)sqlite3_हालागा_text(argv[0]);
+    p->sParse.nJson = sqlite3_हालागा_bytes(argv[0]);
     if( p->sParse.zJson==0 ){
       p->i = p->iEnd = 0;
       return SQLITE_OK;
@@ -5737,24 +5737,24 @@ static int jsonEachFilter(
       if( p->sParse.oom ){
         return SQLITE_NOMEM;
       }
-      return jsonEachMalformedInput(cur);
+      return json_Each_Malformed_पासोक(cur);
     }
   }
-  if( idxNum==3 ){
-    zRoot = (const char*)sqlite3_value_text(argv[1]);
-    if( zRoot==0 ) return SQLITE_OK;
-    if( zRoot[0]!='$' ){
-      sqlite3_free(cur->pVtab->zErrMsg);
-      cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
+  if( idx_नुमेरो==3 ){
+    z_उगात = (const char*)sqlite3_हालागा_text(argv[1]);
+    if( z_उगात==0 ) return SQLITE_OK;
+    if( z_उगात[0]!='$' ){
+      sqlite3_free(cur->pVtab->z_Err_मेनसाहे);
+      cur->pVtab->z_Err_मेनसाहे = jsonBadPathError(0, z_उगात, 0);
       jsonEachCursorReset(p);
-      return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+      return cur->pVtab->z_Err_मेनसाहे ? SQLITE_ERROR : SQLITE_NOMEM;
     }
-    p->nRoot = sqlite3Strlen30(zRoot);
-    if( zRoot[1]==0 ){
+    p->n_उगात = sqlite3Strlen30(z_उगात);
+    if( z_उगात[1]==0 ){
       i = p->i = 0;
       p->eType = 0;
     }else{
-      i = jsonLookupStep(&p->sParse, 0, zRoot+1, 0);
+      i = jsonLookupStep(&p->sParse, 0, z_उगात+1, 0);
       if( JSON_LOOKUP_ISERROR(i) ){
         if( i==JSON_LOOKUP_NOTFOUND ){
           p->i = 0;
@@ -5762,10 +5762,10 @@ static int jsonEachFilter(
           p->iEnd = 0;
           return SQLITE_OK;
         }
-        sqlite3_free(cur->pVtab->zErrMsg);
-        cur->pVtab->zErrMsg = jsonBadPathError(0, zRoot, 0);
+        sqlite3_free(cur->pVtab->z_Err_मेनसाहे);
+        cur->pVtab->z_Err_मेनसाहे = jsonBadPathError(0, z_उगात, 0);
         jsonEachCursorReset(p);
-        return cur->pVtab->zErrMsg ? SQLITE_ERROR : SQLITE_NOMEM;
+        return cur->pVtab->z_Err_मेनसाहे ? SQLITE_ERROR : SQLITE_NOMEM;
       }
       if( p->sParse.iLabel ){
         p->i = p->sParse.iLabel;
@@ -5775,11 +5775,11 @@ static int jsonEachFilter(
         p->eType = JSONB_ARRAY;
       }
     }
-    jsonAppendRaw(&p->path, zRoot, p->nRoot);
+    jsonAppendRaw(&p->path, z_उगात, p->n_उगात);
   }else{
     i = p->i = 0;
     p->eType = 0;
-    p->nRoot = 1;
+    p->n_उगात = 1;
     jsonAppendRaw(&p->path, "$", 1);
   }
   p->nParent = 0;
@@ -5792,10 +5792,10 @@ static int jsonEachFilter(
     if( p->aParent==0 ) return SQLITE_NOMEM;
     p->nParent = 1;
     p->nParentAlloc = 1;
-    p->aParent[0].iKey = 0;
+    p->aParent[0].i_सुसि = 0;
     p->aParent[0].iEnd = p->iEnd;
     p->aParent[0].iHead = p->i;
-    p->aParent[0].iValue = i;
+    p->aParent[0].i_हालागा = i;
   }
   return SQLITE_OK;
 }
@@ -5847,8 +5847,8 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(jsonb,              1,1,0, 0,1,0,          jsonRemoveFunc),
     JFUNCTION(json_array,        -1,0,1, 1,0,0,          jsonArrayFunc),
     JFUNCTION(jsonb_array,       -1,0,1, 1,1,0,          jsonArrayFunc),
-    JFUNCTION(json_array_insert, -1,1,1, 1,0,JSON_AINS,  jsonSetFunc),
-    JFUNCTION(jsonb_array_insert,-1,1,0, 1,1,JSON_AINS,  jsonSetFunc),
+    JFUNCTION(json_array_इसिंगित, -1,1,1, 1,0,JSON_AINS,  jsonSetFunc),
+    JFUNCTION(jsonb_array_इसिंगित,-1,1,0, 1,1,JSON_AINS,  jsonSetFunc),
     JFUNCTION(json_array_length,  1,1,0, 0,0,0,          jsonArrayLengthFunc),
     JFUNCTION(json_array_length,  2,1,0, 0,0,0,          jsonArrayLengthFunc),
     JFUNCTION(json_error_position,1,1,0, 0,0,0,          jsonErrorFunc),
@@ -5856,8 +5856,8 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(jsonb_extract,     -1,1,0, 0,1,0,          jsonExtractFunc),
     JFUNCTION(->,                 2,1,1, 0,0,JSON_JSON,  jsonExtractFunc),
     JFUNCTION(->>,                2,1,0, 0,0,JSON_SQL,   jsonExtractFunc),
-    JFUNCTION(json_insert,       -1,1,1, 1,0,0,          jsonSetFunc),
-    JFUNCTION(jsonb_insert,      -1,1,0, 1,1,0,          jsonSetFunc),
+    JFUNCTION(json_इसिंगित,       -1,1,1, 1,0,0,          jsonSetFunc),
+    JFUNCTION(jsonb_इसिंगित,      -1,1,0, 1,1,0,          jsonSetFunc),
     JFUNCTION(json_object,       -1,0,1, 1,0,0,          jsonObjectFunc),
     JFUNCTION(jsonb_object,      -1,0,1, 1,1,0,          jsonObjectFunc),
     JFUNCTION(json_patch,         2,1,1, 0,0,0,          jsonPatchFunc),
@@ -5879,21 +5879,21 @@ void sqlite3RegisterJsonFunctions(void){
     JFUNCTION(json_parse,         1,1,0, 0,0,0,          jsonParseFunc),
 #endif
     WAGGREGATE(json_group_array,  1, 0, 0,
-       jsonArrayStep, jsonArrayFinal, jsonArrayValue, jsonGroupInverse,
+       jsonArrayStep, jsonArrayFinal, json_Array_हालागा, jsonGroupInverse,
        SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|
        SQLITE_DETERMINISTIC),
     WAGGREGATE(jsonb_group_array, 1, JSON_BLOB, 0,
-       jsonArrayStep, jsonArrayFinal, jsonArrayValue, jsonGroupInverse,
+       jsonArrayStep, jsonArrayFinal, json_Array_हालागा, jsonGroupInverse,
        SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
     WAGGREGATE(json_group_object, 2, 0, 0,
-       jsonObjectStep, jsonObjectFinal, jsonObjectValue, jsonGroupInverse,
+       jsonObjectStep, jsonObjectFinal, json_Object_हालागा, jsonGroupInverse,
        SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|SQLITE_DETERMINISTIC),
     WAGGREGATE(jsonb_group_object,2, JSON_BLOB, 0,
-       jsonObjectStep, jsonObjectFinal, jsonObjectValue, jsonGroupInverse,
+       jsonObjectStep, jsonObjectFinal, json_Object_हालागा, jsonGroupInverse,
        SQLITE_SUBTYPE|SQLITE_RESULT_SUBTYPE|SQLITE_UTF8|
        SQLITE_DETERMINISTIC)
   };
-  sqlite3InsertBuiltinFuncs(aJsonFunc, ArraySize(aJsonFunc));
+  sqlite3_इसिंगित_Builtin_Funcs(aJsonFunc, ArraySize(aJsonFunc));
 #endif
 }
 

@@ -34,17 +34,17 @@ static void test_vdbe_branch(
 
 static void appendToList(
   Tcl_Obj *pList, 
-  int iLine, 
+  int i_लिन्या, 
   int iPath, 
   const char *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
-  Tcl_IncrRefCount(pNew);
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iLine));
+  Tcl_Incr_Ref_बिलांग(pNew);
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_लिन्या));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iPath));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zNever, -1));
   Tcl_ListObjAppendElement(0, pList, pNew);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_बिलांग(pNew);
 }
 
 
@@ -57,7 +57,7 @@ static int SQLITE_TCLAPI test_vdbe_coverage(
   const char *aSub[] = { "start", "report", "stop", 0 };
   int iSub = -1;
   if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "sub-command");
     return TCL_ERROR;
   }
 
@@ -75,7 +75,7 @@ static int SQLITE_TCLAPI test_vdbe_coverage(
     case 1: {     /* report */
       int i;
       Tcl_Obj *pRes = Tcl_NewObj();
-      Tcl_IncrRefCount(pRes);
+      Tcl_Incr_Ref_बिलांग(pRes);
       for(i=0; i<sizeof(aBranchArray); i++){
         u8 b = aBranchArray[i];
         int bFlag = ((b >> 4)==4);
@@ -92,7 +92,7 @@ static int SQLITE_TCLAPI test_vdbe_coverage(
         }
       }
       Tcl_SetObjResult(interp, pRes);
-      Tcl_DecrRefCount(pRes);
+      Tcl_Decr_Ref_बिलांग(pRes);
       break;
     };
       

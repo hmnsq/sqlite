@@ -32,14 +32,14 @@
 **
 ** will fail because neither abc or def can be resolved.
 */
-static int resolveAttachExpr(NameContext *pName, Expr *pExpr)
+static int resolve_Attach_पाहायाग(NameContext *pName, पाहायाग *p_पाहायाग)
 {
   int rc = SQLITE_OK;
-  if( pExpr ){
-    if( pExpr->op!=TK_ID ){
-      rc = sqlite3ResolveExprNames(pName, pExpr);
+  if( p_पाहायाग ){
+    if( p_पाहायाग->op!=TK_ID ){
+      rc = sqlite3_Resolve_पाहायाग_Names(pName, p_पाहायाग);
     }else{
-      pExpr->op = TK_STRING;
+      p_पाहायाग->op = TK_STRING;
     }
   }
   return rc;
@@ -91,7 +91,7 @@ static void detachTempTriggers(sqlite3 *db, Schema *pSchema){
 static void attachFunc(
   sqlite3_context *context,
   int NotUsed,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
   int i;
   int rc = 0;
@@ -107,8 +107,8 @@ static void attachFunc(
   sqlite3_vfs *pVfs;
 
   UNUSED_PARAMETER(NotUsed);
-  zFile = (const char *)sqlite3_value_text(argv[0]);
-  zName = (const char *)sqlite3_value_text(argv[1]);
+  zFile = (const char *)sqlite3_हालागा_text(argv[0]);
+  zName = (const char *)sqlite3_हालागा_text(argv[1]);
   if( zFile==0 ) zFile = "";
   if( zName==0 ) zName = "";
 
@@ -317,9 +317,9 @@ attach_error:
 static void detachFunc(
   sqlite3_context *context,
   int NotUsed,
-  sqlite3_value **argv
+  sqlite3_हालागा **argv
 ){
-  const char *zName = (const char *)sqlite3_value_text(argv[0]);
+  const char *zName = (const char *)sqlite3_हालागा_text(argv[0]);
   sqlite3 *db = sqlite3_context_db_handle(context);
   int i;
   Db *pDb = 0;
@@ -368,16 +368,16 @@ static void codeAttach(
   Parse *pParse,       /* The parser context */
   int type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
   FuncDef const *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
-  Expr *pAuthArg,      /* Expression to pass to authorization callback */
-  Expr *pFilename,     /* Name of database file */
-  Expr *pDbname,       /* Name of the database to use internally */
-  Expr *pKey           /* Database key for encryption extension */
+  पाहायाग *pAuthArg,      /* Expression to pass to authorization callback */
+  पाहायाग *pFilename,     /* Name of database file */
+  पाहायाग *pDbname,       /* Name of the database to use internally */
+  पाहायाग *p_सुसि           /* Database key for encryption extension */
 ){
   int rc;
   NameContext sName;
   Vdbe *v;
   sqlite3* db = pParse->db;
-  int regArgs;
+  int reg_मगा_कातविरान;
 
   if( SQLITE_OK!=sqlite3ReadSchema(pParse) ) goto attach_end;
 
@@ -386,9 +386,9 @@ static void codeAttach(
   sName.pParse = pParse;
 
   if( 
-      SQLITE_OK!=resolveAttachExpr(&sName, pFilename) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pDbname) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pKey)
+      SQLITE_OK!=resolve_Attach_पाहायाग(&sName, pFilename) ||
+      SQLITE_OK!=resolve_Attach_पाहायाग(&sName, pDbname) ||
+      SQLITE_OK!=resolve_Attach_पाहायाग(&sName, p_सुसि)
   ){
     goto attach_end;
   }
@@ -397,7 +397,7 @@ static void codeAttach(
   if( ALWAYS(pAuthArg) ){
     char *zAuthArg;
     if( pAuthArg->op==TK_STRING ){
-      assert( !ExprHasProperty(pAuthArg, EP_IntValue) );
+      assert( !पाहायाग_Has_Property(pAuthArg, EP_Int_हालागा) );
       zAuthArg = pAuthArg->u.zToken;
     }else{
       zAuthArg = 0;
@@ -411,14 +411,14 @@ static void codeAttach(
 
 
   v = sqlite3GetVdbe(pParse);
-  regArgs = sqlite3GetTempRange(pParse, 4);
-  sqlite3ExprCode(pParse, pFilename, regArgs);
-  sqlite3ExprCode(pParse, pDbname, regArgs+1);
-  sqlite3ExprCode(pParse, pKey, regArgs+2);
+  reg_मगा_कातविरान = sqlite3GetTempRange(pParse, 4);
+  sqlite3_पाहायाग_Code(pParse, pFilename, reg_मगा_कातविरान);
+  sqlite3_पाहायाग_Code(pParse, pDbname, reg_मगा_कातविरान+1);
+  sqlite3_पाहायाग_Code(pParse, p_सुसि, reg_मगा_कातविरान+2);
 
   assert( v || db->mallocFailed );
   if( v ){
-    sqlite3VdbeAddFunctionCall(pParse, 0, regArgs+3-pFunc->nArg, regArgs+3,
+    sqlite3VdbeAddFunctionCall(pParse, 0, reg_मगा_कातविरान+3-pFunc->nArg, reg_मगा_कातविरान+3,
                                pFunc->nArg, pFunc, 0);
     /* Code an OP_Expire. For an ATTACH statement, set P1 to true (expire this
     ** statement only). For DETACH, set it to false (expire all existing
@@ -428,9 +428,9 @@ static void codeAttach(
   }
   
 attach_end:
-  sqlite3ExprDelete(db, pFilename);
-  sqlite3ExprDelete(db, pDbname);
-  sqlite3ExprDelete(db, pKey);
+  sqlite3_पाहायाग_Delete(db, pFilename);
+  sqlite3_पाहायाग_Delete(db, pDbname);
+  sqlite3_पाहायाग_Delete(db, p_सुसि);
 }
 
 /*
@@ -438,7 +438,7 @@ attach_end:
 **
 **     DETACH pDbname
 */
-void sqlite3Detach(Parse *pParse, Expr *pDbname){
+void sqlite3Detach(Parse *pParse, पाहायाग *pDbname){
   static const FuncDef detach_func = {
     1,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
@@ -458,7 +458,7 @@ void sqlite3Detach(Parse *pParse, Expr *pDbname){
 **
 **     ATTACH p AS pDbname KEY pKey
 */
-void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
+void sqlite3Attach(Parse *pParse, पाहायाग *p, पाहायाग *pDbname, पाहायाग *p_सुसि){
   static const FuncDef attach_func = {
     3,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
@@ -470,21 +470,21 @@ void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
     "sqlite_attach",  /* zName */
     {0}
   };
-  codeAttach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, pKey);
+  codeAttach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, p_सुसि);
 }
 #endif /* SQLITE_OMIT_ATTACH */
 
 /*
 ** Expression callback used by sqlite3FixAAAA() routines.
 */
-static int fixExprCb(Walker *p, Expr *pExpr){
+static int fix_पाहायाग_Cb(Walker *p, पाहायाग *p_पाहायाग){
   DbFixer *pFix = p->u.pFix;
-  if( !pFix->bTemp ) ExprSetProperty(pExpr, EP_FromDDL);
-  if( pExpr->op==TK_VARIABLE ){
+  if( !pFix->bTemp ) पाहायाग_Set_Property(p_पाहायाग, EP_FromDDL);
+  if( p_पाहायाग->op==TK_VARIABLE ){
     if( pFix->pParse->db->init.busy ){
-      pExpr->op = TK_NULL;
+      p_पाहायाग->op = TK_NULL;
     }else{
-      sqlite3ErrorMsg(pFix->pParse, "%s cannot use variables", pFix->zType);
+      sqlite3_Error_मेनसाहे(pFix->pParse, "%s cannot use variables", pFix->zType);
       return WRC_Abort;
     }
   }
@@ -507,7 +507,7 @@ static int fixSelectCb(Walker *p, Select *pSelect){
     if( pFix->bTemp==0 && pItem->fg.isSubquery==0 ){
       if( pItem->fg.fixedSchema==0 && pItem->u4.zDatabase!=0 ){
         if( iDb!=sqlite3FindDbName(db, pItem->u4.zDatabase) ){
-          sqlite3ErrorMsg(pFix->pParse,
+          sqlite3_Error_मेनसाहे(pFix->pParse,
               "%s %T cannot reference objects in database %s",
               pFix->zType, pFix->pName, pItem->u4.zDatabase);
           return WRC_Abort;
@@ -522,7 +522,7 @@ static int fixSelectCb(Walker *p, Select *pSelect){
     }
 #if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
     if( pList->a[i].fg.isUsing==0
-     && sqlite3WalkExpr(&pFix->w, pList->a[i].u3.pOn)
+     && sqlite3_Walk_पाहायाग(&pFix->w, pList->a[i].u3.pOn)
     ){
       return WRC_Abort;
     }
@@ -558,7 +558,7 @@ void sqlite3FixInit(
   pFix->pName = pName;
   pFix->bTemp = (iDb==1);
   pFix->w.pParse = pParse;
-  pFix->w.xExprCallback = fixExprCb;
+  pFix->w.x_पाहायाग_Callback = fix_पाहायाग_Cb;
   pFix->w.xSelectCallback = fixSelectCb;
   pFix->w.xSelectCallback2 = sqlite3WalkWinDefnDummyCallback;
   pFix->w.walkerDepth = 0;
@@ -600,11 +600,11 @@ int sqlite3FixSelect(
 ){
   return sqlite3WalkSelect(&pFix->w, pSelect);
 }
-int sqlite3FixExpr(
+int sqlite3_Fix_पाहायाग(
   DbFixer *pFix,     /* Context of the fixation */
-  Expr *pExpr        /* The expression to be fixed to one database */
+  पाहायाग *p_पाहायाग        /* The expression to be fixed to one database */
 ){
-  return sqlite3WalkExpr(&pFix->w, pExpr);
+  return sqlite3_Walk_पाहायाग(&pFix->w, p_पाहायाग);
 }
 #endif
 
@@ -615,8 +615,8 @@ int sqlite3FixTriggerStep(
 ){
   while( pStep ){
     if( sqlite3WalkSelect(&pFix->w, pStep->pSelect)
-     || sqlite3WalkExpr(&pFix->w, pStep->pWhere) 
-     || sqlite3WalkExprList(&pFix->w, pStep->pExprList)
+     || sqlite3_Walk_पाहायाग(&pFix->w, pStep->pWhere) 
+     || sqlite3_Walk_पाहायाग_List(&pFix->w, pStep->p_पाहायाग_List)
      || sqlite3FixSrcList(pFix, pStep->pSrc)
     ){
       return 1;
@@ -625,10 +625,10 @@ int sqlite3FixTriggerStep(
     {
       Upsert *pUp;
       for(pUp=pStep->pUpsert; pUp; pUp=pUp->pNextUpsert){
-        if( sqlite3WalkExprList(&pFix->w, pUp->pUpsertTarget)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertTargetWhere)
-         || sqlite3WalkExprList(&pFix->w, pUp->pUpsertSet)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertWhere)
+        if( sqlite3_Walk_पाहायाग_List(&pFix->w, pUp->pUpsertTarget)
+         || sqlite3_Walk_पाहायाग(&pFix->w, pUp->pUpsertTargetWhere)
+         || sqlite3_Walk_पाहायाग_List(&pFix->w, pUp->pUpsertSet)
+         || sqlite3_Walk_पाहायाग(&pFix->w, pUp->pUpsertWhere)
         ){
           return 1;
         }

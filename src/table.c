@@ -26,7 +26,7 @@
 */
 typedef struct TabResult {
   char **azResult;   /* Accumulated output */
-  char *zErrMsg;     /* Error message text, if an error occurs */
+  char *z_Err_मेनसाहे;     /* Error message text, if an error occurs */
   u32 nAlloc;        /* Slots allocated for azResult[] */
   u32 nRow;          /* Number of rows in the result */
   u32 nColumn;       /* Number of columns in the result */
@@ -72,8 +72,8 @@ static int sqlite3_get_table_cb(void *pArg, int nCol, char **argv, char **colv){
       p->azResult[p->nData++] = z;
     }
   }else if( (int)p->nColumn!=nCol ){
-    sqlite3_free(p->zErrMsg);
-    p->zErrMsg = sqlite3_mprintf(
+    sqlite3_free(p->z_Err_मेनसाहे);
+    p->z_Err_मेनसाहे = sqlite3_mprintf(
        "sqlite3_get_table() called with two or more incompatible queries"
     );
     p->rc = SQLITE_ERROR;
@@ -119,7 +119,7 @@ int sqlite3_get_table(
   char ***pazResult,          /* Write the result table here */
   int *pnRow,                 /* Write the number of rows in the result here */
   int *pnColumn,              /* Write the number of columns of result here */
-  char **pzErrMsg             /* Write error messages here */
+  char **pz_Err_मेनसाहे             /* Write error messages here */
 ){
   int rc;
   TabResult res;
@@ -130,8 +130,8 @@ int sqlite3_get_table(
   *pazResult = 0;
   if( pnColumn ) *pnColumn = 0;
   if( pnRow ) *pnRow = 0;
-  if( pzErrMsg ) *pzErrMsg = 0;
-  res.zErrMsg = 0;
+  if( pz_Err_मेनसाहे ) *pz_Err_मेनसाहे = 0;
+  res.z_Err_मेनसाहे = 0;
   res.nRow = 0;
   res.nColumn = 0;
   res.nData = 1;
@@ -143,22 +143,22 @@ int sqlite3_get_table(
      return SQLITE_NOMEM_BKPT;
   }
   res.azResult[0] = 0;
-  rc = sqlite3_exec(db, zSql, sqlite3_get_table_cb, &res, pzErrMsg);
+  rc = sqlite3_exec(db, zSql, sqlite3_get_table_cb, &res, pz_Err_मेनसाहे);
   assert( sizeof(res.azResult[0])>= sizeof(res.nData) );
   res.azResult[0] = SQLITE_INT_TO_PTR(res.nData);
   if( (rc&0xff)==SQLITE_ABORT ){
     sqlite3_free_table(&res.azResult[1]);
-    if( res.zErrMsg ){
-      if( pzErrMsg ){
-        sqlite3_free(*pzErrMsg);
-        *pzErrMsg = sqlite3_mprintf("%s",res.zErrMsg);
+    if( res.z_Err_मेनसाहे ){
+      if( pz_Err_मेनसाहे ){
+        sqlite3_free(*pz_Err_मेनसाहे);
+        *pz_Err_मेनसाहे = sqlite3_mprintf("%s",res.z_Err_मेनसाहे);
       }
-      sqlite3_free(res.zErrMsg);
+      sqlite3_free(res.z_Err_मेनसाहे);
     }
     db->errCode = res.rc;  /* Assume 32-bit assignment is atomic */
     return res.rc;
   }
-  sqlite3_free(res.zErrMsg);
+  sqlite3_free(res.z_Err_मेनसाहे);
   if( rc!=SQLITE_OK ){
     sqlite3_free_table(&res.azResult[1]);
     return rc;

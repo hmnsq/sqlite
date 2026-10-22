@@ -153,7 +153,7 @@ struct TestvfsBuffer {
 
 #define PARENTVFS(x) (((Testvfs *)((x)->pAppData))->pParent)
 
-#define TESTVFS_MAX_ARGS 12
+#define TESTVFS_MAX_मगा_कातविरान 12
 
 
 /*
@@ -181,8 +181,8 @@ static int tvfsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
 static int tvfsFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
 #ifndef SQLITE_OMIT_LOAD_EXTENSION
 static void *tvfsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void tvfsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*tvfsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
+static void tvfsDlError(sqlite3_vfs*, int nByte, char *z_Err_मेनसाहे);
+static void (*tvfsDlSym(sqlite3_vfs*,void*, const char *z_सिम्बोलो))(void);
 static void tvfsDlClose(sqlite3_vfs*, void*);
 #endif /* SQLITE_OMIT_LOAD_EXTENSION */
 static int tvfsRandomness(sqlite3_vfs*, int nByte, char *zOut);
@@ -293,7 +293,7 @@ static void tvfsExecTcl(
   assert( arg3==0 || arg2!=0 );
 
   pEval = Tcl_DuplicateObj(p->pScript);
-  Tcl_IncrRefCount(p->pScript);
+  Tcl_Incr_Ref_बिलांग(p->pScript);
   Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewStringObj(zMethod, -1));
   if( arg1 ) Tcl_ListObjAppendElement(p->interp, pEval, arg1);
   if( arg2 ) Tcl_ListObjAppendElement(p->interp, pEval, arg2);
@@ -323,7 +323,7 @@ static int tvfsClose(sqlite3_file *pFile){
   }
 
   if( pFd->pShmId ){
-    Tcl_DecrRefCount(pFd->pShmId);
+    Tcl_Decr_Ref_बिलांग(pFd->pShmId);
     pFd->pShmId = 0;
   }
   if( pFile->pMethods ){
@@ -635,7 +635,7 @@ static int tvfsOpen(
   Tcl_ResetResult(p->interp);
   if( p->pScript && p->mask&TESTVFS_OPEN_MASK ){
     Tcl_Obj *pArg = Tcl_NewObj();
-    Tcl_IncrRefCount(pArg);
+    Tcl_Incr_Ref_बिलांग(pArg);
     if( flags&SQLITE_OPEN_MAIN_DB ){
       const char *z = &zName[strlen(zName)+1];
       while( *z ){
@@ -646,7 +646,7 @@ static int tvfsOpen(
       }
     }
     tvfsExecTcl(p, "xOpen", Tcl_NewStringObj(pFd->zFilename, -1), pArg, 0, 0);
-    Tcl_DecrRefCount(pArg);
+    Tcl_Decr_Ref_बिलांग(pArg);
     if( tvfsResultCode(p, &rc) ){
       if( rc!=SQLITE_OK ) return rc;
     }else{
@@ -661,7 +661,7 @@ static int tvfsOpen(
   if( !pId ){
     pId = Tcl_NewStringObj("anon", -1);
   }
-  Tcl_IncrRefCount(pId);
+  Tcl_Incr_Ref_बिलांग(pId);
   pFd->pShmId = pId;
   Tcl_ResetResult(p->interp);
 
@@ -782,8 +782,8 @@ static void *tvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void tvfsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3OsDlError(PARENTVFS(pVfs), nByte, zErrMsg);
+static void tvfsDlError(sqlite3_vfs *pVfs, int nByte, char *z_Err_मेनसाहे){
+  sqlite3OsDlError(PARENTVFS(pVfs), nByte, z_Err_मेनसाहे);
 }
 
 /*
@@ -912,7 +912,7 @@ static int tvfsShmMap(
 
   if( p->pScript && p->mask&TESTVFS_SHMMAP_MASK ){
     Tcl_Obj *pArg = Tcl_NewObj();
-    Tcl_IncrRefCount(pArg);
+    Tcl_Incr_Ref_बिलांग(pArg);
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(iPage));
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(pgsz));
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(isWrite));
@@ -920,7 +920,7 @@ static int tvfsShmMap(
         Tcl_NewStringObj(pFd->pShm->zFile, -1), pFd->pShmId, pArg, 0
     );
     tvfsResultCode(p, &rc);
-    Tcl_DecrRefCount(pArg);
+    Tcl_Decr_Ref_बिलांग(pArg);
   }
   if( rc==SQLITE_OK && p->mask&TESTVFS_SHMMAP_MASK && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
@@ -1111,7 +1111,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
   int i;
   
   if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUBCOMMAND ...");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "SUBCOMMAND ...");
     return TCL_ERROR;
   }
   if( Tcl_GetIndexFromObjStruct(
@@ -1128,7 +1128,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       TestvfsBuffer *pBuffer;
       char *zName;
       if( objc!=3 && objc!=4 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "FILE ?VALUE?");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "FILE ?VALUE?");
         return TCL_ERROR;
       }
       zName = ckalloc(p->pParent->mxPathname);
@@ -1208,7 +1208,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       Tcl_Size nElem = 0;
       int mask = 0;
       if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "LIST");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "LIST");
         return TCL_ERROR;
       }
       if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
@@ -1243,16 +1243,16 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       if( objc==3 ){
         Tcl_Size nByte;
         if( p->pScript ){
-          Tcl_DecrRefCount(p->pScript);
+          Tcl_Decr_Ref_बिलांग(p->pScript);
           p->pScript = 0;
         }
         Tcl_GetStringFromObj(objv[2], &nByte);
         if( nByte>0 ){
           p->pScript = Tcl_DuplicateObj(objv[2]);
-          Tcl_IncrRefCount(p->pScript);
+          Tcl_Incr_Ref_बिलांग(p->pScript);
         }
       }else if( objc!=2 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?SCRIPT?");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "?SCRIPT?");
         return TCL_ERROR;
       }
 
@@ -1294,7 +1294,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
         pTest->eFault = iPersist?FAULT_INJECT_PERSISTENT:FAULT_INJECT_TRANSIENT;
         pTest->iCnt = iCnt;
       }else if( objc!=2 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?CNT PERSIST?");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "?CNT PERSIST?");
         return TCL_ERROR;
       }
       Tcl_SetObjResult(interp, Tcl_NewIntObj(iRet));
@@ -1309,7 +1309,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     case CMD_DEVCHAR: {
       struct DeviceFlag {
         char *zName;
-        int iValue;
+        int i_हालागा;
       } aFlag[] = {
         { "default",               -1 },
         { "atomic",                SQLITE_IOCAP_ATOMIC                },
@@ -1332,7 +1332,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
       int iFlag;
 
       if( objc>3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?ATTR-LIST?");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "?ATTR-LIST?");
         return TCL_ERROR;
       }
       if( objc==3 ){
@@ -1352,11 +1352,11 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
           ){
             return TCL_ERROR;
           }
-          if( aFlag[idx].iValue<0 && nFlags>1 ){
+          if( aFlag[idx].i_हालागा<0 && nFlags>1 ){
             Tcl_AppendResult(interp, "bad flags: ", Tcl_GetString(objv[2]), NULL);
             return TCL_ERROR;
           }
-          iNew |= aFlag[idx].iValue;
+          iNew |= aFlag[idx].i_हालागा;
         }
 
         p->iDevchar = iNew| 0x10000000;
@@ -1364,7 +1364,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
 
       pRet = Tcl_NewObj();
       for(iFlag=0; iFlag<sizeof(aFlag)/sizeof(aFlag[0]); iFlag++){
-        if( p->iDevchar & aFlag[iFlag].iValue ){
+        if( p->iDevchar & aFlag[iFlag].i_हालागा ){
           Tcl_ListObjAppendElement(
               interp, pRet, Tcl_NewStringObj(aFlag[iFlag].zName, -1)
           );
@@ -1377,7 +1377,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
 
     case CMD_SECTORSIZE: {
       if( objc>3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?VALUE?");
+        Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 2, objv, "?VALUE?");
         return TCL_ERROR;
       }
       if( objc==3 ){
@@ -1397,7 +1397,7 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
 
 static void SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
   Testvfs *p = (Testvfs *)cd;
-  if( p->pScript ) Tcl_DecrRefCount(p->pScript);
+  if( p->pScript ) Tcl_Decr_Ref_बिलांग(p->pScript);
   sqlite3_vfs_unregister(p->pVfs);
   memset(p->pVfs, 0, sizeof(sqlite3_vfs));
   ckfree((char *)p->pVfs);
@@ -1491,7 +1491,7 @@ static int SQLITE_TCLAPI testvfs_cmd(
   int mxPathname = -1;            /* Value passed to -mxpathname */
   int iVersion = 3;               /* Value passed to -iversion */
 
-  if( objc<2 || 0!=(objc%2) ) goto bad_args;
+  if( objc<2 || 0!=(objc%2) ) goto bad_मगा_कातविरान;
   for(i=2; i<objc; i += 2){
     Tcl_Size nSwitch;
     char *zSwitch;
@@ -1530,7 +1530,7 @@ static int SQLITE_TCLAPI testvfs_cmd(
       if( isFullshm ) isNoshm = 0;
     }
     else{
-      goto bad_args;
+      goto bad_मगा_कातविरान;
     }
   }
 
@@ -1577,8 +1577,8 @@ static int SQLITE_TCLAPI testvfs_cmd(
 
   return TCL_OK;
 
- bad_args:
-  Tcl_WrongNumArgs(interp, 1, objv, "VFSNAME ?-noshm BOOL? ?-fullshm BOOL? ?-default BOOL? ?-mxpathname INT? ?-szosfile INT? ?-iversion INT?");
+ bad_मगा_कातविरान:
+  Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "VFSNAME ?-noshm BOOL? ?-fullshm BOOL? ?-default BOOL? ?-mxpathname INT? ?-szosfile INT? ?-iversion INT?");
   return TCL_ERROR;
 }
 
@@ -1606,7 +1606,7 @@ static int SQLITE_TCLAPI test_vfs_shmlock(
   sqlite3_file *pFd;
 
   if( objc!=7 ){
-    Tcl_WrongNumArgs(interp, 1, objv, 
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, 
         "DB DBNAME (shared|exclusive) (lock|unlock) OFFSET N"
     );
     return TCL_ERROR;
@@ -1651,7 +1651,7 @@ static int SQLITE_TCLAPI test_vfs_set_readmark(
   int iOff;
 
   if( objc!=4 && objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SLOT ?VALUE?");
+    Tcl_Wrong_नुमेरो_मगा_कातविरान(interp, 1, objv, "DB DBNAME SLOT ?VALUE?");
     return TCL_ERROR;
   }
 

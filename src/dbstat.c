@@ -110,7 +110,7 @@ struct StatPage {
   int nCell;                      /* Number of cells on page */
   int nUnused;                    /* Number of unused bytes on page */
   StatCell *aCell;                /* Array of parsed cells */
-  u32 iRightChildPg;              /* Right-child page number (or 0) */
+  u32 i_कानान_Child_Pg;              /* Right-child page number (or 0) */
   int nMxPayload;                 /* Largest payload of any cell on the page */
 };
 
@@ -249,15 +249,15 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   if( iSchema>=0 ){
     pIdxInfo->aConstraintUsage[iSchema].argvIndex = ++i;
     pIdxInfo->aConstraintUsage[iSchema].omit = 1;
-    pIdxInfo->idxNum |= 0x01;
+    pIdxInfo->idx_नुमेरो |= 0x01;
   }
   if( iName>=0 ){
     pIdxInfo->aConstraintUsage[iName].argvIndex = ++i;
-    pIdxInfo->idxNum |= 0x02;
+    pIdxInfo->idx_नुमेरो |= 0x02;
   }
   if( iAgg>=0 ){
     pIdxInfo->aConstraintUsage[iAgg].argvIndex = ++i;
-    pIdxInfo->idxNum |= 0x04;
+    pIdxInfo->idx_नुमेरो |= 0x04;
   }
   pIdxInfo->estimatedCost = 1.0;
 
@@ -277,7 +277,7 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
      )
   ){
     pIdxInfo->orderByConsumed = 1;
-    pIdxInfo->idxNum |= 0x08;
+    pIdxInfo->idx_नुमेरो |= 0x08;
   }
   pIdxInfo->idxFlags |= SQLITE_INDEX_SCAN_HEX;
 
@@ -430,7 +430,7 @@ static int statDecodePage(Btree *pBt, StatPage *p){
     iOff = iNext;
   }
   p->nUnused = nUnused;
-  p->iRightChildPg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
+  p->i_कानान_Child_Pg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
 
   if( p->nCell ){
     int i;                        /* Used to iterate through cells */
@@ -586,14 +586,14 @@ statNextRestart:
     rc = sqlite3_step(pCsr->pStmt);
     if( rc==SQLITE_ROW ){
       int nPage;
-      u32 iRoot = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
+      u32 i_उगात = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
       sqlite3PagerPagecount(pPager, &nPage);
       if( nPage==0 ){
         pCsr->isEof = 1;
         return sqlite3_reset(pCsr->pStmt);
       }
-      rc = statGetPage(pBt, iRoot, &pCsr->aPage[0]);
-      pCsr->aPage[0].iPgno = iRoot;
+      rc = statGetPage(pBt, i_उगात, &pCsr->aPage[0]);
+      pCsr->aPage[0].iPgno = i_उगात;
       pCsr->aPage[0].iCell = 0;
       if( !pCsr->isAgg ){
         pCsr->aPage[0].zPath = z = sqlite3_mprintf("/");
@@ -637,11 +637,11 @@ statNextRestart:
           return z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
         }
       }
-      if( p->iRightChildPg ) break;
+      if( p->i_कानान_Child_Pg ) break;
       p->iCell++;
     }
 
-    if( !p->iRightChildPg || p->iCell>p->nCell ){
+    if( !p->i_कानान_Child_Pg || p->iCell>p->nCell ){
       statClearPage(p);
       pCsr->iPage--;
       if( pCsr->isAgg && pCsr->iPage<0 ){
@@ -659,7 +659,7 @@ statNextRestart:
     assert( p==&pCsr->aPage[pCsr->iPage-1] );
 
     if( p->iCell==p->nCell ){
-      p[1].iPgno = p->iRightChildPg;
+      p[1].iPgno = p->i_कानान_Child_Pg;
     }else{
       p[1].iPgno = p->aCell[p->iCell].iChildPg;
     }
@@ -734,8 +734,8 @@ static int statEof(sqlite3_vtab_cursor *pCursor){
 */
 static int statFilter(
   sqlite3_vtab_cursor *pCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable*)(pCursor->pVtab);
@@ -750,9 +750,9 @@ static int statFilter(
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
-  if( idxNum & 0x01 ){
+  if( idx_नुमेरो & 0x01 ){
     /* schema=? constraint is present.  Get its value */
-    const char *zDbase = (const char*)sqlite3_value_text(argv[iArg++]);
+    const char *zDbase = (const char*)sqlite3_हालागा_text(argv[iArg++]);
     pCsr->iDb = sqlite3FindDbName(pTab->db, zDbase);
     if( pCsr->iDb<0 ){
       pCsr->iDb = 0;
@@ -762,13 +762,13 @@ static int statFilter(
   }else{
     pCsr->iDb = pTab->iDb;
   }
-  if( idxNum & 0x02 ){
+  if( idx_नुमेरो & 0x02 ){
     /* name=? constraint is present */
-    zName = (const char*)sqlite3_value_text(argv[iArg++]);
+    zName = (const char*)sqlite3_हालागा_text(argv[iArg++]);
   }
-  if( idxNum & 0x04 ){
+  if( idx_नुमेरो & 0x04 ){
     /* aggregate=? constraint is present */
-    pCsr->isAgg = sqlite3_value_double(argv[iArg++])!=0.0;
+    pCsr->isAgg = sqlite3_हालागा_double(argv[iArg++])!=0.0;
   }else{
     pCsr->isAgg = 0;
   }
@@ -783,7 +783,7 @@ static int statFilter(
   if( zName ){
     sqlite3_str_appendf(pSql, "WHERE name=%Q", zName);
   }
-  if( idxNum & 0x08 ){
+  if( idx_नुमेरो & 0x08 ){
     sqlite3_str_appendf(pSql, " ORDER BY name");
   }
   zSql = sqlite3_str_finish(pSql);

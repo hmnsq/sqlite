@@ -515,7 +515,7 @@ void sqlite3MemdebugDump(const char *zFilename){
 /*
 ** Return the number of times sqlite3MemMalloc() has been called.
 */
-int sqlite3MemdebugMallocCount(){
+int sqlite3_Memdebug_Malloc_बिलांग(){
   int i;
   int nTotal = 0;
   for(i=0; i<NCSIZE; i++){

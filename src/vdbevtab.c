@@ -211,13 +211,13 @@ static int bytecodevtabColumn(
         Schema *pSchema;
         HashElem *k;
         int iDb = pOp->p3;
-        Pgno iRoot = (Pgno)pOp->p2;
+        Pgno i_उगात = (Pgno)pOp->p2;
         sqlite3 *db = pVTab->db;
         pSchema = db->aDb[iDb].pSchema;
         pCur->zSchema = db->aDb[iDb].zDbSName;
         for(k=sqliteHashFirst(&pSchema->tblHash); k; k=sqliteHashNext(k)){
           Table *pTab = (Table*)sqliteHashData(k);
-          if( !IsVirtual(pTab) && pTab->tnum==iRoot ){
+          if( !IsVirtual(pTab) && pTab->tnum==i_उगात ){
             pCur->zName = pTab->zName;
             pCur->zType = "table";
             break;
@@ -226,7 +226,7 @@ static int bytecodevtabColumn(
         if( pCur->zName==0 ){
           for(k=sqliteHashFirst(&pSchema->idxHash); k; k=sqliteHashNext(k)){
             Index *pIdx = (Index*)sqliteHashData(k);
-            if( pIdx->tnum==iRoot ){
+            if( pIdx->tnum==i_उगात ){
               pCur->zName = pIdx->zName;
               pCur->zType = "index";
             }
@@ -332,8 +332,8 @@ static int bytecodevtabRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 */
 static int bytecodevtabFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  int idx_नुमेरो, const char *idxStr,
+  int argc, sqlite3_हालागा **argv
 ){
   bytecodevtab_cursor *pCur = (bytecodevtab_cursor *)pVtabCursor;
   bytecodevtab *pVTab = (bytecodevtab *)pVtabCursor->pVtab;
@@ -343,10 +343,10 @@ static int bytecodevtabFilter(
   bytecodevtabCursorClear(pCur);
   pCur->iRowid = 0;
   pCur->iAddr = 0;
-  pCur->showSubprograms = idxNum==0;
+  pCur->showSubprograms = idx_नुमेरो==0;
   assert( argc==1 );
-  if( sqlite3_value_type(argv[0])==SQLITE_TEXT ){
-    const char *zSql = (const char*)sqlite3_value_text(argv[0]);
+  if( sqlite3_हालागा_type(argv[0])==SQLITE_TEXT ){
+    const char *zSql = (const char*)sqlite3_हालागा_text(argv[0]);
     if( zSql==0 ){
       rc = SQLITE_NOMEM;
     }else{
@@ -354,10 +354,10 @@ static int bytecodevtabFilter(
       pCur->needFinalize = 1;
     }
   }else{
-    pCur->pStmt = (sqlite3_stmt*)sqlite3_value_pointer(argv[0],"stmt-pointer");
+    pCur->pStmt = (sqlite3_stmt*)sqlite3_हालागा_pointer(argv[0],"stmt-pointer");
   }
   if( pCur->pStmt==0 ){
-    pVTab->base.zErrMsg = sqlite3_mprintf(
+    pVTab->base.z_Err_मेनसाहे = sqlite3_mprintf(
        "argument to %s() is not a valid SQL statement",
        pVTab->bTablesUsed ? "tables_used" : "bytecode"
     );
@@ -384,7 +384,7 @@ static int bytecodevtabBestIndex(
   int iBaseCol = pVTab->bTablesUsed ? 4 : 10;
   pIdxInfo->estimatedCost = (double)100;
   pIdxInfo->estimatedRows = 100;
-  pIdxInfo->idxNum = 0;
+  pIdxInfo->idx_नुमेरो = 0;
   for(i=0, p=pIdxInfo->aConstraint; i<pIdxInfo->nConstraint; i++, p++){
     if( p->usable==0 ) continue;
     if( p->op==SQLITE_INDEX_CONSTRAINT_EQ && p->iColumn==iBaseCol+1 ){
@@ -394,7 +394,7 @@ static int bytecodevtabBestIndex(
     }
     if( p->op==SQLITE_INDEX_CONSTRAINT_ISNULL && p->iColumn==iBaseCol ){
       pIdxInfo->aConstraintUsage[i].omit = 1;
-      pIdxInfo->idxNum = 1;
+      pIdxInfo->idx_नुमेरो = 1;
     }
   }
   return rc;
