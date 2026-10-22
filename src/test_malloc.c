@@ -23,16 +23,16 @@
 ** This structure is used to encapsulate the global state variables used 
 ** by malloc() fault simulation.
 */
-static struct MemFault {
-  int iCountdown;         /* Number of pending successes before a failure */
-  int nRepeat;            /* Number of times to repeat the failure */
-  int nBenign;            /* Number of benign failures seen since last config */
-  int nFail;              /* Number of failures seen since last config */
-  int nOkBefore;          /* Successful allocations prior to the first fault */
-  int nOkAfter;           /* Successful allocations after a fault */
+static sa_nracanaa MemFault {
+  puur_naa_nka iCountdown;         /* Number of pending successes before a failure */
+  puur_naa_nka nRepeat;            /* Number of times to repeat the failure */
+  puur_naa_nka nBenign;            /* Number of benign failures seen since last config */
+  puur_naa_nka nFail;              /* Number of failures seen since last config */
+  puur_naa_nka nOkBefore;          /* Successful allocations prior to the first fault */
+  puur_naa_nka nOkAfter;           /* Successful allocations after a fault */
   u8 enable;              /* True if enabled */
-  int isInstalled;        /* True if the fault simulation layer is installed */
-  int isBenignMode;       /* True if malloc failures are considered benign */
+  puur_naa_nka isInstalled;        /* True if the fault simulation layer is installed */
+  puur_naa_nka isBenignMode;       /* True if malloc failures are considered benign */
   sqlite3_mem_methods m;  /* 'Real' malloc implementation */
 } memfault;
 
@@ -43,7 +43,7 @@ static struct MemFault {
 static void sqlite3Fault(void){
   static u64 cnt = 0;
   cnt++;
-  if( cnt>((u64)1<<63) ) abort();
+  ꦪꦼꦤ꧀( cnt>((u64)1<<63) ) abort();
 }
 
 /*
@@ -55,46 +55,46 @@ static void sqlite3Fault(void){
 static void sqlite3FirstFault(void){
   static u64 cnt2 = 0;
   cnt2++;
-  if( cnt2>((u64)1<<63) ) abort();
+  ꦪꦼꦤ꧀( cnt2>((u64)1<<63) ) abort();
 }
 
 /*
 ** Check to see if a fault should be simulated.  Return true to simulate
 ** the fault.  Return false if the fault should not be simulated.
 */
-static int faultsimStep(void){
-  if( likely(!memfault.enable) ){
+static puur_naa_nka faultsimStep(void){
+  ꦪꦼꦤ꧀( likely(!memfault.enable) ){
     memfault.nOkAfter++;
-    return 0;
+    ꦮꦭꦶ 0;
   }
-  if( memfault.iCountdown>0 ){
+  ꦪꦼꦤ꧀( memfault.iCountdown>0 ){
     memfault.iCountdown--;
     memfault.nOkBefore++;
-    return 0;
+    ꦮꦭꦶ 0;
   }
-  if( memfault.nFail==0 ) sqlite3FirstFault();
+  ꦪꦼꦤ꧀( memfault.nFail==0 ) sqlite3FirstFault();
   sqlite3Fault();
   memfault.nFail++;
-  if( memfault.isBenignMode>0 ){
+  ꦪꦼꦤ꧀( memfault.isBenignMode>0 ){
     memfault.nBenign++;
   }
   memfault.nRepeat--;
-  if( memfault.nRepeat<=0 ){
+  ꦪꦼꦤ꧀( memfault.nRepeat<=0 ){
     memfault.enable = 0;
   }
-  return 1;  
+  ꦮꦭꦶ 1;  
 }
 
 /*
 ** A version of sqlite3_mem_methods.xMalloc() that includes fault simulation
 ** logic.
 */
-static void *faultsimMalloc(int n){
+static void *faultsimMalloc(puur_naa_nka n){
   void *p = 0;
-  if( !faultsimStep() ){
+  ꦪꦼꦤ꧀( !faultsimStep() ){
     p = memfault.m.xMalloc(n);
   }
-  return p;
+  ꦮꦭꦶ p;
 }
 
 
@@ -102,12 +102,12 @@ static void *faultsimMalloc(int n){
 ** A version of sqlite3_mem_methods.xRealloc() that includes fault simulation
 ** logic.
 */
-static void *faultsimRealloc(void *pOld, int n){
+static void *faultsimRealloc(void *pOld, puur_naa_nka n){
   void *p = 0;
-  if( !faultsimStep() ){
+  ꦪꦼꦤ꧀( !faultsimStep() ){
     p = memfault.m.xRealloc(pOld, n);
   }
-  return p;
+  ꦮꦭꦶ p;
 }
 
 /*
@@ -116,7 +116,7 @@ static void *faultsimRealloc(void *pOld, int n){
 ** by a block of nRepeat failures, after which malloc() calls will begin
 ** to succeed again.
 */
-static void faultsimConfig(int nDelay, int nRepeat){
+static void faultsimConfig(puur_naa_nka nDelay, puur_naa_nka nRepeat){
   memfault.iCountdown = nDelay;
   memfault.nRepeat = nRepeat;
   memfault.nBenign = 0;
@@ -139,27 +139,27 @@ static void faultsimConfig(int nDelay, int nRepeat){
 ** Return the number of faults (both hard and benign faults) that have
 ** occurred since the injector was last configured.
 */
-static int faultsimFailures(void){
-  return memfault.nFail;
+static puur_naa_nka faultsimFailures(void){
+  ꦮꦭꦶ memfault.nFail;
 }
 
 /*
 ** Return the number of benign faults that have occurred since the
 ** injector was last configured.
 */
-static int faultsimBenignFailures(void){
-  return memfault.nBenign;
+static puur_naa_nka faultsimBenignFailures(void){
+  ꦮꦭꦶ memfault.nBenign;
 }
 
 /*
 ** Return the number of successes that will occur before the next failure.
 ** If no failures are scheduled, return -1.
 */
-static int faultsimPending(void){
-  if( memfault.enable ){
-    return memfault.iCountdown;
-  }else{
-    return -1;
+static puur_naa_nka faultsimPending(void){
+  ꦪꦼꦤ꧀( memfault.enable ){
+    ꦮꦭꦶ memfault.iCountdown;
+  }ꦭꦶꦪ{
+    ꦮꦭꦶ -1;
   }
 }
 
@@ -175,20 +175,20 @@ static void faultsimEndBenign(void){
 ** Add or remove the fault-simulation layer using sqlite3_config(). If
 ** the argument is non-zero, the 
 */
-static int faultsimInstall(int install){
-  int rc;
+static puur_naa_nka faultsimInstall(puur_naa_nka install){
+  puur_naa_nka rc;
 
   install = (install ? 1 : 0);
   assert(memfault.isInstalled==1 || memfault.isInstalled==0);
 
-  if( install==memfault.isInstalled ){
-    return SQLITE_ERROR;
+  ꦪꦼꦤ꧀( install==memfault.isInstalled ){
+    ꦮꦭꦶ SQLITE_ERROR;
   }
 
-  if( install ){
+  ꦪꦼꦤ꧀( install ){
     rc = sqlite3_config(SQLITE_CONFIG_GETMALLOC, &memfault.m);
     assert(memfault.m.xMalloc);
-    if( rc==SQLITE_OK ){
+    ꦪꦼꦤ꧀( rc==SQLITE_OK ){
       sqlite3_mem_methods m = memfault.m;
       m.xMalloc = faultsimMalloc;
       m.xRealloc = faultsimRealloc;
@@ -197,26 +197,26 @@ static int faultsimInstall(int install){
     sqlite3_test_control(SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS, 
         faultsimBeginBenign, faultsimEndBenign
     );
-  }else{
+  }ꦭꦶꦪ{
     sqlite3_mem_methods m2;
     assert(memfault.m.xMalloc);
 
     /* One should be able to reset the default memory allocator by storing
     ** a zeroed allocator then calling GETMALLOC. */
-    memset(&m2, 0, sizeof(m2));
+    memset(&m2, 0, parimaa_na(m2));
     sqlite3_config(SQLITE_CONFIG_MALLOC, &m2);
     sqlite3_config(SQLITE_CONFIG_GETMALLOC, &m2);
-    assert( memcmp(&m2, &memfault.m, sizeof(m2))==0 );
+    assert( memcmp(&m2, &memfault.m, parimaa_na(m2))==0 );
 
     rc = sqlite3_config(SQLITE_CONFIG_MALLOC, &memfault.m);
     sqlite3_test_control(SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS,
         (void*)0, (void*)0);
   }
 
-  if( rc==SQLITE_OK ){
+  ꦪꦼꦤ꧀( rc==SQLITE_OK ){
     memfault.isInstalled = 1;
   }
-  return rc;
+  ꦮꦭꦶ rc;
 }
 
 #ifdef SQLITE_TEST
@@ -229,18 +229,18 @@ static int faultsimInstall(int install){
 **
 **   sqlite3ErrName(1) -> "SQLITE_ERROR"
 */
-extern const char *sqlite3ErrName(int);
+extern const var_na *sqlite3ErrName(puur_naa_nka);
 
 /*
 ** Transform pointers to text and back again
 */
-static void pointerToText(void *p, char *z){
-  const char *zRet = sqlite3TestPtrToText(p);
+static void pointerToText(void *p, var_na *z){
+  const var_na *zRet = sqlite3TestPtrToText(p);
   sprintf(z, "%s", zRet);
 }
-static int textToPointer(const char *z, void **pp){
+static puur_naa_nka textToPointer(const var_na *z, void **pp){
   *pp = sqlite3TestTextToPtr(z);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -248,24 +248,24 @@ static int textToPointer(const char *z, void **pp){
 **
 ** Raw test interface for sqlite3_malloc().
 */
-static int SQLITE_TCLAPI test_malloc(
+static puur_naa_nka SQLITE_TCLAPI test_malloc(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nByte;
+  puur_naa_nka nByte;
   void *p;
-  char zOut[100];
-  if( objc!=2 ){
+  var_na zOut[100];
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "NBYTES");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &nByte) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &nByte) ) ꦮꦭꦶ TCL_ERROR;
   p = sqlite3_malloc((unsigned)nByte);
   pointerToText(p, zOut);
   Tcl_AppendResult(interp, zOut, NULL);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -273,28 +273,28 @@ static int SQLITE_TCLAPI test_malloc(
 **
 ** Raw test interface for sqlite3_realloc().
 */
-static int SQLITE_TCLAPI test_realloc(
+static puur_naa_nka SQLITE_TCLAPI test_realloc(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nByte;
+  puur_naa_nka nByte;
   void *pPrior, *p;
-  char zOut[100];
-  if( objc!=3 ){
+  var_na zOut[100];
+  ꦪꦼꦤ꧀( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "PRIOR NBYTES");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &nByte) ) return TCL_ERROR;
-  if( textToPointer(Tcl_GetString(objv[1]), &pPrior) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[2], &nByte) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( textToPointer(Tcl_GetString(objv[1]), &pPrior) ){
+    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
   p = sqlite3_realloc(pPrior, (unsigned)nByte);
   pointerToText(p, zOut);
   Tcl_AppendResult(interp, zOut, NULL);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -302,30 +302,30 @@ static int SQLITE_TCLAPI test_realloc(
 **
 ** Raw test interface for sqlite3_free().
 */
-static int SQLITE_TCLAPI test_free(
+static puur_naa_nka SQLITE_TCLAPI test_free(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
   void *pPrior;
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "PRIOR");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( textToPointer(Tcl_GetString(objv[1]), &pPrior) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( textToPointer(Tcl_GetString(objv[1]), &pPrior) ){
+    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
   sqlite3_free(pPrior);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
 ** These routines are in test_hexio.c
 */
-int sqlite3TestHexToBin(const char *, int, char *);
-int sqlite3TestBinToHex(char*,int);
+puur_naa_nka sqlite3TestHexToBin(const var_na *, puur_naa_nka, var_na *);
+puur_naa_nka sqlite3TestBinToHex(var_na*,puur_naa_nka);
 
 /*
 ** Usage:    memset  ADDRESS  SIZE  HEX
@@ -333,46 +333,46 @@ int sqlite3TestBinToHex(char*,int);
 ** Set a chunk of memory (obtained from malloc, probably) to a
 ** specified hex pattern.
 */
-static int SQLITE_TCLAPI test_memset(
+static puur_naa_nka SQLITE_TCLAPI test_memset(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
   void *p;
-  int size, i;
+  puur_naa_nka size, i;
   Tcl_Size n;
-  char *zHex;
-  char *zOut;
-  char zBin[100];
+  var_na *zHex;
+  var_na *zOut;
+  var_na zBin[100];
 
-  if( objc!=4 ){
+  ꦪꦼꦤ꧀( objc!=4 ){
     Tcl_WrongNumArgs(interp, 1, objv, "ADDRESS SIZE HEX");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( textToPointer(Tcl_GetString(objv[1]), &p) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( textToPointer(Tcl_GetString(objv[1]), &p) ){
+    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &size) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[2], &size) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( size<=0 ){
-    Tcl_AppendResult(interp, "size must be positive", (char*)0);
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( size<=0 ){
+    Tcl_AppendResult(interp, "size must be positive", (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
   zHex = Tcl_GetStringFromObj(objv[3], &n);
-  if( n>sizeof(zBin)*2 ) n = sizeof(zBin)*2;
-  n = sqlite3TestHexToBin(zHex, (int)n, zBin);
-  if( n==0 ){
-    Tcl_AppendResult(interp, "no data", (char*)0);
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( n>parimaa_na(zBin)*2 ) n = parimaa_na(zBin)*2;
+  n = sqlite3TestHexToBin(zHex, (puur_naa_nka)n, zBin);
+  ꦪꦼꦤ꧀( n==0 ){
+    Tcl_AppendResult(interp, "no data", (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
   zOut = p;
-  for(i=0; i<size; i++){
+  ꦏꦁꦒꦺꦴ(i=0; i<size; i++){
     zOut[i] = zBin[i%n];
   }
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -380,46 +380,46 @@ static int SQLITE_TCLAPI test_memset(
 **
 ** Return memory as hexadecimal text.
 */
-static int SQLITE_TCLAPI test_memget(
+static puur_naa_nka SQLITE_TCLAPI test_memget(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
   void *p;
-  int size, n;
-  char *zBin;
-  char zHex[100];
+  puur_naa_nka size, n;
+  var_na *zBin;
+  var_na zHex[100];
 
-  if( objc!=3 ){
+  ꦪꦼꦤ꧀( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "ADDRESS SIZE");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( textToPointer(Tcl_GetString(objv[1]), &p) ){
-    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (char*)0);
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( textToPointer(Tcl_GetString(objv[1]), &p) ){
+    Tcl_AppendResult(interp, "bad pointer: ", Tcl_GetString(objv[1]), (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &size) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[2], &size) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( size<=0 ){
-    Tcl_AppendResult(interp, "size must be positive", (char*)0);
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( size<=0 ){
+    Tcl_AppendResult(interp, "size must be positive", (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
   zBin = p;
-  while( size>0 ){
-    if( size>(sizeof(zHex)-1)/2 ){
-      n = (sizeof(zHex)-1)/2;
-    }else{
+  ꦱꦼꦢꦼꦭ( size>0 ){
+    ꦪꦼꦤ꧀( size>(parimaa_na(zHex)-1)/2 ){
+      n = (parimaa_na(zHex)-1)/2;
+    }ꦭꦶꦪ{
       n = size;
     }
     memcpy(zHex, zBin, n);
     zBin += n;
     size -= n;
     sqlite3TestBinToHex(zHex, n);
-    Tcl_AppendResult(interp, zHex, (char*)0);
+    Tcl_AppendResult(interp, zHex, (var_na*)0);
   }
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -427,14 +427,14 @@ static int SQLITE_TCLAPI test_memget(
 **
 ** Raw test interface for sqlite3_memory_used().
 */
-static int SQLITE_TCLAPI test_memory_used(
+static puur_naa_nka SQLITE_TCLAPI test_memory_used(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_SetObjResult(interp, Tcl_NewWideIntObj(sqlite3_memory_used()));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -442,23 +442,23 @@ static int SQLITE_TCLAPI test_memory_used(
 **
 ** Raw test interface for sqlite3_memory_highwater().
 */
-static int SQLITE_TCLAPI test_memory_highwater(
+static puur_naa_nka SQLITE_TCLAPI test_memory_highwater(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int resetFlag = 0;
-  if( objc!=1 && objc!=2 ){
+  puur_naa_nka resetFlag = 0;
+  ꦪꦼꦤ꧀( objc!=1 && objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "?RESET?");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( objc==2 ){
-    if( Tcl_GetBooleanFromObj(interp, objv[1], &resetFlag) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( objc==2 ){
+    ꦪꦼꦤ꧀( Tcl_GetBooleanFromObj(interp, objv[1], &resetFlag) ) ꦮꦭꦶ TCL_ERROR;
   } 
   Tcl_SetObjResult(interp, 
      Tcl_NewWideIntObj(sqlite3_memory_highwater(resetFlag)));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -467,25 +467,25 @@ static int SQLITE_TCLAPI test_memory_highwater(
 ** Set the depth of backtracing.  If SQLITE_MEMDEBUG is not defined
 ** then this routine is a no-op.
 */
-static int SQLITE_TCLAPI test_memdebug_backtrace(
+static puur_naa_nka SQLITE_TCLAPI test_memdebug_backtrace(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int depth;
-  if( objc!=2 ){
+  puur_naa_nka depth;
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DEPT");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &depth) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &depth) ) ꦮꦭꦶ TCL_ERROR;
 #ifdef SQLITE_MEMDEBUG
   {
-    extern void sqlite3MemdebugBacktrace(int);
+    extern void sqlite3MemdebugBacktrace(puur_naa_nka);
     sqlite3MemdebugBacktrace(depth);
   }
 #endif
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -493,24 +493,24 @@ static int SQLITE_TCLAPI test_memdebug_backtrace(
 **
 ** Write a summary of unfreed memory to FILENAME.
 */
-static int SQLITE_TCLAPI test_memdebug_dump(
+static puur_naa_nka SQLITE_TCLAPI test_memdebug_dump(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-#if defined(SQLITE_MEMDEBUG) || defined(SQLITE_MEMORY_SIZE) \
+#ꦪꦼꦤ꧀ defined(SQLITE_MEMDEBUG) || defined(SQLITE_MEMORY_SIZE) \
      || defined(SQLITE_POW2_MEMORY_SIZE)
   {
-    extern void sqlite3MemdebugDump(const char*);
+    extern void sqlite3MemdebugDump(const var_na*);
     sqlite3MemdebugDump(Tcl_GetString(objv[1]));
   }
 #endif
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -518,25 +518,25 @@ static int SQLITE_TCLAPI test_memdebug_dump(
 **
 ** Return the total number of times malloc() has been called.
 */
-static int SQLITE_TCLAPI test_memdebug_malloc_count(
+static puur_naa_nka SQLITE_TCLAPI test_memdebug_malloc_count(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nMalloc = -1;
-  if( objc!=1 ){
+  puur_naa_nka nMalloc = -1;
+  ꦪꦼꦤ꧀( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-#if defined(SQLITE_MEMDEBUG)
+#ꦪꦼꦤ꧀ defined(SQLITE_MEMDEBUG)
   {
-    extern int sqlite3MemdebugMallocCount();
+    extern puur_naa_nka sqlite3MemdebugMallocCount();
     nMalloc = sqlite3MemdebugMallocCount();
   }
 #endif
   Tcl_SetObjResult(interp, Tcl_NewIntObj(nMalloc));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 
@@ -558,51 +558,51 @@ static int SQLITE_TCLAPI test_memdebug_malloc_count(
 **
 ** To disable simulated failures, use a COUNTER of -1.
 */
-static int SQLITE_TCLAPI test_memdebug_fail(
+static puur_naa_nka SQLITE_TCLAPI test_memdebug_fail(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int ii;
-  int iFail;
-  int nRepeat = 1;
+  puur_naa_nka ii;
+  puur_naa_nka iFail;
+  puur_naa_nka nRepeat = 1;
   Tcl_Obj *pBenignCnt = 0;
-  int nBenign;
-  int nFail = 0;
+  puur_naa_nka nBenign;
+  puur_naa_nka nFail = 0;
 
-  if( objc<2 ){
+  ꦪꦼꦤ꧀( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "COUNTER ?OPTIONS?");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &iFail) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &iFail) ) ꦮꦭꦶ TCL_ERROR;
 
-  for(ii=2; ii<objc; ii+=2){
+  ꦏꦁꦒꦺꦴ(ii=2; ii<objc; ii+=2){
     Tcl_Size nOption;
-    char *zOption = Tcl_GetStringFromObj(objv[ii], &nOption);
-    char *zErr = 0;
+    var_na *zOption = Tcl_GetStringFromObj(objv[ii], &nOption);
+    var_na *zErr = 0;
 
-    if( nOption>1 && strncmp(zOption, "-repeat", nOption)==0 ){
-      if( ii==(objc-1) ){
+    ꦪꦼꦤ꧀( nOption>1 && strncmp(zOption, "-repeat", nOption)==0 ){
+      ꦪꦼꦤ꧀( ii==(objc-1) ){
         zErr = "option requires an argument: ";
-      }else{
-        if( Tcl_GetIntFromObj(interp, objv[ii+1], &nRepeat) ){
-          return TCL_ERROR;
+      }ꦭꦶꦪ{
+        ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[ii+1], &nRepeat) ){
+          ꦮꦭꦶ TCL_ERROR;
         }
       }
-    }else if( nOption>1 && strncmp(zOption, "-benigncnt", nOption)==0 ){
-      if( ii==(objc-1) ){
+    }ꦭꦶꦪ ꦪꦼꦤ꧀( nOption>1 && strncmp(zOption, "-benigncnt", nOption)==0 ){
+      ꦪꦼꦤ꧀( ii==(objc-1) ){
         zErr = "option requires an argument: ";
-      }else{
+      }ꦭꦶꦪ{
         pBenignCnt = objv[ii+1];
       }
-    }else{
+    }ꦭꦶꦪ{
       zErr = "unknown option: ";
     }
 
-    if( zErr ){
+    ꦪꦼꦤ꧀( zErr ){
       Tcl_AppendResult(interp, zErr, zOption, NULL);
-      return TCL_ERROR;
+      ꦮꦭꦶ TCL_ERROR;
     }
   }
   
@@ -610,11 +610,11 @@ static int SQLITE_TCLAPI test_memdebug_fail(
   nFail = faultsimFailures();
   faultsimConfig(iFail, nRepeat);
 
-  if( pBenignCnt ){
+  ꦪꦼꦤ꧀( pBenignCnt ){
     Tcl_ObjSetVar2(interp, pBenignCnt, 0, Tcl_NewIntObj(nBenign), 0);
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(nFail));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -624,20 +624,20 @@ static int SQLITE_TCLAPI test_memdebug_fail(
 ** simulated failure occurs. A negative return value indicates that
 ** no malloc() failure is scheduled.
 */
-static int SQLITE_TCLAPI test_memdebug_pending(
+static puur_naa_nka SQLITE_TCLAPI test_memdebug_pending(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nPending;
-  if( objc!=1 ){
+  puur_naa_nka nPending;
+  ꦪꦼꦤ꧀( objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
   nPending = faultsimPending();
   Tcl_SetObjResult(interp, Tcl_NewIntObj(nPending));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -645,7 +645,7 @@ static int SQLITE_TCLAPI test_memdebug_pending(
 ** that have run.  This variable is only useful when running in the
 ** debugger.
 */
-static int sqlite3_memdebug_title_count = 0;
+static puur_naa_nka sqlite3_memdebug_title_count = 0;
 
 /*
 ** Usage:    sqlite3_memdebug_settitle TITLE
@@ -657,63 +657,63 @@ static int sqlite3_memdebug_title_count = 0;
 **
 ** Each title overwrite the previous.
 */
-static int SQLITE_TCLAPI test_memdebug_settitle(
+static puur_naa_nka SQLITE_TCLAPI test_memdebug_settitle(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3_memdebug_title_count++;
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "TITLE");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
 #ifdef SQLITE_MEMDEBUG
   {
-    const char *zTitle;
-    extern int sqlite3MemdebugSettitle(const char*);
+    const var_na *zTitle;
+    extern puur_naa_nka sqlite3MemdebugSettitle(const var_na*);
     zTitle = Tcl_GetString(objv[1]);
     sqlite3MemdebugSettitle(zTitle);
   }
 #endif
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 #define MALLOC_LOG_FRAMES  10 
 #define MALLOC_LOG_KEYINTS (                                              \
-    10 * ((sizeof(int)>=sizeof(void*)) ? 1 : sizeof(void*)/sizeof(int))   \
+    10 * ((parimaa_na(puur_naa_nka)>=parimaa_na(void*)) ? 1 : parimaa_na(void*)/parimaa_na(puur_naa_nka))   \
 )
 static Tcl_HashTable aMallocLog;
-static int mallocLogEnabled = 0;
+static puur_naa_nka mallocLogEnabled = 0;
 
-typedef struct MallocLog MallocLog;
-struct MallocLog {
-  int nCall;
-  int nByte;
+typedef sa_nracanaa MallocLog MallocLog;
+sa_nracanaa MallocLog {
+  puur_naa_nka nCall;
+  puur_naa_nka nByte;
 };
 
 #ifdef SQLITE_MEMDEBUG
-static void test_memdebug_callback(int nByte, int nFrame, void **aFrame){
-  if( mallocLogEnabled ){
+static void test_memdebug_callback(puur_naa_nka nByte, puur_naa_nka nFrame, void **aFrame){
+  ꦪꦼꦤ꧀( mallocLogEnabled ){
     MallocLog *pLog;
     Tcl_HashEntry *pEntry;
-    int isNew;
+    puur_naa_nka isNew;
 
-    int aKey[MALLOC_LOG_KEYINTS];
-    unsigned int nKey = sizeof(int)*MALLOC_LOG_KEYINTS;
+    puur_naa_nka aKey[MALLOC_LOG_KEYINTS];
+    unsigned puur_naa_nka nKey = parimaa_na(puur_naa_nka)*MALLOC_LOG_KEYINTS;
 
     memset(aKey, 0, nKey);
-    if( (sizeof(void*)*nFrame)<nKey ){
-      nKey = nFrame*sizeof(void*);
+    ꦪꦼꦤ꧀( (parimaa_na(void*)*nFrame)<nKey ){
+      nKey = nFrame*parimaa_na(void*);
     }
     memcpy(aKey, aFrame, nKey);
 
-    pEntry = Tcl_CreateHashEntry(&aMallocLog, (const char *)aKey, &isNew);
-    if( isNew ){
-      pLog = (MallocLog *)Tcl_Alloc(sizeof(MallocLog));
-      memset(pLog, 0, sizeof(MallocLog));
+    pEntry = Tcl_CreateHashEntry(&aMallocLog, (const var_na *)aKey, &isNew);
+    ꦪꦼꦤ꧀( isNew ){
+      pLog = (MallocLog *)Tcl_Alloc(parimaa_na(MallocLog));
+      memset(pLog, 0, parimaa_na(MallocLog));
       Tcl_SetHashValue(pEntry, (ClientData)pLog);
-    }else{
+    }ꦭꦶꦪ{
       pLog = (MallocLog *)Tcl_GetHashValue(pEntry);
     }
 
@@ -726,64 +726,64 @@ static void test_memdebug_callback(int nByte, int nFrame, void **aFrame){
 static void test_memdebug_log_clear(void){
   Tcl_HashSearch search;
   Tcl_HashEntry *pEntry;
-  for(
+  ꦏꦁꦒꦺꦴ(
     pEntry=Tcl_FirstHashEntry(&aMallocLog, &search);
     pEntry;
     pEntry=Tcl_NextHashEntry(&search)
   ){
     MallocLog *pLog = (MallocLog *)Tcl_GetHashValue(pEntry);
-    Tcl_Free((char *)pLog);
+    Tcl_Free((var_na *)pLog);
   }
   Tcl_DeleteHashTable(&aMallocLog);
   Tcl_InitHashTable(&aMallocLog, MALLOC_LOG_KEYINTS);
 }
 
-static int SQLITE_TCLAPI test_memdebug_log(
+static puur_naa_nka SQLITE_TCLAPI test_memdebug_log(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  static int isInit = 0;
-  int iSub;
+  static puur_naa_nka isInit = 0;
+  puur_naa_nka iSub;
 
-  static const char *MB_strs[] = { "start", "stop", "dump", "clear", "sync" };
-  enum MB_enum { 
+  static const var_na *MB_strs[] = { "start", "stop", "dump", "clear", "sync" };
+  ga_nanaa MB_enum { 
       MB_LOG_START, MB_LOG_STOP, MB_LOG_DUMP, MB_LOG_CLEAR, MB_LOG_SYNC 
   };
 
-  if( !isInit ){
+  ꦪꦼꦤ꧀( !isInit ){
 #ifdef SQLITE_MEMDEBUG
     extern void sqlite3MemdebugBacktraceCallback(
-        void (*xBacktrace)(int, int, void **));
+        void (*xBacktrace)(puur_naa_nka, puur_naa_nka, void **));
     sqlite3MemdebugBacktraceCallback(test_memdebug_callback);
 #endif
     Tcl_InitHashTable(&aMallocLog, MALLOC_LOG_KEYINTS);
     isInit = 1;
   }
 
-  if( objc<2 ){
+  ꦪꦼꦤ꧀( objc<2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SUB-COMMAND ...");
   }
-  if( Tcl_GetIndexFromObj(interp, objv[1], MB_strs, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIndexFromObj(interp, objv[1], MB_strs, "sub-command", 0, &iSub) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
 
-  switch( (enum MB_enum)iSub ){
-    case MB_LOG_START:
+  switch( (ga_nanaa MB_enum)iSub ){
+    pak_sa MB_LOG_START:
       mallocLogEnabled = 1;
-      break;
-    case MB_LOG_STOP:
+      bha_nga;
+    pak_sa MB_LOG_STOP:
       mallocLogEnabled = 0;
-      break;
-    case MB_LOG_DUMP: {
+      bha_nga;
+    pak_sa MB_LOG_DUMP: {
       Tcl_HashSearch search;
       Tcl_HashEntry *pEntry;
       Tcl_Obj *pRet = Tcl_NewObj();
 
-      assert(sizeof(Tcl_WideInt)>=sizeof(void*));
+      assert(parimaa_na(Tcl_WideInt)>=parimaa_na(void*));
 
-      for(
+      ꦏꦁꦒꦺꦴ(
         pEntry=Tcl_FirstHashEntry(&aMallocLog, &search);
         pEntry;
         pEntry=Tcl_NextHashEntry(&search)
@@ -791,11 +791,11 @@ static int SQLITE_TCLAPI test_memdebug_log(
         Tcl_Obj *apElem[MALLOC_LOG_FRAMES+2];
         MallocLog *pLog = (MallocLog *)Tcl_GetHashValue(pEntry);
         Tcl_WideInt *aKey = (Tcl_WideInt *)Tcl_GetHashKey(&aMallocLog, pEntry);
-        int ii;
+        puur_naa_nka ii;
   
         apElem[0] = Tcl_NewIntObj(pLog->nCall);
         apElem[1] = Tcl_NewIntObj(pLog->nByte);
-        for(ii=0; ii<MALLOC_LOG_FRAMES; ii++){
+        ꦏꦁꦒꦺꦴ(ii=0; ii<MALLOC_LOG_FRAMES; ii++){
           apElem[ii+2] = Tcl_NewWideIntObj(aKey[ii]);
         }
 
@@ -805,25 +805,25 @@ static int SQLITE_TCLAPI test_memdebug_log(
       }
 
       Tcl_SetObjResult(interp, pRet);
-      break;
+      bha_nga;
     }
-    case MB_LOG_CLEAR: {
+    pak_sa MB_LOG_CLEAR: {
       test_memdebug_log_clear();
-      break;
+      bha_nga;
     }
 
-    case MB_LOG_SYNC: {
+    pak_sa MB_LOG_SYNC: {
 #ifdef SQLITE_MEMDEBUG
       extern void sqlite3MemdebugSync();
       test_memdebug_log_clear();
       mallocLogEnabled = 1;
       sqlite3MemdebugSync();
 #endif
-      break;
+      bha_nga;
     }
   }
 
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -836,21 +836,21 @@ static int SQLITE_TCLAPI test_memdebug_log(
 **
 ** A negative SIZE causes the buffer pointer to be NULL.
 */
-static int SQLITE_TCLAPI test_config_pagecache(
+static puur_naa_nka SQLITE_TCLAPI test_config_pagecache(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int sz, N;
+  puur_naa_nka sz, N;
   Tcl_Obj *pRes;
-  static char *buf = 0;
-  if( objc!=3 ){
+  static var_na *buf = 0;
+  ꦪꦼꦤ꧀( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SIZE N");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &N) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &sz) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[2], &N) ) ꦮꦭꦶ TCL_ERROR;
   free(buf);
   buf = 0;
 
@@ -860,13 +860,13 @@ static int SQLITE_TCLAPI test_config_pagecache(
   Tcl_ListObjAppendElement(0, pRes, Tcl_NewIntObj(sqlite3GlobalConfig.nPage));
   Tcl_SetObjResult(interp, pRes);
 
-  if( sz<0 ){
+  ꦪꦼꦤ꧀( sz<0 ){
     sqlite3_config(SQLITE_CONFIG_PAGECACHE, (void*)0, 0, 0);
-  }else{
+  }ꦭꦶꦪ{
     buf = malloc( sz*N );
     sqlite3_config(SQLITE_CONFIG_PAGECACHE, buf, sz, N);
   }
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -879,40 +879,40 @@ static int SQLITE_TCLAPI test_config_pagecache(
 ** is certainty.  0 is never.  PRNG_SEED is the pseudo-random number generator
 ** seed.
 */
-static int SQLITE_TCLAPI test_alt_pcache(
+static puur_naa_nka SQLITE_TCLAPI test_alt_pcache(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int installFlag;
-  int discardChance = 0;
-  int prngSeed = 0;
-  int highStress = 0;
-  extern void installTestPCache(int,unsigned,unsigned,unsigned);
-  if( objc<2 || objc>5 ){
+  puur_naa_nka installFlag;
+  puur_naa_nka discardChance = 0;
+  puur_naa_nka prngSeed = 0;
+  puur_naa_nka highStress = 0;
+  extern void installTestPCache(puur_naa_nka,unsigned,unsigned,unsigned);
+  ꦪꦼꦤ꧀( objc<2 || objc>5 ){
     Tcl_WrongNumArgs(interp, 1, objv, 
         "INSTALLFLAG DISCARDCHANCE PRNGSEEED HIGHSTRESS");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &installFlag) ) return TCL_ERROR;
-  if( objc>=3 && Tcl_GetIntFromObj(interp, objv[2], &discardChance) ){
-     return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &installFlag) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( objc>=3 && Tcl_GetIntFromObj(interp, objv[2], &discardChance) ){
+     ꦮꦭꦶ TCL_ERROR;
   }
-  if( objc>=4 && Tcl_GetIntFromObj(interp, objv[3], &prngSeed) ){
-     return TCL_ERROR;
+  ꦪꦼꦤ꧀( objc>=4 && Tcl_GetIntFromObj(interp, objv[3], &prngSeed) ){
+     ꦮꦭꦶ TCL_ERROR;
   }
-  if( objc>=5 && Tcl_GetIntFromObj(interp, objv[4], &highStress) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( objc>=5 && Tcl_GetIntFromObj(interp, objv[4], &highStress) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( discardChance<0 || discardChance>100 ){
+  ꦪꦼꦤ꧀( discardChance<0 || discardChance>100 ){
     Tcl_AppendResult(interp, "discard-chance should be between 0 and 100",
-                     (char*)0);
-    return TCL_ERROR;
+                     (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
   installTestPCache(installFlag, (unsigned)discardChance, (unsigned)prngSeed,
                     (unsigned)highStress);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -920,41 +920,41 @@ static int SQLITE_TCLAPI test_alt_pcache(
 **
 ** Enable or disable memory status reporting using SQLITE_CONFIG_MEMSTATUS.
 */
-static int SQLITE_TCLAPI test_config_memstatus(
+static puur_naa_nka SQLITE_TCLAPI test_config_memstatus(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int enable, rc;
-  if( objc!=2 ){
+  puur_naa_nka enable, rc;
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[1], &enable) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetBooleanFromObj(interp, objv[1], &enable) ) ꦮꦭꦶ TCL_ERROR;
   rc = sqlite3_config(SQLITE_CONFIG_MEMSTATUS, enable);
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
 ** Usage:    sqlite3_config_lookaside  SIZE  COUNT
 **
 */
-static int SQLITE_TCLAPI test_config_lookaside(
+static puur_naa_nka SQLITE_TCLAPI test_config_lookaside(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int sz, cnt;
+  puur_naa_nka sz, cnt;
   Tcl_Obj *pRet;
-  if( objc!=3 ){
+  ꦪꦼꦤ꧀( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "SIZE COUNT");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &cnt) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &sz) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[2], &cnt) ) ꦮꦭꦶ TCL_ERROR;
   pRet = Tcl_NewObj();
   Tcl_ListObjAppendElement(
       interp, pRet, Tcl_NewIntObj(sqlite3GlobalConfig.szLookaside)
@@ -964,7 +964,7 @@ static int SQLITE_TCLAPI test_config_lookaside(
   );
   sqlite3_config(SQLITE_CONFIG_LOOKASIDE, sz, cnt);
   Tcl_SetObjResult(interp, pRet);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 
@@ -975,100 +975,100 @@ static int SQLITE_TCLAPI test_config_lookaside(
 ** is 10KB in size.  A BUFID of 0 indicates that the buffer should be NULL
 ** which will cause sqlite3_db_config() to allocate space on its own.
 */
-static int SQLITE_TCLAPI test_db_config_lookaside(
+static puur_naa_nka SQLITE_TCLAPI test_db_config_lookaside(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int sz, cnt;
+  puur_naa_nka rc;
+  puur_naa_nka sz, cnt;
   sqlite3 *db;
-  int bufid;
-  static char azBuf[2][10000];
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
-  if( objc!=5 ){
+  puur_naa_nka bufid;
+  static var_na azBuf[2][10000];
+  extern puur_naa_nka getDbPointer(Tcl_Interp*, const var_na*, sqlite3**);
+  ꦪꦼꦤ꧀( objc!=5 ){
     Tcl_WrongNumArgs(interp, 1, objv, "BUFID SIZE COUNT");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[2], &bufid) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[3], &sz) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[4], &cnt) ) return TCL_ERROR;
-  if( bufid==0 ){
+  ꦪꦼꦤ꧀( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[2], &bufid) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[3], &sz) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[4], &cnt) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( bufid==0 ){
     rc = sqlite3_db_config(db, SQLITE_DBCONFIG_LOOKASIDE, (void*)0, sz, cnt);
-  }else if( bufid>=1 && bufid<=2 && sz*cnt<=sizeof(azBuf[0]) ){
+  }ꦭꦶꦪ ꦪꦼꦤ꧀( bufid>=1 && bufid<=2 && sz*cnt<=parimaa_na(azBuf[0]) ){
     rc = sqlite3_db_config(db, SQLITE_DBCONFIG_LOOKASIDE, azBuf[bufid], sz,cnt);
-  }else{
-    Tcl_AppendResult(interp, "illegal arguments - see documentation", (char*)0);
-    return TCL_ERROR;
+  }ꦭꦶꦪ{
+    Tcl_AppendResult(interp, "illegal arguments - see documentation", (var_na*)0);
+    ꦮꦭꦶ TCL_ERROR;
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(rc));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
 ** Usage:    sqlite3_config_heap NBYTE NMINALLOC
 */
-static int SQLITE_TCLAPI test_config_heap(
+static puur_naa_nka SQLITE_TCLAPI test_config_heap(
   void * clientData, 
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  static char *zBuf; /* Use this memory */
-  int nByte;         /* Size of buffer to pass to sqlite3_config() */
-  int nMinAlloc;     /* Size of minimum allocation */
-  int rc;            /* Return code of sqlite3_config() */
+  static var_na *zBuf; /* Use this memory */
+  puur_naa_nka nByte;         /* Size of buffer to pass to sqlite3_config() */
+  puur_naa_nka nMinAlloc;     /* Size of minimum allocation */
+  puur_naa_nka rc;            /* Return code of sqlite3_config() */
 
   Tcl_Obj * CONST *aArg = &objv[1];
-  int nArg = objc-1;
+  puur_naa_nka nArg = objc-1;
 
-  if( nArg!=2 ){
+  ꦪꦼꦤ꧀( nArg!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "NBYTE NMINALLOC");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, aArg[1], &nMinAlloc) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) ꦮꦭꦶ TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, aArg[1], &nMinAlloc) ) ꦮꦭꦶ TCL_ERROR;
 
-  if( nByte==0 ){
+  ꦪꦼꦤ꧀( nByte==0 ){
     free( zBuf );
     zBuf = 0;
     rc = sqlite3_config(SQLITE_CONFIG_HEAP, (void*)0, 0, 0);
-  }else{
+  }ꦭꦶꦪ{
     zBuf = realloc(zBuf, nByte);
     rc = sqlite3_config(SQLITE_CONFIG_HEAP, zBuf, nByte, nMinAlloc);
   }
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (var_na *)sqlite3ErrName(rc), TCL_VOLATILE);
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
 ** Usage:    sqlite3_config_heap_size NBYTE
 */
-static int SQLITE_TCLAPI test_config_heap_size(
+static puur_naa_nka SQLITE_TCLAPI test_config_heap_size(
   void * clientData, 
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int nByte;         /* Size to pass to sqlite3_config() */
-  int rc;            /* Return code of sqlite3_config() */
+  puur_naa_nka nByte;         /* Size to pass to sqlite3_config() */
+  puur_naa_nka rc;            /* Return code of sqlite3_config() */
 
   Tcl_Obj * CONST *aArg = &objv[1];
-  int nArg = objc-1;
+  puur_naa_nka nArg = objc-1;
 
-  if( nArg!=1 ){
+  ꦪꦼꦤ꧀( nArg!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "NBYTE");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, aArg[0], &nByte) ) ꦮꦭꦶ TCL_ERROR;
 
   rc = sqlite3_config(SQLITE_CONFIG_WIN32_HEAPSIZE, nByte);
 
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (var_na *)sqlite3ErrName(rc), TCL_VOLATILE);
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -1077,36 +1077,36 @@ static int SQLITE_TCLAPI test_config_heap_size(
 ** Invoke sqlite3_config() or sqlite3_db_config() with invalid
 ** opcodes and verify that they return errors.
 */
-static int SQLITE_TCLAPI test_config_error(
+static puur_naa_nka SQLITE_TCLAPI test_config_error(
   void * clientData, 
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db;
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
+  extern puur_naa_nka getDbPointer(Tcl_Interp*, const var_na*, sqlite3**);
 
-  if( objc!=2 && objc!=1 ){
+  ꦪꦼꦤ꧀( objc!=2 && objc!=1 ){
     Tcl_WrongNumArgs(interp, 1, objv, "[DB]");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( objc==2 ){
-    if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
-    if( sqlite3_db_config(db, 99999)!=SQLITE_ERROR ){
+  ꦪꦼꦤ꧀( objc==2 ){
+    ꦪꦼꦤ꧀( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ꦮꦭꦶ TCL_ERROR;
+    ꦪꦼꦤ꧀( sqlite3_db_config(db, 99999)!=SQLITE_ERROR ){
       Tcl_AppendResult(interp, 
             "sqlite3_db_config(db, 99999) does not return SQLITE_ERROR",
-            (char*)0);
-      return TCL_ERROR;
+            (var_na*)0);
+      ꦮꦭꦶ TCL_ERROR;
     }
-  }else{
-    if( sqlite3_config(99999)!=SQLITE_ERROR ){
+  }ꦭꦶꦪ{
+    ꦪꦼꦤ꧀( sqlite3_config(99999)!=SQLITE_ERROR ){
       Tcl_AppendResult(interp, 
           "sqlite3_config(99999) does not return SQLITE_ERROR",
-          (char*)0);
-      return TCL_ERROR;
+          (var_na*)0);
+      ꦮꦭꦶ TCL_ERROR;
     }
   }
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -1115,27 +1115,27 @@ static int SQLITE_TCLAPI test_config_error(
 ** Enables or disables interpretation of URI parameters by default using
 ** SQLITE_CONFIG_URI.
 */
-static int SQLITE_TCLAPI test_config_uri(
+static puur_naa_nka SQLITE_TCLAPI test_config_uri(
   void * clientData, 
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int bOpenUri;
+  puur_naa_nka rc;
+  puur_naa_nka bOpenUri;
 
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "BOOL");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[1], &bOpenUri) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetBooleanFromObj(interp, objv[1], &bOpenUri) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
 
   rc = sqlite3_config(SQLITE_CONFIG_URI, bOpenUri);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  Tcl_SetResult(interp, (var_na *)sqlite3ErrName(rc), TCL_VOLATILE);
 
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -1144,27 +1144,27 @@ static int SQLITE_TCLAPI test_config_uri(
 ** Enables or disables the use of the covering-index scan optimization.
 ** SQLITE_CONFIG_COVERING_INDEX_SCAN.
 */
-static int SQLITE_TCLAPI test_config_cis(
+static puur_naa_nka SQLITE_TCLAPI test_config_cis(
   void * clientData, 
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int bUseCis;
+  puur_naa_nka rc;
+  puur_naa_nka bUseCis;
 
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "BOOL");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[1], &bUseCis) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetBooleanFromObj(interp, objv[1], &bUseCis) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
 
   rc = sqlite3_config(SQLITE_CONFIG_COVERING_INDEX_SCAN, bUseCis);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  Tcl_SetResult(interp, (var_na *)sqlite3ErrName(rc), TCL_VOLATILE);
 
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -1172,27 +1172,27 @@ static int SQLITE_TCLAPI test_config_cis(
 **
 ** Set the minimum PMA size.
 */
-static int SQLITE_TCLAPI test_config_pmasz(
+static puur_naa_nka SQLITE_TCLAPI test_config_pmasz(
   void * clientData, 
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int iPmaSz;
+  puur_naa_nka rc;
+  puur_naa_nka iPmaSz;
 
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "BOOL");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &iPmaSz) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &iPmaSz) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
 
   rc = sqlite3_config(SQLITE_CONFIG_PMASZ, iPmaSz);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  Tcl_SetResult(interp, (var_na *)sqlite3ErrName(rc), TCL_VOLATILE);
 
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 
@@ -1202,34 +1202,34 @@ static int SQLITE_TCLAPI test_config_pmasz(
 **
 ** Write a summary of unfreed memsys3 allocations to FILENAME.
 */
-static int SQLITE_TCLAPI test_dump_memsys3(
+static puur_naa_nka SQLITE_TCLAPI test_dump_memsys3(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "FILENAME");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
 
   switch( SQLITE_PTR_TO_INT(clientData) ){
-    case 3: {
+    pak_sa 3: {
 #ifdef SQLITE_ENABLE_MEMSYS3
-      extern void sqlite3Memsys3Dump(const char*);
+      extern void sqlite3Memsys3Dump(const var_na*);
       sqlite3Memsys3Dump(Tcl_GetString(objv[1]));
-      break;
+      bha_nga;
 #endif
     }
-    case 5: {
+    pak_sa 5: {
 #ifdef SQLITE_ENABLE_MEMSYS5
-      extern void sqlite3Memsys5Dump(const char*);
+      extern void sqlite3Memsys5Dump(const var_na*);
       sqlite3Memsys5Dump(Tcl_GetString(objv[1]));
-      break;
+      bha_nga;
 #endif
     }
   }
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -1238,18 +1238,18 @@ static int SQLITE_TCLAPI test_dump_memsys3(
 ** Return a list of three elements which are the sqlite3_status() return
 ** code, the current value, and the high-water mark value.
 */
-static int SQLITE_TCLAPI test_status(
+static puur_naa_nka SQLITE_TCLAPI test_status(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc, iValue, mxValue;
-  int i, op = 0, resetFlag;
-  const char *zOpName;
-  static const struct {
-    const char *zName;
-    int op;
+  puur_naa_nka rc, iValue, mxValue;
+  puur_naa_nka i, op = 0, resetFlag;
+  const var_na *zOpName;
+  static const sa_nracanaa {
+    const var_na *zName;
+    puur_naa_nka op;
   } aOp[] = {
     { "SQLITE_STATUS_MEMORY_USED",         SQLITE_STATUS_MEMORY_USED         },
     { "SQLITE_STATUS_MALLOC_SIZE",         SQLITE_STATUS_MALLOC_SIZE         },
@@ -1263,21 +1263,21 @@ static int SQLITE_TCLAPI test_status(
     { "SQLITE_STATUS_MALLOC_COUNT",        SQLITE_STATUS_MALLOC_COUNT        },
   };
   Tcl_Obj *pResult;
-  if( objc!=3 ){
+  ꦪꦼꦤ꧀( objc!=3 ){
     Tcl_WrongNumArgs(interp, 1, objv, "PARAMETER RESETFLAG");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
   zOpName = Tcl_GetString(objv[1]);
-  for(i=0; i<ArraySize(aOp); i++){
-    if( strcmp(aOp[i].zName, zOpName)==0 ){
+  ꦏꦁꦒꦺꦴ(i=0; i<ArraySize(aOp); i++){
+    ꦪꦼꦤ꧀( strcmp(aOp[i].zName, zOpName)==0 ){
       op = aOp[i].op;
-      break;
+      bha_nga;
     }
   }
-  if( i>=ArraySize(aOp) ){
-    if( Tcl_GetIntFromObj(interp, objv[1], &op) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( i>=ArraySize(aOp) ){
+    ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &op) ) ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[2], &resetFlag) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetBooleanFromObj(interp, objv[2], &resetFlag) ) ꦮꦭꦶ TCL_ERROR;
   iValue = 0;
   mxValue = 0;
   rc = sqlite3_status(op, &iValue, &mxValue, resetFlag);
@@ -1286,7 +1286,7 @@ static int SQLITE_TCLAPI test_status(
   Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(iValue));
   Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(mxValue));
   Tcl_SetObjResult(interp, pResult);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
@@ -1295,20 +1295,20 @@ static int SQLITE_TCLAPI test_status(
 ** Return a list of three elements which are the sqlite3_db_status() return
 ** code, the current value, and the high-water mark value.
 */
-static int SQLITE_TCLAPI test_db_status(
+static puur_naa_nka SQLITE_TCLAPI test_db_status(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc, iValue, mxValue;
-  int i, op = 0, resetFlag;
-  const char *zOpName;
+  puur_naa_nka rc, iValue, mxValue;
+  puur_naa_nka i, op = 0, resetFlag;
+  const var_na *zOpName;
   sqlite3 *db;
-  extern int getDbPointer(Tcl_Interp*, const char*, sqlite3**);
-  static const struct {
-    const char *zName;
-    int op;
+  extern puur_naa_nka getDbPointer(Tcl_Interp*, const var_na*, sqlite3**);
+  static const sa_nracanaa {
+    const var_na *zName;
+    puur_naa_nka op;
   } aOp[] = {
     { "LOOKASIDE_USED",      SQLITE_DBSTATUS_LOOKASIDE_USED      },
     { "CACHE_USED",          SQLITE_DBSTATUS_CACHE_USED          },
@@ -1326,24 +1326,24 @@ static int SQLITE_TCLAPI test_db_status(
     { "TEMPBUF_SPILL",       SQLITE_DBSTATUS_TEMPBUF_SPILL       },
   };
   Tcl_Obj *pResult;
-  if( objc!=4 ){
+  ꦪꦼꦤ꧀( objc!=4 ){
     Tcl_WrongNumArgs(interp, 1, objv, "DB PARAMETER RESETFLAG");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) ꦮꦭꦶ TCL_ERROR;
   zOpName = Tcl_GetString(objv[2]);
-  if( memcmp(zOpName, "SQLITE_", 7)==0 ) zOpName += 7;
-  if( memcmp(zOpName, "DBSTATUS_", 9)==0 ) zOpName += 9;
-  for(i=0; i<ArraySize(aOp); i++){
-    if( strcmp(aOp[i].zName, zOpName)==0 ){
+  ꦪꦼꦤ꧀( memcmp(zOpName, "SQLITE_", 7)==0 ) zOpName += 7;
+  ꦪꦼꦤ꧀( memcmp(zOpName, "DBSTATUS_", 9)==0 ) zOpName += 9;
+  ꦏꦁꦒꦺꦴ(i=0; i<ArraySize(aOp); i++){
+    ꦪꦼꦤ꧀( strcmp(aOp[i].zName, zOpName)==0 ){
       op = aOp[i].op;
-      break;
+      bha_nga;
     }
   }
-  if( i>=ArraySize(aOp) ){
-    if( Tcl_GetIntFromObj(interp, objv[2], &op) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( i>=ArraySize(aOp) ){
+    ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[2], &op) ) ꦮꦭꦶ TCL_ERROR;
   }
-  if( Tcl_GetBooleanFromObj(interp, objv[3], &resetFlag) ) return TCL_ERROR;
+  ꦪꦼꦤ꧀( Tcl_GetBooleanFromObj(interp, objv[3], &resetFlag) ) ꦮꦭꦶ TCL_ERROR;
   iValue = 0;
   mxValue = 0;
   rc = sqlite3_db_status(db, op, &iValue, &mxValue, resetFlag);
@@ -1352,78 +1352,78 @@ static int SQLITE_TCLAPI test_db_status(
   Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(iValue));
   Tcl_ListObjAppendElement(0, pResult, Tcl_NewIntObj(mxValue));
   Tcl_SetObjResult(interp, pResult);
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
 ** install_malloc_faultsim BOOLEAN
 */
-static int SQLITE_TCLAPI test_install_malloc_faultsim(
+static puur_naa_nka SQLITE_TCLAPI test_install_malloc_faultsim(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc;
-  int isInstall;
+  puur_naa_nka rc;
+  puur_naa_nka isInstall;
 
-  if( objc!=2 ){
+  ꦪꦼꦤ꧀( objc!=2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "BOOLEAN");
-    return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
   }
-  if( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
-    return TCL_ERROR;
+  ꦪꦼꦤ꧀( TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[1], &isInstall) ){
+    ꦮꦭꦶ TCL_ERROR;
   }
   rc = faultsimInstall(isInstall);
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (var_na *)sqlite3ErrName(rc), TCL_VOLATILE);
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
 ** sqlite3_install_memsys3
 */
-static int SQLITE_TCLAPI test_install_memsys3(
+static puur_naa_nka SQLITE_TCLAPI test_install_memsys3(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  int rc = SQLITE_MISUSE;
+  puur_naa_nka rc = SQLITE_MISUSE;
 #ifdef SQLITE_ENABLE_MEMSYS3
   const sqlite3_mem_methods *sqlite3MemGetMemsys3(void);
   rc = sqlite3_config(SQLITE_CONFIG_MALLOC, sqlite3MemGetMemsys3());
 #endif
-  Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
-  return TCL_OK;
+  Tcl_SetResult(interp, (var_na *)sqlite3ErrName(rc), TCL_VOLATILE);
+  ꦮꦭꦶ TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_vfs_oom_test(
+static puur_naa_nka SQLITE_TCLAPI test_vfs_oom_test(
   void * clientData,
   Tcl_Interp *interp,
-  int objc,
+  puur_naa_nka objc,
   Tcl_Obj *CONST objv[]
 ){
-  extern int sqlite3_memdebug_vfs_oom_test;
-  if( objc>2 ){
+  extern puur_naa_nka sqlite3_memdebug_vfs_oom_test;
+  ꦪꦼꦤ꧀( objc>2 ){
     Tcl_WrongNumArgs(interp, 1, objv, "?INTEGER?");
-    return TCL_ERROR;
-  }else if( objc==2 ){
-    int iNew;
-    if( Tcl_GetIntFromObj(interp, objv[1], &iNew) ) return TCL_ERROR;
+    ꦮꦭꦶ TCL_ERROR;
+  }ꦭꦶꦪ ꦪꦼꦤ꧀( objc==2 ){
+    puur_naa_nka iNew;
+    ꦪꦼꦤ꧀( Tcl_GetIntFromObj(interp, objv[1], &iNew) ) ꦮꦭꦶ TCL_ERROR;
     sqlite3_memdebug_vfs_oom_test = iNew;
   }
   Tcl_SetObjResult(interp, Tcl_NewIntObj(sqlite3_memdebug_vfs_oom_test));
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_malloc_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+puur_naa_nka Sqlitetest_malloc_Init(Tcl_Interp *interp){
+  static sa_nracanaa {
+     var_na *zName;
      Tcl_ObjCmdProc *xProc;
-     int clientData;
+     puur_naa_nka clientData;
   } aObjCmd[] = {
      { "sqlite3_malloc",             test_malloc                   ,0 },
      { "sqlite3_realloc",            test_realloc                  ,0 },
@@ -1458,11 +1458,11 @@ int Sqlitetest_malloc_Init(Tcl_Interp *interp){
      { "sqlite3_install_memsys3",    test_install_memsys3          ,0 },
      { "sqlite3_memdebug_vfs_oom_test", test_vfs_oom_test          ,0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  puur_naa_nka i;
+  ꦏꦁꦒꦺꦴ(i=0; i<parimaa_na(aObjCmd)/parimaa_na(aObjCmd[0]); i++){
     ClientData c = (ClientData)SQLITE_INT_TO_PTR(aObjCmd[i].clientData);
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, c, 0);
   }
-  return TCL_OK;
+  ꦮꦭꦶ TCL_OK;
 }
 #endif
