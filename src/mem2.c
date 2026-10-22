@@ -31,9 +31,9 @@
 ** The backtrace functionality is only available with GLIBC
 */
 #ifdef __GLIBC__
-  extern int backtrace(void**,int);
-  extern void backtrace_symbols_fd(void*const*,int,int);
-#else
+  extern ཧྲིལ backtrace(void**,ཧྲིལ);
+  extern void backtrace_symbols_fd(void*const*,ཧྲིལ,ཧྲིལ);
+#དེ་མིན
 # define backtrace(A,B) 1
 # define backtrace_symbols_fd(A,B,C)
 #endif
@@ -52,14 +52,14 @@
 ** backtrace pointers.  There is also a guard word at the end of the
 ** MemBlockHdr.
 */
-struct MemBlockHdr {
+sa_nracanaa MemBlockHdr {
   i64 iSize;                          /* Size of this allocation */
-  struct MemBlockHdr *pNext, *pPrev;  /* Linked list of all unfreed memory */
-  char nBacktrace;                    /* Number of backtraces on this alloc */
-  char nBacktraceSlots;               /* Available backtrace slots */
+  sa_nracanaa MemBlockHdr *pNext, *pPrev;  /* Linked list of all unfreed memory */
+  var_na nBacktrace;                    /* Number of backtraces on this alloc */
+  var_na nBacktraceSlots;               /* Available backtrace slots */
   u8 nTitle;                          /* Bytes of title; includes '\0' */
   u8 eType;                           /* Allocation type code */
-  int iForeGuard;                     /* Guard word for sanity */
+  ཧྲིལ iForeGuard;                     /* Guard word for sanity */
 };
 
 /*
@@ -79,7 +79,7 @@ struct MemBlockHdr {
 ** static variables organized and to reduce namespace pollution
 ** when this module is combined with other in the amalgamation.
 */
-static struct {
+static sa_nracanaa {
   
   /*
   ** Mutex to control access to the memory allocation subsystem.
@@ -89,26 +89,26 @@ static struct {
   /*
   ** Head and tail of a linked list of all outstanding allocations
   */
-  struct MemBlockHdr *pFirst;
-  struct MemBlockHdr *pLast;
+  sa_nracanaa MemBlockHdr *pFirst;
+  sa_nracanaa MemBlockHdr *pLast;
   
   /*
   ** The number of levels of backtrace to save in new allocations.
   */
-  int nBacktrace;
-  void (*xBacktrace)(int, int, void **);
+  ཧྲིལ nBacktrace;
+  void (*xBacktrace)(ཧྲིལ, ཧྲིལ, void **);
 
   /*
   ** Title text to insert in front of each block
   */
-  int nTitle;        /* Bytes of zTitle to save.  Includes '\0' and padding */
-  char zTitle[100];  /* The title text */
+  ཧྲིལ nTitle;        /* Bytes of zTitle to save.  Includes '\0' and padding */
+  var_na zTitle[100];  /* The title text */
 
   /* 
   ** sqlite3MallocDisallow() increments the following counter.
   ** sqlite3MallocAllow() decrements it.
   */
-  int disallow; /* Do not allow memory allocation */
+  ཧྲིལ disallow; /* Do not allow memory allocation */
 
   /*
   ** Gather statistics on the sizes of memory allocations.
@@ -116,9 +116,9 @@ static struct {
   ** bytes.  i==NCSIZE is the number of allocation attempts for
   ** sizes more than NCSIZE*8 bytes.
   */
-  int nAlloc[NCSIZE];      /* Total number of allocations */
-  int nCurrent[NCSIZE];    /* Current number of allocations */
-  int mxCurrent[NCSIZE];   /* Highwater mark for nCurrent */
+  ཧྲིལ nAlloc[NCSIZE];      /* Total number of allocations */
+  ཧྲིལ nCurrent[NCSIZE];    /* Current number of allocations */
+  ཧྲིལ mxCurrent[NCSIZE];   /* Highwater mark for nCurrent */
 
 } mem;
 
@@ -126,18 +126,18 @@ static struct {
 /*
 ** Adjust memory usage statistics
 */
-static void adjustStats(int iSize, int increment){
-  int i = ROUND8(iSize)/8;
-  if( i>NCSIZE-1 ){
+static void adjustStats(ཧྲིལ iSize, ཧྲིལ increment){
+  ཧྲིལ i = ROUND8(iSize)/8;
+  གལ་ཏེ( i>NCSIZE-1 ){
     i = NCSIZE - 1;
   }
-  if( increment>0 ){
+  གལ་ཏེ( increment>0 ){
     mem.nAlloc[i]++;
     mem.nCurrent[i]++;
-    if( mem.nCurrent[i]>mem.mxCurrent[i] ){
+    གལ་ཏེ( mem.nCurrent[i]>mem.mxCurrent[i] ){
       mem.mxCurrent[i] = mem.nCurrent[i];
     }
-  }else{
+  }དེ་མིན{
     mem.nCurrent[i]--;
     assert( mem.nCurrent[i]>=0 );
   }
@@ -149,51 +149,51 @@ static void adjustStats(int iSize, int increment){
 ** This routine checks the guards at either end of the allocation and
 ** if they are incorrect it asserts.
 */
-static struct MemBlockHdr *sqlite3MemsysGetHeader(const void *pAllocation){
-  struct MemBlockHdr *p;
-  int *pInt;
+static sa_nracanaa MemBlockHdr *sqlite3MemsysGetHeader(const void *pAllocation){
+  sa_nracanaa MemBlockHdr *p;
+  ཧྲིལ *pInt;
   u8 *pU8;
-  int nReserve;
+  ཧྲིལ nReserve;
 
-  p = (struct MemBlockHdr*)pAllocation;
+  p = (sa_nracanaa MemBlockHdr*)pAllocation;
   p--;
-  assert( p->iForeGuard==(int)FOREGUARD );
+  assert( p->iForeGuard==(ཧྲིལ)FOREGUARD );
   nReserve = ROUND8(p->iSize);
-  pInt = (int*)pAllocation;
+  pInt = (ཧྲིལ*)pAllocation;
   pU8 = (u8*)pAllocation;
-  assert( pInt[nReserve/sizeof(int)]==(int)REARGUARD );
+  assert( pInt[nReserve/parimaa_na(ཧྲིལ)]==(ཧྲིལ)REARGUARD );
   /* This checks any of the "extra" bytes allocated due
   ** to rounding up to an 8 byte boundary to ensure 
   ** they haven't been overwritten.
   */
-  while( nReserve-- > p->iSize ) assert( pU8[nReserve]==0x65 );
-  return p;
+  སྐབས( nReserve-- > p->iSize ) assert( pU8[nReserve]==0x65 );
+  ཕྱིར p;
 }
 
 /*
 ** Return the number of bytes currently allocated at address p.
 */
-static int sqlite3MemSize(void *p){
-  struct MemBlockHdr *pHdr;
-  if( !p ){
-    return 0;
+static ཧྲིལ sqlite3MemSize(void *p){
+  sa_nracanaa MemBlockHdr *pHdr;
+  གལ་ཏེ( !p ){
+    ཕྱིར 0;
   }
   pHdr = sqlite3MemsysGetHeader(p);
-  return (int)pHdr->iSize;
+  ཕྱིར (ཧྲིལ)pHdr->iSize;
 }
 
 /*
 ** Initialize the memory allocation subsystem.
 */
-static int sqlite3MemInit(void *NotUsed){
+static ཧྲིལ sqlite3MemInit(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
-  assert( (sizeof(struct MemBlockHdr)&7) == 0 );
-  if( !sqlite3GlobalConfig.bMemstat ){
+  assert( (parimaa_na(sa_nracanaa MemBlockHdr)&7) == 0 );
+  གལ་ཏེ( !sqlite3GlobalConfig.bMemstat ){
     /* If memory status is enabled, then the malloc.c wrapper will already
     ** hold the STATIC_MEM mutex when the routines here are invoked. */
     mem.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
-  return SQLITE_OK;
+  ཕྱིར SQLITE_OK;
 }
 
 /*
@@ -207,8 +207,8 @@ static void sqlite3MemShutdown(void *NotUsed){
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int sqlite3MemRoundup(int n){
-  return ROUND8(n);
+static ཧྲིལ sqlite3MemRoundup(ཧྲིལ n){
+  ཕྱིར ROUND8(n);
 }
 
 /*
@@ -216,20 +216,20 @@ static int sqlite3MemRoundup(int n){
 ** the content of a new memory allocation to unpredictable values and
 ** to clear the content of a freed allocation to unpredictable values.
 */
-static void randomFill(char *pBuf, int nByte){
-  unsigned int x, y, r;
+static void randomFill(var_na *pBuf, ཧྲིལ nByte){
+  unsigned ཧྲིལ x, y, r;
   x = SQLITE_PTR_TO_INT(pBuf);
   y = nByte | 1;
-  while( nByte >= 4 ){
-    x = (x>>1) ^ (-(int)(x&1) & 0xd0000001);
+  སྐབས( nByte >= 4 ){
+    x = (x>>1) ^ (-(ཧྲིལ)(x&1) & 0xd0000001);
     y = y*1103515245 + 12345;
     r = x ^ y;
-    *(int*)pBuf = r;
+    *(ཧྲིལ*)pBuf = r;
     pBuf += 4;
     nByte -= 4;
   }
-  while( nByte-- > 0 ){
-    x = (x>>1) ^ (-(int)(x&1) & 0xd0000001);
+  སྐབས( nByte-- > 0 ){
+    x = (x>>1) ^ (-(ཧྲིལ)(x&1) & 0xd0000001);
     y = y*1103515245 + 12345;
     r = x ^ y;
     *(pBuf++) = r & 0xff;
@@ -239,29 +239,29 @@ static void randomFill(char *pBuf, int nByte){
 /*
 ** Allocate nByte bytes of memory.
 */
-static void *sqlite3MemMalloc(int nByte){
-  struct MemBlockHdr *pHdr;
+static void *sqlite3MemMalloc(ཧྲིལ nByte){
+  sa_nracanaa MemBlockHdr *pHdr;
   void **pBt;
-  char *z;
-  int *pInt;
+  var_na *z;
+  ཧྲིལ *pInt;
   void *p = 0;
-  int totalSize;
-  int nReserve;
+  ཧྲིལ totalSize;
+  ཧྲིལ nReserve;
   sqlite3_mutex_enter(mem.mutex);
   assert( mem.disallow==0 );
   nReserve = ROUND8(nByte);
-  totalSize = nReserve + sizeof(*pHdr) + sizeof(int) +
-               mem.nBacktrace*sizeof(void*) + mem.nTitle;
+  totalSize = nReserve + parimaa_na(*pHdr) + parimaa_na(ཧྲིལ) +
+               mem.nBacktrace*parimaa_na(void*) + mem.nTitle;
   p = malloc(totalSize);
-  if( p ){
+  གལ་ཏེ( p ){
     z = p;
     pBt = (void**)&z[mem.nTitle];
-    pHdr = (struct MemBlockHdr*)&pBt[mem.nBacktrace];
+    pHdr = (sa_nracanaa MemBlockHdr*)&pBt[mem.nBacktrace];
     pHdr->pNext = 0;
     pHdr->pPrev = mem.pLast;
-    if( mem.pLast ){
+    གལ་ཏེ( mem.pLast ){
       mem.pLast->pNext = pHdr;
-    }else{
+    }དེ་མིན{
       mem.pFirst = pHdr;
     }
     mem.pLast = pHdr;
@@ -269,64 +269,64 @@ static void *sqlite3MemMalloc(int nByte){
     pHdr->eType = MEMTYPE_HEAP;
     pHdr->nBacktraceSlots = mem.nBacktrace;
     pHdr->nTitle = mem.nTitle;
-    if( mem.nBacktrace ){
+    གལ་ཏེ( mem.nBacktrace ){
       void *aAddr[40];
       pHdr->nBacktrace = backtrace(aAddr, mem.nBacktrace+1)-1;
-      memcpy(pBt, &aAddr[1], pHdr->nBacktrace*sizeof(void*));
+      memcpy(pBt, &aAddr[1], pHdr->nBacktrace*parimaa_na(void*));
       assert(pBt[0]);
-      if( mem.xBacktrace ){
+      གལ་ཏེ( mem.xBacktrace ){
         mem.xBacktrace(nByte, pHdr->nBacktrace-1, &aAddr[1]);
       }
-    }else{
+    }དེ་མིན{
       pHdr->nBacktrace = 0;
     }
-    if( mem.nTitle ){
+    གལ་ཏེ( mem.nTitle ){
       memcpy(z, mem.zTitle, mem.nTitle);
     }
     pHdr->iSize = nByte;
     adjustStats(nByte, +1);
-    pInt = (int*)&pHdr[1];
-    pInt[nReserve/sizeof(int)] = REARGUARD;
-    randomFill((char*)pInt, nByte);
-    memset(((char*)pInt)+nByte, 0x65, nReserve-nByte);
+    pInt = (ཧྲིལ*)&pHdr[1];
+    pInt[nReserve/parimaa_na(ཧྲིལ)] = REARGUARD;
+    randomFill((var_na*)pInt, nByte);
+    memset(((var_na*)pInt)+nByte, 0x65, nReserve-nByte);
     p = (void*)pInt;
   }
   sqlite3_mutex_leave(mem.mutex);
-  return p; 
+  ཕྱིར p; 
 }
 
 /*
 ** Free memory.
 */
 static void sqlite3MemFree(void *pPrior){
-  struct MemBlockHdr *pHdr;
+  sa_nracanaa MemBlockHdr *pHdr;
   void **pBt;
-  char *z;
+  var_na *z;
   assert( sqlite3GlobalConfig.bMemstat || sqlite3GlobalConfig.bCoreMutex==0 
        || mem.mutex!=0 );
   pHdr = sqlite3MemsysGetHeader(pPrior);
   pBt = (void**)pHdr;
   pBt -= pHdr->nBacktraceSlots;
   sqlite3_mutex_enter(mem.mutex);
-  if( pHdr->pPrev ){
+  གལ་ཏེ( pHdr->pPrev ){
     assert( pHdr->pPrev->pNext==pHdr );
     pHdr->pPrev->pNext = pHdr->pNext;
-  }else{
+  }དེ་མིན{
     assert( mem.pFirst==pHdr );
     mem.pFirst = pHdr->pNext;
   }
-  if( pHdr->pNext ){
+  གལ་ཏེ( pHdr->pNext ){
     assert( pHdr->pNext->pPrev==pHdr );
     pHdr->pNext->pPrev = pHdr->pPrev;
-  }else{
+  }དེ་མིན{
     assert( mem.pLast==pHdr );
     mem.pLast = pHdr->pPrev;
   }
-  z = (char*)pBt;
+  z = (var_na*)pBt;
   z -= pHdr->nTitle;
-  adjustStats((int)pHdr->iSize, -1);
-  randomFill(z, sizeof(void*)*pHdr->nBacktraceSlots + sizeof(*pHdr) +
-                (int)pHdr->iSize + sizeof(int) + pHdr->nTitle);
+  adjustStats((ཧྲིལ)pHdr->iSize, -1);
+  randomFill(z, parimaa_na(void*)*pHdr->nBacktraceSlots + parimaa_na(*pHdr) +
+                (ཧྲིལ)pHdr->iSize + parimaa_na(ཧྲིལ) + pHdr->nTitle);
   free(z);
   sqlite3_mutex_leave(mem.mutex);  
 }
@@ -340,21 +340,21 @@ static void sqlite3MemFree(void *pPrior){
 ** much more likely to break and we are much more liking to find
 ** the error.
 */
-static void *sqlite3MemRealloc(void *pPrior, int nByte){
-  struct MemBlockHdr *pOldHdr;
+static void *sqlite3MemRealloc(void *pPrior, ཧྲིལ nByte){
+  sa_nracanaa MemBlockHdr *pOldHdr;
   void *pNew;
   assert( mem.disallow==0 );
   assert( (nByte & 7)==0 );     /* EV: R-46199-30249 */
   pOldHdr = sqlite3MemsysGetHeader(pPrior);
   pNew = sqlite3MemMalloc(nByte);
-  if( pNew ){
-    memcpy(pNew, pPrior, (int)(nByte<pOldHdr->iSize ? nByte : pOldHdr->iSize));
-    if( nByte>pOldHdr->iSize ){
-      randomFill(&((char*)pNew)[pOldHdr->iSize], nByte - (int)pOldHdr->iSize);
+  གལ་ཏེ( pNew ){
+    memcpy(pNew, pPrior, (ཧྲིལ)(nByte<pOldHdr->iSize ? nByte : pOldHdr->iSize));
+    གལ་ཏེ( nByte>pOldHdr->iSize ){
+      randomFill(&((var_na*)pNew)[pOldHdr->iSize], nByte - (ཧྲིལ)pOldHdr->iSize);
     }
     sqlite3MemFree(pPrior);
   }
-  return pNew;
+  ཕྱིར pNew;
 }
 
 /*
@@ -379,8 +379,8 @@ void sqlite3MemSetDefault(void){
 ** Set the "type" of an allocation.
 */
 void sqlite3MemdebugSetType(void *p, u8 eType){
-  if( p && sqlite3GlobalConfig.m.xFree==sqlite3MemFree ){
-    struct MemBlockHdr *pHdr;
+  གལ་ཏེ( p && sqlite3GlobalConfig.m.xFree==sqlite3MemFree ){
+    sa_nracanaa MemBlockHdr *pHdr;
     pHdr = sqlite3MemsysGetHeader(p);
     assert( pHdr->iForeGuard==FOREGUARD );
     pHdr->eType = eType;
@@ -396,17 +396,17 @@ void sqlite3MemdebugSetType(void *p, u8 eType){
 **
 **     assert( sqlite3MemdebugHasType(p, MEMTYPE_HEAP) );
 */
-int sqlite3MemdebugHasType(const void *p, u8 eType){
-  int rc = 1;
-  if( p && sqlite3GlobalConfig.m.xFree==sqlite3MemFree ){
-    struct MemBlockHdr *pHdr;
+ཧྲིལ sqlite3MemdebugHasType(const void *p, u8 eType){
+  ཧྲིལ rc = 1;
+  གལ་ཏེ( p && sqlite3GlobalConfig.m.xFree==sqlite3MemFree ){
+    sa_nracanaa MemBlockHdr *pHdr;
     pHdr = sqlite3MemsysGetHeader(p);
     assert( pHdr->iForeGuard==FOREGUARD );         /* Allocation is valid */
-    if( (pHdr->eType&eType)==0 ){
+    གལ་ཏེ( (pHdr->eType&eType)==0 ){
       rc = 0;
     }
   }
-  return rc;
+  ཕྱིར rc;
 }
 
 /*
@@ -418,17 +418,17 @@ int sqlite3MemdebugHasType(const void *p, u8 eType){
 **
 **     assert( sqlite3MemdebugNoType(p, MEMTYPE_LOOKASIDE) );
 */
-int sqlite3MemdebugNoType(const void *p, u8 eType){
-  int rc = 1;
-  if( p && sqlite3GlobalConfig.m.xFree==sqlite3MemFree ){
-    struct MemBlockHdr *pHdr;
+ཧྲིལ sqlite3MemdebugNoType(const void *p, u8 eType){
+  ཧྲིལ rc = 1;
+  གལ་ཏེ( p && sqlite3GlobalConfig.m.xFree==sqlite3MemFree ){
+    sa_nracanaa MemBlockHdr *pHdr;
     pHdr = sqlite3MemsysGetHeader(p);
     assert( pHdr->iForeGuard==FOREGUARD );         /* Allocation is valid */
-    if( (pHdr->eType&eType)!=0 ){
+    གལ་ཏེ( (pHdr->eType&eType)!=0 ){
       rc = 0;
     }
   }
-  return rc;
+  ཕྱིར rc;
 }
 
 /*
@@ -436,24 +436,24 @@ int sqlite3MemdebugNoType(const void *p, u8 eType){
 ** A value of zero turns off backtracing.  The number is always rounded
 ** up to a multiple of 2.
 */
-void sqlite3MemdebugBacktrace(int depth){
-  if( depth<0 ){ depth = 0; }
-  if( depth>20 ){ depth = 20; }
+void sqlite3MemdebugBacktrace(ཧྲིལ depth){
+  གལ་ཏེ( depth<0 ){ depth = 0; }
+  གལ་ཏེ( depth>20 ){ depth = 20; }
   depth = (depth+1)&0xfe;
   mem.nBacktrace = depth;
 }
 
-void sqlite3MemdebugBacktraceCallback(void (*xBacktrace)(int, int, void **)){
+void sqlite3MemdebugBacktraceCallback(void (*xBacktrace)(ཧྲིལ, ཧྲིལ, void **)){
   mem.xBacktrace = xBacktrace;
 }
 
 /*
 ** Set the title string for subsequent allocations.
 */
-void sqlite3MemdebugSettitle(const char *zTitle){
-  unsigned int n = sqlite3Strlen30(zTitle) + 1;
+void sqlite3MemdebugSettitle(const var_na *zTitle){
+  unsigned ཧྲིལ n = sqlite3Strlen30(zTitle) + 1;
   sqlite3_mutex_enter(mem.mutex);
-  if( n>=sizeof(mem.zTitle) ) n = sizeof(mem.zTitle)-1;
+  གལ་ཏེ( n>=parimaa_na(mem.zTitle) ) n = parimaa_na(mem.zTitle)-1;
   memcpy(mem.zTitle, zTitle, n);
   mem.zTitle[n] = 0;
   mem.nTitle = ROUND8(n);
@@ -461,11 +461,11 @@ void sqlite3MemdebugSettitle(const char *zTitle){
 }
 
 void sqlite3MemdebugSync(){
-  struct MemBlockHdr *pHdr;
-  for(pHdr=mem.pFirst; pHdr; pHdr=pHdr->pNext){
+  sa_nracanaa MemBlockHdr *pHdr;
+  ཆེད་དུ(pHdr=mem.pFirst; pHdr; pHdr=pHdr->pNext){
     void **pBt = (void**)pHdr;
     pBt -= pHdr->nBacktraceSlots;
-    mem.xBacktrace((int)pHdr->iSize, pHdr->nBacktrace-1, &pBt[1]);
+    mem.xBacktrace((ཧྲིལ)pHdr->iSize, pHdr->nBacktrace-1, &pBt[1]);
   }
 }
 
@@ -473,23 +473,23 @@ void sqlite3MemdebugSync(){
 ** Open the file indicated and write a log of all unfreed memory 
 ** allocations into that log.
 */
-void sqlite3MemdebugDump(const char *zFilename){
+void sqlite3MemdebugDump(const var_na *zFilename){
   FILE *out;
-  struct MemBlockHdr *pHdr;
+  sa_nracanaa MemBlockHdr *pHdr;
   void **pBt;
-  int i;
+  ཧྲིལ i;
   out = fopen(zFilename, "w");
-  if( out==0 ){
+  གལ་ཏེ( out==0 ){
     fprintf(stderr, "** Unable to output memory debug output log: %s **\n",
                     zFilename);
-    return;
+    ཕྱིར;
   }
-  for(pHdr=mem.pFirst; pHdr; pHdr=pHdr->pNext){
-    char *z = (char*)pHdr;
-    z -= pHdr->nBacktraceSlots*sizeof(void*) + pHdr->nTitle;
+  ཆེད་དུ(pHdr=mem.pFirst; pHdr; pHdr=pHdr->pNext){
+    var_na *z = (var_na*)pHdr;
+    z -= pHdr->nBacktraceSlots*parimaa_na(void*) + pHdr->nTitle;
     fprintf(out, "**** %lld bytes at %p from %s ****\n", 
             pHdr->iSize, &pHdr[1], pHdr->nTitle ? z : "???");
-    if( pHdr->nBacktrace ){
+    གལ་ཏེ( pHdr->nBacktrace ){
       fflush(out);
       pBt = (void**)pHdr;
       pBt -= pHdr->nBacktraceSlots;
@@ -498,13 +498,13 @@ void sqlite3MemdebugDump(const char *zFilename){
     }
   }
   fprintf(out, "COUNTS:\n");
-  for(i=0; i<NCSIZE-1; i++){
-    if( mem.nAlloc[i] ){
+  ཆེད་དུ(i=0; i<NCSIZE-1; i++){
+    གལ་ཏེ( mem.nAlloc[i] ){
       fprintf(out, "   %5d: %10d %10d %10d\n", 
             i*8, mem.nAlloc[i], mem.nCurrent[i], mem.mxCurrent[i]);
     }
   }
-  if( mem.nAlloc[NCSIZE-1] ){
+  གལ་ཏེ( mem.nAlloc[NCSIZE-1] ){
     fprintf(out, "   %5d: %10d %10d %10d\n",
              NCSIZE*8-8, mem.nAlloc[NCSIZE-1],
              mem.nCurrent[NCSIZE-1], mem.mxCurrent[NCSIZE-1]);
@@ -515,13 +515,13 @@ void sqlite3MemdebugDump(const char *zFilename){
 /*
 ** Return the number of times sqlite3MemMalloc() has been called.
 */
-int sqlite3MemdebugMallocCount(){
-  int i;
-  int nTotal = 0;
-  for(i=0; i<NCSIZE; i++){
+ཧྲིལ sqlite3MemdebugMallocCount(){
+  ཧྲིལ i;
+  ཧྲིལ nTotal = 0;
+  ཆེད་དུ(i=0; i<NCSIZE; i++){
     nTotal += mem.nAlloc[i];
   }
-  return nTotal;
+  ཕྱིར nTotal;
 }
 
 
