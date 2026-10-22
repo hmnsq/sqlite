@@ -17,11 +17,11 @@
 ** with historical versions of the "binary" command.  So it seems
 ** easier and safer to build our own mechanism.
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#ضمن "sqliteInt.h"
+#ضمن "tclsqlite.h"
+#ضمن <stdlib.h>
+#ضمن <string.h>
+#ضمن <assert.h>
 
 
 /*
@@ -29,18 +29,18 @@
 ** binary data.  zBuf[] is 2*n+1 bytes long.  Overwrite zBuf[]
 ** with a hexadecimal representation of its original binary input.
 */
-void sqlite3TestBinToHex(unsigned char *zBuf, int N){
-  const unsigned char zHex[] = "0123456789ABCDEF";
-  int i, j;
-  unsigned char c;
+فراغ sqlite3_Test_Bin_منزل_Hex(بنانشان حرف *zBuf, صحيح N){
+  ثابت بنانشان حرف zHex[] = "0123456789ABCDEF";
+  صحيح i, j;
+  بنانشان حرف c;
   i = N*2;
   zBuf[i--] = 0;
-  for(j=N-1; j>=0; j--){
+  لكل(j=N-1; j>=0; j--){
     c = zBuf[j];
     zBuf[i--] = zHex[c&0xf];
     zBuf[i--] = zHex[c>>4];
   }
-  assert( i==-1 );
+  أكد( i==-1 );
 }
 
 /*
@@ -49,8 +49,8 @@ void sqlite3TestBinToHex(unsigned char *zBuf, int N){
 ** the binary data.  Spaces in the original input are ignored.
 ** Return the number of bytes of binary rendered.
 */
-int sqlite3TestHexToBin(const unsigned char *zIn, int N, unsigned char *aOut){
-  const unsigned char aMap[] = {
+صحيح sqlite3_Test_Hex_منزل_Bin(ثابت بنانشان حرف *z_اندريون, صحيح N, بنانشان حرف *a_ٻاهريون){
+  ثابت بنانشان حرف aMap[] = {
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
@@ -68,22 +68,22 @@ int sqlite3TestHexToBin(const unsigned char *zIn, int N, unsigned char *aOut){
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
   };
-  int i, j;
-  int hi=1;
-  unsigned char c;
+  صحيح i, j;
+  صحيح hi=1;
+  بنانشان حرف c;
 
-  for(i=j=0; i<N; i++){
-    c = aMap[zIn[i]];
-    if( c==0 ) continue;
-    if( hi ){
-      aOut[j] = (c-1)<<4;
+  لكل(i=j=0; i<N; i++){
+    c = aMap[z_اندريون[i]];
+    إذا( c==0 ) استمر;
+    إذا( hi ){
+      a_ٻاهريون[j] = (c-1)<<4;
       hi = 0;
-    }else{
-      aOut[j++] |= c-1;
+    }وإلا{
+      a_ٻاهريون[j++] |= c-1;
       hi = 1;
     }
   }
-  return j;
+  أرجع j;
 }
 
 
@@ -94,47 +94,47 @@ int sqlite3TestHexToBin(const unsigned char *zIn, int N, unsigned char *aOut){
 ** beginning of the file.  Convert that information to hexadecimal
 ** and return the resulting HEX string.
 */
-static int SQLITE_TCLAPI hexio_read(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI hexio_read(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int offset;
-  int amt, got;
-  const char *zFile;
-  unsigned char *zBuf;
-  FILE *in;
+  صحيح وٿي;
+  صحيح amt, got;
+  ثابت حرف *zFile;
+  بنانشان حرف *zBuf;
+  FILE *اندريون;
 
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME OFFSET AMT");
-    return TCL_ERROR;
+  إذا( objc!=4 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "FILENAME OFFSET AMT");
+    أرجع TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &offset) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[3], &amt) ) return TCL_ERROR;
+  إذا( Tcl_GetIntFromObj(interp, objv[2], &وٿي) ) أرجع TCL_ERROR;
+  إذا( Tcl_GetIntFromObj(interp, objv[3], &amt) ) أرجع TCL_ERROR;
   zFile = Tcl_GetString(objv[1]);
   zBuf = sqlite3_malloc( amt*2+1 );
-  if( zBuf==0 ){
-    return TCL_ERROR;
+  إذا( zBuf==0 ){
+    أرجع TCL_ERROR;
   }
-  in = fopen(zFile, "rb");
-  if( in==0 ){
-    in = fopen(zFile, "r");
+  اندريون = fopen(zFile, "rb");
+  إذا( اندريون==0 ){
+    اندريون = fopen(zFile, "r");
   }
-  if( in==0 ){
-    Tcl_AppendResult(interp, "cannot open input file ", zFile, NULL);
-    return TCL_ERROR;
+  إذا( اندريون==0 ){
+    Tcl_Append_نتيجو(interp, "cannot open input file ", zFile, عدم);
+    أرجع TCL_ERROR;
   }
-  fseek(in, offset, SEEK_SET);
-  got = (int)fread(zBuf, 1, amt, in);
-  fclose(in);
-  if( got<0 ){
+  fseek(اندريون, وٿي, SEEK_SET);
+  got = (صحيح)fread(zBuf, 1, amt, اندريون);
+  fclose(اندريون);
+  إذا( got<0 ){
     got = 0;
   }
-  sqlite3TestBinToHex(zBuf, got);
-  Tcl_AppendResult(interp, zBuf, NULL);
+  sqlite3_Test_Bin_منزل_Hex(zBuf, got);
+  Tcl_Append_نتيجو(interp, zBuf, عدم);
   sqlite3_free(zBuf);
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 
@@ -144,46 +144,46 @@ static int SQLITE_TCLAPI hexio_read(
 ** Write DATA into file FILENAME beginning at OFFSET from the
 ** beginning of the file.  DATA is expressed in hexadecimal.
 */
-static int SQLITE_TCLAPI hexio_write(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI hexio_write(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int offset;
-  Tcl_Size nIn;
-  int nOut, written;
-  const char *zFile;
-  const unsigned char *zIn;
-  unsigned char *aOut;
-  FILE *out;
+  صحيح وٿي;
+  Tcl_سائيز n_اندريون;
+  صحيح n_ٻاهريون, written;
+  ثابت حرف *zFile;
+  ثابت بنانشان حرف *z_اندريون;
+  بنانشان حرف *a_ٻاهريون;
+  FILE *ٻاهريون;
 
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "FILENAME OFFSET HEXDATA");
-    return TCL_ERROR;
+  إذا( objc!=4 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "FILENAME OFFSET HEXDATA");
+    أرجع TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[2], &offset) ) return TCL_ERROR;
+  إذا( Tcl_GetIntFromObj(interp, objv[2], &وٿي) ) أرجع TCL_ERROR;
   zFile = Tcl_GetString(objv[1]);
-  zIn = (const unsigned char *)Tcl_GetStringFromObj(objv[3], &nIn);
-  aOut = sqlite3_malloc64( 1 + nIn/2 );
-  if( aOut==0 ){
-    return TCL_ERROR;
+  z_اندريون = (ثابت بنانشان حرف *)Tcl_GetStringFromObj(objv[3], &n_اندريون);
+  a_ٻاهريون = sqlite3_malloc64( 1 + n_اندريون/2 );
+  إذا( a_ٻاهريون==0 ){
+    أرجع TCL_ERROR;
   }
-  nOut = sqlite3TestHexToBin(zIn, (int)nIn, aOut);
-  out = fopen(zFile, "r+b");
-  if( out==0 ){
-    out = fopen(zFile, "r+");
+  n_ٻاهريون = sqlite3_Test_Hex_منزل_Bin(z_اندريون, (صحيح)n_اندريون, a_ٻاهريون);
+  ٻاهريون = fopen(zFile, "r+b");
+  إذا( ٻاهريون==0 ){
+    ٻاهريون = fopen(zFile, "r+");
   }
-  if( out==0 ){
-    Tcl_AppendResult(interp, "cannot open output file ", zFile, NULL);
-    return TCL_ERROR;
+  إذا( ٻاهريون==0 ){
+    Tcl_Append_نتيجو(interp, "cannot open output file ", zFile, عدم);
+    أرجع TCL_ERROR;
   }
-  fseek(out, offset, SEEK_SET);
-  written = (int)fwrite(aOut, 1, nOut, out);
-  sqlite3_free(aOut);
-  fclose(out);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(written));
-  return TCL_OK;
+  fseek(ٻاهريون, وٿي, SEEK_SET);
+  written = (صحيح)fwrite(a_ٻاهريون, 1, n_ٻاهريون, ٻاهريون);
+  sqlite3_free(a_ٻاهريون);
+  fclose(ٻاهريون);
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewIntObj(written));
+  أرجع TCL_OK;
 }
 
 /*
@@ -193,51 +193,51 @@ static int SQLITE_TCLAPI hexio_write(
 ** the value of that integer.  HEXDATA can contain between 2 and 8
 ** hexadecimal digits.
 */
-static int SQLITE_TCLAPI hexio_get_int(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI hexio_get_int(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int val;
-  Tcl_Size nIn;
-  int nOut;
-  const unsigned char *zIn;
-  unsigned char *aOut;
-  unsigned char aNum[4];
-  int bLittle = 0;
+  صحيح val;
+  Tcl_سائيز n_اندريون;
+  صحيح n_ٻاهريون;
+  ثابت بنانشان حرف *z_اندريون;
+  بنانشان حرف *a_ٻاهريون;
+  بنانشان حرف a_انگ[4];
+  صحيح bLittle = 0;
 
-  if( objc==3 ){
-    Tcl_Size n;
-    char *z = Tcl_GetStringFromObj(objv[1], &n);
-    if( n>=2 && n<=13 && memcmp(z, "-littleendian", n)==0 ){
+  إذا( objc==3 ){
+    Tcl_سائيز n;
+    حرف *z = Tcl_GetStringFromObj(objv[1], &n);
+    إذا( n>=2 && n<=13 && memcmp(z, "-littleendian", n)==0 ){
       bLittle = 1;
     }
   }
-  if( (objc-bLittle)!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "[-littleendian] HEXDATA");
-    return TCL_ERROR;
+  إذا( (objc-bLittle)!=2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "[-littleendian] HEXDATA");
+    أرجع TCL_ERROR;
   }
-  zIn = (const unsigned char *)Tcl_GetStringFromObj(objv[1+bLittle], &nIn);
-  aOut = sqlite3_malloc64( 1 + nIn/2 );
-  if( aOut==0 ){
-    return TCL_ERROR;
+  z_اندريون = (ثابت بنانشان حرف *)Tcl_GetStringFromObj(objv[1+bLittle], &n_اندريون);
+  a_ٻاهريون = sqlite3_malloc64( 1 + n_اندريون/2 );
+  إذا( a_ٻاهريون==0 ){
+    أرجع TCL_ERROR;
   }
-  nOut = sqlite3TestHexToBin(zIn, (int)nIn, aOut);
-  if( nOut>=4 ){
-    memcpy(aNum, aOut, 4);
-  }else{
-    memset(aNum, 0, sizeof(aNum));
-    memcpy(&aNum[4-nOut], aOut, nOut);
+  n_ٻاهريون = sqlite3_Test_Hex_منزل_Bin(z_اندريون, (صحيح)n_اندريون, a_ٻاهريون);
+  إذا( n_ٻاهريون>=4 ){
+    يادگيري_نقل(a_انگ, a_ٻاهريون, 4);
+  }وإلا{
+    memset(a_انگ, 0, حجم(a_انگ));
+    يادگيري_نقل(&a_انگ[4-n_ٻاهريون], a_ٻاهريون, n_ٻاهريون);
   }
-  sqlite3_free(aOut);
-  if( bLittle ){
-    val = (int)((u32)aNum[3]<<24) | (aNum[2]<<16) | (aNum[1]<<8) | aNum[0];
-  }else{
-    val = (int)((u32)aNum[0]<<24) | (aNum[1]<<16) | (aNum[2]<<8) | aNum[3];
+  sqlite3_free(a_ٻاهريون);
+  إذا( bLittle ){
+    val = (صحيح)((u32)a_انگ[3]<<24) | (a_انگ[2]<<16) | (a_انگ[1]<<8) | a_انگ[0];
+  }وإلا{
+    val = (صحيح)((u32)a_انگ[0]<<24) | (a_انگ[1]<<16) | (a_انگ[2]<<8) | a_انگ[3];
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(val));
-  return TCL_OK;
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewIntObj(val));
+  أرجع TCL_OK;
 }
 
 
@@ -246,25 +246,25 @@ static int SQLITE_TCLAPI hexio_get_int(
 **
 ** Render INTEGER has a 16-bit big-endian integer in hexadecimal.
 */
-static int SQLITE_TCLAPI hexio_render_int16(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI hexio_render_int16(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int val;
-  unsigned char aNum[10];
+  صحيح val;
+  بنانشان حرف a_انگ[10];
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTEGER");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "INTEGER");
+    أرجع TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &val) ) return TCL_ERROR;
-  aNum[0] = val>>8;
-  aNum[1] = val;
-  sqlite3TestBinToHex(aNum, 2);
-  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)aNum, 4));
-  return TCL_OK;
+  إذا( Tcl_GetIntFromObj(interp, objv[1], &val) ) أرجع TCL_ERROR;
+  a_انگ[0] = val>>8;
+  a_انگ[1] = val;
+  sqlite3_Test_Bin_منزل_Hex(a_انگ, 2);
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewStringObj((حرف*)a_انگ, 4));
+  أرجع TCL_OK;
 }
 
 
@@ -273,27 +273,27 @@ static int SQLITE_TCLAPI hexio_render_int16(
 **
 ** Render INTEGER has a 32-bit big-endian integer in hexadecimal.
 */
-static int SQLITE_TCLAPI hexio_render_int32(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI hexio_render_int32(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  int val;
-  unsigned char aNum[10];
+  صحيح val;
+  بنانشان حرف a_انگ[10];
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "INTEGER");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "INTEGER");
+    أرجع TCL_ERROR;
   }
-  if( Tcl_GetIntFromObj(interp, objv[1], &val) ) return TCL_ERROR;
-  aNum[0] = val>>24;
-  aNum[1] = val>>16;
-  aNum[2] = val>>8;
-  aNum[3] = val;
-  sqlite3TestBinToHex(aNum, 4);
-  Tcl_SetObjResult(interp, Tcl_NewStringObj((char*)aNum, 8));
-  return TCL_OK;
+  إذا( Tcl_GetIntFromObj(interp, objv[1], &val) ) أرجع TCL_ERROR;
+  a_انگ[0] = val>>24;
+  a_انگ[1] = val>>16;
+  a_انگ[2] = val>>8;
+  a_انگ[3] = val;
+  sqlite3_Test_Bin_منزل_Hex(a_انگ, 4);
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewStringObj((حرف*)a_انگ, 8));
+  أرجع TCL_OK;
 }
 
 /*
@@ -303,60 +303,60 @@ static int SQLITE_TCLAPI hexio_render_int32(
 ** The UTF8 might not be well-formed.  Run this string through
 ** sqlite3Utf8to8() convert it back to hex and return the result.
 */
-static int SQLITE_TCLAPI utf8_to_utf8(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI utf8_منزل_utf8(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-#ifdef SQLITE_DEBUG
-  Tcl_Size n;
-  int nOut;
-  const unsigned char *zOrig;
-  unsigned char *z;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HEX");
-    return TCL_ERROR;
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  Tcl_سائيز n;
+  صحيح n_ٻاهريون;
+  ثابت بنانشان حرف *zOrig;
+  بنانشان حرف *z;
+  إذا( objc!=2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "HEX");
+    أرجع TCL_ERROR;
   }
-  zOrig = (unsigned char *)Tcl_GetStringFromObj(objv[1], &n);
+  zOrig = (بنانشان حرف *)Tcl_GetStringFromObj(objv[1], &n);
   z = sqlite3_malloc64( n+4 );
-  n = sqlite3TestHexToBin(zOrig, (int)n, z);
+  n = sqlite3_Test_Hex_منزل_Bin(zOrig, (صحيح)n, z);
   z[n] = 0;
-  nOut = sqlite3Utf8To8(z);
-  sqlite3TestBinToHex(z,nOut);
-  Tcl_AppendResult(interp, (char*)z, NULL);
+  n_ٻاهريون = sqlite3Utf8To8(z);
+  sqlite3_Test_Bin_منزل_Hex(z,n_ٻاهريون);
+  Tcl_Append_نتيجو(interp, (حرف*)z, عدم);
   sqlite3_free(z);
-  return TCL_OK;
-#else
-  Tcl_AppendResult(interp, 
-      "[utf8_to_utf8] unavailable - SQLITE_DEBUG not defined", NULL
+  أرجع TCL_OK;
+#وإلا
+  Tcl_Append_نتيجو(interp, 
+      "[utf8_to_utf8] unavailable - SQLITE_DEBUG not defined", عدم
   );
-  return TCL_ERROR;
-#endif
+  أرجع TCL_ERROR;
+#جيڪڏهن_پورو
 }
 
-static int getFts3Varint(const char *p, sqlite_int64 *v){
-  const unsigned char *q = (const unsigned char *) p;
+ساكن صحيح getFts3Varint(ثابت حرف *p, sqlite_int64 *v){
+  ثابت بنانشان حرف *q = (ثابت بنانشان حرف *) p;
   sqlite_uint64 x = 0, y = 1;
-  while( (*q & 0x80) == 0x80 ){
+  طالما( (*q & 0x80) == 0x80 ){
     x += y * (*q++ & 0x7f);
     y <<= 7;
   }
   x += y * (*q++);
   *v = (sqlite_int64) x;
-  return (int) (q - (unsigned char *)p);
+  أرجع (صحيح) (q - (بنانشان حرف *)p);
 }
 
-static int putFts3Varint(char *p, sqlite_int64 v){
-  unsigned char *q = (unsigned char *) p;
+ساكن صحيح putFts3Varint(حرف *p, sqlite_int64 v){
+  بنانشان حرف *q = (بنانشان حرف *) p;
   sqlite_uint64 vu = v;
-  do{
-    *q++ = (unsigned char) ((vu & 0x7f) | 0x80);
+  افعل{
+    *q++ = (بنانشان حرف) ((vu & 0x7f) | 0x80);
     vu >>= 7;
-  }while( vu!=0 );
+  }طالما( vu!=0 );
   q[-1] &= 0x7f;  /* turn off high bit in final byte */
-  assert( q - (unsigned char *)p <= 10 );
-  return (int) (q - (unsigned char *)p);
+  أكد( q - (بنانشان حرف *)p <= 10 );
+  أرجع (صحيح) (q - (بنانشان حرف *)p);
 }
 
 /*
@@ -365,97 +365,97 @@ static int putFts3Varint(char *p, sqlite_int64 v){
 ** Read a varint from the start of BLOB. Set variable VARNAME to contain
 ** the interpreted value. Return the number of bytes of BLOB consumed.
 */
-static int SQLITE_TCLAPI read_fts3varint(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI read_fts3varint(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  Tcl_Size nBlob;
-  unsigned char *zBlob;
+  Tcl_سائيز nBlob;
+  بنانشان حرف *zBlob;
   sqlite3_int64 iVal;
-  int nVal;
+  صحيح nVal;
 
-  if( objc!=3 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "BLOB VARNAME");
-    return TCL_ERROR;
+  إذا( objc!=3 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "BLOB VARNAME");
+    أرجع TCL_ERROR;
   }
   zBlob = Tcl_GetByteArrayFromObj(objv[1], &nBlob);
 
-  nVal = getFts3Varint((char*)zBlob, (sqlite3_int64 *)(&iVal));
-  Tcl_ObjSetVar2(interp, objv[2], 0, Tcl_NewWideIntObj(iVal), 0);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(nVal));
-  return TCL_OK;
+  nVal = getFts3Varint((حرف*)zBlob, (sqlite3_int64 *)(&iVal));
+  Tcl_Obj_سيٽ_Var2(interp, objv[2], 0, Tcl_NewWideIntObj(iVal), 0);
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewIntObj(nVal));
+  أرجع TCL_OK;
 }
 
 /*
 ** USAGE:  make_fts3record ARGLIST
 */
-static int SQLITE_TCLAPI make_fts3record(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI make_fts3record(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   Tcl_Obj **aArg = 0;
-  Tcl_Size nArg = 0;
-  unsigned char *aOut = 0;
-  sqlite3_int64 nOut = 0;
+  Tcl_سائيز nArg = 0;
+  بنانشان حرف *a_ٻاهريون = 0;
+  sqlite3_int64 n_ٻاهريون = 0;
   sqlite3_int64 nAlloc = 0;
-  int i;
+  صحيح i;
 
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "LIST");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "LIST");
+    أرجع TCL_ERROR;
   }
-  if( Tcl_ListObjGetElements(interp, objv[1], &nArg, &aArg) ){
-    return TCL_ERROR;
+  إذا( Tcl_ListObjGetElements(interp, objv[1], &nArg, &aArg) ){
+    أرجع TCL_ERROR;
   }
 
-  for(i=0; i<(int)nArg; i++){
+  لكل(i=0; i<(صحيح)nArg; i++){
     Tcl_WideInt iVal;
-    if( TCL_OK==Tcl_GetWideIntFromObj(0, aArg[i], &iVal) ){
-      if( nOut+10>nAlloc ){
-        int nNew = nAlloc?nAlloc*2:128;
-        unsigned char *aNew = sqlite3_realloc(aOut, nNew);
-        if( aNew==0 ){
-          sqlite3_free(aOut);
-          return TCL_ERROR;
+    إذا( TCL_OK==Tcl_GetWideIntFromObj(0, aArg[i], &iVal) ){
+      إذا( n_ٻاهريون+10>nAlloc ){
+        صحيح nNew = nAlloc?nAlloc*2:128;
+        بنانشان حرف *aNew = sqlite3_realloc(a_ٻاهريون, nNew);
+        إذا( aNew==0 ){
+          sqlite3_free(a_ٻاهريون);
+          أرجع TCL_ERROR;
         }
-        aOut = aNew;
+        a_ٻاهريون = aNew;
         nAlloc = nNew;
       }
-      nOut += putFts3Varint((char*)&aOut[nOut], iVal);
-    }else{
-      Tcl_Size nVal = 0;
-      char *zVal = Tcl_GetStringFromObj(aArg[i], &nVal);
-      while( (nOut + nVal)>nAlloc ){
+      n_ٻاهريون += putFts3Varint((حرف*)&a_ٻاهريون[n_ٻاهريون], iVal);
+    }وإلا{
+      Tcl_سائيز nVal = 0;
+      حرف *zVal = Tcl_GetStringFromObj(aArg[i], &nVal);
+      طالما( (n_ٻاهريون + nVal)>nAlloc ){
         sqlite3_int64 nNew = nAlloc?nAlloc*2:128;
-        unsigned char *aNew = sqlite3_realloc64(aOut, nNew);
-        if( aNew==0 ){
-          sqlite3_free(aOut);
-          return TCL_ERROR;
+        بنانشان حرف *aNew = sqlite3_realloc64(a_ٻاهريون, nNew);
+        إذا( aNew==0 ){
+          sqlite3_free(a_ٻاهريون);
+          أرجع TCL_ERROR;
         }
-        aOut = aNew;
+        a_ٻاهريون = aNew;
         nAlloc = nNew;
       }
-      memcpy(&aOut[nOut], zVal, nVal);
-      nOut += nVal;
+      يادگيري_نقل(&a_ٻاهريون[n_ٻاهريون], zVal, nVal);
+      n_ٻاهريون += nVal;
     }
   }
 
-  Tcl_SetObjResult(interp, Tcl_NewByteArrayObj(aOut, nOut));
-  sqlite3_free(aOut);
-  return TCL_OK;
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewByteArrayObj(a_ٻاهريون, n_ٻاهريون));
+  sqlite3_free(a_ٻاهريون);
+  أرجع TCL_OK;
 }
 
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_hexio_Init(Tcl_Interp *interp){
-  static struct {
-     char *zName;
+صحيح Sqlitetest_hexio_Init(Tcl_Interp *interp){
+  ساكن بنية {
+     حرف *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
      { "hexio_read",                   hexio_read            },
@@ -463,13 +463,13 @@ int Sqlitetest_hexio_Init(Tcl_Interp *interp){
      { "hexio_get_int",                hexio_get_int         },
      { "hexio_render_int16",           hexio_render_int16    },
      { "hexio_render_int32",           hexio_render_int32    },
-     { "utf8_to_utf8",                 utf8_to_utf8          },
+     { "utf8_to_utf8",                 utf8_منزل_utf8          },
      { "read_fts3varint",              read_fts3varint       },
      { "make_fts3record",              make_fts3record       },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  صحيح i;
+  لكل(i=0; i<حجم(aObjCmd)/حجم(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
-  return TCL_OK;
+  أرجع TCL_OK;
 }

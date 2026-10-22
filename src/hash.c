@@ -12,18 +12,18 @@
 ** This is the implementation of generic hash-tables
 ** used in SQLite.
 */
-#include "sqliteInt.h"
-#include <assert.h>
+#ضمن "sqliteInt.h"
+#ضمن <assert.h>
 
 /* Turn bulk memory into a hash table object by initializing the
 ** fields of the Hash structure.
 **
 ** "pNew" is a pointer to the hash table that is to be initialized.
 */
-void sqlite3HashInit(Hash *pNew){
-  assert( pNew!=0 );
-  pNew->first = 0;
-  pNew->count = 0;
+فراغ sqlite3HashInit(Hash *pNew){
+  أكد( pNew!=0 );
+  pNew->پهريون = 0;
+  pNew->ڳڻپ = 0;
   pNew->htsize = 0;
   pNew->ht = 0;
 }
@@ -32,29 +32,29 @@ void sqlite3HashInit(Hash *pNew){
 ** Call this routine to delete a hash table or to reset a hash table
 ** to the empty state.
 */
-void sqlite3HashClear(Hash *pH){
+فراغ sqlite3HashClear(Hash *pH){
   HashElem *elem;         /* For looping over all elements of the table */
 
-  assert( pH!=0 );
-  elem = pH->first;
-  pH->first = 0;
+  أكد( pH!=0 );
+  elem = pH->پهريون;
+  pH->پهريون = 0;
   sqlite3_free(pH->ht);
   pH->ht = 0;
   pH->htsize = 0;
-  while( elem ){
-    HashElem *next_elem = elem->next;
+  طالما( elem ){
+    HashElem *ايندڙ_elem = elem->ايندڙ;
     sqlite3_free(elem);
-    elem = next_elem;
+    elem = ايندڙ_elem;
   }
-  pH->count = 0;
+  pH->ڳڻپ = 0;
 }
 
 /*
 ** The hashing function.
 */
-static unsigned int strHash(const char *z){
-  unsigned int h = 0;
-  while( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
+ساكن بنانشان صحيح strHash(ثابت حرف *z){
+  بنانشان صحيح h = 0;
+  طالما( z[0] ){     /*OPTIMIZATION-IF-TRUE*/
     /* Knuth multiplicative hashing.  (Sorting & Searching, p. 510).
     ** 0x9e3779b1 is 2654435761 which is the closest prime number to
     ** (2**32)*golden_ratio, where golden_ratio = (sqrt(5) - 1)/2.
@@ -62,44 +62,44 @@ static unsigned int strHash(const char *z){
     ** Only bits 0xdf for ASCII and bits 0xbf for EBCDIC each octet are
     ** hashed since the omitted bits determine the upper/lower case difference.
     */
-#ifdef SQLITE_EBCDIC
-    h += 0xbf & (unsigned char)*(z++);
-#else
-    h += 0xdf & (unsigned char)*(z++);
-#endif
+#جيڪڏهن_وصف_ٿيل SQLITE_EBCDIC
+    h += 0xbf & (بنانشان حرف)*(z++);
+#وإلا
+    h += 0xdf & (بنانشان حرف)*(z++);
+#جيڪڏهن_پورو
     h *= 0x9e3779b1;
   }
-  return h;
+  أرجع h;
 }
 
 
 /* Link pNew element into the hash table pH.  If pEntry!=0 then also
 ** insert pNew into the pEntry hash bucket.
 */
-static void insertElement(
+ساكن فراغ وجهو_Element(
   Hash *pH,              /* The complete hash table */
-  struct _ht *pEntry,    /* The entry into which pNew is inserted */
+  بنية _ht *p_داخلا,    /* The entry into which pNew is inserted */
   HashElem *pNew         /* The element to be inserted */
 ){
-  HashElem *pHead;       /* First element already in pEntry */
-  if( pEntry ){
-    pHead = pEntry->count ? pEntry->chain : 0;
-    pEntry->count++;
-    pEntry->chain = pNew;
-  }else{
-    pHead = 0;
+  HashElem *p_سر;       /* First element already in pEntry */
+  إذا( p_داخلا ){
+    p_سر = p_داخلا->ڳڻپ ? p_داخلا->chain : 0;
+    p_داخلا->ڳڻپ++;
+    p_داخلا->chain = pNew;
+  }وإلا{
+    p_سر = 0;
   }
-  if( pHead ){
-    pNew->next = pHead;
-    pNew->prev = pHead->prev;
-    if( pHead->prev ){ pHead->prev->next = pNew; }
-    else             { pH->first = pNew; }
-    pHead->prev = pNew;
-  }else{
-    pNew->next = pH->first;
-    if( pH->first ){ pH->first->prev = pNew; }
+  إذا( p_سر ){
+    pNew->ايندڙ = p_سر;
+    pNew->prev = p_سر->prev;
+    إذا( p_سر->prev ){ p_سر->prev->ايندڙ = pNew; }
+    وإلا             { pH->پهريون = pNew; }
+    p_سر->prev = pNew;
+  }وإلا{
+    pNew->ايندڙ = pH->پهريون;
+    إذا( pH->پهريون ){ pH->پهريون->prev = pNew; }
     pNew->prev = 0;
-    pH->first = pNew;
+    pH->پهريون = pNew;
   }
 }
 
@@ -110,16 +110,16 @@ static void insertElement(
 ** if the new size is the same as the prior size.
 ** Return TRUE if the resize occurs and false if not.
 */
-static int rehash(Hash *pH, unsigned int new_size){
-  struct _ht *new_ht;            /* The new hash table */
-  HashElem *elem, *next_elem;    /* For looping over existing elements */
+ساكن صحيح rehash(Hash *pH, بنانشان صحيح new_سائيز){
+  بنية _ht *new_ht;            /* The new hash table */
+  HashElem *elem, *ايندڙ_elem;    /* For looping over existing elements */
 
-#if SQLITE_MALLOC_SOFT_LIMIT>0
-  if( new_size*sizeof(struct _ht)>SQLITE_MALLOC_SOFT_LIMIT ){
-    new_size = SQLITE_MALLOC_SOFT_LIMIT/sizeof(struct _ht);
+#إذا SQLITE_MALLOC_SOFT_حد_بندي>0
+  إذا( new_سائيز*حجم(بنية _ht)>SQLITE_MALLOC_SOFT_حد_بندي ){
+    new_سائيز = SQLITE_MALLOC_SOFT_حد_بندي/حجم(بنية _ht);
   }
-  if( new_size==pH->htsize ) return 0;
-#endif
+  إذا( new_سائيز==pH->htsize ) أرجع 0;
+#جيڪڏهن_پورو
 
   /* The inability to allocates space for a larger hash table is
   ** a performance hit but it is not a fatal error.  So mark the
@@ -130,19 +130,19 @@ static int rehash(Hash *pH, unsigned int new_size){
   ** may be larger than the requested amount).
   */
   sqlite3BeginBenignMalloc();
-  new_ht = (struct _ht *)sqlite3Malloc( new_size*sizeof(struct _ht) );
-  sqlite3EndBenignMalloc();
+  new_ht = (بنية _ht *)sqlite3Malloc( new_سائيز*حجم(بنية _ht) );
+  sqlite3_پڇاڙي_Benign_Malloc();
 
-  if( new_ht==0 ) return 0;
+  إذا( new_ht==0 ) أرجع 0;
   sqlite3_free(pH->ht);
   pH->ht = new_ht;
-  pH->htsize = new_size = sqlite3MallocSize(new_ht)/sizeof(struct _ht);
-  memset(new_ht, 0, new_size*sizeof(struct _ht));
-  for(elem=pH->first, pH->first=0; elem; elem = next_elem){
-    next_elem = elem->next;
-    insertElement(pH, &new_ht[elem->h % new_size], elem);
+  pH->htsize = new_سائيز = sqlite3_Malloc_سائيز(new_ht)/حجم(بنية _ht);
+  memset(new_ht, 0, new_سائيز*حجم(بنية _ht));
+  لكل(elem=pH->پهريون, pH->پهريون=0; elem; elem = ايندڙ_elem){
+    ايندڙ_elem = elem->ايندڙ;
+    وجهو_Element(pH, &new_ht[elem->h % new_سائيز], elem);
   }
-  return 1;
+  أرجع 1;
 }
 
 /* This function (for internal use only) locates an element in an
@@ -150,67 +150,67 @@ static int rehash(Hash *pH, unsigned int new_size){
 ** a pointer to a static null element with HashElem.data==0 is returned.
 ** If pH is not NULL, then the hash for this key is written to *pH.
 */
-static HashElem *findElementWithHash(
-  const Hash *pH,     /* The pH to be searched */
-  const char *pKey,   /* The key we are searching for */
-  unsigned int *pHash /* Write the hash value here */
+ساكن HashElem *ڳوليو_Element_With_Hash(
+  ثابت Hash *pH,     /* The pH to be searched */
+  ثابت حرف *p_ڪنجي,   /* The key we are searching for */
+  بنانشان صحيح *pHash /* Write the hash value here */
 ){
   HashElem *elem;                /* Used to loop thru the element list */
-  unsigned int count;            /* Number of elements left to test */
-  unsigned int h;                /* The computed hash */
-  static HashElem nullElement = { 0, 0, 0, 0, 0 };
+  بنانشان صحيح ڳڻپ;            /* Number of elements left to test */
+  بنانشان صحيح h;                /* The computed hash */
+  ساكن HashElem nullElement = { 0, 0, 0, 0, 0 };
 
-  h = strHash(pKey);
-  if( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
-    struct _ht *pEntry;
-    pEntry = &pH->ht[h % pH->htsize];
-    elem = pEntry->chain;
-    count = pEntry->count;
-  }else{
-    elem = pH->first;
-    count = pH->count;
+  h = strHash(p_ڪنجي);
+  إذا( pH->ht ){   /*OPTIMIZATION-IF-TRUE*/
+    بنية _ht *p_داخلا;
+    p_داخلا = &pH->ht[h % pH->htsize];
+    elem = p_داخلا->chain;
+    ڳڻپ = p_داخلا->ڳڻپ;
+  }وإلا{
+    elem = pH->پهريون;
+    ڳڻپ = pH->ڳڻپ;
   }
-  if( pHash ) *pHash = h;
-  while( count ){
-    assert( elem!=0 );
-    if( h==elem->h && sqlite3StrICmp(elem->pKey,pKey)==0 ){ 
-      return elem;
+  إذا( pHash ) *pHash = h;
+  طالما( ڳڻپ ){
+    أكد( elem!=0 );
+    إذا( h==elem->h && sqlite3StrICmp(elem->p_ڪنجي,p_ڪنجي)==0 ){ 
+      أرجع elem;
     }
-    elem = elem->next;
-    count--;
+    elem = elem->ايندڙ;
+    ڳڻپ--;
   }
-  return &nullElement;
+  أرجع &nullElement;
 }
 
 /* Remove a single entry from the hash table given a pointer to that
 ** element and a hash on the element's key.
 */
-static void removeElement(
+ساكن فراغ removeElement(
   Hash *pH,         /* The pH containing "elem" */
   HashElem *elem    /* The element to be removed from the pH */
 ){
-  struct _ht *pEntry;
-  if( elem->prev ){
-    elem->prev->next = elem->next; 
-  }else{
-    pH->first = elem->next;
+  بنية _ht *p_داخلا;
+  إذا( elem->prev ){
+    elem->prev->ايندڙ = elem->ايندڙ; 
+  }وإلا{
+    pH->پهريون = elem->ايندڙ;
   }
-  if( elem->next ){
-    elem->next->prev = elem->prev;
+  إذا( elem->ايندڙ ){
+    elem->ايندڙ->prev = elem->prev;
   }
-  if( pH->ht ){
-    pEntry = &pH->ht[elem->h % pH->htsize];
-    if( pEntry->chain==elem ){
-      pEntry->chain = elem->next;
+  إذا( pH->ht ){
+    p_داخلا = &pH->ht[elem->h % pH->htsize];
+    إذا( p_داخلا->chain==elem ){
+      p_داخلا->chain = elem->ايندڙ;
     }
-    assert( pEntry->count>0 );
-    pEntry->count--;
+    أكد( p_داخلا->ڳڻپ>0 );
+    p_داخلا->ڳڻپ--;
   }
   sqlite3_free( elem );
-  pH->count--;
-  if( pH->count==0 ){
-    assert( pH->first==0 );
-    assert( pH->count==0 );
+  pH->ڳڻپ--;
+  إذا( pH->ڳڻپ==0 ){
+    أكد( pH->پهريون==0 );
+    أكد( pH->ڳڻپ==0 );
     sqlite3HashClear(pH);
   }
 }
@@ -219,10 +219,10 @@ static void removeElement(
 ** that matches pKey.  Return the data for this element if it is
 ** found, or NULL if there is no match.
 */
-void *sqlite3HashFind(const Hash *pH, const char *pKey){
-  assert( pH!=0 );
-  assert( pKey!=0 );
-  return findElementWithHash(pH, pKey, 0)->data;
+فراغ *sqlite3_Hash_ڳوليو(ثابت Hash *pH, ثابت حرف *p_ڪنجي){
+  أكد( pH!=0 );
+  أكد( p_ڪنجي!=0 );
+  أرجع ڳوليو_Element_With_Hash(pH, p_ڪنجي, 0)->معلومات;
 }
 
 /* Insert an element into the hash table pH.  The key is pKey
@@ -239,35 +239,35 @@ void *sqlite3HashFind(const Hash *pH, const char *pKey){
 ** If the "data" parameter to this function is NULL, then the
 ** element corresponding to "key" is removed from the hash table.
 */
-void *sqlite3HashInsert(Hash *pH, const char *pKey, void *data){
-  unsigned int h;       /* the hash of the key modulo hash table size */
+فراغ *sqlite3_Hash_وجهو(Hash *pH, ثابت حرف *p_ڪنجي, فراغ *معلومات){
+  بنانشان صحيح h;       /* the hash of the key modulo hash table size */
   HashElem *elem;       /* Used to loop thru the element list */
   HashElem *new_elem;   /* New element added to the pH */
 
-  assert( pH!=0 );
-  assert( pKey!=0 );
-  elem = findElementWithHash(pH,pKey,&h);
-  if( elem->data ){
-    void *old_data = elem->data;
-    if( data==0 ){
+  أكد( pH!=0 );
+  أكد( p_ڪنجي!=0 );
+  elem = ڳوليو_Element_With_Hash(pH,p_ڪنجي,&h);
+  إذا( elem->معلومات ){
+    فراغ *old_معلومات = elem->معلومات;
+    إذا( معلومات==0 ){
       removeElement(pH,elem);
-    }else{
-      elem->data = data;
-      elem->pKey = pKey;
+    }وإلا{
+      elem->معلومات = معلومات;
+      elem->p_ڪنجي = p_ڪنجي;
     }
-    return old_data;
+    أرجع old_معلومات;
   }
-  if( data==0 ) return 0;
-  new_elem = (HashElem*)sqlite3Malloc( sizeof(HashElem) );
-  if( new_elem==0 ) return data;
-  new_elem->pKey = pKey;
+  إذا( معلومات==0 ) أرجع 0;
+  new_elem = (HashElem*)sqlite3Malloc( حجم(HashElem) );
+  إذا( new_elem==0 ) أرجع معلومات;
+  new_elem->p_ڪنجي = p_ڪنجي;
   new_elem->h = h;
-  new_elem->data = data;
-  pH->count++;
-  if( pH->count>=5 && pH->count > 2*pH->htsize ){
-    rehash(pH, pH->count*3);
+  new_elem->معلومات = معلومات;
+  pH->ڳڻپ++;
+  إذا( pH->ڳڻپ>=5 && pH->ڳڻپ > 2*pH->htsize ){
+    rehash(pH, pH->ڳڻپ*3);
   }
-  insertElement(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
-  return 0;
+  وجهو_Element(pH, pH->ht ? &pH->ht[new_elem->h % pH->htsize] : 0, new_elem);
+  أرجع 0;
 }
 

@@ -12,12 +12,12 @@
 ** This is the header file for the generic hash-table implementation
 ** used in SQLite.
 */
-#ifndef SQLITE_HASH_H
-#define SQLITE_HASH_H
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_HASH_H
+#وصف_ڪريو SQLITE_HASH_H
 
 /* Forward declarations of structures. */
-typedef struct Hash Hash;
-typedef struct HashElem HashElem;
+تعريفنوع بنية Hash Hash;
+تعريفنوع بنية HashElem HashElem;
 
 /* A complete hash table is an instance of the following structure.
 ** The internals of this structure are intended to be opaque -- client
@@ -40,12 +40,12 @@ typedef struct HashElem HashElem;
 ** in the table, it is faster to do a linear search than to manage
 ** the hash table.
 */
-struct Hash {
-  unsigned int htsize;      /* Number of buckets in the hash table */
-  unsigned int count;       /* Number of entries in this table */
-  HashElem *first;          /* The first element of the array */
-  struct _ht {              /* the hash table */
-    unsigned int count;        /* Number of entries with this hash */
+بنية Hash {
+  بنانشان صحيح htsize;      /* Number of buckets in the hash table */
+  بنانشان صحيح ڳڻپ;       /* Number of entries in this table */
+  HashElem *پهريون;          /* The first element of the array */
+  بنية _ht {              /* the hash table */
+    بنانشان صحيح ڳڻپ;        /* Number of entries with this hash */
     HashElem *chain;           /* Pointer to first entry with this hash */
   } *ht;
 };
@@ -56,20 +56,20 @@ struct Hash {
 ** Again, this structure is intended to be opaque, but it can't really
 ** be opaque because it is used by macros.
 */
-struct HashElem {
-  HashElem *next, *prev;       /* Next and previous elements in the table */
-  void *data;                  /* Data associated with this element */
-  const char *pKey;            /* Key associated with this element */
-  unsigned int h;              /* hash for pKey */
+بنية HashElem {
+  HashElem *ايندڙ, *prev;       /* Next and previous elements in the table */
+  فراغ *معلومات;                  /* Data associated with this element */
+  ثابت حرف *p_ڪنجي;            /* Key associated with this element */
+  بنانشان صحيح h;              /* hash for pKey */
 };
 
 /*
 ** Access routines.  To delete, insert a NULL pointer.
 */
-void sqlite3HashInit(Hash*);
-void *sqlite3HashInsert(Hash*, const char *pKey, void *pData);
-void *sqlite3HashFind(const Hash*, const char *pKey);
-void sqlite3HashClear(Hash*);
+فراغ sqlite3HashInit(Hash*);
+فراغ *sqlite3_Hash_وجهو(Hash*, ثابت حرف *p_ڪنجي, فراغ *p_معلومات);
+فراغ *sqlite3_Hash_ڳوليو(ثابت Hash*, ثابت حرف *p_ڪنجي);
+فراغ sqlite3HashClear(Hash*);
 
 /*
 ** Macros for looping over all elements of a hash table.  The idiom is
@@ -83,15 +83,15 @@ void sqlite3HashClear(Hash*);
 **     // do something with pData
 **   }
 */
-#define sqliteHashFirst(H)  ((H)->first)
-#define sqliteHashNext(E)   ((E)->next)
-#define sqliteHashData(E)   ((E)->data)
+#وصف_ڪريو sqlite_Hash_پهريون(H)  ((H)->پهريون)
+#وصف_ڪريو sqlite_Hash_ايندڙ(E)   ((E)->ايندڙ)
+#وصف_ڪريو sqlite_Hash_معلومات(E)   ((E)->معلومات)
 /* #define sqliteHashKey(E)    ((E)->pKey) // NOT USED */
 /* #define sqliteHashKeysize(E) ((E)->nKey)  // NOT USED */
 
 /*
 ** Number of entries in a hash table
 */
-#define sqliteHashCount(H)  ((H)->count)
+#وصف_ڪريو sqlite_Hash_ڳڻپ(H)  ((H)->ڳڻپ)
 
-#endif /* SQLITE_HASH_H */
+#جيڪڏهن_پورو /* SQLITE_HASH_H */

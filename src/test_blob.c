@@ -11,19 +11,19 @@
 *************************************************************************
 **
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#ifndef SQLITE_OMIT_INCRBLOB
+#ضمن "sqliteInt.h"
+#ضمن "tclsqlite.h"
+#ضمن <stdlib.h>
+#ضمن <string.h>
+#ضمن <assert.h>
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_INCRBLOB
 
 /* These functions are implemented in main.c. */
-extern const char *sqlite3ErrName(int);
+خارجي ثابت حرف *sqlite3ErrName(صحيح);
 
 /* From test1.c: */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern void *sqlite3TestTextToPtr(const char *z);
+خارجي صحيح get_Db_اشارو(Tcl_Interp *interp, ثابت حرف *zA, sqlite3 **ppDb);
+خارجي فراغ *sqlite3_Test_متن_منزل_Ptr(ثابت حرف *z);
 
 /*
 ** Attempt to extract a blob handle (type sqlite3_blob*) from the Tcl
@@ -37,46 +37,46 @@ extern void *sqlite3TestTextToPtr(const char *z);
 ** command (see tclsqlite.c). Otherwise, it is assumed to be a pointer 
 ** encoded using the ptrToText() routine or similar.
 */
-static int blobHandleFromObj(
+ساكن صحيح blobHandleFromObj(
   Tcl_Interp *interp, 
   Tcl_Obj *pObj,
   sqlite3_blob **ppBlob
 ){
-  char *z;
-  Tcl_Size n;
+  حرف *z;
+  Tcl_سائيز n;
 
   z = Tcl_GetStringFromObj(pObj, &n);
-  if( n==0 ){
+  إذا( n==0 ){
     *ppBlob = 0;
-  }else if( n>9 && 0==memcmp("incrblob_", z, 9) ){
-    int notUsed;
+  }وإلا إذا( n>9 && 0==memcmp("incrblob_", z, 9) ){
+    صحيح not_استعمال_ٿيل;
     Tcl_Channel channel;
-    ClientData instanceData;
+    Client_معلومات instance_معلومات;
     
-    channel = Tcl_GetChannel(interp, z, &notUsed);
-    if( !channel ) return TCL_ERROR;
+    channel = Tcl_GetChannel(interp, z, &not_استعمال_ٿيل);
+    إذا( !channel ) أرجع TCL_ERROR;
 
     Tcl_Flush(channel);
     Tcl_Seek(channel, 0, SEEK_SET);
 
-    instanceData = Tcl_GetChannelInstanceData(channel);
-    *ppBlob = *((sqlite3_blob **)instanceData);
-  }else{
-    *ppBlob = (sqlite3_blob*)sqlite3TestTextToPtr(z);
+    instance_معلومات = Tcl_Get_Channel_Instance_معلومات(channel);
+    *ppBlob = *((sqlite3_blob **)instance_معلومات);
+  }وإلا{
+    *ppBlob = (sqlite3_blob*)sqlite3_Test_متن_منزل_Ptr(z);
   }
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
 ** Like Tcl_GetString(), except that if the string is 0 bytes in size, a
 ** NULL Pointer is returned.
 */
-static char *blobStringFromObj(Tcl_Obj *pObj){
-  Tcl_Size n;
-  char *z;
+ساكن حرف *blobStringFromObj(Tcl_Obj *pObj){
+  Tcl_سائيز n;
+  حرف *z;
   z = Tcl_GetStringFromObj(pObj, &n);
-  return (n ? z : 0);
+  أرجع (n ? z : 0);
 }
 
 /*
@@ -84,104 +84,104 @@ static char *blobStringFromObj(Tcl_Obj *pObj){
 **
 ** Tcl test harness for the sqlite3_blob_open() function.
 */
-static int SQLITE_TCLAPI test_blob_open(
-  ClientData clientData,          /* Not used */
+ساكن صحيح SQLITE_TCLAPI test_blob_open(
+  Client_معلومات client_معلومات,          /* Not used */
   Tcl_Interp *interp,             /* Calling TCL interpreter */
-  int objc,                       /* Number of arguments */
+  صحيح objc,                       /* Number of arguments */
   Tcl_Obj *CONST objv[]           /* Command arguments */
 ){
   sqlite3 *db;
-  const char *zDb;
-  const char *zTable;
-  const char *zColumn;
+  ثابت حرف *zDb;
+  ثابت حرف *z_جدول;
+  ثابت حرف *z_ڪالم;
   Tcl_WideInt iRowid;
-  int flags;
-  const char *zVarname;
-  Tcl_Size nVarname;
+  صحيح flags;
+  ثابت حرف *zVarname;
+  Tcl_سائيز nVarname;
 
   sqlite3_blob *pBlob = (sqlite3_blob*)&flags;   /* Non-zero initialization */
-  int rc;
+  صحيح rc;
 
-  if( objc!=8 ){
-    const char *zUsage = "DB DATABASE TABLE COLUMN ROWID FLAGS VARNAME";
-    Tcl_WrongNumArgs(interp, 1, objv, zUsage);
-    return TCL_ERROR;
+  إذا( objc!=8 ){
+    ثابت حرف *zUsage = "DB DATABASE TABLE COLUMN ROWID FLAGS VARNAME";
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, zUsage);
+    أرجع TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  إذا( get_Db_اشارو(interp, Tcl_GetString(objv[1]), &db) ) أرجع TCL_ERROR;
   zDb = Tcl_GetString(objv[2]);
-  zTable = blobStringFromObj(objv[3]);
-  zColumn = Tcl_GetString(objv[4]);
-  if( Tcl_GetWideIntFromObj(interp, objv[5], &iRowid) ) return TCL_ERROR;
-  if( Tcl_GetIntFromObj(interp, objv[6], &flags) ) return TCL_ERROR;
+  z_جدول = blobStringFromObj(objv[3]);
+  z_ڪالم = Tcl_GetString(objv[4]);
+  إذا( Tcl_GetWideIntFromObj(interp, objv[5], &iRowid) ) أرجع TCL_ERROR;
+  إذا( Tcl_GetIntFromObj(interp, objv[6], &flags) ) أرجع TCL_ERROR;
   zVarname = Tcl_GetStringFromObj(objv[7], &nVarname);
 
-  if( nVarname>0 ){
-    rc = sqlite3_blob_open(db, zDb, zTable, zColumn, iRowid, flags, &pBlob);
-    Tcl_SetVar(interp, zVarname, sqlite3TestPtrToText(pBlob), 0);
-  }else{
-    rc = sqlite3_blob_open(db, zDb, zTable, zColumn, iRowid, flags, 0);
+  إذا( nVarname>0 ){
+    rc = sqlite3_blob_open(db, zDb, z_جدول, z_ڪالم, iRowid, flags, &pBlob);
+    Tcl_سيٽ_Var(interp, zVarname, sqlite3_Test_Ptr_منزل_متن(pBlob), 0);
+  }وإلا{
+    rc = sqlite3_blob_open(db, zDb, z_جدول, z_ڪالم, iRowid, flags, 0);
   }
 
-  if( rc==SQLITE_OK ){
-    Tcl_ResetResult(interp);
-  }else{
-    Tcl_SetResult(interp, (char*)sqlite3ErrName(rc), TCL_VOLATILE);
-    return TCL_ERROR;
+  إذا( rc==SQLITE_OK ){
+    Tcl_Reset_نتيجو(interp);
+  }وإلا{
+    Tcl_سيٽ_نتيجو(interp, (حرف*)sqlite3ErrName(rc), TCL_VOLATILE);
+    أرجع TCL_ERROR;
   }
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 
 /*
 ** sqlite3_blob_close  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_close(
-  ClientData clientData, /* Not used */
+ساكن صحيح SQLITE_TCLAPI test_blob_close(
+  Client_معلومات client_معلومات, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحيح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int rc;
+  صحيح rc;
   
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "HANDLE");
+    أرجع TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
+  إذا( blobHandleFromObj(interp, objv[1], &pBlob) ) أرجع TCL_ERROR;
   rc = sqlite3_blob_close(pBlob);
 
-  if( rc ){
-    Tcl_SetResult(interp, (char*)sqlite3ErrName(rc), TCL_VOLATILE);
-  }else{
-    Tcl_ResetResult(interp);
+  إذا( rc ){
+    Tcl_سيٽ_نتيجو(interp, (حرف*)sqlite3ErrName(rc), TCL_VOLATILE);
+  }وإلا{
+    Tcl_Reset_نتيجو(interp);
   }
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
 ** sqlite3_blob_bytes  HANDLE
 */
-static int SQLITE_TCLAPI test_blob_bytes(
-  ClientData clientData, /* Not used */
+ساكن صحيح SQLITE_TCLAPI test_blob_بائيٽون(
+  Client_معلومات client_معلومات, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحيح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int nByte;
+  صحيح nByte;
   
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE");
-    return TCL_ERROR;
+  إذا( objc!=2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "HANDLE");
+    أرجع TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
-  nByte = sqlite3_blob_bytes(pBlob);
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(nByte));
+  إذا( blobHandleFromObj(interp, objv[1], &pBlob) ) أرجع TCL_ERROR;
+  nByte = sqlite3_blob_بائيٽون(pBlob);
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewIntObj(nByte));
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
 /*
@@ -199,46 +199,46 @@ static int SQLITE_TCLAPI test_blob_bytes(
 **   text representation of the returned error code (i.e. "SQLITE_NOMEM")
 **   and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_read(
-  ClientData clientData, /* Not used */
+ساكن صحيح SQLITE_TCLAPI test_blob_read(
+  Client_معلومات client_معلومات, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحيح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int nByte;
-  int iOffset;
-  unsigned char *zBuf = 0;
-  int rc;
+  صحيح nByte;
+  صحيح i_وٿي;
+  بنانشان حرف *zBuf = 0;
+  صحيح rc;
   
-  if( objc!=4 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "CHANNEL OFFSET N");
-    return TCL_ERROR;
+  إذا( objc!=4 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "CHANNEL OFFSET N");
+    أرجع TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
-  if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset)
+  إذا( blobHandleFromObj(interp, objv[1], &pBlob) ) أرجع TCL_ERROR;
+  إذا( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &i_وٿي)
    || TCL_OK!=Tcl_GetIntFromObj(interp, objv[3], &nByte)
   ){ 
-    return TCL_ERROR;
+    أرجع TCL_ERROR;
   }
 
-  if( nByte>0 ){
-    zBuf = (unsigned char *)Tcl_AttemptAlloc(nByte);
-    if( zBuf==0 ){
-      Tcl_AppendResult(interp, "out of memory in " __FILE__, NULL);
-      return TCL_ERROR;
+  إذا( nByte>0 ){
+    zBuf = (بنانشان حرف *)Tcl_AttemptAlloc(nByte);
+    إذا( zBuf==0 ){
+      Tcl_Append_نتيجو(interp, "out of memory in " __FILE__, عدم);
+      أرجع TCL_ERROR;
     }
   }
-  rc = sqlite3_blob_read(pBlob, zBuf, nByte, iOffset);
-  if( rc==SQLITE_OK ){
-    Tcl_SetObjResult(interp, Tcl_NewByteArrayObj(zBuf, nByte));
-  }else{
-    Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  rc = sqlite3_blob_read(pBlob, zBuf, nByte, i_وٿي);
+  إذا( rc==SQLITE_OK ){
+    Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewByteArrayObj(zBuf, nByte));
+  }وإلا{
+    Tcl_سيٽ_نتيجو(interp, (حرف *)sqlite3ErrName(rc), TCL_VOLATILE);
   }
-  Tcl_Free((char *)zBuf);
+  Tcl_Free((حرف *)zBuf);
 
-  return (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
+  أرجع (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
 }
 
 /*
@@ -255,63 +255,63 @@ static int SQLITE_TCLAPI test_blob_read(
 **   result is set to the text representation of the returned error code 
 **   (i.e. "SQLITE_NOMEM") and a Tcl exception is thrown.
 */
-static int SQLITE_TCLAPI test_blob_write(
-  ClientData clientData, /* Not used */
+ساكن صحيح SQLITE_TCLAPI test_blob_write(
+  Client_معلومات client_معلومات, /* Not used */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحيح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3_blob *pBlob;
-  int iOffset;
-  int rc;
+  صحيح i_وٿي;
+  صحيح rc;
 
-  unsigned char *zBuf;
-  Tcl_Size nBuf;
-  int n;
+  بنانشان حرف *zBuf;
+  Tcl_سائيز nBuf;
+  صحيح n;
   
-  if( objc!=4 && objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "HANDLE OFFSET DATA ?NDATA?");
-    return TCL_ERROR;
+  إذا( objc!=4 && objc!=5 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "HANDLE OFFSET DATA ?NDATA?");
+    أرجع TCL_ERROR;
   }
 
-  if( blobHandleFromObj(interp, objv[1], &pBlob) ) return TCL_ERROR;
-  if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iOffset) ){ 
-    return TCL_ERROR;
+  إذا( blobHandleFromObj(interp, objv[1], &pBlob) ) أرجع TCL_ERROR;
+  إذا( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &i_وٿي) ){ 
+    أرجع TCL_ERROR;
   }
 
   zBuf = Tcl_GetByteArrayFromObj(objv[3], &nBuf);
-  n = (int)(nBuf & 0x7fffffff);
-  if( objc==5 && Tcl_GetIntFromObj(interp, objv[4], &n) ){
-    return TCL_ERROR;
+  n = (صحيح)(nBuf & 0x7fffffff);
+  إذا( objc==5 && Tcl_GetIntFromObj(interp, objv[4], &n) ){
+    أرجع TCL_ERROR;
   }
-  rc = sqlite3_blob_write(pBlob, zBuf, n, iOffset);
-  if( rc!=SQLITE_OK ){
-    Tcl_SetResult(interp, (char *)sqlite3ErrName(rc), TCL_VOLATILE);
+  rc = sqlite3_blob_write(pBlob, zBuf, n, i_وٿي);
+  إذا( rc!=SQLITE_OK ){
+    Tcl_سيٽ_نتيجو(interp, (حرف *)sqlite3ErrName(rc), TCL_VOLATILE);
   }
 
-  return (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
+  أرجع (rc==SQLITE_OK ? TCL_OK : TCL_ERROR);
 }
-#endif /* SQLITE_OMIT_INCRBLOB */
+#جيڪڏهن_پورو /* SQLITE_OMIT_INCRBLOB */
 
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetest_blob_Init(Tcl_Interp *interp){
-#ifndef SQLITE_OMIT_INCRBLOB
-  static struct {
-     char *zName;
+صحيح Sqlitetest_blob_Init(Tcl_Interp *interp){
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_INCRBLOB
+  ساكن بنية {
+     حرف *zName;
      Tcl_ObjCmdProc *xProc;
   } aObjCmd[] = {
      { "sqlite3_blob_open",            test_blob_open        },
      { "sqlite3_blob_close",           test_blob_close       },
-     { "sqlite3_blob_bytes",           test_blob_bytes       },
+     { "sqlite3_blob_bytes",           test_blob_بائيٽون       },
      { "sqlite3_blob_read",            test_blob_read        },
      { "sqlite3_blob_write",           test_blob_write       },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  صحيح i;
+  لكل(i=0; i<حجم(aObjCmd)/حجم(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, aObjCmd[i].xProc, 0, 0);
   }
-#endif /* SQLITE_OMIT_INCRBLOB */
-  return TCL_OK;
+#جيڪڏهن_پورو /* SQLITE_OMIT_INCRBLOB */
+  أرجع TCL_OK;
 }

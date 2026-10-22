@@ -16,16 +16,16 @@
 ** readability and editability.  This file contains utility routines for
 ** analyzing Expr objects in the WHERE clause.
 */
-#include "sqliteInt.h"
-#include "whereInt.h"
+#ضمن "sqliteInt.h"
+#ضمن "whereInt.h"
 
 /* Forward declarations */
-static void exprAnalyze(SrcList*, WhereClause*, int);
+ساكن فراغ اظهار_Analyze(SrcList*, WhereClause*, صحيح);
 
 /*
 ** Deallocate all memory associated with a WhereOrInfo object.
 */
-static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
+ساكن فراغ whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -33,7 +33,7 @@ static void whereOrInfoDelete(sqlite3 *db, WhereOrInfo *p){
 /*
 ** Deallocate all memory associated with a WhereAndInfo object.
 */
-static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
+ساكن فراغ whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
   sqlite3WhereClauseClear(&p->wc);
   sqlite3DbFree(db, p);
 }
@@ -57,38 +57,38 @@ static void whereAndInfoDelete(sqlite3 *db, WhereAndInfo *p){
 ** calling this routine.  Such pointers may be reinitialized by referencing
 ** the pWC->a[] array.
 */
-static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
-  WhereTerm *pTerm;
-  int idx;
-  testcase( wtFlags & TERM_VIRTUAL );
-  if( pWC->nTerm>=pWC->nSlot ){
-    WhereTerm *pOld = pWC->a;
+ساكن صحيح where_Clause_وجهو(WhereClause *pWC, اظهار *p, u16 wtFlags){
+  Where_رڪن *p_رڪن;
+  صحيح idx;
+  testcase( wtFlags & رڪن_VIRTUAL );
+  إذا( pWC->n_رڪن>=pWC->n_جڳهه ){
+    Where_رڪن *pOld = pWC->a;
     sqlite3 *db = pWC->pWInfo->pParse->db;
-    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, sizeof(pWC->a[0])*pWC->nSlot*2 );
-    if( pWC->a==0 ){
-      if( wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, p);
+    pWC->a = sqlite3WhereMalloc(pWC->pWInfo, حجم(pWC->a[0])*pWC->n_جڳهه*2 );
+    إذا( pWC->a==0 ){
+      إذا( wtFlags & رڪن_DYNAMIC ){
+        sqlite3_اظهار_Delete(db, p);
       }
       pWC->a = pOld;
-      return 0;
+      أرجع 0;
     }
-    memcpy(pWC->a, pOld, sizeof(pWC->a[0])*pWC->nTerm);
-    pWC->nSlot = pWC->nSlot*2;
+    يادگيري_نقل(pWC->a, pOld, حجم(pWC->a[0])*pWC->n_رڪن);
+    pWC->n_جڳهه = pWC->n_جڳهه*2;
   }
-  pTerm = &pWC->a[idx = pWC->nTerm++];
-  if( (wtFlags & TERM_VIRTUAL)==0 ) pWC->nBase = pWC->nTerm;
-  if( p && ExprHasProperty(p, EP_Unlikely) ){
-    pTerm->truthProb = sqlite3LogEst(p->iTable) - 270;
-  }else{
-    pTerm->truthProb = 1;
+  p_رڪن = &pWC->a[idx = pWC->n_رڪن++];
+  إذا( (wtFlags & رڪن_VIRTUAL)==0 ) pWC->n_بنياد = pWC->n_رڪن;
+  إذا( p && اظهار_Has_Property(p, EP_Unlikely) ){
+    p_رڪن->truthProb = sqlite3LogEst(p->i_جدول) - 270;
+  }وإلا{
+    p_رڪن->truthProb = 1;
   }
-  pTerm->pExpr = sqlite3ExprSkipCollateAndLikely(p);
-  pTerm->wtFlags = wtFlags;
-  pTerm->pWC = pWC;
-  pTerm->iParent = -1;
-  memset(&pTerm->eOperator, 0,
-         sizeof(WhereTerm) - offsetof(WhereTerm,eOperator));
-  return idx;
+  p_رڪن->p_اظهار = sqlite3_اظهار_Skip_Collate_And_Likely(p);
+  p_رڪن->wtFlags = wtFlags;
+  p_رڪن->pWC = pWC;
+  p_رڪن->i_والد = -1;
+  memset(&p_رڪن->eOperator, 0,
+         حجم(Where_رڪن) - offsetof(Where_رڪن,eOperator));
+  أرجع idx;
 }
 
 /*
@@ -96,73 +96,73 @@ static int whereClauseInsert(WhereClause *pWC, Expr *p, u16 wtFlags){
 ** allowed for an indexable WHERE clause term.  The allowed operators are
 ** "=", "<", ">", "<=", ">=", "IN", "IS", and "IS NULL"
 */
-static int allowedOp(int op){
-  assert( TK_GT>TK_EQ && TK_GT<TK_GE );
-  assert( TK_LT>TK_EQ && TK_LT<TK_GE );
-  assert( TK_LE>TK_EQ && TK_LE<TK_GE );
-  assert( TK_GE==TK_EQ+4 );
-  assert( TK_IN<TK_EQ );
-  assert( TK_IS<TK_EQ );
-  assert( TK_ISNULL<TK_EQ );
-  if( op>TK_GE ) return 0;
-  if( op>=TK_EQ ) return 1;
-  return op==TK_IN || op==TK_ISNULL || op==TK_IS;
+ساكن صحيح allowedOp(صحيح op){
+  أكد( TK_GT>TK_EQ && TK_GT<TK_GE );
+  أكد( TK_LT>TK_EQ && TK_LT<TK_GE );
+  أكد( TK_LE>TK_EQ && TK_LE<TK_GE );
+  أكد( TK_GE==TK_EQ+4 );
+  أكد( TK_اندريون<TK_EQ );
+  أكد( TK_IS<TK_EQ );
+  أكد( TK_ISNULL<TK_EQ );
+  إذا( op>TK_GE ) أرجع 0;
+  إذا( op>=TK_EQ ) أرجع 1;
+  أرجع op==TK_اندريون || op==TK_ISNULL || op==TK_IS;
 }
 
 /*
 ** Commute a comparison operator.  Expressions of the form "X op Y"
 ** are converted into "Y op X".
 */
-static u16 exprCommute(Parse *pParse, Expr *pExpr){
-  if( pExpr->pLeft->op==TK_VECTOR
-   || pExpr->pRight->op==TK_VECTOR
-   || sqlite3BinaryCompareCollSeq(pParse, pExpr->pLeft, pExpr->pRight) !=
-      sqlite3BinaryCompareCollSeq(pParse, pExpr->pRight, pExpr->pLeft)
+ساكن u16 اظهار_Commute(Parse *pParse, اظهار *p_اظهار){
+  إذا( p_اظهار->p_کاٻو->op==TK_ويڪٽر
+   || p_اظهار->p_ساڄو->op==TK_ويڪٽر
+   || sqlite3_ٻٽو_Compare_Coll_Seq(pParse, p_اظهار->p_کاٻو, p_اظهار->p_ساڄو) !=
+      sqlite3_ٻٽو_Compare_Coll_Seq(pParse, p_اظهار->p_ساڄو, p_اظهار->p_کاٻو)
   ){
-    pExpr->flags ^= EP_Commuted;
+    p_اظهار->flags ^= EP_Commuted;
   }
-  SWAP(Expr*,pExpr->pRight,pExpr->pLeft);
-  if( pExpr->op>=TK_GT ){
-    assert( TK_LT==TK_GT+2 );
-    assert( TK_GE==TK_LE+2 );
-    assert( TK_GT>TK_EQ );
-    assert( TK_GT<TK_LE );
-    assert( pExpr->op>=TK_GT && pExpr->op<=TK_GE );
-    pExpr->op = ((pExpr->op-TK_GT)^2)+TK_GT;
+  مٽا_سٽا(اظهار*,p_اظهار->p_ساڄو,p_اظهار->p_کاٻو);
+  إذا( p_اظهار->op>=TK_GT ){
+    أكد( TK_LT==TK_GT+2 );
+    أكد( TK_GE==TK_LE+2 );
+    أكد( TK_GT>TK_EQ );
+    أكد( TK_GT<TK_LE );
+    أكد( p_اظهار->op>=TK_GT && p_اظهار->op<=TK_GE );
+    p_اظهار->op = ((p_اظهار->op-TK_GT)^2)+TK_GT;
   }
-  return 0;
+  أرجع 0;
 }
 
 /*
 ** Translate from TK_xx operator to WO_xx bitmask.
 */
-static u16 operatorMask(int op){
+ساكن u16 operator_نقاب(صحيح op){
   u16 c;
-  assert( allowedOp(op) );
-  if( op>=TK_EQ ){
-    assert( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
+  أكد( allowedOp(op) );
+  إذا( op>=TK_EQ ){
+    أكد( (WO_EQ<<(op-TK_EQ)) < 0x7fff );
     c = (u16)(WO_EQ<<(op-TK_EQ));
-  }else if( op==TK_IN ){
-    c = WO_IN;
-  }else if( op==TK_ISNULL ){
+  }وإلا إذا( op==TK_اندريون ){
+    c = WO_اندريون;
+  }وإلا إذا( op==TK_ISNULL ){
     c = WO_ISNULL;
-  }else{
-    assert( op==TK_IS );
+  }وإلا{
+    أكد( op==TK_IS );
     c = WO_IS;
   }
-  assert( op!=TK_ISNULL || c==WO_ISNULL );
-  assert( op!=TK_IN || c==WO_IN );
-  assert( op!=TK_EQ || c==WO_EQ );
-  assert( op!=TK_LT || c==WO_LT );
-  assert( op!=TK_LE || c==WO_LE );
-  assert( op!=TK_GT || c==WO_GT );
-  assert( op!=TK_GE || c==WO_GE );
-  assert( op!=TK_IS || c==WO_IS );
-  return c;
+  أكد( op!=TK_ISNULL || c==WO_ISNULL );
+  أكد( op!=TK_اندريون || c==WO_اندريون );
+  أكد( op!=TK_EQ || c==WO_EQ );
+  أكد( op!=TK_LT || c==WO_LT );
+  أكد( op!=TK_LE || c==WO_LE );
+  أكد( op!=TK_GT || c==WO_GT );
+  أكد( op!=TK_GE || c==WO_GE );
+  أكد( op!=TK_IS || c==WO_IS );
+  أرجع c;
 }
 
 
-#ifndef SQLITE_OMIT_LIKE_OPTIMIZATION
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_LIKE_OPTIMIZATION
 /*
 ** Check to see if the given expression is a LIKE or GLOB operator that
 ** can be optimized using inequality constraints.  Return TRUE if it is
@@ -175,50 +175,50 @@ static u16 operatorMask(int op){
 ** collating sequence for the column on the LHS must be appropriate for
 ** the operator.
 */
-static int isLikeOrGlob(
+ساكن صحيح isLikeOrGlob(
   Parse *pParse,    /* Parsing and code generating context */
-  Expr *pExpr,      /* Test this expression */
-  Expr **ppPrefix,  /* Pointer to TK_STRING expression with pattern prefix */
-  int *pisComplete, /* True if the only wildcard is % in the last character */
-  int *pnoCase      /* True if uppercase is equivalent to lowercase */
+  اظهار *p_اظهار,      /* Test this expression */
+  اظهار **pp_اڳياڙي,  /* Pointer to TK_STRING expression with pattern prefix */
+  صحيح *pisComplete, /* True if the only wildcard is % in the last character */
+  صحيح *pnoCase      /* True if uppercase is equivalent to lowercase */
 ){
-  const u8 *z = 0;           /* String on RHS of LIKE operator */
-  Expr *pRight, *pLeft;      /* Right and left size of LIKE operator */
-  ExprList *pList;           /* List of operands to the LIKE operator */
+  ثابت u8 *z = 0;           /* String on RHS of LIKE operator */
+  اظهار *p_ساڄو, *p_کاٻو;      /* Right and left size of LIKE operator */
+  اظهار_List *pList;           /* List of operands to the LIKE operator */
   u8 c;                      /* One character in z[] */
-  int cnt;                   /* Number of non-wildcard prefix characters */
+  صحيح cnt;                   /* Number of non-wildcard prefix characters */
   u8 wc[4];                  /* Wildcard characters */
   sqlite3 *db = pParse->db;  /* Database connection */
-  sqlite3_value *pVal = 0;
-  int op;                    /* Opcode of pRight */
-  int rc;                    /* Result code to return */
+  sqlite3_قدر *pVal = 0;
+  صحيح op;                    /* Opcode of pRight */
+  صحيح rc;                    /* Result code to return */
 
-  if( !sqlite3IsLikeFunction(db, pExpr, pnoCase, (char*)wc) ){
-    return 0;
+  إذا( !sqlite3IsLikeFunction(db, p_اظهار, pnoCase, (حرف*)wc) ){
+    أرجع 0;
   }
-#ifdef SQLITE_EBCDIC
-  if( *pnoCase ) return 0;
-#endif
-  assert( ExprUseXList(pExpr) );
-  pList = pExpr->x.pList;
-  pLeft = pList->a[1].pExpr;
+#جيڪڏهن_وصف_ٿيل SQLITE_EBCDIC
+  إذا( *pnoCase ) أرجع 0;
+#جيڪڏهن_پورو
+  أكد( اظهار_Use_XList(p_اظهار) );
+  pList = p_اظهار->x.pList;
+  p_کاٻو = pList->a[1].p_اظهار;
 
-  pRight = sqlite3ExprSkipCollate(pList->a[0].pExpr);
-  op = pRight->op;
-  if( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
+  p_ساڄو = sqlite3_اظهار_Skip_Collate(pList->a[0].p_اظهار);
+  op = p_ساڄو->op;
+  إذا( op==TK_VARIABLE && (db->flags & SQLITE_EnableQPSG)==0 ){
     Vdbe *pReprepare = pParse->pReprepare;
-    int iCol = pRight->iColumn;
-    pVal = sqlite3VdbeGetBoundValue(pReprepare, iCol, SQLITE_AFF_BLOB);
-    if( pVal && sqlite3_value_type(pVal)==SQLITE_TEXT ){
-      z = sqlite3_value_text(pVal);
+    صحيح i_کانو = p_ساڄو->i_ڪالم;
+    pVal = sqlite3_Vdbe_Get_Bound_قدر(pReprepare, i_کانو, SQLITE_AFF_BLOB);
+    إذا( pVal && sqlite3_قدر_type(pVal)==SQLITE_متن ){
+      z = sqlite3_قدر_متن(pVal);
     }
-    sqlite3VdbeReprepareOnBind(pParse->pVdbe, iCol, 0);
-    assert( pRight->op==TK_VARIABLE || pRight->op==TK_REGISTER );
-  }else if( op==TK_STRING ){
-    assert( !ExprHasProperty(pRight, EP_IntValue) );
-     z = (u8*)pRight->u.zToken;
+    sqlite3VdbeReprepareOnBind(pParse->pVdbe, i_کانو, 0);
+    أكد( p_ساڄو->op==TK_VARIABLE || p_ساڄو->op==TK_رجسٽر );
+  }وإلا إذا( op==TK_STRING ){
+    أكد( !اظهار_Has_Property(p_ساڄو, EP_Int_قدر) );
+     z = (u8*)p_ساڄو->u.zToken;
   }
-  if( z ){
+  إذا( z ){
     /* Count the number of prefix bytes prior to the first wildcard,
     ** U+fffd character, or malformed utf-8. If the underlying database
     ** has a UTF16LE encoding, then only consider ASCII characters.  Note that
@@ -226,19 +226,19 @@ static int isLikeOrGlob(
     ** code, but the database engine itself might be processing content using a
     ** different encoding. */
     cnt = 0;
-    while( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
+    طالما( (c=z[cnt])!=0 && c!=wc[0] && c!=wc[1] && c!=wc[2] ){
       cnt++;
-      if( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
+      إذا( c==wc[3] && z[cnt]>0 && z[cnt]<0x80 ){
         cnt++;
-      }else if( c>=0x80 ){
-        const u8 *z2 = z+cnt-1;
-        if( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
+      }وإلا إذا( c>=0x80 ){
+        ثابت u8 *z2 = z+cnt-1;
+        إذا( c==0xff || sqlite3Utf8Read(&z2)==0xfffd  /* bad utf-8 */
          || ENC(db)==SQLITE_UTF16LE 
         ){
           cnt--;
-          break;
-        }else{
-          cnt = (int)(z2-z);
+          اكسر;
+        }وإلا{
+          cnt = (صحيح)(z2-z);
         }
       }
     }
@@ -251,26 +251,26 @@ static int isLikeOrGlob(
     ** range search. The third is because the caller assumes that the pattern
     ** consists of at least one character after all escapes have been
     ** removed.  */
-    if( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
-      Expr *pPrefix;
+    إذا( (cnt>1 || (cnt>0 && z[0]!=wc[3])) && ALWAYS(255!=(u8)z[cnt-1]) ){
+      اظهار *p_اڳياڙي;
 
       /* A "complete" match if the pattern ends with "*" or "%" */
       *pisComplete = c==wc[0] && z[cnt+1]==0 && ENC(db)!=SQLITE_UTF16LE;
 
       /* Get the pattern prefix.  Remove all escapes from the prefix. */
-      pPrefix = sqlite3Expr(db, TK_STRING, (char*)z);
-      if( pPrefix ){
-        int iFrom, iTo;
-        char *zNew;
-        assert( !ExprHasProperty(pPrefix, EP_IntValue) );
-        zNew = pPrefix->u.zToken;
+      p_اڳياڙي = sqlite3_اظهار(db, TK_STRING, (حرف*)z);
+      إذا( p_اڳياڙي ){
+        صحيح iFrom, i_منزل;
+        حرف *zNew;
+        أكد( !اظهار_Has_Property(p_اڳياڙي, EP_Int_قدر) );
+        zNew = p_اڳياڙي->u.zToken;
         zNew[cnt] = 0;
-        for(iFrom=iTo=0; iFrom<cnt; iFrom++){
-          if( zNew[iFrom]==wc[3] ) iFrom++;
-          zNew[iTo++] = zNew[iFrom];
+        لكل(iFrom=i_منزل=0; iFrom<cnt; iFrom++){
+          إذا( zNew[iFrom]==wc[3] ) iFrom++;
+          zNew[i_منزل++] = zNew[iFrom];
         }
-        zNew[iTo] = 0;
-        assert( iTo>0 );
+        zNew[i_منزل] = 0;
+        أكد( i_منزل>0 );
 
         /* If the LHS is not an ordinary column with TEXT affinity, then the
         ** pattern prefix boundaries (both the start and end boundaries) must
@@ -285,63 +285,63 @@ static int isLikeOrGlob(
         **    2019-06-14 https://sqlite.org/src/info/ce8717f0885af975
         **    2019-09-03 https://sqlite.org/src/info/0f0428096f17252a
         */
-        if( pLeft->op!=TK_COLUMN
-         || sqlite3ExprAffinity(pLeft)!=SQLITE_AFF_TEXT
-         || (ALWAYS( ExprUseYTab(pLeft) )
-             && ALWAYS(pLeft->y.pTab)
-             && IsVirtual(pLeft->y.pTab))  /* Might be numeric */
+        إذا( p_کاٻو->op!=TK_ڪالم
+         || sqlite3_اظهار_Affinity(p_کاٻو)!=SQLITE_AFF_متن
+         || (ALWAYS( اظهار_Use_YTab(p_کاٻو) )
+             && ALWAYS(p_کاٻو->y.pTab)
+             && IsVirtual(p_کاٻو->y.pTab))  /* Might be numeric */
         ){
-          int isNum;
-          double rDummy;
-          assert( zNew[iTo]==0 );
-          isNum = sqlite3AtoF(zNew, &rDummy);
-          if( isNum<=0 ){
-            if( iTo==1 && zNew[0]=='-' ){
-              isNum = +1;
-            }else{
-              zNew[iTo-1]++;
-              isNum = sqlite3AtoF(zNew, &rDummy);
-              zNew[iTo-1]--;
+          صحيح is_انگ;
+          مزدوج rDummy;
+          أكد( zNew[i_منزل]==0 );
+          is_انگ = sqlite3AtoF(zNew, &rDummy);
+          إذا( is_انگ<=0 ){
+            إذا( i_منزل==1 && zNew[0]=='-' ){
+              is_انگ = +1;
+            }وإلا{
+              zNew[i_منزل-1]++;
+              is_انگ = sqlite3AtoF(zNew, &rDummy);
+              zNew[i_منزل-1]--;
             }
           }
-          if( isNum>0 ){
-            sqlite3ExprDelete(db, pPrefix);
-            sqlite3ValueFree(pVal);
-            return 0;
+          إذا( is_انگ>0 ){
+            sqlite3_اظهار_Delete(db, p_اڳياڙي);
+            sqlite3_قدر_Free(pVal);
+            أرجع 0;
           }
         }
       }
-      *ppPrefix = pPrefix;
+      *pp_اڳياڙي = p_اڳياڙي;
 
       /* If the RHS pattern is a bound parameter, make arrangements to
       ** reprepare the statement when that parameter is rebound */
-      if( op==TK_VARIABLE ){
+      إذا( op==TK_VARIABLE ){
         Vdbe *v = pParse->pVdbe;
-        sqlite3VdbeReprepareOnBind(v, pRight->iColumn, 0);
-        assert( !ExprHasProperty(pRight, EP_IntValue) );
-        if( *pisComplete && pRight->u.zToken[1] ){
+        sqlite3VdbeReprepareOnBind(v, p_ساڄو->i_ڪالم, 0);
+        أكد( !اظهار_Has_Property(p_ساڄو, EP_Int_قدر) );
+        إذا( *pisComplete && p_ساڄو->u.zToken[1] ){
           /* If the rhs of the LIKE expression is a variable, and the current
           ** value of the variable means there is no need to invoke the LIKE
           ** function, then no OP_Variable will be added to the program.
           ** This causes problems for the sqlite3_bind_parameter_name()
           ** API. To work around them, add a dummy OP_Variable here.
           */
-          int r1 = sqlite3GetTempReg(pParse);
-          sqlite3ExprCodeTarget(pParse, pRight, r1);
+          صحيح r1 = sqlite3_Get_عارضي_Reg(pParse);
+          sqlite3_اظهار_ڪوڊ_هدف(pParse, p_ساڄو, r1);
           sqlite3VdbeChangeP3(v, sqlite3VdbeCurrentAddr(v)-1, 0);
-          sqlite3ReleaseTempReg(pParse, r1);
+          sqlite3_Release_عارضي_Reg(pParse, r1);
         }
       }
-    }else{
+    }وإلا{
       z = 0;
     }
   }
 
   rc = (z!=0);
-  sqlite3ValueFree(pVal);
-  return rc;
+  sqlite3_قدر_Free(pVal);
+  أرجع rc;
 }
-#endif /* SQLITE_OMIT_LIKE_OPTIMIZATION */
+#جيڪڏهن_پورو /* SQLITE_OMIT_LIKE_OPTIMIZATION */
 
 /*
 ** If pExpr is one of "like", "glob", "match", or "regexp", then
@@ -350,29 +350,29 @@ static int isLikeOrGlob(
 **
 ** pExpr is guaranteed to be a TK_FUNCTION.
 */
-int sqlite3ExprIsLikeOperator(const Expr *pExpr){
-  static const struct {
-    const char *zOp;
-    unsigned char eOp;
+صحيح sqlite3_اظهار_Is_Like_Operator(ثابت اظهار *p_اظهار){
+  ساكن ثابت بنية {
+    ثابت حرف *zOp;
+    بنانشان حرف eOp;
   } aOp[] = {
-    { "match",  SQLITE_INDEX_CONSTRAINT_MATCH },
-    { "glob",   SQLITE_INDEX_CONSTRAINT_GLOB },
-    { "like",   SQLITE_INDEX_CONSTRAINT_LIKE },
-    { "regexp", SQLITE_INDEX_CONSTRAINT_REGEXP }
+    { "match",  SQLITE_اشاريو_CONSTRAINT_ميلاپ },
+    { "glob",   SQLITE_اشاريو_CONSTRAINT_GLOB },
+    { "like",   SQLITE_اشاريو_CONSTRAINT_LIKE },
+    { "regexp", SQLITE_اشاريو_CONSTRAINT_REGEXP }
   };
-  int i;
-  assert( pExpr->op==TK_FUNCTION );
-  assert( !ExprHasProperty(pExpr, EP_IntValue) );
-  for(i=0; i<ArraySize(aOp); i++){
-    if( sqlite3StrICmp(pExpr->u.zToken, aOp[i].zOp)==0 ){
-      return aOp[i].eOp;
+  صحيح i;
+  أكد( p_اظهار->op==TK_FUNCTION );
+  أكد( !اظهار_Has_Property(p_اظهار, EP_Int_قدر) );
+  لكل(i=0; i<Array_سائيز(aOp); i++){
+    إذا( sqlite3StrICmp(p_اظهار->u.zToken, aOp[i].zOp)==0 ){
+      أرجع aOp[i].eOp;
     }
   }
-  return 0;
+  أرجع 0;
 }
 
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_VIRTUALTABLE
 /*
 ** Check to see if the pExpr expression is a form that needs to be passed
 ** to the xBestIndex method of virtual tables.  Forms of interest include:
@@ -399,22 +399,22 @@ int sqlite3ExprIsLikeOperator(const Expr *pExpr){
 **
 ** If the expression matches none of the patterns above, return 0.
 */
-static int isAuxiliaryVtabOperator(
+ساكن صحيح isAuxiliaryVtabOperator(
   sqlite3 *db,                    /* Parsing context */
-  Expr *pExpr,                    /* Test this expression */
-  unsigned char *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
-  Expr **ppLeft,                  /* Column expression to left of MATCH/op2 */
-  Expr **ppRight                  /* Expression to left of MATCH/op2 */
+  اظهار *p_اظهار,                    /* Test this expression */
+  بنانشان حرف *peOp2,           /* OUT: 0 for MATCH, or else an op2 value */
+  اظهار **pp_کاٻو,                  /* Column expression to left of MATCH/op2 */
+  اظهار **pp_ساڄو                  /* Expression to left of MATCH/op2 */
 ){
-  if( pExpr->op==TK_FUNCTION ){
-    ExprList *pList;
-    Expr *pCol;                     /* Column reference */
-    int i;
+  إذا( p_اظهار->op==TK_FUNCTION ){
+    اظهار_List *pList;
+    اظهار *p_کانو;                     /* Column reference */
+    صحيح i;
 
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    if( pList==0 || pList->nExpr!=2 ){
-      return 0;
+    أكد( اظهار_Use_XList(p_اظهار) );
+    pList = p_اظهار->x.pList;
+    إذا( pList==0 || pList->n_اظهار!=2 ){
+      أرجع 0;
     }
 
     /* Built-in operators MATCH, GLOB, LIKE, and REGEXP attach to a
@@ -424,13 +424,13 @@ static int isAuxiliaryVtabOperator(
     **       vtab_column MATCH expression
     **       MATCH(expression,vtab_column)
     */
-    pCol = pList->a[1].pExpr;
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) && (i = sqlite3ExprIsLikeOperator(pExpr))!=0 ){
+    p_کانو = pList->a[1].p_اظهار;
+    أكد( p_کانو->op!=TK_ڪالم || (اظهار_Use_YTab(p_کانو) && p_کانو->y.pTab!=0) );
+    إذا( اظهار_Is_Vtab(p_کانو) && (i = sqlite3_اظهار_Is_Like_Operator(p_اظهار))!=0 ){
       *peOp2 = i;
-      *ppRight = pList->a[0].pExpr;
-      *ppLeft = pCol;
-      return 1;
+      *pp_ساڄو = pList->a[0].p_اظهار;
+      *pp_کاٻو = p_کانو;
+      أرجع 1;
     }
 
     /* We can also match against the first column of overloaded
@@ -443,81 +443,81 @@ static int isAuxiliaryVtabOperator(
     ** names.  But for this use case, xFindFunction is expected to deal
     ** with function names in an arbitrary case.
     */
-    pCol = pList->a[0].pExpr;
-    assert( pCol->op!=TK_COLUMN || ExprUseYTab(pCol) );
-    assert( pCol->op!=TK_COLUMN || (ExprUseYTab(pCol) && pCol->y.pTab!=0) );
-    if( ExprIsVtab(pCol) ){
+    p_کانو = pList->a[0].p_اظهار;
+    أكد( p_کانو->op!=TK_ڪالم || اظهار_Use_YTab(p_کانو) );
+    أكد( p_کانو->op!=TK_ڪالم || (اظهار_Use_YTab(p_کانو) && p_کانو->y.pTab!=0) );
+    إذا( اظهار_Is_Vtab(p_کانو) ){
       sqlite3_vtab *pVtab;
       sqlite3_module *pMod;
-      void (*xNotUsed)(sqlite3_context*,int,sqlite3_value**);
-      void *pNotUsed;
-      pVtab = sqlite3GetVTable(db, pCol->y.pTab)->pVtab;
-      assert( pVtab!=0 );
-      assert( pVtab->pModule!=0 );
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
+      فراغ (*x_Not_استعمال_ٿيل)(sqlite3_context*,صحيح,sqlite3_قدر**);
+      فراغ *p_Not_استعمال_ٿيل;
+      pVtab = sqlite3GetVTable(db, p_کانو->y.pTab)->pVtab;
+      أكد( pVtab!=0 );
+      أكد( pVtab->pModule!=0 );
+      أكد( !اظهار_Has_Property(p_اظهار, EP_Int_قدر) );
       pMod = (sqlite3_module *)pVtab->pModule;
-      if( pMod->xFindFunction!=0 ){
-        i = pMod->xFindFunction(pVtab,2, pExpr->u.zToken, &xNotUsed, &pNotUsed);
-        if( i>=SQLITE_INDEX_CONSTRAINT_FUNCTION ){
+      إذا( pMod->x_ڳوليو_Function!=0 ){
+        i = pMod->x_ڳوليو_Function(pVtab,2, p_اظهار->u.zToken, &x_Not_استعمال_ٿيل, &p_Not_استعمال_ٿيل);
+        إذا( i>=SQLITE_اشاريو_CONSTRAINT_FUNCTION ){
           *peOp2 = i;
-          *ppRight = pList->a[1].pExpr;
-          *ppLeft = pCol;
-          return 1;
+          *pp_ساڄو = pList->a[1].p_اظهار;
+          *pp_کاٻو = p_کانو;
+          أرجع 1;
         }
       }
     }
-  }else if( pExpr->op>=TK_EQ ){
+  }وإلا إذا( p_اظهار->op>=TK_EQ ){
     /* Comparison operators are a common case.  Save a few comparisons for
     ** that common case by terminating early. */
-    assert( TK_NE < TK_EQ );
-    assert( TK_ISNOT < TK_EQ );
-    assert( TK_NOTNULL < TK_EQ );
-    return 0;
-  }else if( pExpr->op==TK_NE || pExpr->op==TK_ISNOT || pExpr->op==TK_NOTNULL ){
-    int res = 0;
-    Expr *pLeft = pExpr->pLeft;
-    Expr *pRight = pExpr->pRight;
-    assert( pLeft->op!=TK_COLUMN || (ExprUseYTab(pLeft) && pLeft->y.pTab!=0) );
-    if( ExprIsVtab(pLeft) ){
+    أكد( TK_NE < TK_EQ );
+    أكد( TK_ISNOT < TK_EQ );
+    أكد( TK_NOTNULL < TK_EQ );
+    أرجع 0;
+  }وإلا إذا( p_اظهار->op==TK_NE || p_اظهار->op==TK_ISNOT || p_اظهار->op==TK_NOTNULL ){
+    صحيح res = 0;
+    اظهار *p_کاٻو = p_اظهار->p_کاٻو;
+    اظهار *p_ساڄو = p_اظهار->p_ساڄو;
+    أكد( p_کاٻو->op!=TK_ڪالم || (اظهار_Use_YTab(p_کاٻو) && p_کاٻو->y.pTab!=0) );
+    إذا( اظهار_Is_Vtab(p_کاٻو) ){
       res++;
     }
-    assert( pRight==0 || pRight->op!=TK_COLUMN
-            || (ExprUseYTab(pRight) && pRight->y.pTab!=0) );
-    if( pRight && ExprIsVtab(pRight) ){
+    أكد( p_ساڄو==0 || p_ساڄو->op!=TK_ڪالم
+            || (اظهار_Use_YTab(p_ساڄو) && p_ساڄو->y.pTab!=0) );
+    إذا( p_ساڄو && اظهار_Is_Vtab(p_ساڄو) ){
       res++;
-      SWAP(Expr*, pLeft, pRight);
+      مٽا_سٽا(اظهار*, p_کاٻو, p_ساڄو);
     }
-    *ppLeft = pLeft;
-    *ppRight = pRight;
-    if( pExpr->op==TK_NE ) *peOp2 = SQLITE_INDEX_CONSTRAINT_NE;
-    if( pExpr->op==TK_ISNOT ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOT;
-    if( pExpr->op==TK_NOTNULL ) *peOp2 = SQLITE_INDEX_CONSTRAINT_ISNOTNULL;
-    return res;
+    *pp_کاٻو = p_کاٻو;
+    *pp_ساڄو = p_ساڄو;
+    إذا( p_اظهار->op==TK_NE ) *peOp2 = SQLITE_اشاريو_CONSTRAINT_NE;
+    إذا( p_اظهار->op==TK_ISNOT ) *peOp2 = SQLITE_اشاريو_CONSTRAINT_ISNOT;
+    إذا( p_اظهار->op==TK_NOTNULL ) *peOp2 = SQLITE_اشاريو_CONSTRAINT_ISNOTNULL;
+    أرجع res;
   }
-  return 0;
+  أرجع 0;
 }
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#جيڪڏهن_پورو /* SQLITE_OMIT_VIRTUALTABLE */
 
 /*
 ** If the pBase expression originated in the ON or USING clause of
 ** a join, then transfer the appropriate markings over to derived.
 */
-static void transferJoinMarkings(Expr *pDerived, Expr *pBase){
-  if( pDerived && ExprHasProperty(pBase, EP_OuterON|EP_InnerON) ){
-    pDerived->flags |= pBase->flags & (EP_OuterON|EP_InnerON);
-    pDerived->w.iJoin = pBase->w.iJoin;
+ساكن فراغ transferJoinMarkings(اظهار *pDerived, اظهار *p_بنياد){
+  إذا( pDerived && اظهار_Has_Property(p_بنياد, EP_OuterON|EP_InnerON) ){
+    pDerived->flags |= p_بنياد->flags & (EP_OuterON|EP_InnerON);
+    pDerived->w.iJoin = p_بنياد->w.iJoin;
   }
 }
 
 /*
 ** Mark term iChild as being a child of term iParent
 */
-static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
-  pWC->a[iChild].iParent = iParent;
-  pWC->a[iChild].truthProb = pWC->a[iParent].truthProb;
-  assert(   pWC->a[iParent].nChild <  UMXV(pWC->a[0].nChild) );
-  pWC->a[iParent].nChild++;
-  testcase( pWC->a[iParent].nChild == UMXV(pWC->a[0].nChild) );
+ساكن فراغ mark_رڪن_As_ٻار(WhereClause *pWC, صحيح i_ٻار, صحيح i_والد){
+  pWC->a[i_ٻار].i_والد = i_والد;
+  pWC->a[i_ٻار].truthProb = pWC->a[i_والد].truthProb;
+  أكد(   pWC->a[i_والد].n_ٻار <  UMXV(pWC->a[0].n_ٻار) );
+  pWC->a[i_والد].n_ٻار++;
+  testcase( pWC->a[i_والد].n_ٻار == UMXV(pWC->a[0].n_ٻار) );
 
 }
 
@@ -526,14 +526,14 @@ static void markTermAsChild(WhereClause *pWC, int iChild, int iParent){
 ** a conjunction, then return just pTerm when N==0.  If N is exceeds
 ** the number of available subterms, return NULL.
 */
-static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
-  if( pTerm->eOperator!=WO_AND ){
-    return N==0 ? pTerm : 0;
+ساكن Where_رڪن *whereNthSubterm(Where_رڪن *p_رڪن, صحيح N){
+  إذا( p_رڪن->eOperator!=WO_AND ){
+    أرجع N==0 ? p_رڪن : 0;
   }
-  if( N<pTerm->u.pAndInfo->wc.nTerm ){
-    return &pTerm->u.pAndInfo->wc.a[N];
+  إذا( N<p_رڪن->u.pAndInfo->wc.n_رڪن ){
+    أرجع &p_رڪن->u.pAndInfo->wc.a[N];
   }
-  return 0;
+  أرجع 0;
 }
 
 /*
@@ -556,52 +556,52 @@ static WhereTerm *whereNthSubterm(WhereTerm *pTerm, int N){
 **
 **    x<y OR x>y    -->     x!=y    
 */
-static void whereCombineDisjuncts(
+ساكن فراغ whereCombineDisjuncts(
   SrcList *pSrc,         /* the FROM clause */
   WhereClause *pWC,      /* The complete WHERE clause */
-  WhereTerm *pOne,       /* First disjunct */
-  WhereTerm *pTwo        /* Second disjunct */
+  Where_رڪن *pOne,       /* First disjunct */
+  Where_رڪن *pTwo        /* Second disjunct */
 ){
   u16 eOp = pOne->eOperator | pTwo->eOperator;
   sqlite3 *db;           /* Database connection (for malloc) */
-  Expr *pNew;            /* New virtual expression */
-  int op;                /* Operator for the combined expression */
-  int idxNew;            /* Index in pWC of the next virtual term */
-  Expr *pA, *pB;         /* Expressions associated with pOne and pTwo */
+  اظهار *pNew;            /* New virtual expression */
+  صحيح op;                /* Operator for the combined expression */
+  صحيح idxNew;            /* Index in pWC of the next virtual term */
+  اظهار *pA, *pB;         /* Expressions associated with pOne and pTwo */
 
-  if( (pOne->wtFlags | pTwo->wtFlags) & TERM_VNULL ) return;
-  if( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) return;
-  if( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
-   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) return;
-  pA = pOne->pExpr;
-  pB = pTwo->pExpr;
-  assert( pA->pLeft!=0 && pA->pRight!=0 );
-  assert( pB->pLeft!=0 && pB->pRight!=0 );
-  if( sqlite3ExprCompare(0,pA->pLeft, pB->pLeft, -1) )  return;
-  if( sqlite3ExprCompare(0,pA->pRight, pB->pRight,-1) ) return;
-  if( ExprHasProperty(pA,EP_Commuted)!=ExprHasProperty(pB,EP_Commuted) ){
-    return;
+  إذا( (pOne->wtFlags | pTwo->wtFlags) & رڪن_VNULL ) أرجع;
+  إذا( (pOne->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) أرجع;
+  إذا( (pTwo->eOperator & (WO_EQ|WO_LT|WO_LE|WO_GT|WO_GE))==0 ) أرجع;
+  إذا( (eOp & (WO_EQ|WO_LT|WO_LE))!=eOp
+   && (eOp & (WO_EQ|WO_GT|WO_GE))!=eOp ) أرجع;
+  pA = pOne->p_اظهار;
+  pB = pTwo->p_اظهار;
+  أكد( pA->p_کاٻو!=0 && pA->p_ساڄو!=0 );
+  أكد( pB->p_کاٻو!=0 && pB->p_ساڄو!=0 );
+  إذا( sqlite3_اظهار_Compare(0,pA->p_کاٻو, pB->p_کاٻو, -1) )  أرجع;
+  إذا( sqlite3_اظهار_Compare(0,pA->p_ساڄو, pB->p_ساڄو,-1) ) أرجع;
+  إذا( اظهار_Has_Property(pA,EP_Commuted)!=اظهار_Has_Property(pB,EP_Commuted) ){
+    أرجع;
   }
   /* If we reach this point, it means the two subterms can be combined */
-  if( (eOp & (eOp-1))!=0 ){
-    if( eOp & (WO_LT|WO_LE) ){
+  إذا( (eOp & (eOp-1))!=0 ){
+    إذا( eOp & (WO_LT|WO_LE) ){
       eOp = WO_LE;
-    }else{
-      assert( eOp & (WO_GT|WO_GE) );
+    }وإلا{
+      أكد( eOp & (WO_GT|WO_GE) );
       eOp = WO_GE;
     }
   }
   db = pWC->pWInfo->pParse->db;
-  pNew = sqlite3ExprDup(db, pA, 0);
-  if( pNew==0 ) return;
-  for(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ assert( op<TK_GE ); }
+  pNew = sqlite3_اظهار_Dup(db, pA, 0);
+  إذا( pNew==0 ) أرجع;
+  لكل(op=TK_EQ; eOp!=(WO_EQ<<(op-TK_EQ)); op++){ أكد( op<TK_GE ); }
   pNew->op = op;
-  idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
-  exprAnalyze(pSrc, pWC, idxNew);
+  idxNew = where_Clause_وجهو(pWC, pNew, رڪن_VIRTUAL|رڪن_DYNAMIC);
+  اظهار_Analyze(pSrc, pWC, idxNew);
 }
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#إذا !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
 /*
 ** Analyze a term that consists of two or more OR-connected
 ** subterms.  So in:
@@ -689,21 +689,21 @@ static void whereCombineDisjuncts(
 ** If none of cases 1, 2, or 3 apply, then leave the eOperator set to
 ** zero.  This term is not useful for search.
 */
-static void exprAnalyzeOrTerm(
+ساكن فراغ اظهار_Analyze_Or_رڪن(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the complete WHERE clause */
-  int idxTerm               /* Index of the OR-term to be analyzed */
+  صحيح idx_رڪن               /* Index of the OR-term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo;        /* WHERE clause processing context */
   Parse *pParse = pWInfo->pParse;         /* Parser context */
   sqlite3 *db = pParse->db;               /* Database connection */
-  WhereTerm *pTerm = &pWC->a[idxTerm];    /* The term to be analyzed */
-  Expr *pExpr = pTerm->pExpr;             /* The expression of the term */
-  int i;                                  /* Loop counters */
+  Where_رڪن *p_رڪن = &pWC->a[idx_رڪن];    /* The term to be analyzed */
+  اظهار *p_اظهار = p_رڪن->p_اظهار;             /* The expression of the term */
+  صحيح i;                                  /* Loop counters */
   WhereClause *pOrWc;       /* Breakup of pTerm into subterms */
-  WhereTerm *pOrTerm;       /* A Sub-term within the pOrWc */
+  Where_رڪن *p_Or_رڪن;       /* A Sub-term within the pOrWc */
   WhereOrInfo *pOrInfo;     /* Additional information associated with pTerm */
-  Bitmask chngToIN;         /* Tables that might satisfy case 1 */
+  Bitmask chng_منزل_اندريون;         /* Tables that might satisfy case 1 */
   Bitmask indexable;        /* Tables that are indexable, satisfying case 2 */
 
   /*
@@ -711,72 +711,72 @@ static void exprAnalyzeOrTerm(
   ** stored in a WhereClause structure containing within the WhereOrInfo
   ** object that is attached to the original OR clause term.
   */
-  assert( (pTerm->wtFlags & (TERM_DYNAMIC|TERM_ORINFO|TERM_ANDINFO))==0 );
-  assert( pExpr->op==TK_OR );
-  pTerm->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, sizeof(*pOrInfo));
-  if( pOrInfo==0 ) return;
-  pTerm->wtFlags |= TERM_ORINFO;
+  أكد( (p_رڪن->wtFlags & (رڪن_DYNAMIC|رڪن_ORINFO|رڪن_ANDINFO))==0 );
+  أكد( p_اظهار->op==TK_OR );
+  p_رڪن->u.pOrInfo = pOrInfo = sqlite3DbMallocZero(db, حجم(*pOrInfo));
+  إذا( pOrInfo==0 ) أرجع;
+  p_رڪن->wtFlags |= رڪن_ORINFO;
   pOrWc = &pOrInfo->wc;
-  memset(pOrWc->aStatic, 0, sizeof(pOrWc->aStatic));
+  memset(pOrWc->aStatic, 0, حجم(pOrWc->aStatic));
   sqlite3WhereClauseInit(pOrWc, pWInfo);
-  sqlite3WhereSplit(pOrWc, pExpr, TK_OR);
-  sqlite3WhereExprAnalyze(pSrc, pOrWc);
-  if( db->mallocFailed ) return;
-  assert( pOrWc->nTerm>=2 );
+  sqlite3_Where_ورهايو(pOrWc, p_اظهار, TK_OR);
+  sqlite3_Where_اظهار_Analyze(pSrc, pOrWc);
+  إذا( db->mallocFailed ) أرجع;
+  أكد( pOrWc->n_رڪن>=2 );
 
   /*
   ** Compute the set of tables that might satisfy cases 1 or 3.
   */
   indexable = ~(Bitmask)0;
-  chngToIN = ~(Bitmask)0;
-  for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0 && indexable; i--, pOrTerm++){
-    if( (pOrTerm->eOperator & WO_SINGLE)==0 ){
+  chng_منزل_اندريون = ~(Bitmask)0;
+  لكل(i=pOrWc->n_رڪن-1, p_Or_رڪن=pOrWc->a; i>=0 && indexable; i--, p_Or_رڪن++){
+    إذا( (p_Or_رڪن->eOperator & WO_SINGLE)==0 ){
       WhereAndInfo *pAndInfo;
-      assert( (pOrTerm->wtFlags & (TERM_ANDINFO|TERM_ORINFO))==0 );
-      chngToIN = 0;
-      pAndInfo = sqlite3DbMallocRawNN(db, sizeof(*pAndInfo));
-      if( pAndInfo ){
+      أكد( (p_Or_رڪن->wtFlags & (رڪن_ANDINFO|رڪن_ORINFO))==0 );
+      chng_منزل_اندريون = 0;
+      pAndInfo = sqlite3DbMallocRawNN(db, حجم(*pAndInfo));
+      إذا( pAndInfo ){
         WhereClause *pAndWC;
-        WhereTerm *pAndTerm;
-        int j;
+        Where_رڪن *p_And_رڪن;
+        صحيح j;
         Bitmask b = 0;
-        pOrTerm->u.pAndInfo = pAndInfo;
-        pOrTerm->wtFlags |= TERM_ANDINFO;
-        pOrTerm->eOperator = WO_AND;
-        pOrTerm->leftCursor = -1;
+        p_Or_رڪن->u.pAndInfo = pAndInfo;
+        p_Or_رڪن->wtFlags |= رڪن_ANDINFO;
+        p_Or_رڪن->eOperator = WO_AND;
+        p_Or_رڪن->کاٻو_Cursor = -1;
         pAndWC = &pAndInfo->wc;
-        memset(pAndWC->aStatic, 0, sizeof(pAndWC->aStatic));
+        memset(pAndWC->aStatic, 0, حجم(pAndWC->aStatic));
         sqlite3WhereClauseInit(pAndWC, pWC->pWInfo);
-        sqlite3WhereSplit(pAndWC, pOrTerm->pExpr, TK_AND);
-        sqlite3WhereExprAnalyze(pSrc, pAndWC);
+        sqlite3_Where_ورهايو(pAndWC, p_Or_رڪن->p_اظهار, TK_AND);
+        sqlite3_Where_اظهار_Analyze(pSrc, pAndWC);
         pAndWC->pOuter = pWC;
-        if( !db->mallocFailed ){
-          for(j=0, pAndTerm=pAndWC->a; j<pAndWC->nTerm; j++, pAndTerm++){
-            assert( pAndTerm->pExpr );
-            if( allowedOp(pAndTerm->pExpr->op)
-             || pAndTerm->eOperator==WO_AUX
+        إذا( !db->mallocFailed ){
+          لكل(j=0, p_And_رڪن=pAndWC->a; j<pAndWC->n_رڪن; j++, p_And_رڪن++){
+            أكد( p_And_رڪن->p_اظهار );
+            إذا( allowedOp(p_And_رڪن->p_اظهار->op)
+             || p_And_رڪن->eOperator==WO_AUX
             ){
-              b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pAndTerm->leftCursor);
+              b |= sqlite3_Where_Get_نقاب(&pWInfo->s_نقاب_سيٽ, p_And_رڪن->کاٻو_Cursor);
             }
           }
         }
         indexable &= b;
       }
-    }else if( pOrTerm->wtFlags & TERM_COPIED ){
+    }وإلا إذا( p_Or_رڪن->wtFlags & رڪن_COPIED ){
       /* Skip this term for now.  We revisit it when we process the
       ** corresponding TERM_VIRTUAL term */
-    }else{
+    }وإلا{
       Bitmask b;
-      b = sqlite3WhereGetMask(&pWInfo->sMaskSet, pOrTerm->leftCursor);
-      if( pOrTerm->wtFlags & TERM_VIRTUAL ){
-        WhereTerm *pOther = &pOrWc->a[pOrTerm->iParent];
-        b |= sqlite3WhereGetMask(&pWInfo->sMaskSet, pOther->leftCursor);
+      b = sqlite3_Where_Get_نقاب(&pWInfo->s_نقاب_سيٽ, p_Or_رڪن->کاٻو_Cursor);
+      إذا( p_Or_رڪن->wtFlags & رڪن_VIRTUAL ){
+        Where_رڪن *pOther = &pOrWc->a[p_Or_رڪن->i_والد];
+        b |= sqlite3_Where_Get_نقاب(&pWInfo->s_نقاب_سيٽ, pOther->کاٻو_Cursor);
       }
       indexable &= b;
-      if( (pOrTerm->eOperator & WO_EQ)==0 ){
-        chngToIN = 0;
-      }else{
-        chngToIN &= b;
+      إذا( (p_Or_رڪن->eOperator & WO_EQ)==0 ){
+        chng_منزل_اندريون = 0;
+      }وإلا{
+        chng_منزل_اندريون &= b;
       }
     }
   }
@@ -786,21 +786,21 @@ static void exprAnalyzeOrTerm(
   ** empty.
   */
   pOrInfo->indexable = indexable;
-  pTerm->eOperator = WO_OR;
-  pTerm->leftCursor = -1;
-  if( indexable ){
+  p_رڪن->eOperator = WO_OR;
+  p_رڪن->کاٻو_Cursor = -1;
+  إذا( indexable ){
     pWC->hasOr = 1;
   }
 
   /* For a two-way OR, attempt to implementation case 2.
   */
-  if( indexable && pOrWc->nTerm==2 ){
-    int iOne = 0;
-    WhereTerm *pOne;
-    while( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
-      int iTwo = 0;
-      WhereTerm *pTwo;
-      while( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
+  إذا( indexable && pOrWc->n_رڪن==2 ){
+    صحيح iOne = 0;
+    Where_رڪن *pOne;
+    طالما( (pOne = whereNthSubterm(&pOrWc->a[0],iOne++))!=0 ){
+      صحيح iTwo = 0;
+      Where_رڪن *pTwo;
+      طالما( (pTwo = whereNthSubterm(&pOrWc->a[1],iTwo++))!=0 ){
         whereCombineDisjuncts(pSrc, pWC, pOne, pTwo);
       }
     }
@@ -827,11 +827,11 @@ static void exprAnalyzeOrTerm(
   ** Note that terms of the form "table.column1=table.column2" (the
   ** same table on both sizes of the ==) cannot be optimized.
   */
-  if( chngToIN ){
-    int okToChngToIN = 0;     /* True if the conversion to IN is valid */
-    int iColumn = -1;         /* Column index on lhs of IN operator */
-    int iCursor = -1;         /* Table cursor common to all terms */
-    int j = 0;                /* Loop counter */
+  إذا( chng_منزل_اندريون ){
+    صحيح ok_منزل_Chng_منزل_اندريون = 0;     /* True if the conversion to IN is valid */
+    صحيح i_ڪالم = -1;         /* Column index on lhs of IN operator */
+    صحيح iCursor = -1;         /* Table cursor common to all terms */
+    صحيح j = 0;                /* Loop counter */
 
     /* Search for a table and column that appears on one side or the
     ** other of the == operator in every subterm.  That table and column
@@ -839,69 +839,69 @@ static void exprAnalyzeOrTerm(
     ** such table and column.  Set okToChngToIN if an appropriate table
     ** and column is found but leave okToChngToIN false if not found.
     */
-    for(j=0; j<2 && !okToChngToIN; j++){
-      Expr *pLeft = 0;
-      pOrTerm = pOrWc->a;
-      for(i=pOrWc->nTerm-1; i>=0; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
-        pOrTerm->wtFlags &= ~TERM_OK;
-        if( pOrTerm->leftCursor==iCursor ){
+    لكل(j=0; j<2 && !ok_منزل_Chng_منزل_اندريون; j++){
+      اظهار *p_کاٻو = 0;
+      p_Or_رڪن = pOrWc->a;
+      لكل(i=pOrWc->n_رڪن-1; i>=0; i--, p_Or_رڪن++){
+        أكد( p_Or_رڪن->eOperator & WO_EQ );
+        p_Or_رڪن->wtFlags &= ~رڪن_OK;
+        إذا( p_Or_رڪن->کاٻو_Cursor==iCursor ){
           /* This is the 2-bit case and we are on the second iteration and
           ** current term is from the first iteration.  So skip this term. */
-          assert( j==1 );
-          continue;
+          أكد( j==1 );
+          استمر;
         }
-        if( (chngToIN & sqlite3WhereGetMask(&pWInfo->sMaskSet,
-                                            pOrTerm->leftCursor))==0 ){
+        إذا( (chng_منزل_اندريون & sqlite3_Where_Get_نقاب(&pWInfo->s_نقاب_سيٽ,
+                                            p_Or_رڪن->کاٻو_Cursor))==0 ){
           /* This term must be of the form t1.a==t2.b where t2 is in the
           ** chngToIN set but t1 is not.  This term will be either preceded
           ** or followed by an inverted copy (t2.b==t1.a).  Skip this term
           ** and use its inversion. */
-          testcase( pOrTerm->wtFlags & TERM_COPIED );
-          testcase( pOrTerm->wtFlags & TERM_VIRTUAL );
-          assert( pOrTerm->wtFlags & (TERM_COPIED|TERM_VIRTUAL) );
-          continue;
+          testcase( p_Or_رڪن->wtFlags & رڪن_COPIED );
+          testcase( p_Or_رڪن->wtFlags & رڪن_VIRTUAL );
+          أكد( p_Or_رڪن->wtFlags & (رڪن_COPIED|رڪن_VIRTUAL) );
+          استمر;
         }
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        iColumn = pOrTerm->u.x.leftColumn;
-        iCursor = pOrTerm->leftCursor;
-        pLeft = pOrTerm->pExpr->pLeft;
-        break;
+        أكد( (p_Or_رڪن->eOperator & (WO_OR|WO_AND))==0 );
+        i_ڪالم = p_Or_رڪن->u.x.کاٻو_ڪالم;
+        iCursor = p_Or_رڪن->کاٻو_Cursor;
+        p_کاٻو = p_Or_رڪن->p_اظهار->p_کاٻو;
+        اكسر;
       }
-      if( i<0 ){
+      إذا( i<0 ){
         /* No candidate table+column was found.  This can only occur
         ** on the second iteration */
-        assert( j==1 );
-        assert( IsPowerOfTwo(chngToIN) );
-        assert( chngToIN==sqlite3WhereGetMask(&pWInfo->sMaskSet, iCursor) );
-        break;
+        أكد( j==1 );
+        أكد( Is_Power_جو_Two(chng_منزل_اندريون) );
+        أكد( chng_منزل_اندريون==sqlite3_Where_Get_نقاب(&pWInfo->s_نقاب_سيٽ, iCursor) );
+        اكسر;
       }
       testcase( j==1 );
 
       /* We have found a candidate table and column.  Check to see if that
       ** table and column is common to every term in the OR clause */
-      okToChngToIN = 1;
-      for(; i>=0 && okToChngToIN; i--, pOrTerm++){
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        if( pOrTerm->leftCursor!=iCursor ){
-          pOrTerm->wtFlags &= ~TERM_OK;
-        }else if( pOrTerm->u.x.leftColumn!=iColumn || (iColumn==XN_EXPR
-               && sqlite3ExprCompare(pParse, pOrTerm->pExpr->pLeft, pLeft, -1)
+      ok_منزل_Chng_منزل_اندريون = 1;
+      لكل(; i>=0 && ok_منزل_Chng_منزل_اندريون; i--, p_Or_رڪن++){
+        أكد( p_Or_رڪن->eOperator & WO_EQ );
+        أكد( (p_Or_رڪن->eOperator & (WO_OR|WO_AND))==0 );
+        إذا( p_Or_رڪن->کاٻو_Cursor!=iCursor ){
+          p_Or_رڪن->wtFlags &= ~رڪن_OK;
+        }وإلا إذا( p_Or_رڪن->u.x.کاٻو_ڪالم!=i_ڪالم || (i_ڪالم==XN_اظهار
+               && sqlite3_اظهار_Compare(pParse, p_Or_رڪن->p_اظهار->p_کاٻو, p_کاٻو, -1)
         )){
-          okToChngToIN = 0;
-        }else{
-          int affLeft, affRight;
+          ok_منزل_Chng_منزل_اندريون = 0;
+        }وإلا{
+          صحيح aff_کاٻو, aff_ساڄو;
           /* If the right-hand side is also a column, then the affinities
           ** of both right and left sides must be such that no type
           ** conversions are required on the right.  (Ticket #2249)
           */
-          affRight = sqlite3ExprAffinity(pOrTerm->pExpr->pRight);
-          affLeft = sqlite3ExprAffinity(pOrTerm->pExpr->pLeft);
-          if( affRight!=0 && affRight!=affLeft ){
-            okToChngToIN = 0;
-          }else{
-            pOrTerm->wtFlags |= TERM_OK;
+          aff_ساڄو = sqlite3_اظهار_Affinity(p_Or_رڪن->p_اظهار->p_ساڄو);
+          aff_کاٻو = sqlite3_اظهار_Affinity(p_Or_رڪن->p_اظهار->p_کاٻو);
+          إذا( aff_ساڄو!=0 && aff_ساڄو!=aff_کاٻو ){
+            ok_منزل_Chng_منزل_اندريون = 0;
+          }وإلا{
+            p_Or_رڪن->wtFlags |= رڪن_OK;
           }
         }
       }
@@ -917,65 +917,65 @@ static void exprAnalyzeOrTerm(
     ** subterms of the OR are compatible.  Omit the construction of the
     ** new IN operator if there are any collating sequence mismatches.
     */
-    if( okToChngToIN ){
-      Expr *pDup;            /* A transient duplicate expression */
-      ExprList *pList = 0;   /* The RHS of the IN operator */
-      Expr *pLeft = 0;       /* The LHS of the IN operator */
+    إذا( ok_منزل_Chng_منزل_اندريون ){
+      اظهار *pDup;            /* A transient duplicate expression */
+      اظهار_List *pList = 0;   /* The RHS of the IN operator */
+      اظهار *p_کاٻو = 0;       /* The LHS of the IN operator */
       CollSeq *pCollSeq = 0; /* Collating sequence to use */
-      Expr *pNew;            /* The complete IN operator */
+      اظهار *pNew;            /* The complete IN operator */
 
-      for(i=pOrWc->nTerm-1, pOrTerm=pOrWc->a; i>=0; i--, pOrTerm++){
-        Expr *pThis;
-        if( (pOrTerm->wtFlags & TERM_OK)==0 ) continue;
-        assert( pOrTerm->eOperator & WO_EQ );
-        assert( (pOrTerm->eOperator & (WO_OR|WO_AND))==0 );
-        assert( pOrTerm->leftCursor==iCursor );
-        assert( pOrTerm->u.x.leftColumn==iColumn );
-        pThis = pOrTerm->pExpr;
-        pDup = sqlite3ExprDup(db, pThis->pRight, 0);
-        pList = sqlite3ExprListAppend(pWInfo->pParse, pList, pDup);
-        if( pLeft==0 ){
-          pLeft = pThis->pLeft;
-          pCollSeq = sqlite3ExprCompareCollSeq(pParse, pThis);
-        }else{
-          assert( 0==sqlite3ExprCompare(pParse, 
-                        sqlite3ExprSkipCollate(pThis->pLeft),
-                        sqlite3ExprSkipCollate(pLeft), -1) );
-          if( pCollSeq!=sqlite3ExprCompareCollSeq(pParse, pThis) ){
-            pLeft = 0;  /* Collating sequence mismatch */
-            break;
+      لكل(i=pOrWc->n_رڪن-1, p_Or_رڪن=pOrWc->a; i>=0; i--, p_Or_رڪن++){
+        اظهار *pThis;
+        إذا( (p_Or_رڪن->wtFlags & رڪن_OK)==0 ) استمر;
+        أكد( p_Or_رڪن->eOperator & WO_EQ );
+        أكد( (p_Or_رڪن->eOperator & (WO_OR|WO_AND))==0 );
+        أكد( p_Or_رڪن->کاٻو_Cursor==iCursor );
+        أكد( p_Or_رڪن->u.x.کاٻو_ڪالم==i_ڪالم );
+        pThis = p_Or_رڪن->p_اظهار;
+        pDup = sqlite3_اظهار_Dup(db, pThis->p_ساڄو, 0);
+        pList = sqlite3_اظهار_List_Append(pWInfo->pParse, pList, pDup);
+        إذا( p_کاٻو==0 ){
+          p_کاٻو = pThis->p_کاٻو;
+          pCollSeq = sqlite3_اظهار_Compare_Coll_Seq(pParse, pThis);
+        }وإلا{
+          أكد( 0==sqlite3_اظهار_Compare(pParse, 
+                        sqlite3_اظهار_Skip_Collate(pThis->p_کاٻو),
+                        sqlite3_اظهار_Skip_Collate(p_کاٻو), -1) );
+          إذا( pCollSeq!=sqlite3_اظهار_Compare_Coll_Seq(pParse, pThis) ){
+            p_کاٻو = 0;  /* Collating sequence mismatch */
+            اكسر;
           }
         }
       }
-      if( pLeft==0 ){
+      إذا( p_کاٻو==0 ){
         pNew = 0;  /* Collating sequence mismatch */
-      }else{
-        pDup = sqlite3ExprDup(db, pLeft, 0);
-        if( sqlite3ExprCollSeq(pParse, pDup)!=pCollSeq
+      }وإلا{
+        pDup = sqlite3_اظهار_Dup(db, p_کاٻو, 0);
+        إذا( sqlite3_اظهار_Coll_Seq(pParse, pDup)!=pCollSeq
          && pCollSeq!=0
         ){
-          assert( pCollSeq->zName!=0 );
-          pDup = sqlite3ExprAddCollateString(pParse, pDup, pCollSeq->zName);
+          أكد( pCollSeq->zName!=0 );
+          pDup = sqlite3_اظهار_جوڙيو_Collate_String(pParse, pDup, pCollSeq->zName);
         }
-        pNew = sqlite3PExpr(pParse, TK_IN, pDup, 0);
+        pNew = sqlite3PExpr(pParse, TK_اندريون, pDup, 0);
       }
-      if( pNew ){
-        int idxNew;
-        transferJoinMarkings(pNew, pExpr);
-        assert( ExprUseXList(pNew) );
+      إذا( pNew ){
+        صحيح idxNew;
+        transferJoinMarkings(pNew, p_اظهار);
+        أكد( اظهار_Use_XList(pNew) );
         pNew->x.pList = pList;
-        idxNew = whereClauseInsert(pWC, pNew, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_وجهو(pWC, pNew, رڪن_VIRTUAL|رڪن_DYNAMIC);
         testcase( idxNew==0 );
-        exprAnalyze(pSrc, pWC, idxNew);
+        اظهار_Analyze(pSrc, pWC, idxNew);
         /* pTerm = &pWC->a[idxTerm]; // would be needed if pTerm where reused */
-        markTermAsChild(pWC, idxNew, idxTerm);
-      }else{
-        sqlite3ExprListDelete(db, pList);
+        mark_رڪن_As_ٻار(pWC, idxNew, idx_رڪن);
+      }وإلا{
+        sqlite3_اظهار_List_Delete(db, pList);
       }
     }
   }
 }
-#endif /* !SQLITE_OMIT_OR_OPTIMIZATION && !SQLITE_OMIT_SUBQUERY */
+#جيڪڏهن_پورو /* !SQLITE_OMIT_OR_OPTIMIZATION && !SQLITE_OMIT_SUBQUERY */
 
 /*
 ** We already know that pExpr is a binary operator where both operands are
@@ -993,29 +993,29 @@ static void exprAnalyzeOrTerm(
 ** This is an optimization.  No harm comes from returning 0.  But if 1 is
 ** returned when it should not be, then incorrect answers might result.
 */
-static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
-  char aff1, aff2;
-  if( !OptimizationEnabled(pParse->db, SQLITE_Transitive) ) return 0;  /* (1) */
-  if( pExpr->op!=TK_EQ && pExpr->op!=TK_IS ) return 0;                 /* (2) */
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_Collate) ) return 0;        /* (3) */
-  assert( pSrc!=0 );
-  if( pExpr->op==TK_IS
+ساكن صحيح رڪن_Is_Equivalence(Parse *pParse, اظهار *p_اظهار, SrcList *pSrc){
+  حرف aff1, aff2;
+  إذا( !OptimizationEnabled(pParse->db, SQLITE_متعدي) ) أرجع 0;  /* (1) */
+  إذا( p_اظهار->op!=TK_EQ && p_اظهار->op!=TK_IS ) أرجع 0;                 /* (2) */
+  إذا( اظهار_Has_Property(p_اظهار, EP_OuterON|EP_Collate) ) أرجع 0;        /* (3) */
+  أكد( pSrc!=0 );
+  إذا( p_اظهار->op==TK_IS
    && pSrc->nSrc>=2
    && (pSrc->a[0].fg.jointype & JT_LTORJ)!=0
   ){
-    return 0;                                                          /* (4) */
+    أرجع 0;                                                          /* (4) */
   }
-  aff1 = sqlite3ExprAffinity(pExpr->pLeft);
-  aff2 = sqlite3ExprAffinity(pExpr->pRight);
-  if( aff1!=aff2
+  aff1 = sqlite3_اظهار_Affinity(p_اظهار->p_کاٻو);
+  aff2 = sqlite3_اظهار_Affinity(p_اظهار->p_ساڄو);
+  إذا( aff1!=aff2
    && (!sqlite3IsNumericAffinity(aff1) || !sqlite3IsNumericAffinity(aff2))
   ){
-    return 0;                                                          /* (5) */
+    أرجع 0;                                                          /* (5) */
   }
-  if( !sqlite3ExprCollSeqMatch(pParse, pExpr->pLeft, pExpr->pRight) ){
-    return 0;                                                          /* (6) */
+  إذا( !sqlite3_اظهار_Coll_Seq_ميلاپ(pParse, p_اظهار->p_کاٻو, p_اظهار->p_ساڄو) ){
+    أرجع 0;                                                          /* (6) */
   }
-  return 1;
+  أرجع 1;
 }
 
 /*
@@ -1023,32 +1023,32 @@ static int termIsEquivalence(Parse *pParse, Expr *pExpr, SrcList *pSrc){
 ** a bitmask indicating which tables are used in that expression
 ** tree.
 */
-static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
-  Bitmask mask = 0;
-  while( pS ){
+ساكن Bitmask اظهار_Select_Usage(Where_نقاب_سيٽ *p_نقاب_سيٽ, Select *pS){
+  Bitmask نقاب = 0;
+  طالما( pS ){
     SrcList *pSrc = pS->pSrc;
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pEList);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pGroupBy);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, pS->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pWhere);
-    mask |= sqlite3WhereExprUsage(pMaskSet, pS->pHaving);
-    if( ALWAYS(pSrc!=0) ){
-      int i;
-      for(i=0; i<pSrc->nSrc; i++){
-        if( pSrc->a[i].fg.isSubquery ){
-          mask |= exprSelectUsage(pMaskSet, pSrc->a[i].u4.pSubq->pSelect);
+    نقاب |= sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, pS->pEList);
+    نقاب |= sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, pS->p_گروهه_By);
+    نقاب |= sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, pS->p_ترتيب_By);
+    نقاب |= sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, pS->pWhere);
+    نقاب |= sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, pS->pHaving);
+    إذا( ALWAYS(pSrc!=0) ){
+      صحيح i;
+      لكل(i=0; i<pSrc->nSrc; i++){
+        إذا( pSrc->a[i].fg.isSubquery ){
+          نقاب |= اظهار_Select_Usage(p_نقاب_سيٽ, pSrc->a[i].u4.pSubq->pSelect);
         }
-        if( pSrc->a[i].fg.isUsing==0 ){
-          mask |= sqlite3WhereExprUsage(pMaskSet, pSrc->a[i].u3.pOn);
+        إذا( pSrc->a[i].fg.isUsing==0 ){
+          نقاب |= sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, pSrc->a[i].u3.pOn);
         }
-        if( pSrc->a[i].fg.isTabFunc ){
-          mask |= sqlite3WhereExprListUsage(pMaskSet, pSrc->a[i].u1.pFuncArg);
+        إذا( pSrc->a[i].fg.isTabFunc ){
+          نقاب |= sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, pSrc->a[i].u1.pFuncArg);
         }
       }
     }
-    pS = pS->pPrior;
+    pS = pS->p_اڳواٽ;
   }
-  return mask;
+  أرجع نقاب;
 }
 
 /*
@@ -1064,68 +1064,68 @@ static Bitmask exprSelectUsage(WhereMaskSet *pMaskSet, Select *pS){
 ** true even if that particular column is not indexed, because the column
 ** might be added to an automatic index later.
 */
-static SQLITE_NOINLINE int exprMightBeIndexed2(
+ساكن SQLITE_NOINLINE صحيح اظهار_Might_Be_Indexed2(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor and column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int j                  /* Start looking with the j-th pFrom entry */
+  صحيح *ai_Cur_کانو,         /* Write the referenced table cursor and column here */
+  اظهار *p_اظهار,           /* An operand of a comparison operator */
+  صحيح j                  /* Start looking with the j-th pFrom entry */
 ){
-  Index *pIdx;
-  int i;
-  int iCur;
-  do{
+  اشاريو *pIdx;
+  صحيح i;
+  صحيح iCur;
+  افعل{
     iCur = pFrom->a[j].iCursor;
-    for(pIdx=pFrom->a[j].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr==0 ) continue;
-      for(i=0; i<pIdx->nKeyCol; i++){
-        if( pIdx->aiColumn[i]!=XN_EXPR ) continue;
-        assert( pIdx->bHasExpr );
-        if( sqlite3ExprCompareSkip(pExpr,pIdx->aColExpr->a[i].pExpr,iCur)==0
-         && !sqlite3ExprIsConstant(0,pIdx->aColExpr->a[i].pExpr)
+    لكل(pIdx=pFrom->a[j].pSTab->p_اشاريو; pIdx; pIdx=pIdx->p_ايندڙ){
+      إذا( pIdx->a_کانو_اظهار==0 ) استمر;
+      لكل(i=0; i<pIdx->n_ڪنجي_کانو; i++){
+        إذا( pIdx->ai_ڪالم[i]!=XN_اظهار ) استمر;
+        أكد( pIdx->b_Has_اظهار );
+        إذا( sqlite3_اظهار_Compare_Skip(p_اظهار,pIdx->a_کانو_اظهار->a[i].p_اظهار,iCur)==0
+         && !sqlite3_اظهار_Is_Constant(0,pIdx->a_کانو_اظهار->a[i].p_اظهار)
         ){
-          aiCurCol[0] = iCur;
-          aiCurCol[1] = XN_EXPR;
-          return 1;
+          ai_Cur_کانو[0] = iCur;
+          ai_Cur_کانو[1] = XN_اظهار;
+          أرجع 1;
         }
       }
     }
-  }while( ++j < pFrom->nSrc );
-  return 0;
+  }طالما( ++j < pFrom->nSrc );
+  أرجع 0;
 }
-static int exprMightBeIndexed(
+ساكن صحيح اظهار_Might_Be_اشاريي_وارو(
   SrcList *pFrom,        /* The FROM clause */
-  int *aiCurCol,         /* Write the referenced table cursor & column here */
-  Expr *pExpr,           /* An operand of a comparison operator */
-  int op                 /* The specific comparison operator */
+  صحيح *ai_Cur_کانو,         /* Write the referenced table cursor & column here */
+  اظهار *p_اظهار,           /* An operand of a comparison operator */
+  صحيح op                 /* The specific comparison operator */
 ){
-  int i;
+  صحيح i;
 
   /* If this expression is a vector to the left or right of a
   ** inequality constraint (>, <, >= or <=), perform the processing
   ** on the first element of the vector.  */
-  assert( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
-  assert( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_IN<TK_GE );
-  assert( op<=TK_GE );
-  if( pExpr->op==TK_VECTOR && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
-    assert( ExprUseXList(pExpr) );
-    pExpr = pExpr->x.pList->a[0].pExpr;
+  أكد( TK_GT+1==TK_LE && TK_GT+2==TK_LT && TK_GT+3==TK_GE );
+  أكد( TK_IS<TK_GE && TK_ISNULL<TK_GE && TK_اندريون<TK_GE );
+  أكد( op<=TK_GE );
+  إذا( p_اظهار->op==TK_ويڪٽر && (op>=TK_GT && ALWAYS(op<=TK_GE)) ){
+    أكد( اظهار_Use_XList(p_اظهار) );
+    p_اظهار = p_اظهار->x.pList->a[0].p_اظهار;
   }
 
-  if( pExpr->op==TK_COLUMN ){
-    aiCurCol[0] = pExpr->iTable;
-    aiCurCol[1] = pExpr->iColumn;
-    return 1;
+  إذا( p_اظهار->op==TK_ڪالم ){
+    ai_Cur_کانو[0] = p_اظهار->i_جدول;
+    ai_Cur_کانو[1] = p_اظهار->i_ڪالم;
+    أرجع 1;
   }
 
-  for(i=0; i<pFrom->nSrc; i++){
-    Index *pIdx;
-    for(pIdx=pFrom->a[i].pSTab->pIndex; pIdx; pIdx=pIdx->pNext){
-      if( pIdx->aColExpr ){
-        return exprMightBeIndexed2(pFrom,aiCurCol,pExpr,i);
+  لكل(i=0; i<pFrom->nSrc; i++){
+    اشاريو *pIdx;
+    لكل(pIdx=pFrom->a[i].pSTab->p_اشاريو; pIdx; pIdx=pIdx->p_ايندڙ){
+      إذا( pIdx->a_کانو_اظهار ){
+        أرجع اظهار_Might_Be_Indexed2(pFrom,ai_Cur_کانو,p_اظهار,i);
       }
     }
   }
-  return 0;
+  أرجع 0;
 }
 
 
@@ -1147,161 +1147,161 @@ static int exprMightBeIndexed(
 ** is a commuted copy of a prior term.)  The original term has nChild=1
 ** and the copy has idxParent set to the index of the original term.
 */
-static void exprAnalyze(
+ساكن فراغ اظهار_Analyze(
   SrcList *pSrc,            /* the FROM clause */
   WhereClause *pWC,         /* the WHERE clause */
-  int idxTerm               /* Index of the term to be analyzed */
+  صحيح idx_رڪن               /* Index of the term to be analyzed */
 ){
   WhereInfo *pWInfo = pWC->pWInfo; /* WHERE clause processing context */
-  WhereTerm *pTerm;                /* The term to be analyzed */
-  WhereMaskSet *pMaskSet;          /* Set of table index masks */
-  Expr *pExpr;                     /* The expression to be analyzed */
-  Bitmask prereqLeft;              /* Prerequisites of the pExpr->pLeft */
+  Where_رڪن *p_رڪن;                /* The term to be analyzed */
+  Where_نقاب_سيٽ *p_نقاب_سيٽ;          /* Set of table index masks */
+  اظهار *p_اظهار;                     /* The expression to be analyzed */
+  Bitmask prereq_کاٻو;              /* Prerequisites of the pExpr->pLeft */
   Bitmask prereqAll;               /* Prerequisites of pExpr */
-  Bitmask extraRight = 0;          /* Extra dependencies on LEFT JOIN */
-  Expr *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
-  int isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
-  int noCase = 0;                  /* uppercase equivalent to lowercase */
-  int op;                          /* Top-level operator.  pExpr->op */
+  Bitmask extra_ساڄو = 0;          /* Extra dependencies on LEFT JOIN */
+  اظهار *pStr1 = 0;                 /* RHS of LIKE/GLOB operator */
+  صحيح isComplete = 0;              /* RHS of LIKE/GLOB ends with wildcard */
+  صحيح noCase = 0;                  /* uppercase equivalent to lowercase */
+  صحيح op;                          /* Top-level operator.  pExpr->op */
   Parse *pParse = pWInfo->pParse;  /* Parsing context */
   sqlite3 *db = pParse->db;        /* Database connection */
-  unsigned char eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
-  int nLeft;                       /* Number of elements on left side vector */
+  بنانشان حرف eOp2 = 0;          /* op2 value for LIKE/REGEXP/GLOB */
+  صحيح n_کاٻو;                       /* Number of elements on left side vector */
 
-  if( db->mallocFailed ){
-    return;
+  إذا( db->mallocFailed ){
+    أرجع;
   }
-  assert( pWC->nTerm > idxTerm );
-  pTerm = &pWC->a[idxTerm];
-#ifdef SQLITE_DEBUG
-  pTerm->iTerm = idxTerm;
-#endif
-  pMaskSet = &pWInfo->sMaskSet;
-  pExpr = pTerm->pExpr;
-  assert( pExpr!=0 ); /* Because malloc() has not failed */
-  assert( pExpr->op!=TK_AS && pExpr->op!=TK_COLLATE );
-exprAnalyze_restart:
-  pMaskSet->bVarSelect = 0;
-  prereqLeft = sqlite3WhereExprUsage(pMaskSet, pExpr->pLeft);
-  op = pExpr->op;
-  if( op==TK_IN ){
-    assert( pExpr->pRight==0 );
-    if( sqlite3ExprCheckIN(pParse, pExpr) ) return;
-    if( ExprUseXSelect(pExpr) ){
-      pTerm->prereqRight = exprSelectUsage(pMaskSet, pExpr->x.pSelect);
-    }else{
-      pTerm->prereqRight = sqlite3WhereExprListUsage(pMaskSet, pExpr->x.pList);
+  أكد( pWC->n_رڪن > idx_رڪن );
+  p_رڪن = &pWC->a[idx_رڪن];
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  p_رڪن->i_رڪن = idx_رڪن;
+#جيڪڏهن_پورو
+  p_نقاب_سيٽ = &pWInfo->s_نقاب_سيٽ;
+  p_اظهار = p_رڪن->p_اظهار;
+  أكد( p_اظهار!=0 ); /* Because malloc() has not failed */
+  أكد( p_اظهار->op!=TK_AS && p_اظهار->op!=TK_COLLATE );
+اظهار_Analyze_restart:
+  p_نقاب_سيٽ->bVarSelect = 0;
+  prereq_کاٻو = sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, p_اظهار->p_کاٻو);
+  op = p_اظهار->op;
+  إذا( op==TK_اندريون ){
+    أكد( p_اظهار->p_ساڄو==0 );
+    إذا( sqlite3_اظهار_Check_اندريون(pParse, p_اظهار) ) أرجع;
+    إذا( اظهار_Use_XSelect(p_اظهار) ){
+      p_رڪن->prereq_ساڄو = اظهار_Select_Usage(p_نقاب_سيٽ, p_اظهار->x.pSelect);
+    }وإلا{
+      p_رڪن->prereq_ساڄو = sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, p_اظهار->x.pList);
     }
-    prereqAll = prereqLeft | pTerm->prereqRight;
-  }else{
-    pTerm->prereqRight = sqlite3WhereExprUsage(pMaskSet, pExpr->pRight);
-    if( pExpr->pLeft==0
-     || ExprHasProperty(pExpr, EP_xIsSelect|EP_IfNullRow)
-     || pExpr->x.pList!=0
+    prereqAll = prereq_کاٻو | p_رڪن->prereq_ساڄو;
+  }وإلا{
+    p_رڪن->prereq_ساڄو = sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, p_اظهار->p_ساڄو);
+    إذا( p_اظهار->p_کاٻو==0
+     || اظهار_Has_Property(p_اظهار, EP_xIsSelect|EP_If_Null_صف)
+     || p_اظهار->x.pList!=0
     ){
-      prereqAll = sqlite3WhereExprUsageNN(pMaskSet, pExpr);
-    }else{
-      prereqAll = prereqLeft | pTerm->prereqRight;
+      prereqAll = sqlite3_Where_اظهار_Usage_NN(p_نقاب_سيٽ, p_اظهار);
+    }وإلا{
+      prereqAll = prereq_کاٻو | p_رڪن->prereq_ساڄو;
     }
   }
-  if( pMaskSet->bVarSelect ) pTerm->wtFlags |= TERM_VARSELECT;
+  إذا( p_نقاب_سيٽ->bVarSelect ) p_رڪن->wtFlags |= رڪن_VARSELECT;
 
-#ifdef SQLITE_DEBUG
-  if( prereqAll!=sqlite3WhereExprUsageNN(pMaskSet, pExpr) ){
-    printf("\n*** Incorrect prereqAll computed for:\n");
-    sqlite3TreeViewExpr(0,pExpr,0);
-    assert( 0 );
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  إذا( prereqAll!=sqlite3_Where_اظهار_Usage_NN(p_نقاب_سيٽ, p_اظهار) ){
+    لکو("\n*** Incorrect prereqAll computed for:\n");
+    sqlite3_وڻ_View_اظهار(0,p_اظهار,0);
+    أكد( 0 );
   }
-#endif
+#جيڪڏهن_پورو
 
-  if( ExprHasProperty(pExpr, EP_OuterON|EP_InnerON) ){
-    Bitmask x = sqlite3WhereGetMask(pMaskSet, pExpr->w.iJoin);
-    if( ExprHasProperty(pExpr, EP_OuterON) ){
+  إذا( اظهار_Has_Property(p_اظهار, EP_OuterON|EP_InnerON) ){
+    Bitmask x = sqlite3_Where_Get_نقاب(p_نقاب_سيٽ, p_اظهار->w.iJoin);
+    إذا( اظهار_Has_Property(p_اظهار, EP_OuterON) ){
       prereqAll |= x;
-      extraRight = x-1;  /* ON clause terms may not be used with an index
+      extra_ساڄو = x-1;  /* ON clause terms may not be used with an index
                          ** on left table of a LEFT JOIN.  Ticket #3015 */
-    }else if( (prereqAll>>1)>=x ){
-      ExprClearProperty(pExpr, EP_InnerON);
+    }وإلا إذا( (prereqAll>>1)>=x ){
+      اظهار_Clear_Property(p_اظهار, EP_InnerON);
     }
   }
-  pTerm->prereqAll = prereqAll;
-  pTerm->leftCursor = -1;
-  pTerm->iParent = -1;
-  pTerm->eOperator = 0;
-  if( allowedOp(op) ){
-    int aiCurCol[2];
-    Expr *pLeft = sqlite3ExprSkipCollate(pExpr->pLeft);
-    Expr *pRight = sqlite3ExprSkipCollate(pExpr->pRight);
-    u16 opMask = (pTerm->prereqRight & prereqLeft)==0 ? WO_ALL : WO_EQUIV;
+  p_رڪن->prereqAll = prereqAll;
+  p_رڪن->کاٻو_Cursor = -1;
+  p_رڪن->i_والد = -1;
+  p_رڪن->eOperator = 0;
+  إذا( allowedOp(op) ){
+    صحيح ai_Cur_کانو[2];
+    اظهار *p_کاٻو = sqlite3_اظهار_Skip_Collate(p_اظهار->p_کاٻو);
+    اظهار *p_ساڄو = sqlite3_اظهار_Skip_Collate(p_اظهار->p_ساڄو);
+    u16 op_نقاب = (p_رڪن->prereq_ساڄو & prereq_کاٻو)==0 ? WO_ALL : WO_EQUIV;
 
-    if( pTerm->u.x.iField>0 ){
-      assert( op==TK_IN );
-      assert( pLeft->op==TK_VECTOR );
-      assert( ExprUseXList(pLeft) );
-      pLeft = pLeft->x.pList->a[pTerm->u.x.iField-1].pExpr;
+    إذا( p_رڪن->u.x.i_ميدان>0 ){
+      أكد( op==TK_اندريون );
+      أكد( p_کاٻو->op==TK_ويڪٽر );
+      أكد( اظهار_Use_XList(p_کاٻو) );
+      p_کاٻو = p_کاٻو->x.pList->a[p_رڪن->u.x.i_ميدان-1].p_اظهار;
     }
 
-    if( exprMightBeIndexed(pSrc, aiCurCol, pLeft, op) ){
-      pTerm->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pTerm->u.x.leftColumn = aiCurCol[1];
-      pTerm->eOperator = operatorMask(op) & opMask;
+    إذا( اظهار_Might_Be_اشاريي_وارو(pSrc, ai_Cur_کانو, p_کاٻو, op) ){
+      p_رڪن->کاٻو_Cursor = ai_Cur_کانو[0];
+      أكد( (p_رڪن->eOperator & (WO_OR|WO_AND))==0 );
+      p_رڪن->u.x.کاٻو_ڪالم = ai_Cur_کانو[1];
+      p_رڪن->eOperator = operator_نقاب(op) & op_نقاب;
     }
-    if( op==TK_IS ) pTerm->wtFlags |= TERM_IS;
-    if( pRight
-     && exprMightBeIndexed(pSrc, aiCurCol, pRight, op)
-     && !ExprHasProperty(pRight, EP_FixedCol)
+    إذا( op==TK_IS ) p_رڪن->wtFlags |= رڪن_IS;
+    إذا( p_ساڄو
+     && اظهار_Might_Be_اشاريي_وارو(pSrc, ai_Cur_کانو, p_ساڄو, op)
+     && !اظهار_Has_Property(p_ساڄو, EP_Fixed_کانو)
     ){
-      WhereTerm *pNew;
-      Expr *pDup;
+      Where_رڪن *pNew;
+      اظهار *pDup;
       u16 eExtraOp = 0;        /* Extra bits for pNew->eOperator */
-      assert( pTerm->u.x.iField==0 );
-      if( pTerm->leftCursor>=0 ){
-        int idxNew;
-        pDup = sqlite3ExprDup(db, pExpr, 0);
-        if( db->mallocFailed ){
-          sqlite3ExprDelete(db, pDup);
-          return;
+      أكد( p_رڪن->u.x.i_ميدان==0 );
+      إذا( p_رڪن->کاٻو_Cursor>=0 ){
+        صحيح idxNew;
+        pDup = sqlite3_اظهار_Dup(db, p_اظهار, 0);
+        إذا( db->mallocFailed ){
+          sqlite3_اظهار_Delete(db, pDup);
+          أرجع;
         }
-        idxNew = whereClauseInsert(pWC, pDup, TERM_VIRTUAL|TERM_DYNAMIC);
-        if( idxNew==0 ) return;
+        idxNew = where_Clause_وجهو(pWC, pDup, رڪن_VIRTUAL|رڪن_DYNAMIC);
+        إذا( idxNew==0 ) أرجع;
         pNew = &pWC->a[idxNew];
-        markTermAsChild(pWC, idxNew, idxTerm);
-        if( op==TK_IS ) pNew->wtFlags |= TERM_IS;
-        pTerm = &pWC->a[idxTerm];
-        pTerm->wtFlags |= TERM_COPIED;
-        assert( pWInfo->pTabList!=0 );
-        if( termIsEquivalence(pParse, pDup, pWInfo->pTabList) ){
-          pTerm->eOperator |= WO_EQUIV;
+        mark_رڪن_As_ٻار(pWC, idxNew, idx_رڪن);
+        إذا( op==TK_IS ) pNew->wtFlags |= رڪن_IS;
+        p_رڪن = &pWC->a[idx_رڪن];
+        p_رڪن->wtFlags |= رڪن_COPIED;
+        أكد( pWInfo->pTabList!=0 );
+        إذا( رڪن_Is_Equivalence(pParse, pDup, pWInfo->pTabList) ){
+          p_رڪن->eOperator |= WO_EQUIV;
           eExtraOp = WO_EQUIV;
         }
-      }else{
-        pDup = pExpr;
-        pNew = pTerm;
+      }وإلا{
+        pDup = p_اظهار;
+        pNew = p_رڪن;
       }
-      pNew->wtFlags |= exprCommute(pParse, pDup);
-      pNew->leftCursor = aiCurCol[0];
-      assert( (pTerm->eOperator & (WO_OR|WO_AND))==0 );
-      pNew->u.x.leftColumn = aiCurCol[1];
-      testcase( (prereqLeft | extraRight) != prereqLeft );
-      pNew->prereqRight = prereqLeft | extraRight;
+      pNew->wtFlags |= اظهار_Commute(pParse, pDup);
+      pNew->کاٻو_Cursor = ai_Cur_کانو[0];
+      أكد( (p_رڪن->eOperator & (WO_OR|WO_AND))==0 );
+      pNew->u.x.کاٻو_ڪالم = ai_Cur_کانو[1];
+      testcase( (prereq_کاٻو | extra_ساڄو) != prereq_کاٻو );
+      pNew->prereq_ساڄو = prereq_کاٻو | extra_ساڄو;
       pNew->prereqAll = prereqAll;
-      pNew->eOperator = (operatorMask(pDup->op) + eExtraOp) & opMask;
-    }else
-    if( op==TK_ISNULL
-     && !ExprHasProperty(pExpr,EP_OuterON)
-     && 0==sqlite3ExprCanBeNull(pLeft)
+      pNew->eOperator = (operator_نقاب(pDup->op) + eExtraOp) & op_نقاب;
+    }وإلا
+    إذا( op==TK_ISNULL
+     && !اظهار_Has_Property(p_اظهار,EP_OuterON)
+     && 0==sqlite3_اظهار_Can_Be_Null(p_کاٻو)
     ){
-      assert( !ExprHasProperty(pExpr, EP_IntValue) );
-      pExpr->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
-      pExpr->u.zToken = "false";
-      ExprSetProperty(pExpr, EP_IsFalse);
-      pTerm->prereqAll = 0;
-      pTerm->eOperator = 0;
+      أكد( !اظهار_Has_Property(p_اظهار, EP_Int_قدر) );
+      p_اظهار->op = TK_TRUEFALSE;  /* See tag-20230504-1 */
+      p_اظهار->u.zToken = "false";
+      اظهار_سيٽ_Property(p_اظهار, EP_IsFalse);
+      p_رڪن->prereqAll = 0;
+      p_رڪن->eOperator = 0;
     }
   }
 
-#ifndef SQLITE_OMIT_BETWEEN_OPTIMIZATION
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_BETWEEN_OPTIMIZATION
   /* If a term is the BETWEEN operator, create two new virtual terms
   ** that define the range that the BETWEEN implements.  For example:
   **
@@ -1317,84 +1317,84 @@ exprAnalyze_restart:
   ** skipped.  Or, if the children are satisfied by an index, the original
   ** BETWEEN term is skipped.
   */
-  else if( pExpr->op==TK_BETWEEN && pWC->op==TK_AND ){
-    ExprList *pList;
-    int i;
-    static const u8 ops[] = {TK_GE, TK_LE};
-    assert( ExprUseXList(pExpr) );
-    pList = pExpr->x.pList;
-    assert( pList!=0 );
-    assert( pList->nExpr==2 );
-    assert( pWC->a[idxTerm].nChild==0 );
-    for(i=0; i<2; i++){
-      Expr *pNewExpr;
-      int idxNew;
-      pNewExpr = sqlite3PExpr(pParse, ops[i],
-                             sqlite3ExprDup(db, pExpr->pLeft, 0),
-                             sqlite3ExprDup(db, pList->a[i].pExpr, 0));
-      transferJoinMarkings(pNewExpr, pExpr);
-      idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+  وإلا إذا( p_اظهار->op==TK_BETWEEN && pWC->op==TK_AND ){
+    اظهار_List *pList;
+    صحيح i;
+    ساكن ثابت u8 ops[] = {TK_GE, TK_LE};
+    أكد( اظهار_Use_XList(p_اظهار) );
+    pList = p_اظهار->x.pList;
+    أكد( pList!=0 );
+    أكد( pList->n_اظهار==2 );
+    أكد( pWC->a[idx_رڪن].n_ٻار==0 );
+    لكل(i=0; i<2; i++){
+      اظهار *p_New_اظهار;
+      صحيح idxNew;
+      p_New_اظهار = sqlite3PExpr(pParse, ops[i],
+                             sqlite3_اظهار_Dup(db, p_اظهار->p_کاٻو, 0),
+                             sqlite3_اظهار_Dup(db, pList->a[i].p_اظهار, 0));
+      transferJoinMarkings(p_New_اظهار, p_اظهار);
+      idxNew = where_Clause_وجهو(pWC, p_New_اظهار, رڪن_VIRTUAL|رڪن_DYNAMIC);
       testcase( idxNew==0 );
-      exprAnalyze(pSrc, pWC, idxNew);
-      pTerm = &pWC->a[idxTerm];
-      markTermAsChild(pWC, idxNew, idxTerm);
+      اظهار_Analyze(pSrc, pWC, idxNew);
+      p_رڪن = &pWC->a[idx_رڪن];
+      mark_رڪن_As_ٻار(pWC, idxNew, idx_رڪن);
     }
   }
-#endif /* SQLITE_OMIT_BETWEEN_OPTIMIZATION */
+#جيڪڏهن_پورو /* SQLITE_OMIT_BETWEEN_OPTIMIZATION */
 
-#if !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
+#إذا !defined(SQLITE_OMIT_OR_OPTIMIZATION) && !defined(SQLITE_OMIT_SUBQUERY)
   /* Analyze a term that is composed of two or more subterms connected by
   ** an OR operator.
   */
-  else if( pExpr->op==TK_OR && !ExprHasProperty(pExpr, EP_Collate) ){
-    Expr *pAlt = sqlite3ExprSimplifiedAndOr(pExpr);
-    if( pAlt!=pExpr ){
-      pTerm->pExpr = pExpr = sqlite3ExprSkipCollateAndLikely(pAlt);
-      goto exprAnalyze_restart;
+  وإلا إذا( p_اظهار->op==TK_OR && !اظهار_Has_Property(p_اظهار, EP_Collate) ){
+    اظهار *pAlt = sqlite3_اظهار_Simplified_And_Or(p_اظهار);
+    إذا( pAlt!=p_اظهار ){
+      p_رڪن->p_اظهار = p_اظهار = sqlite3_اظهار_Skip_Collate_And_Likely(pAlt);
+      اذهب اظهار_Analyze_restart;
     }
-    assert( pWC->op==TK_AND );
-    exprAnalyzeOrTerm(pSrc, pWC, idxTerm);
-    pTerm = &pWC->a[idxTerm];
+    أكد( pWC->op==TK_AND );
+    اظهار_Analyze_Or_رڪن(pSrc, pWC, idx_رڪن);
+    p_رڪن = &pWC->a[idx_رڪن];
   }
-#endif /* SQLITE_OMIT_OR_OPTIMIZATION */
+#جيڪڏهن_پورو /* SQLITE_OMIT_OR_OPTIMIZATION */
   /* The form "x IS NOT NULL" can sometimes be evaluated more efficiently
   ** as "x>NULL" if x is not an INTEGER PRIMARY KEY.  So construct a
   ** virtual term of that form.
   **
   ** The virtual term must be tagged with TERM_VNULL.
   */
-  else if( pExpr->op==TK_NOTNULL ){
-    if( pExpr->pLeft->op==TK_COLUMN
-     && pExpr->pLeft->iColumn>=0
-     && !ExprHasProperty(pExpr, EP_OuterON)
+  وإلا إذا( p_اظهار->op==TK_NOTNULL ){
+    إذا( p_اظهار->p_کاٻو->op==TK_ڪالم
+     && p_اظهار->p_کاٻو->i_ڪالم>=0
+     && !اظهار_Has_Property(p_اظهار, EP_OuterON)
     ){
-      Expr *pNewExpr;
-      Expr *pLeft = pExpr->pLeft;
-      int idxNew;
-      WhereTerm *pNewTerm;
+      اظهار *p_New_اظهار;
+      اظهار *p_کاٻو = p_اظهار->p_کاٻو;
+      صحيح idxNew;
+      Where_رڪن *p_New_رڪن;
  
-      pNewExpr = sqlite3PExpr(pParse, TK_GT,
-                              sqlite3ExprDup(db, pLeft, 0),
-                              sqlite3ExprAlloc(db, TK_NULL, 0, 0));
+      p_New_اظهار = sqlite3PExpr(pParse, TK_GT,
+                              sqlite3_اظهار_Dup(db, p_کاٻو, 0),
+                              sqlite3_اظهار_Alloc(db, TK_NULL, 0, 0));
  
-      idxNew = whereClauseInsert(pWC, pNewExpr,
-                                TERM_VIRTUAL|TERM_DYNAMIC|TERM_VNULL);
-      if( idxNew ){
-        pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = 0;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
-        pNewTerm->eOperator = WO_GT;
-        markTermAsChild(pWC, idxNew, idxTerm);
-        pTerm = &pWC->a[idxTerm];
-        pTerm->wtFlags |= TERM_COPIED;
-        pNewTerm->prereqAll = pTerm->prereqAll;
+      idxNew = where_Clause_وجهو(pWC, p_New_اظهار,
+                                رڪن_VIRTUAL|رڪن_DYNAMIC|رڪن_VNULL);
+      إذا( idxNew ){
+        p_New_رڪن = &pWC->a[idxNew];
+        p_New_رڪن->prereq_ساڄو = 0;
+        p_New_رڪن->کاٻو_Cursor = p_کاٻو->i_جدول;
+        p_New_رڪن->u.x.کاٻو_ڪالم = p_کاٻو->i_ڪالم;
+        p_New_رڪن->eOperator = WO_GT;
+        mark_رڪن_As_ٻار(pWC, idxNew, idx_رڪن);
+        p_رڪن = &pWC->a[idx_رڪن];
+        p_رڪن->wtFlags |= رڪن_COPIED;
+        p_New_رڪن->prereqAll = p_رڪن->prereqAll;
       }
     }
   }
 
 
-#ifndef SQLITE_OMIT_LIKE_OPTIMIZATION
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_LIKE_OPTIMIZATION
   /* Add constraints to reduce the search space on a LIKE or GLOB
   ** operator.
   **
@@ -1408,86 +1408,86 @@ exprAnalyze_restart:
   ** bound is made all lowercase so that the bounds also work when comparing
   ** BLOBs.
   */
-  else if( pExpr->op==TK_FUNCTION
+  وإلا إذا( p_اظهار->op==TK_FUNCTION
    && pWC->op==TK_AND
-   && isLikeOrGlob(pParse, pExpr, &pStr1, &isComplete, &noCase)
+   && isLikeOrGlob(pParse, p_اظهار, &pStr1, &isComplete, &noCase)
   ){
-    Expr *pLeft;       /* LHS of LIKE/GLOB operator */
-    Expr *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
-    Expr *pNewExpr1;
-    Expr *pNewExpr2;
-    int idxNew1;
-    int idxNew2;
-    const char *zCollSeqName;     /* Name of collating sequence */
-    const u16 wtFlags = TERM_LIKEOPT | TERM_VIRTUAL | TERM_DYNAMIC;
+    اظهار *p_کاٻو;       /* LHS of LIKE/GLOB operator */
+    اظهار *pStr2;       /* Copy of pStr1 - RHS of LIKE/GLOB operator */
+    اظهار *pNewExpr1;
+    اظهار *pNewExpr2;
+    صحيح idxNew1;
+    صحيح idxNew2;
+    ثابت حرف *zCollSeqName;     /* Name of collating sequence */
+    ثابت u16 wtFlags = رڪن_LIKEOPT | رڪن_VIRTUAL | رڪن_DYNAMIC;
 
-    assert( ExprUseXList(pExpr) );
-    pLeft = pExpr->x.pList->a[1].pExpr;
-    pStr2 = sqlite3ExprDup(db, pStr1, 0);
-    assert( pStr1==0 || !ExprHasProperty(pStr1, EP_IntValue) );
-    assert( pStr2==0 || !ExprHasProperty(pStr2, EP_IntValue) );
+    أكد( اظهار_Use_XList(p_اظهار) );
+    p_کاٻو = p_اظهار->x.pList->a[1].p_اظهار;
+    pStr2 = sqlite3_اظهار_Dup(db, pStr1, 0);
+    أكد( pStr1==0 || !اظهار_Has_Property(pStr1, EP_Int_قدر) );
+    أكد( pStr2==0 || !اظهار_Has_Property(pStr2, EP_Int_قدر) );
 
 
     /* Convert the lower bound to upper-case and the upper bound to
     ** lower-case (upper-case is less than lower-case in ASCII) so that
     ** the range constraints also work for BLOBs
     */
-    if( noCase && !pParse->db->mallocFailed ){
-      int i;
-      char c;
-      pTerm->wtFlags |= TERM_LIKE;
-      for(i=0; (c = pStr1->u.zToken[i])!=0; i++){
+    إذا( noCase && !pParse->db->mallocFailed ){
+      صحيح i;
+      حرف c;
+      p_رڪن->wtFlags |= رڪن_LIKE;
+      لكل(i=0; (c = pStr1->u.zToken[i])!=0; i++){
         pStr1->u.zToken[i] = sqlite3Toupper(c);
         pStr2->u.zToken[i] = sqlite3Tolower(c);
       }
     }
 
-    if( !db->mallocFailed ){
+    إذا( !db->mallocFailed ){
       u8 *pC;       /* Last character before the first wildcard */
       pC = (u8*)&pStr2->u.zToken[sqlite3Strlen30(pStr2->u.zToken)-1];
-      if( noCase ){
+      إذا( noCase ){
         /* The point is to increment the last character before the first
         ** wildcard.  But if we increment '@', that will push it into the
         ** alphabetic range where case conversions will mess up the
         ** inequality.  To avoid this, make sure to also run the full
         ** LIKE on all candidate expressions by clearing the isComplete flag
         */
-        if( *pC=='A'-1 ) isComplete = 0;
-        *pC = sqlite3UpperToLower[*pC];
+        إذا( *pC=='A'-1 ) isComplete = 0;
+        *pC = sqlite3_مٿانهون_منزل_هيٺاهون[*pC];
       }
 
       /* Increment the value of the last utf8 character in the prefix. */
-      while( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
+      طالما( *pC==0xBF && pC>(u8*)pStr2->u.zToken ){
         *pC = 0x80;
         pC--;
       }
-      assert( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
+      أكد( *pC!=0xFF );        /* isLikeOrGlob() guarantees this */
       (*pC)++;
     }
-    zCollSeqName = noCase ? "NOCASE" : sqlite3StrBINARY;
-    pNewExpr1 = sqlite3ExprDup(db, pLeft, 0);
+    zCollSeqName = noCase ? "NOCASE" : sqlite3_Str_ٻٽو;
+    pNewExpr1 = sqlite3_اظهار_Dup(db, p_کاٻو, 0);
     pNewExpr1 = sqlite3PExpr(pParse, TK_GE,
-           sqlite3ExprAddCollateString(pParse,pNewExpr1,zCollSeqName),
+           sqlite3_اظهار_جوڙيو_Collate_String(pParse,pNewExpr1,zCollSeqName),
            pStr1);
-    transferJoinMarkings(pNewExpr1, pExpr);
-    idxNew1 = whereClauseInsert(pWC, pNewExpr1, wtFlags);
+    transferJoinMarkings(pNewExpr1, p_اظهار);
+    idxNew1 = where_Clause_وجهو(pWC, pNewExpr1, wtFlags);
     testcase( idxNew1==0 );
-    pNewExpr2 = sqlite3ExprDup(db, pLeft, 0);
+    pNewExpr2 = sqlite3_اظهار_Dup(db, p_کاٻو, 0);
     pNewExpr2 = sqlite3PExpr(pParse, TK_LT,
-           sqlite3ExprAddCollateString(pParse,pNewExpr2,zCollSeqName),
+           sqlite3_اظهار_جوڙيو_Collate_String(pParse,pNewExpr2,zCollSeqName),
            pStr2);
-    transferJoinMarkings(pNewExpr2, pExpr);
-    idxNew2 = whereClauseInsert(pWC, pNewExpr2, wtFlags);
+    transferJoinMarkings(pNewExpr2, p_اظهار);
+    idxNew2 = where_Clause_وجهو(pWC, pNewExpr2, wtFlags);
     testcase( idxNew2==0 );
-    exprAnalyze(pSrc, pWC, idxNew1);
-    exprAnalyze(pSrc, pWC, idxNew2);
-    pTerm = &pWC->a[idxTerm];
-    if( isComplete ){
-      markTermAsChild(pWC, idxNew1, idxTerm);
-      markTermAsChild(pWC, idxNew2, idxTerm);
+    اظهار_Analyze(pSrc, pWC, idxNew1);
+    اظهار_Analyze(pSrc, pWC, idxNew2);
+    p_رڪن = &pWC->a[idx_رڪن];
+    إذا( isComplete ){
+      mark_رڪن_As_ٻار(pWC, idxNew1, idx_رڪن);
+      mark_رڪن_As_ٻار(pWC, idxNew2, idx_رڪن);
     }
   }
-#endif /* SQLITE_OMIT_LIKE_OPTIMIZATION */
+#جيڪڏهن_پورو /* SQLITE_OMIT_LIKE_OPTIMIZATION */
 
   /* If there is a vector == or IS term - e.g. "(a, b) == (?, ?)" - create
   ** new terms for each component comparison - "a = ?" and "b = ?".  The
@@ -1499,28 +1499,28 @@ exprAnalyze_restart:
   **
   ** tag-20220128a
   */
-  if( (pExpr->op==TK_EQ || pExpr->op==TK_IS)
-   && (nLeft = sqlite3ExprVectorSize(pExpr->pLeft))>1
-   && sqlite3ExprVectorSize(pExpr->pRight)==nLeft
-   && ( (pExpr->pLeft->flags & EP_xIsSelect)==0
-     || (pExpr->pRight->flags & EP_xIsSelect)==0)
+  إذا( (p_اظهار->op==TK_EQ || p_اظهار->op==TK_IS)
+   && (n_کاٻو = sqlite3_اظهار_ويڪٽر_سائيز(p_اظهار->p_کاٻو))>1
+   && sqlite3_اظهار_ويڪٽر_سائيز(p_اظهار->p_ساڄو)==n_کاٻو
+   && ( (p_اظهار->p_کاٻو->flags & EP_xIsSelect)==0
+     || (p_اظهار->p_ساڄو->flags & EP_xIsSelect)==0)
    && pWC->op==TK_AND
   ){
-    int i;
-    for(i=0; i<nLeft; i++){
-      int idxNew;
-      Expr *pNew;
-      Expr *pLeft = sqlite3ExprForVectorField(pParse, pExpr->pLeft, i, nLeft);
-      Expr *pRight = sqlite3ExprForVectorField(pParse, pExpr->pRight, i, nLeft);
+    صحيح i;
+    لكل(i=0; i<n_کاٻو; i++){
+      صحيح idxNew;
+      اظهار *pNew;
+      اظهار *p_کاٻو = sqlite3_اظهار_For_ويڪٽر_ميدان(pParse, p_اظهار->p_کاٻو, i, n_کاٻو);
+      اظهار *p_ساڄو = sqlite3_اظهار_For_ويڪٽر_ميدان(pParse, p_اظهار->p_ساڄو, i, n_کاٻو);
 
-      pNew = sqlite3PExpr(pParse, pExpr->op, pLeft, pRight);
-      transferJoinMarkings(pNew, pExpr);
-      idxNew = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_SLICE);
-      exprAnalyze(pSrc, pWC, idxNew);
+      pNew = sqlite3PExpr(pParse, p_اظهار->op, p_کاٻو, p_ساڄو);
+      transferJoinMarkings(pNew, p_اظهار);
+      idxNew = where_Clause_وجهو(pWC, pNew, رڪن_DYNAMIC|رڪن_ٽڪرو);
+      اظهار_Analyze(pSrc, pWC, idxNew);
     }
-    pTerm = &pWC->a[idxTerm];
-    pTerm->wtFlags |= TERM_CODED|TERM_VIRTUAL;  /* Disable the original */
-    pTerm->eOperator = WO_ROWVAL;
+    p_رڪن = &pWC->a[idx_رڪن];
+    p_رڪن->wtFlags |= رڪن_CODED|رڪن_VIRTUAL;  /* Disable the original */
+    p_رڪن->eOperator = WO_ROWVAL;
   }
 
   /* If there is a vector IN term - e.g. "(a, b) IN (SELECT ...)" - create
@@ -1532,31 +1532,31 @@ exprAnalyze_restart:
   ** This only works if the RHS is a simple SELECT (not a compound) that does
   ** not use window functions.
   */
-  else if( pExpr->op==TK_IN
-   && pTerm->u.x.iField==0
-   && pExpr->pLeft->op==TK_VECTOR
-   && ALWAYS( ExprUseXSelect(pExpr) )
-   && (pExpr->x.pSelect->pPrior==0 || (pExpr->x.pSelect->selFlags & SF_Values))
-#ifndef SQLITE_OMIT_WINDOWFUNC
-   && pExpr->x.pSelect->pWin==0
-#endif
-   && (pExpr->x.pSelect->selFlags & SF_MinMaxAgg)==0
+  وإلا إذا( p_اظهار->op==TK_اندريون
+   && p_رڪن->u.x.i_ميدان==0
+   && p_اظهار->p_کاٻو->op==TK_ويڪٽر
+   && ALWAYS( اظهار_Use_XSelect(p_اظهار) )
+   && (p_اظهار->x.pSelect->p_اڳواٽ==0 || (p_اظهار->x.pSelect->selFlags & SF_قدرون))
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_WINDOWFUNC
+   && p_اظهار->x.pSelect->pWin==0
+#جيڪڏهن_پورو
+   && (p_اظهار->x.pSelect->selFlags & SF_MinMaxAgg)==0
    && pWC->op==TK_AND
-   && pExpr->x.pSelect->pEList->nExpr <= UMXV(pTerm->nChild)
+   && p_اظهار->x.pSelect->pEList->n_اظهار <= UMXV(p_رڪن->n_ٻار)
    /* ^-- See bug 2026-06-04T10:00:49Z */
   ){
-    int i;
-    assert( pTerm->nChild==0 );
-    for(i=0; i<sqlite3ExprVectorSize(pExpr->pLeft); i++){
-      int idxNew;
-      idxNew = whereClauseInsert(pWC, pExpr, TERM_VIRTUAL|TERM_SLICE);
-      pWC->a[idxNew].u.x.iField = i+1;
-      exprAnalyze(pSrc, pWC, idxNew);
-      markTermAsChild(pWC, idxNew, idxTerm);
+    صحيح i;
+    أكد( p_رڪن->n_ٻار==0 );
+    لكل(i=0; i<sqlite3_اظهار_ويڪٽر_سائيز(p_اظهار->p_کاٻو); i++){
+      صحيح idxNew;
+      idxNew = where_Clause_وجهو(pWC, p_اظهار, رڪن_VIRTUAL|رڪن_ٽڪرو);
+      pWC->a[idxNew].u.x.i_ميدان = i+1;
+      اظهار_Analyze(pSrc, pWC, idxNew);
+      mark_رڪن_As_ٻار(pWC, idxNew, idx_رڪن);
     }
   }
 
-#ifndef SQLITE_OMIT_VIRTUALTABLE
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_VIRTUALTABLE
   /* Add a WO_AUX auxiliary term to the constraint set if the
   ** current expression is of the form "column OP expr" where OP
   ** is an operator that gets passed into virtual tables but which is
@@ -1566,48 +1566,48 @@ exprAnalyze_restart:
   ** virtual tables.  The native query optimizer does not attempt
   ** to do anything with MATCH functions.
   */
-  else if( pWC->op==TK_AND ){
-    Expr *pRight = 0, *pLeft = 0;
-    int res = isAuxiliaryVtabOperator(db, pExpr, &eOp2, &pLeft, &pRight);
-    while( res-- > 0 ){
-      int idxNew;
-      WhereTerm *pNewTerm;
-      Bitmask prereqColumn, prereqExpr;
+  وإلا إذا( pWC->op==TK_AND ){
+    اظهار *p_ساڄو = 0, *p_کاٻو = 0;
+    صحيح res = isAuxiliaryVtabOperator(db, p_اظهار, &eOp2, &p_کاٻو, &p_ساڄو);
+    طالما( res-- > 0 ){
+      صحيح idxNew;
+      Where_رڪن *p_New_رڪن;
+      Bitmask prereq_ڪالم, prereq_اظهار;
 
-      prereqExpr = sqlite3WhereExprUsage(pMaskSet, pRight);
-      prereqColumn = sqlite3WhereExprUsage(pMaskSet, pLeft);
-      if( (prereqExpr & prereqColumn)==0 ){
-        Expr *pNewExpr;
-        pNewExpr = sqlite3PExpr(pParse, TK_MATCH,
-            0, sqlite3ExprDup(db, pRight, 0));
-        if( ExprHasProperty(pExpr, EP_OuterON) && pNewExpr ){
-          ExprSetProperty(pNewExpr, EP_OuterON);
-          pNewExpr->w.iJoin = pExpr->w.iJoin;
+      prereq_اظهار = sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, p_ساڄو);
+      prereq_ڪالم = sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, p_کاٻو);
+      إذا( (prereq_اظهار & prereq_ڪالم)==0 ){
+        اظهار *p_New_اظهار;
+        p_New_اظهار = sqlite3PExpr(pParse, TK_ميلاپ,
+            0, sqlite3_اظهار_Dup(db, p_ساڄو, 0));
+        إذا( اظهار_Has_Property(p_اظهار, EP_OuterON) && p_New_اظهار ){
+          اظهار_سيٽ_Property(p_New_اظهار, EP_OuterON);
+          p_New_اظهار->w.iJoin = p_اظهار->w.iJoin;
         }
-        idxNew = whereClauseInsert(pWC, pNewExpr, TERM_VIRTUAL|TERM_DYNAMIC);
+        idxNew = where_Clause_وجهو(pWC, p_New_اظهار, رڪن_VIRTUAL|رڪن_DYNAMIC);
         testcase( idxNew==0 );
-        pNewTerm = &pWC->a[idxNew];
-        pNewTerm->prereqRight = prereqExpr | extraRight;
-        pNewTerm->leftCursor = pLeft->iTable;
-        pNewTerm->u.x.leftColumn = pLeft->iColumn;
-        pNewTerm->eOperator = WO_AUX;
-        pNewTerm->eMatchOp = eOp2;
-        markTermAsChild(pWC, idxNew, idxTerm);
-        pTerm = &pWC->a[idxTerm];
-        pTerm->wtFlags |= TERM_COPIED;
-        pNewTerm->prereqAll = pTerm->prereqAll;
+        p_New_رڪن = &pWC->a[idxNew];
+        p_New_رڪن->prereq_ساڄو = prereq_اظهار | extra_ساڄو;
+        p_New_رڪن->کاٻو_Cursor = p_کاٻو->i_جدول;
+        p_New_رڪن->u.x.کاٻو_ڪالم = p_کاٻو->i_ڪالم;
+        p_New_رڪن->eOperator = WO_AUX;
+        p_New_رڪن->e_ميلاپ_Op = eOp2;
+        mark_رڪن_As_ٻار(pWC, idxNew, idx_رڪن);
+        p_رڪن = &pWC->a[idx_رڪن];
+        p_رڪن->wtFlags |= رڪن_COPIED;
+        p_New_رڪن->prereqAll = p_رڪن->prereqAll;
       }
-      SWAP(Expr*, pLeft, pRight);
+      مٽا_سٽا(اظهار*, p_کاٻو, p_ساڄو);
     }
   }
-#endif /* SQLITE_OMIT_VIRTUALTABLE */
+#جيڪڏهن_پورو /* SQLITE_OMIT_VIRTUALTABLE */
 
   /* Prevent ON clause terms of a LEFT JOIN from being used to drive
   ** an index for tables to the left of the join.
   */
-  testcase( pTerm!=&pWC->a[idxTerm] );
-  pTerm = &pWC->a[idxTerm];
-  pTerm->prereqRight |= extraRight;
+  testcase( p_رڪن!=&pWC->a[idx_رڪن] );
+  p_رڪن = &pWC->a[idx_رڪن];
+  p_رڪن->prereq_ساڄو |= extra_ساڄو;
 }
 
 /***************************************************************************
@@ -1632,16 +1632,16 @@ exprAnalyze_restart:
 ** the WhereClause.a[] array.  The slot[] array grows as needed to contain
 ** all terms of the WHERE clause.
 */
-void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
-  Expr *pE2 = sqlite3ExprSkipCollateAndLikely(pExpr);
+فراغ sqlite3_Where_ورهايو(WhereClause *pWC, اظهار *p_اظهار, u8 op){
+  اظهار *pE2 = sqlite3_اظهار_Skip_Collate_And_Likely(p_اظهار);
   pWC->op = op;
-  assert( pE2!=0 || pExpr==0 );
-  if( pE2==0 ) return;
-  if( pE2->op!=op ){
-    whereClauseInsert(pWC, pExpr, 0);
-  }else{
-    sqlite3WhereSplit(pWC, pE2->pLeft, op);
-    sqlite3WhereSplit(pWC, pE2->pRight, op);
+  أكد( pE2!=0 || p_اظهار==0 );
+  إذا( pE2==0 ) أرجع;
+  إذا( pE2->op!=op ){
+    where_Clause_وجهو(pWC, p_اظهار, 0);
+  }وإلا{
+    sqlite3_Where_ورهايو(pWC, pE2->p_کاٻو, op);
+    sqlite3_Where_ورهايو(pWC, pE2->p_ساڄو, op);
   }
 }
 
@@ -1656,36 +1656,36 @@ void sqlite3WhereSplit(WhereClause *pWC, Expr *pExpr, u8 op){
 ** TK_INTEGER so that it will be available to sqlite3_vtab_rhs_value().
 ** If not, then it codes as a TK_REGISTER expression.
 */
-static void whereAddLimitExpr(
+ساكن فراغ where_جوڙيو_حد_بندي_اظهار(
   WhereClause *pWC,   /* Add the constraint to this WHERE clause */
-  int iReg,           /* Register that will hold value of the limit/offset */
-  Expr *pExpr,        /* Expression that defines the limit/offset */
-  int iCsr,           /* Cursor to which the constraint applies */
-  int eMatchOp        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
+  صحيح iReg,           /* Register that will hold value of the limit/offset */
+  اظهار *p_اظهار,        /* Expression that defines the limit/offset */
+  صحيح iCsr,           /* Cursor to which the constraint applies */
+  صحيح e_ميلاپ_Op        /* SQLITE_INDEX_CONSTRAINT_LIMIT or _OFFSET */
 ){
   Parse *pParse = pWC->pWInfo->pParse;
   sqlite3 *db = pParse->db;
-  Expr *pNew;
-  int iVal = 0;
+  اظهار *pNew;
+  صحيح iVal = 0;
 
-  if( sqlite3ExprIsInteger(pExpr, &iVal, pParse, 0) && iVal>=0 ){
-    Expr *pVal = sqlite3ExprInt32(db, iVal);
-    if( pVal==0 ) return;
-    pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
-  }else{
-    Expr *pVal = sqlite3ExprAlloc(db, TK_REGISTER, 0, 0);
-    if( pVal==0 ) return;
-    pVal->iTable = iReg;
-    pNew = sqlite3PExpr(pParse, TK_MATCH, 0, pVal);
+  إذا( sqlite3_اظهار_Is_Integer(p_اظهار, &iVal, pParse, 0) && iVal>=0 ){
+    اظهار *pVal = sqlite3_اظهار_Int32(db, iVal);
+    إذا( pVal==0 ) أرجع;
+    pNew = sqlite3PExpr(pParse, TK_ميلاپ, 0, pVal);
+  }وإلا{
+    اظهار *pVal = sqlite3_اظهار_Alloc(db, TK_رجسٽر, 0, 0);
+    إذا( pVal==0 ) أرجع;
+    pVal->i_جدول = iReg;
+    pNew = sqlite3PExpr(pParse, TK_ميلاپ, 0, pVal);
   }
-  if( pNew ){
-    WhereTerm *pTerm;
-    int idx;
-    idx = whereClauseInsert(pWC, pNew, TERM_DYNAMIC|TERM_VIRTUAL);
-    pTerm = &pWC->a[idx];
-    pTerm->leftCursor = iCsr;
-    pTerm->eOperator = WO_AUX;
-    pTerm->eMatchOp = eMatchOp;
+  إذا( pNew ){
+    Where_رڪن *p_رڪن;
+    صحيح idx;
+    idx = where_Clause_وجهو(pWC, pNew, رڪن_DYNAMIC|رڪن_VIRTUAL);
+    p_رڪن = &pWC->a[idx];
+    p_رڪن->کاٻو_Cursor = iCsr;
+    p_رڪن->eOperator = WO_AUX;
+    p_رڪن->e_ميلاپ_Op = e_ميلاپ_Op;
   }
 }
 
@@ -1707,69 +1707,69 @@ static void whereAddLimitExpr(
 ** exist only so that they may be passed to the xBestIndex method of the
 ** single virtual table in the FROM clause of the SELECT.
 */
-void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
-  assert( p!=0 && p->pLimit!=0 );                 /* 1 -- checked by caller */
-  if( p->pGroupBy==0
+فراغ SQLITE_NOINLINE sqlite3_Where_جوڙيو_حد_بندي(WhereClause *pWC, Select *p){
+  أكد( p!=0 && p->p_حد_بندي!=0 );                 /* 1 -- checked by caller */
+  إذا( p->p_گروهه_By==0
    && (p->selFlags & (SF_Distinct|SF_Aggregate))==0             /* 2 */
    && (p->pSrc->nSrc==1 && IsVirtual(p->pSrc->a[0].pSTab))      /* 3 */
   ){
-    ExprList *pOrderBy = p->pOrderBy;
-    int iCsr = p->pSrc->a[0].iCursor;
-    int ii;
+    اظهار_List *p_ترتيب_By = p->p_ترتيب_By;
+    صحيح iCsr = p->pSrc->a[0].iCursor;
+    صحيح ii;
 
     /* Check condition (4). Return early if it is not met. */
-    for(ii=0; ii<pWC->nTerm; ii++){
-      if( pWC->a[ii].wtFlags & TERM_CODED ){
+    لكل(ii=0; ii<pWC->n_رڪن; ii++){
+      إذا( pWC->a[ii].wtFlags & رڪن_CODED ){
         /* This term is a vector operation that has been decomposed into
         ** other, subsequent terms.  It can be ignored. See tag-20220128a */
-        assert( pWC->a[ii].wtFlags & TERM_VIRTUAL );
-        assert( pWC->a[ii].eOperator==WO_ROWVAL );
-        continue;
+        أكد( pWC->a[ii].wtFlags & رڪن_VIRTUAL );
+        أكد( pWC->a[ii].eOperator==WO_ROWVAL );
+        استمر;
       }
-      if( pWC->a[ii].nChild ){
+      إذا( pWC->a[ii].n_ٻار ){
         /* If this term has child terms, then they are also part of the
         ** pWC->a[] array. So this term can be ignored, as a LIMIT clause
         ** will only be added if each of the child terms passes the
         ** (leftCursor==iCsr) test below.  */
-        continue;
+        استمر;
       }
-      if( pWC->a[ii].leftCursor==iCsr && pWC->a[ii].prereqRight==0 ) continue;
+      إذا( pWC->a[ii].کاٻو_Cursor==iCsr && pWC->a[ii].prereq_ساڄو==0 ) استمر;
 
       /* If this term has a parent with exactly one child, and the parent will
       ** be passed through to xBestIndex, then this term can be ignored.  */
-      if( pWC->a[ii].iParent>=0 ){
-        WhereTerm *pParent = &pWC->a[ pWC->a[ii].iParent ];
-        if( pParent->leftCursor==iCsr
-         && pParent->prereqRight==0
-         && pParent->nChild==1
+      إذا( pWC->a[ii].i_والد>=0 ){
+        Where_رڪن *p_والد = &pWC->a[ pWC->a[ii].i_والد ];
+        إذا( p_والد->کاٻو_Cursor==iCsr
+         && p_والد->prereq_ساڄو==0
+         && p_والد->n_ٻار==1
         ){
-          continue;
+          استمر;
         }
       }
 
       /* This term will not be passed through. Do not add a LIMIT clause. */
-      return;
+      أرجع;
     }
 
     /* Check condition (5). Return early if it is not met. */
-    if( pOrderBy ){
-      for(ii=0; ii<pOrderBy->nExpr; ii++){
-        Expr *pExpr = pOrderBy->a[ii].pExpr;
-        if( pExpr->op!=TK_COLUMN ) return;
-        if( pExpr->iTable!=iCsr ) return;
-        if( pOrderBy->a[ii].fg.sortFlags & KEYINFO_ORDER_BIGNULL ) return;
+    إذا( p_ترتيب_By ){
+      لكل(ii=0; ii<p_ترتيب_By->n_اظهار; ii++){
+        اظهار *p_اظهار = p_ترتيب_By->a[ii].p_اظهار;
+        إذا( p_اظهار->op!=TK_ڪالم ) أرجع;
+        إذا( p_اظهار->i_جدول!=iCsr ) أرجع;
+        إذا( p_ترتيب_By->a[ii].fg.ترتيب_ڏيو_Flags & KEYINFO_ترتيب_BIGNULL ) أرجع;
       }
     }
 
     /* All conditions are met. Add the terms to the where-clause object. */
-    assert( p->pLimit->op==TK_LIMIT );
-    if( p->iOffset!=0 && (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iOffset, p->pLimit->pRight,
-                        iCsr, SQLITE_INDEX_CONSTRAINT_OFFSET);
+    أكد( p->p_حد_بندي->op==TK_حد_بندي );
+    إذا( p->i_وٿي!=0 && (p->selFlags & SF_Compound)==0 ){
+      where_جوڙيو_حد_بندي_اظهار(pWC, p->i_وٿي, p->p_حد_بندي->p_ساڄو,
+                        iCsr, SQLITE_اشاريو_CONSTRAINT_وٿي);
     }
-    if( p->iOffset==0 || (p->selFlags & SF_Compound)==0 ){
-      whereAddLimitExpr(pWC, p->iLimit, p->pLimit->pLeft,
-                        iCsr, SQLITE_INDEX_CONSTRAINT_LIMIT);
+    إذا( p->i_وٿي==0 || (p->selFlags & SF_Compound)==0 ){
+      where_جوڙيو_حد_بندي_اظهار(pWC, p->i_حد_بندي, p->p_حد_بندي->p_کاٻو,
+                        iCsr, SQLITE_اشاريو_CONSTRAINT_حد_بندي);
     }
   }
 }
@@ -1777,16 +1777,16 @@ void SQLITE_NOINLINE sqlite3WhereAddLimit(WhereClause *pWC, Select *p){
 /*
 ** Initialize a preallocated WhereClause structure.
 */
-void sqlite3WhereClauseInit(
+فراغ sqlite3WhereClauseInit(
   WhereClause *pWC,        /* The WhereClause to be initialized */
   WhereInfo *pWInfo        /* The WHERE processing context */
 ){
   pWC->pWInfo = pWInfo;
   pWC->hasOr = 0;
   pWC->pOuter = 0;
-  pWC->nTerm = 0;
-  pWC->nBase = 0;
-  pWC->nSlot = ArraySize(pWC->aStatic);
+  pWC->n_رڪن = 0;
+  pWC->n_بنياد = 0;
+  pWC->n_جڳهه = Array_سائيز(pWC->aStatic);
   pWC->a = pWC->aStatic;
 }
 
@@ -1795,34 +1795,34 @@ void sqlite3WhereClauseInit(
 ** itself is not freed.  This routine is the inverse of
 ** sqlite3WhereClauseInit().
 */
-void sqlite3WhereClauseClear(WhereClause *pWC){
+فراغ sqlite3WhereClauseClear(WhereClause *pWC){
   sqlite3 *db = pWC->pWInfo->pParse->db;
-  assert( pWC->nTerm>=pWC->nBase );
-  if( pWC->nTerm>0 ){
-    WhereTerm *a = pWC->a;
-    WhereTerm *aLast = &pWC->a[pWC->nTerm-1];
-#ifdef SQLITE_DEBUG
-    int i;
+  أكد( pWC->n_رڪن>=pWC->n_بنياد );
+  إذا( pWC->n_رڪن>0 ){
+    Where_رڪن *a = pWC->a;
+    Where_رڪن *a_آخري = &pWC->a[pWC->n_رڪن-1];
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+    صحيح i;
     /* Verify that every term past pWC->nBase is virtual */
-    for(i=pWC->nBase; i<pWC->nTerm; i++){
-      assert( (pWC->a[i].wtFlags & TERM_VIRTUAL)!=0 );
+    لكل(i=pWC->n_بنياد; i<pWC->n_رڪن; i++){
+      أكد( (pWC->a[i].wtFlags & رڪن_VIRTUAL)!=0 );
     }
-#endif
-    while(1){
-      assert( a->eMatchOp==0 || a->eOperator==WO_AUX );
-      if( a->wtFlags & TERM_DYNAMIC ){
-        sqlite3ExprDelete(db, a->pExpr);
+#جيڪڏهن_پورو
+    طالما(1){
+      أكد( a->e_ميلاپ_Op==0 || a->eOperator==WO_AUX );
+      إذا( a->wtFlags & رڪن_DYNAMIC ){
+        sqlite3_اظهار_Delete(db, a->p_اظهار);
       }
-      if( a->wtFlags & (TERM_ORINFO|TERM_ANDINFO) ){
-        if( a->wtFlags & TERM_ORINFO ){
-          assert( (a->wtFlags & TERM_ANDINFO)==0 );
+      إذا( a->wtFlags & (رڪن_ORINFO|رڪن_ANDINFO) ){
+        إذا( a->wtFlags & رڪن_ORINFO ){
+          أكد( (a->wtFlags & رڪن_ANDINFO)==0 );
           whereOrInfoDelete(db, a->u.pOrInfo);
-        }else{
-          assert( (a->wtFlags & TERM_ANDINFO)!=0 );
+        }وإلا{
+          أكد( (a->wtFlags & رڪن_ANDINFO)!=0 );
           whereAndInfoDelete(db, a->u.pAndInfo);
         }
       }
-      if( a==aLast ) break;
+      إذا( a==a_آخري ) اكسر;
       a++;
     }
   }
@@ -1860,53 +1860,53 @@ void sqlite3WhereClauseClear(WhereClause *pWC){
 **       "no-inline" function to avoid the stack push overhead in the
 **       common case where it is not needed.
 */
-static SQLITE_NOINLINE Bitmask sqlite3WhereExprUsageFull(
-  WhereMaskSet *pMaskSet,
-  Expr *p
+ساكن SQLITE_NOINLINE Bitmask sqlite3_Where_اظهار_Usage_ڀريل(
+  Where_نقاب_سيٽ *p_نقاب_سيٽ,
+  اظهار *p
 ){
-  Bitmask mask;
-  mask = (p->op==TK_IF_NULL_ROW) ? sqlite3WhereGetMask(pMaskSet, p->iTable) : 0;
-  if( p->pLeft ) mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pLeft);
-  if( p->pRight ){
-    mask |= sqlite3WhereExprUsageNN(pMaskSet, p->pRight);
-    assert( p->x.pList==0 );
-  }else if( ExprUseXSelect(p) ){
-    if( ExprHasProperty(p, EP_VarSelect) ) pMaskSet->bVarSelect = 1;
-    mask |= exprSelectUsage(pMaskSet, p->x.pSelect);
-  }else if( p->x.pList ){
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->x.pList);
+  Bitmask نقاب;
+  نقاب = (p->op==TK_IF_NULL_صف) ? sqlite3_Where_Get_نقاب(p_نقاب_سيٽ, p->i_جدول) : 0;
+  إذا( p->p_کاٻو ) نقاب |= sqlite3_Where_اظهار_Usage_NN(p_نقاب_سيٽ, p->p_کاٻو);
+  إذا( p->p_ساڄو ){
+    نقاب |= sqlite3_Where_اظهار_Usage_NN(p_نقاب_سيٽ, p->p_ساڄو);
+    أكد( p->x.pList==0 );
+  }وإلا إذا( اظهار_Use_XSelect(p) ){
+    إذا( اظهار_Has_Property(p, EP_VarSelect) ) p_نقاب_سيٽ->bVarSelect = 1;
+    نقاب |= اظهار_Select_Usage(p_نقاب_سيٽ, p->x.pSelect);
+  }وإلا إذا( p->x.pList ){
+    نقاب |= sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, p->x.pList);
   }
-#ifndef SQLITE_OMIT_WINDOWFUNC
-  if( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && ExprUseYWin(p) ){
-    assert( p->y.pWin!=0 );
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pPartition);
-    mask |= sqlite3WhereExprListUsage(pMaskSet, p->y.pWin->pOrderBy);
-    mask |= sqlite3WhereExprUsage(pMaskSet, p->y.pWin->pFilter);
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_WINDOWFUNC
+  إذا( (p->op==TK_FUNCTION || p->op==TK_AGG_FUNCTION) && اظهار_Use_YWin(p) ){
+    أكد( p->y.pWin!=0 );
+    نقاب |= sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, p->y.pWin->p_حصا_ڪريو);
+    نقاب |= sqlite3_Where_اظهار_List_Usage(p_نقاب_سيٽ, p->y.pWin->p_ترتيب_By);
+    نقاب |= sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, p->y.pWin->pFilter);
   }
-#endif
-  return mask;
+#جيڪڏهن_پورو
+  أرجع نقاب;
 }
-Bitmask sqlite3WhereExprUsageNN(WhereMaskSet *pMaskSet, Expr *p){
-  if( p->op==TK_COLUMN && !ExprHasProperty(p, EP_FixedCol) ){
-    return sqlite3WhereGetMask(pMaskSet, p->iTable);
-  }else if( ExprHasProperty(p, EP_TokenOnly|EP_Leaf) ){
-    assert( p->op!=TK_IF_NULL_ROW );
-    return 0;
+Bitmask sqlite3_Where_اظهار_Usage_NN(Where_نقاب_سيٽ *p_نقاب_سيٽ, اظهار *p){
+  إذا( p->op==TK_ڪالم && !اظهار_Has_Property(p, EP_Fixed_کانو) ){
+    أرجع sqlite3_Where_Get_نقاب(p_نقاب_سيٽ, p->i_جدول);
+  }وإلا إذا( اظهار_Has_Property(p, EP_TokenOnly|EP_پن) ){
+    أكد( p->op!=TK_IF_NULL_صف );
+    أرجع 0;
   }
-  return sqlite3WhereExprUsageFull(pMaskSet, p);
+  أرجع sqlite3_Where_اظهار_Usage_ڀريل(p_نقاب_سيٽ, p);
 }
-Bitmask sqlite3WhereExprUsage(WhereMaskSet *pMaskSet, Expr *p){
-  return p ? sqlite3WhereExprUsageNN(pMaskSet,p) : 0;
+Bitmask sqlite3_Where_اظهار_Usage(Where_نقاب_سيٽ *p_نقاب_سيٽ, اظهار *p){
+  أرجع p ? sqlite3_Where_اظهار_Usage_NN(p_نقاب_سيٽ,p) : 0;
 }
-Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
-  int i;
-  Bitmask mask = 0;
-  if( pList ){
-    for(i=0; i<pList->nExpr; i++){
-      mask |= sqlite3WhereExprUsage(pMaskSet, pList->a[i].pExpr);
+Bitmask sqlite3_Where_اظهار_List_Usage(Where_نقاب_سيٽ *p_نقاب_سيٽ, اظهار_List *pList){
+  صحيح i;
+  Bitmask نقاب = 0;
+  إذا( pList ){
+    لكل(i=0; i<pList->n_اظهار; i++){
+      نقاب |= sqlite3_Where_اظهار_Usage(p_نقاب_سيٽ, pList->a[i].p_اظهار);
     }
   }
-  return mask;
+  أرجع نقاب;
 }
 
 
@@ -1918,13 +1918,13 @@ Bitmask sqlite3WhereExprListUsage(WhereMaskSet *pMaskSet, ExprList *pList){
 ** virtual terms, so start analyzing at the end and work forward
 ** so that the added virtual terms are never processed.
 */
-void sqlite3WhereExprAnalyze(
+فراغ sqlite3_Where_اظهار_Analyze(
   SrcList *pTabList,       /* the FROM clause */
   WhereClause *pWC         /* the WHERE clause to be analyzed */
 ){
-  int i;
-  for(i=pWC->nTerm-1; i>=0; i--){
-    exprAnalyze(pTabList, pWC, i);
+  صحيح i;
+  لكل(i=pWC->n_رڪن-1; i>=0; i--){
+    اظهار_Analyze(pTabList, pWC, i);
   }
 }
 
@@ -1935,54 +1935,54 @@ void sqlite3WhereExprAnalyze(
 ** Each function argument translates into an equality constraint against
 ** a HIDDEN column in the table.
 */
-void sqlite3WhereTabFuncArgs(
+فراغ sqlite3_Where_Tab_Func_دليلون(
   Parse *pParse,                    /* Parsing context */
-  SrcItem *pItem,                   /* The FROM clause term to process */
+  Src_شي *p_شي,                   /* The FROM clause term to process */
   WhereClause *pWC                  /* Xfer function arguments to here */
 ){
-  Table *pTab;
-  int j, k;
-  ExprList *pArgs;
-  Expr *pColRef;
-  Expr *pTerm;
-  if( pItem->fg.isTabFunc==0 ) return;
-  pTab = pItem->pSTab;
-  assert( pTab!=0 );
-  if( !IsVirtual(pTab) ){
-    sqlite3ErrorMsg(pParse, "'%s' is not a function", pItem->zName);
-    return;
+  جدول *pTab;
+  صحيح j, k;
+  اظهار_List *p_دليلون;
+  اظهار *p_کانو_Ref;
+  اظهار *p_رڪن;
+  إذا( p_شي->fg.isTabFunc==0 ) أرجع;
+  pTab = p_شي->pSTab;
+  أكد( pTab!=0 );
+  إذا( !IsVirtual(pTab) ){
+    sqlite3_Error_نياپو(pParse, "'%s' is not a function", p_شي->zName);
+    أرجع;
   }
-  pArgs = pItem->u1.pFuncArg;
-  if( pArgs==0 ) return;
-  for(j=k=0; j<pArgs->nExpr; j++){
-    Expr *pRhs;
+  p_دليلون = p_شي->u1.pFuncArg;
+  إذا( p_دليلون==0 ) أرجع;
+  لكل(j=k=0; j<p_دليلون->n_اظهار; j++){
+    اظهار *pRhs;
     u32 joinType;
-    while( k<pTab->nCol && (pTab->aCol[k].colFlags & COLFLAG_HIDDEN)==0 ){k++;}
-    if( k>=pTab->nCol ){
-      sqlite3ErrorMsg(pParse, "too many arguments on %s() - max %d",
+    طالما( k<pTab->n_کانو && (pTab->a_کانو[k].کانو_Flags & COLFLAG_HIDDEN)==0 ){k++;}
+    إذا( k>=pTab->n_کانو ){
+      sqlite3_Error_نياپو(pParse, "too many arguments on %s() - max %d",
                       pTab->zName, j);
-      return;
+      أرجع;
     }
-    pColRef = sqlite3ExprAlloc(pParse->db, TK_COLUMN, 0, 0);
-    if( pColRef==0 ) return;
-    pColRef->iTable = pItem->iCursor;
-    pColRef->iColumn = k++;
-    assert( ExprUseYTab(pColRef) );
-    pColRef->y.pTab = pTab;
-    pItem->colUsed |= sqlite3ExprColUsed(pColRef);
+    p_کانو_Ref = sqlite3_اظهار_Alloc(pParse->db, TK_ڪالم, 0, 0);
+    إذا( p_کانو_Ref==0 ) أرجع;
+    p_کانو_Ref->i_جدول = p_شي->iCursor;
+    p_کانو_Ref->i_ڪالم = k++;
+    أكد( اظهار_Use_YTab(p_کانو_Ref) );
+    p_کانو_Ref->y.pTab = pTab;
+    p_شي->کانو_استعمال_ٿيل |= sqlite3_اظهار_کانو_استعمال_ٿيل(p_کانو_Ref);
     pRhs = sqlite3PExpr(pParse, TK_UPLUS,
-        sqlite3ExprDup(pParse->db, pArgs->a[j].pExpr, 0), 0);
-    pTerm = sqlite3PExpr(pParse, TK_EQ, pColRef, pRhs);
-    if( pItem->fg.jointype & (JT_LEFT|JT_RIGHT) ){
-      testcase( pItem->fg.jointype & JT_LEFT );  /* testtag-20230227a */
-      testcase( pItem->fg.jointype & JT_RIGHT ); /* testtag-20230227b */
+        sqlite3_اظهار_Dup(pParse->db, p_دليلون->a[j].p_اظهار, 0), 0);
+    p_رڪن = sqlite3PExpr(pParse, TK_EQ, p_کانو_Ref, pRhs);
+    إذا( p_شي->fg.jointype & (JT_کاٻو|JT_ساڄو) ){
+      testcase( p_شي->fg.jointype & JT_کاٻو );  /* testtag-20230227a */
+      testcase( p_شي->fg.jointype & JT_ساڄو ); /* testtag-20230227b */
       joinType = EP_OuterON;
-    }else{
-      testcase( pItem->fg.jointype & JT_LTORJ ); /* testtag-20230227c */
+    }وإلا{
+      testcase( p_شي->fg.jointype & JT_LTORJ ); /* testtag-20230227c */
       joinType = EP_InnerON;
     }
-    sqlite3SetJoinExpr(pTerm, pItem->iCursor, joinType);
-    whereClauseInsert(pWC, pTerm, TERM_DYNAMIC);
+    sqlite3_سيٽ_Join_اظهار(p_رڪن, p_شي->iCursor, joinType);
+    where_Clause_وجهو(pWC, p_رڪن, رڪن_DYNAMIC);
   }
 }
 
@@ -1990,8 +1990,8 @@ void sqlite3WhereTabFuncArgs(
 ** Return true if the WhereLoop pLoop can be use a Bloom filter.
 ** tag-202607231411
 */
-int sqlite3WhereLoopBloomable(const WhereLoop *pLoop){
-  if( pLoop->wsFlags & WHERE_IPK ) return 1;
-  if( NEVER((pLoop->wsFlags & WHERE_INDEXED)==0) ) return 0;
-  return sqlite3IndexBloomable(pLoop->u.btree.pIndex, pLoop->u.btree.nEq);
+صحيح sqlite3WhereLoopBloomable(ثابت WhereLoop *pLoop){
+  إذا( pLoop->wsFlags & WHERE_IPK ) أرجع 1;
+  إذا( NEVER((pLoop->wsFlags & WHERE_اشاريي_وارو)==0) ) أرجع 0;
+  أرجع sqlite3_اشاريو_Bloomable(pLoop->u.btree.p_اشاريو, pLoop->u.btree.nEq);
 }

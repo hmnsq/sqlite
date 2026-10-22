@@ -13,24 +13,24 @@
 ** This file contains code used to implement incremental BLOB I/O.
 */
 
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#ضمن "sqliteInt.h"
+#ضمن "vdbeInt.h"
 
-#ifndef SQLITE_OMIT_INCRBLOB
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_INCRBLOB
 
 /*
 ** Valid sqlite3_blob* handles point to Incrblob structures.
 */
-typedef struct Incrblob Incrblob;
-struct Incrblob {
-  int nByte;              /* Size of open blob, in bytes */
-  int iOffset;            /* Byte offset of blob in cursor data */
-  u16 iCol;               /* Table column this handle is open on */
+تعريفنوع بنية Incrblob Incrblob;
+بنية Incrblob {
+  صحيح nByte;              /* Size of open blob, in bytes */
+  صحيح i_وٿي;            /* Byte offset of blob in cursor data */
+  u16 i_کانو;               /* Table column this handle is open on */
   BtCursor *pCsr;         /* Cursor pointing at blob row */
   sqlite3_stmt *pStmt;    /* Statement holding cursor open */
   sqlite3 *db;            /* The associated database */
-  char *zDb;              /* Database name */
-  Table *pTab;            /* Table object */
+  حرف *zDb;              /* Database name */
+  جدول *pTab;            /* Table object */
 };
 
 
@@ -51,205 +51,205 @@ struct Incrblob {
 ** calls to sqlite3_blob_read(), blob_write() or blob_reopen() will 
 ** immediately return SQLITE_ABORT.
 */
-static int blobSeekToRow(Incrblob *p, sqlite3_int64 iRow, char **pzErr){
-  int rc;                         /* Error code */
-  char *zErr = 0;                 /* Error message */
+ساكن صحيح blob_Seek_منزل_صف(Incrblob *p, sqlite3_int64 i_صف, حرف **pzErr){
+  صحيح rc;                         /* Error code */
+  حرف *zErr = 0;                 /* Error message */
   Vdbe *v = (Vdbe *)p->pStmt;
 
   /* Set the value of register r[1] in the SQL statement to integer iRow. 
   ** This is done directly as a performance optimization
   */
-  sqlite3VdbeMemSetInt64(&v->aMem[1], iRow);
+  sqlite3_Vdbe_Mem_سيٽ_Int64(&v->aMem[1], i_صف);
 
   /* If the statement has been run before (and is paused at the OP_ResultRow)
   ** then back it up to the point where it does the OP_NotExists.  This could
   ** have been down with an extra OP_Goto, but simply setting the program
   ** counter is faster. */
-  if( v->pc>4 ){
+  إذا( v->pc>4 ){
     v->pc = 4;
-    assert( v->aOp[v->pc].opcode==OP_NotExists );
+    أكد( v->aOp[v->pc].opcode==OP_NotExists );
     rc = sqlite3VdbeExec(v);
-  }else{
-    rc = sqlite3_step(p->pStmt);
+  }وإلا{
+    rc = sqlite3_قدم(p->pStmt);
   }
-  if( rc==SQLITE_ROW ){
+  إذا( rc==SQLITE_صف ){
     VdbeCursor *pC = v->apCsr[0];
     u32 type;
-    assert( pC!=0 );
-    assert( pC->eCurType==CURTYPE_BTREE );
-    type = pC->nHdrParsed>p->iCol ? pC->aType[p->iCol] : 0;
-    testcase( pC->nHdrParsed==p->iCol );
-    testcase( pC->nHdrParsed==p->iCol+1 );
-    if( type<12 ){
+    أكد( pC!=0 );
+    أكد( pC->eCurType==CURTYPE_BTREE );
+    type = pC->nHdrParsed>p->i_کانو ? pC->aType[p->i_کانو] : 0;
+    testcase( pC->nHdrParsed==p->i_کانو );
+    testcase( pC->nHdrParsed==p->i_کانو+1 );
+    إذا( type<12 ){
       zErr = sqlite3MPrintf(p->db, "cannot open value of type %s",
           type==0?"null": type==7?"real": "integer"
       );
       rc = SQLITE_ERROR;
       sqlite3_finalize(p->pStmt);
       p->pStmt = 0;
-    }else{
-      p->iOffset = pC->aType[p->iCol + pC->nField];
+    }وإلا{
+      p->i_وٿي = pC->aType[p->i_کانو + pC->n_ميدان];
       p->nByte = sqlite3VdbeSerialTypeLen(type);
       p->pCsr =  pC->uc.pCursor;
       sqlite3BtreeIncrblobCursor(p->pCsr);
     }
   }
 
-  if( rc==SQLITE_ROW ){
+  إذا( rc==SQLITE_صف ){
     rc = SQLITE_OK;
-  }else if( p->pStmt ){
+  }وإلا إذا( p->pStmt ){
     rc = sqlite3_finalize(p->pStmt);
     p->pStmt = 0;
-    if( rc==SQLITE_OK ){
-      zErr = sqlite3MPrintf(p->db, "no such rowid: %lld", iRow);
+    إذا( rc==SQLITE_OK ){
+      zErr = sqlite3MPrintf(p->db, "no such rowid: %lld", i_صف);
       rc = SQLITE_ERROR;
-    }else{
+    }وإلا{
       zErr = sqlite3MPrintf(p->db, "%s", sqlite3_errmsg(p->db));
     }
   }
 
-  assert( rc!=SQLITE_OK || zErr==0 );
-  assert( rc!=SQLITE_ROW && rc!=SQLITE_DONE );
+  أكد( rc!=SQLITE_OK || zErr==0 );
+  أكد( rc!=SQLITE_صف && rc!=SQLITE_پورو );
 
   *pzErr = zErr;
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Open a blob handle.
 */
-int sqlite3_blob_open(
+صحيح sqlite3_blob_open(
   sqlite3* db,            /* The database connection */
-  const char *zDb,        /* The attached database containing the blob */
-  const char *zTable,     /* The table containing the blob */
-  const char *zColumn,    /* The column containing the blob */
-  sqlite_int64 iRow,      /* The row containing the glob */
-  int wrFlag,             /* True -> read/write access, false -> read-only */
+  ثابت حرف *zDb,        /* The attached database containing the blob */
+  ثابت حرف *z_جدول,     /* The table containing the blob */
+  ثابت حرف *z_ڪالم,    /* The column containing the blob */
+  sqlite_int64 i_صف,      /* The row containing the glob */
+  صحيح wrFlag,             /* True -> read/write access, false -> read-only */
   sqlite3_blob **ppBlob   /* Handle for accessing the blob returned here */
 ){
-  int nAttempt = 0;
-  int iCol;               /* Index of zColumn in row-record */
-  int rc = SQLITE_OK;
-  char *zErr = 0;
-  Table *pTab;
+  صحيح nAttempt = 0;
+  صحيح i_کانو;               /* Index of zColumn in row-record */
+  صحيح rc = SQLITE_OK;
+  حرف *zErr = 0;
+  جدول *pTab;
   Incrblob *pBlob = 0;
-  int iDb;
+  صحيح iDb;
   Parse sParse;
 
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( ppBlob==0 ){
-    return SQLITE_MISUSE_BKPT;
+#جيڪڏهن_وصف_ٿيل SQLITE_ENABLE_API_ARMOR
+  إذا( ppBlob==0 ){
+    أرجع SQLITE_MISUSE_BKPT;
   }
-#endif
+#جيڪڏهن_پورو
   *ppBlob = 0;
-#ifdef SQLITE_ENABLE_API_ARMOR
-  if( !sqlite3SafetyCheckOk(db) || zTable==0 || zColumn==0 ){
-    return SQLITE_MISUSE_BKPT;
+#جيڪڏهن_وصف_ٿيل SQLITE_ENABLE_API_ARMOR
+  إذا( !sqlite3SafetyCheckOk(db) || z_جدول==0 || z_ڪالم==0 ){
+    أرجع SQLITE_MISUSE_BKPT;
   }
-#endif
+#جيڪڏهن_پورو
   wrFlag = !!wrFlag;                /* wrFlag = (wrFlag ? 1 : 0); */
 
   sqlite3_mutex_enter(db->mutex);
 
-  pBlob = (Incrblob *)sqlite3DbMallocZero(db, sizeof(Incrblob));
-  while(1){
+  pBlob = (Incrblob *)sqlite3DbMallocZero(db, حجم(Incrblob));
+  طالما(1){
     sqlite3ParseObjectInit(&sParse,db);
-    if( !pBlob ) goto blob_open_out;
+    إذا( !pBlob ) اذهب blob_open_ٻاهريون;
     sqlite3DbFree(db, zErr);
     zErr = 0;
 
     sqlite3BtreeEnterAll(db);
-    pTab = sqlite3LocateTable(&sParse, 0, zTable, zDb);
-    if( pTab && IsVirtual(pTab) ){
+    pTab = sqlite3_Locate_جدول(&sParse, 0, z_جدول, zDb);
+    إذا( pTab && IsVirtual(pTab) ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open virtual table: %s", zTable);
+      sqlite3_Error_نياپو(&sParse, "cannot open virtual table: %s", z_جدول);
     }
-    if( pTab && !HasRowid(pTab) ){
+    إذا( pTab && !HasRowid(pTab) ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open table without rowid: %s", zTable);
+      sqlite3_Error_نياپو(&sParse, "cannot open table without rowid: %s", z_جدول);
     }
-    if( pTab && (pTab->tabFlags&TF_HasGenerated)!=0 ){
+    إذا( pTab && (pTab->tabFlags&TF_HasGenerated)!=0 ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open table with generated columns: %s",
-                      zTable);
+      sqlite3_Error_نياپو(&sParse, "cannot open table with generated columns: %s",
+                      z_جدول);
     }
-#ifndef SQLITE_OMIT_VIEW
-    if( pTab && IsView(pTab) ){
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_VIEW
+    إذا( pTab && IsView(pTab) ){
       pTab = 0;
-      sqlite3ErrorMsg(&sParse, "cannot open view: %s", zTable);
+      sqlite3_Error_نياپو(&sParse, "cannot open view: %s", z_جدول);
     }
-#endif
-    if( pTab==0
-     || ((iDb = sqlite3SchemaToIndex(db, pTab->pSchema))==1 &&
-         sqlite3OpenTempDatabase(&sParse))
+#جيڪڏهن_پورو
+    إذا( pTab==0
+     || ((iDb = sqlite3_Schema_منزل_اشاريو(db, pTab->pSchema))==1 &&
+         sqlite3_Open_عارضي_Database(&sParse))
     ){
-      if( sParse.zErrMsg ){
+      إذا( sParse.z_Err_نياپو ){
         sqlite3DbFree(db, zErr);
-        zErr = sParse.zErrMsg;
-        sParse.zErrMsg = 0;
+        zErr = sParse.z_Err_نياپو;
+        sParse.z_Err_نياپو = 0;
       }
       rc = SQLITE_ERROR;
       sqlite3BtreeLeaveAll(db);
-      goto blob_open_out;
+      اذهب blob_open_ٻاهريون;
     }
     pBlob->pTab = pTab;
     pBlob->zDb = db->aDb[iDb].zDbSName;
 
     /* Now search pTab for the exact column. */
-    iCol = sqlite3ColumnIndex(pTab, zColumn);
-    if( iCol<0 ){
+    i_کانو = sqlite3_ڪالم_اشاريو(pTab, z_ڪالم);
+    إذا( i_کانو<0 ){
       sqlite3DbFree(db, zErr);
-      zErr = sqlite3MPrintf(db, "no such column: \"%s\"", zColumn);
+      zErr = sqlite3MPrintf(db, "no such column: \"%s\"", z_ڪالم);
       rc = SQLITE_ERROR;
       sqlite3BtreeLeaveAll(db);
-      goto blob_open_out;
+      اذهب blob_open_ٻاهريون;
     }
 
     /* If the value is being opened for writing, check that the
     ** column is not indexed, and that it is not part of a foreign key. 
     */
-    if( wrFlag ){
-      const char *zFault = 0;
-      Index *pIdx;
-#ifndef SQLITE_OMIT_FOREIGN_KEY
-      if( db->flags&SQLITE_ForeignKeys ){
+    إذا( wrFlag ){
+      ثابت حرف *zFault = 0;
+      اشاريو *pIdx;
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_FOREIGN_ڪنجي
+      إذا( db->flags&SQLITE_Foreign_ڪنجيون ){
         /* Check that the column is not part of an FK child key definition. It
         ** is not necessary to check if it is part of a parent key, as parent
         ** key columns must be indexed. The check below will pick up this 
         ** case.  */
         FKey *pFKey;
-        assert( IsOrdinaryTable(pTab) );
-        for(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->pNextFrom){
-          int j;
-          for(j=0; j<pFKey->nCol; j++){
-            if( pFKey->aCol[j].iFrom==iCol ){
+        أكد( Is_Ordinary_جدول(pTab) );
+        لكل(pFKey=pTab->u.tab.pFKey; pFKey; pFKey=pFKey->p_ايندڙ_From){
+          صحيح j;
+          لكل(j=0; j<pFKey->n_کانو; j++){
+            إذا( pFKey->a_کانو[j].iFrom==i_کانو ){
               zFault = "foreign key";
             }
           }
         }
       }
-#endif
-      for(pIdx=pTab->pIndex; pIdx; pIdx=pIdx->pNext){
-        int j;
-        for(j=0; j<pIdx->nKeyCol; j++){
+#جيڪڏهن_پورو
+      لكل(pIdx=pTab->p_اشاريو; pIdx; pIdx=pIdx->p_ايندڙ){
+        صحيح j;
+        لكل(j=0; j<pIdx->n_ڪنجي_کانو; j++){
           /* FIXME: Be smarter about indexes that use expressions */
-          if( pIdx->aiColumn[j]==iCol || pIdx->aiColumn[j]==XN_EXPR ){
+          إذا( pIdx->ai_ڪالم[j]==i_کانو || pIdx->ai_ڪالم[j]==XN_اظهار ){
             zFault = "indexed";
           }
         }
       }
-      if( zFault ){
+      إذا( zFault ){
         sqlite3DbFree(db, zErr);
         zErr = sqlite3MPrintf(db, "cannot open %s column for writing", zFault);
         rc = SQLITE_ERROR;
         sqlite3BtreeLeaveAll(db);
-        goto blob_open_out;
+        اذهب blob_open_ٻاهريون;
       }
     }
 
     pBlob->pStmt = (sqlite3_stmt *)sqlite3VdbeCreate(&sParse);
-    assert( pBlob->pStmt || db->mallocFailed );
-    if( pBlob->pStmt ){
+    أكد( pBlob->pStmt || db->mallocFailed );
+    إذا( pBlob->pStmt ){
       
       /* This VDBE program seeks a btree cursor to the identified 
       ** db/table/row entry. The reason for using a vdbe program instead
@@ -266,46 +266,46 @@ int sqlite3_blob_open(
       ** which closes the b-tree cursor and (possibly) commits the 
       ** transaction.
       */
-      static const int iLn = VDBE_OFFSET_LINENO(2);
-      static const VdbeOpList openBlob[] = {
-        {OP_TableLock,      0, 0, 0},  /* 0: Acquire a read or write lock */
+      ساكن ثابت صحيح iLn = VDBE_وٿي_LINENO(2);
+      ساكن ثابت VdbeOpList openBlob[] = {
+        {OP_جدول_تالو,      0, 0, 0},  /* 0: Acquire a read or write lock */
         {OP_OpenRead,       0, 0, 0},  /* 1: Open a cursor */
         /* blobSeekToRow() will initialize r[1] to the desired rowid */
         {OP_NotExists,      0, 5, 1},  /* 2: Seek the cursor to rowid=r[1] */
-        {OP_Column,         0, 0, 1},  /* 3  */
-        {OP_ResultRow,      1, 0, 0},  /* 4  */
+        {OP_ڪالم,         0, 0, 1},  /* 3  */
+        {OP_نتيجو_صف,      1, 0, 0},  /* 4  */
         {OP_Halt,           0, 0, 0},  /* 5  */
       };
       Vdbe *v = (Vdbe *)pBlob->pStmt;
       VdbeOp *aOp;
 
-      sqlite3VdbeAddOp4Int(v, OP_Transaction, iDb, wrFlag, 
+      sqlite3_Vdbe_جوڙيو_Op4_Int(v, OP_Transaction, iDb, wrFlag, 
                            pTab->pSchema->schema_cookie,
                            pTab->pSchema->iGeneration);
       sqlite3VdbeChangeP5(v, 1);
-      assert( sqlite3VdbeCurrentAddr(v)==2 || db->mallocFailed );
-      aOp = sqlite3VdbeAddOpList(v, ArraySize(openBlob), openBlob, iLn);
+      أكد( sqlite3VdbeCurrentAddr(v)==2 || db->mallocFailed );
+      aOp = sqlite3_Vdbe_جوڙيو_Op_List(v, Array_سائيز(openBlob), openBlob, iLn);
 
       /* Make sure a mutex is held on the table to be accessed */
-      sqlite3VdbeUsesBtree(v, iDb); 
+      sqlite3_Vdbe_استعمال_ڪري_Btree(v, iDb); 
 
-      if( db->mallocFailed==0 ){
-        assert( aOp!=0 );
+      إذا( db->mallocFailed==0 ){
+        أكد( aOp!=0 );
         /* Configure the OP_TableLock instruction */
-#ifdef SQLITE_OMIT_SHARED_CACHE
+#جيڪڏهن_وصف_ٿيل SQLITE_OMIT_SHARED_CACHE
         aOp[0].opcode = OP_Noop;
-#else
+#وإلا
         aOp[0].p1 = iDb;
         aOp[0].p2 = pTab->tnum;
         aOp[0].p3 = wrFlag;
         sqlite3VdbeChangeP4(v, 2, pTab->zName, P4_TRANSIENT);
       }
-      if( db->mallocFailed==0 ){
-#endif
+      إذا( db->mallocFailed==0 ){
+#جيڪڏهن_پورو
 
         /* Remove either the OP_OpenWrite or OpenRead. Set the P2 
         ** parameter of the other to pTab->tnum.  */
-        if( wrFlag ) aOp[1].opcode = OP_OpenWrite;
+        إذا( wrFlag ) aOp[1].opcode = OP_OpenWrite;
         aOp[1].p2 = pTab->tnum;
         aOp[1].p3 = iDb;   
 
@@ -317,8 +317,8 @@ int sqlite3_blob_open(
         ** and offset cache without causing any IO.
         */
         aOp[1].p4type = P4_INT32;
-        aOp[1].p4.i = pTab->nCol+1;
-        aOp[3].p2 = pTab->nCol;
+        aOp[1].p4.i = pTab->n_کانو+1;
+        aOp[3].p2 = pTab->n_کانو;
 
         sParse.nVar = 0;
         sParse.nMem = 1;
@@ -327,91 +327,91 @@ int sqlite3_blob_open(
       }
     }
    
-    pBlob->iCol = iCol;
+    pBlob->i_کانو = i_کانو;
     pBlob->db = db;
     sqlite3BtreeLeaveAll(db);
-    if( db->mallocFailed ){
-      goto blob_open_out;
+    إذا( db->mallocFailed ){
+      اذهب blob_open_ٻاهريون;
     }
-    rc = blobSeekToRow(pBlob, iRow, &zErr);
-    if( (++nAttempt)>=SQLITE_MAX_SCHEMA_RETRY || rc!=SQLITE_SCHEMA ) break;
+    rc = blob_Seek_منزل_صف(pBlob, i_صف, &zErr);
+    إذا( (++nAttempt)>=SQLITE_MAX_SCHEMA_RETRY || rc!=SQLITE_SCHEMA ) اكسر;
     sqlite3ParseObjectReset(&sParse);
   }
 
-blob_open_out:
-  if( rc==SQLITE_OK && db->mallocFailed==0 ){
+blob_open_ٻاهريون:
+  إذا( rc==SQLITE_OK && db->mallocFailed==0 ){
     *ppBlob = (sqlite3_blob *)pBlob;
-  }else{
-    if( pBlob && pBlob->pStmt ) sqlite3VdbeFinalize((Vdbe *)pBlob->pStmt);
+  }وإلا{
+    إذا( pBlob && pBlob->pStmt ) sqlite3VdbeFinalize((Vdbe *)pBlob->pStmt);
     sqlite3DbFree(db, pBlob);
   }
-  sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (char*)0), zErr);
+  sqlite3_Error_With_نياپو(db, rc, (zErr ? "%s" : (حرف*)0), zErr);
   sqlite3DbFree(db, zErr);
   sqlite3ParseObjectReset(&sParse);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Close a blob handle that was previously created using
 ** sqlite3_blob_open().
 */
-int sqlite3_blob_close(sqlite3_blob *pBlob){
+صحيح sqlite3_blob_close(sqlite3_blob *pBlob){
   Incrblob *p = (Incrblob *)pBlob;
-  int rc;
+  صحيح rc;
   sqlite3 *db;
 
-  if( p ){
+  إذا( p ){
     sqlite3_stmt *pStmt = p->pStmt;
     db = p->db;
     sqlite3_mutex_enter(db->mutex);
     sqlite3DbFree(db, p);
     sqlite3_mutex_leave(db->mutex);
     rc = sqlite3_finalize(pStmt);
-  }else{
+  }وإلا{
     rc = SQLITE_OK;
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Perform a read or write operation on a blob
 */
-static int blobReadWrite(
+ساكن صحيح blobReadWrite(
   sqlite3_blob *pBlob, 
-  void *z, 
-  int n, 
-  int iOffset, 
-  int (*xCall)(BtCursor*, u32, u32, void*)
+  فراغ *z, 
+  صحيح n, 
+  صحيح i_وٿي, 
+  صحيح (*xCall)(BtCursor*, u32, u32, فراغ*)
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   Incrblob *p = (Incrblob *)pBlob;
   Vdbe *v;
   sqlite3 *db;
 
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
+  إذا( p==0 ) أرجع SQLITE_MISUSE_BKPT;
   db = p->db;
   sqlite3_mutex_enter(db->mutex);
   v = (Vdbe*)p->pStmt;
 
-  if( n<0 || iOffset<0 || ((sqlite3_int64)iOffset+n)>p->nByte ){
+  إذا( n<0 || i_وٿي<0 || ((sqlite3_int64)i_وٿي+n)>p->nByte ){
     /* Request is out of range. Return a transient error. */
     rc = SQLITE_ERROR;
-  }else if( v==0 ){
+  }وإلا إذا( v==0 ){
     /* If there is no statement handle, then the blob-handle has
     ** already been invalidated. Return SQLITE_ABORT in this case.
     */
     rc = SQLITE_ABORT;
-  }else{
+  }وإلا{
     /* Call either BtreeData() or BtreePutData(). If SQLITE_ABORT is
     ** returned, clean-up the statement handle.
     */
-    assert( db == v->db );
+    أكد( db == v->db );
     sqlite3BtreeEnterCursor(p->pCsr);
 
-#ifdef SQLITE_ENABLE_PREUPDATE_HOOK
-    if( xCall==sqlite3BtreePutData && db->xPreUpdateCallback ){
+#جيڪڏهن_وصف_ٿيل SQLITE_ENABLE_PREUPDATE_HOOK
+    إذا( xCall==sqlite3_Btree_Put_معلومات && db->xPreUpdateCallback ){
       /* If a pre-update hook is registered and this is a write cursor, 
       ** invoke it here. 
       ** 
@@ -425,58 +425,58 @@ static int blobReadWrite(
       ** using the incremental-blob API, this works. For the sessions module
       ** anyhow.
       */
-      if( sqlite3BtreeCursorIsValidNN(p->pCsr)==0 ){
+      إذا( sqlite3BtreeCursorIsValidNN(p->pCsr)==0 ){
         /* If the cursor is not currently valid, try to reseek it. This 
         ** always either fails or finds the correct row - the cursor will
         ** have been marked permanently CURSOR_INVALID if the open row has
         ** been deleted.  */
-        int bDiff = 0;
+        صحيح bDiff = 0;
         rc = sqlite3BtreeCursorRestore(p->pCsr, &bDiff);
-        assert( bDiff==0 || sqlite3BtreeCursorIsValidNN(p->pCsr)==0 );
+        أكد( bDiff==0 || sqlite3BtreeCursorIsValidNN(p->pCsr)==0 );
       }
-      if( sqlite3BtreeCursorIsValidNN(p->pCsr) ){
-        sqlite3_int64 iKey;
-        iKey = sqlite3BtreeIntegerKey(p->pCsr);
-        assert( v->apCsr[0]!=0 );
-        assert( v->apCsr[0]->eCurType==CURTYPE_BTREE );
+      إذا( sqlite3BtreeCursorIsValidNN(p->pCsr) ){
+        sqlite3_int64 i_ڪنجي;
+        i_ڪنجي = sqlite3_Btree_Integer_ڪنجي(p->pCsr);
+        أكد( v->apCsr[0]!=0 );
+        أكد( v->apCsr[0]->eCurType==CURTYPE_BTREE );
         sqlite3VdbePreUpdateHook(
-            v, v->apCsr[0], SQLITE_DELETE, p->zDb, p->pTab, iKey, -1, p->iCol
+            v, v->apCsr[0], SQLITE_DELETE, p->zDb, p->pTab, i_ڪنجي, -1, p->i_کانو
         );
       }
     }
-    if( rc==SQLITE_OK ){
-      rc = xCall(p->pCsr, iOffset+p->iOffset, n, z);
+    إذا( rc==SQLITE_OK ){
+      rc = xCall(p->pCsr, i_وٿي+p->i_وٿي, n, z);
     }
-#else
-    rc = xCall(p->pCsr, iOffset+p->iOffset, n, z);
-#endif
+#وإلا
+    rc = xCall(p->pCsr, i_وٿي+p->i_وٿي, n, z);
+#جيڪڏهن_پورو
 
     sqlite3BtreeLeaveCursor(p->pCsr);
-    if( rc==SQLITE_ABORT ){
+    إذا( rc==SQLITE_ABORT ){
       sqlite3VdbeFinalize(v);
       p->pStmt = 0;
-    }else{
+    }وإلا{
       v->rc = rc;
     }
   }
   sqlite3Error(db, rc);
   rc = sqlite3ApiExit(db, rc);
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Read data from a blob handle.
 */
-int sqlite3_blob_read(sqlite3_blob *pBlob, void *z, int n, int iOffset){
-  return blobReadWrite(pBlob, z, n, iOffset, sqlite3BtreePayloadChecked);
+صحيح sqlite3_blob_read(sqlite3_blob *pBlob, فراغ *z, صحيح n, صحيح i_وٿي){
+  أرجع blobReadWrite(pBlob, z, n, i_وٿي, sqlite3BtreePayloadChecked);
 }
 
 /*
 ** Write data to a blob handle.
 */
-int sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, int n, int iOffset){
-  return blobReadWrite(pBlob, (void *)z, n, iOffset, sqlite3BtreePutData);
+صحيح sqlite3_blob_write(sqlite3_blob *pBlob, ثابت فراغ *z, صحيح n, صحيح i_وٿي){
+  أرجع blobReadWrite(pBlob, (فراغ *)z, n, i_وٿي, sqlite3_Btree_Put_معلومات);
 }
 
 /*
@@ -485,9 +485,9 @@ int sqlite3_blob_write(sqlite3_blob *pBlob, const void *z, int n, int iOffset){
 ** The Incrblob.nByte field is fixed for the lifetime of the Incrblob
 ** so no mutex is required for access.
 */
-int sqlite3_blob_bytes(sqlite3_blob *pBlob){
+صحيح sqlite3_blob_بائيٽون(sqlite3_blob *pBlob){
   Incrblob *p = (Incrblob *)pBlob;
-  return (p && p->pStmt) ? p->nByte : 0;
+  أرجع (p && p->pStmt) ? p->nByte : 0;
 }
 
 /*
@@ -500,35 +500,35 @@ int sqlite3_blob_bytes(sqlite3_blob *pBlob){
 ** subsequent calls to sqlite3_blob_xxx() functions (except blob_close()) 
 ** immediately return SQLITE_ABORT.
 */
-int sqlite3_blob_reopen(sqlite3_blob *pBlob, sqlite3_int64 iRow){
-  int rc;
+صحيح sqlite3_blob_reopen(sqlite3_blob *pBlob, sqlite3_int64 i_صف){
+  صحيح rc;
   Incrblob *p = (Incrblob *)pBlob;
   sqlite3 *db;
 
-  if( p==0 ) return SQLITE_MISUSE_BKPT;
+  إذا( p==0 ) أرجع SQLITE_MISUSE_BKPT;
   db = p->db;
   sqlite3_mutex_enter(db->mutex);
 
-  if( p->pStmt==0 ){
+  إذا( p->pStmt==0 ){
     /* If there is no statement handle, then the blob-handle has
     ** already been invalidated. Return SQLITE_ABORT in this case.
     */
     rc = SQLITE_ABORT;
-  }else{
-    char *zErr;
+  }وإلا{
+    حرف *zErr;
     ((Vdbe*)p->pStmt)->rc = SQLITE_OK;
-    rc = blobSeekToRow(p, iRow, &zErr);
-    if( rc!=SQLITE_OK ){
-      sqlite3ErrorWithMsg(db, rc, (zErr ? "%s" : (char*)0), zErr);
+    rc = blob_Seek_منزل_صف(p, i_صف, &zErr);
+    إذا( rc!=SQLITE_OK ){
+      sqlite3_Error_With_نياپو(db, rc, (zErr ? "%s" : (حرف*)0), zErr);
       sqlite3DbFree(db, zErr);
     }
-    assert( rc!=SQLITE_SCHEMA );
+    أكد( rc!=SQLITE_SCHEMA );
   }
 
   rc = sqlite3ApiExit(db, rc);
-  assert( rc==SQLITE_OK || p->pStmt==0 );
+  أكد( rc==SQLITE_OK || p->pStmt==0 );
   sqlite3_mutex_leave(db->mutex);
-  return rc;
+  أرجع rc;
 }
 
-#endif /* #ifndef SQLITE_OMIT_INCRBLOB */
+#جيڪڏهن_پورو /* #ifndef SQLITE_OMIT_INCRBLOB */

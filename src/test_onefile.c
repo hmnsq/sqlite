@@ -79,108 +79,108 @@
 **   time using this demo vfs.
 */
 
-#include "sqlite3.h"
-#include <assert.h>
-#include <string.h>
+#ضمن "sqlite3.h"
+#ضمن <assert.h>
+#ضمن <string.h>
 
 /*
 ** Maximum pathname length supported by the fs backend.
 */
-#define BLOCKSIZE 512
-#define BLOBSIZE 10485760
+#وصف_ڪريو BLOCKSIZE 512
+#وصف_ڪريو BLOBSIZE 10485760
 
 /*
 ** Name used to identify this VFS.
 */
-#define FS_VFS_NAME "fs"
+#وصف_ڪريو FS_VFS_NAME "fs"
 
-typedef struct fs_real_file fs_real_file;
-struct fs_real_file {
+تعريفنوع بنية fs_real_file fs_real_file;
+بنية fs_real_file {
   sqlite3_file *pFile;
-  const char *zName;
-  int nDatabase;              /* Current size of database region */
-  int nJournal;               /* Current size of journal region */
-  int nBlob;                  /* Total size of allocated blob */
-  int nRef;                   /* Number of pointers to this structure */
-  fs_real_file *pNext;
+  ثابت حرف *zName;
+  صحيح nDatabase;              /* Current size of database region */
+  صحيح nJournal;               /* Current size of journal region */
+  صحيح nBlob;                  /* Total size of allocated blob */
+  صحيح nRef;                   /* Number of pointers to this structure */
+  fs_real_file *p_ايندڙ;
   fs_real_file **ppThis;
 };
 
-typedef struct fs_file fs_file;
-struct fs_file {
-  sqlite3_file base;
-  int eType;
+تعريفنوع بنية fs_file fs_file;
+بنية fs_file {
+  sqlite3_file بنياد;
+  صحيح eType;
   fs_real_file *pReal;
 };
 
-typedef struct tmp_file tmp_file;
-struct tmp_file {
-  sqlite3_file base;
-  int nSize;
-  int nAlloc;
-  char *zAlloc;
+تعريفنوع بنية tmp_file tmp_file;
+بنية tmp_file {
+  sqlite3_file بنياد;
+  صحيح n_سائيز;
+  صحيح nAlloc;
+  حرف *zAlloc;
 };
 
 /* Values for fs_file.eType. */
-#define DATABASE_FILE   1
-#define JOURNAL_FILE    2
+#وصف_ڪريو DATABASE_FILE   1
+#وصف_ڪريو JOURNAL_FILE    2
 
 /*
 ** Method declarations for fs_file.
 */
-static int fsClose(sqlite3_file*);
-static int fsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int fsWrite(sqlite3_file*, const void*, int iAmt, sqlite3_int64 iOfst);
-static int fsTruncate(sqlite3_file*, sqlite3_int64 size);
-static int fsSync(sqlite3_file*, int flags);
-static int fsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int fsLock(sqlite3_file*, int);
-static int fsUnlock(sqlite3_file*, int);
-static int fsCheckReservedLock(sqlite3_file*, int *pResOut);
-static int fsFileControl(sqlite3_file*, int op, void *pArg);
-static int fsSectorSize(sqlite3_file*);
-static int fsDeviceCharacteristics(sqlite3_file*);
+ساكن صحيح fsClose(sqlite3_file*);
+ساكن صحيح fsRead(sqlite3_file*, فراغ*, صحيح iAmt, sqlite3_int64 iOfst);
+ساكن صحيح fsWrite(sqlite3_file*, ثابت فراغ*, صحيح iAmt, sqlite3_int64 iOfst);
+ساكن صحيح fsTruncate(sqlite3_file*, sqlite3_int64 سائيز);
+ساكن صحيح fsSync(sqlite3_file*, صحيح flags);
+ساكن صحيح fs_File_سائيز(sqlite3_file*, sqlite3_int64 *p_سائيز);
+ساكن صحيح fs_تالو(sqlite3_file*, صحيح);
+ساكن صحيح fsUnlock(sqlite3_file*, صحيح);
+ساكن صحيح fs_Check_Reserved_تالو(sqlite3_file*, صحيح *p_Res_ٻاهريون);
+ساكن صحيح fsFileControl(sqlite3_file*, صحيح op, فراغ *pArg);
+ساكن صحيح fs_Sector_سائيز(sqlite3_file*);
+ساكن صحيح fsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for tmp_file.
 */
-static int tmpClose(sqlite3_file*);
-static int tmpRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int tmpWrite(sqlite3_file*, const void*, int iAmt, sqlite3_int64 iOfst);
-static int tmpTruncate(sqlite3_file*, sqlite3_int64 size);
-static int tmpSync(sqlite3_file*, int flags);
-static int tmpFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int tmpLock(sqlite3_file*, int);
-static int tmpUnlock(sqlite3_file*, int);
-static int tmpCheckReservedLock(sqlite3_file*, int *pResOut);
-static int tmpFileControl(sqlite3_file*, int op, void *pArg);
-static int tmpSectorSize(sqlite3_file*);
-static int tmpDeviceCharacteristics(sqlite3_file*);
+ساكن صحيح tmpClose(sqlite3_file*);
+ساكن صحيح tmpRead(sqlite3_file*, فراغ*, صحيح iAmt, sqlite3_int64 iOfst);
+ساكن صحيح tmpWrite(sqlite3_file*, ثابت فراغ*, صحيح iAmt, sqlite3_int64 iOfst);
+ساكن صحيح tmpTruncate(sqlite3_file*, sqlite3_int64 سائيز);
+ساكن صحيح tmpSync(sqlite3_file*, صحيح flags);
+ساكن صحيح tmp_File_سائيز(sqlite3_file*, sqlite3_int64 *p_سائيز);
+ساكن صحيح tmp_تالو(sqlite3_file*, صحيح);
+ساكن صحيح tmpUnlock(sqlite3_file*, صحيح);
+ساكن صحيح tmp_Check_Reserved_تالو(sqlite3_file*, صحيح *p_Res_ٻاهريون);
+ساكن صحيح tmpFileControl(sqlite3_file*, صحيح op, فراغ *pArg);
+ساكن صحيح tmp_Sector_سائيز(sqlite3_file*);
+ساكن صحيح tmpDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for fs_vfs.
 */
-static int fsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int fsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int fsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int fsFullPathname(sqlite3_vfs*, const char *zName, int nOut,char *zOut);
-static void *fsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void fsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*fsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
-static void fsDlClose(sqlite3_vfs*, void*);
-static int fsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int fsSleep(sqlite3_vfs*, int microseconds);
-static int fsCurrentTime(sqlite3_vfs*, double*);
+ساكن صحيح fsOpen(sqlite3_vfs*, ثابت حرف *, sqlite3_file*, صحيح , صحيح *);
+ساكن صحيح fsDelete(sqlite3_vfs*, ثابت حرف *zName, صحيح syncDir);
+ساكن صحيح fsAccess(sqlite3_vfs*, ثابت حرف *zName, صحيح flags, صحيح *);
+ساكن صحيح fs_ڀريل_Pathname(sqlite3_vfs*, ثابت حرف *zName, صحيح n_ٻاهريون,حرف *z_ٻاهريون);
+ساكن فراغ *fsDlOpen(sqlite3_vfs*, ثابت حرف *zFilename);
+ساكن فراغ fsDlError(sqlite3_vfs*, صحيح nByte, حرف *z_Err_نياپو);
+ساكن فراغ (*fsDlSym(sqlite3_vfs*,فراغ*, ثابت حرف *z_نشان))(فراغ);
+ساكن فراغ fsDlClose(sqlite3_vfs*, فراغ*);
+ساكن صحيح fsRandomness(sqlite3_vfs*, صحيح nByte, حرف *z_ٻاهريون);
+ساكن صحيح fsSleep(sqlite3_vfs*, صحيح microseconds);
+ساكن صحيح fs_Current_وقت(sqlite3_vfs*, مزدوج*);
 
 
-typedef struct fs_vfs_t fs_vfs_t;
-struct fs_vfs_t {
-  sqlite3_vfs base;
+تعريفنوع بنية fs_vfs_t fs_vfs_t;
+بنية fs_vfs_t {
+  sqlite3_vfs بنياد;
   fs_real_file *pFileList;
-  sqlite3_vfs *pParent;
+  sqlite3_vfs *p_والد;
 };
 
-static fs_vfs_t fs_vfs = {
+ساكن fs_vfs_t fs_vfs = {
   {
     1,                                          /* iVersion */
     0,                                          /* szOsFile */
@@ -191,33 +191,33 @@ static fs_vfs_t fs_vfs = {
     fsOpen,                                     /* xOpen */
     fsDelete,                                   /* xDelete */
     fsAccess,                                   /* xAccess */
-    fsFullPathname,                             /* xFullPathname */
+    fs_ڀريل_Pathname,                             /* xFullPathname */
     fsDlOpen,                                   /* xDlOpen */
     fsDlError,                                  /* xDlError */
     fsDlSym,                                    /* xDlSym */
     fsDlClose,                                  /* xDlClose */
     fsRandomness,                               /* xRandomness */
     fsSleep,                                    /* xSleep */
-    fsCurrentTime,                              /* xCurrentTime */
+    fs_Current_وقت,                              /* xCurrentTime */
     0                                           /* xCurrentTimeInt64 */
   }, 
   0,                                            /* pFileList */
   0                                             /* pParent */
 };
 
-static sqlite3_io_methods fs_io_methods = {
+ساكن sqlite3_io_methods fs_io_methods = {
   1,                            /* iVersion */
   fsClose,                      /* xClose */
   fsRead,                       /* xRead */
   fsWrite,                      /* xWrite */
   fsTruncate,                   /* xTruncate */
   fsSync,                       /* xSync */
-  fsFileSize,                   /* xFileSize */
-  fsLock,                       /* xLock */
+  fs_File_سائيز,                   /* xFileSize */
+  fs_تالو,                       /* xLock */
   fsUnlock,                     /* xUnlock */
-  fsCheckReservedLock,          /* xCheckReservedLock */
+  fs_Check_Reserved_تالو,          /* xCheckReservedLock */
   fsFileControl,                /* xFileControl */
-  fsSectorSize,                 /* xSectorSize */
+  fs_Sector_سائيز,                 /* xSectorSize */
   fsDeviceCharacteristics,      /* xDeviceCharacteristics */
   0,                            /* xShmMap */
   0,                            /* xShmLock */
@@ -226,19 +226,19 @@ static sqlite3_io_methods fs_io_methods = {
 };
 
 
-static sqlite3_io_methods tmp_io_methods = {
+ساكن sqlite3_io_methods tmp_io_methods = {
   1,                            /* iVersion */
   tmpClose,                     /* xClose */
   tmpRead,                      /* xRead */
   tmpWrite,                     /* xWrite */
   tmpTruncate,                  /* xTruncate */
   tmpSync,                      /* xSync */
-  tmpFileSize,                  /* xFileSize */
-  tmpLock,                      /* xLock */
+  tmp_File_سائيز,                  /* xFileSize */
+  tmp_تالو,                      /* xLock */
   tmpUnlock,                    /* xUnlock */
-  tmpCheckReservedLock,         /* xCheckReservedLock */
+  tmp_Check_Reserved_تالو,         /* xCheckReservedLock */
   tmpFileControl,               /* xFileControl */
-  tmpSectorSize,                /* xSectorSize */
+  tmp_Sector_سائيز,                /* xSectorSize */
   tmpDeviceCharacteristics,     /* xDeviceCharacteristics */
   0,                            /* xShmMap */
   0,                            /* xShmLock */
@@ -247,435 +247,435 @@ static sqlite3_io_methods tmp_io_methods = {
 };
 
 /* Useful macros used in several places */
-#define MIN(x,y) ((x)<(y)?(x):(y))
-#define MAX(x,y) ((x)>(y)?(x):(y))
+#وصف_ڪريو MIN(x,y) ((x)<(y)?(x):(y))
+#وصف_ڪريو MAX(x,y) ((x)>(y)?(x):(y))
 
 
 /*
 ** Close a tmp-file.
 */
-static int tmpClose(sqlite3_file *pFile){
+ساكن صحيح tmpClose(sqlite3_file *pFile){
   tmp_file *pTmp = (tmp_file *)pFile;
   sqlite3_free(pTmp->zAlloc);
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Read data from a tmp-file.
 */
-static int tmpRead(
+ساكن صحيح tmpRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  فراغ *zBuf, 
+  صحيح iAmt, 
   sqlite_int64 iOfst
 ){
   tmp_file *pTmp = (tmp_file *)pFile;
-  if( (iAmt+iOfst)>pTmp->nSize ){
-    return SQLITE_IOERR_SHORT_READ;
+  إذا( (iAmt+iOfst)>pTmp->n_سائيز ){
+    أرجع SQLITE_IOERR_SHORT_READ;
   }
-  memcpy(zBuf, &pTmp->zAlloc[iOfst], iAmt);
-  return SQLITE_OK;
+  يادگيري_نقل(zBuf, &pTmp->zAlloc[iOfst], iAmt);
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Write data to a tmp-file.
 */
-static int tmpWrite(
+ساكن صحيح tmpWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ثابت فراغ *zBuf, 
+  صحيح iAmt, 
   sqlite_int64 iOfst
 ){
   tmp_file *pTmp = (tmp_file *)pFile;
-  if( (iAmt+iOfst)>pTmp->nAlloc ){
-    int nNew = (int)(2*(iAmt+iOfst+pTmp->nAlloc));
-    char *zNew = sqlite3_realloc(pTmp->zAlloc, nNew);
-    if( !zNew ){
-      return SQLITE_NOMEM;
+  إذا( (iAmt+iOfst)>pTmp->nAlloc ){
+    صحيح nNew = (صحيح)(2*(iAmt+iOfst+pTmp->nAlloc));
+    حرف *zNew = sqlite3_realloc(pTmp->zAlloc, nNew);
+    إذا( !zNew ){
+      أرجع SQLITE_NOMEM;
     }
     pTmp->zAlloc = zNew;
     pTmp->nAlloc = nNew;
   }
-  memcpy(&pTmp->zAlloc[iOfst], zBuf, iAmt);
-  pTmp->nSize = (int)MAX(pTmp->nSize, iOfst+iAmt);
-  return SQLITE_OK;
+  يادگيري_نقل(&pTmp->zAlloc[iOfst], zBuf, iAmt);
+  pTmp->n_سائيز = (صحيح)MAX(pTmp->n_سائيز, iOfst+iAmt);
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Truncate a tmp-file.
 */
-static int tmpTruncate(sqlite3_file *pFile, sqlite_int64 size){
+ساكن صحيح tmpTruncate(sqlite3_file *pFile, sqlite_int64 سائيز){
   tmp_file *pTmp = (tmp_file *)pFile;
-  pTmp->nSize = (int)MIN(pTmp->nSize, size);
-  return SQLITE_OK;
+  pTmp->n_سائيز = (صحيح)MIN(pTmp->n_سائيز, سائيز);
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Sync a tmp-file.
 */
-static int tmpSync(sqlite3_file *pFile, int flags){
-  return SQLITE_OK;
+ساكن صحيح tmpSync(sqlite3_file *pFile, صحيح flags){
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Return the current file-size of a tmp-file.
 */
-static int tmpFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+ساكن صحيح tmp_File_سائيز(sqlite3_file *pFile, sqlite_int64 *p_سائيز){
   tmp_file *pTmp = (tmp_file *)pFile;
-  *pSize = pTmp->nSize;
-  return SQLITE_OK;
+  *p_سائيز = pTmp->n_سائيز;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Lock a tmp-file.
 */
-static int tmpLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+ساكن صحيح tmp_تالو(sqlite3_file *pFile, صحيح e_تالو){
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Unlock a tmp-file.
 */
-static int tmpUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+ساكن صحيح tmpUnlock(sqlite3_file *pFile, صحيح e_تالو){
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on a tmp-file.
 */
-static int tmpCheckReservedLock(sqlite3_file *pFile, int *pResOut){
-  *pResOut = 0;
-  return SQLITE_OK;
+ساكن صحيح tmp_Check_Reserved_تالو(sqlite3_file *pFile, صحيح *p_Res_ٻاهريون){
+  *p_Res_ٻاهريون = 0;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on a tmp-file.
 */
-static int tmpFileControl(sqlite3_file *pFile, int op, void *pArg){
-  return SQLITE_OK;
+ساكن صحيح tmpFileControl(sqlite3_file *pFile, صحيح op, فراغ *pArg){
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Return the sector-size in bytes for a tmp-file.
 */
-static int tmpSectorSize(sqlite3_file *pFile){
-  return 0;
+ساكن صحيح tmp_Sector_سائيز(sqlite3_file *pFile){
+  أرجع 0;
 }
 
 /*
 ** Return the device characteristic flags supported by a tmp-file.
 */
-static int tmpDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+ساكن صحيح tmpDeviceCharacteristics(sqlite3_file *pFile){
+  أرجع 0;
 }
 
 /*
 ** Close an fs-file.
 */
-static int fsClose(sqlite3_file *pFile){
-  int rc = SQLITE_OK;
+ساكن صحيح fsClose(sqlite3_file *pFile){
+  صحيح rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
 
   /* Decrement the real_file ref-count. */
   pReal->nRef--;
-  assert(pReal->nRef>=0);
+  أكد(pReal->nRef>=0);
 
   /* When the ref-count reaches 0, destroy the structure */
-  if( pReal->nRef==0 ){
-    *pReal->ppThis = pReal->pNext;
-    if( pReal->pNext ){
-      pReal->pNext->ppThis = pReal->ppThis;
+  إذا( pReal->nRef==0 ){
+    *pReal->ppThis = pReal->p_ايندڙ;
+    إذا( pReal->p_ايندڙ ){
+      pReal->p_ايندڙ->ppThis = pReal->ppThis;
     }
     rc = pReal->pFile->pMethods->xClose(pReal->pFile);
     sqlite3_free(pReal);
   }
 
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Read data from an fs-file.
 */
-static int fsRead(
+ساكن صحيح fsRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  فراغ *zBuf, 
+  صحيح iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pF = pReal->pFile;
 
-  if( (p->eType==DATABASE_FILE && (iAmt+iOfst)>pReal->nDatabase)
+  إذا( (p->eType==DATABASE_FILE && (iAmt+iOfst)>pReal->nDatabase)
    || (p->eType==JOURNAL_FILE && (iAmt+iOfst)>pReal->nJournal)
   ){
     rc = SQLITE_IOERR_SHORT_READ;
-  }else if( p->eType==DATABASE_FILE ){
+  }وإلا إذا( p->eType==DATABASE_FILE ){
     rc = pF->pMethods->xRead(pF, zBuf, iAmt, iOfst+BLOCKSIZE);
-  }else{
+  }وإلا{
     /* Journal file. */
-    int iRem = iAmt;
-    int iBuf = 0;
-    int ii = (int)iOfst;
-    while( iRem>0 && rc==SQLITE_OK ){
-      int iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
-      int iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
+    صحيح iRem = iAmt;
+    صحيح iBuf = 0;
+    صحيح ii = (صحيح)iOfst;
+    طالما( iRem>0 && rc==SQLITE_OK ){
+      صحيح iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
+      صحيح iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
 
-      rc = pF->pMethods->xRead(pF, &((char *)zBuf)[iBuf], iRealAmt, iRealOff);
+      rc = pF->pMethods->xRead(pF, &((حرف *)zBuf)[iBuf], iRealAmt, iRealOff);
       ii += iRealAmt;
       iBuf += iRealAmt;
       iRem -= iRealAmt;
     }
   }
 
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Write data to an fs-file.
 */
-static int fsWrite(
+ساكن صحيح fsWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ثابت فراغ *zBuf, 
+  صحيح iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pF = pReal->pFile;
 
-  if( p->eType==DATABASE_FILE ){
-    if( (iAmt+iOfst+BLOCKSIZE)>(pReal->nBlob-pReal->nJournal) ){
-      rc = SQLITE_FULL;
-    }else{
+  إذا( p->eType==DATABASE_FILE ){
+    إذا( (iAmt+iOfst+BLOCKSIZE)>(pReal->nBlob-pReal->nJournal) ){
+      rc = SQLITE_ڀريل;
+    }وإلا{
       rc = pF->pMethods->xWrite(pF, zBuf, iAmt, iOfst+BLOCKSIZE);
-      if( rc==SQLITE_OK ){
-        pReal->nDatabase = (int)MAX(pReal->nDatabase, iAmt+iOfst);
+      إذا( rc==SQLITE_OK ){
+        pReal->nDatabase = (صحيح)MAX(pReal->nDatabase, iAmt+iOfst);
       }
     }
-  }else{
+  }وإلا{
     /* Journal file. */
-    int iRem = iAmt;
-    int iBuf = 0;
-    int ii = (int)iOfst;
-    while( iRem>0 && rc==SQLITE_OK ){
-      int iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
-      int iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
+    صحيح iRem = iAmt;
+    صحيح iBuf = 0;
+    صحيح ii = (صحيح)iOfst;
+    طالما( iRem>0 && rc==SQLITE_OK ){
+      صحيح iRealOff = pReal->nBlob - BLOCKSIZE*((ii/BLOCKSIZE)+1) + ii%BLOCKSIZE;
+      صحيح iRealAmt = MIN(iRem, BLOCKSIZE - (iRealOff%BLOCKSIZE));
 
-      if( iRealOff<(pReal->nDatabase+BLOCKSIZE) ){
-        rc = SQLITE_FULL;
-      }else{
-        rc = pF->pMethods->xWrite(pF, &((char *)zBuf)[iBuf], iRealAmt,iRealOff);
+      إذا( iRealOff<(pReal->nDatabase+BLOCKSIZE) ){
+        rc = SQLITE_ڀريل;
+      }وإلا{
+        rc = pF->pMethods->xWrite(pF, &((حرف *)zBuf)[iBuf], iRealAmt,iRealOff);
         ii += iRealAmt;
         iBuf += iRealAmt;
         iRem -= iRealAmt;
       }
     }
-    if( rc==SQLITE_OK ){
-      pReal->nJournal = (int)MAX(pReal->nJournal, iAmt+iOfst);
+    إذا( rc==SQLITE_OK ){
+      pReal->nJournal = (صحيح)MAX(pReal->nJournal, iAmt+iOfst);
     }
   }
 
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Truncate an fs-file.
 */
-static int fsTruncate(sqlite3_file *pFile, sqlite_int64 size){
+ساكن صحيح fsTruncate(sqlite3_file *pFile, sqlite_int64 سائيز){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
-  if( p->eType==DATABASE_FILE ){
-    pReal->nDatabase = (int)MIN(pReal->nDatabase, size);
-  }else{
-    pReal->nJournal = (int)MIN(pReal->nJournal, size);
+  إذا( p->eType==DATABASE_FILE ){
+    pReal->nDatabase = (صحيح)MIN(pReal->nDatabase, سائيز);
+  }وإلا{
+    pReal->nJournal = (صحيح)MIN(pReal->nJournal, سائيز);
   }
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Sync an fs-file.
 */
-static int fsSync(sqlite3_file *pFile, int flags){
+ساكن صحيح fsSync(sqlite3_file *pFile, صحيح flags){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
   sqlite3_file *pRealFile = pReal->pFile;
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
 
-  if( p->eType==DATABASE_FILE ){
-    unsigned char zSize[4];
-    zSize[0] = (pReal->nDatabase&0xFF000000)>>24;
-    zSize[1] = (unsigned char)((pReal->nDatabase&0x00FF0000)>>16);
-    zSize[2] = (pReal->nDatabase&0x0000FF00)>>8;
-    zSize[3] = (pReal->nDatabase&0x000000FF);
-    rc = pRealFile->pMethods->xWrite(pRealFile, zSize, 4, 0);
+  إذا( p->eType==DATABASE_FILE ){
+    بنانشان حرف z_سائيز[4];
+    z_سائيز[0] = (pReal->nDatabase&0xFF000000)>>24;
+    z_سائيز[1] = (بنانشان حرف)((pReal->nDatabase&0x00FF0000)>>16);
+    z_سائيز[2] = (pReal->nDatabase&0x0000FF00)>>8;
+    z_سائيز[3] = (pReal->nDatabase&0x000000FF);
+    rc = pRealFile->pMethods->xWrite(pRealFile, z_سائيز, 4, 0);
   }
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     rc = pRealFile->pMethods->xSync(pRealFile, flags&(~SQLITE_SYNC_DATAONLY));
   }
 
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Return the current file-size of an fs-file.
 */
-static int fsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+ساكن صحيح fs_File_سائيز(sqlite3_file *pFile, sqlite_int64 *p_سائيز){
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = p->pReal;
-  if( p->eType==DATABASE_FILE ){
-    *pSize = pReal->nDatabase;
-  }else{
-    *pSize = pReal->nJournal;
+  إذا( p->eType==DATABASE_FILE ){
+    *p_سائيز = pReal->nDatabase;
+  }وإلا{
+    *p_سائيز = pReal->nJournal;
   }
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Lock an fs-file.
 */
-static int fsLock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+ساكن صحيح fs_تالو(sqlite3_file *pFile, صحيح e_تالو){
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Unlock an fs-file.
 */
-static int fsUnlock(sqlite3_file *pFile, int eLock){
-  return SQLITE_OK;
+ساكن صحيح fsUnlock(sqlite3_file *pFile, صحيح e_تالو){
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an fs-file.
 */
-static int fsCheckReservedLock(sqlite3_file *pFile, int *pResOut){
-  *pResOut = 0;
-  return SQLITE_OK;
+ساكن صحيح fs_Check_Reserved_تالو(sqlite3_file *pFile, صحيح *p_Res_ٻاهريون){
+  *p_Res_ٻاهريون = 0;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** File control method. For custom operations on an fs-file.
 */
-static int fsFileControl(sqlite3_file *pFile, int op, void *pArg){
-  if( op==SQLITE_FCNTL_PRAGMA ) return SQLITE_NOTFOUND;
-  return SQLITE_OK;
+ساكن صحيح fsFileControl(sqlite3_file *pFile, صحيح op, فراغ *pArg){
+  إذا( op==SQLITE_FCNTL_PRAGMA ) أرجع SQLITE_NOTFOUND;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Return the sector-size in bytes for an fs-file.
 */
-static int fsSectorSize(sqlite3_file *pFile){
-  return BLOCKSIZE;
+ساكن صحيح fs_Sector_سائيز(sqlite3_file *pFile){
+  أرجع BLOCKSIZE;
 }
 
 /*
 ** Return the device characteristic flags supported by an fs-file.
 */
-static int fsDeviceCharacteristics(sqlite3_file *pFile){
-  return 0;
+ساكن صحيح fsDeviceCharacteristics(sqlite3_file *pFile){
+  أرجع 0;
 }
 
 /*
 ** Open an fs file handle.
 */
-static int fsOpen(
+ساكن صحيح fsOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ثابت حرف *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  صحيح flags,
+  صحيح *p_ٻاهريون_Flags
 ){
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_file *p = (fs_file *)pFile;
   fs_real_file *pReal = 0;
-  int eType;
-  int nName;
-  int rc = SQLITE_OK;
+  صحيح eType;
+  صحيح nName;
+  صحيح rc = SQLITE_OK;
 
-  if( 0==(flags&(SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_MAIN_JOURNAL)) ){
+  إذا( 0==(flags&(SQLITE_OPEN_MAIN_DB|SQLITE_OPEN_MAIN_JOURNAL)) ){
     tmp_file *p2 = (tmp_file *)pFile;
-    memset(p2, 0, sizeof(*p2));
-    p2->base.pMethods = &tmp_io_methods;
-    return SQLITE_OK;
+    memset(p2, 0, حجم(*p2));
+    p2->بنياد.pMethods = &tmp_io_methods;
+    أرجع SQLITE_OK;
   }
 
   eType = ((flags&(SQLITE_OPEN_MAIN_DB))?DATABASE_FILE:JOURNAL_FILE);
-  p->base.pMethods = &fs_io_methods;
+  p->بنياد.pMethods = &fs_io_methods;
   p->eType = eType;
 
-  assert(strlen("-journal")==8);
-  nName = (int)strlen(zName)-((eType==JOURNAL_FILE)?8:0);
+  أكد(لڙي_ڊيگهه("-journal")==8);
+  nName = (صحيح)لڙي_ڊيگهه(zName)-((eType==JOURNAL_FILE)?8:0);
   pReal=pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zName, nName); pReal=pReal->pNext);
+  لكل(; pReal && لڙي_ڀيٽ(pReal->zName, zName, nName); pReal=pReal->p_ايندڙ);
 
-  if( !pReal ){
-    int real_flags = (flags&~(SQLITE_OPEN_MAIN_DB))|SQLITE_OPEN_TEMP_DB;
-    sqlite3_int64 size;
+  إذا( !pReal ){
+    صحيح real_flags = (flags&~(SQLITE_OPEN_MAIN_DB))|SQLITE_OPEN_عارضي_DB;
+    sqlite3_int64 سائيز;
     sqlite3_file *pRealFile;
-    sqlite3_vfs *pParent = pFsVfs->pParent;
-    assert(eType==DATABASE_FILE);
+    sqlite3_vfs *p_والد = pFsVfs->p_والد;
+    أكد(eType==DATABASE_FILE);
 
-    pReal = (fs_real_file *)sqlite3_malloc(sizeof(*pReal)+pParent->szOsFile);
-    if( !pReal ){
+    pReal = (fs_real_file *)sqlite3_malloc(حجم(*pReal)+p_والد->szOsFile);
+    إذا( !pReal ){
       rc = SQLITE_NOMEM;
-      goto open_out;
+      اذهب open_ٻاهريون;
     }
-    memset(pReal, 0, sizeof(*pReal)+pParent->szOsFile);
+    memset(pReal, 0, حجم(*pReal)+p_والد->szOsFile);
     pReal->zName = zName;
     pReal->pFile = (sqlite3_file *)(&pReal[1]);
 
-    rc = pParent->xOpen(pParent, zName, pReal->pFile, real_flags, pOutFlags);
-    if( rc!=SQLITE_OK ){
-      goto open_out;
+    rc = p_والد->xOpen(p_والد, zName, pReal->pFile, real_flags, p_ٻاهريون_Flags);
+    إذا( rc!=SQLITE_OK ){
+      اذهب open_ٻاهريون;
     }
     pRealFile = pReal->pFile;
 
-    rc = pRealFile->pMethods->xFileSize(pRealFile, &size);
-    if( rc!=SQLITE_OK ){
-      goto open_out;
+    rc = pRealFile->pMethods->x_File_سائيز(pRealFile, &سائيز);
+    إذا( rc!=SQLITE_OK ){
+      اذهب open_ٻاهريون;
     }
-    if( size==0 ){
+    إذا( سائيز==0 ){
       rc = pRealFile->pMethods->xWrite(pRealFile, "\0", 1, BLOBSIZE-1);
       pReal->nBlob = BLOBSIZE;
-    }else{
-      unsigned char zS[4];
-      pReal->nBlob = (int)size;
+    }وإلا{
+      بنانشان حرف zS[4];
+      pReal->nBlob = (صحيح)سائيز;
       rc = pRealFile->pMethods->xRead(pRealFile, zS, 4, 0);
       pReal->nDatabase = (zS[0]<<24)+(zS[1]<<16)+(zS[2]<<8)+zS[3];
-      if( rc==SQLITE_OK ){
+      إذا( rc==SQLITE_OK ){
         rc = pRealFile->pMethods->xRead(pRealFile, zS, 4, pReal->nBlob-4);
-        if( zS[0] || zS[1] || zS[2] || zS[3] ){
+        إذا( zS[0] || zS[1] || zS[2] || zS[3] ){
           pReal->nJournal = pReal->nBlob;
         }
       }
     }
 
-    if( rc==SQLITE_OK ){
-      pReal->pNext = pFsVfs->pFileList;
-      if( pReal->pNext ){
-        pReal->pNext->ppThis = &pReal->pNext;
+    إذا( rc==SQLITE_OK ){
+      pReal->p_ايندڙ = pFsVfs->pFileList;
+      إذا( pReal->p_ايندڙ ){
+        pReal->p_ايندڙ->ppThis = &pReal->p_ايندڙ;
       }
       pReal->ppThis = &pFsVfs->pFileList;
       pFsVfs->pFileList = pReal;
     }
   }
 
-open_out:
-  if( pReal ){
-    if( rc==SQLITE_OK ){
+open_ٻاهريون:
+  إذا( pReal ){
+    إذا( rc==SQLITE_OK ){
       p->pReal = pReal;
       pReal->nRef++;
-    }else{
-      if( pReal->pFile->pMethods ){
+    }وإلا{
+      إذا( pReal->pFile->pMethods ){
         pReal->pFile->pMethods->xClose(pReal->pFile);
       }
       sqlite3_free(pReal);
     }
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -683,59 +683,59 @@ open_out:
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int fsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc = SQLITE_OK;
+ساكن صحيح fsDelete(sqlite3_vfs *pVfs, ثابت حرف *z_رستو, صحيح dirSync){
+  صحيح rc = SQLITE_OK;
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_real_file *pReal;
   sqlite3_file *pF;
-  int nName = (int)strlen(zPath) - 8;
+  صحيح nName = (صحيح)لڙي_ڊيگهه(z_رستو) - 8;
 
-  assert(strlen("-journal")==8);
-  assert(strcmp("-journal", &zPath[nName])==0);
+  أكد(لڙي_ڊيگهه("-journal")==8);
+  أكد(strcmp("-journal", &z_رستو[nName])==0);
 
   pReal = pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
-  if( pReal ){
+  لكل(; pReal && لڙي_ڀيٽ(pReal->zName, z_رستو, nName); pReal=pReal->p_ايندڙ);
+  إذا( pReal ){
     pF = pReal->pFile;
     rc = pF->pMethods->xWrite(pF, "\0\0\0\0", 4, pReal->nBlob-BLOCKSIZE);
-    if( rc==SQLITE_OK ){
+    إذا( rc==SQLITE_OK ){
       pReal->nJournal = 0;
     }
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int fsAccess(
+ساكن صحيح fsAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ثابت حرف *z_رستو, 
+  صحيح flags, 
+  صحيح *p_Res_ٻاهريون
 ){
   fs_vfs_t *pFsVfs = (fs_vfs_t *)pVfs;
   fs_real_file *pReal;
-  int isJournal = 0;
-  int nName = (int)strlen(zPath);
+  صحيح isJournal = 0;
+  صحيح nName = (صحيح)لڙي_ڊيگهه(z_رستو);
 
-  if( flags!=SQLITE_ACCESS_EXISTS ){
-    sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-    return pParent->xAccess(pParent, zPath, flags, pResOut);
+  إذا( flags!=SQLITE_ACCESS_EXISTS ){
+    sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+    أرجع p_والد->xAccess(p_والد, z_رستو, flags, p_Res_ٻاهريون);
   }
 
-  assert(strlen("-journal")==8);
-  if( nName>8 && strcmp("-journal", &zPath[nName-8])==0 ){
+  أكد(لڙي_ڊيگهه("-journal")==8);
+  إذا( nName>8 && strcmp("-journal", &z_رستو[nName-8])==0 ){
     nName -= 8;
     isJournal = 1;
   }
 
   pReal = pFsVfs->pFileList; 
-  for(; pReal && strncmp(pReal->zName, zPath, nName); pReal=pReal->pNext);
+  لكل(; pReal && لڙي_ڀيٽ(pReal->zName, z_رستو, nName); pReal=pReal->p_ايندڙ);
 
-  *pResOut = (pReal && (!isJournal || pReal->nJournal>0));
-  return SQLITE_OK;
+  *p_Res_ٻاهريون = (pReal && (!isJournal || pReal->nJournal>0));
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -743,22 +743,22 @@ static int fsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (FS_MAX_PATHNAME+1) bytes.
 */
-static int fsFullPathname(
+ساكن صحيح fs_ڀريل_Pathname(
   sqlite3_vfs *pVfs,            /* Pointer to vfs object */
-  const char *zPath,            /* Possibly relative input path */
-  int nOut,                     /* Size of output buffer in bytes */
-  char *zOut                    /* Output buffer */
+  ثابت حرف *z_رستو,            /* Possibly relative input path */
+  صحيح n_ٻاهريون,                     /* Size of output buffer in bytes */
+  حرف *z_ٻاهريون                    /* Output buffer */
 ){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xFullPathname(pParent, zPath, nOut, zOut);
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  أرجع p_والد->x_ڀريل_Pathname(p_والد, z_رستو, n_ٻاهريون, z_ٻاهريون);
 }
 
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *fsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xDlOpen(pParent, zPath);
+ساكن فراغ *fsDlOpen(sqlite3_vfs *pVfs, ثابت حرف *z_رستو){
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  أرجع p_والد->xDlOpen(p_والد, z_رستو);
 }
 
 /*
@@ -766,51 +766,51 @@ static void *fsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void fsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  pParent->xDlError(pParent, nByte, zErrMsg);
+ساكن فراغ fsDlError(sqlite3_vfs *pVfs, صحيح nByte, حرف *z_Err_نياپو){
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  p_والد->xDlError(p_والد, nByte, z_Err_نياپو);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*fsDlSym(sqlite3_vfs *pVfs, void *pH, const char *zSym))(void){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xDlSym(pParent, pH, zSym);
+ساكن فراغ (*fsDlSym(sqlite3_vfs *pVfs, فراغ *pH, ثابت حرف *zSym))(فراغ){
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  أرجع p_والد->xDlSym(p_والد, pH, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void fsDlClose(sqlite3_vfs *pVfs, void *pHandle){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  pParent->xDlClose(pParent, pHandle);
+ساكن فراغ fsDlClose(sqlite3_vfs *pVfs, فراغ *pHandle){
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  p_والد->xDlClose(p_والد, pHandle);
 }
 
 /*
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int fsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xRandomness(pParent, nByte, zBufOut);
+ساكن صحيح fsRandomness(sqlite3_vfs *pVfs, صحيح nByte, حرف *z_Buf_ٻاهريون){
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  أرجع p_والد->xRandomness(p_والد, nByte, z_Buf_ٻاهريون);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int fsSleep(sqlite3_vfs *pVfs, int nMicro){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xSleep(pParent, nMicro);
+ساكن صحيح fsSleep(sqlite3_vfs *pVfs, صحيح nMicro){
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  أرجع p_والد->xSleep(p_والد, nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int fsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  sqlite3_vfs *pParent = ((fs_vfs_t *)pVfs)->pParent;
-  return pParent->xCurrentTime(pParent, pTimeOut);
+ساكن صحيح fs_Current_وقت(sqlite3_vfs *pVfs, مزدوج *p_وقت_ٻاهريون){
+  sqlite3_vfs *p_والد = ((fs_vfs_t *)pVfs)->p_والد;
+  أرجع p_والد->x_Current_وقت(p_والد, p_وقت_ٻاهريون);
 }
 
 /*
@@ -818,14 +818,14 @@ static int fsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
 ** true, the fs vfs becomes the new default vfs. It is the only publicly
 ** available function in this file.
 */
-int fs_register(void){
-  if( fs_vfs.pParent ) return SQLITE_OK;
-  fs_vfs.pParent = sqlite3_vfs_find(0);
-  fs_vfs.base.mxPathname = fs_vfs.pParent->mxPathname;
-  fs_vfs.base.szOsFile = MAX(sizeof(tmp_file), sizeof(fs_file));
-  return sqlite3_vfs_register(&fs_vfs.base, 0);
+صحيح fs_رجسٽر(فراغ){
+  إذا( fs_vfs.p_والد ) أرجع SQLITE_OK;
+  fs_vfs.p_والد = sqlite3_vfs_ڳوليو(0);
+  fs_vfs.بنياد.mxPathname = fs_vfs.p_والد->mxPathname;
+  fs_vfs.بنياد.szOsFile = MAX(حجم(tmp_file), حجم(fs_file));
+  أرجع sqlite3_vfs_رجسٽر(&fs_vfs.بنياد, 0);
 }
 
-#ifdef SQLITE_TEST
-  int SqlitetestOnefile_Init() {return fs_register();}
-#endif
+#جيڪڏهن_وصف_ٿيل SQLITE_TEST
+  صحيح SqlitetestOnefile_Init() {أرجع fs_رجسٽر();}
+#جيڪڏهن_پورو

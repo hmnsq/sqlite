@@ -15,10 +15,10 @@
 **
 ** The Vdbe parse-tree explainer is also found here.
 */
-#include "sqliteInt.h"
-#include "vdbeInt.h"
+#ضمن "sqliteInt.h"
+#ضمن "vdbeInt.h"
 
-#ifndef SQLITE_OMIT_TRACE
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_TRACE
 
 /*
 ** zSql is a zero-terminated string of UTF-8 SQL text.  Return the number of
@@ -26,23 +26,23 @@
 ** a host parameter.  If the text contains no host parameters, return
 ** the total number of bytes in the text.
 */
-static i64 findNextHostParameter(const char *zSql, i64 *pnToken){
-  int tokenType;
-  i64 nTotal = 0;
+ساكن i64 ڳوليو_ايندڙ_Host_Parameter(ثابت حرف *zSql, i64 *pnToken){
+  صحيح tokenType;
+  i64 n_ڪل = 0;
   i64 n;
 
   *pnToken = 0;
-  while( zSql[0] ){
+  طالما( zSql[0] ){
     n = sqlite3GetToken((u8*)zSql, &tokenType);
-    assert( n>0 && tokenType!=TK_ILLEGAL );
-    if( tokenType==TK_VARIABLE ){
+    أكد( n>0 && tokenType!=TK_ILLEGAL );
+    إذا( tokenType==TK_VARIABLE ){
       *pnToken = n;
-      break;
+      اكسر;
     }
-    nTotal += n;
+    n_ڪل += n;
     zSql += n;
   }
-  return nTotal;
+  أرجع n_ڪل;
 }
 
 /*
@@ -69,124 +69,124 @@ static i64 findNextHostParameter(const char *zSql, i64 *pnToken){
 ** parameter index is known, locate the value in p->aVar[].  Then render
 ** the value as a literal in place of the host parameter name.
 */
-char *sqlite3VdbeExpandSql(
+حرف *sqlite3VdbeExpandSql(
   Vdbe *p,                 /* The prepared statement being evaluated */
-  const char *zRawSql      /* Raw text of the SQL statement */
+  ثابت حرف *zRawSql      /* Raw text of the SQL statement */
 ){
   sqlite3 *db;             /* The database connection */
-  int idx = 0;             /* Index of a host parameter */
-  int nextIndex = 1;       /* Index of next ? host parameter */
+  صحيح idx = 0;             /* Index of a host parameter */
+  صحيح ايندڙ_اشاريو = 1;       /* Index of next ? host parameter */
   i64 n;                   /* Length of a token prefix */
   i64 nToken;              /* Length of the parameter token */
-  int i;                   /* Loop counter */
+  صحيح i;                   /* Loop counter */
   Mem *pVar;               /* Value of a host parameter */
-  StrAccum out;            /* Accumulate the output here */
-#ifndef SQLITE_OMIT_UTF16
+  StrAccum ٻاهريون;            /* Accumulate the output here */
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_UTF16
   Mem utf8;                /* Used to convert UTF16 into UTF8 for display */
-#endif
+#جيڪڏهن_پورو
 
   db = p->db;
-  sqlite3StrAccumInit(&out, 0, 0, 0, db->aLimit[SQLITE_LIMIT_LENGTH]);
-  if( db->nVdbeExec>1 ){
-    while( *zRawSql ){
-      const char *zStart = zRawSql;
-      while( *(zRawSql++)!='\n' && *zRawSql );
-      sqlite3_str_append(&out, "-- ", 3);
-      assert( (zRawSql - zStart) > 0 );
-      sqlite3_str_append(&out, zStart, (int)(zRawSql-zStart));
+  sqlite3StrAccumInit(&ٻاهريون, 0, 0, 0, db->a_حد_بندي[SQLITE_حد_بندي_ڊيگهائي]);
+  إذا( db->nVdbeExec>1 ){
+    طالما( *zRawSql ){
+      ثابت حرف *z_شروعات = zRawSql;
+      طالما( *(zRawSql++)!='\n' && *zRawSql );
+      sqlite3_str_append(&ٻاهريون, "-- ", 3);
+      أكد( (zRawSql - z_شروعات) > 0 );
+      sqlite3_str_append(&ٻاهريون, z_شروعات, (صحيح)(zRawSql-z_شروعات));
     }
-  }else if( p->nVar==0 ){
-    sqlite3_str_append(&out, zRawSql, sqlite3Strlen30(zRawSql));
-  }else{
-    while( zRawSql[0] ){
-      n = findNextHostParameter(zRawSql, &nToken);
-      assert( n>0 );
-      sqlite3_str_append(&out, zRawSql, n);
+  }وإلا إذا( p->nVar==0 ){
+    sqlite3_str_append(&ٻاهريون, zRawSql, sqlite3Strlen30(zRawSql));
+  }وإلا{
+    طالما( zRawSql[0] ){
+      n = ڳوليو_ايندڙ_Host_Parameter(zRawSql, &nToken);
+      أكد( n>0 );
+      sqlite3_str_append(&ٻاهريون, zRawSql, n);
       zRawSql += n;
-      assert( zRawSql[0] || nToken==0 );
-      if( nToken==0 ) break;
-      if( zRawSql[0]=='?' ){
-        if( nToken>1 ){
-          assert( sqlite3Isdigit(zRawSql[1]) );
+      أكد( zRawSql[0] || nToken==0 );
+      إذا( nToken==0 ) اكسر;
+      إذا( zRawSql[0]=='?' ){
+        إذا( nToken>1 ){
+          أكد( sqlite3Isdigit(zRawSql[1]) );
           sqlite3GetInt32(&zRawSql[1], &idx);
-        }else{
-          idx = nextIndex;
+        }وإلا{
+          idx = ايندڙ_اشاريو;
         }
-      }else{
-        assert( zRawSql[0]==':' || zRawSql[0]=='$' ||
+      }وإلا{
+        أكد( zRawSql[0]==':' || zRawSql[0]=='$' ||
                 zRawSql[0]=='@' || zRawSql[0]=='#' );
         testcase( zRawSql[0]==':' );
         testcase( zRawSql[0]=='$' );
         testcase( zRawSql[0]=='@' );
         testcase( zRawSql[0]=='#' );
-        idx = sqlite3VdbeParameterIndex(p, zRawSql, nToken);
-        assert( idx>0 );
+        idx = sqlite3_Vdbe_Parameter_اشاريو(p, zRawSql, nToken);
+        أكد( idx>0 );
       }
       zRawSql += nToken;
-      nextIndex = MAX(idx + 1, nextIndex);
-      assert( idx>0 && idx<=p->nVar );
+      ايندڙ_اشاريو = MAX(idx + 1, ايندڙ_اشاريو);
+      أكد( idx>0 && idx<=p->nVar );
       pVar = &p->aVar[idx-1];
-      if( pVar->flags & MEM_Null ){
-        sqlite3_str_append(&out, "NULL", 4);
-      }else if( pVar->flags & (MEM_Int|MEM_IntReal) ){
-        sqlite3_str_appendf(&out, "%lld", pVar->u.i);
-      }else if( pVar->flags & MEM_Real ){
-        sqlite3_str_appendf(&out, "%!.15g", pVar->u.r);
-      }else if( pVar->flags & MEM_Str ){
-        int nOut;  /* Number of bytes of the string text to include in output */
-#ifndef SQLITE_OMIT_UTF16
+      إذا( pVar->flags & MEM_Null ){
+        sqlite3_str_append(&ٻاهريون, "NULL", 4);
+      }وإلا إذا( pVar->flags & (MEM_Int|MEM_IntReal) ){
+        sqlite3_str_appendf(&ٻاهريون, "%lld", pVar->u.i);
+      }وإلا إذا( pVar->flags & MEM_Real ){
+        sqlite3_str_appendf(&ٻاهريون, "%!.15g", pVar->u.r);
+      }وإلا إذا( pVar->flags & MEM_Str ){
+        صحيح n_ٻاهريون;  /* Number of bytes of the string text to include in output */
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_UTF16
         u8 enc = ENC(db);
-        if( enc!=SQLITE_UTF8 ){
-          memset(&utf8, 0, sizeof(utf8));
+        إذا( enc!=SQLITE_UTF8 ){
+          memset(&utf8, 0, حجم(utf8));
           utf8.db = db;
-          sqlite3VdbeMemSetStr(&utf8, pVar->z, pVar->n, enc, SQLITE_STATIC);
-          if( SQLITE_NOMEM==sqlite3VdbeChangeEncoding(&utf8, SQLITE_UTF8) ){
-            out.accError = SQLITE_NOMEM;
-            out.nAlloc = 0;
+          sqlite3_Vdbe_Mem_سيٽ_Str(&utf8, pVar->z, pVar->n, enc, SQLITE_STATIC);
+          إذا( SQLITE_NOMEM==sqlite3VdbeChangeEncoding(&utf8, SQLITE_UTF8) ){
+            ٻاهريون.accError = SQLITE_NOMEM;
+            ٻاهريون.nAlloc = 0;
           }
           pVar = &utf8;
         }
-#endif
-        nOut = pVar->n;
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut>SQLITE_TRACE_SIZE_LIMIT ){
-          nOut = SQLITE_TRACE_SIZE_LIMIT;
-          while( nOut<pVar->n && (pVar->z[nOut]&0xc0)==0x80 ){ nOut++; }
+#جيڪڏهن_پورو
+        n_ٻاهريون = pVar->n;
+#جيڪڏهن_وصف_ٿيل SQLITE_TRACE_سائيز_حد_بندي
+        إذا( n_ٻاهريون>SQLITE_TRACE_سائيز_حد_بندي ){
+          n_ٻاهريون = SQLITE_TRACE_سائيز_حد_بندي;
+          طالما( n_ٻاهريون<pVar->n && (pVar->z[n_ٻاهريون]&0xc0)==0x80 ){ n_ٻاهريون++; }
         }
-#endif    
-        sqlite3_str_appendf(&out, "'%.*q'", nOut, pVar->z);
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut<pVar->n ){
-          sqlite3_str_appendf(&out, "/*+%d bytes*/", pVar->n-nOut);
+#جيڪڏهن_پورو    
+        sqlite3_str_appendf(&ٻاهريون, "'%.*q'", n_ٻاهريون, pVar->z);
+#جيڪڏهن_وصف_ٿيل SQLITE_TRACE_سائيز_حد_بندي
+        إذا( n_ٻاهريون<pVar->n ){
+          sqlite3_str_appendf(&ٻاهريون, "/*+%d bytes*/", pVar->n-n_ٻاهريون);
         }
-#endif
-#ifndef SQLITE_OMIT_UTF16
-        if( enc!=SQLITE_UTF8 ) sqlite3VdbeMemRelease(&utf8);
-#endif
-      }else if( pVar->flags & MEM_Zero ){
-        sqlite3_str_appendf(&out, "zeroblob(%d)", pVar->u.nZero);
-      }else{
-        int nOut;  /* Number of bytes of the blob to include in output */
-        assert( pVar->flags & MEM_Blob );
-        sqlite3_str_append(&out, "x'", 2);
-        nOut = pVar->n;
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut>SQLITE_TRACE_SIZE_LIMIT ) nOut = SQLITE_TRACE_SIZE_LIMIT;
-#endif
-        for(i=0; i<nOut; i++){
-          sqlite3_str_appendf(&out, "%02x", pVar->z[i]&0xff);
+#جيڪڏهن_پورو
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_UTF16
+        إذا( enc!=SQLITE_UTF8 ) sqlite3VdbeMemRelease(&utf8);
+#جيڪڏهن_پورو
+      }وإلا إذا( pVar->flags & MEM_Zero ){
+        sqlite3_str_appendf(&ٻاهريون, "zeroblob(%d)", pVar->u.nZero);
+      }وإلا{
+        صحيح n_ٻاهريون;  /* Number of bytes of the blob to include in output */
+        أكد( pVar->flags & MEM_Blob );
+        sqlite3_str_append(&ٻاهريون, "x'", 2);
+        n_ٻاهريون = pVar->n;
+#جيڪڏهن_وصف_ٿيل SQLITE_TRACE_سائيز_حد_بندي
+        إذا( n_ٻاهريون>SQLITE_TRACE_سائيز_حد_بندي ) n_ٻاهريون = SQLITE_TRACE_سائيز_حد_بندي;
+#جيڪڏهن_پورو
+        لكل(i=0; i<n_ٻاهريون; i++){
+          sqlite3_str_appendf(&ٻاهريون, "%02x", pVar->z[i]&0xff);
         }
-        sqlite3_str_append(&out, "'", 1);
-#ifdef SQLITE_TRACE_SIZE_LIMIT
-        if( nOut<pVar->n ){
-          sqlite3_str_appendf(&out, "/*+%d bytes*/", pVar->n-nOut);
+        sqlite3_str_append(&ٻاهريون, "'", 1);
+#جيڪڏهن_وصف_ٿيل SQLITE_TRACE_سائيز_حد_بندي
+        إذا( n_ٻاهريون<pVar->n ){
+          sqlite3_str_appendf(&ٻاهريون, "/*+%d bytes*/", pVar->n-n_ٻاهريون);
         }
-#endif
+#جيڪڏهن_پورو
       }
     }
   }
-  if( out.accError ) sqlite3_str_reset(&out);
-  return sqlite3StrAccumFinish(&out);
+  إذا( ٻاهريون.accError ) sqlite3_str_reset(&ٻاهريون);
+  أرجع sqlite3_Str_Accum_پڄاڻي(&ٻاهريون);
 }
 
-#endif /* #ifndef SQLITE_OMIT_TRACE */
+#جيڪڏهن_پورو /* #ifndef SQLITE_OMIT_TRACE */

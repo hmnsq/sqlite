@@ -11,9 +11,9 @@
 *************************************************************************
 ** This file contains code used to implement the ATTACH and DETACH commands.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
-#ifndef SQLITE_OMIT_ATTACH
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_ATTACH
 /*
 ** Resolve an expression that was part of an ATTACH or DETACH statement. This
 ** is slightly different from resolving a normal SQL expression, because simple
@@ -32,25 +32,25 @@
 **
 ** will fail because neither abc or def can be resolved.
 */
-static int resolveAttachExpr(NameContext *pName, Expr *pExpr)
+ساكن صحيح resolve_Attach_اظهار(NameContext *pName, اظهار *p_اظهار)
 {
-  int rc = SQLITE_OK;
-  if( pExpr ){
-    if( pExpr->op!=TK_ID ){
-      rc = sqlite3ResolveExprNames(pName, pExpr);
-    }else{
-      pExpr->op = TK_STRING;
+  صحيح rc = SQLITE_OK;
+  إذا( p_اظهار ){
+    إذا( p_اظهار->op!=TK_ID ){
+      rc = sqlite3_Resolve_اظهار_نالا(pName, p_اظهار);
+    }وإلا{
+      p_اظهار->op = TK_STRING;
     }
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Return true if zName points to a name that may be used to refer to
 ** database iDb attached to handle db.
 */
-int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName){
-  return (
+صحيح sqlite3DbIsNamed(sqlite3 *db, صحيح iDb, ثابت حرف *zName){
+  أرجع (
       sqlite3StrICmp(db->aDb[iDb].zDbSName, zName)==0
    || (iDb==0 && sqlite3StrICmp("main", zName)==0)
   );
@@ -60,16 +60,16 @@ int sqlite3DbIsNamed(sqlite3 *db, int iDb, const char *zName){
 ** If any TEMP triggers reference schema pSchema, move those triggers to
 ** reference the TEMP schema itself.
 */
-static void detachTempTriggers(sqlite3 *db, Schema *pSchema){
-  HashElem *pEntry;
-  assert( db->aDb[1].pSchema );
-  pEntry = sqliteHashFirst(&db->aDb[1].pSchema->trigHash);
-  while( pEntry ){
-    Trigger *pTrig = (Trigger*)sqliteHashData(pEntry);
-    if( pTrig->pTabSchema==pSchema ){
+ساكن فراغ detach_عارضي_Triggers(sqlite3 *db, Schema *pSchema){
+  HashElem *p_داخلا;
+  أكد( db->aDb[1].pSchema );
+  p_داخلا = sqlite_Hash_پهريون(&db->aDb[1].pSchema->trigHash);
+  طالما( p_داخلا ){
+    Trigger *pTrig = (Trigger*)sqlite_Hash_معلومات(p_داخلا);
+    إذا( pTrig->pTabSchema==pSchema ){
       pTrig->pTabSchema = pTrig->pSchema;
     }
-    pEntry = sqliteHashNext(pEntry);
+    p_داخلا = sqlite_Hash_ايندڙ(p_داخلا);
   }
 }
 
@@ -88,77 +88,77 @@ static void detachTempTriggers(sqlite3 *db, Schema *pSchema){
 ** new database, close the database on db->init.iDb and reopen it as an
 ** empty MemDB.
 */
-static void attachFunc(
+ساكن فراغ attachFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  صحيح Not_استعمال_ٿيل,
+  sqlite3_قدر **argv
 ){
-  int i;
-  int rc = 0;
+  صحيح i;
+  صحيح rc = 0;
   sqlite3 *db = sqlite3_context_db_handle(context);
-  const char *zName;
-  const char *zFile;
-  char *zPath = 0;
-  char *zErr = 0;
-  unsigned int flags;
+  ثابت حرف *zName;
+  ثابت حرف *zFile;
+  حرف *z_رستو = 0;
+  حرف *zErr = 0;
+  بنانشان صحيح flags;
   Db *aNew;                 /* New array of Db pointers */
   Db *pNew = 0;             /* Db object for the newly attached database */
-  char *zErrDyn = 0;
+  حرف *zErrDyn = 0;
   sqlite3_vfs *pVfs;
 
-  UNUSED_PARAMETER(NotUsed);
-  zFile = (const char *)sqlite3_value_text(argv[0]);
-  zName = (const char *)sqlite3_value_text(argv[1]);
-  if( zFile==0 ) zFile = "";
-  if( zName==0 ) zName = "";
+  اڻ_استعمال_ٿيل_PARAMETER(Not_استعمال_ٿيل);
+  zFile = (ثابت حرف *)sqlite3_قدر_متن(argv[0]);
+  zName = (ثابت حرف *)sqlite3_قدر_متن(argv[1]);
+  إذا( zFile==0 ) zFile = "";
+  إذا( zName==0 ) zName = "";
 
-#ifndef SQLITE_OMIT_DESERIALIZE
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_DESERIALIZE
 # define REOPEN_AS_MEMDB(db)  (db->init.reopenMemdb)
-#else
+#وإلا
 # define REOPEN_AS_MEMDB(db)  (0)
-#endif
+#جيڪڏهن_پورو
 
-  if( REOPEN_AS_MEMDB(db) ){
+  إذا( REOPEN_AS_MEMDB(db) ){
     /* This is not a real ATTACH.  Instead, this routine is being called
     ** from sqlite3_deserialize() to close database db->init.iDb and
     ** reopen it as a MemDB */
     Btree *pNewBt = 0;
 
     pNew = &db->aDb[db->init.iDb];
-    assert( pNew->pBt!=0 );
-    if( sqlite3BtreeTxnState(pNew->pBt)!=SQLITE_TXN_NONE
-     || sqlite3BtreeIsInBackup(pNew->pBt)
+    أكد( pNew->pBt!=0 );
+    إذا( sqlite3BtreeTxnState(pNew->pBt)!=SQLITE_TXN_NONE
+     || sqlite3_Btree_Is_اندريون_Backup(pNew->pBt)
     ){
       rc = SQLITE_BUSY;
-      goto attach_error;
+      اذهب attach_error;
     }
 
-    pVfs = sqlite3_vfs_find("memdb");
-    if( pVfs==0 ) return;
+    pVfs = sqlite3_vfs_ڳوليو("memdb");
+    إذا( pVfs==0 ) أرجع;
     rc = sqlite3BtreeOpen(pVfs, "x\0", db, &pNewBt, 0, SQLITE_OPEN_MAIN_DB);
-    if( rc==SQLITE_OK ){
+    إذا( rc==SQLITE_OK ){
       Schema *pNewSchema = sqlite3SchemaGet(db, pNewBt);
-      if( pNewSchema ){
+      إذا( pNewSchema ){
         /* Both the Btree and the new Schema were allocated successfully.
         ** Close the old db and update the aDb[] slot with the new memdb
         ** values.  */
-        detachTempTriggers(db, pNew->pSchema);
+        detach_عارضي_Triggers(db, pNew->pSchema);
         sqlite3BtreeClose(pNew->pBt);
         pNew->pBt = pNewBt;
         pNew->pSchema = pNewSchema;
-        if( db->init.iDb==0 ){
+        إذا( db->init.iDb==0 ){
           /* Clear all eponymous virtual table instances, as they are holding
           ** pointers to the schema object just freed by sqlite3BtreeClose() */
-          sqlite3VtabEponymousTableClearAll(db);
+          sqlite3_Vtab_Eponymous_جدول_Clear_All(db);
         }
         sqlite3ExpirePreparedStatements(db, 1);
-      }else{
+      }وإلا{
         sqlite3BtreeClose(pNewBt);
         rc = SQLITE_NOMEM;
       }
     }
-    if( rc ) goto attach_error;
-  }else{
+    إذا( rc ) اذهب attach_error;
+  }وإلا{
     /* This is a real ATTACH
     **
     ** Check for the following errors:
@@ -167,143 +167,143 @@ static void attachFunc(
     **     * Transaction currently open
     **     * Specified database name already being used.
     */
-    if( db->nDb>=db->aLimit[SQLITE_LIMIT_ATTACHED]+2 ){
+    إذا( db->nDb>=db->a_حد_بندي[SQLITE_حد_بندي_ATTACHED]+2 ){
       zErrDyn = sqlite3MPrintf(db, "too many attached databases - max %d", 
-        db->aLimit[SQLITE_LIMIT_ATTACHED]
+        db->a_حد_بندي[SQLITE_حد_بندي_ATTACHED]
       );
-      goto attach_error;
+      اذهب attach_error;
     }
-    for(i=0; i<db->nDb; i++){
-      assert( zName );
-      if( sqlite3DbIsNamed(db, i, zName) ){
+    لكل(i=0; i<db->nDb; i++){
+      أكد( zName );
+      إذا( sqlite3DbIsNamed(db, i, zName) ){
         zErrDyn = sqlite3MPrintf(db, "database %s is already in use", zName);
-        goto attach_error;
+        اذهب attach_error;
       }
     }
   
     /* Allocate the new entry in the db->aDb[] array and initialize the schema
     ** hash tables.
     */
-    if( db->aDb==db->aDbStatic ){
-      aNew = sqlite3DbMallocRawNN(db, sizeof(db->aDb[0])*3 );
-      if( aNew==0 ) return;
-      memcpy(aNew, db->aDb, sizeof(db->aDb[0])*2);
-    }else{
-      aNew = sqlite3DbRealloc(db, db->aDb, sizeof(db->aDb[0])*(1+(i64)db->nDb));
-      if( aNew==0 ) return;
+    إذا( db->aDb==db->aDbStatic ){
+      aNew = sqlite3DbMallocRawNN(db, حجم(db->aDb[0])*3 );
+      إذا( aNew==0 ) أرجع;
+      يادگيري_نقل(aNew, db->aDb, حجم(db->aDb[0])*2);
+    }وإلا{
+      aNew = sqlite3DbRealloc(db, db->aDb, حجم(db->aDb[0])*(1+(i64)db->nDb));
+      إذا( aNew==0 ) أرجع;
     }
     db->aDb = aNew;
     pNew = &db->aDb[db->nDb];
-    memset(pNew, 0, sizeof(*pNew));
+    memset(pNew, 0, حجم(*pNew));
   
     /* Open the database file. If the btree is successfully opened, use
     ** it to obtain the database schema. At this point the schema may
     ** or may not be initialized.
     */
     flags = db->openFlags;
-    rc = sqlite3ParseUri(db->pVfs->zName, zFile, &flags, &pVfs, &zPath, &zErr);
-    if( rc!=SQLITE_OK ){
-      if( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
-      sqlite3_result_error(context, zErr, -1);
+    rc = sqlite3ParseUri(db->pVfs->zName, zFile, &flags, &pVfs, &z_رستو, &zErr);
+    إذا( rc!=SQLITE_OK ){
+      إذا( rc==SQLITE_NOMEM ) sqlite3OomFault(db);
+      sqlite3_نتيجو_error(context, zErr, -1);
       sqlite3_free(zErr);
-      return;
+      أرجع;
     }
-    if( (db->flags & SQLITE_AttachWrite)==0 ){
+    إذا( (db->flags & SQLITE_AttachWrite)==0 ){
       flags &= ~(SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE);
       flags |= SQLITE_OPEN_READONLY;
-    }else if( (db->flags & SQLITE_AttachCreate)==0 ){
+    }وإلا إذا( (db->flags & SQLITE_AttachCreate)==0 ){
       flags &= ~SQLITE_OPEN_CREATE;
     }
-    assert( pVfs );
+    أكد( pVfs );
     flags |= SQLITE_OPEN_MAIN_DB;
-    rc = sqlite3BtreeOpen(pVfs, zPath, db, &pNew->pBt, 0, flags);
+    rc = sqlite3BtreeOpen(pVfs, z_رستو, db, &pNew->pBt, 0, flags);
     db->nDb++;
     pNew->zDbSName = sqlite3DbStrDup(db, zName);
   }
   db->noSharedCache = 0;
-  if( rc==SQLITE_CONSTRAINT ){
+  إذا( rc==SQLITE_CONSTRAINT ){
     rc = SQLITE_ERROR;
     zErrDyn = sqlite3MPrintf(db, "database is already attached");
-  }else if( rc==SQLITE_OK ){
+  }وإلا إذا( rc==SQLITE_OK ){
     Pager *pPager;
     pNew->pSchema = sqlite3SchemaGet(db, pNew->pBt);
-    if( !pNew->pSchema ){
+    إذا( !pNew->pSchema ){
       rc = SQLITE_NOMEM_BKPT;
-    }else if( pNew->pSchema->file_format && pNew->pSchema->enc!=ENC(db) ){
+    }وإلا إذا( pNew->pSchema->file_format && pNew->pSchema->enc!=ENC(db) ){
       zErrDyn = sqlite3MPrintf(db, 
         "attached databases must use the same text encoding as main database");
       rc = SQLITE_ERROR;
     }
     sqlite3BtreeEnter(pNew->pBt);
     pPager = sqlite3BtreePager(pNew->pBt);
-    sqlite3PagerLockingMode(pPager, db->dfltLockMode);
+    sqlite3_Pager_Locking_گهڻائي(pPager, db->dflt_تالو_گهڻائي);
     sqlite3BtreeSecureDelete(pNew->pBt,
                              sqlite3BtreeSecureDelete(db->aDb[0].pBt,-1) );
-#ifndef SQLITE_OMIT_PAGER_PRAGMAS
-    sqlite3BtreeSetPagerFlags(pNew->pBt,
-                      PAGER_SYNCHRONOUS_FULL | (db->flags & PAGER_FLAGS_MASK));
-#endif
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_PAGER_PRAGMAS
+    sqlite3_Btree_سيٽ_Pager_Flags(pNew->pBt,
+                      PAGER_SYNCHRONOUS_ڀريل | (db->flags & PAGER_FLAGS_نقاب));
+#جيڪڏهن_پورو
     sqlite3BtreeLeave(pNew->pBt);
   }
   pNew->safety_level = SQLITE_DEFAULT_SYNCHRONOUS+1;
-  if( rc==SQLITE_OK && pNew->zDbSName==0 ){
+  إذا( rc==SQLITE_OK && pNew->zDbSName==0 ){
     rc = SQLITE_NOMEM_BKPT;
   }
-  sqlite3_free_filename( zPath );
+  sqlite3_free_filename( z_رستو );
 
   /* If the file was opened successfully, read the schema for the new database.
   ** If this fails, or if opening the file failed, then close the file and 
   ** remove the entry from the db->aDb[] array. i.e. put everything back the
   ** way we found it.
   */
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     sqlite3BtreeEnterAll(db);
     db->init.iDb = 0;
-    db->mDbFlags &= ~(DBFLAG_SchemaKnownOk);
-#ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-    if( db->setlkFlags & SQLITE_SETLK_BLOCK_ON_CONNECT ){
-      int val = 1;
+    db->mDbFlags &= ~(DBFLAG_Schema_معلوم_Ok);
+#جيڪڏهن_وصف_ٿيل SQLITE_ENABLE_SETLK_TIMEOUT
+    إذا( db->setlkFlags & SQLITE_SETLK_بلاڪ_ON_CONNECT ){
+      صحيح val = 1;
       sqlite3_file *fd = sqlite3PagerFile(sqlite3BtreePager(pNew->pBt));
-      sqlite3OsFileControlHint(fd, SQLITE_FCNTL_BLOCK_ON_CONNECT, &val);
+      sqlite3OsFileControlHint(fd, SQLITE_FCNTL_بلاڪ_ON_CONNECT, &val);
     }
-#endif
-    if( !REOPEN_AS_MEMDB(db) ){
+#جيڪڏهن_پورو
+    إذا( !REOPEN_AS_MEMDB(db) ){
       rc = sqlite3Init(db, &zErrDyn);
     }
     sqlite3BtreeLeaveAll(db);
-    assert( zErrDyn==0 || rc!=SQLITE_OK );
+    أكد( zErrDyn==0 || rc!=SQLITE_OK );
   }
-  if( rc ){
-    if( ALWAYS(!REOPEN_AS_MEMDB(db)) ){
-      int iDb = db->nDb - 1;
-      assert( iDb>=2 );
-      if( db->aDb[iDb].pBt ){
+  إذا( rc ){
+    إذا( ALWAYS(!REOPEN_AS_MEMDB(db)) ){
+      صحيح iDb = db->nDb - 1;
+      أكد( iDb>=2 );
+      إذا( db->aDb[iDb].pBt ){
         sqlite3BtreeClose(db->aDb[iDb].pBt);
         db->aDb[iDb].pBt = 0;
         db->aDb[iDb].pSchema = 0;
       }
-      sqlite3ResetAllSchemasOfConnection(db);
+      sqlite3_Reset_All_Schemas_جو_Connection(db);
       db->nDb = iDb;
-      if( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
+      إذا( rc==SQLITE_NOMEM || rc==SQLITE_IOERR_NOMEM ){
         sqlite3OomFault(db);
         sqlite3DbFree(db, zErrDyn);
         zErrDyn = sqlite3MPrintf(db, "out of memory");
-      }else if( zErrDyn==0 ){
+      }وإلا إذا( zErrDyn==0 ){
         zErrDyn = sqlite3MPrintf(db, "unable to open database: %s", zFile);
       }
     }
-    goto attach_error;
+    اذهب attach_error;
   }
   
-  return;
+  أرجع;
 
 attach_error:
   /* Return an error if we get here */
-  if( zErrDyn ){
-    sqlite3_result_error(context, zErrDyn, -1);
+  إذا( zErrDyn ){
+    sqlite3_نتيجو_error(context, zErrDyn, -1);
     sqlite3DbFree(db, zErrDyn);
   }
-  if( rc ) sqlite3_result_error_code(context, rc);
+  إذا( rc ) sqlite3_نتيجو_error_ڪوڊ(context, rc);
 }
 
 /*
@@ -314,123 +314,123 @@ attach_error:
 **
 **     SELECT sqlite_detach(x)
 */
-static void detachFunc(
+ساكن فراغ detachFunc(
   sqlite3_context *context,
-  int NotUsed,
-  sqlite3_value **argv
+  صحيح Not_استعمال_ٿيل,
+  sqlite3_قدر **argv
 ){
-  const char *zName = (const char *)sqlite3_value_text(argv[0]);
+  ثابت حرف *zName = (ثابت حرف *)sqlite3_قدر_متن(argv[0]);
   sqlite3 *db = sqlite3_context_db_handle(context);
-  int i;
+  صحيح i;
   Db *pDb = 0;
-  char zErr[128];
+  حرف zErr[128];
 
-  UNUSED_PARAMETER(NotUsed);
+  اڻ_استعمال_ٿيل_PARAMETER(Not_استعمال_ٿيل);
 
-  if( zName==0 ) zName = "";
-  for(i=0; i<db->nDb; i++){
+  إذا( zName==0 ) zName = "";
+  لكل(i=0; i<db->nDb; i++){
     pDb = &db->aDb[i];
-    if( pDb->pBt==0 ) continue;
-    if( sqlite3DbIsNamed(db, i, zName) ) break;
+    إذا( pDb->pBt==0 ) استمر;
+    إذا( sqlite3DbIsNamed(db, i, zName) ) اكسر;
   }
 
-  if( i>=db->nDb ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "no such database: %s", zName);
-    goto detach_error;
+  إذا( i>=db->nDb ){
+    sqlite3_snprintf(حجم(zErr),zErr, "no such database: %s", zName);
+    اذهب detach_error;
   }
-  if( i<2 ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "cannot detach database %s", zName);
-    goto detach_error;
+  إذا( i<2 ){
+    sqlite3_snprintf(حجم(zErr),zErr, "cannot detach database %s", zName);
+    اذهب detach_error;
   }
-  if( sqlite3BtreeTxnState(pDb->pBt)!=SQLITE_TXN_NONE
-   || sqlite3BtreeIsInBackup(pDb->pBt)
+  إذا( sqlite3BtreeTxnState(pDb->pBt)!=SQLITE_TXN_NONE
+   || sqlite3_Btree_Is_اندريون_Backup(pDb->pBt)
   ){
-    sqlite3_snprintf(sizeof(zErr),zErr, "database %s is locked", zName);
-    goto detach_error;
+    sqlite3_snprintf(حجم(zErr),zErr, "database %s is locked", zName);
+    اذهب detach_error;
   }
 
-  detachTempTriggers(db, pDb->pSchema);
+  detach_عارضي_Triggers(db, pDb->pSchema);
   sqlite3BtreeClose(pDb->pBt);
   pDb->pBt = 0;
   pDb->pSchema = 0;
   sqlite3CollapseDatabaseArray(db);
-  return;
+  أرجع;
 
 detach_error:
-  sqlite3_result_error(context, zErr, -1);
+  sqlite3_نتيجو_error(context, zErr, -1);
 }
 
 /*
 ** This procedure generates VDBE code for a single invocation of either the
 ** sqlite_detach() or sqlite_attach() SQL user functions.
 */
-static void codeAttach(
+ساكن فراغ ڪوڊ_Attach(
   Parse *pParse,       /* The parser context */
-  int type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
-  FuncDef const *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
-  Expr *pAuthArg,      /* Expression to pass to authorization callback */
-  Expr *pFilename,     /* Name of database file */
-  Expr *pDbname,       /* Name of the database to use internally */
-  Expr *pKey           /* Database key for encryption extension */
+  صحيح type,            /* Either SQLITE_ATTACH or SQLITE_DETACH */
+  FuncDef ثابت *pFunc,/* FuncDef wrapper for detachFunc() or attachFunc() */
+  اظهار *pAuthArg,      /* Expression to pass to authorization callback */
+  اظهار *pFilename,     /* Name of database file */
+  اظهار *pDbname,       /* Name of the database to use internally */
+  اظهار *p_ڪنجي           /* Database key for encryption extension */
 ){
-  int rc;
+  صحيح rc;
   NameContext sName;
   Vdbe *v;
   sqlite3* db = pParse->db;
-  int regArgs;
+  صحيح reg_دليلون;
 
-  if( SQLITE_OK!=sqlite3ReadSchema(pParse) ) goto attach_end;
+  إذا( SQLITE_OK!=sqlite3ReadSchema(pParse) ) اذهب attach_پڇاڙي;
 
-  if( pParse->nErr ) goto attach_end;
-  memset(&sName, 0, sizeof(NameContext));
+  إذا( pParse->nErr ) اذهب attach_پڇاڙي;
+  memset(&sName, 0, حجم(NameContext));
   sName.pParse = pParse;
 
-  if( 
-      SQLITE_OK!=resolveAttachExpr(&sName, pFilename) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pDbname) ||
-      SQLITE_OK!=resolveAttachExpr(&sName, pKey)
+  إذا( 
+      SQLITE_OK!=resolve_Attach_اظهار(&sName, pFilename) ||
+      SQLITE_OK!=resolve_Attach_اظهار(&sName, pDbname) ||
+      SQLITE_OK!=resolve_Attach_اظهار(&sName, p_ڪنجي)
   ){
-    goto attach_end;
+    اذهب attach_پڇاڙي;
   }
 
-#ifndef SQLITE_OMIT_AUTHORIZATION
-  if( ALWAYS(pAuthArg) ){
-    char *zAuthArg;
-    if( pAuthArg->op==TK_STRING ){
-      assert( !ExprHasProperty(pAuthArg, EP_IntValue) );
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_AUTHORIZATION
+  إذا( ALWAYS(pAuthArg) ){
+    حرف *zAuthArg;
+    إذا( pAuthArg->op==TK_STRING ){
+      أكد( !اظهار_Has_Property(pAuthArg, EP_Int_قدر) );
       zAuthArg = pAuthArg->u.zToken;
-    }else{
+    }وإلا{
       zAuthArg = 0;
     }
     rc = sqlite3AuthCheck(pParse, type, zAuthArg, 0, 0);
-    if(rc!=SQLITE_OK ){
-      goto attach_end;
+    إذا(rc!=SQLITE_OK ){
+      اذهب attach_پڇاڙي;
     }
   }
-#endif /* SQLITE_OMIT_AUTHORIZATION */
+#جيڪڏهن_پورو /* SQLITE_OMIT_AUTHORIZATION */
 
 
   v = sqlite3GetVdbe(pParse);
-  regArgs = sqlite3GetTempRange(pParse, 4);
-  sqlite3ExprCode(pParse, pFilename, regArgs);
-  sqlite3ExprCode(pParse, pDbname, regArgs+1);
-  sqlite3ExprCode(pParse, pKey, regArgs+2);
+  reg_دليلون = sqlite3_Get_عارضي_Range(pParse, 4);
+  sqlite3_اظهار_ڪوڊ(pParse, pFilename, reg_دليلون);
+  sqlite3_اظهار_ڪوڊ(pParse, pDbname, reg_دليلون+1);
+  sqlite3_اظهار_ڪوڊ(pParse, p_ڪنجي, reg_دليلون+2);
 
-  assert( v || db->mallocFailed );
-  if( v ){
-    sqlite3VdbeAddFunctionCall(pParse, 0, regArgs+3-pFunc->nArg, regArgs+3,
+  أكد( v || db->mallocFailed );
+  إذا( v ){
+    sqlite3_Vdbe_جوڙيو_Function_Call(pParse, 0, reg_دليلون+3-pFunc->nArg, reg_دليلون+3,
                                pFunc->nArg, pFunc, 0);
     /* Code an OP_Expire. For an ATTACH statement, set P1 to true (expire this
     ** statement only). For DETACH, set it to false (expire all existing
     ** statements).
     */
-    sqlite3VdbeAddOp1(v, OP_Expire, (type==SQLITE_ATTACH));
+    sqlite3_Vdbe_جوڙيو_Op1(v, OP_Expire, (type==SQLITE_ATTACH));
   }
   
-attach_end:
-  sqlite3ExprDelete(db, pFilename);
-  sqlite3ExprDelete(db, pDbname);
-  sqlite3ExprDelete(db, pKey);
+attach_پڇاڙي:
+  sqlite3_اظهار_Delete(db, pFilename);
+  sqlite3_اظهار_Delete(db, pDbname);
+  sqlite3_اظهار_Delete(db, p_ڪنجي);
 }
 
 /*
@@ -438,8 +438,8 @@ attach_end:
 **
 **     DETACH pDbname
 */
-void sqlite3Detach(Parse *pParse, Expr *pDbname){
-  static const FuncDef detach_func = {
+فراغ sqlite3Detach(Parse *pParse, اظهار *pDbname){
+  ساكن ثابت FuncDef detach_func = {
     1,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -450,7 +450,7 @@ void sqlite3Detach(Parse *pParse, Expr *pDbname){
     "sqlite_detach",  /* zName */
     {0}
   };
-  codeAttach(pParse, SQLITE_DETACH, &detach_func, pDbname, 0, 0, pDbname);
+  ڪوڊ_Attach(pParse, SQLITE_DETACH, &detach_func, pDbname, 0, 0, pDbname);
 }
 
 /*
@@ -458,8 +458,8 @@ void sqlite3Detach(Parse *pParse, Expr *pDbname){
 **
 **     ATTACH p AS pDbname KEY pKey
 */
-void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
-  static const FuncDef attach_func = {
+فراغ sqlite3Attach(Parse *pParse, اظهار *p, اظهار *pDbname, اظهار *p_ڪنجي){
+  ساكن ثابت FuncDef attach_func = {
     3,                /* nArg */
     SQLITE_UTF8,      /* funcFlags */
     0,                /* pUserData */
@@ -470,99 +470,99 @@ void sqlite3Attach(Parse *pParse, Expr *p, Expr *pDbname, Expr *pKey){
     "sqlite_attach",  /* zName */
     {0}
   };
-  codeAttach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, pKey);
+  ڪوڊ_Attach(pParse, SQLITE_ATTACH, &attach_func, p, p, pDbname, p_ڪنجي);
 }
-#endif /* SQLITE_OMIT_ATTACH */
+#جيڪڏهن_پورو /* SQLITE_OMIT_ATTACH */
 
 /*
 ** Expression callback used by sqlite3FixAAAA() routines.
 */
-static int fixExprCb(Walker *p, Expr *pExpr){
+ساكن صحيح fix_اظهار_Cb(Walker *p, اظهار *p_اظهار){
   DbFixer *pFix = p->u.pFix;
-  if( !pFix->bTemp ) ExprSetProperty(pExpr, EP_FromDDL);
-  if( pExpr->op==TK_VARIABLE ){
-    if( pFix->pParse->db->init.busy ){
-      pExpr->op = TK_NULL;
-    }else{
-      sqlite3ErrorMsg(pFix->pParse, "%s cannot use variables", pFix->zType);
-      return WRC_Abort;
+  إذا( !pFix->b_عارضي ) اظهار_سيٽ_Property(p_اظهار, EP_FromDDL);
+  إذا( p_اظهار->op==TK_VARIABLE ){
+    إذا( pFix->pParse->db->init.busy ){
+      p_اظهار->op = TK_NULL;
+    }وإلا{
+      sqlite3_Error_نياپو(pFix->pParse, "%s cannot use variables", pFix->zType);
+      أرجع WRC_Abort;
     }
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
 ** Select callback used by sqlite3FixAAAA() routines.
 */
-static int fixSelectCb(Walker *p, Select *pSelect){
+ساكن صحيح fixSelectCb(Walker *p, Select *pSelect){
   DbFixer *pFix = p->u.pFix;
-  int i;
-  SrcItem *pItem;
+  صحيح i;
+  Src_شي *p_شي;
   sqlite3 *db = pFix->pParse->db;
-  int iDb = sqlite3FindDbName(db, pFix->zDb);
+  صحيح iDb = sqlite3_ڳوليو_Db_Name(db, pFix->zDb);
   SrcList *pList = pSelect->pSrc;
 
-  if( NEVER(pList==0) ) return WRC_Continue;
-  for(i=0, pItem=pList->a; i<pList->nSrc; i++, pItem++){
-    if( pFix->bTemp==0 && pItem->fg.isSubquery==0 ){
-      if( pItem->fg.fixedSchema==0 && pItem->u4.zDatabase!=0 ){
-        if( iDb!=sqlite3FindDbName(db, pItem->u4.zDatabase) ){
-          sqlite3ErrorMsg(pFix->pParse,
+  إذا( NEVER(pList==0) ) أرجع WRC_Continue;
+  لكل(i=0, p_شي=pList->a; i<pList->nSrc; i++, p_شي++){
+    إذا( pFix->b_عارضي==0 && p_شي->fg.isSubquery==0 ){
+      إذا( p_شي->fg.fixedSchema==0 && p_شي->u4.zDatabase!=0 ){
+        إذا( iDb!=sqlite3_ڳوليو_Db_Name(db, p_شي->u4.zDatabase) ){
+          sqlite3_Error_نياپو(pFix->pParse,
               "%s %T cannot reference objects in database %s",
-              pFix->zType, pFix->pName, pItem->u4.zDatabase);
-          return WRC_Abort;
+              pFix->zType, pFix->pName, p_شي->u4.zDatabase);
+          أرجع WRC_Abort;
         }
-        sqlite3DbFree(db, pItem->u4.zDatabase);
-        pItem->fg.notCte = 1;
-        pItem->fg.hadSchema = 1;
+        sqlite3DbFree(db, p_شي->u4.zDatabase);
+        p_شي->fg.notCte = 1;
+        p_شي->fg.hadSchema = 1;
       }
-      pItem->u4.pSchema = pFix->pSchema;
-      pItem->fg.fromDDL = 1;
-      pItem->fg.fixedSchema = 1;
+      p_شي->u4.pSchema = pFix->pSchema;
+      p_شي->fg.fromDDL = 1;
+      p_شي->fg.fixedSchema = 1;
     }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
-    if( pList->a[i].fg.isUsing==0
-     && sqlite3WalkExpr(&pFix->w, pList->a[i].u3.pOn)
+#إذا !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
+    إذا( pList->a[i].fg.isUsing==0
+     && sqlite3_Walk_اظهار(&pFix->w, pList->a[i].u3.pOn)
     ){
-      return WRC_Abort;
+      أرجع WRC_Abort;
     }
-#endif
+#جيڪڏهن_پورو
   }
-  if( pSelect->pWith ){
-    for(i=0; i<pSelect->pWith->nCte; i++){
-      if( sqlite3WalkSelect(p, pSelect->pWith->a[i].pSelect) ){
-        return WRC_Abort;
+  إذا( pSelect->pWith ){
+    لكل(i=0; i<pSelect->pWith->nCte; i++){
+      إذا( sqlite3WalkSelect(p, pSelect->pWith->a[i].pSelect) ){
+        أرجع WRC_Abort;
       }
     }
   }
-  return WRC_Continue;
+  أرجع WRC_Continue;
 }
 
 /*
 ** Initialize a DbFixer structure.  This routine must be called prior
 ** to passing the structure to one of the sqliteFixAAAA() routines below.
 */
-void sqlite3FixInit(
+فراغ sqlite3FixInit(
   DbFixer *pFix,      /* The fixer to be initialized */
   Parse *pParse,      /* Error messages will be written here */
-  int iDb,            /* This is the database that must be used */
-  const char *zType,  /* "view", "trigger", or "index" */
-  const Token *pName  /* Name of the view, trigger, or index */
+  صحيح iDb,            /* This is the database that must be used */
+  ثابت حرف *zType,  /* "view", "trigger", or "index" */
+  ثابت Token *pName  /* Name of the view, trigger, or index */
 ){
   sqlite3 *db = pParse->db;
-  assert( db->nDb>iDb );
+  أكد( db->nDb>iDb );
   pFix->pParse = pParse;
   pFix->zDb = db->aDb[iDb].zDbSName;
   pFix->pSchema = db->aDb[iDb].pSchema;
   pFix->zType = zType;
   pFix->pName = pName;
-  pFix->bTemp = (iDb==1);
+  pFix->b_عارضي = (iDb==1);
   pFix->w.pParse = pParse;
-  pFix->w.xExprCallback = fixExprCb;
+  pFix->w.x_اظهار_Callback = fix_اظهار_Cb;
   pFix->w.xSelectCallback = fixSelectCb;
   pFix->w.xSelectCallback2 = sqlite3WalkWinDefnDummyCallback;
-  pFix->w.walkerDepth = 0;
-  pFix->w.eCode = 0;
+  pFix->w.walker_اونهائي = 0;
+  pFix->w.e_ڪوڊ = 0;
   pFix->w.u.pFix = pFix;
 }
 
@@ -580,64 +580,64 @@ void sqlite3FixInit(
 ** pParse->zErrMsg and these routines return non-zero.  If everything
 ** checks out, these routines return 0.
 */
-int sqlite3FixSrcList(
+صحيح sqlite3FixSrcList(
   DbFixer *pFix,       /* Context of the fixation */
   SrcList *pList       /* The Source list to check and modify */
 ){
-  int res = 0;
-  if( pList ){
+  صحيح res = 0;
+  إذا( pList ){
     Select s; 
-    memset(&s, 0, sizeof(s));
+    memset(&s, 0, حجم(s));
     s.pSrc = pList;
     res = sqlite3WalkSelect(&pFix->w, &s);
   }
-  return res;
+  أرجع res;
 }
-#if !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
-int sqlite3FixSelect(
+#إذا !defined(SQLITE_OMIT_VIEW) || !defined(SQLITE_OMIT_TRIGGER)
+صحيح sqlite3FixSelect(
   DbFixer *pFix,       /* Context of the fixation */
   Select *pSelect      /* The SELECT statement to be fixed to one database */
 ){
-  return sqlite3WalkSelect(&pFix->w, pSelect);
+  أرجع sqlite3WalkSelect(&pFix->w, pSelect);
 }
-int sqlite3FixExpr(
+صحيح sqlite3_Fix_اظهار(
   DbFixer *pFix,     /* Context of the fixation */
-  Expr *pExpr        /* The expression to be fixed to one database */
+  اظهار *p_اظهار        /* The expression to be fixed to one database */
 ){
-  return sqlite3WalkExpr(&pFix->w, pExpr);
+  أرجع sqlite3_Walk_اظهار(&pFix->w, p_اظهار);
 }
-#endif
+#جيڪڏهن_پورو
 
-#ifndef SQLITE_OMIT_TRIGGER
-int sqlite3FixTriggerStep(
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_TRIGGER
+صحيح sqlite3_Fix_Trigger_قدم(
   DbFixer *pFix,     /* Context of the fixation */
-  TriggerStep *pStep /* The trigger step be fixed to one database */
+  Trigger_قدم *p_قدم /* The trigger step be fixed to one database */
 ){
-  while( pStep ){
-    if( sqlite3WalkSelect(&pFix->w, pStep->pSelect)
-     || sqlite3WalkExpr(&pFix->w, pStep->pWhere) 
-     || sqlite3WalkExprList(&pFix->w, pStep->pExprList)
-     || sqlite3FixSrcList(pFix, pStep->pSrc)
+  طالما( p_قدم ){
+    إذا( sqlite3WalkSelect(&pFix->w, p_قدم->pSelect)
+     || sqlite3_Walk_اظهار(&pFix->w, p_قدم->pWhere) 
+     || sqlite3_Walk_اظهار_List(&pFix->w, p_قدم->p_اظهار_List)
+     || sqlite3FixSrcList(pFix, p_قدم->pSrc)
     ){
-      return 1;
+      أرجع 1;
     }
-#ifndef SQLITE_OMIT_UPSERT
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_UPSERT
     {
-      Upsert *pUp;
-      for(pUp=pStep->pUpsert; pUp; pUp=pUp->pNextUpsert){
-        if( sqlite3WalkExprList(&pFix->w, pUp->pUpsertTarget)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertTargetWhere)
-         || sqlite3WalkExprList(&pFix->w, pUp->pUpsertSet)
-         || sqlite3WalkExpr(&pFix->w, pUp->pUpsertWhere)
+      Upsert *p_مٿي;
+      لكل(p_مٿي=p_قدم->pUpsert; p_مٿي; p_مٿي=p_مٿي->p_ايندڙ_Upsert){
+        إذا( sqlite3_Walk_اظهار_List(&pFix->w, p_مٿي->p_Upsert_هدف)
+         || sqlite3_Walk_اظهار(&pFix->w, p_مٿي->p_Upsert_هدف_Where)
+         || sqlite3_Walk_اظهار_List(&pFix->w, p_مٿي->p_Upsert_سيٽ)
+         || sqlite3_Walk_اظهار(&pFix->w, p_مٿي->pUpsertWhere)
         ){
-          return 1;
+          أرجع 1;
         }
       }
     }
-#endif
-    pStep = pStep->pNext;
+#جيڪڏهن_پورو
+    p_قدم = p_قدم->p_ايندڙ;
   }
 
-  return 0;
+  أرجع 0;
 }
-#endif
+#جيڪڏهن_پورو

@@ -24,49 +24,49 @@
 **   -mxpathname INTEGER        (Value for sqlite3_vfs.mxPathname)
 **   -iversion   INTEGER        (Value for sqlite3_vfs.iVersion)
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#إذا SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#ضمن "sqlite3.h"
+#ضمن "sqliteInt.h"
+#ضمن "tclsqlite.h"
 
-typedef struct Testvfs Testvfs;
-typedef struct TestvfsShm TestvfsShm;
-typedef struct TestvfsBuffer TestvfsBuffer;
-typedef struct TestvfsFile TestvfsFile;
-typedef struct TestvfsFd TestvfsFd;
+تعريفنوع بنية Testvfs Testvfs;
+تعريفنوع بنية TestvfsShm TestvfsShm;
+تعريفنوع بنية Testvfs_بفر Testvfs_بفر;
+تعريفنوع بنية TestvfsFile TestvfsFile;
+تعريفنوع بنية TestvfsFd TestvfsFd;
 
 /*
 ** An open file handle.
 */
-struct TestvfsFile {
-  sqlite3_file base;              /* Base class.  Must be first */
+بنية TestvfsFile {
+  sqlite3_file بنياد;              /* Base class.  Must be first */
   TestvfsFd *pFd;                 /* File data */
 };
-#define tvfsGetFd(pFile) (((TestvfsFile *)pFile)->pFd)
+#وصف_ڪريو tvfsGetFd(pFile) (((TestvfsFile *)pFile)->pFd)
 
-struct TestvfsFd {
+بنية TestvfsFd {
   sqlite3_vfs *pVfs;              /* The VFS */
-  const char *zFilename;          /* Filename as passed to xOpen() */
+  ثابت حرف *zFilename;          /* Filename as passed to xOpen() */
   sqlite3_file *pReal;            /* The real, underlying file descriptor */
   Tcl_Obj *pShmId;                /* Shared memory id for Tcl callbacks */
 
-  TestvfsBuffer *pShm;            /* Shared memory buffer */
+  Testvfs_بفر *pShm;            /* Shared memory buffer */
   u32 excllock;                   /* Mask of exclusive locks */
   u32 sharedlock;                 /* Mask of shared locks */
-  TestvfsFd *pNext;               /* Next handle opened on the same file */
+  TestvfsFd *p_ايندڙ;               /* Next handle opened on the same file */
 };
 
 
-#define FAULT_INJECT_NONE       0
-#define FAULT_INJECT_TRANSIENT  1
-#define FAULT_INJECT_PERSISTENT 2
+#وصف_ڪريو FAULT_INJECT_NONE       0
+#وصف_ڪريو FAULT_INJECT_TRANSIENT  1
+#وصف_ڪريو FAULT_INJECT_PERSISTENT 2
 
-typedef struct TestFaultInject TestFaultInject;
-struct TestFaultInject {
-  int iCnt;                       /* Remaining calls before fault injection */
-  int eFault;                     /* A FAULT_INJECT_* value */
-  int nFail;                      /* Number of faults injected */
+تعريفنوع بنية TestFaultInject TestFaultInject;
+بنية TestFaultInject {
+  صحيح iCnt;                       /* Remaining calls before fault injection */
+  صحيح eFault;                     /* A FAULT_INJECT_* value */
+  صحيح nFail;                      /* Number of faults injected */
 };
 
 /*
@@ -74,33 +74,33 @@ struct TestFaultInject {
 ** sqlite3_vfs.pAppData field of the VFS structure registered with SQLite
 ** is set to point to it.
 */
-struct Testvfs {
-  char *zName;                    /* Name of this VFS */
-  sqlite3_vfs *pParent;           /* The VFS to use for file IO */
+بنية Testvfs {
+  حرف *zName;                    /* Name of this VFS */
+  sqlite3_vfs *p_والد;           /* The VFS to use for file IO */
   sqlite3_vfs *pVfs;              /* The testvfs registered with SQLite */
   Tcl_Interp *interp;             /* Interpreter to run script in */
   Tcl_Obj *pScript;               /* Script to execute */
-  TestvfsBuffer *pBuffer;         /* List of shared buffers */
-  int isNoshm;
-  int isFullshm;
+  Testvfs_بفر *p_بفر;         /* List of shared buffers */
+  صحيح isNoshm;
+  صحيح isFullshm;
 
-  int mask;                       /* Mask controlling [script] and [ioerr] */
+  صحيح نقاب;                       /* Mask controlling [script] and [ioerr] */
 
   TestFaultInject ioerr_err;
-  TestFaultInject full_err;
+  TestFaultInject ڀريل_err;
   TestFaultInject cantopen_err;
 
-#if 0
-  int iIoerrCnt;
-  int ioerr;
-  int nIoerrFail;
-  int iFullCnt;
-  int fullerr;
-  int nFullFail;
-#endif
+#إذا 0
+  صحيح iIoerrCnt;
+  صحيح ioerr;
+  صحيح nIoerrFail;
+  صحيح i_ڀريل_Cnt;
+  صحيح fullerr;
+  صحيح n_ڀريل_Fail;
+#جيڪڏهن_پورو
 
-  int iDevchar;
-  int iSectorsize;
+  صحيح iDevchar;
+  صحيح iSectorsize;
 };
 
 /*
@@ -111,120 +111,120 @@ struct Testvfs {
 **   + Simulating IO errors, and
 **   + Invoking the Tcl callback script.
 */
-#define TESTVFS_SHMOPEN_MASK      0x00000001
-#define TESTVFS_SHMLOCK_MASK      0x00000010
-#define TESTVFS_SHMMAP_MASK       0x00000020
-#define TESTVFS_SHMBARRIER_MASK   0x00000040
-#define TESTVFS_SHMCLOSE_MASK     0x00000080
+#وصف_ڪريو TESTVFS_SHMOPEN_نقاب      0x00000001
+#وصف_ڪريو TESTVFS_SHMLOCK_نقاب      0x00000010
+#وصف_ڪريو TESTVFS_SHMMAP_نقاب       0x00000020
+#وصف_ڪريو TESTVFS_SHMBARRIER_نقاب   0x00000040
+#وصف_ڪريو TESTVFS_SHMCLOSE_نقاب     0x00000080
 
-#define TESTVFS_OPEN_MASK         0x00000100
-#define TESTVFS_SYNC_MASK         0x00000200
-#define TESTVFS_DELETE_MASK       0x00000400
-#define TESTVFS_CLOSE_MASK        0x00000800
-#define TESTVFS_WRITE_MASK        0x00001000
-#define TESTVFS_TRUNCATE_MASK     0x00002000
-#define TESTVFS_ACCESS_MASK       0x00004000
-#define TESTVFS_FULLPATHNAME_MASK 0x00008000
-#define TESTVFS_READ_MASK         0x00010000
-#define TESTVFS_UNLOCK_MASK       0x00020000
-#define TESTVFS_LOCK_MASK         0x00040000
-#define TESTVFS_CKLOCK_MASK       0x00080000
-#define TESTVFS_FCNTL_MASK        0x00100000
-#define TESTVFS_SLEEP_MASK        0x00200000
+#وصف_ڪريو TESTVFS_OPEN_نقاب         0x00000100
+#وصف_ڪريو TESTVFS_SYNC_نقاب         0x00000200
+#وصف_ڪريو TESTVFS_DELETE_نقاب       0x00000400
+#وصف_ڪريو TESTVFS_CLOSE_نقاب        0x00000800
+#وصف_ڪريو TESTVFS_WRITE_نقاب        0x00001000
+#وصف_ڪريو TESTVFS_TRUNCATE_نقاب     0x00002000
+#وصف_ڪريو TESTVFS_ACCESS_نقاب       0x00004000
+#وصف_ڪريو TESTVFS_FULLPATHNAME_نقاب 0x00008000
+#وصف_ڪريو TESTVFS_READ_نقاب         0x00010000
+#وصف_ڪريو TESTVFS_UNLOCK_نقاب       0x00020000
+#وصف_ڪريو TESTVFS_تالو_نقاب         0x00040000
+#وصف_ڪريو TESTVFS_CKLOCK_نقاب       0x00080000
+#وصف_ڪريو TESTVFS_FCNTL_نقاب        0x00100000
+#وصف_ڪريو TESTVFS_SLEEP_نقاب        0x00200000
 
-#define TESTVFS_ALL_MASK          0x003FFFFF
+#وصف_ڪريو TESTVFS_ALL_نقاب          0x003FFFFF
 
 
-#define TESTVFS_MAX_PAGES 1024
+#وصف_ڪريو TESTVFS_MAX_صفحا 1024
 
 /*
 ** A shared-memory buffer. There is one of these objects for each shared
 ** memory region opened by clients. If two clients open the same file,
 ** there are two TestvfsFile structures but only one TestvfsBuffer structure.
 */
-struct TestvfsBuffer {
-  char *zFile;                    /* Associated file name */
-  int pgsz;                       /* Page size */
-  u8 *aPage[TESTVFS_MAX_PAGES];   /* Array of ckalloc'd pages */
+بنية Testvfs_بفر {
+  حرف *zFile;                    /* Associated file name */
+  صحيح pgsz;                       /* Page size */
+  u8 *a_صفحو[TESTVFS_MAX_صفحا];   /* Array of ckalloc'd pages */
   TestvfsFd *pFile;               /* List of open handles */
-  TestvfsBuffer *pNext;           /* Next in linked list of all buffers */
+  Testvfs_بفر *p_ايندڙ;           /* Next in linked list of all buffers */
 };
 
 
-#define PARENTVFS(x) (((Testvfs *)((x)->pAppData))->pParent)
+#وصف_ڪريو PARENTVFS(x) (((Testvfs *)((x)->p_App_معلومات))->p_والد)
 
-#define TESTVFS_MAX_ARGS 12
+#وصف_ڪريو TESTVFS_MAX_دليلون 12
 
 
 /*
 ** Method declarations for TestvfsFile.
 */
-static int tvfsClose(sqlite3_file*);
-static int tvfsRead(sqlite3_file*, void*, int iAmt, sqlite3_int64 iOfst);
-static int tvfsWrite(sqlite3_file*,const void*,int iAmt, sqlite3_int64 iOfst);
-static int tvfsTruncate(sqlite3_file*, sqlite3_int64 size);
-static int tvfsSync(sqlite3_file*, int flags);
-static int tvfsFileSize(sqlite3_file*, sqlite3_int64 *pSize);
-static int tvfsLock(sqlite3_file*, int);
-static int tvfsUnlock(sqlite3_file*, int);
-static int tvfsCheckReservedLock(sqlite3_file*, int *);
-static int tvfsFileControl(sqlite3_file*, int op, void *pArg);
-static int tvfsSectorSize(sqlite3_file*);
-static int tvfsDeviceCharacteristics(sqlite3_file*);
+ساكن صحيح tvfsClose(sqlite3_file*);
+ساكن صحيح tvfsRead(sqlite3_file*, فراغ*, صحيح iAmt, sqlite3_int64 iOfst);
+ساكن صحيح tvfsWrite(sqlite3_file*,ثابت فراغ*,صحيح iAmt, sqlite3_int64 iOfst);
+ساكن صحيح tvfsTruncate(sqlite3_file*, sqlite3_int64 سائيز);
+ساكن صحيح tvfsSync(sqlite3_file*, صحيح flags);
+ساكن صحيح tvfs_File_سائيز(sqlite3_file*, sqlite3_int64 *p_سائيز);
+ساكن صحيح tvfs_تالو(sqlite3_file*, صحيح);
+ساكن صحيح tvfsUnlock(sqlite3_file*, صحيح);
+ساكن صحيح tvfs_Check_Reserved_تالو(sqlite3_file*, صحيح *);
+ساكن صحيح tvfsFileControl(sqlite3_file*, صحيح op, فراغ *pArg);
+ساكن صحيح tvfs_Sector_سائيز(sqlite3_file*);
+ساكن صحيح tvfsDeviceCharacteristics(sqlite3_file*);
 
 /*
 ** Method declarations for tvfs_vfs.
 */
-static int tvfsOpen(sqlite3_vfs*, const char *, sqlite3_file*, int , int *);
-static int tvfsDelete(sqlite3_vfs*, const char *zName, int syncDir);
-static int tvfsAccess(sqlite3_vfs*, const char *zName, int flags, int *);
-static int tvfsFullPathname(sqlite3_vfs*, const char *zName, int, char *zOut);
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
-static void *tvfsDlOpen(sqlite3_vfs*, const char *zFilename);
-static void tvfsDlError(sqlite3_vfs*, int nByte, char *zErrMsg);
-static void (*tvfsDlSym(sqlite3_vfs*,void*, const char *zSymbol))(void);
-static void tvfsDlClose(sqlite3_vfs*, void*);
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
-static int tvfsRandomness(sqlite3_vfs*, int nByte, char *zOut);
-static int tvfsSleep(sqlite3_vfs*, int microseconds);
-static int tvfsCurrentTime(sqlite3_vfs*, double*);
+ساكن صحيح tvfsOpen(sqlite3_vfs*, ثابت حرف *, sqlite3_file*, صحيح , صحيح *);
+ساكن صحيح tvfsDelete(sqlite3_vfs*, ثابت حرف *zName, صحيح syncDir);
+ساكن صحيح tvfsAccess(sqlite3_vfs*, ثابت حرف *zName, صحيح flags, صحيح *);
+ساكن صحيح tvfs_ڀريل_Pathname(sqlite3_vfs*, ثابت حرف *zName, صحيح, حرف *z_ٻاهريون);
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_ڀريو_EXTENSION
+ساكن فراغ *tvfsDlOpen(sqlite3_vfs*, ثابت حرف *zFilename);
+ساكن فراغ tvfsDlError(sqlite3_vfs*, صحيح nByte, حرف *z_Err_نياپو);
+ساكن فراغ (*tvfsDlSym(sqlite3_vfs*,فراغ*, ثابت حرف *z_نشان))(فراغ);
+ساكن فراغ tvfsDlClose(sqlite3_vfs*, فراغ*);
+#جيڪڏهن_پورو /* SQLITE_OMIT_LOAD_EXTENSION */
+ساكن صحيح tvfsRandomness(sqlite3_vfs*, صحيح nByte, حرف *z_ٻاهريون);
+ساكن صحيح tvfsSleep(sqlite3_vfs*, صحيح microseconds);
+ساكن صحيح tvfs_Current_وقت(sqlite3_vfs*, مزدوج*);
 
-static int tvfsShmOpen(sqlite3_file*);
-static int tvfsShmLock(sqlite3_file*, int , int, int);
-static int tvfsShmMap(sqlite3_file*,int,int,int, void volatile **);
-static void tvfsShmBarrier(sqlite3_file*);
-static int tvfsShmUnmap(sqlite3_file*, int);
+ساكن صحيح tvfsShmOpen(sqlite3_file*);
+ساكن صحيح tvfs_Shm_تالو(sqlite3_file*, صحيح , صحيح, صحيح);
+ساكن صحيح tvfsShmMap(sqlite3_file*,صحيح,صحيح,صحيح, فراغ متطاير **);
+ساكن فراغ tvfsShmBarrier(sqlite3_file*);
+ساكن صحيح tvfsShmUnmap(sqlite3_file*, صحيح);
 
-static int tvfsFetch(sqlite3_file*, sqlite3_int64, int, void**);
-static int tvfsUnfetch(sqlite3_file*, sqlite3_int64, void*);
+ساكن صحيح tvfsFetch(sqlite3_file*, sqlite3_int64, صحيح, فراغ**);
+ساكن صحيح tvfsUnfetch(sqlite3_file*, sqlite3_int64, فراغ*);
 
-static sqlite3_io_methods tvfs_io_methods = {
+ساكن sqlite3_io_methods tvfs_io_methods = {
   3,                              /* iVersion */
   tvfsClose,                      /* xClose */
   tvfsRead,                       /* xRead */
   tvfsWrite,                      /* xWrite */
   tvfsTruncate,                   /* xTruncate */
   tvfsSync,                       /* xSync */
-  tvfsFileSize,                   /* xFileSize */
-  tvfsLock,                       /* xLock */
+  tvfs_File_سائيز,                   /* xFileSize */
+  tvfs_تالو,                       /* xLock */
   tvfsUnlock,                     /* xUnlock */
-  tvfsCheckReservedLock,          /* xCheckReservedLock */
+  tvfs_Check_Reserved_تالو,          /* xCheckReservedLock */
   tvfsFileControl,                /* xFileControl */
-  tvfsSectorSize,                 /* xSectorSize */
+  tvfs_Sector_سائيز,                 /* xSectorSize */
   tvfsDeviceCharacteristics,      /* xDeviceCharacteristics */
   tvfsShmMap,                     /* xShmMap */
-  tvfsShmLock,                    /* xShmLock */
+  tvfs_Shm_تالو,                    /* xShmLock */
   tvfsShmBarrier,                 /* xShmBarrier */
   tvfsShmUnmap,                   /* xShmUnmap */
   tvfsFetch,
   tvfsUnfetch
 };
 
-static int tvfsResultCode(Testvfs *p, int *pRc){
-  struct errcode {
-    int eCode;
-    const char *zCode;
-  } aCode[] = {
+ساكن صحيح tvfs_نتيجو_ڪوڊ(Testvfs *p, صحيح *pRc){
+  بنية errcode {
+    صحيح e_ڪوڊ;
+    ثابت حرف *z_ڪوڊ;
+  } a_ڪوڊ[] = {
     { SQLITE_OK,       "SQLITE_OK"     },
     { SQLITE_ERROR,    "SQLITE_ERROR"  },
     { SQLITE_IOERR,    "SQLITE_IOERR"  },
@@ -236,74 +236,74 @@ static int tvfsResultCode(Testvfs *p, int *pRc){
     { -1,              "SQLITE_OMIT"   },
   };
 
-  const char *z;
-  int i;
+  ثابت حرف *z;
+  صحيح i;
 
-  z = Tcl_GetStringResult(p->interp);
-  for(i=0; i<ArraySize(aCode); i++){
-    if( 0==strcmp(z, aCode[i].zCode) ){
-      *pRc = aCode[i].eCode;
-      return 1;
+  z = Tcl_Get_String_نتيجو(p->interp);
+  لكل(i=0; i<Array_سائيز(a_ڪوڊ); i++){
+    إذا( 0==strcmp(z, a_ڪوڊ[i].z_ڪوڊ) ){
+      *pRc = a_ڪوڊ[i].e_ڪوڊ;
+      أرجع 1;
     }
   }
 
-  return 0;
+  أرجع 0;
 }
 
-static int tvfsInjectFault(TestFaultInject *p){
-  int ret = 0;
-  if( p->eFault ){
+ساكن صحيح tvfsInjectFault(TestFaultInject *p){
+  صحيح ret = 0;
+  إذا( p->eFault ){
     p->iCnt--;
-    if( p->iCnt==0 || (p->iCnt<0 && p->eFault==FAULT_INJECT_PERSISTENT ) ){
+    إذا( p->iCnt==0 || (p->iCnt<0 && p->eFault==FAULT_INJECT_PERSISTENT ) ){
       ret = 1;
       p->nFail++;
     }
   }
-  return ret;
+  أرجع ret;
 }
 
 
-static int tvfsInjectIoerr(Testvfs *p){
-  return tvfsInjectFault(&p->ioerr_err);
+ساكن صحيح tvfsInjectIoerr(Testvfs *p){
+  أرجع tvfsInjectFault(&p->ioerr_err);
 }
 
-static int tvfsInjectFullerr(Testvfs *p){
-  return tvfsInjectFault(&p->full_err);
+ساكن صحيح tvfsInjectFullerr(Testvfs *p){
+  أرجع tvfsInjectFault(&p->ڀريل_err);
 }
-static int tvfsInjectCantopenerr(Testvfs *p){
-  return tvfsInjectFault(&p->cantopen_err);
+ساكن صحيح tvfsInjectCantopenerr(Testvfs *p){
+  أرجع tvfsInjectFault(&p->cantopen_err);
 }
 
 
-static void tvfsExecTcl(
+ساكن فراغ tvfsExecTcl(
   Testvfs *p, 
-  const char *zMethod,
+  ثابت حرف *z_طريقو,
   Tcl_Obj *arg1,
   Tcl_Obj *arg2,
   Tcl_Obj *arg3,
   Tcl_Obj *arg4
 ){
-  int rc;                         /* Return code from Tcl_EvalObj() */
+  صحيح rc;                         /* Return code from Tcl_EvalObj() */
   Tcl_Obj *pEval;
-  assert( p->pScript );
+  أكد( p->pScript );
 
-  assert( zMethod );
-  assert( p );
-  assert( arg2==0 || arg1!=0 );
-  assert( arg3==0 || arg2!=0 );
+  أكد( z_طريقو );
+  أكد( p );
+  أكد( arg2==0 || arg1!=0 );
+  أكد( arg3==0 || arg2!=0 );
 
   pEval = Tcl_DuplicateObj(p->pScript);
-  Tcl_IncrRefCount(p->pScript);
-  Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewStringObj(zMethod, -1));
-  if( arg1 ) Tcl_ListObjAppendElement(p->interp, pEval, arg1);
-  if( arg2 ) Tcl_ListObjAppendElement(p->interp, pEval, arg2);
-  if( arg3 ) Tcl_ListObjAppendElement(p->interp, pEval, arg3);
-  if( arg4 ) Tcl_ListObjAppendElement(p->interp, pEval, arg4);
+  Tcl_Incr_Ref_ڳڻپ(p->pScript);
+  Tcl_ListObjAppendElement(p->interp, pEval, Tcl_NewStringObj(z_طريقو, -1));
+  إذا( arg1 ) Tcl_ListObjAppendElement(p->interp, pEval, arg1);
+  إذا( arg2 ) Tcl_ListObjAppendElement(p->interp, pEval, arg2);
+  إذا( arg3 ) Tcl_ListObjAppendElement(p->interp, pEval, arg3);
+  إذا( arg4 ) Tcl_ListObjAppendElement(p->interp, pEval, arg4);
 
   rc = Tcl_EvalObjEx(p->interp, pEval, TCL_EVAL_GLOBAL);
-  if( rc!=TCL_OK ){
+  إذا( rc!=TCL_OK ){
     Tcl_BackgroundError(p->interp);
-    Tcl_ResetResult(p->interp);
+    Tcl_Reset_نتيجو(p->interp);
   }
 }
 
@@ -311,316 +311,316 @@ static void tvfsExecTcl(
 /*
 ** Close an tvfs-file.
 */
-static int tvfsClose(sqlite3_file *pFile){
+ساكن صحيح tvfsClose(sqlite3_file *pFile){
   TestvfsFile *pTestfile = (TestvfsFile *)pFile;
   TestvfsFd *pFd = pTestfile->pFd;
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
 
-  if( p->pScript && p->mask&TESTVFS_CLOSE_MASK ){
+  إذا( p->pScript && p->نقاب&TESTVFS_CLOSE_نقاب ){
     tvfsExecTcl(p, "xClose", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
   }
 
-  if( pFd->pShmId ){
-    Tcl_DecrRefCount(pFd->pShmId);
+  إذا( pFd->pShmId ){
+    Tcl_Decr_Ref_ڳڻپ(pFd->pShmId);
     pFd->pShmId = 0;
   }
-  if( pFile->pMethods ){
-    ckfree((char *)pFile->pMethods);
+  إذا( pFile->pMethods ){
+    ckfree((حرف *)pFile->pMethods);
   }
   sqlite3OsClose(pFd->pReal);
-  ckfree((char *)pFd);
+  ckfree((حرف *)pFd);
   pTestfile->pFd = 0;
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
 ** Read data from an tvfs-file.
 */
-static int tvfsRead(
+ساكن صحيح tvfsRead(
   sqlite3_file *pFile, 
-  void *zBuf, 
-  int iAmt, 
+  فراغ *zBuf, 
+  صحيح iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_READ_MASK ){
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  إذا( p->pScript && p->نقاب&TESTVFS_READ_نقاب ){
     tvfsExecTcl(p, "xRead", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
-    tvfsResultCode(p, &rc);
+    tvfs_نتيجو_ڪوڊ(p, &rc);
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_READ_MASK && tvfsInjectIoerr(p) ){
+  إذا( rc==SQLITE_OK && p->نقاب&TESTVFS_READ_نقاب && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     rc = sqlite3OsRead(pFd->pReal, zBuf, iAmt, iOfst);
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Write data to an tvfs-file.
 */
-static int tvfsWrite(
+ساكن صحيح tvfsWrite(
   sqlite3_file *pFile, 
-  const void *zBuf, 
-  int iAmt, 
+  ثابت فراغ *zBuf, 
+  صحيح iAmt, 
   sqlite_int64 iOfst
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
 
-  if( p->pScript && p->mask&TESTVFS_WRITE_MASK ){
+  إذا( p->pScript && p->نقاب&TESTVFS_WRITE_نقاب ){
     tvfsExecTcl(p, "xWrite", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 
         Tcl_NewWideIntObj(iOfst), Tcl_NewIntObj(iAmt)
     );
-    tvfsResultCode(p, &rc);
-    if( rc<0 ) return SQLITE_OK;
+    tvfs_نتيجو_ڪوڊ(p, &rc);
+    إذا( rc<0 ) أرجع SQLITE_OK;
   }
 
-  if( rc==SQLITE_OK && tvfsInjectFullerr(p) ){
-    rc = SQLITE_FULL;
+  إذا( rc==SQLITE_OK && tvfsInjectFullerr(p) ){
+    rc = SQLITE_ڀريل;
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_WRITE_MASK && tvfsInjectIoerr(p) ){
+  إذا( rc==SQLITE_OK && p->نقاب&TESTVFS_WRITE_نقاب && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
   
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     rc = sqlite3OsWrite(pFd->pReal, zBuf, iAmt, iOfst);
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Truncate an tvfs-file.
 */
-static int tvfsTruncate(sqlite3_file *pFile, sqlite_int64 size){
-  int rc = SQLITE_OK;
+ساكن صحيح tvfsTruncate(sqlite3_file *pFile, sqlite_int64 سائيز){
+  صحيح rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
 
-  if( p->pScript && p->mask&TESTVFS_TRUNCATE_MASK ){
+  إذا( p->pScript && p->نقاب&TESTVFS_TRUNCATE_نقاب ){
     tvfsExecTcl(p, "xTruncate", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId, 0, 0
     );
-    tvfsResultCode(p, &rc);
+    tvfs_نتيجو_ڪوڊ(p, &rc);
   }
   
-  if( rc==SQLITE_OK ){
-    rc = sqlite3OsTruncate(pFd->pReal, size);
+  إذا( rc==SQLITE_OK ){
+    rc = sqlite3OsTruncate(pFd->pReal, سائيز);
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Sync an tvfs-file.
 */
-static int tvfsSync(sqlite3_file *pFile, int flags){
-  int rc = SQLITE_OK;
+ساكن صحيح tvfsSync(sqlite3_file *pFile, صحيح flags){
+  صحيح rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
 
-  if( p->pScript && p->mask&TESTVFS_SYNC_MASK ){
-    char *zFlags = 0;
+  إذا( p->pScript && p->نقاب&TESTVFS_SYNC_نقاب ){
+    حرف *zFlags = 0;
 
-    switch( flags ){
-      case SQLITE_SYNC_NORMAL:
+    بدل( flags ){
+      حالة SQLITE_SYNC_عام:
         zFlags = "normal";
-        break;
-      case SQLITE_SYNC_FULL:
+        اكسر;
+      حالة SQLITE_SYNC_ڀريل:
         zFlags = "full";
-        break;
-      case SQLITE_SYNC_NORMAL|SQLITE_SYNC_DATAONLY:
+        اكسر;
+      حالة SQLITE_SYNC_عام|SQLITE_SYNC_DATAONLY:
         zFlags = "normal|dataonly";
-        break;
-      case SQLITE_SYNC_FULL|SQLITE_SYNC_DATAONLY:
+        اكسر;
+      حالة SQLITE_SYNC_ڀريل|SQLITE_SYNC_DATAONLY:
         zFlags = "full|dataonly";
-        break;
-      default:
-        assert(0);
+        اكسر;
+      افتراضي:
+        أكد(0);
     }
 
     tvfsExecTcl(p, "xSync", 
         Tcl_NewStringObj(pFd->zFilename, -1), pFd->pShmId,
         Tcl_NewStringObj(zFlags, -1), 0
     );
-    tvfsResultCode(p, &rc);
+    tvfs_نتيجو_ڪوڊ(p, &rc);
   }
 
-  if( rc==SQLITE_OK && tvfsInjectFullerr(p) ) rc = SQLITE_FULL;
+  إذا( rc==SQLITE_OK && tvfsInjectFullerr(p) ) rc = SQLITE_ڀريل;
 
-  if( rc==SQLITE_OK ){
+  إذا( rc==SQLITE_OK ){
     rc = sqlite3OsSync(pFd->pReal, flags);
   }
 
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Return the current file-size of an tvfs-file.
 */
-static int tvfsFileSize(sqlite3_file *pFile, sqlite_int64 *pSize){
+ساكن صحيح tvfs_File_سائيز(sqlite3_file *pFile, sqlite_int64 *p_سائيز){
   TestvfsFd *p = tvfsGetFd(pFile);
-  return sqlite3OsFileSize(p->pReal, pSize);
+  أرجع sqlite3_Os_File_سائيز(p->pReal, p_سائيز);
 }
 
 /*
 ** Lock an tvfs-file.
 */
-static int tvfsLock(sqlite3_file *pFile, int eLock){
+ساكن صحيح tvfs_تالو(sqlite3_file *pFile, صحيح e_تالو){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_LOCK_MASK ){
-    char zLock[30];
-    sqlite3_snprintf(sizeof(zLock),zLock,"%d",eLock);
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  إذا( p->pScript && p->نقاب&TESTVFS_تالو_نقاب ){
+    حرف z_تالو[30];
+    sqlite3_snprintf(حجم(z_تالو),z_تالو,"%d",e_تالو);
     tvfsExecTcl(p, "xLock", Tcl_NewStringObj(pFd->zFilename, -1), 
-                   Tcl_NewStringObj(zLock, -1), 0, 0);
+                   Tcl_NewStringObj(z_تالو, -1), 0, 0);
   }
-  if( p->mask&TESTVFS_LOCK_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR_LOCK;
+  إذا( p->نقاب&TESTVFS_تالو_نقاب && tvfsInjectIoerr(p) ){
+    أرجع SQLITE_IOERR_تالو;
   }
-  return sqlite3OsLock(pFd->pReal, eLock);
+  أرجع sqlite3_Os_تالو(pFd->pReal, e_تالو);
 }
 
 /*
 ** Unlock an tvfs-file.
 */
-static int tvfsUnlock(sqlite3_file *pFile, int eLock){
+ساكن صحيح tvfsUnlock(sqlite3_file *pFile, صحيح e_تالو){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_UNLOCK_MASK ){
-    char zLock[30];
-    sqlite3_snprintf(sizeof(zLock),zLock,"%d",eLock);
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  إذا( p->pScript && p->نقاب&TESTVFS_UNLOCK_نقاب ){
+    حرف z_تالو[30];
+    sqlite3_snprintf(حجم(z_تالو),z_تالو,"%d",e_تالو);
     tvfsExecTcl(p, "xUnlock", Tcl_NewStringObj(pFd->zFilename, -1), 
-                   Tcl_NewStringObj(zLock, -1), 0, 0);
+                   Tcl_NewStringObj(z_تالو, -1), 0, 0);
   }
-  if( p->mask&TESTVFS_UNLOCK_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR_UNLOCK;
+  إذا( p->نقاب&TESTVFS_UNLOCK_نقاب && tvfsInjectIoerr(p) ){
+    أرجع SQLITE_IOERR_UNLOCK;
   }
-  return sqlite3OsUnlock(pFd->pReal, eLock);
+  أرجع sqlite3OsUnlock(pFd->pReal, e_تالو);
 }
 
 /*
 ** Check if another file-handle holds a RESERVED lock on an tvfs-file.
 */
-static int tvfsCheckReservedLock(sqlite3_file *pFile, int *pResOut){
+ساكن صحيح tvfs_Check_Reserved_تالو(sqlite3_file *pFile, صحيح *p_Res_ٻاهريون){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_CKLOCK_MASK ){
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  إذا( p->pScript && p->نقاب&TESTVFS_CKLOCK_نقاب ){
     tvfsExecTcl(p, "xCheckReservedLock", Tcl_NewStringObj(pFd->zFilename, -1),
                    0, 0, 0);
   }
-  return sqlite3OsCheckReservedLock(pFd->pReal, pResOut);
+  أرجع sqlite3_Os_Check_Reserved_تالو(pFd->pReal, p_Res_ٻاهريون);
 }
 
 /*
 ** File control method. For custom operations on an tvfs-file.
 */
-static int tvfsFileControl(sqlite3_file *pFile, int op, void *pArg){
+ساكن صحيح tvfsFileControl(sqlite3_file *pFile, صحيح op, فراغ *pArg){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( op==SQLITE_FCNTL_PRAGMA ){
-    char **argv = (char**)pArg;
-    if( sqlite3_stricmp(argv[1],"error")==0 ){
-      int rc = SQLITE_ERROR;
-      if( argv[2] ){
-        const char *z = argv[2];
-        int x = atoi(z);
-        if( x ){
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  إذا( op==SQLITE_FCNTL_PRAGMA ){
+    حرف **argv = (حرف**)pArg;
+    إذا( sqlite3_stricmp(argv[1],"error")==0 ){
+      صحيح rc = SQLITE_ERROR;
+      إذا( argv[2] ){
+        ثابت حرف *z = argv[2];
+        صحيح x = atoi(z);
+        إذا( x ){
           rc = x;
-          while( sqlite3Isdigit(z[0]) ){ z++; }
-          while( sqlite3Isspace(z[0]) ){ z++; }
+          طالما( sqlite3Isdigit(z[0]) ){ z++; }
+          طالما( sqlite3Isspace(z[0]) ){ z++; }
         }
-        if( z[0] ) argv[0] = sqlite3_mprintf("%s", z);
+        إذا( z[0] ) argv[0] = sqlite3_mprintf("%s", z);
       }
-      return rc;
+      أرجع rc;
     }
-    if( sqlite3_stricmp(argv[1], "filename")==0 ){
+    إذا( sqlite3_stricmp(argv[1], "filename")==0 ){
       argv[0] = sqlite3_mprintf("%s", pFd->zFilename);
-      return SQLITE_OK;
+      أرجع SQLITE_OK;
     }
   }
-  if( p->pScript && (p->mask&TESTVFS_FCNTL_MASK) ){
-    struct Fcntl {
-      int iFnctl;
-      const char *zFnctl;
+  إذا( p->pScript && (p->نقاب&TESTVFS_FCNTL_نقاب) ){
+    بنية Fcntl {
+      صحيح iFnctl;
+      ثابت حرف *zFnctl;
     } aF[] = {
       { SQLITE_FCNTL_BEGIN_ATOMIC_WRITE, "BEGIN_ATOMIC_WRITE" },
       { SQLITE_FCNTL_COMMIT_ATOMIC_WRITE, "COMMIT_ATOMIC_WRITE" },
       { SQLITE_FCNTL_ZIPVFS, "ZIPVFS" },
     };
-    int i;
-    for(i=0; i<sizeof(aF)/sizeof(aF[0]); i++){
-      if( op==aF[i].iFnctl ) break;
+    صحيح i;
+    لكل(i=0; i<حجم(aF)/حجم(aF[0]); i++){
+      إذا( op==aF[i].iFnctl ) اكسر;
     }
-    if( i<sizeof(aF)/sizeof(aF[0]) ){
-      int rc = 0;
+    إذا( i<حجم(aF)/حجم(aF[0]) ){
+      صحيح rc = 0;
       tvfsExecTcl(p, "xFileControl", 
           Tcl_NewStringObj(pFd->zFilename, -1), 
           Tcl_NewStringObj(aF[i].zFnctl, -1),
           0, 0
       );
-      tvfsResultCode(p, &rc);
-      if( rc ) return (rc<0 ? SQLITE_OK : rc);
+      tvfs_نتيجو_ڪوڊ(p, &rc);
+      إذا( rc ) أرجع (rc<0 ? SQLITE_OK : rc);
     }
   }
-  return sqlite3OsFileControl(pFd->pReal, op, pArg);
+  أرجع sqlite3OsFileControl(pFd->pReal, op, pArg);
 }
 
 /*
 ** Return the sector-size in bytes for an tvfs-file.
 */
-static int tvfsSectorSize(sqlite3_file *pFile){
+ساكن صحيح tvfs_Sector_سائيز(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->iSectorsize>=0 ){
-    return p->iSectorsize;
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  إذا( p->iSectorsize>=0 ){
+    أرجع p->iSectorsize;
   }
-  return sqlite3OsSectorSize(pFd->pReal);
+  أرجع sqlite3_Os_Sector_سائيز(pFd->pReal);
 }
 
 /*
 ** Return the device characteristic flags supported by an tvfs-file.
 */
-static int tvfsDeviceCharacteristics(sqlite3_file *pFile){
+ساكن صحيح tvfsDeviceCharacteristics(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)pFd->pVfs->pAppData;
-  if( p->iDevchar>=0 ){
-    return p->iDevchar;
+  Testvfs *p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  إذا( p->iDevchar>=0 ){
+    أرجع p->iDevchar;
   }
-  return sqlite3OsDeviceCharacteristics(pFd->pReal);
+  أرجع sqlite3OsDeviceCharacteristics(pFd->pReal);
 }
 
 /*
 ** Open an tvfs file handle.
 */
-static int tvfsOpen(
+ساكن صحيح tvfsOpen(
   sqlite3_vfs *pVfs,
-  const char *zName,
+  ثابت حرف *zName,
   sqlite3_file *pFile,
-  int flags,
-  int *pOutFlags
+  صحيح flags,
+  صحيح *p_ٻاهريون_Flags
 ){
-  int rc;
+  صحيح rc;
   TestvfsFile *pTestfile = (TestvfsFile *)pFile;
   TestvfsFd *pFd;
   Tcl_Obj *pId = 0;
-  Testvfs *p = (Testvfs *)pVfs->pAppData;
+  Testvfs *p = (Testvfs *)pVfs->p_App_معلومات;
 
-  pFd = (TestvfsFd *)ckalloc(sizeof(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
-  memset(pFd, 0, sizeof(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
+  pFd = (TestvfsFd *)ckalloc(حجم(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
+  memset(pFd, 0, حجم(TestvfsFd) + PARENTVFS(pVfs)->szOsFile);
   pFd->pShm = 0;
   pFd->pShmId = 0;
   pFd->zFilename = zName;
   pFd->pVfs = pVfs;
   pFd->pReal = (sqlite3_file *)&pFd[1];
-  memset(pTestfile, 0, sizeof(TestvfsFile));
+  memset(pTestfile, 0, حجم(TestvfsFile));
   pTestfile->pFd = pFd;
 
   /* Evaluate the Tcl script: 
@@ -632,66 +632,66 @@ static int tvfsOpen(
   ** connection is named "anon". Otherwise, the value returned by the
   ** script is used as the connection name.
   */
-  Tcl_ResetResult(p->interp);
-  if( p->pScript && p->mask&TESTVFS_OPEN_MASK ){
+  Tcl_Reset_نتيجو(p->interp);
+  إذا( p->pScript && p->نقاب&TESTVFS_OPEN_نقاب ){
     Tcl_Obj *pArg = Tcl_NewObj();
-    Tcl_IncrRefCount(pArg);
-    if( flags&SQLITE_OPEN_MAIN_DB ){
-      const char *z = &zName[strlen(zName)+1];
-      while( *z ){
+    Tcl_Incr_Ref_ڳڻپ(pArg);
+    إذا( flags&SQLITE_OPEN_MAIN_DB ){
+      ثابت حرف *z = &zName[لڙي_ڊيگهه(zName)+1];
+      طالما( *z ){
         Tcl_ListObjAppendElement(0, pArg, Tcl_NewStringObj(z, -1));
-        z += strlen(z) + 1;
+        z += لڙي_ڊيگهه(z) + 1;
         Tcl_ListObjAppendElement(0, pArg, Tcl_NewStringObj(z, -1));
-        z += strlen(z) + 1;
+        z += لڙي_ڊيگهه(z) + 1;
       }
     }
     tvfsExecTcl(p, "xOpen", Tcl_NewStringObj(pFd->zFilename, -1), pArg, 0, 0);
-    Tcl_DecrRefCount(pArg);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
-    }else{
-      pId = Tcl_GetObjResult(p->interp);
+    Tcl_Decr_Ref_ڳڻپ(pArg);
+    إذا( tvfs_نتيجو_ڪوڊ(p, &rc) ){
+      إذا( rc!=SQLITE_OK ) أرجع rc;
+    }وإلا{
+      pId = Tcl_Get_Obj_نتيجو(p->interp);
     }
   }
 
-  if( (p->mask&TESTVFS_OPEN_MASK) &&  tvfsInjectIoerr(p) ) return SQLITE_IOERR;
-  if( tvfsInjectCantopenerr(p) ) return SQLITE_CANTOPEN;
-  if( tvfsInjectFullerr(p) ) return SQLITE_FULL;
+  إذا( (p->نقاب&TESTVFS_OPEN_نقاب) &&  tvfsInjectIoerr(p) ) أرجع SQLITE_IOERR;
+  إذا( tvfsInjectCantopenerr(p) ) أرجع SQLITE_CANTOPEN;
+  إذا( tvfsInjectFullerr(p) ) أرجع SQLITE_ڀريل;
 
-  if( !pId ){
+  إذا( !pId ){
     pId = Tcl_NewStringObj("anon", -1);
   }
-  Tcl_IncrRefCount(pId);
+  Tcl_Incr_Ref_ڳڻپ(pId);
   pFd->pShmId = pId;
-  Tcl_ResetResult(p->interp);
+  Tcl_Reset_نتيجو(p->interp);
 
-  rc = sqlite3OsOpen(PARENTVFS(pVfs), zName, pFd->pReal, flags, pOutFlags);
-  if( pFd->pReal->pMethods ){
+  rc = sqlite3OsOpen(PARENTVFS(pVfs), zName, pFd->pReal, flags, p_ٻاهريون_Flags);
+  إذا( pFd->pReal->pMethods ){
     sqlite3_io_methods *pMethods;
-    int nByte;
+    صحيح nByte;
 
-    if( pVfs->iVersion>1 ){
-      nByte = sizeof(sqlite3_io_methods);
-    }else{
+    إذا( pVfs->i_نسخو>1 ){
+      nByte = حجم(sqlite3_io_methods);
+    }وإلا{
       nByte = offsetof(sqlite3_io_methods, xShmMap);
     }
 
     pMethods = (sqlite3_io_methods *)ckalloc(nByte);
-    memcpy(pMethods, &tvfs_io_methods, nByte);
-    pMethods->iVersion = pFd->pReal->pMethods->iVersion;
-    if( pMethods->iVersion>pVfs->iVersion ){
-      pMethods->iVersion = pVfs->iVersion;
+    يادگيري_نقل(pMethods, &tvfs_io_methods, nByte);
+    pMethods->i_نسخو = pFd->pReal->pMethods->i_نسخو;
+    إذا( pMethods->i_نسخو>pVfs->i_نسخو ){
+      pMethods->i_نسخو = pVfs->i_نسخو;
     }
-    if( pVfs->iVersion>1 && ((Testvfs *)pVfs->pAppData)->isNoshm ){
+    إذا( pVfs->i_نسخو>1 && ((Testvfs *)pVfs->p_App_معلومات)->isNoshm ){
       pMethods->xShmUnmap = 0;
-      pMethods->xShmLock = 0;
+      pMethods->x_Shm_تالو = 0;
       pMethods->xShmBarrier = 0;
       pMethods->xShmMap = 0;
     }
     pFile->pMethods = pMethods;
   }
 
-  return rc;
+  أرجع rc;
 }
 
 /*
@@ -699,52 +699,52 @@ static int tvfsOpen(
 ** ensure the file-system modifications are synced to disk before
 ** returning.
 */
-static int tvfsDelete(sqlite3_vfs *pVfs, const char *zPath, int dirSync){
-  int rc = SQLITE_OK;
-  Testvfs *p = (Testvfs *)pVfs->pAppData;
+ساكن صحيح tvfsDelete(sqlite3_vfs *pVfs, ثابت حرف *z_رستو, صحيح dirSync){
+  صحيح rc = SQLITE_OK;
+  Testvfs *p = (Testvfs *)pVfs->p_App_معلومات;
 
-  if( p->pScript && p->mask&TESTVFS_DELETE_MASK ){
+  إذا( p->pScript && p->نقاب&TESTVFS_DELETE_نقاب ){
     tvfsExecTcl(p, "xDelete", 
-        Tcl_NewStringObj(zPath, -1), Tcl_NewIntObj(dirSync), 0, 0
+        Tcl_NewStringObj(z_رستو, -1), Tcl_NewIntObj(dirSync), 0, 0
     );
-    tvfsResultCode(p, &rc);
+    tvfs_نتيجو_ڪوڊ(p, &rc);
   }
-  if( rc==SQLITE_OK ){
-    rc = sqlite3OsDelete(PARENTVFS(pVfs), zPath, dirSync);
+  إذا( rc==SQLITE_OK ){
+    rc = sqlite3OsDelete(PARENTVFS(pVfs), z_رستو, dirSync);
   }
-  return rc;
+  أرجع rc;
 }
 
 /*
 ** Test for access permissions. Return true if the requested permission
 ** is available, or false otherwise.
 */
-static int tvfsAccess(
+ساكن صحيح tvfsAccess(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int flags, 
-  int *pResOut
+  ثابت حرف *z_رستو, 
+  صحيح flags, 
+  صحيح *p_Res_ٻاهريون
 ){
-  Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_ACCESS_MASK ){
-    int rc;
-    char *zArg = 0;
-    if( flags==SQLITE_ACCESS_EXISTS ) zArg = "SQLITE_ACCESS_EXISTS";
-    if( flags==SQLITE_ACCESS_READWRITE ) zArg = "SQLITE_ACCESS_READWRITE";
-    if( flags==SQLITE_ACCESS_READ ) zArg = "SQLITE_ACCESS_READ";
+  Testvfs *p = (Testvfs *)pVfs->p_App_معلومات;
+  إذا( p->pScript && p->نقاب&TESTVFS_ACCESS_نقاب ){
+    صحيح rc;
+    حرف *zArg = 0;
+    إذا( flags==SQLITE_ACCESS_EXISTS ) zArg = "SQLITE_ACCESS_EXISTS";
+    إذا( flags==SQLITE_ACCESS_READWRITE ) zArg = "SQLITE_ACCESS_READWRITE";
+    إذا( flags==SQLITE_ACCESS_READ ) zArg = "SQLITE_ACCESS_READ";
     tvfsExecTcl(p, "xAccess", 
-        Tcl_NewStringObj(zPath, -1), Tcl_NewStringObj(zArg, -1), 0, 0
+        Tcl_NewStringObj(z_رستو, -1), Tcl_NewStringObj(zArg, -1), 0, 0
     );
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
-    }else{
+    إذا( tvfs_نتيجو_ڪوڊ(p, &rc) ){
+      إذا( rc!=SQLITE_OK ) أرجع rc;
+    }وإلا{
       Tcl_Interp *interp = p->interp;
-      if( TCL_OK==Tcl_GetBooleanFromObj(0, Tcl_GetObjResult(interp), pResOut) ){
-        return SQLITE_OK;
+      إذا( TCL_OK==Tcl_GetBooleanFromObj(0, Tcl_Get_Obj_نتيجو(interp), p_Res_ٻاهريون) ){
+        أرجع SQLITE_OK;
       }
     }
   }
-  return sqlite3OsAccess(PARENTVFS(pVfs), zPath, flags, pResOut);
+  أرجع sqlite3OsAccess(PARENTVFS(pVfs), z_رستو, flags, p_Res_ٻاهريون);
 }
 
 /*
@@ -752,29 +752,29 @@ static int tvfsAccess(
 ** to the pathname in zPath. zOut is guaranteed to point to a buffer
 ** of at least (DEVSYM_MAX_PATHNAME+1) bytes.
 */
-static int tvfsFullPathname(
+ساكن صحيح tvfs_ڀريل_Pathname(
   sqlite3_vfs *pVfs, 
-  const char *zPath, 
-  int nOut, 
-  char *zOut
+  ثابت حرف *z_رستو, 
+  صحيح n_ٻاهريون, 
+  حرف *z_ٻاهريون
 ){
-  Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && p->mask&TESTVFS_FULLPATHNAME_MASK ){
-    int rc;
-    tvfsExecTcl(p, "xFullPathname", Tcl_NewStringObj(zPath, -1), 0, 0, 0);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
+  Testvfs *p = (Testvfs *)pVfs->p_App_معلومات;
+  إذا( p->pScript && p->نقاب&TESTVFS_FULLPATHNAME_نقاب ){
+    صحيح rc;
+    tvfsExecTcl(p, "xFullPathname", Tcl_NewStringObj(z_رستو, -1), 0, 0, 0);
+    إذا( tvfs_نتيجو_ڪوڊ(p, &rc) ){
+      إذا( rc!=SQLITE_OK ) أرجع rc;
     }
   }
-  return sqlite3OsFullPathname(PARENTVFS(pVfs), zPath, nOut, zOut);
+  أرجع sqlite3_Os_ڀريل_Pathname(PARENTVFS(pVfs), z_رستو, n_ٻاهريون, z_ٻاهريون);
 }
 
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_ڀريو_EXTENSION
 /*
 ** Open the dynamic library located at zPath and return a handle.
 */
-static void *tvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
-  return sqlite3OsDlOpen(PARENTVFS(pVfs), zPath);
+ساكن فراغ *tvfsDlOpen(sqlite3_vfs *pVfs, ثابت حرف *z_رستو){
+  أرجع sqlite3OsDlOpen(PARENTVFS(pVfs), z_رستو);
 }
 
 /*
@@ -782,320 +782,320 @@ static void *tvfsDlOpen(sqlite3_vfs *pVfs, const char *zPath){
 ** utf-8 string describing the most recent error encountered associated 
 ** with dynamic libraries.
 */
-static void tvfsDlError(sqlite3_vfs *pVfs, int nByte, char *zErrMsg){
-  sqlite3OsDlError(PARENTVFS(pVfs), nByte, zErrMsg);
+ساكن فراغ tvfsDlError(sqlite3_vfs *pVfs, صحيح nByte, حرف *z_Err_نياپو){
+  sqlite3OsDlError(PARENTVFS(pVfs), nByte, z_Err_نياپو);
 }
 
 /*
 ** Return a pointer to the symbol zSymbol in the dynamic library pHandle.
 */
-static void (*tvfsDlSym(sqlite3_vfs *pVfs, void *p, const char *zSym))(void){
-  return sqlite3OsDlSym(PARENTVFS(pVfs), p, zSym);
+ساكن فراغ (*tvfsDlSym(sqlite3_vfs *pVfs, فراغ *p, ثابت حرف *zSym))(فراغ){
+  أرجع sqlite3OsDlSym(PARENTVFS(pVfs), p, zSym);
 }
 
 /*
 ** Close the dynamic library handle pHandle.
 */
-static void tvfsDlClose(sqlite3_vfs *pVfs, void *pHandle){
+ساكن فراغ tvfsDlClose(sqlite3_vfs *pVfs, فراغ *pHandle){
   sqlite3OsDlClose(PARENTVFS(pVfs), pHandle);
 }
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
+#جيڪڏهن_پورو /* SQLITE_OMIT_LOAD_EXTENSION */
 
 /*
 ** Populate the buffer pointed to by zBufOut with nByte bytes of 
 ** random data.
 */
-static int tvfsRandomness(sqlite3_vfs *pVfs, int nByte, char *zBufOut){
-  return sqlite3OsRandomness(PARENTVFS(pVfs), nByte, zBufOut);
+ساكن صحيح tvfsRandomness(sqlite3_vfs *pVfs, صحيح nByte, حرف *z_Buf_ٻاهريون){
+  أرجع sqlite3OsRandomness(PARENTVFS(pVfs), nByte, z_Buf_ٻاهريون);
 }
 
 /*
 ** Sleep for nMicro microseconds. Return the number of microseconds 
 ** actually slept.
 */
-static int tvfsSleep(sqlite3_vfs *pVfs, int nMicro){
-  Testvfs *p = (Testvfs *)pVfs->pAppData;
-  if( p->pScript && (p->mask&TESTVFS_SLEEP_MASK) ){
+ساكن صحيح tvfsSleep(sqlite3_vfs *pVfs, صحيح nMicro){
+  Testvfs *p = (Testvfs *)pVfs->p_App_معلومات;
+  إذا( p->pScript && (p->نقاب&TESTVFS_SLEEP_نقاب) ){
     tvfsExecTcl(p, "xSleep", Tcl_NewIntObj(nMicro), 0, 0, 0);
   }
-  return sqlite3OsSleep(PARENTVFS(pVfs), nMicro);
+  أرجع sqlite3OsSleep(PARENTVFS(pVfs), nMicro);
 }
 
 /*
 ** Return the current time as a Julian Day number in *pTimeOut.
 */
-static int tvfsCurrentTime(sqlite3_vfs *pVfs, double *pTimeOut){
-  return PARENTVFS(pVfs)->xCurrentTime(PARENTVFS(pVfs), pTimeOut);
+ساكن صحيح tvfs_Current_وقت(sqlite3_vfs *pVfs, مزدوج *p_وقت_ٻاهريون){
+  أرجع PARENTVFS(pVfs)->x_Current_وقت(PARENTVFS(pVfs), p_وقت_ٻاهريون);
 }
 
-static int tvfsShmOpen(sqlite3_file *pFile){
+ساكن صحيح tvfsShmOpen(sqlite3_file *pFile){
   Testvfs *p;
-  int rc = SQLITE_OK;             /* Return code */
-  TestvfsBuffer *pBuffer;         /* Buffer to open connection to */
+  صحيح rc = SQLITE_OK;             /* Return code */
+  Testvfs_بفر *p_بفر;         /* Buffer to open connection to */
   TestvfsFd *pFd;                 /* The testvfs file structure */
 
   pFd = tvfsGetFd(pFile);
-  p = (Testvfs *)pFd->pVfs->pAppData;
-  assert( 0==p->isFullshm );
-  assert( pFd->pShmId && pFd->pShm==0 && pFd->pNext==0 );
+  p = (Testvfs *)pFd->pVfs->p_App_معلومات;
+  أكد( 0==p->isFullshm );
+  أكد( pFd->pShmId && pFd->pShm==0 && pFd->p_ايندڙ==0 );
 
   /* Evaluate the Tcl script: 
   **
   **   SCRIPT xShmOpen FILENAME
   */
-  Tcl_ResetResult(p->interp);
-  if( p->pScript && p->mask&TESTVFS_SHMOPEN_MASK ){
+  Tcl_Reset_نتيجو(p->interp);
+  إذا( p->pScript && p->نقاب&TESTVFS_SHMOPEN_نقاب ){
     tvfsExecTcl(p, "xShmOpen", Tcl_NewStringObj(pFd->zFilename, -1), 0, 0, 0);
-    if( tvfsResultCode(p, &rc) ){
-      if( rc!=SQLITE_OK ) return rc;
+    إذا( tvfs_نتيجو_ڪوڊ(p, &rc) ){
+      إذا( rc!=SQLITE_OK ) أرجع rc;
     }
   }
 
-  assert( rc==SQLITE_OK );
-  if( p->mask&TESTVFS_SHMOPEN_MASK && tvfsInjectIoerr(p) ){
-    return SQLITE_IOERR;
+  أكد( rc==SQLITE_OK );
+  إذا( p->نقاب&TESTVFS_SHMOPEN_نقاب && tvfsInjectIoerr(p) ){
+    أرجع SQLITE_IOERR;
   }
 
   /* Search for a TestvfsBuffer. Create a new one if required. */
-  for(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
-    if( 0==strcmp(pFd->zFilename, pBuffer->zFile) ) break;
+  لكل(p_بفر=p->p_بفر; p_بفر; p_بفر=p_بفر->p_ايندڙ){
+    إذا( 0==strcmp(pFd->zFilename, p_بفر->zFile) ) اكسر;
   }
-  if( !pBuffer ){
-    int szName = (int)strlen(pFd->zFilename);
-    int nByte = sizeof(TestvfsBuffer) + szName + 1;
-    pBuffer = (TestvfsBuffer *)ckalloc(nByte);
-    memset(pBuffer, 0, nByte);
-    pBuffer->zFile = (char *)&pBuffer[1];
-    memcpy(pBuffer->zFile, pFd->zFilename, szName+1);
-    pBuffer->pNext = p->pBuffer;
-    p->pBuffer = pBuffer;
+  إذا( !p_بفر ){
+    صحيح szName = (صحيح)لڙي_ڊيگهه(pFd->zFilename);
+    صحيح nByte = حجم(Testvfs_بفر) + szName + 1;
+    p_بفر = (Testvfs_بفر *)ckalloc(nByte);
+    memset(p_بفر, 0, nByte);
+    p_بفر->zFile = (حرف *)&p_بفر[1];
+    يادگيري_نقل(p_بفر->zFile, pFd->zFilename, szName+1);
+    p_بفر->p_ايندڙ = p->p_بفر;
+    p->p_بفر = p_بفر;
   }
 
   /* Connect the TestvfsBuffer to the new TestvfsShm handle and return. */
-  pFd->pNext = pBuffer->pFile;
-  pBuffer->pFile = pFd;
-  pFd->pShm = pBuffer;
-  return rc;
+  pFd->p_ايندڙ = p_بفر->pFile;
+  p_بفر->pFile = pFd;
+  pFd->pShm = p_بفر;
+  أرجع rc;
 }
 
-static void tvfsAllocPage(TestvfsBuffer *p, int iPage, int pgsz){
-  assert( iPage<TESTVFS_MAX_PAGES );
-  if( p->aPage[iPage]==0 ){
-    p->aPage[iPage] = (u8 *)ckalloc(pgsz);
-    memset(p->aPage[iPage], 0, pgsz);
+ساكن فراغ tvfs_Alloc_صفحو(Testvfs_بفر *p, صحيح i_صفحو, صحيح pgsz){
+  أكد( i_صفحو<TESTVFS_MAX_صفحا );
+  إذا( p->a_صفحو[i_صفحو]==0 ){
+    p->a_صفحو[i_صفحو] = (u8 *)ckalloc(pgsz);
+    memset(p->a_صفحو[i_صفحو], 0, pgsz);
     p->pgsz = pgsz;
   }
 }
 
-static int tvfsShmMap(
+ساكن صحيح tvfsShmMap(
   sqlite3_file *pFile,            /* Handle open on database file */
-  int iPage,                      /* Page to retrieve */
-  int pgsz,                       /* Size of pages */
-  int isWrite,                    /* True to extend file if necessary */
-  void volatile **pp              /* OUT: Mapped memory */
+  صحيح i_صفحو,                      /* Page to retrieve */
+  صحيح pgsz,                       /* Size of pages */
+  صحيح isWrite,                    /* True to extend file if necessary */
+  فراغ متطاير **pp              /* OUT: Mapped memory */
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
+  Testvfs *p = (Testvfs *)(pFd->pVfs->p_App_معلومات);
 
-  if( p->isFullshm ){
+  إذا( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmMap(pReal, iPage, pgsz, isWrite, pp);
+    أرجع pReal->pMethods->xShmMap(pReal, i_صفحو, pgsz, isWrite, pp);
   }
 
-  if( 0==pFd->pShm ){
+  إذا( 0==pFd->pShm ){
     rc = tvfsShmOpen(pFile);
-    if( rc!=SQLITE_OK ){
-      return rc;
+    إذا( rc!=SQLITE_OK ){
+      أرجع rc;
     }
   }
 
-  if( p->pScript && p->mask&TESTVFS_SHMMAP_MASK ){
+  إذا( p->pScript && p->نقاب&TESTVFS_SHMMAP_نقاب ){
     Tcl_Obj *pArg = Tcl_NewObj();
-    Tcl_IncrRefCount(pArg);
-    Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(iPage));
+    Tcl_Incr_Ref_ڳڻپ(pArg);
+    Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(i_صفحو));
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(pgsz));
     Tcl_ListObjAppendElement(p->interp, pArg, Tcl_NewIntObj(isWrite));
     tvfsExecTcl(p, "xShmMap", 
         Tcl_NewStringObj(pFd->pShm->zFile, -1), pFd->pShmId, pArg, 0
     );
-    tvfsResultCode(p, &rc);
-    Tcl_DecrRefCount(pArg);
+    tvfs_نتيجو_ڪوڊ(p, &rc);
+    Tcl_Decr_Ref_ڳڻپ(pArg);
   }
-  if( rc==SQLITE_OK && p->mask&TESTVFS_SHMMAP_MASK && tvfsInjectIoerr(p) ){
+  إذا( rc==SQLITE_OK && p->نقاب&TESTVFS_SHMMAP_نقاب && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
 
-  if( rc==SQLITE_OK && isWrite && !pFd->pShm->aPage[iPage] ){
-    tvfsAllocPage(pFd->pShm, iPage, pgsz);
+  إذا( rc==SQLITE_OK && isWrite && !pFd->pShm->a_صفحو[i_صفحو] ){
+    tvfs_Alloc_صفحو(pFd->pShm, i_صفحو, pgsz);
   }
-  if( rc==SQLITE_OK || rc==SQLITE_READONLY ){
-    *pp = (void volatile *)pFd->pShm->aPage[iPage];
+  إذا( rc==SQLITE_OK || rc==SQLITE_READONLY ){
+    *pp = (فراغ متطاير *)pFd->pShm->a_صفحو[i_صفحو];
   }
 
-  return rc;
+  أرجع rc;
 }
 
 
-static int tvfsShmLock(
+ساكن صحيح tvfs_Shm_تالو(
   sqlite3_file *pFile,
-  int ofst,
-  int n,
-  int flags
+  صحيح ofst,
+  صحيح n,
+  صحيح flags
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
-  int nLock;
-  char zLock[80];
+  Testvfs *p = (Testvfs *)(pFd->pVfs->p_App_معلومات);
+  صحيح n_تالو;
+  حرف z_تالو[80];
 
-  if( p->isFullshm ){
+  إذا( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmLock(pReal, ofst, n, flags);
+    أرجع pReal->pMethods->x_Shm_تالو(pReal, ofst, n, flags);
   }
 
-  if( p->pScript && p->mask&TESTVFS_SHMLOCK_MASK ){
-    sqlite3_snprintf(sizeof(zLock), zLock, "%d %d", ofst, n);
-    nLock = (int)strlen(zLock);
-    if( flags & SQLITE_SHM_LOCK ){
-      strcpy(&zLock[nLock], " lock");
-    }else{
-      strcpy(&zLock[nLock], " unlock");
+  إذا( p->pScript && p->نقاب&TESTVFS_SHMLOCK_نقاب ){
+    sqlite3_snprintf(حجم(z_تالو), z_تالو, "%d %d", ofst, n);
+    n_تالو = (صحيح)لڙي_ڊيگهه(z_تالو);
+    إذا( flags & SQLITE_SHM_تالو ){
+      strcpy(&z_تالو[n_تالو], " lock");
+    }وإلا{
+      strcpy(&z_تالو[n_تالو], " unlock");
     }
-    nLock += (int)strlen(&zLock[nLock]);
-    if( flags & SQLITE_SHM_SHARED ){
-      strcpy(&zLock[nLock], " shared");
-    }else{
-      strcpy(&zLock[nLock], " exclusive");
+    n_تالو += (صحيح)لڙي_ڊيگهه(&z_تالو[n_تالو]);
+    إذا( flags & SQLITE_SHM_SHARED ){
+      strcpy(&z_تالو[n_تالو], " shared");
+    }وإلا{
+      strcpy(&z_تالو[n_تالو], " exclusive");
     }
     tvfsExecTcl(p, "xShmLock", 
         Tcl_NewStringObj(pFd->pShm->zFile, -1), pFd->pShmId,
-        Tcl_NewStringObj(zLock, -1), 0
+        Tcl_NewStringObj(z_تالو, -1), 0
     );
-    tvfsResultCode(p, &rc);
+    tvfs_نتيجو_ڪوڊ(p, &rc);
   }
 
-  if( rc==SQLITE_OK && p->mask&TESTVFS_SHMLOCK_MASK && tvfsInjectIoerr(p) ){
+  إذا( rc==SQLITE_OK && p->نقاب&TESTVFS_SHMLOCK_نقاب && tvfsInjectIoerr(p) ){
     rc = SQLITE_IOERR;
   }
 
-  if( rc==SQLITE_OK ){
-    int isLock = (flags & SQLITE_SHM_LOCK);
-    int isExcl = (flags & SQLITE_SHM_EXCLUSIVE);
-    u32 mask = (((1<<n)-1) << ofst);
-    if( isLock ){
+  إذا( rc==SQLITE_OK ){
+    صحيح is_تالو = (flags & SQLITE_SHM_تالو);
+    صحيح isExcl = (flags & SQLITE_SHM_EXCLUSIVE);
+    u32 نقاب = (((1<<n)-1) << ofst);
+    إذا( is_تالو ){
       TestvfsFd *p2;
-      for(p2=pFd->pShm->pFile; p2; p2=p2->pNext){
-        if( p2==pFd ) continue;
-        if( (p2->excllock&mask) || (isExcl && p2->sharedlock&mask) ){
+      لكل(p2=pFd->pShm->pFile; p2; p2=p2->p_ايندڙ){
+        إذا( p2==pFd ) استمر;
+        إذا( (p2->excllock&نقاب) || (isExcl && p2->sharedlock&نقاب) ){
           rc = SQLITE_BUSY;
-          break;
+          اكسر;
         }
       }
-      if( rc==SQLITE_OK ){
-        if( isExcl )  pFd->excllock |= mask;
-        if( !isExcl ) pFd->sharedlock |= mask;
+      إذا( rc==SQLITE_OK ){
+        إذا( isExcl )  pFd->excllock |= نقاب;
+        إذا( !isExcl ) pFd->sharedlock |= نقاب;
       }
-    }else{
-      if( isExcl )  pFd->excllock &= (~mask);
-      if( !isExcl ) pFd->sharedlock &= (~mask);
+    }وإلا{
+      إذا( isExcl )  pFd->excllock &= (~نقاب);
+      إذا( !isExcl ) pFd->sharedlock &= (~نقاب);
     }
   }
 
-  return rc;
+  أرجع rc;
 }
 
-static void tvfsShmBarrier(sqlite3_file *pFile){
+ساكن فراغ tvfsShmBarrier(sqlite3_file *pFile){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
+  Testvfs *p = (Testvfs *)(pFd->pVfs->p_App_معلومات);
 
-  if( p->pScript && p->mask&TESTVFS_SHMBARRIER_MASK ){
-    const char *z = pFd->pShm ? pFd->pShm->zFile : "";
+  إذا( p->pScript && p->نقاب&TESTVFS_SHMBARRIER_نقاب ){
+    ثابت حرف *z = pFd->pShm ? pFd->pShm->zFile : "";
     tvfsExecTcl(p, "xShmBarrier", Tcl_NewStringObj(z, -1), pFd->pShmId, 0, 0);
   }
 
-  if( p->isFullshm ){
+  إذا( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
     pReal->pMethods->xShmBarrier(pReal);
-    return;
+    أرجع;
   }
 }
 
-static int tvfsShmUnmap(
+ساكن صحيح tvfsShmUnmap(
   sqlite3_file *pFile,
-  int deleteFlag
+  صحيح deleteFlag
 ){
-  int rc = SQLITE_OK;
+  صحيح rc = SQLITE_OK;
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  Testvfs *p = (Testvfs *)(pFd->pVfs->pAppData);
-  TestvfsBuffer *pBuffer = pFd->pShm;
+  Testvfs *p = (Testvfs *)(pFd->pVfs->p_App_معلومات);
+  Testvfs_بفر *p_بفر = pFd->pShm;
   TestvfsFd **ppFd;
 
-  if( p->isFullshm ){
+  إذا( p->isFullshm ){
     sqlite3_file *pReal = pFd->pReal;
-    return pReal->pMethods->xShmUnmap(pReal, deleteFlag);
+    أرجع pReal->pMethods->xShmUnmap(pReal, deleteFlag);
   }
 
-  if( !pBuffer ) return SQLITE_OK;
-  assert( pFd->pShmId && pFd->pShm );
+  إذا( !p_بفر ) أرجع SQLITE_OK;
+  أكد( pFd->pShmId && pFd->pShm );
 
-  if( p->pScript && p->mask&TESTVFS_SHMCLOSE_MASK ){
+  إذا( p->pScript && p->نقاب&TESTVFS_SHMCLOSE_نقاب ){
     tvfsExecTcl(p, "xShmUnmap", 
         Tcl_NewStringObj(pFd->pShm->zFile, -1), pFd->pShmId, 0, 0
     );
-    tvfsResultCode(p, &rc);
+    tvfs_نتيجو_ڪوڊ(p, &rc);
   }
 
-  for(ppFd=&pBuffer->pFile; *ppFd!=pFd; ppFd=&((*ppFd)->pNext));
-  assert( (*ppFd)==pFd );
-  *ppFd = pFd->pNext;
-  pFd->pNext = 0;
+  لكل(ppFd=&p_بفر->pFile; *ppFd!=pFd; ppFd=&((*ppFd)->p_ايندڙ));
+  أكد( (*ppFd)==pFd );
+  *ppFd = pFd->p_ايندڙ;
+  pFd->p_ايندڙ = 0;
 
-  if( pBuffer->pFile==0 ){
-    int i;
-    TestvfsBuffer **pp;
-    for(pp=&p->pBuffer; *pp!=pBuffer; pp=&((*pp)->pNext));
-    *pp = (*pp)->pNext;
-    for(i=0; pBuffer->aPage[i]; i++){
-      ckfree((char *)pBuffer->aPage[i]);
+  إذا( p_بفر->pFile==0 ){
+    صحيح i;
+    Testvfs_بفر **pp;
+    لكل(pp=&p->p_بفر; *pp!=p_بفر; pp=&((*pp)->p_ايندڙ));
+    *pp = (*pp)->p_ايندڙ;
+    لكل(i=0; p_بفر->a_صفحو[i]; i++){
+      ckfree((حرف *)p_بفر->a_صفحو[i]);
     }
-    ckfree((char *)pBuffer);
+    ckfree((حرف *)p_بفر);
   }
   pFd->pShm = 0;
 
-  return rc;
+  أرجع rc;
 }
 
-static int tvfsFetch(
+ساكن صحيح tvfsFetch(
     sqlite3_file *pFile, 
     sqlite3_int64 iOfst, 
-    int iAmt, 
-    void **pp
+    صحيح iAmt, 
+    فراغ **pp
 ){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  return sqlite3OsFetch(pFd->pReal, iOfst, iAmt, pp);
+  أرجع sqlite3OsFetch(pFd->pReal, iOfst, iAmt, pp);
 }
 
-static int tvfsUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, void *p){
+ساكن صحيح tvfsUnfetch(sqlite3_file *pFile, sqlite3_int64 iOfst, فراغ *p){
   TestvfsFd *pFd = tvfsGetFd(pFile);
-  return sqlite3OsUnfetch(pFd->pReal, iOfst, p);
+  أرجع sqlite3OsUnfetch(pFd->pReal, iOfst, p);
 }
 
-static int SQLITE_TCLAPI testvfs_obj_cmd(
-  ClientData cd,
+ساكن صحيح SQLITE_TCLAPI testvfs_obj_cmd(
+  Client_معلومات cd,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   Testvfs *p = (Testvfs *)cd;
 
-  enum DB_enum { 
+  تعداد DB_enum { 
     CMD_SHM, CMD_DELETE, CMD_FILTER, CMD_IOERR, CMD_SCRIPT, 
     CMD_DEVCHAR, CMD_SECTORSIZE, CMD_FULLERR, CMD_CANTOPENERR
   };
-  struct TestvfsSubcmd {
-    char *zName;
-    enum DB_enum eCmd;
+  بنية TestvfsSubcmd {
+    حرف *zName;
+    تعداد DB_enum eCmd;
   } aSubcmd[] = {
     { "shm",         CMD_SHM         },
     { "delete",      CMD_DELETE      },
@@ -1108,129 +1108,129 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     { "sectorsize",  CMD_SECTORSIZE  },
     { 0, 0 }
   };
-  int i;
+  صحيح i;
   
-  if( objc<2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "SUBCOMMAND ...");
-    return TCL_ERROR;
+  إذا( objc<2 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "SUBCOMMAND ...");
+    أرجع TCL_ERROR;
   }
-  if( Tcl_GetIndexFromObjStruct(
-        interp, objv[1], aSubcmd, sizeof(aSubcmd[0]), "subcommand", 0, &i) 
+  إذا( Tcl_Get_اشاريو_From_Obj_Struct(
+        interp, objv[1], aSubcmd, حجم(aSubcmd[0]), "subcommand", 0, &i) 
   ){
-    return TCL_ERROR;
+    أرجع TCL_ERROR;
   }
-  Tcl_ResetResult(interp);
+  Tcl_Reset_نتيجو(interp);
 
-  switch( aSubcmd[i].eCmd ){
-    case CMD_SHM: {
+  بدل( aSubcmd[i].eCmd ){
+    حالة CMD_SHM: {
       Tcl_Obj *pObj;
-      int rc;
-      TestvfsBuffer *pBuffer;
-      char *zName;
-      if( objc!=3 && objc!=4 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "FILE ?VALUE?");
-        return TCL_ERROR;
+      صحيح rc;
+      Testvfs_بفر *p_بفر;
+      حرف *zName;
+      إذا( objc!=3 && objc!=4 ){
+        Tcl_Wrong_انگ_دليلون(interp, 2, objv, "FILE ?VALUE?");
+        أرجع TCL_ERROR;
       }
-      zName = ckalloc(p->pParent->mxPathname);
-      rc = p->pParent->xFullPathname(
-          p->pParent, Tcl_GetString(objv[2]), 
-          p->pParent->mxPathname, zName
+      zName = ckalloc(p->p_والد->mxPathname);
+      rc = p->p_والد->x_ڀريل_Pathname(
+          p->p_والد, Tcl_GetString(objv[2]), 
+          p->p_والد->mxPathname, zName
       );
-      if( rc!=SQLITE_OK ){
-        Tcl_AppendResult(interp, "failed to get full path: ",
-                         Tcl_GetString(objv[2]), NULL);
+      إذا( rc!=SQLITE_OK ){
+        Tcl_Append_نتيجو(interp, "failed to get full path: ",
+                         Tcl_GetString(objv[2]), عدم);
         ckfree(zName);
-        return TCL_ERROR;
+        أرجع TCL_ERROR;
       }
-      for(pBuffer=p->pBuffer; pBuffer; pBuffer=pBuffer->pNext){
-        if( 0==strcmp(pBuffer->zFile, zName) ) break;
+      لكل(p_بفر=p->p_بفر; p_بفر; p_بفر=p_بفر->p_ايندڙ){
+        إذا( 0==strcmp(p_بفر->zFile, zName) ) اكسر;
       }
       ckfree(zName);
-      if( !pBuffer ){
-        Tcl_AppendResult(interp, "no such file: ", Tcl_GetString(objv[2]), NULL);
-        return TCL_ERROR;
+      إذا( !p_بفر ){
+        Tcl_Append_نتيجو(interp, "no such file: ", Tcl_GetString(objv[2]), عدم);
+        أرجع TCL_ERROR;
       }
-      if( objc==4 ){
-        Tcl_Size n;
+      إذا( objc==4 ){
+        Tcl_سائيز n;
         u8 *a = Tcl_GetByteArrayFromObj(objv[3], &n);
-        int pgsz = pBuffer->pgsz;
-        if( pgsz==0 ) pgsz = 65536;
-        for(i=0; i*pgsz<(int)n; i++){
-          int nByte = pgsz;
-          tvfsAllocPage(pBuffer, i, pgsz);
-          if( n-i*pgsz<pgsz ){
-            nByte = (int)n;
+        صحيح pgsz = p_بفر->pgsz;
+        إذا( pgsz==0 ) pgsz = 65536;
+        لكل(i=0; i*pgsz<(صحيح)n; i++){
+          صحيح nByte = pgsz;
+          tvfs_Alloc_صفحو(p_بفر, i, pgsz);
+          إذا( n-i*pgsz<pgsz ){
+            nByte = (صحيح)n;
           }
-          memcpy(pBuffer->aPage[i], &a[i*pgsz], nByte);
+          يادگيري_نقل(p_بفر->a_صفحو[i], &a[i*pgsz], nByte);
         }
       }
 
       pObj = Tcl_NewObj();
-      for(i=0; pBuffer->aPage[i]; i++){
-        int pgsz = pBuffer->pgsz;
-        if( pgsz==0 ) pgsz = 65536;
-        Tcl_AppendObjToObj(pObj, Tcl_NewByteArrayObj(pBuffer->aPage[i], pgsz));
+      لكل(i=0; p_بفر->a_صفحو[i]; i++){
+        صحيح pgsz = p_بفر->pgsz;
+        إذا( pgsz==0 ) pgsz = 65536;
+        Tcl_Append_Obj_منزل_Obj(pObj, Tcl_NewByteArrayObj(p_بفر->a_صفحو[i], pgsz));
       }
-      Tcl_SetObjResult(interp, pObj);
-      break;
+      Tcl_سيٽ_Obj_نتيجو(interp, pObj);
+      اكسر;
     }
 
     /*  TESTVFS filter METHOD-LIST
     **
     **     Activate special processing for those methods contained in the list
     */
-    case CMD_FILTER: {
-      static struct VfsMethod {
-        char *zName;
-        int mask;
+    حالة CMD_FILTER: {
+      ساكن بنية Vfs_طريقو {
+        حرف *zName;
+        صحيح نقاب;
       } vfsmethod [] = {
-        { "xShmOpen",           TESTVFS_SHMOPEN_MASK },
-        { "xShmLock",           TESTVFS_SHMLOCK_MASK },
-        { "xShmBarrier",        TESTVFS_SHMBARRIER_MASK },
-        { "xShmUnmap",          TESTVFS_SHMCLOSE_MASK },
-        { "xShmMap",            TESTVFS_SHMMAP_MASK },
-        { "xSync",              TESTVFS_SYNC_MASK },
-        { "xDelete",            TESTVFS_DELETE_MASK },
-        { "xWrite",             TESTVFS_WRITE_MASK },
-        { "xRead",              TESTVFS_READ_MASK },
-        { "xTruncate",          TESTVFS_TRUNCATE_MASK },
-        { "xOpen",              TESTVFS_OPEN_MASK },
-        { "xClose",             TESTVFS_CLOSE_MASK },
-        { "xAccess",            TESTVFS_ACCESS_MASK },
-        { "xFullPathname",      TESTVFS_FULLPATHNAME_MASK },
-        { "xUnlock",            TESTVFS_UNLOCK_MASK },
-        { "xLock",              TESTVFS_LOCK_MASK },
-        { "xCheckReservedLock", TESTVFS_CKLOCK_MASK },
-        { "xFileControl",       TESTVFS_FCNTL_MASK },
-        { "xSleep",             TESTVFS_SLEEP_MASK },
+        { "xShmOpen",           TESTVFS_SHMOPEN_نقاب },
+        { "xShmLock",           TESTVFS_SHMLOCK_نقاب },
+        { "xShmBarrier",        TESTVFS_SHMBARRIER_نقاب },
+        { "xShmUnmap",          TESTVFS_SHMCLOSE_نقاب },
+        { "xShmMap",            TESTVFS_SHMMAP_نقاب },
+        { "xSync",              TESTVFS_SYNC_نقاب },
+        { "xDelete",            TESTVFS_DELETE_نقاب },
+        { "xWrite",             TESTVFS_WRITE_نقاب },
+        { "xRead",              TESTVFS_READ_نقاب },
+        { "xTruncate",          TESTVFS_TRUNCATE_نقاب },
+        { "xOpen",              TESTVFS_OPEN_نقاب },
+        { "xClose",             TESTVFS_CLOSE_نقاب },
+        { "xAccess",            TESTVFS_ACCESS_نقاب },
+        { "xFullPathname",      TESTVFS_FULLPATHNAME_نقاب },
+        { "xUnlock",            TESTVFS_UNLOCK_نقاب },
+        { "xLock",              TESTVFS_تالو_نقاب },
+        { "xCheckReservedLock", TESTVFS_CKLOCK_نقاب },
+        { "xFileControl",       TESTVFS_FCNTL_نقاب },
+        { "xSleep",             TESTVFS_SLEEP_نقاب },
       };
       Tcl_Obj **apElem = 0;
-      Tcl_Size nElem = 0;
-      int mask = 0;
-      if( objc!=3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "LIST");
-        return TCL_ERROR;
+      Tcl_سائيز nElem = 0;
+      صحيح نقاب = 0;
+      إذا( objc!=3 ){
+        Tcl_Wrong_انگ_دليلون(interp, 2, objv, "LIST");
+        أرجع TCL_ERROR;
       }
-      if( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
-        return TCL_ERROR;
+      إذا( Tcl_ListObjGetElements(interp, objv[2], &nElem, &apElem) ){
+        أرجع TCL_ERROR;
       }
-      Tcl_ResetResult(interp);
-      for(i=0; i<(int)nElem; i++){
-        int iMethod;
-        char *zElem = Tcl_GetString(apElem[i]);
-        for(iMethod=0; iMethod<ArraySize(vfsmethod); iMethod++){
-          if( strcmp(zElem, vfsmethod[iMethod].zName)==0 ){
-            mask |= vfsmethod[iMethod].mask;
-            break;
+      Tcl_Reset_نتيجو(interp);
+      لكل(i=0; i<(صحيح)nElem; i++){
+        صحيح i_طريقو;
+        حرف *zElem = Tcl_GetString(apElem[i]);
+        لكل(i_طريقو=0; i_طريقو<Array_سائيز(vfsmethod); i_طريقو++){
+          إذا( strcmp(zElem, vfsmethod[i_طريقو].zName)==0 ){
+            نقاب |= vfsmethod[i_طريقو].نقاب;
+            اكسر;
           }
         }
-        if( iMethod==ArraySize(vfsmethod) ){
-          Tcl_AppendResult(interp, "unknown method: ", zElem, NULL);
-          return TCL_ERROR;
+        إذا( i_طريقو==Array_سائيز(vfsmethod) ){
+          Tcl_Append_نتيجو(interp, "unknown method: ", zElem, عدم);
+          أرجع TCL_ERROR;
         }
       }
-      p->mask = mask;
-      break;
+      p->نقاب = نقاب;
+      اكسر;
     }
 
     /*
@@ -1239,27 +1239,27 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     **  Query or set the script to be run when filtered VFS events
     **  occur.
     */
-    case CMD_SCRIPT: {
-      if( objc==3 ){
-        Tcl_Size nByte;
-        if( p->pScript ){
-          Tcl_DecrRefCount(p->pScript);
+    حالة CMD_SCRIPT: {
+      إذا( objc==3 ){
+        Tcl_سائيز nByte;
+        إذا( p->pScript ){
+          Tcl_Decr_Ref_ڳڻپ(p->pScript);
           p->pScript = 0;
         }
         Tcl_GetStringFromObj(objv[2], &nByte);
-        if( nByte>0 ){
+        إذا( nByte>0 ){
           p->pScript = Tcl_DuplicateObj(objv[2]);
-          Tcl_IncrRefCount(p->pScript);
+          Tcl_Incr_Ref_ڳڻپ(p->pScript);
         }
-      }else if( objc!=2 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?SCRIPT?");
-        return TCL_ERROR;
+      }وإلا إذا( objc!=2 ){
+        Tcl_Wrong_انگ_دليلون(interp, 2, objv, "?SCRIPT?");
+        أرجع TCL_ERROR;
       }
 
-      Tcl_ResetResult(interp);
-      if( p->pScript ) Tcl_SetObjResult(interp, p->pScript);
+      Tcl_Reset_نتيجو(interp);
+      إذا( p->pScript ) Tcl_سيٽ_Obj_نتيجو(interp, p->pScript);
 
-      break;
+      اكسر;
     }
 
     /*
@@ -1267,49 +1267,49 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
     **
     **   Where IFAIL is an integer and PERSIST is boolean.
     */
-    case CMD_CANTOPENERR:
-    case CMD_IOERR:
-    case CMD_FULLERR: {
+    حالة CMD_CANTOPENERR:
+    حالة CMD_IOERR:
+    حالة CMD_FULLERR: {
       TestFaultInject *pTest = 0;
-      int iRet;
+      صحيح iRet;
 
-      switch( aSubcmd[i].eCmd ){
-        case CMD_IOERR: pTest = &p->ioerr_err; break;
-        case CMD_FULLERR: pTest = &p->full_err; break;
-        case CMD_CANTOPENERR: pTest = &p->cantopen_err; break;
-        default: assert(0);
+      بدل( aSubcmd[i].eCmd ){
+        حالة CMD_IOERR: pTest = &p->ioerr_err; اكسر;
+        حالة CMD_FULLERR: pTest = &p->ڀريل_err; اكسر;
+        حالة CMD_CANTOPENERR: pTest = &p->cantopen_err; اكسر;
+        افتراضي: أكد(0);
       }
       iRet = pTest->nFail;
       pTest->nFail = 0;
       pTest->eFault = 0;
       pTest->iCnt = 0;
 
-      if( objc==4 ){
-        int iCnt, iPersist;
-        if( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iCnt)
+      إذا( objc==4 ){
+        صحيح iCnt, iPersist;
+        إذا( TCL_OK!=Tcl_GetIntFromObj(interp, objv[2], &iCnt)
          || TCL_OK!=Tcl_GetBooleanFromObj(interp, objv[3], &iPersist)
         ){
-          return TCL_ERROR;
+          أرجع TCL_ERROR;
         }
         pTest->eFault = iPersist?FAULT_INJECT_PERSISTENT:FAULT_INJECT_TRANSIENT;
         pTest->iCnt = iCnt;
-      }else if( objc!=2 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?CNT PERSIST?");
-        return TCL_ERROR;
+      }وإلا إذا( objc!=2 ){
+        Tcl_Wrong_انگ_دليلون(interp, 2, objv, "?CNT PERSIST?");
+        أرجع TCL_ERROR;
       }
-      Tcl_SetObjResult(interp, Tcl_NewIntObj(iRet));
-      break;
+      Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewIntObj(iRet));
+      اكسر;
     }
 
-    case CMD_DELETE: {
+    حالة CMD_DELETE: {
       Tcl_DeleteCommand(interp, Tcl_GetString(objv[0]));
-      break;
+      اكسر;
     }
 
-    case CMD_DEVCHAR: {
-      struct DeviceFlag {
-        char *zName;
-        int iValue;
+    حالة CMD_DEVCHAR: {
+      بنية DeviceFlag {
+        حرف *zName;
+        صحيح i_قدر;
       } aFlag[] = {
         { "default",               -1 },
         { "atomic",                SQLITE_IOCAP_ATOMIC                },
@@ -1322,87 +1322,87 @@ static int SQLITE_TCLAPI testvfs_obj_cmd(
         { "atomic32k",             SQLITE_IOCAP_ATOMIC32K             },
         { "atomic64k",             SQLITE_IOCAP_ATOMIC64K             },
         { "sequential",            SQLITE_IOCAP_SEQUENTIAL            },
-        { "safe_append",           SQLITE_IOCAP_SAFE_APPEND           },
+        { "safe_append",           SQLITE_IOCAP_محفوظ_APPEND           },
         { "undeletable_when_open", SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN },
         { "powersafe_overwrite",   SQLITE_IOCAP_POWERSAFE_OVERWRITE   },
         { "immutable",             SQLITE_IOCAP_IMMUTABLE             },
         { 0, 0 }
       };
       Tcl_Obj *pRet;
-      int iFlag;
+      صحيح iFlag;
 
-      if( objc>3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?ATTR-LIST?");
-        return TCL_ERROR;
+      إذا( objc>3 ){
+        Tcl_Wrong_انگ_دليلون(interp, 2, objv, "?ATTR-LIST?");
+        أرجع TCL_ERROR;
       }
-      if( objc==3 ){
-        int j;
-        int iNew = 0;
+      إذا( objc==3 ){
+        صحيح j;
+        صحيح iNew = 0;
         Tcl_Obj **flags = 0;
-        Tcl_Size nFlags = 0;
+        Tcl_سائيز nFlags = 0;
 
-        if( Tcl_ListObjGetElements(interp, objv[2], &nFlags, &flags) ){
-          return TCL_ERROR;
+        إذا( Tcl_ListObjGetElements(interp, objv[2], &nFlags, &flags) ){
+          أرجع TCL_ERROR;
         }
 
-        for(j=0; j<(int)nFlags; j++){
-          int idx = 0;
-          if( Tcl_GetIndexFromObjStruct(interp, flags[j], aFlag, 
-                sizeof(aFlag[0]), "flag", 0, &idx) 
+        لكل(j=0; j<(صحيح)nFlags; j++){
+          صحيح idx = 0;
+          إذا( Tcl_Get_اشاريو_From_Obj_Struct(interp, flags[j], aFlag, 
+                حجم(aFlag[0]), "flag", 0, &idx) 
           ){
-            return TCL_ERROR;
+            أرجع TCL_ERROR;
           }
-          if( aFlag[idx].iValue<0 && nFlags>1 ){
-            Tcl_AppendResult(interp, "bad flags: ", Tcl_GetString(objv[2]), NULL);
-            return TCL_ERROR;
+          إذا( aFlag[idx].i_قدر<0 && nFlags>1 ){
+            Tcl_Append_نتيجو(interp, "bad flags: ", Tcl_GetString(objv[2]), عدم);
+            أرجع TCL_ERROR;
           }
-          iNew |= aFlag[idx].iValue;
+          iNew |= aFlag[idx].i_قدر;
         }
 
         p->iDevchar = iNew| 0x10000000;
       }
 
       pRet = Tcl_NewObj();
-      for(iFlag=0; iFlag<sizeof(aFlag)/sizeof(aFlag[0]); iFlag++){
-        if( p->iDevchar & aFlag[iFlag].iValue ){
+      لكل(iFlag=0; iFlag<حجم(aFlag)/حجم(aFlag[0]); iFlag++){
+        إذا( p->iDevchar & aFlag[iFlag].i_قدر ){
           Tcl_ListObjAppendElement(
               interp, pRet, Tcl_NewStringObj(aFlag[iFlag].zName, -1)
           );
         }
       }
-      Tcl_SetObjResult(interp, pRet);
+      Tcl_سيٽ_Obj_نتيجو(interp, pRet);
 
-      break;
+      اكسر;
     }
 
-    case CMD_SECTORSIZE: {
-      if( objc>3 ){
-        Tcl_WrongNumArgs(interp, 2, objv, "?VALUE?");
-        return TCL_ERROR;
+    حالة CMD_SECTORSIZE: {
+      إذا( objc>3 ){
+        Tcl_Wrong_انگ_دليلون(interp, 2, objv, "?VALUE?");
+        أرجع TCL_ERROR;
       }
-      if( objc==3 ){
-        int iNew = 0;
-        if( Tcl_GetIntFromObj(interp, objv[2], &iNew) ){
-          return TCL_ERROR;
+      إذا( objc==3 ){
+        صحيح iNew = 0;
+        إذا( Tcl_GetIntFromObj(interp, objv[2], &iNew) ){
+          أرجع TCL_ERROR;
         }
         p->iSectorsize = iNew;
       }
-      Tcl_SetObjResult(interp, Tcl_NewIntObj(p->iSectorsize));
-      break;
+      Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewIntObj(p->iSectorsize));
+      اكسر;
     }
   }
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-static void SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
+ساكن فراغ SQLITE_TCLAPI testvfs_obj_del(Client_معلومات cd){
   Testvfs *p = (Testvfs *)cd;
-  if( p->pScript ) Tcl_DecrRefCount(p->pScript);
+  إذا( p->pScript ) Tcl_Decr_Ref_ڳڻپ(p->pScript);
   sqlite3_vfs_unregister(p->pVfs);
-  memset(p->pVfs, 0, sizeof(sqlite3_vfs));
-  ckfree((char *)p->pVfs);
-  memset(p, 0, sizeof(Testvfs));
-  ckfree((char *)p);
+  memset(p->pVfs, 0, حجم(sqlite3_vfs));
+  ckfree((حرف *)p->pVfs);
+  memset(p, 0, حجم(Testvfs));
+  ckfree((حرف *)p);
 }
 
 /*
@@ -1440,13 +1440,13 @@ static void SQLITE_TCLAPI testvfs_obj_del(ClientData cd){
 **
 ** where LOCK is of the form "OFFSET NBYTE lock/unlock shared/exclusive"
 */
-static int SQLITE_TCLAPI testvfs_cmd(
-  ClientData cd,
+ساكن صحيح SQLITE_TCLAPI testvfs_cmd(
+  Client_معلومات cd,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  static sqlite3_vfs tvfs_vfs = {
+  ساكن sqlite3_vfs tvfs_vfs = {
     3,                            /* iVersion */
     0,                            /* szOsFile */
     0,                            /* mxPathname */
@@ -1456,21 +1456,21 @@ static int SQLITE_TCLAPI testvfs_cmd(
     tvfsOpen,                     /* xOpen */
     tvfsDelete,                   /* xDelete */
     tvfsAccess,                   /* xAccess */
-    tvfsFullPathname,             /* xFullPathname */
-#ifndef SQLITE_OMIT_LOAD_EXTENSION
+    tvfs_ڀريل_Pathname,             /* xFullPathname */
+#جيڪڏهن_وصف_نه_ٿيل SQLITE_OMIT_ڀريو_EXTENSION
     tvfsDlOpen,                   /* xDlOpen */
     tvfsDlError,                  /* xDlError */
     tvfsDlSym,                    /* xDlSym */
     tvfsDlClose,                  /* xDlClose */
-#else
+#وإلا
     0,                            /* xDlOpen */
     0,                            /* xDlError */
     0,                            /* xDlSym */
     0,                            /* xDlClose */
-#endif /* SQLITE_OMIT_LOAD_EXTENSION */
+#جيڪڏهن_پورو /* SQLITE_OMIT_LOAD_EXTENSION */
     tvfsRandomness,               /* xRandomness */
     tvfsSleep,                    /* xSleep */
-    tvfsCurrentTime,              /* xCurrentTime */
+    tvfs_Current_وقت,              /* xCurrentTime */
     0,                            /* xGetLastError */
     0,                            /* xCurrentTimeInt64 */
     0,                            /* xSetSystemCall */
@@ -1480,66 +1480,66 @@ static int SQLITE_TCLAPI testvfs_cmd(
 
   Testvfs *p;                     /* New object */
   sqlite3_vfs *pVfs;              /* New VFS */
-  char *zVfs;
-  int nByte;                      /* Bytes of space to allocate at p */
+  حرف *zVfs;
+  صحيح nByte;                      /* Bytes of space to allocate at p */
 
-  int i;
-  int isNoshm = 0;                /* True if -noshm is passed */
-  int isFullshm = 0;              /* True if -fullshm is passed */
-  int isDefault = 0;              /* True if -default is passed */
-  int szOsFile = 0;               /* Value passed to -szosfile */
-  int mxPathname = -1;            /* Value passed to -mxpathname */
-  int iVersion = 3;               /* Value passed to -iversion */
+  صحيح i;
+  صحيح isNoshm = 0;                /* True if -noshm is passed */
+  صحيح isFullshm = 0;              /* True if -fullshm is passed */
+  صحيح isDefault = 0;              /* True if -default is passed */
+  صحيح szOsFile = 0;               /* Value passed to -szosfile */
+  صحيح mxPathname = -1;            /* Value passed to -mxpathname */
+  صحيح i_نسخو = 3;               /* Value passed to -iversion */
 
-  if( objc<2 || 0!=(objc%2) ) goto bad_args;
-  for(i=2; i<objc; i += 2){
-    Tcl_Size nSwitch;
-    char *zSwitch;
+  إذا( objc<2 || 0!=(objc%2) ) اذهب bad_دليلون;
+  لكل(i=2; i<objc; i += 2){
+    Tcl_سائيز nSwitch;
+    حرف *zSwitch;
     zSwitch = Tcl_GetStringFromObj(objv[i], &nSwitch); 
 
-    if( nSwitch>2 && 0==strncmp("-noshm", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isNoshm) ){
-        return TCL_ERROR;
+    إذا( nSwitch>2 && 0==لڙي_ڀيٽ("-noshm", zSwitch, nSwitch) ){
+      إذا( Tcl_GetBooleanFromObj(interp, objv[i+1], &isNoshm) ){
+        أرجع TCL_ERROR;
       }
-      if( isNoshm ) isFullshm = 0;
+      إذا( isNoshm ) isFullshm = 0;
     }
-    else if( nSwitch>2 && 0==strncmp("-default", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isDefault) ){
-        return TCL_ERROR;
-      }
-    }
-    else if( nSwitch>2 && 0==strncmp("-szosfile", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &szOsFile) ){
-        return TCL_ERROR;
+    وإلا إذا( nSwitch>2 && 0==لڙي_ڀيٽ("-default", zSwitch, nSwitch) ){
+      إذا( Tcl_GetBooleanFromObj(interp, objv[i+1], &isDefault) ){
+        أرجع TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-mxpathname", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &mxPathname) ){
-        return TCL_ERROR;
+    وإلا إذا( nSwitch>2 && 0==لڙي_ڀيٽ("-szosfile", zSwitch, nSwitch) ){
+      إذا( Tcl_GetIntFromObj(interp, objv[i+1], &szOsFile) ){
+        أرجع TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-iversion", zSwitch, nSwitch) ){
-      if( Tcl_GetIntFromObj(interp, objv[i+1], &iVersion) ){
-        return TCL_ERROR;
+    وإلا إذا( nSwitch>2 && 0==لڙي_ڀيٽ("-mxpathname", zSwitch, nSwitch) ){
+      إذا( Tcl_GetIntFromObj(interp, objv[i+1], &mxPathname) ){
+        أرجع TCL_ERROR;
       }
     }
-    else if( nSwitch>2 && 0==strncmp("-fullshm", zSwitch, nSwitch) ){
-      if( Tcl_GetBooleanFromObj(interp, objv[i+1], &isFullshm) ){
-        return TCL_ERROR;
+    وإلا إذا( nSwitch>2 && 0==لڙي_ڀيٽ("-iversion", zSwitch, nSwitch) ){
+      إذا( Tcl_GetIntFromObj(interp, objv[i+1], &i_نسخو) ){
+        أرجع TCL_ERROR;
       }
-      if( isFullshm ) isNoshm = 0;
     }
-    else{
-      goto bad_args;
+    وإلا إذا( nSwitch>2 && 0==لڙي_ڀيٽ("-fullshm", zSwitch, nSwitch) ){
+      إذا( Tcl_GetBooleanFromObj(interp, objv[i+1], &isFullshm) ){
+        أرجع TCL_ERROR;
+      }
+      إذا( isFullshm ) isNoshm = 0;
+    }
+    وإلا{
+      اذهب bad_دليلون;
     }
   }
 
-  if( szOsFile<sizeof(TestvfsFile) ){
-    szOsFile = sizeof(TestvfsFile);
+  إذا( szOsFile<حجم(TestvfsFile) ){
+    szOsFile = حجم(TestvfsFile);
   }
 
   zVfs = Tcl_GetString(objv[1]);
-  nByte = sizeof(Testvfs) + (int)strlen(zVfs)+1;
+  nByte = حجم(Testvfs) + (صحيح)لڙي_ڊيگهه(zVfs)+1;
   p = (Testvfs *)ckalloc(nByte);
   memset(p, 0, nByte);
   p->iDevchar = -1;
@@ -1552,146 +1552,146 @@ static int SQLITE_TCLAPI testvfs_cmd(
   ** methods of a deleted object.
   */
   Tcl_CreateObjCommand(interp, zVfs, testvfs_obj_cmd, p, testvfs_obj_del);
-  p->pParent = sqlite3_vfs_find(0);
+  p->p_والد = sqlite3_vfs_ڳوليو(0);
   p->interp = interp;
 
-  p->zName = (char *)&p[1];
-  memcpy(p->zName, zVfs, strlen(zVfs)+1);
+  p->zName = (حرف *)&p[1];
+  يادگيري_نقل(p->zName, zVfs, لڙي_ڊيگهه(zVfs)+1);
 
-  pVfs = (sqlite3_vfs *)ckalloc(sizeof(sqlite3_vfs));
-  memcpy(pVfs, &tvfs_vfs, sizeof(sqlite3_vfs));
-  pVfs->pAppData = (void *)p;
-  pVfs->iVersion = iVersion;
+  pVfs = (sqlite3_vfs *)ckalloc(حجم(sqlite3_vfs));
+  يادگيري_نقل(pVfs, &tvfs_vfs, حجم(sqlite3_vfs));
+  pVfs->p_App_معلومات = (فراغ *)p;
+  pVfs->i_نسخو = i_نسخو;
   pVfs->zName = p->zName;
-  pVfs->mxPathname = p->pParent->mxPathname;
-  if( mxPathname>=0 && mxPathname<pVfs->mxPathname ){
+  pVfs->mxPathname = p->p_والد->mxPathname;
+  إذا( mxPathname>=0 && mxPathname<pVfs->mxPathname ){
     pVfs->mxPathname = mxPathname;
   }
   pVfs->szOsFile = szOsFile;
   p->pVfs = pVfs;
   p->isNoshm = isNoshm;
   p->isFullshm = isFullshm;
-  p->mask = TESTVFS_ALL_MASK;
+  p->نقاب = TESTVFS_ALL_نقاب;
 
-  sqlite3_vfs_register(pVfs, isDefault);
+  sqlite3_vfs_رجسٽر(pVfs, isDefault);
 
-  return TCL_OK;
+  أرجع TCL_OK;
 
- bad_args:
-  Tcl_WrongNumArgs(interp, 1, objv, "VFSNAME ?-noshm BOOL? ?-fullshm BOOL? ?-default BOOL? ?-mxpathname INT? ?-szosfile INT? ?-iversion INT?");
-  return TCL_ERROR;
+ bad_دليلون:
+  Tcl_Wrong_انگ_دليلون(interp, 1, objv, "VFSNAME ?-noshm BOOL? ?-fullshm BOOL? ?-default BOOL? ?-mxpathname INT? ?-szosfile INT? ?-iversion INT?");
+  أرجع TCL_ERROR;
 }
 
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
-extern const char *sqlite3ErrName(int);
+خارجي صحيح get_Db_اشارو(Tcl_Interp *interp, ثابت حرف *zA, sqlite3 **ppDb);
+خارجي ثابت حرف *sqlite3ErrName(صحيح);
 
 /*
 ** tclcmd: vfs_shmlock DB DBNAME (shared|exclusive) (lock|unlock) OFFSET N
 */
-static int SQLITE_TCLAPI test_vfs_shmlock(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_vfs_shmlock(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *azArg1[] = {"shared", "exclusive", 0};
-  const char *azArg2[] = {"lock", "unlock", 0};
+  ثابت حرف *azArg1[] = {"shared", "exclusive", 0};
+  ثابت حرف *azArg2[] = {"lock", "unlock", 0};
   sqlite3 *db = 0;
-  int rc = SQLITE_OK;
-  const char *zDbname = 0;
-  int iArg1 = 0;
-  int iArg2 = 0;
-  int iOffset = 0;
-  int n = 0;
+  صحيح rc = SQLITE_OK;
+  ثابت حرف *zDbname = 0;
+  صحيح iArg1 = 0;
+  صحيح iArg2 = 0;
+  صحيح i_وٿي = 0;
+  صحيح n = 0;
   sqlite3_file *pFd;
 
-  if( objc!=7 ){
-    Tcl_WrongNumArgs(interp, 1, objv, 
+  إذا( objc!=7 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, 
         "DB DBNAME (shared|exclusive) (lock|unlock) OFFSET N"
     );
-    return TCL_ERROR;
+    أرجع TCL_ERROR;
   }
 
   zDbname = Tcl_GetString(objv[2]);
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
-   || Tcl_GetIndexFromObj(interp, objv[3], azArg1, "ARG", 0, &iArg1) 
-   || Tcl_GetIndexFromObj(interp, objv[4], azArg2, "ARG", 0, &iArg2) 
-   || Tcl_GetIntFromObj(interp, objv[5], &iOffset)
+  إذا( get_Db_اشارو(interp, Tcl_GetString(objv[1]), &db) 
+   || Tcl_Get_اشاريو_From_Obj(interp, objv[3], azArg1, "ARG", 0, &iArg1) 
+   || Tcl_Get_اشاريو_From_Obj(interp, objv[4], azArg2, "ARG", 0, &iArg2) 
+   || Tcl_GetIntFromObj(interp, objv[5], &i_وٿي)
    || Tcl_GetIntFromObj(interp, objv[6], &n)
   ){
-    return TCL_ERROR;
+    أرجع TCL_ERROR;
   }
 
-  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (void*)&pFd);
-  if( pFd==0 ){
-    return TCL_ERROR;
+  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_اشارو, (فراغ*)&pFd);
+  إذا( pFd==0 ){
+    أرجع TCL_ERROR;
   }
-  rc = pFd->pMethods->xShmLock(pFd, iOffset, n, 
+  rc = pFd->pMethods->x_Shm_تالو(pFd, i_وٿي, n, 
       (iArg1==0 ? SQLITE_SHM_SHARED : SQLITE_SHM_EXCLUSIVE)
-    | (iArg2==0 ? SQLITE_SHM_LOCK : SQLITE_SHM_UNLOCK)
+    | (iArg2==0 ? SQLITE_SHM_تالو : SQLITE_SHM_UNLOCK)
   );
-  Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-  return TCL_OK;
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
+  أرجع TCL_OK;
 }
 
-static int SQLITE_TCLAPI test_vfs_set_readmark(
-  void * clientData,
+ساكن صحيح SQLITE_TCLAPI test_vfs_سيٽ_readmark(
+  فراغ * client_معلومات,
   Tcl_Interp *interp,
-  int objc,
+  صحيح objc,
   Tcl_Obj *CONST objv[]
 ){
   sqlite3 *db = 0;
-  int rc = SQLITE_OK;
-  const char *zDbname = 0;
-  int iSlot = 0;
-  int iVal = -1;
+  صحيح rc = SQLITE_OK;
+  ثابت حرف *zDbname = 0;
+  صحيح i_جڳهه = 0;
+  صحيح iVal = -1;
   sqlite3_file *pFd;
-  void volatile *pShm = 0;
+  فراغ متطاير *pShm = 0;
   u32 *aShm;
-  int iOff;
+  صحيح iOff;
 
-  if( objc!=4 && objc!=5 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB DBNAME SLOT ?VALUE?");
-    return TCL_ERROR;
+  إذا( objc!=4 && objc!=5 ){
+    Tcl_Wrong_انگ_دليلون(interp, 1, objv, "DB DBNAME SLOT ?VALUE?");
+    أرجع TCL_ERROR;
   }
 
   zDbname = Tcl_GetString(objv[2]);
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) 
-   || Tcl_GetIntFromObj(interp, objv[3], &iSlot)
+  إذا( get_Db_اشارو(interp, Tcl_GetString(objv[1]), &db) 
+   || Tcl_GetIntFromObj(interp, objv[3], &i_جڳهه)
    || (objc==5 && Tcl_GetIntFromObj(interp, objv[4], &iVal))
   ){
-    return TCL_ERROR;
+    أرجع TCL_ERROR;
   }
 
-  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_POINTER, (void*)&pFd);
-  if( pFd==0 ){
-    return TCL_ERROR;
+  sqlite3_file_control(db, zDbname, SQLITE_FCNTL_FILE_اشارو, (فراغ*)&pFd);
+  إذا( pFd==0 ){
+    أرجع TCL_ERROR;
   }
   rc = pFd->pMethods->xShmMap(pFd, 0, 32*1024, 0, &pShm);
-  if( rc!=SQLITE_OK ){
-    Tcl_SetObjResult(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
-    return TCL_ERROR;
+  إذا( rc!=SQLITE_OK ){
+    Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewStringObj(sqlite3ErrName(rc), -1));
+    أرجع TCL_ERROR;
   }
-  if( pShm==0 ){
-    Tcl_AppendResult(interp, "*-shm is not yet mapped", NULL);
-    return TCL_ERROR;
+  إذا( pShm==0 ){
+    Tcl_Append_نتيجو(interp, "*-shm is not yet mapped", عدم);
+    أرجع TCL_ERROR;
   }
   aShm = (u32*)pShm;
-  iOff = 12*2+1+iSlot;
+  iOff = 12*2+1+i_جڳهه;
 
-  if( objc==5 ){
+  إذا( objc==5 ){
     aShm[iOff] = iVal;
   }
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(aShm[iOff]));
+  Tcl_سيٽ_Obj_نتيجو(interp, Tcl_NewIntObj(aShm[iOff]));
 
-  return TCL_OK;
+  أرجع TCL_OK;
 }
 
-int Sqlitetestvfs_Init(Tcl_Interp *interp){
+صحيح Sqlitetestvfs_Init(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp, "testvfs", testvfs_cmd, 0, 0);
   Tcl_CreateObjCommand(interp, "vfs_shmlock", test_vfs_shmlock, 0, 0);
-  Tcl_CreateObjCommand(interp, "vfs_set_readmark", test_vfs_set_readmark, 0, 0);
-  return TCL_OK;
+  Tcl_CreateObjCommand(interp, "vfs_set_readmark", test_vfs_سيٽ_readmark, 0, 0);
+  أرجع TCL_OK;
 }
 
-#endif
+#جيڪڏهن_پورو

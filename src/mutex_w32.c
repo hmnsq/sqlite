@@ -11,36 +11,36 @@
 *************************************************************************
 ** This file contains the C functions that implement mutexes for Win32.
 */
-#include "sqliteInt.h"
+#ضمن "sqliteInt.h"
 
-#if SQLITE_OS_WIN
+#إذا SQLITE_OS_WIN
 /*
 ** Include code that is common to all os_*.c files
 */
-#include "os_common.h"
+#ضمن "os_common.h"
 
 /*
 ** Include the header file for the Windows VFS.
 */
-#include "os_win.h"
-#endif
+#ضمن "os_win.h"
+#جيڪڏهن_پورو
 
 /*
 ** The code in this file is only used if we are compiling multithreaded
 ** on a Win32 system.
 */
-#ifdef SQLITE_MUTEX_W32
+#جيڪڏهن_وصف_ٿيل SQLITE_MUTEX_W32
 
-#if MSVC_VERSION>0
+#إذا MSVC_نسخو>0
 # define ALIGN128 __declspec(align(128))
-#else
+#وإلا
 # define ALIGN128
-#endif
+#جيڪڏهن_پورو
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4324)
-#endif /* _MSC_VER */
+#جيڪڏهن_وصف_ٿيل _MSC_VER
+#هدايت warning(ڌڪو)
+#هدايت warning(disable: 4324)
+#جيڪڏهن_پورو /* _MSC_VER */
 
 /*
 ** Each SQLite mutex is an instance of the following structure.
@@ -52,51 +52,51 @@
 ** that 64 works just as well most of the time, but the internet says
 ** that 128-byte alignment works better.
 */
-struct sqlite3_mutex { 
-  union {
+بنية sqlite3_mutex { 
+  اتحاد {
     CRITICAL_SECTION cs;     /* The CRITICAL_SECTION mutex.  id==1 */
     SRWLOCK srwl;            /* The Slim reader/writer lock.  id!=1 */
   } u;
-  int id;                    /* Mutex type */
-#ifdef SQLITE_DEBUG
-  volatile int nRef;         /* Number of entrances */
-  volatile DWORD owner;      /* Thread holding this mutex */
-  volatile LONG trace;       /* True to trace changes */
-#endif
+  صحيح id;                    /* Mutex type */
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  متطاير صحيح nRef;         /* Number of entrances */
+  متطاير DWORD owner;      /* Thread holding this mutex */
+  متطاير LONG trace;       /* True to trace changes */
+#جيڪڏهن_پورو
 };
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif /* _MSC_VER */
+#جيڪڏهن_وصف_ٿيل _MSC_VER
+#هدايت warning(ڪڍو)
+#جيڪڏهن_پورو /* _MSC_VER */
 
-#ifdef SQLITE_DEBUG
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
 /*
 ** The sqlite3_mutex_held() and sqlite3_mutex_notheld() routine are
 ** intended for use only inside assert() statements.
 */
-static int winMutexHeld(sqlite3_mutex *p){
-  return p->nRef!=0 && p->owner==GetCurrentThreadId();
+ساكن صحيح winMutexHeld(sqlite3_mutex *p){
+  أرجع p->nRef!=0 && p->owner==GetCurrentThreadId();
 }
 
-static int winMutexNotheld(sqlite3_mutex *p){
-  return p->nRef==0 || p->owner!=GetCurrentThreadId();
+ساكن صحيح winMutexNotheld(sqlite3_mutex *p){
+  أرجع p->nRef==0 || p->owner!=GetCurrentThreadId();
 }
-#endif
+#جيڪڏهن_پورو
 
 /*
 ** Try to provide a memory barrier operation, needed for initialization
 ** and also for the xShmBarrier method of the VFS in cases when SQLite is
 ** compiled without mutexes (SQLITE_THREADSAFE=0).
 */
-void sqlite3MemoryBarrier(void){
-#if defined(SQLITE_MEMORY_BARRIER)
-  SQLITE_MEMORY_BARRIER;
-#elif defined(__GNUC__)
+فراغ sqlite3_يادگيري_Barrier(فراغ){
+#إذا defined(SQLITE_يادگيري_BARRIER)
+  SQLITE_يادگيري_BARRIER;
+#وإلاإذا defined(__GNUC__)
   __sync_synchronize();
-#elif MSVC_VERSION>=1400
+#وإلاإذا MSVC_نسخو>=1400
   _ReadWriteBarrier();
-#elif defined(MemoryBarrier)
-  MemoryBarrier();
-#endif
+#وإلاإذا defined(يادگيري_Barrier)
+  يادگيري_Barrier();
+#جيڪڏهن_پورو
 }
 
 /*
@@ -109,54 +109,54 @@ void sqlite3MemoryBarrier(void){
 ** Experiments show that 64 works just as well most of the time, but
 ** the internet says that 128-byte alignment works better.
 */
-static ALIGN128 union staticMutexes {
+ساكن ALIGN128 اتحاد staticMutexes {
   sqlite3_mutex m;
-  char spacer[128];
+  حرف spacer[128];
 } aWindowsMutex[12];
-static int winMutex_isInit = 0;
+ساكن صحيح winMutex_isInit = 0;
 
 /* As the winMutexInit() and winMutexEnd() functions are called as part
 ** of the sqlite3_initialize() and sqlite3_shutdown() processing, the
 ** "interlocked" magic used here is probably not strictly necessary.
 */
-static LONG volatile winMutex_lock = 0;
+ساكن LONG متطاير win_Mutex_تالو = 0;
 
-void sqlite3_win32_sleep(DWORD milliseconds); /* os_win.c */
+فراغ sqlite3_win32_sleep(DWORD milliseconds); /* os_win.c */
 
-static int winMutexInit(void){
+ساكن صحيح winMutexInit(فراغ){
   /* The first to increment to 1 does actual initialization */
-  if( InterlockedCompareExchange(&winMutex_lock, 1, 0)==0 ){
-    int i;
-    for(i=0; i<ArraySize(aWindowsMutex); i++){
+  إذا( InterlockedCompareExchange(&win_Mutex_تالو, 1, 0)==0 ){
+    صحيح i;
+    لكل(i=0; i<Array_سائيز(aWindowsMutex); i++){
       sqlite3_mutex *p = &aWindowsMutex[i].m;
       p->id = i+2;
       InitializeSRWLock(&p->u.srwl);
-#ifdef SQLITE_DEBUG
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
       p->nRef = 0;
       p->owner = 0;
       p->trace = 0;
-#endif
+#جيڪڏهن_پورو
     }
     winMutex_isInit = 1;
-  }else{
+  }وإلا{
     /* Another thread is (in the process of) initializing the static
     ** mutexes */
-    while( !winMutex_isInit ){
+    طالما( !winMutex_isInit ){
       sqlite3_win32_sleep(1);
     }
   }
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
-static int winMutexEnd(void){
+ساكن صحيح win_Mutex_پڇاڙي(فراغ){
   /* The first to decrement to 0 does actual shutdown
   ** (which should be the last to shutdown.) */
-  if( InterlockedCompareExchange(&winMutex_lock, 0, 1)==1 ){
-    if( winMutex_isInit==1 ){
+  إذا( InterlockedCompareExchange(&win_Mutex_تالو, 0, 1)==1 ){
+    إذا( winMutex_isInit==1 ){
       winMutex_isInit = 0;
     }
   }
-  return SQLITE_OK;
+  أرجع SQLITE_OK;
 }
 
 /*
@@ -207,46 +207,46 @@ static int winMutexEnd(void){
 ** mutex types, the same mutex is returned on every call that has
 ** the same type number.
 */
-static sqlite3_mutex *winMutexAlloc(int iType){
+ساكن sqlite3_mutex *winMutexAlloc(صحيح iType){
   sqlite3_mutex *p;
 
-  switch( iType ){
-    case SQLITE_MUTEX_FAST:
-    case SQLITE_MUTEX_RECURSIVE: {
-      p = sqlite3MallocZero( sizeof(*p) );
-      if( p ){
+  بدل( iType ){
+    حالة SQLITE_MUTEX_FAST:
+    حالة SQLITE_MUTEX_RECURSIVE: {
+      p = sqlite3MallocZero( حجم(*p) );
+      إذا( p ){
         p->id = iType;
-#ifdef SQLITE_DEBUG
-#ifdef SQLITE_WIN32_MUTEX_TRACE_DYNAMIC
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+#جيڪڏهن_وصف_ٿيل SQLITE_WIN32_MUTEX_TRACE_DYNAMIC
         p->trace = 1;
-#endif
-#endif
-        if( iType==SQLITE_MUTEX_RECURSIVE ){
+#جيڪڏهن_پورو
+#جيڪڏهن_پورو
+        إذا( iType==SQLITE_MUTEX_RECURSIVE ){
           InitializeCriticalSection(&p->u.cs);
-        }else{
+        }وإلا{
           InitializeSRWLock(&p->u.srwl);
         }
       }
-      break;
+      اكسر;
     }
-    default: {
-#ifdef SQLITE_ENABLE_API_ARMOR
-      if( iType-2<0 || iType-2>=ArraySize(aWindowsMutex) ){
-        (void)SQLITE_MISUSE_BKPT;
-        return 0;
+    افتراضي: {
+#جيڪڏهن_وصف_ٿيل SQLITE_ENABLE_API_ARMOR
+      إذا( iType-2<0 || iType-2>=Array_سائيز(aWindowsMutex) ){
+        (فراغ)SQLITE_MISUSE_BKPT;
+        أرجع 0;
       }
-#endif
+#جيڪڏهن_پورو
       p = &aWindowsMutex[iType-2].m;
-#ifdef SQLITE_DEBUG
-#ifdef SQLITE_WIN32_MUTEX_TRACE_STATIC
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+#جيڪڏهن_وصف_ٿيل SQLITE_WIN32_MUTEX_TRACE_STATIC
       InterlockedCompareExchange(&p->trace, 1, 0);
-#endif
-#endif
-      break;
+#جيڪڏهن_پورو
+#جيڪڏهن_پورو
+      اكسر;
     }
   }
-  assert( p==0 || p->id==iType );
-  return p;
+  أكد( p==0 || p->id==iType );
+  أرجع p;
 }
 
 
@@ -255,18 +255,18 @@ static sqlite3_mutex *winMutexAlloc(int iType){
 ** allocated mutex.  SQLite is careful to deallocate every
 ** mutex that it allocates.
 */
-static void winMutexFree(sqlite3_mutex *p){
-  assert( p );
-  assert( p->nRef==0 && p->owner==0 );
-  if( p->id==SQLITE_MUTEX_FAST ){
+ساكن فراغ winMutexFree(sqlite3_mutex *p){
+  أكد( p );
+  أكد( p->nRef==0 && p->owner==0 );
+  إذا( p->id==SQLITE_MUTEX_FAST ){
     sqlite3_free(p);
-  }else if( p->id==SQLITE_MUTEX_RECURSIVE ){
+  }وإلا إذا( p->id==SQLITE_MUTEX_RECURSIVE ){
     DeleteCriticalSection(&p->u.cs);
     sqlite3_free(p);
-  }else{
-#ifdef SQLITE_ENABLE_API_ARMOR
-    (void)SQLITE_MISUSE_BKPT;
-#endif
+  }وإلا{
+#جيڪڏهن_وصف_ٿيل SQLITE_ENABLE_API_ARMOR
+    (فراغ)SQLITE_MISUSE_BKPT;
+#جيڪڏهن_پورو
   }
 }
 
@@ -281,60 +281,60 @@ static void winMutexFree(sqlite3_mutex *p){
 ** can enter.  If the same thread tries to enter any other kind of mutex
 ** more than once, the behavior is undefined.
 */
-static void winMutexEnter(sqlite3_mutex *p){
-  assert( p );
-#ifdef SQLITE_DEBUG
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
-#endif
-  assert( winMutex_isInit==1 );
-  if( p->id==SQLITE_MUTEX_RECURSIVE ){
+ساكن فراغ winMutexEnter(sqlite3_mutex *p){
+  أكد( p );
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  أكد( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
+#جيڪڏهن_پورو
+  أكد( winMutex_isInit==1 );
+  إذا( p->id==SQLITE_MUTEX_RECURSIVE ){
     EnterCriticalSection(&p->u.cs);
-  }else{
+  }وإلا{
     AcquireSRWLockExclusive(&p->u.srwl);
   }
-#ifdef SQLITE_DEBUG
-  assert( p->nRef>0 || p->owner==0 );
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  أكد( p->nRef>0 || p->owner==0 );
   p->owner = GetCurrentThreadId();
   p->nRef++;
-  if( p->trace ){
+  إذا( p->trace ){
     OSTRACE(("ENTER-MUTEX tid=%lu, mutex(%d)=%p (%d), nRef=%d\n",
              GetCurrentThreadId(), p->id, p, p->trace, p->nRef));
   }
-#endif
+#جيڪڏهن_پورو
 }
 
-static int winMutexTry(sqlite3_mutex *p){
-  int rc = SQLITE_BUSY;
-  assert( p );
-  assert( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
+ساكن صحيح winMutexTry(sqlite3_mutex *p){
+  صحيح rc = SQLITE_BUSY;
+  أكد( p );
+  أكد( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld(p) );
   /*
   ** The sqlite3_mutex_try() routine is seldom used, and when it is
   ** used it is merely an optimization.  So it is OK for it to always
   ** fail.
   */
-  if( p->id==SQLITE_MUTEX_RECURSIVE ){
+  إذا( p->id==SQLITE_MUTEX_RECURSIVE ){
     rc = TryEnterCriticalSection(&p->u.cs);
-  }else{
+  }وإلا{
     rc = TryAcquireSRWLockExclusive(&p->u.srwl);
   }
-  if( rc ){
-#ifdef SQLITE_DEBUG
+  إذا( rc ){
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
     p->owner = GetCurrentThreadId();
     p->nRef++;
-#endif
+#جيڪڏهن_پورو
     rc = SQLITE_OK;
-  }else{
+  }وإلا{
     rc = SQLITE_BUSY;
   }
-#ifdef SQLITE_DEBUG
-  if( p->trace ){
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  إذا( p->trace ){
     OSTRACE((
        "TRY-MUTEX tid=%lu, mutex(%d)=%p (%d), owner=%lu, nRef=%d, rc=%s\n",
        GetCurrentThreadId(), p->id, p, p->trace, p->owner, p->nRef,
        sqlite3ErrName(rc)));
   }
-#endif
-  return rc;
+#جيڪڏهن_پورو
+  أرجع rc;
 }
 
 /*
@@ -343,47 +343,47 @@ static int winMutexTry(sqlite3_mutex *p){
 ** is undefined if the mutex is not currently entered or
 ** is not currently allocated.  SQLite will never do either.
 */
-static void winMutexLeave(sqlite3_mutex *p){
-  assert( p );
-#ifdef SQLITE_DEBUG
-  assert( p->nRef>0 );
-  assert( p->owner==GetCurrentThreadId() );
+ساكن فراغ winMutexLeave(sqlite3_mutex *p){
+  أكد( p );
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  أكد( p->nRef>0 );
+  أكد( p->owner==GetCurrentThreadId() );
   p->nRef--;
-  if( p->nRef==0 ) p->owner = 0;
-  assert( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
-#endif
-  assert( winMutex_isInit==1 );
-  if( p->id==SQLITE_MUTEX_RECURSIVE ){
+  إذا( p->nRef==0 ) p->owner = 0;
+  أكد( p->nRef==0 || p->id==SQLITE_MUTEX_RECURSIVE );
+#جيڪڏهن_پورو
+  أكد( winMutex_isInit==1 );
+  إذا( p->id==SQLITE_MUTEX_RECURSIVE ){
     LeaveCriticalSection(&p->u.cs);
-  }else{
+  }وإلا{
     ReleaseSRWLockExclusive(&p->u.srwl);
   }
-#ifdef SQLITE_DEBUG
-  if( p->trace ){
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
+  إذا( p->trace ){
     OSTRACE(("LEAVE-MUTEX tid=%lu, mutex(%d)=%p (%d), nRef=%d\n",
              GetCurrentThreadId(), p->id, p, p->trace, p->nRef));
   }
-#endif
+#جيڪڏهن_پورو
 }
 
-sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
-  static const sqlite3_mutex_methods sMutex = {
+sqlite3_mutex_methods ثابت *sqlite3DefaultMutex(فراغ){
+  ساكن ثابت sqlite3_mutex_methods sMutex = {
     winMutexInit,
-    winMutexEnd,
+    win_Mutex_پڇاڙي,
     winMutexAlloc,
     winMutexFree,
     winMutexEnter,
     winMutexTry,
     winMutexLeave,
-#ifdef SQLITE_DEBUG
+#جيڪڏهن_وصف_ٿيل SQLITE_DEBUG
     winMutexHeld,
     winMutexNotheld
-#else
+#وإلا
     0,
     0
-#endif
+#جيڪڏهن_پورو
   };
-  return &sMutex;
+  أرجع &sMutex;
 }
 
-#endif /* SQLITE_MUTEX_W32 */
+#جيڪڏهن_پورو /* SQLITE_MUTEX_W32 */
