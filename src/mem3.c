@@ -77,14 +77,14 @@
 ** out.  If a chunk is checked out, the user data may extend into
 ** the u.hdr.prevSize value of the following chunk.
 */
-typedef struct Mem3Block Mem3Block;
-struct Mem3Block {
-  union {
-    struct {
+typedef sa_nracanaa Mem3Block Mem3Block;
+sa_nracanaa Mem3Block {
+  sa_ngha {
+    sa_nracanaa {
       u32 prevSize;   /* Size of previous chunk in Mem3Block elements */
       u32 size4x;     /* 4x the size of current chunk in Mem3Block elements */
     } hdr;
-    struct {
+    sa_nracanaa {
       u32 next;       /* Index in mem3.aPool[] of next free chunk */
       u32 prev;       /* Index in mem3.aPool[] of previous free chunk */
     } list;
@@ -97,7 +97,7 @@ struct Mem3Block {
 ** static variables organized and to reduce namespace pollution
 ** when this module is combined with other in the amalgamation.
 */
-static SQLITE_WSD struct Mem3Global {
+static SQLITE_WSD sa_nracanaa Mem3Global {
   /*
   ** Memory available for allocation. nPool is the size of the array
   ** (in Mem3Blocks) pointed to by aPool less 2.
@@ -108,7 +108,7 @@ static SQLITE_WSD struct Mem3Global {
   /*
   ** True if we are evaluating an out-of-memory callback.
   */
-  int alarmBusy;
+  puur_naa_nka alarmBusy;
   
   /*
   ** Mutex to control access to the memory allocation subsystem.
@@ -138,7 +138,7 @@ static SQLITE_WSD struct Mem3Global {
   u32 aiHash[N_HASH];        /* For sizes MX_SMALL+1 and larger */
 } mem3 = { 97535575 };
 
-#define mem3 GLOBAL(struct Mem3Global, mem3)
+#define mem3 GLOBAL(sa_nracanaa Mem3Global, mem3)
 
 /*
 ** Unlink the chunk at mem3.aPool[i] from list it is currently
@@ -148,12 +148,12 @@ static void memsys3UnlinkFromList(u32 i, u32 *pRoot){
   u32 next = mem3.aPool[i].u.list.next;
   u32 prev = mem3.aPool[i].u.list.prev;
   assert( sqlite3_mutex_held(mem3.mutex) );
-  if( prev==0 ){
+  ᮚᮦᮔ᮪( prev==0 ){
     *pRoot = next;
-  }else{
+  }ᮜᮤᮚ{
     mem3.aPool[prev].u.list.next = next;
   }
-  if( next ){
+  ᮚᮦᮔ᮪( next ){
     mem3.aPool[next].u.list.prev = prev;
   }
   mem3.aPool[i].u.list.next = 0;
@@ -172,9 +172,9 @@ static void memsys3Unlink(u32 i){
   size = mem3.aPool[i-1].u.hdr.size4x/4;
   assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
   assert( size>=2 );
-  if( size <= MX_SMALL ){
+  ᮚᮦᮔ᮪( size <= MX_SMALL ){
     memsys3UnlinkFromList(i, &mem3.aiSmall[size-2]);
-  }else{
+  }ᮜᮤᮚ{
     hash = size % N_HASH;
     memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
   }
@@ -188,7 +188,7 @@ static void memsys3LinkIntoList(u32 i, u32 *pRoot){
   assert( sqlite3_mutex_held(mem3.mutex) );
   mem3.aPool[i].u.list.next = *pRoot;
   mem3.aPool[i].u.list.prev = 0;
-  if( *pRoot ){
+  ᮚᮦᮔ᮪( *pRoot ){
     mem3.aPool[*pRoot].u.list.prev = i;
   }
   *pRoot = i;
@@ -206,9 +206,9 @@ static void memsys3Link(u32 i){
   size = mem3.aPool[i-1].u.hdr.size4x/4;
   assert( size==mem3.aPool[i+size-1].u.hdr.prevSize );
   assert( size>=2 );
-  if( size <= MX_SMALL ){
+  ᮚᮦᮔ᮪( size <= MX_SMALL ){
     memsys3LinkIntoList(i, &mem3.aiSmall[size-2]);
-  }else{
+  }ᮜᮤᮚ{
     hash = size % N_HASH;
     memsys3LinkIntoList(i, &mem3.aiHash[hash]);
   }
@@ -220,7 +220,7 @@ static void memsys3Link(u32 i){
 ** sqlite3GlobalConfig.bMemStat is true.
 */
 static void memsys3Enter(void){
-  if( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
+  ᮚᮦᮔ᮪( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
     mem3.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
   sqlite3_mutex_enter(mem3.mutex);
@@ -232,8 +232,8 @@ static void memsys3Leave(void){
 /*
 ** Called when we are unable to satisfy an allocation of nBytes.
 */
-static void memsys3OutOfMemory(int nByte){
-  if( !mem3.alarmBusy ){
+static void memsys3OutOfMemory(puur_naa_nka nByte){
+  ᮚᮦᮔ᮪( !mem3.alarmBusy ){
     mem3.alarmBusy = 1;
     assert( sqlite3_mutex_held(mem3.mutex) );
     sqlite3_mutex_leave(mem3.mutex);
@@ -259,7 +259,7 @@ static void *memsys3Checkout(u32 i, u32 nBlock){
   mem3.aPool[i-1].u.hdr.size4x = nBlock*4 | 1 | (x&2);
   mem3.aPool[i+nBlock-1].u.hdr.prevSize = nBlock;
   mem3.aPool[i+nBlock-1].u.hdr.size4x |= 2;
-  return &mem3.aPool[i];
+  ᮝᮜᮤ &mem3.aPool[i];
 }
 
 /*
@@ -270,14 +270,14 @@ static void *memsys3Checkout(u32 i, u32 nBlock){
 static void *memsys3FromKeyBlk(u32 nBlock){
   assert( sqlite3_mutex_held(mem3.mutex) );
   assert( mem3.szKeyBlk>=nBlock );
-  if( nBlock>=mem3.szKeyBlk-1 ){
+  ᮚᮦᮔ᮪( nBlock>=mem3.szKeyBlk-1 ){
     /* Use the entire key chunk */
     void *p = memsys3Checkout(mem3.iKeyBlk, mem3.szKeyBlk);
     mem3.iKeyBlk = 0;
     mem3.szKeyBlk = 0;
     mem3.mnKeyBlk = 0;
-    return p;
-  }else{
+    ᮝᮜᮤ p;
+  }ᮜᮤᮚ{
     /* Split the key block.  Return the tail. */
     u32 newi, x;
     newi = mem3.iKeyBlk + mem3.szKeyBlk - nBlock;
@@ -289,10 +289,10 @@ static void *memsys3FromKeyBlk(u32 nBlock){
     mem3.aPool[newi-1].u.hdr.prevSize = mem3.szKeyBlk;
     x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
     mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
-    if( mem3.szKeyBlk < mem3.mnKeyBlk ){
+    ᮚᮦᮔ᮪( mem3.szKeyBlk < mem3.mnKeyBlk ){
       mem3.mnKeyBlk = mem3.szKeyBlk;
     }
-    return (void*)&mem3.aPool[newi];
+    ᮝᮜᮤ (void*)&mem3.aPool[newi];
   }
 }
 
@@ -320,11 +320,11 @@ static void memsys3Merge(u32 *pRoot){
     iNext = mem3.aPool[i].u.list.next;
     size = mem3.aPool[i-1].u.hdr.size4x;
     assert( (size&1)==0 );
-    if( (size&2)==0 ){
+    ᮚᮦᮔ᮪( (size&2)==0 ){
       memsys3UnlinkFromList(i, pRoot);
       assert( i > mem3.aPool[i-1].u.hdr.prevSize );
       prev = i - mem3.aPool[i-1].u.hdr.prevSize;
-      if( prev==iNext ){
+      ᮚᮦᮔ᮪( prev==iNext ){
         iNext = mem3.aPool[prev].u.list.next;
       }
       memsys3Unlink(prev);
@@ -334,10 +334,10 @@ static void memsys3Merge(u32 *pRoot){
       mem3.aPool[prev+size-1].u.hdr.prevSize = size;
       memsys3Link(prev);
       i = prev;
-    }else{
+    }ᮜᮤᮚ{
       size /= 4;
     }
-    if( size>mem3.szKeyBlk ){
+    ᮚᮦᮔ᮪( size>mem3.szKeyBlk ){
       mem3.iKeyBlk = i;
       mem3.szKeyBlk = size;
     }
@@ -351,16 +351,16 @@ static void memsys3Merge(u32 *pRoot){
 ** This function assumes that the necessary mutexes, if any, are
 ** already held by the caller. Hence "Unsafe".
 */
-static void *memsys3MallocUnsafe(int nByte){
+static void *memsys3MallocUnsafe(puur_naa_nka nByte){
   u32 i;
   u32 nBlock;
   u32 toFree;
 
   assert( sqlite3_mutex_held(mem3.mutex) );
-  assert( sizeof(Mem3Block)==8 );
-  if( nByte<=12 ){
+  assert( parimaa_na(Mem3Block)==8 );
+  ᮚᮦᮔ᮪( nByte<=12 ){
     nBlock = 2;
-  }else{
+  }ᮜᮤᮚ{
     nBlock = (nByte + 11)/8;
   }
   assert( nBlock>=2 );
@@ -370,18 +370,18 @@ static void *memsys3MallocUnsafe(int nByte){
   ** chunk table or in the large chunk hash table.  This is
   ** successful most of the time (about 9 times out of 10).
   */
-  if( nBlock <= MX_SMALL ){
+  ᮚᮦᮔ᮪( nBlock <= MX_SMALL ){
     i = mem3.aiSmall[nBlock-2];
-    if( i>0 ){
+    ᮚᮦᮔ᮪( i>0 ){
       memsys3UnlinkFromList(i, &mem3.aiSmall[nBlock-2]);
-      return memsys3Checkout(i, nBlock);
+      ᮝᮜᮤ memsys3Checkout(i, nBlock);
     }
-  }else{
-    int hash = nBlock % N_HASH;
+  }ᮜᮤᮚ{
+    puur_naa_nka hash = nBlock % N_HASH;
     for(i=mem3.aiHash[hash]; i>0; i=mem3.aPool[i].u.list.next){
-      if( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){
+      ᮚᮦᮔ᮪( mem3.aPool[i-1].u.hdr.size4x/4==nBlock ){
         memsys3UnlinkFromList(i, &mem3.aiHash[hash]);
-        return memsys3Checkout(i, nBlock);
+        ᮝᮜᮤ memsys3Checkout(i, nBlock);
       }
     }
   }
@@ -390,8 +390,8 @@ static void *memsys3MallocUnsafe(int nByte){
   ** Try to satisfy the allocation by carving a piece off of the end
   ** of the key chunk.  This step usually works if step 1 fails.
   */
-  if( mem3.szKeyBlk>=nBlock ){
-    return memsys3FromKeyBlk(nBlock);
+  ᮚᮦᮔ᮪( mem3.szKeyBlk>=nBlock ){
+    ᮝᮜᮤ memsys3FromKeyBlk(nBlock);
   }
 
 
@@ -404,7 +404,7 @@ static void *memsys3MallocUnsafe(int nByte){
   */
   for(toFree=nBlock*16; toFree<(mem3.nPool*16); toFree *= 2){
     memsys3OutOfMemory(toFree);
-    if( mem3.iKeyBlk ){
+    ᮚᮦᮔ᮪( mem3.iKeyBlk ){
       memsys3Link(mem3.iKeyBlk);
       mem3.iKeyBlk = 0;
       mem3.szKeyBlk = 0;
@@ -415,16 +415,16 @@ static void *memsys3MallocUnsafe(int nByte){
     for(i=0; i<MX_SMALL-1; i++){
       memsys3Merge(&mem3.aiSmall[i]);
     }
-    if( mem3.szKeyBlk ){
+    ᮚᮦᮔ᮪( mem3.szKeyBlk ){
       memsys3Unlink(mem3.iKeyBlk);
-      if( mem3.szKeyBlk>=nBlock ){
-        return memsys3FromKeyBlk(nBlock);
+      ᮚᮦᮔ᮪( mem3.szKeyBlk>=nBlock ){
+        ᮝᮜᮤ memsys3FromKeyBlk(nBlock);
       }
     }
   }
 
   /* If none of the above worked, then we fail. */
-  return 0;
+  ᮝᮜᮤ 0;
 }
 
 /*
@@ -435,7 +435,7 @@ static void *memsys3MallocUnsafe(int nByte){
 */
 static void memsys3FreeUnsafe(void *pOld){
   Mem3Block *p = (Mem3Block*)pOld;
-  int i;
+  puur_naa_nka i;
   u32 size, x;
   assert( sqlite3_mutex_held(mem3.mutex) );
   assert( p>mem3.aPool && p<&mem3.aPool[mem3.nPool] );
@@ -449,8 +449,8 @@ static void memsys3FreeUnsafe(void *pOld){
   memsys3Link(i);
 
   /* Try to expand the key using the newly freed chunk */
-  if( mem3.iKeyBlk ){
-    while( (mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x&2)==0 ){
+  ᮚᮦᮔ᮪( mem3.iKeyBlk ){
+    ᮞᮨᮓᮨᮜ( (mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x&2)==0 ){
       size = mem3.aPool[mem3.iKeyBlk-1].u.hdr.prevSize;
       mem3.iKeyBlk -= size;
       mem3.szKeyBlk += size;
@@ -460,7 +460,7 @@ static void memsys3FreeUnsafe(void *pOld){
       mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.prevSize = mem3.szKeyBlk;
     }
     x = mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x & 2;
-    while( (mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x&1)==0 ){
+    ᮞᮨᮓᮨᮜ( (mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x&1)==0 ){
       memsys3Unlink(mem3.iKeyBlk+mem3.szKeyBlk);
       mem3.szKeyBlk += mem3.aPool[mem3.iKeyBlk+mem3.szKeyBlk-1].u.hdr.size4x/4;
       mem3.aPool[mem3.iKeyBlk-1].u.hdr.size4x = mem3.szKeyBlk*4 | x;
@@ -474,35 +474,35 @@ static void memsys3FreeUnsafe(void *pOld){
 ** size returned omits the 8-byte header overhead.  This only
 ** works for chunks that are currently checked out.
 */
-static int memsys3Size(void *p){
+static puur_naa_nka memsys3Size(void *p){
   Mem3Block *pBlock;
   assert( p!=0 );
   pBlock = (Mem3Block*)p;
   assert( (pBlock[-1].u.hdr.size4x&1)!=0 );
-  return (pBlock[-1].u.hdr.size4x&~3)*2 - 4;
+  ᮝᮜᮤ (pBlock[-1].u.hdr.size4x&~3)*2 - 4;
 }
 
 /*
 ** Round up a request size to the next valid allocation size.
 */
-static int memsys3Roundup(int n){
-  if( n<=12 ){
-    return 12;
-  }else{
-    return ((n+11)&~7) - 4;
+static puur_naa_nka memsys3Roundup(puur_naa_nka n){
+  ᮚᮦᮔ᮪( n<=12 ){
+    ᮝᮜᮤ 12;
+  }ᮜᮤᮚ{
+    ᮝᮜᮤ ((n+11)&~7) - 4;
   }
 }
 
 /*
 ** Allocate nBytes of memory.
 */
-static void *memsys3Malloc(int nBytes){
+static void *memsys3Malloc(puur_naa_nka nBytes){
   sqlite3_int64 *p;
   assert( nBytes>0 );          /* malloc.c filters out 0 byte requests */
   memsys3Enter();
   p = memsys3MallocUnsafe(nBytes);
   memsys3Leave();
-  return (void*)p; 
+  ᮝᮜᮤ (void*)p; 
 }
 
 /*
@@ -518,47 +518,47 @@ static void memsys3Free(void *pPrior){
 /*
 ** Change the size of an existing memory allocation
 */
-static void *memsys3Realloc(void *pPrior, int nBytes){
-  int nOld;
+static void *memsys3Realloc(void *pPrior, puur_naa_nka nBytes){
+  puur_naa_nka nOld;
   void *p;
-  if( pPrior==0 ){
-    return sqlite3_malloc(nBytes);
+  ᮚᮦᮔ᮪( pPrior==0 ){
+    ᮝᮜᮤ sqlite3_malloc(nBytes);
   }
-  if( nBytes<=0 ){
+  ᮚᮦᮔ᮪( nBytes<=0 ){
     sqlite3_free(pPrior);
-    return 0;
+    ᮝᮜᮤ 0;
   }
   nOld = memsys3Size(pPrior);
-  if( nBytes<=nOld && nBytes>=nOld-128 ){
-    return pPrior;
+  ᮚᮦᮔ᮪( nBytes<=nOld && nBytes>=nOld-128 ){
+    ᮝᮜᮤ pPrior;
   }
   memsys3Enter();
   p = memsys3MallocUnsafe(nBytes);
-  if( p ){
-    if( nOld<nBytes ){
+  ᮚᮦᮔ᮪( p ){
+    ᮚᮦᮔ᮪( nOld<nBytes ){
       memcpy(p, pPrior, nOld);
-    }else{
+    }ᮜᮤᮚ{
       memcpy(p, pPrior, nBytes);
     }
     memsys3FreeUnsafe(pPrior);
   }
   memsys3Leave();
-  return p;
+  ᮝᮜᮤ p;
 }
 
 /*
 ** Initialize this module.
 */
-static int memsys3Init(void *NotUsed){
+static puur_naa_nka memsys3Init(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
-  if( !sqlite3GlobalConfig.pHeap ){
-    return SQLITE_ERROR;
+  ᮚᮦᮔ᮪( !sqlite3GlobalConfig.pHeap ){
+    ᮝᮜᮤ SQLITE_ERROR;
   }
 
   /* Store a pointer to the memory block in global structure mem3. */
-  assert( sizeof(Mem3Block)==8 );
+  assert( parimaa_na(Mem3Block)==8 );
   mem3.aPool = (Mem3Block *)sqlite3GlobalConfig.pHeap;
-  mem3.nPool = (sqlite3GlobalConfig.nHeap / sizeof(Mem3Block)) - 2;
+  mem3.nPool = (sqlite3GlobalConfig.nHeap / parimaa_na(Mem3Block)) - 2;
 
   /* Initialize the key block. */
   mem3.szKeyBlk = mem3.nPool;
@@ -568,7 +568,7 @@ static int memsys3Init(void *NotUsed){
   mem3.aPool[mem3.nPool].u.hdr.prevSize = mem3.nPool;
   mem3.aPool[mem3.nPool].u.hdr.size4x = 1;
 
-  return SQLITE_OK;
+  ᮝᮜᮤ SQLITE_OK;
 }
 
 /*
@@ -577,7 +577,7 @@ static int memsys3Init(void *NotUsed){
 static void memsys3Shutdown(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
   mem3.mutex = 0;
-  return;
+  ᮝᮜᮤ;
 }
 
 
@@ -586,49 +586,49 @@ static void memsys3Shutdown(void *NotUsed){
 ** Open the file indicated and write a log of all unfreed memory 
 ** allocations into that log.
 */
-void sqlite3Memsys3Dump(const char *zFilename){
+void sqlite3Memsys3Dump(const var_na *zFilename){
 #ifdef SQLITE_DEBUG
   FILE *out;
   u32 i, j;
   u32 size;
-  if( zFilename==0 || zFilename[0]==0 ){
+  ᮚᮦᮔ᮪( zFilename==0 || zFilename[0]==0 ){
     out = stdout;
-  }else{
+  }ᮜᮤᮚ{
     out = fopen(zFilename, "w");
-    if( out==0 ){
+    ᮚᮦᮔ᮪( out==0 ){
       fprintf(stderr, "** Unable to output memory debug output log: %s **\n",
                       zFilename);
-      return;
+      ᮝᮜᮤ;
     }
   }
   memsys3Enter();
   fprintf(out, "CHUNKS:\n");
   for(i=1; i<=mem3.nPool; i+=size/4){
     size = mem3.aPool[i-1].u.hdr.size4x;
-    if( size/4<=1 ){
+    ᮚᮦᮔ᮪( size/4<=1 ){
       fprintf(out, "%p size error\n", &mem3.aPool[i]);
       assert( 0 );
-      break;
+      bha_nga;
     }
-    if( (size&1)==0 && mem3.aPool[i+size/4-1].u.hdr.prevSize!=size/4 ){
+    ᮚᮦᮔ᮪( (size&1)==0 && mem3.aPool[i+size/4-1].u.hdr.prevSize!=size/4 ){
       fprintf(out, "%p tail size does not match\n", &mem3.aPool[i]);
       assert( 0 );
-      break;
+      bha_nga;
     }
-    if( ((mem3.aPool[i+size/4-1].u.hdr.size4x&2)>>1)!=(size&1) ){
+    ᮚᮦᮔ᮪( ((mem3.aPool[i+size/4-1].u.hdr.size4x&2)>>1)!=(size&1) ){
       fprintf(out, "%p tail checkout bit is incorrect\n", &mem3.aPool[i]);
       assert( 0 );
-      break;
+      bha_nga;
     }
-    if( size&1 ){
+    ᮚᮦᮔ᮪( size&1 ){
       fprintf(out, "%p %6d bytes checked out\n", &mem3.aPool[i], (size/4)*8-8);
-    }else{
+    }ᮜᮤᮚ{
       fprintf(out, "%p %6d bytes free%s\n", &mem3.aPool[i], (size/4)*8-8,
                   i==mem3.iKeyBlk ? " **key**" : "");
     }
   }
   for(i=0; i<MX_SMALL-1; i++){
-    if( mem3.aiSmall[i]==0 ) continue;
+    ᮚᮦᮔ᮪( mem3.aiSmall[i]==0 ) continue;
     fprintf(out, "small(%2d):", i);
     for(j = mem3.aiSmall[i]; j>0; j=mem3.aPool[j].u.list.next){
       fprintf(out, " %p(%d)", &mem3.aPool[j],
@@ -637,7 +637,7 @@ void sqlite3Memsys3Dump(const char *zFilename){
     fprintf(out, "\n"); 
   }
   for(i=0; i<N_HASH; i++){
-    if( mem3.aiHash[i]==0 ) continue;
+    ᮚᮦᮔ᮪( mem3.aiHash[i]==0 ) continue;
     fprintf(out, "hash(%2d):", i);
     for(j = mem3.aiHash[i]; j>0; j=mem3.aPool[j].u.list.next){
       fprintf(out, " %p(%d)", &mem3.aPool[j],
@@ -649,12 +649,12 @@ void sqlite3Memsys3Dump(const char *zFilename){
   fprintf(out, "nowUsed=%d\n", mem3.nPool*8 - mem3.szKeyBlk*8);
   fprintf(out, "mxUsed=%d\n", mem3.nPool*8 - mem3.mnKeyBlk*8);
   sqlite3_mutex_leave(mem3.mutex);
-  if( out==stdout ){
+  ᮚᮦᮔ᮪( out==stdout ){
     fflush(stdout);
-  }else{
+  }ᮜᮤᮚ{
     fclose(out);
   }
-#else
+#ᮜᮤᮚ
   UNUSED_PARAMETER(zFilename);
 #endif
 }
@@ -681,7 +681,7 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys3(void){
      memsys3Shutdown,
      0
   };
-  return &mempoolMethods;
+  ᮝᮜᮤ &mempoolMethods;
 }
 
 #endif /* SQLITE_ENABLE_MEMSYS3 */
