@@ -16,7 +16,7 @@
 ** are merely placeholders.  Real drivers must be substituted using
 ** sqlite3_config() before SQLite will operate.
 */
-#include "sqliteInt.h"
+#شامل "sqliteInt.h"
 
 /*
 ** This version of the memory allocator is the default.  It is
@@ -28,13 +28,13 @@
 /*
 ** No-op versions of all memory allocation routines
 */
-static void *sqlite3MemMalloc(int nByte){ return 0; }
-static void sqlite3MemFree(void *pPrior){ return; }
-static void *sqlite3MemRealloc(void *pPrior, int nByte){ return 0; }
-static int sqlite3MemSize(void *pPrior){ return 0; }
-static int sqlite3MemRoundup(int n){ return n; }
-static int sqlite3MemInit(void *NotUsed){ return SQLITE_OK; }
-static void sqlite3MemShutdown(void *NotUsed){ return; }
+ایستا تهی *sqlite3MemMalloc(صحیح nByte){ بازگشت 0; }
+ایستا تهی sqlite3MemFree(تهی *pPrior){ بازگشت; }
+ایستا تهی *sqlite3MemRealloc(تهی *pPrior, صحیح nByte){ بازگشت 0; }
+ایستا صحیح sqlite3MemSize(تهی *pPrior){ بازگشت 0; }
+ایستا صحیح sqlite3MemRoundup(صحیح n){ بازگشت n; }
+ایستا صحیح sqlite3MemInit(تهی *NotUsed){ بازگشت SQLITE_OK; }
+ایستا تهی sqlite3MemShutdown(تهی *NotUsed){ بازگشت; }
 
 /*
 ** This routine is the only routine in this file with external linkage.
@@ -42,8 +42,8 @@ static void sqlite3MemShutdown(void *NotUsed){ return; }
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
-  static const sqlite3_mem_methods defaultMethods = {
+تهی sqlite3MemSetDefault(تهی){
+  ایستا ثابت sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
      sqlite3MemRealloc,

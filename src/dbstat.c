@@ -21,8 +21,8 @@
 ** official SQLite documentation.
 */
 
-#include "sqliteInt.h"   /* Requires access to internal data structures */
-#if (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
+#شامل "sqliteInt.h"   /* Requires access to internal data structures */
+#اگر (defined(SQLITE_ENABLE_DBSTAT_VTAB) || defined(SQLITE_TEST)) \
     && !defined(SQLITE_OMIT_VIRTUALTABLE)
 
 /*
@@ -65,7 +65,7 @@
 **
 **      '/1c2/000/'               // Left-most child of 451st child of root
 */
-static const char zDbstatSchema[] = 
+ایستا ثابت نویسه zDbstatSchema[] = 
   "CREATE TABLE x("
   " name       TEXT,"          /*  0 Name of table or index */
   " path       TEXT,"          /*  1 Path to page from root (NULL for agg) */
@@ -83,56 +83,56 @@ static const char zDbstatSchema[] =
 ;
 
 /* Forward reference to data structured used in this module */
-typedef struct StatTable StatTable;
-typedef struct StatCursor StatCursor;
-typedef struct StatPage StatPage;
-typedef struct StatCell StatCell;
+تعریفنوع ساختار StatTable StatTable;
+تعریفنوع ساختار StatCursor StatCursor;
+تعریفنوع ساختار StatPage StatPage;
+تعریفنوع ساختار StatCell StatCell;
 
 /* Size information for a single cell within a btree page */
-struct StatCell {
-  int nLocal;                     /* Bytes of local payload */
+ساختار StatCell {
+  صحیح nLocal;                     /* Bytes of local payload */
   u32 iChildPg;                   /* Child node (or 0 if this is a leaf) */
-  int nOvfl;                      /* Entries in aOvfl[] */
+  صحیح nOvfl;                      /* Entries in aOvfl[] */
   u32 *aOvfl;                     /* Array of overflow page numbers */
-  int nLastOvfl;                  /* Bytes of payload on final overflow page */
-  int iOvfl;                      /* Iterates through aOvfl[] */
+  صحیح nLastOvfl;                  /* Bytes of payload on final overflow page */
+  صحیح iOvfl;                      /* Iterates through aOvfl[] */
 };
 
 /* Size information for a single btree page */
-struct StatPage {
+ساختار StatPage {
   u32 iPgno;                      /* Page number */
   u8 *aPg;                        /* Page buffer from sqlite3_malloc() */
-  int iCell;                      /* Current cell */
-  char *zPath;                    /* Path to this page */
+  صحیح iCell;                      /* Current cell */
+  نویسه *zPath;                    /* Path to this page */
 
   /* Variables populated by statDecodePage(): */
   u8 flags;                       /* Copy of flags byte */
-  int nCell;                      /* Number of cells on page */
-  int nUnused;                    /* Number of unused bytes on page */
+  صحیح nCell;                      /* Number of cells on page */
+  صحیح nUnused;                    /* Number of unused bytes on page */
   StatCell *aCell;                /* Array of parsed cells */
-  u32 iRightChildPg;              /* Right-child page number (or 0) */
-  int nMxPayload;                 /* Largest payload of any cell on the page */
+  u32 i_راست_Child_Pg;              /* Right-child page number (or 0) */
+  صحیح nMxPayload;                 /* Largest payload of any cell on the page */
 };
 
 /* The cursor for scanning the dbstat virtual table */
-struct StatCursor {
+ساختار StatCursor {
   sqlite3_vtab_cursor base;       /* base class.  MUST BE FIRST! */
   sqlite3_stmt *pStmt;            /* Iterates through set of root pages */
   u8 isEof;                       /* After pStmt has returned SQLITE_DONE */
   u8 isAgg;                       /* Aggregate results for each table */
-  int iDb;                        /* Schema used for this query */
+  صحیح iDb;                        /* Schema used for this query */
 
   StatPage aPage[32];             /* Pages in path to current page */
-  int iPage;                      /* Current entry in aPage[] */
+  صحیح iPage;                      /* Current entry in aPage[] */
 
   /* Values to return. */
   u32 iPageno;                    /* Value of 'pageno' column */
-  char *zName;                    /* Value of 'name' column */
-  char *zPath;                    /* Value of 'path' column */
-  char *zPagetype;                /* Value of 'pagetype' column */
-  int nPage;                      /* Number of pages in current btree */
-  int nCell;                      /* Value of 'ncell' column */
-  int nMxPayload;                 /* Value of 'mx_payload' column */
+  نویسه *zName;                    /* Value of 'name' column */
+  نویسه *zPath;                    /* Value of 'path' column */
+  نویسه *zPagetype;                /* Value of 'pagetype' column */
+  صحیح nPage;                      /* Number of pages in current btree */
+  صحیح nCell;                      /* Value of 'ncell' column */
+  صحیح nMxPayload;                 /* Value of 'mx_payload' column */
   i64 nUnused;                    /* Value of 'unused' column */
   i64 nPayload;                   /* Value of 'payload' column */
   i64 iOffset;                    /* Value of 'pgOffset' column */
@@ -140,10 +140,10 @@ struct StatCursor {
 };
 
 /* An instance of the DBSTAT virtual table */
-struct StatTable {
+ساختار StatTable {
   sqlite3_vtab base;              /* base class.  MUST BE FIRST! */
   sqlite3 *db;                    /* Database connection that owns this vtab */
-  int iDb;                        /* Index of database to analyze */
+  صحیح iDb;                        /* Index of database to analyze */
 };
 
 #ifndef get2byte
@@ -153,53 +153,53 @@ struct StatTable {
 /*
 ** Connect to or create a new DBSTAT virtual table.
 */
-static int statConnect(
+ایستا صحیح statConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  تهی *pAux,
+  صحیح argc, ثابت نویسه *ثابت*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  نویسه **pzErr
 ){
   StatTable *pTab = 0;
-  int rc = SQLITE_OK;
-  int iDb;
-  (void)pAux;
+  صحیح rc = SQLITE_OK;
+  صحیح iDb;
+  (تهی)pAux;
 
-  if( argc>=4 ){
+  اگر( argc>=4 ){
     Token nm;
-    sqlite3TokenInit(&nm, (char*)argv[3]);
+    sqlite3TokenInit(&nm, (نویسه*)argv[3]);
     iDb = sqlite3FindDb(db, &nm);
-    if( iDb<0 ){
+    اگر( iDb<0 ){
       *pzErr = sqlite3_mprintf("no such database: %s", argv[3]);
-      return SQLITE_ERROR;
+      بازگشت SQLITE_ERROR;
     }
-  }else{
+  }وگرنه{
     iDb = 0;
   }
   sqlite3_vtab_config(db, SQLITE_VTAB_DIRECTONLY);
   rc = sqlite3_declare_vtab(db, zDbstatSchema);
-  if( rc==SQLITE_OK ){
-    pTab = (StatTable *)sqlite3_malloc64(sizeof(StatTable));
-    if( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
+  اگر( rc==SQLITE_OK ){
+    pTab = (StatTable *)sqlite3_malloc64(اندازه(StatTable));
+    اگر( pTab==0 ) rc = SQLITE_NOMEM_BKPT;
   }
 
-  assert( rc==SQLITE_OK || pTab==0 );
-  if( rc==SQLITE_OK ){
-    memset(pTab, 0, sizeof(StatTable));
+  أكد( rc==SQLITE_OK || pTab==0 );
+  اگر( rc==SQLITE_OK ){
+    memset(pTab, 0, اندازه(StatTable));
     pTab->db = db;
     pTab->iDb = iDb;
   }
 
   *ppVtab = (sqlite3_vtab*)pTab;
-  return rc;
+  بازگشت rc;
 }
 
 /*
 ** Disconnect from or destroy the DBSTAT virtual table.
 */
-static int statDisconnect(sqlite3_vtab *pVtab){
+ایستا صحیح statDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
@@ -212,52 +212,52 @@ static int statDisconnect(sqlite3_vtab *pVtab){
 **      0x04           There is an aggregate=? term in the WHERE clause
 **      0x08           Output should be ordered by name and path
 */
-static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int i;
-  int iSchema = -1;
-  int iName = -1;
-  int iAgg = -1;
-  (void)tab;
+ایستا صحیح statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  صحیح i;
+  صحیح iSchema = -1;
+  صحیح iName = -1;
+  صحیح iAgg = -1;
+  (تهی)tab;
 
   /* Look for a valid schema=? constraint.  If found, change the idxNum to
   ** 1 and request the value of that constraint be sent to xFilter.  And
   ** lower the cost estimate to encourage the constrained version to be
   ** used.
   */
-  for(i=0; i<pIdxInfo->nConstraint; i++){
-    if( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) continue;
-    if( pIdxInfo->aConstraint[i].usable==0 ){
+  برای(i=0; i<pIdxInfo->nConstraint; i++){
+    اگر( pIdxInfo->aConstraint[i].op!=SQLITE_INDEX_CONSTRAINT_EQ ) ادامه;
+    اگر( pIdxInfo->aConstraint[i].usable==0 ){
       /* Force DBSTAT table should always be the right-most table in a join */
-      return SQLITE_CONSTRAINT;
+      بازگشت SQLITE_CONSTRAINT;
     }
-    switch( pIdxInfo->aConstraint[i].iColumn ){
-      case 0: {    /* name */
+    انتخاب( pIdxInfo->aConstraint[i].iColumn ){
+      حالت 0: {    /* name */
         iName = i;
-        break;
+        بشکن;
       }
-      case 10: {   /* schema */
+      حالت 10: {   /* schema */
         iSchema = i;
-        break;
+        بشکن;
       }
-      case 11: {   /* aggregate */
+      حالت 11: {   /* aggregate */
         iAgg = i;
-        break;
+        بشکن;
       }
     }
   }
   i = 0;
-  if( iSchema>=0 ){
+  اگر( iSchema>=0 ){
     pIdxInfo->aConstraintUsage[iSchema].argvIndex = ++i;
     pIdxInfo->aConstraintUsage[iSchema].omit = 1;
-    pIdxInfo->idxNum |= 0x01;
+    pIdxInfo->idx_رقم |= 0x01;
   }
-  if( iName>=0 ){
+  اگر( iName>=0 ){
     pIdxInfo->aConstraintUsage[iName].argvIndex = ++i;
-    pIdxInfo->idxNum |= 0x02;
+    pIdxInfo->idx_رقم |= 0x02;
   }
-  if( iAgg>=0 ){
+  اگر( iAgg>=0 ){
     pIdxInfo->aConstraintUsage[iAgg].argvIndex = ++i;
-    pIdxInfo->idxNum |= 0x04;
+    pIdxInfo->idx_رقم |= 0x04;
   }
   pIdxInfo->estimatedCost = 1.0;
 
@@ -265,7 +265,7 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
   ** If this will satisfy the client, set the orderByConsumed flag so that 
   ** SQLite does not do an external sort.
   */
-  if( ( pIdxInfo->nOrderBy==1
+  اگر( ( pIdxInfo->nOrderBy==1
      && pIdxInfo->aOrderBy[0].iColumn==0
      && pIdxInfo->aOrderBy[0].desc==0
      ) ||
@@ -277,37 +277,37 @@ static int statBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
      )
   ){
     pIdxInfo->orderByConsumed = 1;
-    pIdxInfo->idxNum |= 0x08;
+    pIdxInfo->idx_رقم |= 0x08;
   }
   pIdxInfo->idxFlags |= SQLITE_INDEX_SCAN_HEX;
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** Open a new DBSTAT cursor.
 */
-static int statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ایستا صحیح statOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   StatTable *pTab = (StatTable *)pVTab;
   StatCursor *pCsr;
 
-  pCsr = (StatCursor *)sqlite3_malloc64(sizeof(StatCursor));
-  if( pCsr==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
-    memset(pCsr, 0, sizeof(StatCursor));
+  pCsr = (StatCursor *)sqlite3_malloc64(اندازه(StatCursor));
+  اگر( pCsr==0 ){
+    بازگشت SQLITE_NOMEM_BKPT;
+  }وگرنه{
+    memset(pCsr, 0, اندازه(StatCursor));
     pCsr->base.pVtab = pVTab;
     pCsr->iDb = pTab->iDb;
   }
 
   *ppCursor = (sqlite3_vtab_cursor *)pCsr;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
-static void statClearCells(StatPage *p){
-  int i;
-  if( p->aCell ){
-    for(i=0; i<p->nCell; i++){
+ایستا تهی statClearCells(StatPage *p){
+  صحیح i;
+  اگر( p->aCell ){
+    برای(i=0; i<p->nCell; i++){
       sqlite3_free(p->aCell[i].aOvfl);
     }
     sqlite3_free(p->aCell);
@@ -316,21 +316,21 @@ static void statClearCells(StatPage *p){
   p->aCell = 0;
 }
 
-static void statClearPage(StatPage *p){
+ایستا تهی statClearPage(StatPage *p){
   u8 *aPg = p->aPg;
   statClearCells(p);
   sqlite3_free(p->zPath);
-  memset(p, 0, sizeof(StatPage));
+  memset(p, 0, اندازه(StatPage));
   p->aPg = aPg;
 }
 
-static void statResetCsr(StatCursor *pCsr){
-  int i;
+ایستا تهی statResetCsr(StatCursor *pCsr){
+  صحیح i;
   /* In some circumstances, specifically if an OOM has occurred, the call
   ** to sqlite3_reset() may cause the pager to be reset (emptied). It is
   ** important that statClearPage() is called to free any page refs before
   ** this happens. dbsqlfuzz 9ed3e4e3816219d3509d711636c38542bf3f40b1. */
-  for(i=0; i<ArraySize(pCsr->aPage); i++){
+  برای(i=0; i<ArraySize(pCsr->aPage); i++){
     statClearPage(&pCsr->aPage[i]);
     sqlite3_free(pCsr->aPage[i].aPg);
     pCsr->aPage[i].aPg = 0;
@@ -343,7 +343,7 @@ static void statResetCsr(StatCursor *pCsr){
 }
 
 /* Resize the space-used counters inside of the cursor */
-static void statResetCounts(StatCursor *pCsr){
+ایستا تهی statResetCounts(StatCursor *pCsr){
   pCsr->nCell = 0;
   pCsr->nMxPayload = 0;
   pCsr->nUnused = 0;
@@ -355,12 +355,12 @@ static void statResetCounts(StatCursor *pCsr){
 /*
 ** Close a DBSTAT cursor.
 */
-static int statClose(sqlite3_vtab_cursor *pCursor){
+ایستا صحیح statClose(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
@@ -368,125 +368,125 @@ static int statClose(sqlite3_vtab_cursor *pCursor){
 ** content (payload) stored on that page.  That is to say, compute the
 ** number of bytes of content not found on overflow pages.
 */
-static int getLocalPayload(
-  int nUsable,                    /* Usable bytes per page */
+ایستا صحیح getLocalPayload(
+  صحیح nUsable,                    /* Usable bytes per page */
   u8 flags,                       /* Page flags */
-  int nTotal                      /* Total record (payload) size */
+  صحیح nTotal                      /* Total record (payload) size */
 ){
-  int nLocal;
-  int nMinLocal;
-  int nMaxLocal;
+  صحیح nLocal;
+  صحیح nMinLocal;
+  صحیح nMaxLocal;
  
-  if( flags==0x0D ){              /* Table leaf node */
+  اگر( flags==0x0D ){              /* Table leaf node */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = nUsable - 35;
-  }else{                          /* Index interior and leaf nodes */
+  }وگرنه{                          /* Index interior and leaf nodes */
     nMinLocal = (nUsable - 12) * 32 / 255 - 23;
     nMaxLocal = (nUsable - 12) * 64 / 255 - 23;
   }
 
   nLocal = nMinLocal + (nTotal - nMinLocal) % (nUsable - 4);
-  if( nLocal>nMaxLocal ) nLocal = nMinLocal;
-  return nLocal;
+  اگر( nLocal>nMaxLocal ) nLocal = nMinLocal;
+  بازگشت nLocal;
 }
 
 /* Populate the StatPage object with information about the all
 ** cells found on the page currently under analysis.
 */
-static int statDecodePage(Btree *pBt, StatPage *p){
-  int nUnused;
-  int iOff;
-  int nHdr;
-  int isLeaf;
-  int szPage;
+ایستا صحیح statDecodePage(Btree *pBt, StatPage *p){
+  صحیح nUnused;
+  صحیح iOff;
+  صحیح nHdr;
+  صحیح isLeaf;
+  صحیح szPage;
 
   u8 *aData = p->aPg;
   u8 *aHdr = &aData[p->iPgno==1 ? 100 : 0];
 
   p->flags = aHdr[0];
-  if( p->flags==0x0A || p->flags==0x0D ){
+  اگر( p->flags==0x0A || p->flags==0x0D ){
     isLeaf = 1;
     nHdr = 8;
-  }else if( p->flags==0x05 || p->flags==0x02 ){
+  }وگرنه اگر( p->flags==0x05 || p->flags==0x02 ){
     isLeaf = 0;
     nHdr = 12;
-  }else{
-    goto statPageIsCorrupt;
+  }وگرنه{
+    برو statPageIsCorrupt;
   }
-  if( p->iPgno==1 ) nHdr += 100;
+  اگر( p->iPgno==1 ) nHdr += 100;
   p->nCell = get2byte(&aHdr[3]);
   p->nMxPayload = 0;
   szPage = sqlite3BtreeGetPageSize(pBt);
 
   nUnused = get2byte(&aHdr[5]) - nHdr - 2*p->nCell;
-  nUnused += (int)aHdr[7];
+  nUnused += (صحیح)aHdr[7];
   iOff = get2byte(&aHdr[1]);
-  while( iOff ){
-    int iNext;
-    if( iOff>=szPage ) goto statPageIsCorrupt;
+  وقتی( iOff ){
+    صحیح iNext;
+    اگر( iOff>=szPage ) برو statPageIsCorrupt;
     nUnused += get2byte(&aData[iOff+2]);
     iNext = get2byte(&aData[iOff]);
-    if( iNext<iOff+4 && iNext>0 ) goto statPageIsCorrupt;
+    اگر( iNext<iOff+4 && iNext>0 ) برو statPageIsCorrupt;
     iOff = iNext;
   }
   p->nUnused = nUnused;
-  p->iRightChildPg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
+  p->i_راست_Child_Pg = isLeaf ? 0 : sqlite3Get4byte(&aHdr[8]);
 
-  if( p->nCell ){
-    int i;                        /* Used to iterate through cells */
-    int nUsable;                  /* Usable bytes per page */
+  اگر( p->nCell ){
+    صحیح i;                        /* Used to iterate through cells */
+    صحیح nUsable;                  /* Usable bytes per page */
 
     sqlite3BtreeEnter(pBt);
     nUsable = szPage - sqlite3BtreeGetReserveNoMutex(pBt);
     sqlite3BtreeLeave(pBt);
-    p->aCell = sqlite3_malloc64((p->nCell+1) * sizeof(StatCell));
-    if( p->aCell==0 ) return SQLITE_NOMEM_BKPT;
-    memset(p->aCell, 0, (p->nCell+1) * sizeof(StatCell));
+    p->aCell = sqlite3_malloc64((p->nCell+1) * اندازه(StatCell));
+    اگر( p->aCell==0 ) بازگشت SQLITE_NOMEM_BKPT;
+    memset(p->aCell, 0, (p->nCell+1) * اندازه(StatCell));
 
-    for(i=0; i<p->nCell; i++){
+    برای(i=0; i<p->nCell; i++){
       StatCell *pCell = &p->aCell[i];
 
       iOff = get2byte(&aData[nHdr+i*2]);
-      if( iOff<nHdr || iOff>=szPage ) goto statPageIsCorrupt;
-      if( !isLeaf ){
+      اگر( iOff<nHdr || iOff>=szPage ) برو statPageIsCorrupt;
+      اگر( !isLeaf ){
         pCell->iChildPg = sqlite3Get4byte(&aData[iOff]);
         iOff += 4;
       }
-      if( p->flags==0x05 ){
+      اگر( p->flags==0x05 ){
         /* A table interior node. nPayload==0. */
-      }else{
+      }وگرنه{
         u32 nPayload;             /* Bytes of payload total (local+overflow) */
-        int nLocal;               /* Bytes of payload stored locally */
+        صحیح nLocal;               /* Bytes of payload stored locally */
         iOff += getVarint32(&aData[iOff], nPayload);
-        if( p->flags==0x0D ){
+        اگر( p->flags==0x0D ){
           u64 dummy;
           iOff += sqlite3GetVarint(&aData[iOff], &dummy);
         }
-        if( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
+        اگر( nPayload>(u32)p->nMxPayload ) p->nMxPayload = nPayload;
         nLocal = getLocalPayload(nUsable, p->flags, nPayload);
-        if( nLocal<0 ) goto statPageIsCorrupt;
+        اگر( nLocal<0 ) برو statPageIsCorrupt;
         pCell->nLocal = nLocal;
-        assert( nPayload>=(u32)nLocal );
-        assert( nLocal<=(nUsable-35) );
-        if( nPayload>(u32)nLocal ){
-          int j;
-          int nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
-          if( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
-            goto statPageIsCorrupt;
+        أكد( nPayload>=(u32)nLocal );
+        أكد( nLocal<=(nUsable-35) );
+        اگر( nPayload>(u32)nLocal ){
+          صحیح j;
+          صحیح nOvfl = ((nPayload - nLocal) + nUsable-4 - 1) / (nUsable - 4);
+          اگر( iOff+nLocal+4>nUsable || nPayload>0x7fffffff ){
+            برو statPageIsCorrupt;
           }
           pCell->nLastOvfl = (nPayload-nLocal) - (nOvfl-1) * (nUsable-4);
           pCell->nOvfl = nOvfl;
-          pCell->aOvfl = sqlite3_malloc64(sizeof(u32)*nOvfl);
-          if( pCell->aOvfl==0 ) return SQLITE_NOMEM_BKPT;
+          pCell->aOvfl = sqlite3_malloc64(اندازه(u32)*nOvfl);
+          اگر( pCell->aOvfl==0 ) بازگشت SQLITE_NOMEM_BKPT;
           pCell->aOvfl[0] = sqlite3Get4byte(&aData[iOff+nLocal]);
-          for(j=1; j<nOvfl; j++){
-            int rc;
+          برای(j=1; j<nOvfl; j++){
+            صحیح rc;
             u32 iPrev = pCell->aOvfl[j-1];
             DbPage *pPg = 0;
             rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPrev, &pPg, 0);
-            if( rc!=SQLITE_OK ){
-              assert( pPg==0 );
-              return rc;
+            اگر( rc!=SQLITE_OK ){
+              أكد( pPg==0 );
+              بازگشت rc;
             } 
             pCell->aOvfl[j] = sqlite3Get4byte(sqlite3PagerGetData(pPg));
             sqlite3PagerUnref(pPg);
@@ -496,19 +496,19 @@ static int statDecodePage(Btree *pBt, StatPage *p){
     }
   }
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 
 statPageIsCorrupt:
   p->flags = 0;
   statClearCells(p);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** Populate the pCsr->iOffset and pCsr->szPage member variables. Based on
 ** the current value of pCsr->iPageno.
 */
-static void statSizeAndOffset(StatCursor *pCsr){
+ایستا تهی statSizeAndOffset(StatCursor *pCsr){
   StatTable *pTab = (StatTable *)((sqlite3_vtab_cursor *)pCsr)->pVtab;
   Btree *pBt = pTab->db->aDb[pTab->iDb].pBt;
   Pager *pPager = sqlite3BtreePager(pBt);
@@ -520,10 +520,10 @@ static void statSizeAndOffset(StatCursor *pCsr){
   */
   fd = sqlite3PagerFile(pPager);
   x[0] = pCsr->iPageno;
-  if( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
+  اگر( sqlite3OsFileControl(fd, 230440, &x)==SQLITE_OK ){
     pCsr->iOffset = x[0];
     pCsr->szPage += x[1];
-  }else{
+  }وگرنه{
     /* Not ZIPVFS: The default page size and offset */
     pCsr->szPage += sqlite3BtreeGetPageSize(pBt);
     pCsr->iOffset = (i64)pCsr->szPage * (pCsr->iPageno - 1);
@@ -535,31 +535,31 @@ static void statSizeAndOffset(StatCursor *pCsr){
 ** to page object pPg. Allocate the buffer if necessary. Return SQLITE_OK
 ** if successful, or an SQLite error code otherwise.
 */
-static int statGetPage(
+ایستا صحیح statGetPage(
   Btree *pBt,                     /* Load page from this b-tree */
   u32 iPg,                        /* Page number to load */
   StatPage *pPg                   /* Load page into this object */
 ){
-  int pgsz = sqlite3BtreeGetPageSize(pBt);
+  صحیح pgsz = sqlite3BtreeGetPageSize(pBt);
   DbPage *pDbPage = 0;
-  int rc;
+  صحیح rc;
 
-  if( pPg->aPg==0 ){
+  اگر( pPg->aPg==0 ){
     pPg->aPg = (u8*)sqlite3_malloc(pgsz + DBSTAT_PAGE_PADDING_BYTES);
-    if( pPg->aPg==0 ){
-      return SQLITE_NOMEM_BKPT;
+    اگر( pPg->aPg==0 ){
+      بازگشت SQLITE_NOMEM_BKPT;
     }
     memset(&pPg->aPg[pgsz], 0, DBSTAT_PAGE_PADDING_BYTES);
   }
 
   rc = sqlite3PagerGet(sqlite3BtreePager(pBt), iPg, &pDbPage, 0);
-  if( rc==SQLITE_OK ){
-    const u8 *a = sqlite3PagerGetData(pDbPage);
+  اگر( rc==SQLITE_OK ){
+    ثابت u8 *a = sqlite3PagerGetData(pDbPage);
     memcpy(pPg->aPg, a, pgsz);
     sqlite3PagerUnref(pDbPage);
   }
 
-  return rc;
+  بازگشت rc;
 }
 
 /*
@@ -567,10 +567,10 @@ static int statGetPage(
 ** entry will be the next page, but in aggregated mode (pCsr->isAgg!=0),
 ** the next entry is the next btree.
 */
-static int statNext(sqlite3_vtab_cursor *pCursor){
-  int rc;
-  int nPayload;
-  char *z;
+ایستا صحیح statNext(sqlite3_vtab_cursor *pCursor){
+  صحیح rc;
+  صحیح nPayload;
+  نویسه *z;
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable *)pCursor->pVtab;
   Btree *pBt = pTab->db->aDb[pCsr->iDb].pBt;
@@ -580,40 +580,40 @@ static int statNext(sqlite3_vtab_cursor *pCursor){
   pCsr->zPath = 0;
 
 statNextRestart:
-  if( pCsr->iPage<0 ){
+  اگر( pCsr->iPage<0 ){
     /* Start measuring space on the next btree */
     statResetCounts(pCsr);
     rc = sqlite3_step(pCsr->pStmt);
-    if( rc==SQLITE_ROW ){
-      int nPage;
-      u32 iRoot = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
+    اگر( rc==SQLITE_ROW ){
+      صحیح nPage;
+      u32 i_ریشه = (u32)sqlite3_column_int64(pCsr->pStmt, 1);
       sqlite3PagerPagecount(pPager, &nPage);
-      if( nPage==0 ){
+      اگر( nPage==0 ){
         pCsr->isEof = 1;
-        return sqlite3_reset(pCsr->pStmt);
+        بازگشت sqlite3_reset(pCsr->pStmt);
       }
-      rc = statGetPage(pBt, iRoot, &pCsr->aPage[0]);
-      pCsr->aPage[0].iPgno = iRoot;
+      rc = statGetPage(pBt, i_ریشه, &pCsr->aPage[0]);
+      pCsr->aPage[0].iPgno = i_ریشه;
       pCsr->aPage[0].iCell = 0;
-      if( !pCsr->isAgg ){
+      اگر( !pCsr->isAgg ){
         pCsr->aPage[0].zPath = z = sqlite3_mprintf("/");
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        اگر( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       pCsr->iPage = 0;
       pCsr->nPage = 1;
-    }else{
+    }وگرنه{
       pCsr->isEof = 1;
-      return sqlite3_reset(pCsr->pStmt);
+      بازگشت sqlite3_reset(pCsr->pStmt);
     }
-  }else{
+  }وگرنه{
     /* Continue analyzing the btree previously started */
     StatPage *p = &pCsr->aPage[pCsr->iPage];
-    if( !pCsr->isAgg ) statResetCounts(pCsr);
-    while( p->iCell<p->nCell ){
+    اگر( !pCsr->isAgg ) statResetCounts(pCsr);
+    وقتی( p->iCell<p->nCell ){
       StatCell *pCell = &p->aCell[p->iCell];
-      while( pCell->iOvfl<pCell->nOvfl ){
-        int nUsable;
-        int iOvfl = pCell->iOvfl;
+      وقتی( pCell->iOvfl<pCell->nOvfl ){
+        صحیح nUsable;
+        صحیح iOvfl = pCell->iOvfl;
         sqlite3BtreeEnter(pBt);
         nUsable = sqlite3BtreeGetPageSize(pBt) - 
                         sqlite3BtreeGetReserveNoMutex(pBt);
@@ -621,54 +621,54 @@ statNextRestart:
         pCsr->nPage++;
         pCsr->iPageno = pCell->aOvfl[iOvfl];
         statSizeAndOffset(pCsr);
-        if( pCell->iOvfl<pCell->nOvfl-1 ){
+        اگر( pCell->iOvfl<pCell->nOvfl-1 ){
           pCsr->nPayload += nUsable - 4;
-        }else{
+        }وگرنه{
           pCsr->nPayload += pCell->nLastOvfl;
           pCsr->nUnused += nUsable - 4 - pCell->nLastOvfl;
         }
         pCell->iOvfl++;
-        if( !pCsr->isAgg ){
-          pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
+        اگر( !pCsr->isAgg ){
+          pCsr->zName = (نویسه *)sqlite3_column_text(pCsr->pStmt, 0);
           pCsr->zPagetype = "overflow";
           pCsr->zPath = z = sqlite3_mprintf(
               "%s%.3x+%.6x", p->zPath, p->iCell, iOvfl
           );
-          return z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
+          بازگشت z==0 ? SQLITE_NOMEM_BKPT : SQLITE_OK;
         }
       }
-      if( p->iRightChildPg ) break;
+      اگر( p->i_راست_Child_Pg ) بشکن;
       p->iCell++;
     }
 
-    if( !p->iRightChildPg || p->iCell>p->nCell ){
+    اگر( !p->i_راست_Child_Pg || p->iCell>p->nCell ){
       statClearPage(p);
       pCsr->iPage--;
-      if( pCsr->isAgg && pCsr->iPage<0 ){
+      اگر( pCsr->isAgg && pCsr->iPage<0 ){
         /* label-statNext-done:  When computing aggregate space usage over
         ** an entire btree, this is the exit point from this function */
-        return SQLITE_OK;
+        بازگشت SQLITE_OK;
       }
-      goto statNextRestart; /* Tail recursion */
+      برو statNextRestart; /* Tail recursion */
     }
     pCsr->iPage++;
-    if( pCsr->iPage>=ArraySize(pCsr->aPage) ){
+    اگر( pCsr->iPage>=ArraySize(pCsr->aPage) ){
       statResetCsr(pCsr);
-      return SQLITE_CORRUPT_BKPT;
+      بازگشت SQLITE_CORRUPT_BKPT;
     }
-    assert( p==&pCsr->aPage[pCsr->iPage-1] );
+    أكد( p==&pCsr->aPage[pCsr->iPage-1] );
 
-    if( p->iCell==p->nCell ){
-      p[1].iPgno = p->iRightChildPg;
-    }else{
+    اگر( p->iCell==p->nCell ){
+      p[1].iPgno = p->i_راست_Child_Pg;
+    }وگرنه{
       p[1].iPgno = p->aCell[p->iCell].iChildPg;
     }
     rc = statGetPage(pBt, p[1].iPgno, &p[1]);
     pCsr->nPage++;
     p[1].iCell = 0;
-    if( !pCsr->isAgg ){
+    اگر( !pCsr->isAgg ){
       p[1].zPath = z = sqlite3_mprintf("%s%.3x/", p->zPath, p->iCell);
-      if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+      اگر( z==0 ) rc = SQLITE_NOMEM_BKPT;
     }
     p->iCell++;
   }
@@ -677,38 +677,38 @@ statNextRestart:
   /* Populate the StatCursor fields with the values to be returned
   ** by the xColumn() and xRowid() methods.
   */
-  if( rc==SQLITE_OK ){
-    int i;
+  اگر( rc==SQLITE_OK ){
+    صحیح i;
     StatPage *p = &pCsr->aPage[pCsr->iPage];
-    pCsr->zName = (char *)sqlite3_column_text(pCsr->pStmt, 0);
+    pCsr->zName = (نویسه *)sqlite3_column_text(pCsr->pStmt, 0);
     pCsr->iPageno = p->iPgno;
 
     rc = statDecodePage(pBt, p);
-    if( rc==SQLITE_OK ){
+    اگر( rc==SQLITE_OK ){
       statSizeAndOffset(pCsr);
 
-      switch( p->flags ){
-        case 0x05:             /* table internal */
-        case 0x02:             /* index internal */
+      انتخاب( p->flags ){
+        حالت 0x05:             /* table internal */
+        حالت 0x02:             /* index internal */
           pCsr->zPagetype = "internal";
-          break;
-        case 0x0D:             /* table leaf */
-        case 0x0A:             /* index leaf */
+          بشکن;
+        حالت 0x0D:             /* table leaf */
+        حالت 0x0A:             /* index leaf */
           pCsr->zPagetype = "leaf";
-          break;
-        default:
+          بشکن;
+        پیشفرض:
           pCsr->zPagetype = "corrupted";
-          break;
+          بشکن;
       }
       pCsr->nCell += p->nCell;
       pCsr->nUnused += p->nUnused;
-      if( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
-      if( !pCsr->isAgg ){
+      اگر( p->nMxPayload>pCsr->nMxPayload ) pCsr->nMxPayload = p->nMxPayload;
+      اگر( !pCsr->isAgg ){
         pCsr->zPath = z = sqlite3_mprintf("%s", p->zPath);
-        if( z==0 ) rc = SQLITE_NOMEM_BKPT;
+        اگر( z==0 ) rc = SQLITE_NOMEM_BKPT;
       }
       nPayload = 0;
-      for(i=0; i<p->nCell; i++){
+      برای(i=0; i<p->nCell; i++){
         nPayload += p->aCell[i].nLocal;
       }
       pCsr->nPayload += nPayload;
@@ -716,60 +716,60 @@ statNextRestart:
       /* If computing aggregate space usage by btree, continue with the
       ** next page.  The loop will exit via the return at label-statNext-done
       */
-      if( pCsr->isAgg ) goto statNextRestart;
+      اگر( pCsr->isAgg ) برو statNextRestart;
     }
   }
 
-  return rc;
+  بازگشت rc;
 }
 
-static int statEof(sqlite3_vtab_cursor *pCursor){
+ایستا صحیح statEof(sqlite3_vtab_cursor *pCursor){
   StatCursor *pCsr = (StatCursor *)pCursor;
-  return pCsr->isEof;
+  بازگشت pCsr->isEof;
 }
 
 /* Initialize a cursor according to the query plan idxNum using the
 ** arguments in argv[0].  See statBestIndex() for a description of the
 ** meaning of the bits in idxNum.
 */
-static int statFilter(
+ایستا صحیح statFilter(
   sqlite3_vtab_cursor *pCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  صحیح idx_رقم, ثابت نویسه *idxStr,
+  صحیح argc, sqlite3_مقدار **argv
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
   StatTable *pTab = (StatTable*)(pCursor->pVtab);
   sqlite3_str *pSql;      /* Query of btrees to analyze */
-  char *zSql;             /* String value of pSql */
-  int iArg = 0;           /* Count of argv[] parameters used so far */
-  int rc = SQLITE_OK;     /* Result of this operation */
-  const char *zName = 0;  /* Only provide analysis of this table */
-  (void)argc;
-  (void)idxStr;
+  نویسه *zSql;             /* String value of pSql */
+  صحیح iArg = 0;           /* Count of argv[] parameters used so far */
+  صحیح rc = SQLITE_OK;     /* Result of this operation */
+  ثابت نویسه *zName = 0;  /* Only provide analysis of this table */
+  (تهی)argc;
+  (تهی)idxStr;
 
   statResetCsr(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
-  if( idxNum & 0x01 ){
+  اگر( idx_رقم & 0x01 ){
     /* schema=? constraint is present.  Get its value */
-    const char *zDbase = (const char*)sqlite3_value_text(argv[iArg++]);
+    ثابت نویسه *zDbase = (ثابت نویسه*)sqlite3_مقدار_text(argv[iArg++]);
     pCsr->iDb = sqlite3FindDbName(pTab->db, zDbase);
-    if( pCsr->iDb<0 ){
+    اگر( pCsr->iDb<0 ){
       pCsr->iDb = 0;
       pCsr->isEof = 1;
-      return SQLITE_OK;
+      بازگشت SQLITE_OK;
     }
-  }else{
+  }وگرنه{
     pCsr->iDb = pTab->iDb;
   }
-  if( idxNum & 0x02 ){
+  اگر( idx_رقم & 0x02 ){
     /* name=? constraint is present */
-    zName = (const char*)sqlite3_value_text(argv[iArg++]);
+    zName = (ثابت نویسه*)sqlite3_مقدار_text(argv[iArg++]);
   }
-  if( idxNum & 0x04 ){
+  اگر( idx_رقم & 0x04 ){
     /* aggregate=? constraint is present */
-    pCsr->isAgg = sqlite3_value_double(argv[iArg++])!=0.0;
-  }else{
+    pCsr->isAgg = sqlite3_مقدار_double(argv[iArg++])!=0.0;
+  }وگرنه{
     pCsr->isAgg = 0;
   }
   pSql = sqlite3_str_new(pTab->db);
@@ -780,99 +780,99 @@ static int statFilter(
         "SELECT name,rootpage,type"
         " FROM \"%w\".sqlite_schema WHERE rootpage!=0)",
       pTab->db->aDb[pCsr->iDb].zDbSName);
-  if( zName ){
+  اگر( zName ){
     sqlite3_str_appendf(pSql, "WHERE name=%Q", zName);
   }
-  if( idxNum & 0x08 ){
+  اگر( idx_رقم & 0x08 ){
     sqlite3_str_appendf(pSql, " ORDER BY name");
   }
   zSql = sqlite3_str_finish(pSql);
-  if( zSql==0 ){
-    return SQLITE_NOMEM_BKPT;
-  }else{
+  اگر( zSql==0 ){
+    بازگشت SQLITE_NOMEM_BKPT;
+  }وگرنه{
     rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
     sqlite3_free(zSql);
   }
 
-  if( rc==SQLITE_OK ){
+  اگر( rc==SQLITE_OK ){
     pCsr->iPage = -1;
     rc = statNext(pCursor);
   }
-  return rc;
+  بازگشت rc;
 }
 
-static int statColumn(
+ایستا صحیح statColumn(
   sqlite3_vtab_cursor *pCursor, 
   sqlite3_context *ctx, 
-  int i
+  صحیح i
 ){
   StatCursor *pCsr = (StatCursor *)pCursor;
-  switch( i ){
-    case 0:            /* name */
+  انتخاب( i ){
+    حالت 0:            /* name */
       sqlite3_result_text(ctx, pCsr->zName, -1, SQLITE_TRANSIENT);
-      break;
-    case 1:            /* path */
-      if( !pCsr->isAgg ){
+      بشکن;
+    حالت 1:            /* path */
+      اگر( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPath, -1, SQLITE_TRANSIENT);
       }
-      break;
-    case 2:            /* pageno */
-      if( pCsr->isAgg ){
+      بشکن;
+    حالت 2:            /* pageno */
+      اگر( pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->nPage);
-      }else{
+      }وگرنه{
         sqlite3_result_int64(ctx, pCsr->iPageno);
       }
-      break;
-    case 3:            /* pagetype */
-      if( !pCsr->isAgg ){
+      بشکن;
+    حالت 3:            /* pagetype */
+      اگر( !pCsr->isAgg ){
         sqlite3_result_text(ctx, pCsr->zPagetype, -1, SQLITE_STATIC);
       }
-      break;
-    case 4:            /* ncell */
+      بشکن;
+    حالت 4:            /* ncell */
       sqlite3_result_int64(ctx, pCsr->nCell);
-      break;
-    case 5:            /* payload */
+      بشکن;
+    حالت 5:            /* payload */
       sqlite3_result_int64(ctx, pCsr->nPayload);
-      break;
-    case 6:            /* unused */
+      بشکن;
+    حالت 6:            /* unused */
       sqlite3_result_int64(ctx, pCsr->nUnused);
-      break;
-    case 7:            /* mx_payload */
+      بشکن;
+    حالت 7:            /* mx_payload */
       sqlite3_result_int64(ctx, pCsr->nMxPayload);
-      break;
-    case 8:            /* pgoffset */
-      if( !pCsr->isAgg ){
+      بشکن;
+    حالت 8:            /* pgoffset */
+      اگر( !pCsr->isAgg ){
         sqlite3_result_int64(ctx, pCsr->iOffset);
       }
-      break;
-    case 9:            /* pgsize */
+      بشکن;
+    حالت 9:            /* pgsize */
       sqlite3_result_int64(ctx, pCsr->szPage);
-      break;
-    case 10: {         /* schema */
+      بشکن;
+    حالت 10: {         /* schema */
       sqlite3 *db = sqlite3_context_db_handle(ctx);
-      int iDb = pCsr->iDb;
+      صحیح iDb = pCsr->iDb;
       sqlite3_result_text(ctx, db->aDb[iDb].zDbSName, -1, SQLITE_STATIC);
-      break;
+      بشکن;
     }
-    default: {         /* aggregate */
+    پیشفرض: {         /* aggregate */
       sqlite3_result_int(ctx, pCsr->isAgg);
-      break;
+      بشکن;
     }
   }
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
-static int statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
+ایستا صحیح statRowid(sqlite3_vtab_cursor *pCursor, sqlite_int64 *pRowid){
   StatCursor *pCsr = (StatCursor *)pCursor;
   *pRowid = pCsr->iPageno;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** Invoke this routine to register the "dbstat" virtual table module
 */
-int sqlite3DbstatRegister(sqlite3 *db){
-  static sqlite3_module dbstat_module = {
+صحیح sqlite3DbstatRegister(sqlite3 *db){
+  ایستا sqlite3_module dbstat_module = {
     0,                            /* iVersion */
     statConnect,                  /* xCreate */
     statConnect,                  /* xConnect */
@@ -899,8 +899,8 @@ int sqlite3DbstatRegister(sqlite3 *db){
     0,                            /* xShadowName */
     0                             /* xIntegrity */
   };
-  return sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
+  بازگشت sqlite3_create_module(db, "dbstat", &dbstat_module, 0);
 }
-#elif defined(SQLITE_ENABLE_DBSTAT_VTAB)
-int sqlite3DbstatRegister(sqlite3 *db){ return SQLITE_OK; }
+#وگرنهاگر defined(SQLITE_ENABLE_DBSTAT_VTAB)
+صحیح sqlite3DbstatRegister(sqlite3 *db){ بازگشت SQLITE_OK; }
 #endif /* SQLITE_ENABLE_DBSTAT_VTAB */

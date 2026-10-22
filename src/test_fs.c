@@ -61,18 +61,18 @@
 **
 **   SELECT * FROM fstree WHERE path LIKE '/home/dan/sqlite/%'
 */
-#include "sqliteInt.h"
-#include "tclsqlite.h"
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#شامل "sqliteInt.h"
+#شامل "tclsqlite.h"
+#شامل <stdlib.h>
+#شامل <string.h>
+#شامل <sys/types.h>
+#شامل <sys/stat.h>
+#شامل <fcntl.h>
 
-#if !defined(_WIN32) || defined(__MSVCRT__)
+#اگر !defined(_WIN32) || defined(__MSVCRT__)
 # include <unistd.h>
 # include <dirent.h>
-#else
+#وگرنه
 # include "windirent.h"
 # ifndef S_ISREG
 #  define S_ISREG(mode) (((mode) & S_IFMT) == S_IFREG)
@@ -81,43 +81,43 @@
 
 #ifndef SQLITE_OMIT_VIRTUALTABLE
 
-typedef struct fs_vtab fs_vtab;
-typedef struct fs_cursor fs_cursor;
+تعریفنوع ساختار fs_vtab fs_vtab;
+تعریفنوع ساختار fs_cursor fs_cursor;
 
 /* 
 ** A fs virtual-table object 
 */
-struct fs_vtab {
+ساختار fs_vtab {
   sqlite3_vtab base;
   sqlite3 *db;
-  char *zDb;                      /* Name of db containing zTbl */
-  char *zTbl;                     /* Name of docid->file map table */
+  نویسه *zDb;                      /* Name of db containing zTbl */
+  نویسه *zTbl;                     /* Name of docid->file map table */
 };
 
 /* A fs cursor object */
-struct fs_cursor {
+ساختار fs_cursor {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pStmt;
-  char *zBuf;
-  int nBuf;
-  int nAlloc;
+  نویسه *zBuf;
+  صحیح nBuf;
+  صحیح nAlloc;
 };
 
 /*************************************************************************
 ** Start of fsdir implementation.
 */
-typedef struct FsdirVtab FsdirVtab;
-typedef struct FsdirCsr FsdirCsr;
-struct FsdirVtab {
+تعریفنوع ساختار FsdirVtab FsdirVtab;
+تعریفنوع ساختار FsdirCsr FsdirCsr;
+ساختار FsdirVtab {
   sqlite3_vtab base;
 };
 
-struct FsdirCsr {
+ساختار FsdirCsr {
   sqlite3_vtab_cursor base;
-  char *zDir;                     /* Buffer containing directory scanned */
+  نویسه *zDir;                     /* Buffer containing directory scanned */
   DIR *pDir;                      /* Open directory */
   sqlite3_int64 iRowid;
-  struct dirent *pEntry;
+  ساختار dirent *pEntry;
 };
 
 /*
@@ -131,36 +131,36 @@ struct FsdirCsr {
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fsdirConnect(
+ایستا صحیح fsdirConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  تهی *pAux,
+  صحیح argc, ثابت نویسه *ثابت*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  نویسه **pzErr
 ){
   FsdirVtab *pTab;
 
-  if( argc!=3 ){
+  اگر( argc!=3 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    بازگشت SQLITE_ERROR;
   }
 
-  pTab = (FsdirVtab *)sqlite3_malloc(sizeof(FsdirVtab));
-  if( !pTab ) return SQLITE_NOMEM;
-  memset(pTab, 0, sizeof(FsdirVtab));
+  pTab = (FsdirVtab *)sqlite3_malloc(اندازه(FsdirVtab));
+  اگر( !pTab ) بازگشت SQLITE_NOMEM;
+  memset(pTab, 0, اندازه(FsdirVtab));
 
   *ppVtab = &pTab->base;
   sqlite3_declare_vtab(db, "CREATE TABLE xyz(dir, name);");
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** xDestroy/xDisconnect implementation.
 */
-static int fsdirDisconnect(sqlite3_vtab *pVtab){
+ایستا صحیح fsdirDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
@@ -168,25 +168,25 @@ static int fsdirDisconnect(sqlite3_vtab *pVtab){
 **
 **   (dir = ?)
 */
-static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+ایستا صحیح fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  صحیح ii;
 
   pIdxInfo->estimatedCost = 1000000000.0;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *p = &pIdxInfo->aConstraint[ii];
-    if( p->iColumn==0 && p->usable && p->op==SQLITE_INDEX_CONSTRAINT_EQ ){
-      struct sqlite3_index_constraint_usage *pUsage;
+  برای(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ساختار sqlite3_index_constraint ثابت *p = &pIdxInfo->aConstraint[ii];
+    اگر( p->iColumn==0 && p->usable && p->op==SQLITE_INDEX_CONSTRAINT_EQ ){
+      ساختار sqlite3_index_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
       pUsage->omit = 1;
       pUsage->argvIndex = 1;
-      pIdxInfo->idxNum = 1;
+      pIdxInfo->idx_رقم = 1;
       pIdxInfo->estimatedCost = 1.0;
-      break;
+      بشکن;
     }
   }
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
@@ -194,117 +194,117 @@ static int fsdirBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **
 ** Open a new fsdir cursor.
 */
-static int fsdirOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ایستا صحیح fsdirOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   FsdirCsr *pCur;
   /* Allocate an extra 256 bytes because it is undefined how big dirent.d_name
   ** is and we need enough space.  Linux provides plenty already, but
   ** Solaris only provides one byte. */
-  pCur = (FsdirCsr*)sqlite3_malloc(sizeof(FsdirCsr)+256);
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(FsdirCsr));
+  pCur = (FsdirCsr*)sqlite3_malloc(اندازه(FsdirCsr)+256);
+  اگر( pCur==0 ) بازگشت SQLITE_NOMEM;
+  memset(pCur, 0, اندازه(FsdirCsr));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** Close a fsdir cursor.
 */
-static int fsdirClose(sqlite3_vtab_cursor *cur){
+ایستا صحیح fsdirClose(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCur = (FsdirCsr*)cur;
-  if( pCur->pDir ) closedir(pCur->pDir);
+  اگر( pCur->pDir ) closedir(pCur->pDir);
   sqlite3_free(pCur->zDir);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** Skip the cursor to the next entry.
 */
-static int fsdirNext(sqlite3_vtab_cursor *cur){
+ایستا صحیح fsdirNext(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
 
-  if( pCsr->pDir ){
+  اگر( pCsr->pDir ){
     pCsr->pEntry = readdir(pCsr->pDir);
-    if( pCsr->pEntry==0 ){
+    اگر( pCsr->pEntry==0 ){
       closedir(pCsr->pDir);
       pCsr->pDir = 0;
     }
     pCsr->iRowid++;
   }
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** xFilter method implementation.
 */
-static int fsdirFilter(
+ایستا صحیح fsdirFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  صحیح idx_رقم, ثابت نویسه *idxStr,
+  صحیح argc, sqlite3_مقدار **argv
 ){
   FsdirCsr *pCsr = (FsdirCsr*)pVtabCursor;
-  const char *zDir;
-  int nDir;
+  ثابت نویسه *zDir;
+  صحیح nDir;
 
 
-  if( idxNum!=1 || argc!=1 ){
-    return SQLITE_ERROR;
+  اگر( idx_رقم!=1 || argc!=1 ){
+    بازگشت SQLITE_ERROR;
   }
 
   pCsr->iRowid = 0;
   sqlite3_free(pCsr->zDir);
-  if( pCsr->pDir ){
+  اگر( pCsr->pDir ){
     closedir(pCsr->pDir);
     pCsr->pDir = 0;
   }
 
-  zDir = (const char*)sqlite3_value_text(argv[0]);
-  nDir = sqlite3_value_bytes(argv[0]);
+  zDir = (ثابت نویسه*)sqlite3_مقدار_text(argv[0]);
+  nDir = sqlite3_مقدار_bytes(argv[0]);
   pCsr->zDir = sqlite3_malloc(nDir+1);
-  if( pCsr->zDir==0 ) return SQLITE_NOMEM;
+  اگر( pCsr->zDir==0 ) بازگشت SQLITE_NOMEM;
   memcpy(pCsr->zDir, zDir, nDir+1);
 
   pCsr->pDir = opendir(pCsr->zDir);
-  return fsdirNext(pVtabCursor); 
+  بازگشت fsdirNext(pVtabCursor); 
 }
 
 /*
 ** xEof method implementation.
 */
-static int fsdirEof(sqlite3_vtab_cursor *cur){
+ایستا صحیح fsdirEof(sqlite3_vtab_cursor *cur){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
-  return pCsr->pDir==0;
+  بازگشت pCsr->pDir==0;
 }
 
 /*
 ** xColumn method implementation.
 */
-static int fsdirColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ایستا صحیح fsdirColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, صحیح i){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
-  switch( i ){
-    case 0: /* dir */
+  انتخاب( i ){
+    حالت 0: /* dir */
       sqlite3_result_text(ctx, pCsr->zDir, -1, SQLITE_STATIC);
-      break;
+      بشکن;
 
-    case 1: /* name */
+    حالت 1: /* name */
       sqlite3_result_text(ctx, pCsr->pEntry->d_name, -1, SQLITE_TRANSIENT);
-      break;
+      بشکن;
 
-    default:
-      assert( 0 );
+    پیشفرض:
+      أكد( 0 );
   }
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** xRowid method implementation.
 */
-static int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ایستا صحیح fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   FsdirCsr *pCsr = (FsdirCsr*)cur;
   *pRowid = pCsr->iRowid;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 /*
 ** End of fsdir implementation.
@@ -313,17 +313,17 @@ static int fsdirRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 /*************************************************************************
 ** Start of fstree implementation.
 */
-typedef struct FstreeVtab FstreeVtab;
-typedef struct FstreeCsr FstreeCsr;
-struct FstreeVtab {
+تعریفنوع ساختار FstreeVtab FstreeVtab;
+تعریفنوع ساختار FstreeCsr FstreeCsr;
+ساختار FstreeVtab {
   sqlite3_vtab base;
   sqlite3 *db;
 };
 
-struct FstreeCsr {
+ساختار FstreeCsr {
   sqlite3_vtab_cursor base;
   sqlite3_stmt *pStmt;            /* Statement to list paths */
-  int fd;                         /* File descriptor open on current path */
+  صحیح fd;                         /* File descriptor open on current path */
 };
 
 /*
@@ -337,37 +337,37 @@ struct FstreeCsr {
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fstreeConnect(
+ایستا صحیح fstreeConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  تهی *pAux,
+  صحیح argc, ثابت نویسه *ثابت*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  نویسه **pzErr
 ){
   FstreeVtab *pTab;
 
-  if( argc!=3 ){
+  اگر( argc!=3 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    بازگشت SQLITE_ERROR;
   }
 
-  pTab = (FstreeVtab *)sqlite3_malloc(sizeof(FstreeVtab));
-  if( !pTab ) return SQLITE_NOMEM;
-  memset(pTab, 0, sizeof(FstreeVtab));
+  pTab = (FstreeVtab *)sqlite3_malloc(اندازه(FstreeVtab));
+  اگر( !pTab ) بازگشت SQLITE_NOMEM;
+  memset(pTab, 0, اندازه(FstreeVtab));
   pTab->db = db;
 
   *ppVtab = &pTab->base;
   sqlite3_declare_vtab(db, "CREATE TABLE xyz(path, size, data);");
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** xDestroy/xDisconnect implementation.
 */
-static int fstreeDisconnect(sqlite3_vtab *pVtab){
+ایستا صحیح fstreeDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
@@ -375,27 +375,27 @@ static int fstreeDisconnect(sqlite3_vtab *pVtab){
 **
 **   (dir = ?)
 */
-static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+ایستا صحیح fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  صحیح ii;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *p = &pIdxInfo->aConstraint[ii];
-    if( p->iColumn==0 && p->usable && (
+  برای(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ساختار sqlite3_index_constraint ثابت *p = &pIdxInfo->aConstraint[ii];
+    اگر( p->iColumn==0 && p->usable && (
           p->op==SQLITE_INDEX_CONSTRAINT_GLOB
        || p->op==SQLITE_INDEX_CONSTRAINT_LIKE
        || p->op==SQLITE_INDEX_CONSTRAINT_EQ
     )){
-      struct sqlite3_index_constraint_usage *pUsage;
+      ساختار sqlite3_index_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
-      pIdxInfo->idxNum = p->op;
+      pIdxInfo->idx_رقم = p->op;
       pUsage->argvIndex = 1;
       pIdxInfo->estimatedCost = 100000.0;
-      return SQLITE_OK;
+      بازگشت SQLITE_OK;
     }
   }
 
   pIdxInfo->estimatedCost = 1000000000.0;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
@@ -403,18 +403,18 @@ static int fstreeBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
 **
 ** Open a new fstree cursor.
 */
-static int fstreeOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ایستا صحیح fstreeOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   FstreeCsr *pCur;
-  pCur = (FstreeCsr*)sqlite3_malloc(sizeof(FstreeCsr));
-  if( pCur==0 ) return SQLITE_NOMEM;
-  memset(pCur, 0, sizeof(FstreeCsr));
+  pCur = (FstreeCsr*)sqlite3_malloc(اندازه(FstreeCsr));
+  اگر( pCur==0 ) بازگشت SQLITE_NOMEM;
+  memset(pCur, 0, اندازه(FstreeCsr));
   pCur->fd = -1;
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
-static void fstreeCloseFd(FstreeCsr *pCsr){
-  if( pCsr->fd>=0 ){
+ایستا تهی fstreeCloseFd(FstreeCsr *pCsr){
+  اگر( pCsr->fd>=0 ){
     close(pCsr->fd);
     pCsr->fd = -1;
   }
@@ -423,46 +423,46 @@ static void fstreeCloseFd(FstreeCsr *pCsr){
 /*
 ** Close a fstree cursor.
 */
-static int fstreeClose(sqlite3_vtab_cursor *cur){
+ایستا صحیح fstreeClose(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
   sqlite3_finalize(pCsr->pStmt);
   fstreeCloseFd(pCsr);
   sqlite3_free(pCsr);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** Skip the cursor to the next entry.
 */
-static int fstreeNext(sqlite3_vtab_cursor *cur){
+ایستا صحیح fstreeNext(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  int rc;
+  صحیح rc;
 
   fstreeCloseFd(pCsr);
   rc = sqlite3_step(pCsr->pStmt);
-  if( rc!=SQLITE_ROW ){
+  اگر( rc!=SQLITE_ROW ){
     rc = sqlite3_finalize(pCsr->pStmt);
     pCsr->pStmt = 0;
-  }else{
+  }وگرنه{
     rc = SQLITE_OK;
-    pCsr->fd = open((const char*)sqlite3_column_text(pCsr->pStmt, 0), O_RDONLY);
+    pCsr->fd = open((ثابت نویسه*)sqlite3_column_text(pCsr->pStmt, 0), O_RDONLY);
   }
 
-  return rc;
+  بازگشت rc;
 }
 
 /*
 ** xFilter method implementation.
 */
-static int fstreeFilter(
+ایستا صحیح fstreeFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  صحیح idx_رقم, ثابت نویسه *idxStr,
+  صحیح argc, sqlite3_مقدار **argv
 ){
   FstreeCsr *pCsr = (FstreeCsr*)pVtabCursor;
   FstreeVtab *pTab = (FstreeVtab*)(pCsr->base.pVtab);
-  int rc;
-  const char *zSql = 
+  صحیح rc;
+  ثابت نویسه *zSql = 
 "WITH r(d) AS ("
 "  SELECT CASE WHEN dir=?2 THEN ?3 ELSE dir END || '/' || name "
 "    FROM fsdir WHERE dir=?1 AND name NOT LIKE '.%'"
@@ -470,104 +470,104 @@ static int fstreeFilter(
 "  SELECT dir || '/' || name FROM r, fsdir WHERE dir=d AND name NOT LIKE '.%'"
 ") SELECT d FROM r;";
 
-  char *zRoot;
-  int nRoot;
-  char *zPrefix;
-  int nPrefix;
-  const char *zDir;
-  int nDir;
-  char aWild[2] = { '\0', '\0' };
+  نویسه *z_ریشه;
+  صحیح n_ریشه;
+  نویسه *zPrefix;
+  صحیح nPrefix;
+  ثابت نویسه *zDir;
+  صحیح nDir;
+  نویسه aWild[2] = { '\0', '\0' };
 
 #ifdef _WIN32
-  const char *zDrive = getenv("fstreeDrive");
-  if( zDrive==0 ){
+  ثابت نویسه *zDrive = getenv("fstreeDrive");
+  اگر( zDrive==0 ){
     zDrive = getenv("SystemDrive");
   }
-  zRoot = sqlite3_mprintf("%s%c", zDrive, '/');
-  nRoot = sqlite3Strlen30(zRoot);
+  z_ریشه = sqlite3_mprintf("%s%c", zDrive, '/');
+  n_ریشه = sqlite3Strlen30(z_ریشه);
   zPrefix = sqlite3_mprintf("%s", zDrive);
   nPrefix = sqlite3Strlen30(zPrefix);
-#else
-  zRoot = "/";
-  nRoot = 1;
+#وگرنه
+  z_ریشه = "/";
+  n_ریشه = 1;
   zPrefix = "";
   nPrefix = 0;
 #endif
 
-  zDir = zRoot;
-  nDir = nRoot;
+  zDir = z_ریشه;
+  nDir = n_ریشه;
 
   fstreeCloseFd(pCsr);
   sqlite3_finalize(pCsr->pStmt);
   pCsr->pStmt = 0;
   rc = sqlite3_prepare_v2(pTab->db, zSql, -1, &pCsr->pStmt, 0);
-  if( rc!=SQLITE_OK ) return rc;
+  اگر( rc!=SQLITE_OK ) بازگشت rc;
 
-  if( idxNum ){
-    const char *zQuery = (const char*)sqlite3_value_text(argv[0]);
-    switch( idxNum ){
-      case SQLITE_INDEX_CONSTRAINT_GLOB:
+  اگر( idx_رقم ){
+    ثابت نویسه *zQuery = (ثابت نویسه*)sqlite3_مقدار_text(argv[0]);
+    انتخاب( idx_رقم ){
+      حالت SQLITE_INDEX_CONSTRAINT_GLOB:
         aWild[0] = '*';
         aWild[1] = '?';
-        break;
-      case SQLITE_INDEX_CONSTRAINT_LIKE:
+        بشکن;
+      حالت SQLITE_INDEX_CONSTRAINT_LIKE:
         aWild[0] = '_';
         aWild[1] = '%';
-        break;
+        بشکن;
     }
 
-    if( sqlite3_strnicmp(zQuery, zPrefix, nPrefix)==0 ){
-      int i;
-      for(i=nPrefix; zQuery[i]; i++){
-        if( zQuery[i]==aWild[0] || zQuery[i]==aWild[1] ) break;
-        if( zQuery[i]=='/' ) nDir = i;
+    اگر( sqlite3_strnicmp(zQuery, zPrefix, nPrefix)==0 ){
+      صحیح i;
+      برای(i=nPrefix; zQuery[i]; i++){
+        اگر( zQuery[i]==aWild[0] || zQuery[i]==aWild[1] ) بشکن;
+        اگر( zQuery[i]=='/' ) nDir = i;
       }
       zDir = zQuery;
     }
   }
-  if( nDir==0 ) nDir = 1;
+  اگر( nDir==0 ) nDir = 1;
 
   sqlite3_bind_text(pCsr->pStmt, 1, zDir, nDir, SQLITE_TRANSIENT);
-  sqlite3_bind_text(pCsr->pStmt, 2, zRoot, nRoot, SQLITE_TRANSIENT);
+  sqlite3_bind_text(pCsr->pStmt, 2, z_ریشه, n_ریشه, SQLITE_TRANSIENT);
   sqlite3_bind_text(pCsr->pStmt, 3, zPrefix, nPrefix, SQLITE_TRANSIENT);
 
 #ifdef _WIN32
   sqlite3_free(zPrefix);
-  sqlite3_free(zRoot);
+  sqlite3_free(z_ریشه);
 #endif
 
-  return fstreeNext(pVtabCursor); 
+  بازگشت fstreeNext(pVtabCursor); 
 }
 
 /*
 ** xEof method implementation.
 */
-static int fstreeEof(sqlite3_vtab_cursor *cur){
+ایستا صحیح fstreeEof(sqlite3_vtab_cursor *cur){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  return pCsr->pStmt==0;
+  بازگشت pCsr->pStmt==0;
 }
 
 /*
 ** xColumn method implementation.
 */
-static int fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ایستا صحیح fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, صحیح i){
   FstreeCsr *pCsr = (FstreeCsr*)cur;
-  if( i==0 ){      /* path */
-    sqlite3_result_value(ctx, sqlite3_column_value(pCsr->pStmt, 0));
-  }else{
-    struct stat sBuf;
+  اگر( i==0 ){      /* path */
+    sqlite3_result_مقدار(ctx, sqlite3_column_مقدار(pCsr->pStmt, 0));
+  }وگرنه{
+    ساختار stat sBuf;
     fstat(pCsr->fd, &sBuf);
 
-    if( S_ISREG(sBuf.st_mode) ){
-      if( i==1 ){
+    اگر( S_ISREG(sBuf.st_mode) ){
+      اگر( i==1 ){
         sqlite3_result_int64(ctx, sBuf.st_size);
-      }else{
-        int nRead;
-        char *aBuf = sqlite3_malloc(sBuf.st_mode+1);
-        if( !aBuf ) return SQLITE_NOMEM;
-        nRead = read(pCsr->fd, aBuf, sBuf.st_mode);
-        if( nRead!=sBuf.st_mode ){
-          return SQLITE_IOERR;
+      }وگرنه{
+        صحیح nRead;
+        نویسه *aBuf = sqlite3_malloc(sBuf.st_mode+1);
+        اگر( !aBuf ) بازگشت SQLITE_NOMEM;
+        nRead = اقرأ(pCsr->fd, aBuf, sBuf.st_mode);
+        اگر( nRead!=sBuf.st_mode ){
+          بازگشت SQLITE_IOERR;
         }
         sqlite3_result_blob(ctx, aBuf, nRead, SQLITE_TRANSIENT);
         sqlite3_free(aBuf);
@@ -575,15 +575,15 @@ static int fstreeColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
     }
   }
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** xRowid method implementation.
 */
-static int fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ایستا صحیح fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   *pRowid = 0;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 /*
 ** End of fstree implementation.
@@ -603,29 +603,29 @@ static int fstreeRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
 **   argv[2]   -> table name
 **   argv[...] -> other module argument fields.
 */
-static int fsConnect(
+ایستا صحیح fsConnect(
   sqlite3 *db,
-  void *pAux,
-  int argc, const char *const*argv,
+  تهی *pAux,
+  صحیح argc, ثابت نویسه *ثابت*argv,
   sqlite3_vtab **ppVtab,
-  char **pzErr
+  نویسه **pzErr
 ){
   fs_vtab *pVtab;
-  int nByte;
-  const char *zTbl;
-  const char *zDb = argv[1];
+  صحیح nByte;
+  ثابت نویسه *zTbl;
+  ثابت نویسه *zDb = argv[1];
 
-  if( argc!=4 ){
+  اگر( argc!=4 ){
     *pzErr = sqlite3_mprintf("wrong number of arguments");
-    return SQLITE_ERROR;
+    بازگشت SQLITE_ERROR;
   }
   zTbl = argv[3];
 
-  nByte = sizeof(fs_vtab) + (int)strlen(zTbl) + 1 + (int)strlen(zDb) + 1;
+  nByte = اندازه(fs_vtab) + (صحیح)strlen(zTbl) + 1 + (صحیح)strlen(zDb) + 1;
   pVtab = (fs_vtab *)sqlite3MallocZero( nByte );
-  if( !pVtab ) return SQLITE_NOMEM;
+  اگر( !pVtab ) بازگشت SQLITE_NOMEM;
 
-  pVtab->zTbl = (char *)&pVtab[1];
+  pVtab->zTbl = (نویسه *)&pVtab[1];
   pVtab->zDb = &pVtab->zTbl[strlen(zTbl)+1];
   pVtab->db = db;
   memcpy(pVtab->zTbl, zTbl, strlen(zTbl));
@@ -633,157 +633,157 @@ static int fsConnect(
   *ppVtab = &pVtab->base;
   sqlite3_declare_vtab(db, "CREATE TABLE x(path TEXT, data TEXT)");
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 /* Note that for this virtual table, the xCreate and xConnect
 ** methods are identical. */
 
-static int fsDisconnect(sqlite3_vtab *pVtab){
+ایستا صحیح fsDisconnect(sqlite3_vtab *pVtab){
   sqlite3_free(pVtab);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 /* The xDisconnect and xDestroy methods are also the same */
 
 /*
 ** Open a new fs cursor.
 */
-static int fsOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
+ایستا صحیح fsOpen(sqlite3_vtab *pVTab, sqlite3_vtab_cursor **ppCursor){
   fs_cursor *pCur;
-  pCur = sqlite3MallocZero(sizeof(fs_cursor));
+  pCur = sqlite3MallocZero(اندازه(fs_cursor));
   *ppCursor = &pCur->base;
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** Close a fs cursor.
 */
-static int fsClose(sqlite3_vtab_cursor *cur){
+ایستا صحیح fsClose(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor *)cur;
   sqlite3_finalize(pCur->pStmt);
   sqlite3_free(pCur->zBuf);
   sqlite3_free(pCur);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
-static int fsNext(sqlite3_vtab_cursor *cur){
+ایستا صحیح fsNext(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor *)cur;
-  int rc;
+  صحیح rc;
 
   rc = sqlite3_step(pCur->pStmt);
-  if( rc==SQLITE_ROW || rc==SQLITE_DONE ) rc = SQLITE_OK;
+  اگر( rc==SQLITE_ROW || rc==SQLITE_DONE ) rc = SQLITE_OK;
 
-  return rc;
+  بازگشت rc;
 }
 
-static int fsFilter(
+ایستا صحیح fsFilter(
   sqlite3_vtab_cursor *pVtabCursor, 
-  int idxNum, const char *idxStr,
-  int argc, sqlite3_value **argv
+  صحیح idx_رقم, ثابت نویسه *idxStr,
+  صحیح argc, sqlite3_مقدار **argv
 ){
-  int rc;
+  صحیح rc;
   fs_cursor *pCur = (fs_cursor *)pVtabCursor;
   fs_vtab *p = (fs_vtab *)(pVtabCursor->pVtab);
 
-  assert( (idxNum==0 && argc==0) || (idxNum==1 && argc==1) );
-  if( idxNum==1 ){
-    char *zStmt = sqlite3_mprintf(
+  أكد( (idx_رقم==0 && argc==0) || (idx_رقم==1 && argc==1) );
+  اگر( idx_رقم==1 ){
+    نویسه *zStmt = sqlite3_mprintf(
         "SELECT * FROM %Q.%Q WHERE rowid=?", p->zDb, p->zTbl);
-    if( !zStmt ) return SQLITE_NOMEM;
+    اگر( !zStmt ) بازگشت SQLITE_NOMEM;
     rc = sqlite3_prepare_v2(p->db, zStmt, -1, &pCur->pStmt, 0);
     sqlite3_free(zStmt);
-    if( rc==SQLITE_OK ){
-      sqlite3_bind_value(pCur->pStmt, 1, argv[0]);
+    اگر( rc==SQLITE_OK ){
+      sqlite3_bind_مقدار(pCur->pStmt, 1, argv[0]);
     }
-  }else{
-    char *zStmt = sqlite3_mprintf("SELECT * FROM %Q.%Q", p->zDb, p->zTbl);
-    if( !zStmt ) return SQLITE_NOMEM;
+  }وگرنه{
+    نویسه *zStmt = sqlite3_mprintf("SELECT * FROM %Q.%Q", p->zDb, p->zTbl);
+    اگر( !zStmt ) بازگشت SQLITE_NOMEM;
     rc = sqlite3_prepare_v2(p->db, zStmt, -1, &pCur->pStmt, 0);
     sqlite3_free(zStmt);
   }
 
-  if( rc==SQLITE_OK ){
+  اگر( rc==SQLITE_OK ){
     rc = fsNext(pVtabCursor); 
   }
-  return rc;
+  بازگشت rc;
 }
 
-static int fsColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, int i){
+ایستا صحیح fsColumn(sqlite3_vtab_cursor *cur, sqlite3_context *ctx, صحیح i){
   fs_cursor *pCur = (fs_cursor*)cur;
 
-  assert( i==0 || i==1 || i==2 );
-  if( i==0 ){
-    sqlite3_result_value(ctx, sqlite3_column_value(pCur->pStmt, 0));
-  }else{
-    const char *zFile = (const char *)sqlite3_column_text(pCur->pStmt, 1);
-    struct stat sbuf;
-    int fd;
+  أكد( i==0 || i==1 || i==2 );
+  اگر( i==0 ){
+    sqlite3_result_مقدار(ctx, sqlite3_column_مقدار(pCur->pStmt, 0));
+  }وگرنه{
+    ثابت نویسه *zFile = (ثابت نویسه *)sqlite3_column_text(pCur->pStmt, 1);
+    ساختار stat sbuf;
+    صحیح fd;
 
-    int n;
+    صحیح n;
     fd = open(zFile, O_RDONLY);
-    if( fd<0 ) return SQLITE_IOERR;
+    اگر( fd<0 ) بازگشت SQLITE_IOERR;
     fstat(fd, &sbuf);
 
-    if( sbuf.st_size>=pCur->nAlloc ){
+    اگر( sbuf.st_size>=pCur->nAlloc ){
       sqlite3_int64 nNew = sbuf.st_size*2;
-      char *zNew;
-      if( nNew<1024 ) nNew = 1024;
+      نویسه *zNew;
+      اگر( nNew<1024 ) nNew = 1024;
 
       zNew = sqlite3Realloc(pCur->zBuf, nNew);
-      if( zNew==0 ){
+      اگر( zNew==0 ){
         close(fd);
-        return SQLITE_NOMEM;
+        بازگشت SQLITE_NOMEM;
       }
       pCur->zBuf = zNew;
       pCur->nAlloc = nNew;
     }
 
-    n = (int)read(fd, pCur->zBuf, sbuf.st_size);
+    n = (صحیح)اقرأ(fd, pCur->zBuf, sbuf.st_size);
     close(fd);
-    if( n!=sbuf.st_size ) return SQLITE_ERROR;
+    اگر( n!=sbuf.st_size ) بازگشت SQLITE_ERROR;
     pCur->nBuf = sbuf.st_size;
     pCur->zBuf[pCur->nBuf] = '\0';
 
     sqlite3_result_text(ctx, pCur->zBuf, -1, SQLITE_TRANSIENT);
   }
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
-static int fsRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
+ایستا صحیح fsRowid(sqlite3_vtab_cursor *cur, sqlite_int64 *pRowid){
   fs_cursor *pCur = (fs_cursor*)cur;
   *pRowid = sqlite3_column_int64(pCur->pStmt, 0);
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
-static int fsEof(sqlite3_vtab_cursor *cur){
+ایستا صحیح fsEof(sqlite3_vtab_cursor *cur){
   fs_cursor *pCur = (fs_cursor*)cur;
-  return (sqlite3_data_count(pCur->pStmt)==0);
+  بازگشت (sqlite3_data_شمار(pCur->pStmt)==0);
 }
 
-static int fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
-  int ii;
+ایستا صحیح fsBestIndex(sqlite3_vtab *tab, sqlite3_index_info *pIdxInfo){
+  صحیح ii;
 
-  for(ii=0; ii<pIdxInfo->nConstraint; ii++){
-    struct sqlite3_index_constraint const *pCons = &pIdxInfo->aConstraint[ii];
-    if( pCons->iColumn<0 && pCons->usable
+  برای(ii=0; ii<pIdxInfo->nConstraint; ii++){
+    ساختار sqlite3_index_constraint ثابت *pCons = &pIdxInfo->aConstraint[ii];
+    اگر( pCons->iColumn<0 && pCons->usable
            && pCons->op==SQLITE_INDEX_CONSTRAINT_EQ ){
-      struct sqlite3_index_constraint_usage *pUsage;
+      ساختار sqlite3_index_constraint_usage *pUsage;
       pUsage = &pIdxInfo->aConstraintUsage[ii];
       pUsage->omit = 0;
       pUsage->argvIndex = 1;
-      pIdxInfo->idxNum = 1;
+      pIdxInfo->idx_رقم = 1;
       pIdxInfo->estimatedCost = 1.0;
-      break;
+      بشکن;
     }
   }
 
-  return SQLITE_OK;
+  بازگشت SQLITE_OK;
 }
 
 /*
 ** A virtual table module that provides read-only access to a
 ** Tcl global variable namespace.
 */
-static sqlite3_module fsModule = {
+ایستا sqlite3_module fsModule = {
   0,                         /* iVersion */
   fsConnect,
   fsConnect,
@@ -811,7 +811,7 @@ static sqlite3_module fsModule = {
   0                            /* xIntegrity */
 };
 
-static sqlite3_module fsdirModule = {
+ایستا sqlite3_module fsdirModule = {
   0,                              /* iVersion */
   fsdirConnect,                   /* xCreate */
   fsdirConnect,                   /* xConnect */
@@ -839,7 +839,7 @@ static sqlite3_module fsdirModule = {
   0                               /* xIntegrity */
 };
 
-static sqlite3_module fstreeModule = {
+ایستا sqlite3_module fstreeModule = {
   0,                              /* iVersion */
   fstreeConnect,                  /* xCreate */
   fstreeConnect,                  /* xConnect */
@@ -870,29 +870,29 @@ static sqlite3_module fstreeModule = {
 /*
 ** Decode a pointer to an sqlite3 object.
 */
-extern int getDbPointer(Tcl_Interp *interp, const char *zA, sqlite3 **ppDb);
+بیرونی صحیح getDbPointer(Tcl_Interp *interp, ثابت نویسه *zA, sqlite3 **ppDb);
 
 /*
 ** Register the echo virtual table module.
 */
-static int SQLITE_TCLAPI register_fs_module(
+ایستا صحیح SQLITE_TCLAPI register_fs_module(
   ClientData clientData, /* Pointer to sqlite3_enable_XXX function */
   Tcl_Interp *interp,    /* The TCL interpreter that invoked this command */
-  int objc,              /* Number of arguments */
+  صحیح objc,              /* Number of arguments */
   Tcl_Obj *CONST objv[]  /* Command arguments */
 ){
   sqlite3 *db;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "DB");
-    return TCL_ERROR;
+  اگر( objc!=2 ){
+    Tcl_Wrong_رقم_Args(interp, 1, objv, "DB");
+    بازگشت TCL_ERROR;
   }
-  if( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) return TCL_ERROR;
+  اگر( getDbPointer(interp, Tcl_GetString(objv[1]), &db) ) بازگشت TCL_ERROR;
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  sqlite3_create_module(db, "fs", &fsModule, (void *)interp);
+  sqlite3_create_module(db, "fs", &fsModule, (تهی *)interp);
   sqlite3_create_module(db, "fsdir", &fsdirModule, 0);
   sqlite3_create_module(db, "fstree", &fstreeModule, 0);
 #endif
-  return TCL_OK;
+  بازگشت TCL_OK;
 }
 
 #endif
@@ -901,20 +901,20 @@ static int SQLITE_TCLAPI register_fs_module(
 /*
 ** Register commands with the TCL interpreter.
 */
-int Sqlitetestfs_Init(Tcl_Interp *interp){
+صحیح Sqlitetestfs_Init(Tcl_Interp *interp){
 #ifndef SQLITE_OMIT_VIRTUALTABLE
-  static struct {
-     char *zName;
+  ایستا ساختار {
+     نویسه *zName;
      Tcl_ObjCmdProc *xProc;
-     void *clientData;
+     تهی *clientData;
   } aObjCmd[] = {
      { "register_fs_module",   register_fs_module, 0 },
   };
-  int i;
-  for(i=0; i<sizeof(aObjCmd)/sizeof(aObjCmd[0]); i++){
+  صحیح i;
+  برای(i=0; i<اندازه(aObjCmd)/اندازه(aObjCmd[0]); i++){
     Tcl_CreateObjCommand(interp, aObjCmd[i].zName, 
         aObjCmd[i].xProc, aObjCmd[i].clientData, 0);
   }
 #endif
-  return TCL_OK;
+  بازگشت TCL_OK;
 }

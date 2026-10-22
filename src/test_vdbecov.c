@@ -11,106 +11,106 @@
 ******************************************************************************
 **
 */
-#if SQLITE_TEST          /* This file is used for testing only */
+#اگر SQLITE_TEST          /* This file is used for testing only */
 
-#include "sqlite3.h"
-#include "sqliteInt.h"
-#include "tclsqlite.h"
+#شامل "sqlite3.h"
+#شامل "sqliteInt.h"
+#شامل "tclsqlite.h"
 
 #ifdef SQLITE_VDBE_COVERAGE
 
-static u8 aBranchArray[200000];
+ایستا u8 aBranchArray[200000];
 
-static void test_vdbe_branch(
-  void *pCtx, 
-  unsigned int iSrc, 
-  unsigned char iBranch, 
-  unsigned char iType
+ایستا تهی test_vdbe_branch(
+  تهی *pCtx, 
+  unsigned صحیح iSrc, 
+  unsigned نویسه iBranch, 
+  unsigned نویسه iType
 ){
-  if( iSrc<sizeof(aBranchArray) ){
+  اگر( iSrc<اندازه(aBranchArray) ){
     aBranchArray[iSrc] |= iBranch;
   }
 }
 
-static void appendToList(
+ایستا تهی appendToList(
   Tcl_Obj *pList, 
-  int iLine, 
-  int iPath, 
-  const char *zNever
+  صحیح i_سطر, 
+  صحیح iPath, 
+  ثابت نویسه *zNever
 ){
   Tcl_Obj *pNew = Tcl_NewObj();
-  Tcl_IncrRefCount(pNew);
-  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iLine));
+  Tcl_Incr_Ref_شمار(pNew);
+  Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(i_سطر));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewIntObj(iPath));
   Tcl_ListObjAppendElement(0, pNew, Tcl_NewStringObj(zNever, -1));
   Tcl_ListObjAppendElement(0, pList, pNew);
-  Tcl_DecrRefCount(pNew);
+  Tcl_Decr_Ref_شمار(pNew);
 }
 
 
-static int SQLITE_TCLAPI test_vdbe_coverage(
+ایستا صحیح SQLITE_TCLAPI test_vdbe_coverage(
   ClientData cd,
   Tcl_Interp *interp,
-  int objc,
+  صحیح objc,
   Tcl_Obj *CONST objv[]
 ){
-  const char *aSub[] = { "start", "report", "stop", 0 };
-  int iSub = -1;
-  if( objc!=2 ){
-    Tcl_WrongNumArgs(interp, 1, objv, "sub-command");
-    return TCL_ERROR;
+  ثابت نویسه *aSub[] = { "start", "report", "stop", 0 };
+  صحیح iSub = -1;
+  اگر( objc!=2 ){
+    Tcl_Wrong_رقم_Args(interp, 1, objv, "sub-command");
+    بازگشت TCL_ERROR;
   }
 
-  if( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
-    return TCL_ERROR;
+  اگر( Tcl_GetIndexFromObj(interp, objv[1], aSub, "sub-command", 0, &iSub) ){
+    بازگشت TCL_ERROR;
   }
 
   Tcl_ResetResult(interp);
-  assert( iSub==0 || iSub==1 || iSub==2 );
-  switch( iSub ){
-    case 0:       /* start */
-      memset(aBranchArray, 0, sizeof(aBranchArray));
+  أكد( iSub==0 || iSub==1 || iSub==2 );
+  انتخاب( iSub ){
+    حالت 0:       /* start */
+      memset(aBranchArray, 0, اندازه(aBranchArray));
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, test_vdbe_branch, 0);
-      break;
-    case 1: {     /* report */
-      int i;
+      بشکن;
+    حالت 1: {     /* report */
+      صحیح i;
       Tcl_Obj *pRes = Tcl_NewObj();
-      Tcl_IncrRefCount(pRes);
-      for(i=0; i<sizeof(aBranchArray); i++){
+      Tcl_Incr_Ref_شمار(pRes);
+      برای(i=0; i<اندازه(aBranchArray); i++){
         u8 b = aBranchArray[i];
-        int bFlag = ((b >> 4)==4);
-        if( b ){
-          if( (b & 0x01)==0 ){
+        صحیح bFlag = ((b >> 4)==4);
+        اگر( b ){
+          اگر( (b & 0x01)==0 ){
             appendToList(pRes, i, 0, bFlag ? "less than" : "falls through");
           }
-          if( (b & 0x02)==0 ){
+          اگر( (b & 0x02)==0 ){
             appendToList(pRes, i, 1, bFlag ? "equal" : "taken");
           }
-          if( (b & 0x04)==0 ){
+          اگر( (b & 0x04)==0 ){
             appendToList(pRes, i, 2, bFlag ? "greater-than" : "NULL");
           }
         }
       }
       Tcl_SetObjResult(interp, pRes);
-      Tcl_DecrRefCount(pRes);
-      break;
+      Tcl_Decr_Ref_شمار(pRes);
+      بشکن;
     };
       
-    default:      /* stop */         
+    پیشفرض:      /* stop */         
       sqlite3_test_control(SQLITE_TESTCTRL_VDBE_COVERAGE, 0, 0);
-      break;
+      بشکن;
   }
 
-  return TCL_OK;
+  بازگشت TCL_OK;
 }
 
 #endif  /* SQLITE_VDBE_COVERAGE */
 
-int Sqlitetestvdbecov_Init(Tcl_Interp *interp){
+صحیح Sqlitetestvdbecov_Init(Tcl_Interp *interp){
 #ifdef SQLITE_VDBE_COVERAGE
   Tcl_CreateObjCommand(interp, "vdbe_coverage", test_vdbe_coverage, 0, 0);
 #endif
-  return TCL_OK;
+  بازگشت TCL_OK;
 }
 
 #endif
